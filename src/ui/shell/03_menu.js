@@ -16,7 +16,7 @@ const SUBS={
   cfg:[['set','게임 설정'],['auth','업무 권한'],['save','저장·기기'],['info','정보']], /* 설정 정리(사용자 11-17): 저장·기기와 정보(카페·패치 노트·관리자)를 따로 */
   league:[['stand','순위'],['score','일정·결과'],['rec','기록'],['stat','통계'],['wire','리그 소식'],['assoc','협회'],['nt','국가대표'],['ovs','해외 리그'],['hist','역사']],
   club:[['info','구단 정보'],['owner','구단주·목표'],['fans','팬·언론'],['fin','재정'],['spon','스폰서'],['inv','시설 투자'],['chron','연대기'],['share','팀 카드'],['cup','프런트컵']],
-  uld:[['lobby','로비'],['league','리그'],['deck','덱'],['data','기록·데이터'],['rank','순위']]}; /* 래더 v2 하위 탭(src/ui/uladder/02_uladder_pages.js) */
+  uld:[['lobby','로비'],['league','리그'],['deck','덱'],['data','기록·데이터'],['rank','순위'],['rec','기록실']]}; /* 래더 v2 하위 탭(src/ui/uladder/02_uladder_pages.js), 기록실(사용자 11-18) */
 /* 탭 정리: 보이는 탭 하나가 예전 화면 여러 개를 이어서 보여 준다 */
 const MERGE={trade:{block:['block']},staff:{train:['tc','camp','sc','dev','lead']}, /* 예전 '훈련' 메뉴는 스태프·육성 > 훈련·육성 안쪽 탭 */
   league:{hist:['hist','feat'],stat:['tdata','dist','park']},club:{owner:['owner','rel'],fans:['fans','ops','crew','news','media'],chron:['build','chron','result','ob','log']}};

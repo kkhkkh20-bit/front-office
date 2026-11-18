@@ -6,8 +6,8 @@
      GET    /api/v1/player/me                     DELETE /api/v1/player  (내 기록 전부 지우기)
      POST   /api/v1/player/link  {provider, ticket|code}   POST /api/v1/player/login {provider, ticket|code, platform} → 새 기기 토큰
      PUT    /api/v1/ladder/deck  {e, tier?, wid?}  GET /api/v1/ladder/opponents?tier=&ovr=&n=9
-     POST   /api/v1/ladder/result {key, rank, teams, w, l, d, opps:[{pid,w,l,d}]}
-     GET    /api/v1/ladder/leaderboard?tier=|all&season=   GET /api/v1/ladder/feed   GET /api/v1/ladder/meta?tier=|all (덱 구성 집계, 10분 캐시)   GET /api/v1/ladder/me   GET /api/v1/ladder/rivals   GET /api/v1/ladder/h2h/PID
+     POST   /api/v1/ladder/result {key, rank, teams, w, l, d, opps:[{pid,w,l,d}], ps?, rec?}
+     GET    /api/v1/ladder/leaderboard?tier=|all&season=   GET /api/v1/ladder/feed   GET /api/v1/ladder/meta?tier=|all (덱 구성 집계, 10분 캐시)   GET /api/v1/ladder/records?season=&tier=|all (기록실: 시즌 개인·팀 순위·우승 벽, 120초 캐시)   GET /api/v1/ladder/me   GET /api/v1/ladder/rivals   GET /api/v1/ladder/h2h/PID
      클라우드 저장(R2 env.SAVES, 없으면 503 not_configured): GET cloud · GET/PUT/DELETE saves[/SLOT] · POST player/link-code[/redeem] · POST player/recovery[/redeem] · GET player/devices · PUT player/devices/me · DELETE player/devices/ID (worker/v1/cloud.js)
      관리자: GET admin/stats · GET admin/export?kind=decks|results&n=&cursor=&from=&to= (CSV용 줄, 페이지) · GET admin/players?q= · PUT admin/hide {pid, hide} · DELETE admin/player/PID · DELETE admin/deck/PID · POST admin/season/roll · POST admin/migrate
    계정 연결과 기기 토큰(srv2 #64): 연결(POST player/link)은 지금 플레이어에 계정을 붙일 뿐 토큰을 바꾸지 않는다. 그래서 연결 전의 익명 기기 토큰과
@@ -24,9 +24,11 @@ import { PROVIDERS, linkReady, verify } from './link.js';
 import { countDB, statStmts, takeUsage } from './usage.js';
 import { SCHEMA_VERSION } from './schema.js';
 import { cloudPublic, cloudRoute, _cloudReset } from './cloud.js';
+import { records, _recReset } from './records.js';
+import { cacheGen } from './ladder.js';
 
 let schemaOk = false, fetcher = (...a) => fetch(...a);
-export function _v1Reset() { schemaOk = false; _cloudReset(); }
+export function _v1Reset() { schemaOk = false; _cloudReset(); _recReset(); }
 export function _setFetch(f) { fetcher = f || ((...a) => fetch(...a)); }
 
 async function schemaVersion(db) {
@@ -54,8 +56,9 @@ async function route(req, env, url, now) {
     if (!(await ensureSchema(db))) return err(503, 'schema_missing');
     if (rest === 'health' && req.method === 'GET') { const s = await currentSeason(db, now); return json(200, { ok: true, schema: SCHEMA_VERSION, season: { id: s.id, starts: s.starts, ends: s.ends }, platforms: PLATFORMS }); }
     /* 공개 읽기 */
-    if (req.method === 'GET' && (rest === 'ladder/leaderboard' || rest === 'ladder/feed' || rest === 'ladder/meta')) {
+    if (req.method === 'GET' && (rest === 'ladder/leaderboard' || rest === 'ladder/feed' || rest === 'ladder/meta' || rest === 'ladder/records')) {
       if (await limited(env, 'read', await ipKey(req, env), now)) return err(429, 'rate_limited');
+      if (rest === 'ladder/records') return await records(url, db, now, await currentSeason(db, now), await cacheGen(db, now)); /* 래더 기록실(사용자 11-18) */
       return rest === 'ladder/feed' ? await feed(url, db, now) : rest === 'ladder/meta' ? await meta(url, db, now) : await leaderboard(url, db, now);
     }
     if (rest === 'player' && req.method === 'POST') return await postPlayer(req, env, db, now);

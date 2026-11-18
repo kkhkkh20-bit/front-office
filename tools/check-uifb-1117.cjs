@@ -33,7 +33,7 @@ try{for(const [W,H] of [[1920,1080],[1440,900],[390,844]]){const pc=W>=1100,c=aw
   /* 5. 래더: PC 왼쪽 메뉴에서 빠지고 위 오른쪽 아이콘(설정 옆), 휴대폰은 메뉴에서 */
   if(pc){const r=await p.evaluate(()=>({side:!!document.querySelector('.fmside [data-v="uld"]'),ico:!!document.querySelector('.fm-r .fm-i[data-a="tab"][data-v="uld"]'),next:document.querySelector('.fm-r .fm-i[data-v="uld"]')?.nextElementSibling?.dataset.v}));
     assert.equal(r.side,false,'왼쪽 메뉴에 래더 없음');assert.ok(r.ico,'위 오른쪽 래더 아이콘');assert.equal(r.next,'cfg:set','설정 바로 옆');
-    await p.click('.fm-r .fm-i[data-v="uld"]');await p.waitForTimeout(300);assert.equal(await p.evaluate(()=>UI.tab),'uld');assert.ok(await p.evaluate(()=>!!document.querySelector('.fm-r .fm-i[data-v="uld"].on')&&document.querySelectorAll('.fm-sub [data-v^="uld:"]').length===5),'래더 열림·하위 탭');
+    await p.click('.fm-r .fm-i[data-v="uld"]');await p.waitForTimeout(300);assert.equal(await p.evaluate(()=>UI.tab),'uld');assert.ok(await p.evaluate(()=>!!document.querySelector('.fm-r .fm-i[data-v="uld"].on')&&document.querySelectorAll('.fm-sub [data-v^="uld:"]').length===6),'래더 열림·하위 탭');
     await fit('래더');await shot('5-ladder');await p.evaluate(()=>A.go('uld:rank'));assert.equal(await p.evaluate(()=>UI.tab+':'+curSub('uld')),'uld:rank','래더 하위 경로');
     await p.evaluate(()=>A.go('club:uld'));assert.equal(await p.evaluate(()=>UI.tab),'uld','예전 경로(구단 › 래더)');}
   else{await p.evaluate(()=>A.tab('home'));await p.tap('.bnav [data-a="menu"]');await p.waitForTimeout(200);const b=p.locator('.menu-grid [data-a="tab"][data-v="uld"]');assert.equal(await b.count(),1,'휴대폰 메뉴에 래더');await shot('5-menu');await b.tap();await p.waitForTimeout(300);assert.equal(await p.evaluate(()=>UI.tab),'uld');await fit('래더');}
