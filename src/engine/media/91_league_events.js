@@ -61,11 +61,12 @@ function allStarSelect(){
     const p=G.players[x.id],label=`${y} 올스타(${side})`;if(!(p.aw||[]).includes(label))addAward(p,label);
   }
   const mine=Object.values(A.teams).flat().filter(x=>x.t===G.user);
-  news('선수',`${y} 나눔·드림 올스타 선정 발표`,`${dmd(A.event-2)}~${dmd(A.event+1)}은 올스타 휴식기입니다. ${mine.length?`${tshort(G.user)}에서는 ${mine.map(x=>x.name+(x.starter?'(베스트12)':'(추천)')).join(', ')} 선수가 뽑혔습니다.`:'우리 구단의 선정 선수는 없습니다.'} 명단은 팬·선수 평가와 추천으로 꾸렸고, 올 시즌 1군 기록을 기준으로 했습니다.`,0,{tid:G.user});
+  news('선수',`${y} 나눔·드림 올스타 선정 발표`,`${dmd(A.event-2)}~${dmd(A.event+1)}은 올스타 휴식기입니다. ${mine.length?`${tshort(G.user)}에서는 ${mine.map(x=>x.name+(x.starter?'(베스트12)':'(추천)')).join(', ')} 선수가 뽑혔습니다.`:'우리 구단의 선정 선수는 없습니다.'} 명단은 팬·선수 평가와 추천으로 꾸렸고, 올 시즌 1군 기록을 기준으로 했습니다.`,0,{tid:G.user,act:{l:'올스타 명단',a:'leagueEvents',v:String(y)}});
   mail('홍보팀',`${y} 올스타 명단 발표`,`${dmd(A.event)} 나눔·드림 올스타 행사.\n우리 구단: ${mine.map(x=>x.name).join(', ')||'선정 선수 없음'}\n올스타 휴식기 ${dmd(A.event-2)}~${dmd(A.event+1)}에는 정규시즌 경기가 없습니다.`,{kind:'기록',acts:[{l:'올스타 명단',a:'leagueEvents',v:y}]});
   return A;
 }
 function allStarDaily(){
+  try{ asgVoteDaily(); }catch(e){ console.error(e); } /* 팬 투표 중간 발표(93b_all_star_game) */
   if(!G.cal||!G.sea||G.sea.y!==G.year||G.day<G.cal.asg-14||G.day>G.cal.asg+1)return;
   const A=allStarSelect();
   if(!A.played)for(const side of ['나눔','드림'])for(const x of A.teams[side]){ const p=G.players[x.id]; if(p&&p.team!=null&&allStarSide(p.team)===side&&x.t!==p.team)x.t=p.team; } /* 같은 진영 안 이적: 다음 날부터 지금 구단으로(검수 11-06, 11-09zq) */
@@ -83,7 +84,7 @@ function allStarDaily(){
       news('선수',`${side} 올스타 ${next.name}, ${old.name} 대신 선정`,`${old.name}의 출전이 어려워 ${tshort(next.t)} ${next.name}을 대체 선수로 선정했습니다.`,0,{tid:next.t,ref:next.id});
     }
   }
-  if(G.day>=G.cal.asg&&!A.played){const resume=Object.keys(G.cal.sched).map(Number).filter(d=>d>G.cal.asg+1).sort((a,b)=>a-b)[0];A.played=true;note('일정',`${G.year} 나눔·드림 올스타 행사가 열렸습니다.${resume?' '+dmd(resume)+'부터 정규시즌 일정이 재개됩니다.':''}`);}
+  if(G.day>=G.cal.asg&&!A.played){const resume=Object.keys(G.cal.sched).map(Number).filter(d=>d>G.cal.asg+1).sort((a,b)=>a-b)[0];A.played=true;try{ asgEvent(A); }catch(e){ console.error(e); } /* 홈런 더비·올스타전(따로 씨앗을 둔 난수, 시즌 기록 밖) */note('일정',`${G.year} 나눔·드림 올스타 행사가 열렸습니다.${resume?' '+dmd(resume)+'부터 정규시즌 일정이 재개됩니다.':''}`);}
 }
 /* ===== 우승·가을야구 순간 기사 =====
    횟수·연도는 G.history(이 리그에서 치른 시즌, 올해는 아직 들어가기 전)에서만 센다. 우리 구단 우승 기사는 champCelebrate가 쓴다. */

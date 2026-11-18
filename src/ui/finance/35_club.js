@@ -272,7 +272,8 @@ function champHero(){ const L=G.last; if(!L)return ''; const me=L.tid??G.user; c
 function resultBody0(){
   const L=G.last; const me=L.tid??G.user; /* 결산 뒤 이직해도 성적·월별·신뢰·결산표 모두 결산한 구단 기준(검수 11-09h) */ const ps=L.ps; const f=L.fins[me]; const uo=L.order.find(o=>o.tid===me);
   const rank=L.order.findIndex(o=>o.tid===me)+1; const tr=L.trust;
-  const psRow=(label,s)=>s?`<div class="item" style="cursor:default"><span class="nm">${label}</span><span class="sub">${tname(s[0])} ${s[2]}-${s[3]} ${tname(s[1])}</span></div>`:'';
+  const PM=(()=>{ try{ return psMvpOf(L.y); }catch(e){ return null; } })(), psK={'와일드카드':'wc','준플레이오프':'spo','플레이오프':'po','한국시리즈':'ks'};
+  const psRow=(label,s)=>{ if(!s)return ''; const m=PM&&PM.s[psK[label]]; return `<div class="item" style="cursor:default"><span class="nm">${label}</span><span class="sub">${tname(s[0])} ${s[2]}-${s[3]} ${tname(s[1])}${m?` · MVP ${esc(m.n)}`:''}</span></div>`; }; /* 시리즈 MVP(93_award_race) */
   return `<div class="res2"><div class="res2-a"><p>${me!==G.user?`${esc(tname(me))} · `:''}<b>${recStr(uo)} · ${rank}위</b> · ${ps.champ===me?'한국시리즈 우승':rank<=5?'가을야구 진출':'가을야구 탈락'}</p>
     <div class="months">${(L.months||[]).map(x=>`<div><span>${x.m}</span><b>${x.w}-${x.l}${x.t?`-${x.t}`:''}</b></div>`).join('')}${(()=>{ const M=L.months||[]; if(!M.length)return ''; const w=sum(M.map(x=>x.w)), l=sum(M.map(x=>x.l)), t=sum(M.map(x=>x.t||0)); return `<div class="tot"><span>합계</span><b>${w}-${l}${t?`-${t}`:''}</b></div>`; })()}</div>
     <p class="small">구단주 신뢰 ${tr.before} → <b>${tr.after}</b> <span class="pill ${tr.delta>=0?'good':'bad'}">${tr.delta>=0?'+':''}${tr.delta}</span></p>

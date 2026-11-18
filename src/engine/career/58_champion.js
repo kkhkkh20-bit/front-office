@@ -15,8 +15,7 @@ function champAdopt(tid){ champEventsInit(); const r=Object.values(G.champEvents
 function champSchedule(tid,y){ champEventsInit(); const r=champRecord(tid,y); if(!r.parade)r.parade={tid,y,d:G.day+3,done:false}; if(!r.sales)r.sales={tid,y,pop:team(tid).pop}; r.ringY=y+1; return r; }
 function champRing(tid){ champEventsInit(); return Object.values(G.champEvents||{}).find(r=>r.tid===tid&&r.ringY===G.year&&r.ringDone!==G.year); }
 function champSeriesMvp(y,tid){ tid=tid??G.user;
-  { const K=G.psSer&&G.psSer[y]&&G.psSer[y].ks; if(K){ const L=Object.entries(K).filter(([,o])=>o.t===tid).map(([id,o])=>{ const v=o.isP?(o.outs||0)/3*.7-(o.er||0)*1.3+(o.so||0)*.2+(o.w||0)*1.5+(o.sv||0):(o.h||0)+(o.d||0)*.5+(o.hr||0)*2+(o.rbi||0)*.8+(o.bb||0)*.3; return {id:+id,o,v}; }).sort((a,b)=>b.v-a.v); const b=L[0];
-    if(b){ const o=b.o; const line=o.isP?`${o.w||0}승${o.sv?` ${o.sv}세이브`:''} · ${ipStr(o.outs||0)}이닝 ${o.er||0}자책 · 탈삼진 ${o.so||0}`:`${o.ab||0}타수 ${o.h||0}안타 ${o.hr||0}홈런 ${o.rbi||0}타점`; return {id:b.id,n:o.n,line,games:Math.max(...L.map(x=>x.o.g))}; } } } /* 모든 구단의 한국시리즈 기록(psRec)으로. 옛 저장은 아래 우리 경기 기록으로 */
+  { const r=psSeriesMvp(y,'ks',tid); if(r)return r; } /* 모든 구단의 한국시리즈 기록(psRec)으로. 옛 저장은 아래 우리 경기 기록으로 */
   const R=(G.games||[]).filter(r=>r.kind&&r.kind.startsWith('한국시리즈')&&dobj(r.day).y===y&&(r.home===tid||r.away===tid)); const sc={};
   for(const r of R){ const s=r.box[r.home===tid?'h':'a'];
     for(const b of s.bat){ const v=(b.h||0)+(b.d||0)*.5+(b.hr||0)*2+(b.rbi||0)*.8+(b.bb||0)*.3; const o=sc[b.id]=sc[b.id]||{id:b.id,n:b.n,v:0,b:{ab:0,h:0,hr:0,rbi:0},p:null}; o.v+=v; o.b.ab+=b.ab||0; o.b.h+=b.h||0; o.b.hr+=b.hr||0; o.b.rbi+=b.rbi||0; }
@@ -26,7 +25,7 @@ function champSeriesMvp(y,tid){ tid=tid??G.user;
   return {id:best.id,n:best.n,line,games:R.length}; }
 function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.year; const record=champSchedule(P.champ,y);if(!record.chron){const H=typeof clubChron==='function'?clubChron(P.champ):(G.chron||[]);if(!H.some(x=>x.tid===P.champ&&x.y===y&&x.k==='champ'&&/한국시리즈.*우승/.test(x.t)))chron('champ',`${y} 한국시리즈 우승 · 상대 ${tname(P.runner)}${P.res?.ks?` · ${P.res.ks[2]}승 ${P.res.ks[3]}패`:''}`,null,P.champ);record.chron=1;}
   /* 우승 구단 효과(인기·선수단 기분·구단주 신뢰)는 플레이어가 맡았는지와 상관없이 같게(검수 11-09zo) */ if(!record.fx){ record.fx=1; const tc=team(P.champ); for(const p of playersOf(P.champ))p.mor=clamp((p.mor??60)+8,0,100); tc.pop=clamp(tc.pop+.1,.7,1.5); tc.trust=clamp(tc.trust+3,0,100); }
-  if(!record.mvpDone&&!record.news){ record.mvpDone=1; const m=champSeriesMvp(y,P.champ), q=m&&G.players[m.id]; if(q){ try{ addAward(q,`${y} 한국시리즈 최우수선수`,P.champ); }catch(e){} q.mor=clamp((q.mor??60)+5,0,100); } } /* AI 구단이 우승해도 시리즈 최우수선수를 뽑는다(검수 11-09zz). 정규시즌 MVP 집계와 섞이지 않게 'MVP' 글자를 쓰지 않는다 */
+  if(!record.mvpDone&&!record.news){ record.mvpDone=1; const m=champSeriesMvp(y,P.champ), q=m&&G.players[m.id]; if(q){ try{ addAward(q,`${y} 한국시리즈 최우수선수`,P.champ); }catch(e){} q.mor=clamp((q.mor??60)+5,0,100); } if(m){ try{ psMvpSeries('ks',P.champ,m); }catch(e){} if(G.unemp||P.champ!==G.user)withRng(y*1009+59,()=>news('선수',`한국시리즈 MVP ${m.n}`,`${tname(P.champ)}의 ${m.n}이(가) ${m.line}(으)로 한국시리즈 MVP에 뽑혔습니다.`,0,{ref:m.id,tid:P.champ})); } } /* 시리즈 MVP 기록·다른 구단 우승 때도 기사(93_award_race) */ /* AI 구단이 우승해도 시리즈 최우수선수를 뽑는다(검수 11-09zz). 정규시즌 MVP 집계와 섞이지 않게 'MVP' 글자를 쓰지 않는다 */
   if(G.unemp||P.champ!==G.user)return; if(record.news)return; const t=team(G.user);
   const prev=(G.history||[]).filter(h=>h.champ===G.user).map(h=>h.y); const last=prev.length?Math.max(...prev):null; const n=prev.length+1;
   const ks=P.res&&P.res.ks?P.res.ks:null; const mvp=champSeriesMvp(y);

@@ -46,15 +46,15 @@ function relSyncMe(){ const R0=relsG(); for(const t of G.teams){ if(relMine(t.id
 const relTraitMul=g=>g&&g.trait==='loyal'?1.5:g&&g.trait==='hard'?.6:1;
 /* 우리 연락·식사와 같은 상한(gmTalkRel, t.rel 60 = v 20) */
 function relTalkCap(e0,d){ const v=e0?e0.v:0, cap=(GM_TALK_CAP-50)*2; return d<=0?d:v>=cap?0:Math.min(d,cap-v); }
-function relMeet(t,o,kind){ const a=relKeyOf(t.gm,'gm'), b=relKeyOf(o.gm,'gm'); if(!a||!b)return 0; const R0=relsG(), pk=relPK(a,b); const e0=R0[pk]; const dim=relDim(e0?e0.v:0,1);
+function relMeet(t,o,kind){ const a=relKeyOf(t.gm,'gm'), b=relKeyOf(o.gm,'gm'); if(!a||!b||t===o)return 0;if(kind==='meal'&&gmMealFunds(t.id)<10)return 0; const R0=G.rels||{}, pk=relPK(a,b); const e0=R0[pk]; const dim=relDim(e0?e0.v:0,1);
   if(kind==='meal'){ if(e0&&e0.m!=null&&G.day-e0.m<30)return 0; const u=relU('rmeal'+G.day,t.id*17+o.id); const base=3+Math.floor(u*3); /* ri(3,5)과 같은 폭 */
     const d=relTalkCap(e0,Math.round(base*relTraitMul(o.gm)*dim)*2); /* 0~100 눈금(t.rel)의 값을 -100~100 눈금으로 */ const e=relAdd(a,b,d,'meal',null,true); e.m=G.day; t.cash=(t.cash||0)-10; /* 1천만 원: 우리 식사와 같은 비용 */ return d; }
-  if(e0&&e0.c!=null&&G.day-e0.c<14)return 0; const u=relU('rcall'+G.day,t.id*19+o.id); const tr=o.gm.trait; const d=relTalkCap(e0,Math.round(Math.max(0,(tr==='loyal'?2:1)*(1+Math.floor(u*2))-(tr==='hard'?1:0))*dim)*2); const e=relAdd(a,b,d,d>0?'call':null,null,true); if(e)e.c=G.day; return d; }
+  if(e0&&e0.c!=null&&G.day-e0.c<14)return 0; const u=relU('rcall'+G.day,t.id*19+o.id); const tr=o.gm.trait; const d=relTalkCap(e0,Math.round(Math.max(0,(tr==='loyal'?2:1)*(1+Math.floor(u*2))-(tr==='hard'?1:0))*dim)*2); const e=relAdd(a,b,d,d>0?'call':null,null,true)||(relsG()[pk]={v:0,why:[],d:G.day});e.c=G.day; return d; }
 /* 매달 1일: AI 단장끼리 만난다. 의리파는 자주, 강경파는 드물게. 상대는 거의 고르게 고른다(친한 사이는 아주 조금 더): 가까운 둘만 매달 만나 저절로 더 가까워지지 않게 */
 function relNetMonth(){ if(!G.teams)return 0; const L=G.teams.filter(t=>t.id!==ME()&&t.gm&&!t.gm.interim); let n=0;
   for(const t of L){ const g=t.gm, p=g.trait==='loyal'?.7:g.trait==='hard'?.25:.45; if(relU('rnet'+G.day,t.id)>=p)continue; const a=relKeyOf(g,'gm');
     const C=L.filter(o=>o!==t).map(o=>{ const e=relsG()[relPK(a,relKeyOf(o.gm,'gm'))]; return {o,e,s:clamp(e?e.v:0,-20,20)*.15+relU('rnetp'+G.day,t.id*31+o.id)*50}; }).sort((x,y)=>y.s-x.s);
-    for(const x of C.slice(0,3)){ const ok=x.e&&x.e.m!=null&&G.day-x.e.m<30; const d=relMeet(t,x.o,ok?'call':'meal'); if(d||!ok){ n++; break; } } }
+    for(const x of C.slice(0,3)){ const ok=x.e&&x.e.m!=null&&G.day-x.e.m<30; const kind=ok||gmMealFunds(t.id)<10?'call':'meal';relMeet(t,x.o,kind);const e=G.rels?.[relPK(a,relKeyOf(x.o.gm,'gm'))];if(e&&(kind==='meal'?e.m:e.c)===G.day){n++;break;} } }
   return n; }
 
 /* ----- 경력: 선임·재계약·경질·교체(staffHistory에서 부른다) ----- */
@@ -70,11 +70,12 @@ function relNoteMeWork(k,dv,code){ const x=relMeLive(k); const e=relAdd('me',k,0
 /* ----- 트레이드 ----- */
 /* AI끼리 거래 직후(G.lgTrades에 넣은 뒤): 성사 +, 그때 가치 차이(trueVal, 우리 거래 평가와 같은 잣대)를 남겨 시즌 뒤 손해 본 쪽이 앙금을 갖는다 */
 function relTradeLog(tr){ if(!tr||tr.rl)return; tr.rl=1; const a=relGmKey(tr.a), b=relGmKey(tr.b); if(!a||!b)return; relAdd(a,b,4,'trd');
-  try{ const tv=L=>sum((L||[]).map(id=>G.players[id]?trueVal(G.players[id]):0)); tr.dv=Math.round((tv(tr.ag)-tv(tr.bg))*10)/10; }catch(e){} tr.ka=a; tr.kb=b; }
+  try{ const tv=L=>sum((L||[]).map(id=>G.players[id]?trueVal(G.players[id]):0)), A=team(tr.a), B=team(tr.b), cash=tr.cash||0, pk=Array.isArray(tr.pk)?{give:tr.pk,get:[]}:tr.pk||{};
+    const player=tv(tr.ag)-tv(tr.bg), money=cash<0?cashVal(A,-cash):-cashVal(B,cash), picks=sum((pk.get||[]).map(k=>pkVal(A,k)))-sum((pk.give||[]).map(k=>pkVal(B,k))); tr.relValue={v:1,player,cash:money,picks}; tr.dv=Math.round((player+money+picks)*10)/10; }catch(e){} tr.ka=a; tr.kb=b; }
 /* 그 시즌 거래와 지난 결산 뒤 겨울 거래(연도가 하나 앞)를 모두 본다: 비시즌 거래도 한 번은 평가받는다 */
 const relTrDue=(tr,y)=>tr.y<=y&&tr.y>=y-1;
 function relTradeYear(y){ for(const tr of G.lgTrades||[]){ if(!relTrDue(tr,y)||tr.rv||!tr.ka||!tr.kb)continue; tr.rv=1; const d=tr.dv||0;
-    if(!tr.pk&&Math.abs(d)>7){ const win=d>0?tr.ka:tr.kb, lose=d>0?tr.kb:tr.ka; relAdd(win,lose,-20,'flc',win); } else relAdd(tr.ka,tr.kb,4,'fair'); }
+    if(Math.abs(d)>7){ const win=d>0?tr.ka:tr.kb, lose=d>0?tr.kb:tr.ka; relAdd(win,lose,-20,'flc',win); } else relAdd(tr.ka,tr.kb,4,'fair'); }
   /* 우리 거래: 값은 t.rel(손해 보면 -6, 08_season_events)이고 사유만 */
   for(const tr of G.trades||[]){ if(!relTrDue(tr,y)||tr.rlv)continue; tr.rlv=1; const g=relGmById(tr.gw); const k=g&&relKeyOf(g,'gm'); if(!k)continue; relNoteMe(k,tr.diff>7?'flc':'trd',tr.diff>7?'me':null); } }
 function relGmById(id){ if(id==null)return null; for(const t of G.teams)if(t.gm&&t.gm.id===id)return t.gm; const x=(G.exGM||[]).find(x=>x.g&&x.g.id===id); return x?x.g:null; }
@@ -86,10 +87,28 @@ function relStaffOf(tid){ const me=tid===G.user&&!G.unemp; const gm=relGmKey(tid
 function relWorkYear(){ for(const t of G.teams){ const X=relStaffOf(t.id); const add=(a,b,v,code)=>{ if(!a||!b)return; if(a==='me'||b==='me')relNoteMe(a==='me'?b:a,code); else relAdd(a,b,v,code); };
     add(X.gm,X.mk,5,'col'); for(const c of X.C){ add(X.gm,c.k,2,'col'); if(X.mk)relAdd(X.mk,c.k,c.clan?5:3,c.clan?'clan':'col',c.clan?X.mk:null); } for(const s of X.S)add(X.gm,s,2,'col'); } }
 /* 감독 아래 출전 기회: 많이 뛴 주축은 그 감독을 좋아하고, 쓸 만한데 거의 못 뛴 선수는 서운해한다(구단마다 많이 뛴 4명·못 뛴 2명까지) */
-function relPlayYear(y){ for(const t of G.teams){ const m=G.mgr&&G.mgr[t.id]; const mk=m&&!m.interim?relKeyOf(m,'mgr'):null; if(!mk)continue;
-    const L=playersOf(t.id).filter(p=>!p.prospect&&!p.ys&&(p.hist||[]).some(h=>h.y===y&&h.t===t.id)).map(p=>{ let h=null; try{ h=seasonTotalT(p,y,'1군',t.id); }catch(e){} const n=h?(p.isP?(h.outs||0)/3*3.2:(h.pa||0)):0; return {p,n}; });
-    for(const x of L.filter(x=>x.n>=380).sort((a,b)=>b.n-a.n).slice(0,4))relAdd('pl:'+x.p.id,mk,8,'pla',mk);
-    const top=new Set([...L].sort((a,b)=>ovr(b.p)-ovr(a.p)).slice(0,14).map(x=>x.p.id)); for(const x of L.filter(x=>x.n<100&&top.has(x.p.id)&&!(x.p.injOut>0)&&ovr(x.p)>=52).slice(0,2))relAdd('pl:'+x.p.id,mk,-10,'ben',mk); } }
+/* 감독 임명·퇴임의 실제 사건만 기록한다. 같은 인사 사건을 다시 처리해도 재임 구간은 늘지 않는다. */
+function relMgrTenure(kind,m,action,tid){ if(kind!=='mgr')return; const mk=relKeyOf(m,'mgr'); if(!mk)return; const start=REL_HIRE.includes(action), end=['경질','계약 종료','계약 만료','은퇴','감독대행 임무 종료'].includes(action); if(!start&&!end)return;
+  const L=G.relMgrTen=G.relMgrTen||[]; if(start){ if(L.some(x=>x.k===mk&&x.t===tid&&x.a===G.day))return; for(const x of L)if(x.t===tid&&x.b==null)x.b=G.day; L.push({k:mk,t:tid,a:G.day}); }
+  else { const x=[...L].reverse().find(x=>x.k===mk&&x.t===tid&&x.b==null); if(x)x.b=G.day; }
+}
+/* 실제 경기의 기용량은 당시 감독에게만 적립한다. 경기 객체의 영수증은 재적용·JSON 왕복에도 같은 건으로 식별한다. */
+function relPlayGame(g,day){ let R0=G.relPlay; if(!R0||R0.y!==G.year)R0=G.relPlay={y:G.year,seq:0,seen:{},use:{}};
+  if(!g.relPlayId||!g.relPlayId.startsWith(G.year+':'))g.relPlayId=G.year+':'+(++R0.seq); else R0.seq=Math.max(R0.seq,+g.relPlayId.split(':')[1]||0); if(R0.seen[g.relPlayId])return; R0.seen[g.relPlayId]=true;
+  for(const s of Object.values(g.S)){ const m=G.mgr?.[s.tid], mk=m&&!m.interim?relKeyOf(m,'mgr'):null; if(!mk)continue; const T=R0.use[s.tid]=R0.use[s.tid]||{};
+    for(const [id,x] of s.box){ const p=G.players[id]; if(!p)continue; const n=p.isP?(x.outs||0)*3.2/3:(x.pa||0); const P=T[id]=T[id]||{}; P[mk]=(P[mk]||0)+n; }
+  }
+}
+function relPlayYear(y){ for(const t of G.teams){ const rows=Object.values(G.players).filter(p=>!p.prospect&&!p.ys&&(p.hist||[]).some(h=>h.y===y&&h.t===t.id)), tracked=G.relPlay?.y===y?G.relPlay.use?.[t.id]:null, groups=new Map();
+    /* 구세이브 전체 기록은 시즌 처음부터 끝까지 단독 지휘한 실제 선임/퇴임 증거가 있을 때만 귀속한다. */
+    const cal=G.cal?.y===y?G.cal:null, tenure=(G.relMgrTen||[]).filter(x=>x.t===t.id), full=cal?tenure.filter(x=>x.a<=cal.open&&(x.b==null||x.b>cal.end)):[], solo=full.length===1&&!tenure.some(x=>x.k!==full[0].k&&x.a<=cal.end&&(x.b==null||x.b>cal.open))?full[0].k:null;
+    for(const p of rows){ let use=tracked?.[p.id]; if(!use&&solo){ const h=seasonTotalT(p,y,'1군',t.id); if(h)use={[solo]:p.isP?(h.outs||0)*3.2/3:(h.pa||0)}; } if(!use)continue;
+      for(const [mk,n] of Object.entries(use)){ if(!groups.has(mk))groups.set(mk,[]); groups.get(mk).push({p,n}); }
+    }
+    for(const [mk,L] of groups){ for(const x of L.filter(x=>x.n>=380).sort((a,b)=>b.n-a.n).slice(0,4))relAdd('pl:'+x.p.id,mk,8,'pla',mk);
+      const top=new Set([...L].sort((a,b)=>ovr(b.p)-ovr(a.p)).slice(0,14).map(x=>x.p.id)); for(const x of L.filter(x=>x.n<100&&top.has(x.p.id)&&x.p.team===t.id&&!(x.p.injOut>0)&&ovr(x.p)>=52).slice(0,2))relAdd('pl:'+x.p.id,mk,-10,'ben',mk); }
+  } }
+
 function relMentorYear(){ for(const t of G.teams){ const M=t.id===G.user?G.mentor:((G.clubT||{})[t.id]||{}).mentor; if(!M||M.y!==G.year)continue; const v=G.players[M.id]; if(!v||v.team!==t.id)continue;
     for(const p of playersOf(t.id).filter(p=>p.age<=24&&!p.prospect).sort((a,b)=>b.pot-a.pot).slice(0,3))relAdd('pl:'+v.id,'pl:'+p.id,6,'men','pl:'+v.id); } }
 /* 크기 관리: 2년 넘게 그대로인 옅은 관계는 지우고, 상한을 넘으면 옅은 것부터 */
@@ -103,21 +122,33 @@ function relsSeason(y){ if(!G.teams||G.relSea===y)return; G.relSea=y; try{ relPl
 function relsMonth(){ try{ relNetMonth(); }catch(e){} try{ gmInvMonth(); }catch(e){} relSyncMe(); }
 
 /* ----- 다른 구단 단장이 우리 단장을 부른다: 사이가 좋거나 거래하고 싶을 때 더 자주. 리그 전체에서 한 시즌 몇 번 ----- */
+/* 초대는 발신자와 수신 단장 개인에게 연결한다. 후임이 전임의 비용·거절 벌점을 받지 않는다. */
+function gmInvOwner(){ return 'u'+(G.gmLine||[]).length; }
+function gmInvOwnerWhy(e){ const owner=e.data&&e.data.owner; if(owner!=null)return owner===gmInvOwner()?'':'전임 단장에게 온 초대라 종료됐습니다.';
+  if(!(G.gmLine||[]).length)return ''; const start=G.gmP&&G.gmP.d0; return Number.isFinite(e.day)&&Number.isFinite(start)&&e.day>start?'':'수신 단장을 확인할 수 없는 옛 초대라 종료됐습니다.'; }
+function gmInvEnd(e,why){ if(!e||e.done)return; e.done=true;e.void=true;e.res=why;const m=(G.mail||[]).find(m=>m.id===e.mid);if(m){m.acts=[];m.read=true;m.imp=false;m.body+='\n\n[종료] '+why;}G.stops=(G.stops||[]).filter(s=>s.id!==e.mid);(G.evlog=G.evlog||[]).unshift({d:G.day,y:G.year,t:e.title,c:'초대 종료',r:why,k:e.k,id:e.id,auto:true});if(G.evlog.length>80)G.evlog.length=80; }
+/* me는 현재 단장 별칭이다. 전임의 실제 관계는 계보 인물 키로 옮겨 기록을 지우지 않는다. */
+function relSuccession(n){ const former='gmline:'+n,R0=relsG(); for(const k of relMeLiveKeys()){const v=relMeLive(k),pk=relPK('me',k);if(v!=null&&(R0[pk]||Math.abs(v)>=10)){const e=R0[pk]||{why:[],d:G.day};R0[pk]={...e,v};}}
+  for(const pk of Object.keys(R0)){const K=pk.split('|');if(!K.includes('me'))continue;const e=R0[pk],other=K[0]==='me'?K[1]:K[0],oldFirst=K[0],newFirst=former<other?former:other,flip=(oldFirst==='me'?former:other)!==newFirst;
+    R0[relPK(former,other)]={...e,why:(e.why||[]).map(w=>w[2]==null?[...w]:[w[0],w[1],flip?1-w[2]:w[2]])};delete R0[pk];}
+  for(const t of G.teams||[])t.rel=50; const m=G.mgr&&G.mgr[G.user];if(m&&m.rel!=null)m.rel=50;
+  for(const s of [...Object.values((G.coach||{})[G.user]||{}),...(G.coachX||[]),...(G.scouts||[]),...(G.analysts||[])])if(s&&s.staff&&s.staff.rels)s.staff.rels.me=50;
+  for(const e of G.evs||[])if(e.k==='gmInv'&&!e.done)gmInvEnd(e,'전임 단장이 물러나 초대를 종료했습니다. 후임의 비용과 친분은 바꾸지 않습니다.');delete G.gmInvD;_relWho=null;return former; }
+function gmInvMigrate(){ for(const e of G.evs||[])if(e.k==='gmInv'&&!e.done){const why=gmInvOwnerWhy(e);if(why)gmInvEnd(e,why);} }
 function gmInvOpen(){ return (G.evs||[]).some(e=>e.k==='gmInv'&&!e.done); }
 function gmInvMonth(){ if(G.unemp||G.gameOver||G.user==null||!G.teams||gmInvOpen())return null; if(G.gmInvD!=null&&G.day-G.gmInvD<25)return null; try{ if(personalAway())return null; }catch(e){}
-  const L=G.teams.filter(t=>t.id!==G.user&&t.gm&&!t.gm.interim).map(t=>{ const g=t.gm, c=gmContactView(t.id); const meal=!(c.meal!=null&&c.meal>G.day-30), call=!(c.call!=null&&c.call>G.day-14); if(!meal&&!call)return null;
+  const L=G.teams.filter(t=>t.id!==G.user&&t.gm&&!t.gm.interim).map(t=>{ const g=t.gm, c=gmContactView(t.id); const meal=!gmContactWhy(t.id,'meal'),call=!gmContactWhy(t.id,'call'); if(!meal&&!call)return null;
       let want=false; try{ want=(t.rel??50)>=45&&aiInterest(t.id).length>0; }catch(e){}
-      const p=(.03+((t.rel??50)>=65?.025:(t.rel??50)<35?-.02:0)+(want?.02:0))*(g.trait==='loyal'?1.5:g.trait==='hard'?.5:1); return {t,g,meal,want,p}; }).filter(Boolean);
+      const p=(.03+((t.rel??50)>=65?.025:(t.rel??50)<35?-.02:0)+(want?.02:0))*(g.trait==='loyal'?1.5:g.trait==='hard'?.5:1); return {t,g,meal,call,want,p}; }).filter(Boolean);
   const P=L.filter(x=>relU('ginv'+G.day,x.t.id)<x.p); if(!P.length)return null; const x=P[Math.min(P.length-1,Math.floor(relU('ginvw'+G.day,P.length)*P.length))]; /* 문턱을 넘은 단장 중 고르게(구단 번호 순으로 앞 구단만 부르지 않게) */
-  return gmInvite(x.t.id,x.meal&&relU('ginvk'+G.day,x.t.id)<(x.want||(x.t.rel??50)>=60?.7:.35)?'meal':'call',x.want); }
-function gmInvite(tid,kind,want){ const t=team(tid), g=gmOf(tid); if(!g||g.interim)return null; G.gmInvD=G.day; const nm=`${tshort(tid)} ${g.name} 단장`;
+  return gmInvite(x.t.id,x.meal&&(!x.call||relU('ginvk'+G.day,x.t.id)<(x.want||(x.t.rel??50)>=60?.7:.35))?'meal':'call',x.want); }
+function gmInvite(tid,kind,want){if(gmContactWhy(tid,kind))return null;const t=team(tid),g=t.gm; G.gmInvD=G.day; const nm=`${tshort(tid)} ${g.name} 단장`;
   const sit=kind==='meal'?`${nm}이 저녁 식사를 하자고 연락해 왔습니다.${want?' 우리 선수 이야기를 꺼내고 싶은 눈치입니다.':' 시즌 이야기나 하자고 합니다.'}${aiQ(tid,'hello')}`:`${nm}이 통화하자고 연락해 왔습니다.${want?' 거래 이야기를 슬쩍 떠보려는 것 같습니다.':' 안부를 묻고 싶다고 합니다.'}`;
-  const e=evNew('gmInv',kind==='meal'?`${nm}의 식사 초대`:`${nm}의 연락`,sit,[{l:kind==='meal'?'식사 자리에 나간다':'통화한다',fx:kind==='meal'?'우리가 청한 식사와 같습니다. 구단 운영비 1천만 원이 들고 친분이 오릅니다.':'우리가 건 안부 연락과 같습니다. 친분이 조금 오릅니다.'},{l:'정중히 거절',fx:'친분이 조금 식습니다.'}],{from:nm,cat:'gm',data:{tid,gid:g.id,kind},def:1,exp:7}); /* 진행 멈춤 분류를 '다른 구단 단장 초대'로 따로(예전엔 선수단 사건으로 묶였다) */
+  const e=evNew('gmInv',kind==='meal'?`${nm}의 식사 초대`:`${nm}의 연락`,sit,[{l:kind==='meal'?'식사 자리에 나간다':'통화한다',fx:kind==='meal'?'우리가 청한 식사와 같습니다. 구단 운영비 1천만 원이 들고 친분이 오릅니다.':'우리가 건 안부 연락과 같습니다. 친분이 조금 오릅니다.'},{l:'정중히 거절',fx:'친분이 조금 식습니다.'}],{from:nm,cat:'gm',data:{tid,gid:g.id,kind,owner:gmInvOwner()},def:1,exp:7}); /* 진행 멈춤 분류를 '다른 구단 단장 초대'로 따로(예전엔 선수단 사건으로 묶였다) */
   return e; }
-EVH.gmInv={ can(e,i){ if(i!==0)return ''; try{ const w=personalAway(); if(w)return w; }catch(x){} return ''; },
-  pick(e,i){ const D=e.data||{}, tid=D.tid, g=team(tid)&&team(tid).gm; if(G.unemp||tid===G.user||!g||g.id!==D.gid)return '그 단장은 이미 자리를 떠났습니다.'; const t=team(tid), k=relKeyOf(g,'gm');
-    if(i===0){ const r=gmContact(tid,D.kind==='meal'?'meal':'call'); if(r&&r.ok)relNoteMe(k,D.kind==='meal'?'meal':'call'); return r&&r.msg||''; }
-    t.rel=clamp((t.rel??50)-1,0,100); relNoteMe(k,'dec','me'); return `${g.name} 단장의 초대를 거절했습니다. 친분이 조금 식었습니다.`; } };
+function gmInvWhy(e){if(typeof gmInvOwnerWhy==='function'){const why=gmInvOwnerWhy(e);if(why)return why;}const D=e.data||{},g=team(D.tid)?.gm;if(!g||g.id!==D.gid)return '그 단장은 이미 자리를 떠났습니다.';return gmContactWhy(D.tid,D.kind==='meal'?'meal':'call');}
+EVH.gmInv={canAuto:true,can(e,i){return i===0?gmInvWhy(e):'';},pick(e,i){const why=gmInvWhy(e);if(why)return why+' 이 초대는 관계 변화 없이 종료했습니다.';const D=e.data||{},tid=D.tid,t=team(tid),g=t.gm,k=relKeyOf(g,'gm');if(i===0){const r=gmContact(tid,D.kind==='meal'?'meal':'call');if(r&&r.ok)relNoteMe(k,D.kind==='meal'?'meal':'call');return r&&r.msg||'';}t.rel=clamp((t.rel??50)-1,0,100);relNoteMe(k,'dec','me');return `${g.name} 단장의 초대를 거절했습니다. 친분이 조금 식었습니다.`;}};
+
 
 /* ----- 효과(작게) ----- */
 /* AI끼리 트레이드: tradeNeed가 우리와의 친분(t.rel) 대신 두 단장 사이 친분을 같은 눈금(0~100)으로 본다 */
@@ -131,11 +162,16 @@ function relHireBias(tid,s,kind){ const a=relGmKey(tid); if(!a||a==='me')return 
 
 /* ----- 카드용: 좋아하는·싫어하는 인물(수치 없이 이름과 사유 말만) ----- */
 let _relWho=null;
-function relWho(){ if(_relWho&&_relWho.g===G&&_relWho.d===G.day&&_relWho.u===G.user&&_relWho.x===!!G.unemp)return _relWho.m; const M=new Map(); const put=(k,o)=>{ if(k)M.set(k,o); };
+function relWhoSig(){ const a=[],put=(s,role)=>{if(s)a.push([role,s.id,s.name,s.team,s.interim,s.act,s.cid,s.personKey,s.fid,s.ob,s.prospect].join(':'));};
+  for(const t of G.teams||[]){a.push(t.id+':'+tfull(t));put(t.gm,'gm'+t.id);put((G.mgr||{})[t.id],'mgr'+t.id);for(const [r,c] of Object.entries((G.coach||{})[t.id]||{}))put(c,'coach'+t.id+r);for(const c of (G.lgStaff||{})[t.id]?.sc||[])put(c,'sc'+t.id);}
+  for(const [id,p] of Object.entries(G.players||{}))put(p,'p'+id);for(const [id,p] of Object.entries(G.arch||{}))put(p,'a'+id);
+  for(const [role,L] of [['exgm',(G.exGM||[]).map(x=>x.g)],['line',G.gmLine||[]],['ob',G.ob||[]],['exmgr',G.exMgr||[]],['mm',G.mmarket||[]],['cm',G.cmarket||[]],['sm',G.scoutMarket||[]],['sc',G.scouts||[]]])for(const x of L)put(x,role);a.push(meName());return a.join('|'); }
+function relWho(){ const sig=relWhoSig(); if(_relWho&&_relWho.g===G&&_relWho.sig===sig&&_relWho.d===G.day&&_relWho.u===G.user&&_relWho.x===!!G.unemp)return _relWho.m; const M=new Map(); const put=(k,o)=>{ if(k)M.set(k,o); };
   const safe=f=>{ try{ f(); }catch(e){} };
   safe(()=>{ for(const [id,a] of Object.entries(G.arch||{}))if(a&&a.name)put('pl:'+id,{n:a.name,r:'은퇴 선수',link:{a:'player',v:String(id)}}); });
   safe(()=>{ for(const o of G.ob||[])put(personNetworkKey(o,'ob'),{n:o.name,r:'은퇴 선수',link:{a:'person',v:'ob:'+o.id}}); });
   safe(()=>{ for(const p of Object.values(G.players||{}))if(!p.prospect)put('pl:'+p.id,{n:p.name,r:p.team!=null?tshort(p.team)+' 선수':'무적 선수',link:{a:'player',v:String(p.id)}}); });
+  safe(()=>{ for(const [i,x] of (G.gmLine||[]).entries())put(x.personKey||'gmline:'+i,{n:x.name,r:'전 단장'}); });
   safe(()=>{ for(const x of G.exGM||[])if(x.g)put(relKeyOf(x.g,'gm'),{n:x.g.name,r:'전 단장'}); });
   safe(()=>{ for(const m of G.exMgr||[])put(relKeyOf(m,'mgr'),{n:m.name,r:'전 감독',link:{a:'person',v:'xmgr:'+m.id}}); });
   safe(()=>{ for(const m of G.mmarket||[])put(relKeyOf(m,'mgr'),{n:m.name,r:'감독 후보',link:{a:'person',v:'xmgr:'+m.id}}); });
@@ -147,7 +183,7 @@ function relWho(){ if(_relWho&&_relWho.g===G&&_relWho.d===G.day&&_relWho.u===G.u
     safe(()=>{ for(const [role,c] of Object.entries(coachesOf(t.id)))if(c)put(relKeyOf(c,'coach'),{n:c.name,r:tshort(t.id)+' '+((CROLE[role]||{}).l||'코치'),link:{a:'person',v:me?'c:'+role:'oc:'+t.id+':'+role}}); });
     safe(()=>{ const S=me?G.scouts||[]:(G.lgStaff&&G.lgStaff[t.id]&&G.lgStaff[t.id].sc)||[]; for(const s of S)put(relKeyOf(s,'scout'),{n:s.name,r:tshort(t.id)+' 스카우트',link:{a:'person',v:me?'sc:'+s.id:'ost:sc:'+t.id+':'+s.id}}); }); }
   put('me',{n:meName()||'우리 단장',r:G.unemp?'야인 단장':tshort(G.user)+' 단장 · 나',me:1});
-  _relWho={g:G,d:G.day,u:G.user,x:!!G.unemp,m:M}; return M; }
+  _relWho={g:G,sig,d:G.day,u:G.user,x:!!G.unemp,m:M}; return M; }
 /* 사유 한 마디: 좋아하는 쪽이면 좋은 일, 싫어하는 쪽이면 나쁜 일 중 가장 최근 것 */
 function relWhyWord(e,owner,other,pos){ const lo=owner<other?owner:other; const W=(e&&e.why)||[]; const pick=W.find(w=>REL_WHY[w[0]]&&(REL_WHY[w[0]][2]>0)===pos)||W.find(w=>REL_WHY[w[0]]); if(!pick)return pos?'가까운 사이':'껄끄러운 사이';
   const L=REL_WHY[pick[0]]; if(pick[2]==null)return L[1]; const subj=pick[2]===0?lo:(owner<other?other:owner); return subj===owner?L[0]:L[1]; }

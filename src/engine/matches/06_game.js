@@ -20,25 +20,25 @@ const pz=()=>({outs:0,h:0,hr:0,bb:0,hbp:0,so:0,r:0,er:0,pc:0,bf:0,e:0});
 const staF=p=>clamp(1+(45-(p.r.sta||45))*.006,.8,1.2);
 const staI=p=>clamp(1+(40-(p.r.sta||40))*.006,.8,1.2); /* 부상 배수: 리그 투수 평균 체력(약 40)을 1로 둬 전체 부상 빈도는 그대로 */
 function pitFatGain(p,pc,isSP){ return (pc*(isSP?.55:.9)+(isSP?0:6))*staF(p); } /* 한 경기 등판 피로(원정 이동 피로는 따로 곱한다) */
-function relAvail(p,day,ps){ const ae=mgrPush(p.team)+(ps?18:0); /* 가을야구: 연투·혹사를 더 감수한다 */ if(!healthy(p)||p.lastApp===day||(p.fat||0)>72+(ae-50)*.4+((p.r.sta||45)-45)*.4)return false; /* 체력이 좋은 불펜은 연투를 더 버틴다 */
+function relAvail(p,day,ps){ const ae=mgrPush(p.team)+(ps?18:0); /* 가을야구: 연투·혹사를 더 감수한다 */ if(mcfPitchRest(p,day)||!healthy(p)||p.lastApp===day||(p.fat||0)>72+(ae-50)*.4+((p.r.sta||45)-45)*.4)return false; /* 체력이 좋은 불펜은 연투를 더 버틴다 */
   const cd=consecDays(p,day); /* 연투: 이틀은 보통, 3연투는 밀어붙이는 감독만, 4연투는 강행군 감독만 */
   if(cd>=1&&(p.lastPc||0)>25+(ae-50)*.4)return false; if(cd>=2&&(ae<55||(p.lastPc||0)>22))return false; if(cd>=3&&ae<72)return false; if(cd>=4)return false;
   if(ae<=38&&pc7(p,day)>60)return false;
   { let n7=0; for(const x of (p.ld||[]))if(x[0]>=day-7&&x[0]<day)n7++; if(n7>=4+(ae>=68?1:0))return false; } /* 지난 7일에 네 번 던졌으면 쉰다(강행군 감독·가을야구 총력전은 다섯 번). 11-15 투수 감사: 불펜 등판 1위가 해마다 81~92경기, 70경기 이상이 시즌마다 12명(KBO는 1위가 대개 70~80경기) */
   return true; }
 /* 가을야구 총력전: 좋은 선발 셋으로 돌리고(4일 휴식이면 등판), 탈락 위기면 에이스가 3일만 쉬고도 나온다 */
-function psStarter(tid,d,day,ps){ const rest=p=>p.lastStart==null?99:day-p.lastStart; const top=[...d.sp].filter(healthy).sort((a,b)=>spV(b)-spV(a)); const need=(ps.elimT?ps.elimT.includes(tid):ps.elim)?3:4;
+function psStarter(tid,d,day,ps){ const rest=p=>p.lastStart==null?99:day-p.lastStart; const top=[...d.sp].filter(p=>healthy(p)&&!mcfPitchRest(p,day)).sort((a,b)=>spV(b)-spV(a)); const need=(ps.elimT?ps.elimT.includes(tid):ps.elim)?3:4;
   const ok=p=>p.lastApp!==day&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&day-p.lastApp<2); /* 어제 불펜으로 던진 투수는 쉬어 온 선발 뒤로(정규시즌과 같은 기준, 검수 11-08) */ return top.slice(0,3).find(p=>ok(p)&&rest(p)>=need)||top.find(p=>ok(p)&&rest(p)>=4)||null; }
 /* 최종전 접전 7회 이후: 오늘 선발이 아닌 에이스(선발 상위 2명, 2일 이상 쉼)를 불펜으로 */
 function psAceRelief(fs,inn,lead,day,ps){ if(!ps||!(ps.fin||(ps.elimT?ps.elimT.includes(fs.tid):ps.elim))||inn<7||Math.abs(lead)>3||!fs.spAll)return null; const top=[...fs.spAll].filter(p=>p!==fs.sp&&!fs.used.has(p.id)&&relAvail(p,day,ps)).sort((a,b)=>spV(b)-spV(a)).slice(0,2);
   return top.find(p=>p.lastApp==null||day-p.lastApp>=2)||null; } /* '2일 이상 쉼'은 구원 등판까지 센 마지막 등판일 기준(검수 11-09zh) */
 function pickStarter(tid,d,day,ps,o){
-  const t=team(tid); const sp=d.sp; if(ps&&sp.length){ const c=psStarter(tid,d,day,ps); if(c)return c; }
-  const fresh=p=>p.lastApp!==day&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&day-p.lastApp<2); /* 오늘 던졌거나 어제·그제 불펜으로 던진 투수는 선발 순번을 넘긴다(새로 들어온 선발 포함, 검수 11-07) */
-  if(!sp.length){ const el=playersOf(tid).filter(p=>p.isP&&psOk(p)&&!(p.susp>day)&&!isAway(p)&&(!entryOn()||p.e1||canUp(p))), td=p=>p.lastApp!==day; const c=d.pen.find(fresh)||el.find(p=>healthy(p)&&fresh(p))||d.pen.find(td)||el.find(p=>healthy(p)&&td(p))||null; /* 오늘 던진 투수는 비상 선발로도 쓰지 않는다(검수 11-09zh) */
+  const t=team(tid); const sp=d.sp.filter(p=>!mcfPitchRest(p,day)); if(ps&&sp.length){ const c=psStarter(tid,d,day,ps); if(c)return c; }
+  const fresh=p=>!mcfPitchRest(p,day)&&p.lastApp!==day&&!(p.lastApp!=null&&p.lastApp!==p.lastStart&&day-p.lastApp<2); /* 오늘 던졌거나 어제·그제 불펜으로 던진 투수는 선발 순번을 넘긴다(새로 들어온 선발 포함, 검수 11-07) */
+  if(!sp.length){ const el=playersOf(tid).filter(p=>p.isP&&!mcfPitchRest(p,day)&&psOk(p)&&!(p.susp>day)&&!isAway(p)&&(!entryOn()||p.e1||canUp(p))), td=p=>!mcfPitchRest(p,day)&&p.lastApp!==day; const c=d.pen.find(fresh)||el.find(p=>healthy(p)&&fresh(p))||d.pen.find(td)||el.find(p=>healthy(p)&&td(p))||null; /* 오늘 던진 투수는 비상 선발로도 쓰지 않는다(검수 11-09zh) */
     if(c&&entryOn()&&!c.e1){ const ent=playersOf(tid).filter(p=>p.e1); if(ent.length>=entryLimit()){ const lean=teamLean(tid), out=ent.filter(p=>!d.start.includes(p)&&!cProt(p,c,ent)).sort((a,b)=>(healthy(a)-healthy(b))||(entryVal(tid,a,lean)-entryVal(tid,b,lean)))[0]; if(!out)return null; out.e1=false; out.downDay=G.day; } } /* 1군 정원이 차 있으면 다친 선수부터 한 명 말소하고 올린다(검수 11-09zh) */ /* 재활 선수 명단·연봉 미계약 투수는 마지막 수단으로도 쓰지 않는다. 아무도 없으면 null: 경기를 미루는 기존 처리(playDay)로(검수 11-09t) */ if(c&&entryOn()&&!c.e1){ c.e1=true; c.upDay=G.day; } return c; } /* 마지막 후보도 출장정지·재등록 제한·2군 선발 수업은 빼고, 2군에서 올리면 등록한다(검수 11-08) */ /* 건강한 투수가 없으면 기존 경기 연기 경로로 보낸다. 부상자를 강제로 선발 등판시키지 않는다. */
   for(let k=0;k<sp.length;k++){ const i=((t.rot||0)+k)%sp.length; const p=sp[i]; if((p.lastStart==null||day-p.lastStart>=5)&&fresh(p)){ if(o)o.rot=(i+1)%sp.length; return p; } } /* 순번은 경기를 저장할 때(applyGame) 넘긴다: 실패·재시도로 두 칸 넘지 않게(검수 11-09zh) */
-  const pool=[...sp].sort((a,b)=>(a.lastStart||0)-(b.lastStart||0)); return pool.find(fresh)||d.pen.find(fresh)||pool.find(p=>p.lastApp!==day)||d.pen.find(p=>p.lastApp!==day)||null; /* 당일 등판은 모든 선발 경로의 하드 제외 조건이다. 오늘 던진 투수만 남으면 후보 없음: gameSide의 경기 연기 경로로 보낸다. */
+  const pool=[...sp].sort((a,b)=>(a.lastStart||0)-(b.lastStart||0)); return pool.find(fresh)||d.pen.find(fresh)||pool.find(p=>!mcfPitchRest(p,day)&&p.lastApp!==day)||d.pen.find(p=>!mcfPitchRest(p,day)&&p.lastApp!==day)||null; /* 당일 등판은 모든 선발 경로의 하드 제외 조건이다. 오늘 던진 투수만 남으면 후보 없음: gameSide의 경기 연기 경로로 보낸다. */
 }
 /* 타순(카페 11-14: 외국인 거포·최고 타자가 1번에 몰림. 감독마다 달라야 한다). 실제로 쓰이는 짜임새를 감독 성향으로 고른다(같은 감독은 늘 같은 짜임새).
    - 클래식(KBO 전통): 1번 출루·발, 2번 맞히기·번트, 3번 최고 타자, 4번 최고 거포, 5번 다음 거포, 6~9번은 잘 치는 순
@@ -156,7 +156,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
     return x.outs>=(fs.multi&&fs.multi[fs.cur.id]?6:3)||x.pc>=lim(fs); }
   function bringIn(fs,inn,lead,half,nr){
     const registered=fs.farm?[]:actOf(fs.tid).filter(p=>p.isP),roster=fs.farm?(fs.pitchPool||new Set([fs.sp,...fs.pen,...(fs.spAll||[])].filter(Boolean).map(p=>p.id))):new Set(registered.map(p=>p.id));
-    const eligible=p=>p&&p.isP&&roster.has(p.id)&&p!==fs.cur&&!fs.used.has(p.id)&&p.lastApp!==day&&healthy(p)&&!(p.susp>day)&&!(p.boy>day)&&(fs.farm||psOk(p));
+    const eligible=p=>p&&p.isP&&!mcfPitchRest(p,day)&&roster.has(p.id)&&p!==fs.cur&&!fs.used.has(p.id)&&p.lastApp!==day&&healthy(p)&&!(p.susp>day)&&!(p.boy>day)&&(fs.farm||psOk(p));
     { const ace=psAceRelief(fs,inn,lead,day,psx); if(ace&&eligible(ace)){ fs.exit[fs.cur.id]=lead; fs.cur=ace; fs.curIsSP=false; fs.used.add(ace.id); (fs.multi=fs.multi||{})[ace.id]=1; fs.box.set(ace.id,pz()); fs.entry[ace.id]=lead; (fs.entryR=fs.entryR||{})[ace.id]=nr||0; fs.pitchers.push(ace.id); if(ev.length<400)ev.push({h:half,t:`총력전: 선발 ${ace.name} 불펜 등판`}); if(pbp.length<1000)pbp.push([half,'PC',ace.id]); return; } }
     let av=fs.pen.filter(p=>eligible(p)&&relAvail(p,day,ps));
     if(!av.length&&armDirOn(fs.tid))av=[...new Map([...fs.pen,...(fs.spAll||[]),...registered].map(p=>[p.id,p])).values()].filter(eligible); /* 퓨처스는 전달받은 명단 안에서만, 1군은 실제 등록 명단 안에서만 확인한다. */
@@ -283,6 +283,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
   CLUTCH=0; return {S,score,line,hits,ev,dec,inn,walk,pbp,broadcast,W}; /* W(좌우·타구 기록)는 applyGame에서 쓴다 */
 }
 function applyGame(day,hid,aid,g,ps){
+  if(!ps)relPlayGame(g,day); /* 실제 정규시즌 기용은 당시 감독 개인에게만 귀속(검수 #933). */
   let turfM=1; try{ turfM=stadTurfM(hid); }catch(e){}
   const y=G.year;
   for(const k of ['h','a']){ const s=g.S[k]; const bm=k==='a'?1+BUS[busLv(s.tid)].f:1; /* 원정 이동 피로 */

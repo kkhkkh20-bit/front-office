@@ -9,6 +9,7 @@ const ACQ_K={fd:'창단 지명',draft:'신인 지명','트레이드':'트레이�
 function tbLastY(){ return period()==='pre'?G.year-1:G.year; }
 function acqStamp(p,k,tid,o){ if(!p||tid==null)return; G.acqSeq=(G.acqSeq||0)+1; let w0; try{ if(k!=='fd'&&k!=='draft'){ const y=tbLastY(); const h=seasonTotal(p,y,'1군'); if(h)w0=Math.round(warOf(h,p)*10)/10; } }catch(e){}
   p.acq=Object.assign({k,y:G.year,d:G.day,n:G.acqSeq,tid,o0:Math.round(ovr(p)),age0:p.age},w0!=null?{w0}:{},o||{});
+  if(typeof mcfAcquired==='function')mcfAcquired(p,tid);
   if(tid===G.user&&!G.unemp){ const L=G.mineL=G.mineL||[]; L.push({id:p.id,o:Object.assign({},p.acq)}); if(L.length>400)L.splice(0,L.length-400); } } /* 내가 데려온 선수: 떠나도 재임 성과에 남긴다 */
 /* 취임 당시 주전 9자리(창단 구단은 창단 드래프트가 끝난 때): 나이·인원. 재임 성과의 비교 기준 */
 function tbTakeSnap(){ if(G.user==null||G.unemp)return; let d=null; try{ d=depth(G.user); }catch(e){ return; } const ln=d.start||[]; G.tbSnap={tid:G.user,y:G.year,d:G.day,age:ln.length?Math.round(ln.reduce((a,p)=>a+p.age,0)/ln.length*10)/10:null,n:playersOf(G.user).filter(p=>!p.prospect).length}; }
