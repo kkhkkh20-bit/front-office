@@ -75,7 +75,8 @@ function addR(p,k,a){ const t=a*10, f=Math.floor(t); const n=f+(R()<t-f?1:0); co
 const TB_YCAP=2, TB_K=.0035; /* 시즌 중 훈련은 몸을 유지하는 정도. 크게 바뀌는 건 스프링·마무리캠프(79_camps.js) */
 function tbFactors(p,regSet){ const room=Math.max(0,p.pot-ovr(p)); initPers(p); const m=p.team!=null?mgrOf(p.team):null;
   return {play:regSet&&regSet.has(p.id)?.5:1, room:room>0?clamp(room/8,.2,1):.1, will:persGrowF(p), fac:p.team!=null?facEff(p).g:1, coach:G.coach?coachDevMult(p):1, mgr:m?1+((m.youth||50)-50)/150:1, age:p.age<=23?1:p.age<=25?.8:.5}; }
-function trnBase(){ const per=period(); if(per!=='pre'&&per!=='season')return; const regs={};
+function trnBase(){ if(_rosM)return trnBase0(); rosterMemoOn(); try{ return trnBase0(); } finally { rosterMemoOff(); } } /* 기본 훈련은 능력치만 바꾸고 소속·부상·나이·성격은 바꾸지 않는다: 구단 명단·리더 계산을 한 번만(성능 11-18) */
+function trnBase0(){ const per=period(); if(per!=='pre'&&per!=='season')return; const regs={};
   for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||p.joinY>G.year||p.hold||isAway(p)||p.age>28||p.injOut>0||ovsAbroad(p)|| /* 해외 연수 중에는 국내 기본 훈련도 없다(검수 11-09o) */ /* 대표팀 차출 중에는 구단 기본 훈련도 없다 */ /* 내년 합류·연봉 미계약 선수는 훈련하지 않는다(검수 11-05) */(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))continue;
     if(!regs[p.team]){ const d=depth(p.team); regs[p.team]=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }
     if(!p.tg||p.tg.y!==G.year)p.tg={y:G.year,s:0}; if(p.tg.s>=TB_YCAP)continue;

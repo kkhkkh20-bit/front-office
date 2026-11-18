@@ -8,10 +8,12 @@ function wsStack(h){ return typeof innerWidth!=='undefined'&&innerWidth<700?`<di
 function jumpBar(L){ L=L.filter(Boolean); return L.length>1?`<nav class="jump-bar" aria-label="바로 가기">${L.map(([id,l])=>`<button type="button" data-a="jumpTo" data-v="${id}">${l}</button>`).join('')}</nav>`:''; }
 function workspaceCompact(){return matchMedia('(max-width:699px), (max-height:599px), (max-width:1099px) and (pointer:coarse)').matches;}
 function twPager(){ if(typeof document==='undefined')return; const narrow=innerWidth<=TWP_W; UI.twPg=UI.twPg||{};
+  const TL=[]; /* 성능(11-18): 먼저 모든 표를 원래대로 되돌리고(쓰기), 넘치는지 한꺼번에 잰 뒤(읽기 한 번), 넘치는 표만 나눈다. 표마다 쓰기·읽기를 번갈아 화면 배치를 여러 번 다시 계산했다 */
   document.querySelectorAll('.tw,.fdt-w').forEach((tw,ix)=>{ if(tw.closest('.cs-bg,.pf-season-table'))return; /* 선수 상황판 시즌 통계는 열을 넘기지 않고 옆으로 스크롤 */ const tb=tw.querySelector(':scope > table'); if(!tb||!tb.tHead)return;
     tw.querySelectorAll(':scope > .twpg').forEach(x=>x.remove()); tw.closest('.roster-list')?.querySelectorAll('.roster-tools>.twpg').forEach(x=>x.remove()); if(tw.previousElementSibling&&tw.previousElementSibling.classList.contains('twpg'))tw.previousElementSibling.remove(); tb.querySelectorAll('.twh').forEach(c=>c.classList.remove('twh')); tb.querySelectorAll('[data-cs0]').forEach(c=>{ c.colSpan=+c.dataset.cs0; c.classList.remove('twspan'); delete c.dataset.cs0; }); tw.classList.remove('twp');
-    if(!narrow&&tw.closest('.roster-list,.candidate-list,.fdl-main'))return;
-    if(tb.scrollWidth<=tw.clientWidth+4)return; void narrow; /* 넓은 화면도 표가 넘치면 같은 방식으로 넘긴다 */
+    if(!narrow&&tw.closest('.roster-list,.candidate-list,.fdl-main'))return; TL.push([tw,ix,tb]); });
+  const TO=TL.map(([tw,,tb])=>tb.scrollWidth>tw.clientWidth+4);
+  TL.forEach(([tw,ix,tb],j)=>{ if(!TO[j])return; void narrow; /* 넓은 화면도 표가 넘치면 같은 방식으로 넘긴다 */
     const hr=tb.tHead.rows[tb.tHead.rows.length-1]; const H=[...hr.cells]; const n=H.length; if(n<3||H.some(c=>c.colSpan>1))return;
     tw.classList.add('twp'); /* 줄인 이름 칸 기준으로 폭을 잰다 */
     const rows=[...tb.rows].filter(r=>r.cells.length===n); /* 그룹 제목처럼 칸이 합쳐진 줄은 그대로 둔다 */
@@ -37,7 +39,7 @@ function twPager(){ if(typeof document==='undefined')return; const narrow=innerW
     bar.innerHTML=`<button type="button" ${pg>0?'':'disabled'} aria-label="앞 열">◀</button><span><b>${pg+1}/${pages.length}</b> ${esc(lab(pg))}</span><button type="button" ${pg<pages.length-1?'':'disabled'} aria-label="다음 열">▶</button>`;
     const [bp,bn]=bar.querySelectorAll('button'); tw._twpg=bar; const go=d=>{ const had=bar.contains(document.activeElement); UI.twPg[key]=pg+d; twPager(); if(had)twPagerFocus(tw,d); }; /* 버튼을 다시 만들어도 키보드 초점은 같은 쪽 버튼에(검수 11-17 #7) */
     bp.onclick=()=>go(-1); bn.onclick=()=>go(1); const rtools=matchMedia('(max-width:699px) and (min-height:600px)').matches?tw.closest('.roster-list')?.querySelector('.roster-tools'):null; /* 30_mobile_workspace.css의 세로 휴대폰 조건과 같게 */ if(tw.matches('.fdl-main .fdt-w')&&fdCompact())tw.before(bar); else if(rtools)rtools.append(bar); /* 선수 명단: 필터 줄 옆 */ else tw.insertBefore(bar,tb); /* 휴대폰 드래프트: 표 스크롤 밖에 두어 늘 보이게 */ tw._twGo=d=>{ if(pg+d>=0&&pg+d<pages.length)go(d); }; });
-  document.documentElement.style.setProperty('--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); try{ tabRowHints(); }catch(e){} }
+  cssVarSet(document.documentElement,'--toph',(document.querySelector('.top')?.offsetHeight||56)+'px'); try{ tabRowHints(); }catch(e){} }
 function twPagerFocus(tw,d){ const bar=tw._twpg; if(!bar||!bar.isConnected)return; const B=[...bar.querySelectorAll('button')]; const t=B[d<0?0:1]; const f=t&&!t.disabled?t:B.find(b=>!b.disabled); if(f)try{ f.focus({preventScroll:true}); }catch(e){} }
 if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ twPager(); }catch(e){} },150); }); }
 
