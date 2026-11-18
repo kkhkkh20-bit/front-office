@@ -2892,11 +2892,13 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 /* 끌어서 글자 선택·사진 끌림 방지(앱처럼). 입력칸·코드 상자는 선택 가능 */
 #app,#sheet{-webkit-user-select:none;user-select:none}#app img,#sheet img{-webkit-user-drag:none;user-drag:none}
 #app :is(input,textarea,select,[contenteditable],.code,.selectable),#sheet :is(input,textarea,select,[contenteditable],.code,.selectable){-webkit-user-select:text;user-select:text}
+/* 예산 여유 칩: 기본은 긴 꼴, 좁은 화면(탭 줄 오른쪽 위)은 짧은 꼴(카페 11-18) */
+.chipn.bud>.bud-m{display:none}
 /* 물음표 도움말(사용자 11-06): 동그랗고 또렷하게, 휴대폰에서는 줄을 따로 차지하지 않고 탭 줄 오른쪽 위에 겹쳐 둔다 */
 #app .helpbtn{width:26px;height:26px;min-height:26px!important;border-radius:50%;padding:0;display:inline-grid;place-items:center;font:800 13px/1 var(--f-num);color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);box-shadow:none}
 #app .helpbtn.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 @media(max-width:1000px){ #app .subhead.notitle{position:relative;height:0!important;min-height:0!important;padding:0!important;margin:0!important;overflow:visible;z-index:6}
- #app .subhead.notitle>.meta{position:absolute;right:0;top:8px;display:flex;gap:6px;align-items:center} #app .subhead.notitle>.meta>:not(.helpbtn){display:none} #app .shell:has(.subhead.notitle) main.content :is(.ibx-tabs,.ws-tab-row,.subtabs,.ibx-mback){margin-right:34px;box-sizing:border-box} #app .shell:has(.subhead.notitle) main.content>.dhead:first-child .row.between{padding-right:30px} /* 떠 있는 ? 버튼이 탭 글자를 덮지 않게 탭 줄 폭 자체를 줄인다(11-08 검수) */ }
+ #app .subhead.notitle>.meta{position:absolute;right:0;top:8px;display:flex;gap:6px;align-items:center} #app .subhead.notitle>.meta>:not(.helpbtn):not(.bud){display:none} #app .subhead.notitle>.meta>.bud{position:relative;font-size:12px;line-height:18px;height:26px;min-height:26px!important;padding:3px 8px;white-space:nowrap;background:var(--bg,#0e141b)} #app .subhead.notitle>.meta>.bud::after{content:"";position:absolute;inset:-7px -3px} #app .subhead.notitle>.meta>.bud>.bud-f{display:none} #app .subhead.notitle>.meta>.bud>.bud-m{display:inline} #app .shell:has(.subhead.notitle) main.content :is(.ibx-tabs,.ws-tab-row,.subtabs,.ibx-mback){margin-right:var(--metaw,34px);box-sizing:border-box} #app .shell:has(.subhead.notitle) main.content>.dhead:first-child .row.between{padding-right:var(--metaw,30px)} /* 떠 있는 ? 버튼이 탭 글자를 덮지 않게 탭 줄 폭 자체를 줄인다(11-08 검수) */ }
 /* 트럭 시위 기사 그림(LED 전광판 트럭) */
 .trk{position:relative;margin:6px 0 4px;height:132px;border-radius:8px;overflow:hidden;background:linear-gradient(#1b2433,#0e141d);border:1px solid var(--line)}
 .trk-bld{position:absolute;left:0;right:0;top:10px;height:70px;background:repeating-linear-gradient(90deg,#1f2b3b 0 26px,#18222f 26px 30px);opacity:.9}.trk-bld span{position:absolute;right:8px;top:6px;font-size:var(--ui-micro);color:#8fa1b6;letter-spacing:.04em}
@@ -3030,7 +3032,7 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 /* 용어 풀이 글자(플레이테스트 4 #14) */
 .gl{border-bottom:1px dotted currentColor;cursor:help}
 /* 태블릿: 떠 있는 ? 버튼이 선수단 머리 줄의 정리 모드 버튼을 가리지 않게(플레이테스트 4 E) */
-@media(max-width:1000px){#app .shell:has(.subhead.notitle) main.content .roster-heading{padding-right:36px}}
+@media(max-width:1000px){#app .shell:has(.subhead.notitle) main.content .roster-heading{padding-right:var(--metaw,36px)}}
 
 /* 한 구역의 ⓘ를 하나로 합친 뒤(mergeHints) 말풍선이 길어질 수 있어 화면 안에서 스크롤 */
 #tipb{max-height:min(60vh,440px);overflow:auto}
@@ -6667,7 +6669,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 @media(max-width:699px){
  #app .shell:has(.ws-frame) .subhead{min-height:24px;max-height:24px;margin-block:4px;gap:8px}
  #app .shell:has(.ws-frame) .subhead h1{font-size:16px;line-height:24px;margin:0}
- #app .shell:has(.ws-frame) .subhead .meta>.chipn{display:none}
+ #app .shell:has(.ws-frame) .subhead .meta>.chipn:not(.bud){display:none} /* 예산 여유는 늘 보인다(카페 11-18) */
  #app .shell:has(.ws-frame) .subhead .helpbtn{width:24px;height:24px;min-height:24px;padding:0}
 }
 @media(max-width:1099px) and (max-height:599px){
@@ -35946,10 +35948,12 @@ const TCOL=new Proxy({},{get:(o,code)=>{ const p=TPAL[code]; return p?[p[0],p[3]
 function setTeamVars(t){ const r=document.documentElement.style; const c=t&&(t.logo&&t.logo.c1?(P=>[P[0],P[3],P[2]])(tpal(t)):TCOL[t.code]); const h=t?t.hue:212;
   r.setProperty('--team',c?c[0]:hslHex(h,52,34)); r.setProperty('--team-hi',c?c[1]:hslHex(h,60,50)); r.setProperty('--team-dk',c?c[2]:hslHex(h,42,16)); }
 const TITLE={cal:'캘린더',home:'홈',inbox:'소식함',roster:'선수단',trade:'트레이드',transfer:'영입·계약',scout:'스카우팅',train:'훈련',staff:'스태프·육성',cfg:'설정 · 권한',me:'단장 프로필',league:'리그',club:'구단·재정',uld:'래더'};
+/* 예산 여유 칩의 짧은 꼴(휴대폰·좁은 화면, 카페 11-18 "남은 예산이 늘 보이게"): 100억 이상은 정수 억, 그 아래는 소수 한 자리 억, 1억 미만은 만 */
+function moneyShort(v){ const n=v<0, a=Math.abs(Math.round(v)); const s=a>=10000?Math.round(a/100)+'억':a>=100?(Math.round(a/10)/10)+'억':money(a); return (n?'-':'')+s; }
 function metaChips(){ const t=team(G.user); const per=period(); const ci=capInfo(G.user); const r=myRec(); const c=[];
   if(per==='season'||per==='post')c.push(`<span class="chipn"><b>${r.w}-${r.l}${r.t?'-'+r.t:''}</b> · ${myRank()}위</span>`);
   if(!G.unemp){ const b=budget(); const R=G.roomSeen; if(!R||R.y!==G.year){ G.roomSeen={y:G.year,v:b.roomGoal,d:G.day,dv:0}; } else if(R.d!==G.day){ const dv=b.roomGoal-R.v; G.roomSeen={y:G.year,v:b.roomGoal,d:G.day,dv:Math.abs(dv)>=5000?dv:0}; } const dv=G.roomSeen.dv||0;
-    c.push(`<button class="chipn lk" data-a="go" data-v="club:fin" title="${b.indie?'예산 여유 = 올해 예상 수입 - 올해 예상 지출(독립구단: 새 스폰서·관중 수입이 바로 반영). ':'예산 여유 = 시즌 시작 때 확정한 예상 수입 + 구단주 지원 목표 - 올해 예상 지출. 시즌 중 늘어난 수입(새 스폰서 등)은 모기업 몫이라 여기에 더해지지 않고, 구단주에게 추가 지원을 요청할 근거가 됩니다. '}음수면 구단주 목표를 넘겨 쓰는 중입니다(돈이 없다는 뜻은 아님). 0이면 예상 적자를 보유 현금으로 먼저 메운 상태입니다. 트레이드·영입 화면의 '선수 영입 자금'은 지금 쓸 수 있는 현금(보유 현금 기준)으로, 이 숫자와 다릅니다. 예상 수지(재정 화면)는 실제 수입·지출 전망이고, 구단주는 시즌 결산 때 실제 수지와 이 목표를 지켰는지로 평가합니다. 연봉 상한까지 남은 금액과는 다른 숫자입니다. 누르면 재정 화면.">예산 여유 <b style="color:${b.roomGoal>=0?'var(--good)':'var(--bad)'}">${b.roomGoal>=0?money(b.roomGoal):'-'+money(-b.roomGoal)}</b>${Math.abs(b.roomGoal)<50&&b.selfC>0?`<em class="small" style="font-style:normal" title="올해 예상 적자 ${money(b.selfC)}를 보유 현금(30억 초과분의 절반)으로 먼저 메워 여유가 0입니다"> 현금 충당</em>`:''}${dv?`<em class="small" style="font-style:normal;color:${dv>0?'var(--good)':'var(--bad)'}"> ${dv>0?'▲':'▼'}${money(Math.abs(dv))}</em>`:''}</button>`); } void ci;
+    c.push(`<button class="chipn lk bud" data-a="go" data-v="club:fin" title="${b.indie?'예산 여유 = 올해 예상 수입 - 올해 예상 지출(독립구단: 새 스폰서·관중 수입이 바로 반영). ':'예산 여유 = 시즌 시작 때 확정한 예상 수입 + 구단주 지원 목표 - 올해 예상 지출. 시즌 중 늘어난 수입(새 스폰서 등)은 모기업 몫이라 여기에 더해지지 않고, 구단주에게 추가 지원을 요청할 근거가 됩니다. '}음수면 구단주 목표를 넘겨 쓰는 중입니다(돈이 없다는 뜻은 아님). 0이면 예상 적자를 보유 현금으로 먼저 메운 상태입니다. 트레이드·영입 화면의 '선수 영입 자금'은 지금 쓸 수 있는 현금(보유 현금 기준)으로, 이 숫자와 다릅니다. 예상 수지(재정 화면)는 실제 수입·지출 전망이고, 구단주는 시즌 결산 때 실제 수지와 이 목표를 지켰는지로 평가합니다. 연봉 상한까지 남은 금액과는 다른 숫자입니다. 누르면 재정 화면." aria-label="예산 여유 ${b.roomGoal>=0?money(b.roomGoal):'-'+money(-b.roomGoal)}, 누르면 재정 화면"><span class="bud-f">예산 여유 <b style="color:${b.roomGoal>=0?'var(--good)':'var(--bad)'}">${b.roomGoal>=0?money(b.roomGoal):'-'+money(-b.roomGoal)}</b>${Math.abs(b.roomGoal)<50&&b.selfC>0?`<em class="small" style="font-style:normal" title="올해 예상 적자 ${money(b.selfC)}를 보유 현금(30억 초과분의 절반)으로 먼저 메워 여유가 0입니다"> 현금 충당</em>`:''}${dv?`<em class="small" style="font-style:normal;color:${dv>0?'var(--good)':'var(--bad)'}"> ${dv>0?'▲':'▼'}${money(Math.abs(dv))}</em>`:''}</span><span class="bud-m" aria-hidden="true">여유 <b style="color:${b.roomGoal>=0?'var(--good)':'var(--bad)'}">${moneyShort(b.roomGoal)}</b></span></button>`); } void ci;
   return c.join(''); }
 function blkLink(b){ if(/^건강한/.test(b))return '<button data-a="rosterRecovery">국내 무적 선수 보충</button><button data-a="tab" data-v="roster">선수단·육성선수 확인</button>';if(b.includes('창단'))return '<button data-a="tab" data-v="home">드래프트로</button>'; if(G.draft&&!G.draft.done)return '<button data-a="goWork" data-v="신인드래프트">드래프트로</button>'; if(b.includes('감독'))return '<button data-a="goWork" data-v="감독">감독 후보</button>'; if(G.live)return '<button data-a="tab" data-v="home">경기 보기</button>'; if(b.includes('로스터'))return '<button data-a="tab" data-v="roster">선수단</button>'; if(b.includes('보상'))return '<button data-a="go" data-v="transfer:fa">FA 보상 처리</button>'; return ''; }
 
@@ -36087,11 +36091,17 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
   </div>`;
   { const mc=app.querySelector('main.content'); if(mc)mc.dataset.tab=UI.tab; } /* workspaceFit이 다른 탭 화면을 감싸지 않게 */
   document.body.classList.toggle('help',helpOn()); markHints(app);
+  metaFit();
   renderSheet(); try{ autoLink($('#app')); }catch(e){}
   if(UI.tab==='inbox')inboxWire();
   /* 도장(거래 성사·지명)은 4초 뒤 저절로 닫혀 아래 버튼을 가리지 않는다 */
   if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); }
 }
+/* 휴대폰·좁은 화면: 탭 줄 오른쪽 위에 떠 있는 [여유 ○억][?] 폭만큼 탭 줄을 비워 둔다(카페 11-18: 예산 여유가 늘 보이게) */
+function metaFit(){ if(typeof document==='undefined')return; const app=document.getElementById('app'); if(!app)return; const m=app.querySelector('.subhead.notitle>.meta'); const w=m&&m.offsetWidth; if(w)app.style.setProperty('--metaw',(w+8)+'px'); else app.style.removeProperty('--metaw'); }
+if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ metaFit(); }catch(e){} },160); }); }
+/* 위 예산 여유 칩을 그 자리에서 다시 쓴다: 코치 연수·인물 카드 영입처럼 창(시트)만 다시 그리는 지출에도 바로 바뀌게(카페 11-18). 첫 호출은 방금 그린 값을 기억만 한다 */
+function metaSync(){ if(typeof document==='undefined'||!G||UI.title||G.gameOver)return; const m=document.querySelector('#app .fm-meta,#app .subhead>.meta'); if(!m||(UI.tab==='club'&&UI.clubInspect!=null))return; const h=metaChips(); if(m._mh===undefined){ m._mh=h; return; } if(m._mh===h)return; m._mh=h; [...m.children].filter(e=>!e.classList.contains('helpbtn')).forEach(e=>e.remove()); const hb=m.querySelector('.helpbtn'); if(hb)hb.insertAdjacentHTML('beforebegin',h); else m.insertAdjacentHTML('beforeend',h); metaFit(); }
 /* 화면에 보이는 시즌 단계: 경기는 중계보다 먼저 계산돼 한국시리즈 마지막 경기 중계 중에도 엔진은 이미 시리즈 종료(스토브리그)다.
    그 중계를 보는 동안에는 결과를 먼저 알리지 않게 '포스트시즌'으로 둔다 */
 function perShown(){ const P=G.ps, g=UI.cast&&G.games[UI.cast.g]; return P&&P.done&&g&&P.resD&&g.day===P.resD.ks&&G.day<(P.finDay??G.day+1)?'post':period(); }
@@ -43313,7 +43323,7 @@ function spoilMask0(g,p,keepDetail=false){ /* 경기 직전 사본이 있으면 
 /* 창을 다시 그려도 키보드 초점이 남게(외부 검수 11-17: 일괄 수정 창에서 그림이 늦게 와 다시 그리면 '파일 불러오기' 초점이 사라짐). 초점이 창 안 단추·입력칸이었고 다시 그린 뒤 body로 떨어졌을 때만 같은 칸에 돌려준다 */
 function sheetFocusKey(el){ try{ const a=document.activeElement; if(!el||!a||a===document.body||!el.contains(a))return null; const d=a.dataset||{}, E=v=>CSS.escape(String(v)); const k=a.id?'#'+E(a.id):d.a?`[data-a="${E(d.a)}"]`+(d.v!=null?`[data-v="${E(d.v)}"]`:''):d.cosm?`[data-cosm="${E(d.cosm)}"]`:a.classList.contains('cosm-nm')&&d.id!=null?`.cosm-nm[data-id="${E(d.id)}"]`:null; if(!k)return null; let s=null; try{ if(typeof a.selectionStart==='number')s=[a.selectionStart,a.selectionEnd]; }catch(e){} return {k,s}; }catch(e){ return null; } }
 function sheetFocusBack(el,f){ try{ if(!f||!el||(document.activeElement&&document.activeElement!==document.body))return; const n=el.querySelector(f.k); if(!n)return; n.focus({preventScroll:true}); if(f.s)try{ n.setSelectionRange(f.s[0],f.s[1]); }catch(e){} }catch(e){} }
-function renderSheet(){ const el=$('#sheet');rememberReading(el); const _fk=sheetFocusKey(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ topTitleSync(); }catch(e){} try{ const ng=el&&el.querySelector('.sheet.ngt'); if(ng){ const k=[...ng.children].filter(c=>getComputedStyle(c).display!=='none'); ng.style.setProperty('--ng-pre',Math.max(1,k.findIndex(c=>c.classList.contains('ng-rows')))); } }catch(e){} /* 협상실 PC: 조건 줄 칸이 남은 높이를 채우게(UI 3단계 3-4) */ try{ twPager(); rosterHeadFit(); workspaceFit(); workspaceDetail(); twPager(); fitPages(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} sheetFocusBack(el,_fk); }
+function renderSheet(){ const el=$('#sheet');rememberReading(el); const _fk=sheetFocusKey(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ topTitleSync(); }catch(e){} try{ metaSync(); }catch(e){} try{ const ng=el&&el.querySelector('.sheet.ngt'); if(ng){ const k=[...ng.children].filter(c=>getComputedStyle(c).display!=='none'); ng.style.setProperty('--ng-pre',Math.max(1,k.findIndex(c=>c.classList.contains('ng-rows')))); } }catch(e){} /* 협상실 PC: 조건 줄 칸이 남은 높이를 채우게(UI 3단계 3-4) */ try{ twPager(); rosterHeadFit(); workspaceFit(); workspaceDetail(); twPager(); fitPages(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} sheetFocusBack(el,_fk); }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -44633,7 +44643,7 @@ document.addEventListener('click',e=>{
     const navigation=['advStop','tab','sub','go','retiredGo','trophyGo','itab','ovsPick','ovsList','ovsFlt','ovsBulkOpen','ovsBulkClose','ovsBulkTog','ovsCenter','protOpt','cpPos','peopleStep','relGo','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','stopTg','advAskTog','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tpool','tsideGo','dpick','jumpTo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive','networkOpen','networkPerson','networkRecruit','networkFilter','networkSearch','networkReset','networkPage','coachStudyOpen','coachStudyProgram','coachStudyFocus','relBulkMode','relBulkToggle','relBulkAll','relBulkClear','relBulkTopic','freePage','freeSort','freeReset','fbarTog','fbarReset','fbqClear','freeOpt'].includes(a);
     if(!navigation&&L&&now-L.t<400&&Math.hypot((e.clientX||0)-L.x,(e.clientY||0)-L.y)<30&&L.r!==UI._rN&&L.sig!==sig){ e.preventDefault(); return; }
     UI._clk={t:now,x:e.clientX||0,y:e.clientY||0,r:UI._rN,sig}; }
-  if(A[a]){ e.preventDefault(); UI._tapAnchor=tapAnchor(el); try{ A[a](el.dataset.v,el,e); }finally{ UI._tapAnchor=null; } } /* 다시 그린 뒤 누른 버튼 위치 유지(52_reading_state) */
+  if(A[a]){ e.preventDefault(); UI._tapAnchor=tapAnchor(el); try{ A[a](el.dataset.v,el,e); }finally{ UI._tapAnchor=null; try{ metaSync(); }catch(e){} } } /* 다시 그린 뒤 누른 버튼 위치 유지(52_reading_state) */
 });
 /* 선택 상자 대신 버튼 줄(optRow): 버튼을 누르면 같은 값을 고른 것처럼 아래 change 처리를 그대로 탄다 */
 function optRow(a,cur,opts,x,cls){ return `<span class="chips optrow${cls?' '+cls:''}" role="group">${opts.map(([v,l])=>`<button type="button" data-a="opt" data-k="${a}"${x!=null?` data-x="${x}"`:''} data-v="${esc(String(v))}" class="${String(cur)===String(v)?'on':''}" aria-pressed="${String(cur)===String(v)}">${l}</button>`).join('')}</span>`; }
@@ -48348,6 +48358,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-18-budget-chip',d:'11월 18일',t:'예산 여유가 늘 보입니다',items:[
+    '휴대폰·좁은 화면에서도 하위 탭 줄 오른쪽 위(? 옆)에 "여유 ○억"이 늘 보입니다. 누르면 재정 화면으로 갑니다. 스태프·육성·시설·재정·영입·트레이드·선수단 등 모든 게임 화면에서 같은 자리입니다(홈 제외). 코치 연수처럼 창 안에서 돈을 써도 숫자가 바로 바뀝니다.']},
   {id:'2026-11-18-trade3',d:'11월 18일',t:'트레이드 조정: 상위 팀의 작은 거래 · 주전 거래 웃돈 상한 · 유망주·지명권 · 매물',items:[
     '비주전 거래(상대가 백업·2군만 내주는 거래)의 독주 견제 웃돈은 이제 상대가 실제로 내주는 값(최소 0.4)에 붙습니다. 예전에는 값이 작아도 1.5로 보고 붙여, 값 0.4짜리 백업 하나에 30% 넘는 웃돈이 붙었습니다.',
     '비주전 거래에서 상대가 기본으로 더 받으려는 몫(단장 성향·협상력·친분에 따른 요구치)을 거래 크기에 맞춰 줄입니다. 상대가 내주는 값에 1을 더해 3으로 나눈 비율(0.45~1배)만 붙입니다.',

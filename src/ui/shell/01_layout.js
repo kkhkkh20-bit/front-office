@@ -44,11 +44,17 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
   </div>`;
   { const mc=app.querySelector('main.content'); if(mc)mc.dataset.tab=UI.tab; } /* workspaceFit이 다른 탭 화면을 감싸지 않게 */
   document.body.classList.toggle('help',helpOn()); markHints(app);
+  metaFit();
   renderSheet(); try{ autoLink($('#app')); }catch(e){}
   if(UI.tab==='inbox')inboxWire();
   /* 도장(거래 성사·지명)은 4초 뒤 저절로 닫혀 아래 버튼을 가리지 않는다 */
   if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); }
 }
+/* 휴대폰·좁은 화면: 탭 줄 오른쪽 위에 떠 있는 [여유 ○억][?] 폭만큼 탭 줄을 비워 둔다(카페 11-18: 예산 여유가 늘 보이게) */
+function metaFit(){ if(typeof document==='undefined')return; const app=document.getElementById('app'); if(!app)return; const m=app.querySelector('.subhead.notitle>.meta'); const w=m&&m.offsetWidth; if(w)app.style.setProperty('--metaw',(w+8)+'px'); else app.style.removeProperty('--metaw'); }
+if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ metaFit(); }catch(e){} },160); }); }
+/* 위 예산 여유 칩을 그 자리에서 다시 쓴다: 코치 연수·인물 카드 영입처럼 창(시트)만 다시 그리는 지출에도 바로 바뀌게(카페 11-18). 첫 호출은 방금 그린 값을 기억만 한다 */
+function metaSync(){ if(typeof document==='undefined'||!G||UI.title||G.gameOver)return; const m=document.querySelector('#app .fm-meta,#app .subhead>.meta'); if(!m||(UI.tab==='club'&&UI.clubInspect!=null))return; const h=metaChips(); if(m._mh===undefined){ m._mh=h; return; } if(m._mh===h)return; m._mh=h; [...m.children].filter(e=>!e.classList.contains('helpbtn')).forEach(e=>e.remove()); const hb=m.querySelector('.helpbtn'); if(hb)hb.insertAdjacentHTML('beforebegin',h); else m.insertAdjacentHTML('beforeend',h); metaFit(); }
 /* 화면에 보이는 시즌 단계: 경기는 중계보다 먼저 계산돼 한국시리즈 마지막 경기 중계 중에도 엔진은 이미 시리즈 종료(스토브리그)다.
    그 중계를 보는 동안에는 결과를 먼저 알리지 않게 '포스트시즌'으로 둔다 */
 function perShown(){ const P=G.ps, g=UI.cast&&G.games[UI.cast.g]; return P&&P.done&&g&&P.resD&&g.day===P.resD.ks&&G.day<(P.finDay??G.day+1)?'post':period(); }
