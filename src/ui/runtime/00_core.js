@@ -180,18 +180,27 @@ function castHoldSync(){ const c=UI.cast||UI.castRet, g=G&&c&&c.hold&&G.games[c.
   G.castHold={g:c.g,gid:g.gid,k:c.k||0,play:UI.cast===c?!!c.play:!!c.wasPlay,pre:c.pre?1:0,spd:c.spd||1,mode:c.mode==='all'?'all':'hl',...(c.pitch&&c.pitch.k===c.k&&c.pitch.shown>0?{pi:c.pitch.shown}:{}),...(UI.cwAfter?{cw:UI.cwAfter}:{}),...(ps?{ps}:{})}; }
 /* 저장 전 화면 상태가 이 세이브(G) 것인지 먼저 맞춘다(검수 11-09zzc #1: 가져온 백업에 이전 게임의 중계 위치가 저장됨) */
 let _saveGStage=false; /* 가져오기 저장 확인 전에는 현재 화면 상태를 건드리거나 새 게임에 섞지 않는다 */
-function prepG(){ if(_saveGStage)return JSON.stringify(G); try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } return JSON.stringify(G); } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
+function prepG(){ if(_saveGStage)return JSON.stringify(G); try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } const P=prepImg(); _svParts=P; return P?prepJoin(P):JSON.stringify(G); }
+/* 직접 넣은 사진(G.cimg·cimgO, base64 수백 KB~수 MB)은 거의 바뀌지 않는다: 사진 묶음 JSON은 바뀔 때만 다시 만들고, 나머지만 문자열화해 뒤에 잇는다(성능 11-18, IndexedDB로 가는 큰 세이브).
+   사진이 작으면(256KB 미만) 예전처럼 한 번에. 사진 키가 JSON 맨 뒤로 갈 뿐 내용은 같다 */
+const IMG_KS=['cimg','cimgO']; let _imgC={g:null,v:0,o:{},s:''}, _svParts=null;
+function prepImg(){ if(!G)return null; const C=_imgC; let n=0; for(const k of IMG_KS){ const M=G[k]; if(M&&typeof M==='object')for(const x in M){ const v=M[x]; n+=typeof v==='string'?v.length:0; } } if(n<262144)return null;
+  let same=C.g===G; if(same)for(const k of IMG_KS){ const M=G[k], O=C.o[k]; if(!M!==!O){ same=false; break; } if(!M)continue; const ks=Object.keys(M); if(ks.length!==Object.keys(O).length||ks.some(x=>M[x]!==O[x])){ same=false; break; } }
+  if(!same){ const o={}; let t=''; for(const k of IMG_KS){ const M=G[k]; if(M===undefined)continue; o[k]=M&&typeof M==='object'?{...M}:M; t+=','+JSON.stringify(k)+':'+JSON.stringify(M); } _imgC={g:G,v:C.v+1,o,s:t}; }
+  const R={}; for(const k in G)if(!IMG_KS.includes(k))R[k]=G[k]; return {rest:JSON.stringify(R),img:_imgC.s,iv:_imgC.v}; }
+function prepJoin(P){ return P.rest.length>2?P.rest.slice(0,-1)+P.img+'}':'{'+P.img.slice(1)+'}'; } /* 무적 선수의 기용 기록(use·l10)도 지우지 않는다: 시상·기록에 쓰인다(검수 11-06) */
 function packJ(j){ if(ZOK){ try{ return z15(fflate.deflateSync(new TextEncoder().encode(j),{level:6})); }catch(e){ ZERR=String(e&&e.message||e); } } return LZString.compressToUTF16(j); } /* deflate가 실패하면 예전 LZ로 저장 */
 /* 자동 저장 압축은 별도 스레드(Worker)에서: 큰 세이브(JSON 수십 MB)를 UTF-8로 바꾸고 deflate한 뒤 15비트 글자로 담는 일이 화면 스레드를 0.5초 넘게 막았다(성능 11-18). 같은 알고리즘(deflate-raw + z15)이라 결과 문자열은 같다. 못 쓰면 예전처럼 화면 스레드에서 */
 let _zW=null, _zN=0; const _zP=new Map();
 function zWorker(){ if(_zW!==null)return _zW; _zW=false; try{ if(typeof Worker==='undefined'||typeof CompressionStream==='undefined'||typeof URL==='undefined'||!URL.createObjectURL)return false;
-    const src='const ZMK='+JSON.stringify(ZMK)+';\n'+z15.toString()+'\nonmessage=async e=>{ const {id,j}=e.data; try{ const cs=new Blob([j]).stream().pipeThrough(new CompressionStream("deflate-raw")); const u=new Uint8Array(await new Response(cs).arrayBuffer()); postMessage({id,s:z15(u)}); }catch(err){ postMessage({id,err:String(err&&err.message||err)}); } };';
+    const src='const ZMK='+JSON.stringify(ZMK)+';\n'+z15.toString()+'\nlet IV=-1,IMG="";onmessage=async e=>{ let {id,j,rest,img,iv}=e.data; try{ if(rest!=null){ if(img!=null){ IMG=img; IV=iv; } else if(iv!==IV)throw new Error("img"); j=rest.length>2?rest.slice(0,-1)+IMG+"}":"{"+IMG.slice(1)+"}"; } const cs=new Blob([j]).stream().pipeThrough(new CompressionStream("deflate-raw")); const u=new Uint8Array(await new Response(cs).arrayBuffer()); postMessage({id,s:z15(u)}); }catch(err){ postMessage({id,err:String(err&&err.message||err)}); } };';
     const w=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})));
     w.onmessage=e=>{ const r=_zP.get(e.data&&e.data.id); if(!r)return; _zP.delete(e.data.id); if(e.data.err!=null)r.rej(new Error(e.data.err)); else r.res(e.data.s); };
     w.onerror=()=>{ _zW=false; for(const r of _zP.values())r.rej(new Error('worker')); _zP.clear(); try{ w.terminate(); }catch(x){} };
     _zW=w; }catch(e){ _zW=false; } return _zW; }
-function packJWorker(j){ const w=zWorker(); if(!w)return null; return new Promise((res,rej)=>{ const id=++_zN; _zP.set(id,{res,rej}); try{ w.postMessage({id,j}); }catch(e){ _zP.delete(id); rej(e); } }); }
-async function packJAsync(j){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); { const P=packJWorker(j); if(P)try{ const s=await P; if(typeof s==='string'&&s[0]===ZMK)return s; }catch(e){} } const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
+let _zIV=-1; /* Worker가 들고 있는 사진 묶음 판번호: 같으면 사진 JSON을 다시 보내지 않는다 */
+function packJWorker(j,P){ const w=zWorker(); if(!w)return null; return new Promise((res,rej)=>{ const id=++_zN; _zP.set(id,{res,rej}); try{ if(P&&P.rest!=null){ const send=P.iv!==_zIV; w.postMessage({id,rest:P.rest,img:send?P.img:null,iv:P.iv}); _zIV=P.iv; } else w.postMessage({id,j}); }catch(e){ _zP.delete(id); _zIV=-1; rej(e); } }); }
+async function packJAsync(j,parts){ if(!ZOK||typeof CompressionStream==='undefined')return packJ(j); { const P=packJWorker(j,parts); if(P)try{ const s=await P; if(typeof s==='string'&&s[0]===ZMK)return s; }catch(e){ _zIV=-1; } } const cs=new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw')); return z15(new Uint8Array(await new Response(cs).arrayBuffer())); }
 function packG(){ return packJ(prepG()); }
 function unpack(s){ if(!s)return null; try{ const txt=s[0]==='{'?s:s[0]===ZMK?new TextDecoder().decode(fflate.inflateSync(unz15(s))):LZString.decompressFromUTF16(s); const g=JSON.parse(txt); return g&&!saveCheck(g)?g:null; }catch(e){ return null; } }
 let SAVE_ERR='';
@@ -256,7 +265,7 @@ function saveHold(fn,what){ if(!savePend())return false; if(UI._svHold)return tr
   sbSettle(n).then(end,()=>end(false)); setTimeout(()=>end(false),8000); return true; }
 function saveStore(){ if(!G)return false; const n=curSlot(); ++_svSeq; _svBusy=false; const j=prepG(); if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } const ok=writeSlot(n,packJ(j),slotInfo()); if(ok)svDone(n,j); _svFail=!ok; return ok; }
 async function saveStoreAsync(){ if(!G)return; const t0=performance.now(); const n=curSlot(), seq=++_svSeq, g=G, info=slotInfo(), j=prepG(); let tm=performance.now()-t0; if(svSame(n,j)){ _svFail=false; _svWarn=false; if(!SAVE_CONFL)SAVE_ERR=''; return true; } _svBusy=true; let data=null;
-  try{ data=await packJAsync(j); }catch(e){ data=null; }
+  const parts=_svParts; try{ data=await packJAsync(j,parts); }catch(e){ data=null; }
   if(SB_PEND.has(n)){ try{ await sbSettle(n); }catch(e){} } /* 앞 저장(IndexedDB 확정)이 끝나길 기다렸다 쓴다: 겹치면 '확정되지 않았습니다'로 실패해 실패 안내와 동기 저장이 뒤따랐다(성능 11-18) */
   if(seq!==_svSeq||G!==g)return; _svBusy=false; let ok; const t1=performance.now(); if(data==null)ok=saveStore(); else if((ok=writeSlot(n,data,info)))svDone(n,j); tm+=performance.now()-t1; _svCost=_svCost?_svCost*.5+tm*.5:tm; /* 화면 스레드에서 쓴 시간(문자열화·쓰기) */
   _svFail=!ok; if(ok)_svWarn=false; else if(!SAVE_CONFL&&!_svWarn){ _svWarn=true; try{ toast(`자동 저장에 실패했습니다. ${SAVE_ERR}`); }catch(e){} } } /* 자동 저장 실패를 바로 알린다(검수 11-09 #10). 실패가 이어지는 동안은 한 번만 */

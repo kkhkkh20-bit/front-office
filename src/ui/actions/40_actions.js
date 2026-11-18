@@ -157,6 +157,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0,ext:!!r.ext}; save(); render(); },
   ovsSet(v){ const [id,k]=v.split(':'); UI.devOk=false; UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
   fallSet(v){ UI.devMsg=setFall(v||null); save(); render(); },
+  fallGo(){ UI.it=Object.assign(UI.it||{},{devv:'ovs',ovsMode:'support'}); closeSheets(); A.go('staff:dev'); }, /* 소식·안내의 '가을 교육리그 신청하기': 육성 > 해외연수 > 교육리그·지원으로 바로 */
   listP(v){ listPlayer(+v); save(); render(); },
   tsugGo(v){ const [src,i]=v.split(':'); const s=(src==='k'?UI._tsugK:src==='f'?UI._find:src==='r'?((UI._rec&&UI._rec.list)||[]):UI._tsug||[])[+i]; if(!s||!tsugValid(s)){ UI.deskMsg='상황이 바뀌어 다시 찾아야 합니다.'; UI.deskOk=false; render(); return; }
     const r=proposeTrade(s.tid,s.give,[s.id]); UI.deskMsg=r.msg; UI.deskOk=r.ok; if(r.ok){ sfx('cheer_hit',.5); UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade}; G.tsug=null; UI.cmpK=null; if(src==='f')UI.findT=null; } save(); render(); },
@@ -179,13 +180,13 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
       if(G.res||G.live){closeSheets();UI.tab='home';UI.mail=null;}else if(G.stops.length){closeSheets();stopsOpen();}else{closeSheets();UI.mail=null;UI.fromMail=null;UI.tab='inbox';UI.mf='all';UI._ibEnd=true;UI.ibSel=null;UI.ibOpen=null;}
       if(G.dig&&G.dig.games?.length&&!G.res&&!G.live)UI.wkres={from:G.dig.from,to:G.dig.to,rk0:G.dig.rk};save();render();window.scrollTo(0,0);});},
   fullTg(){ const d=document,e=d.documentElement; try{ const r=fullOn()?(d.exitFullscreen||d.webkitExitFullscreen).call(d):(e.requestFullscreen||e.webkitRequestFullscreen).call(e); if(r&&r.catch)r.catch(()=>toast('이 브라우저에서는 전체 화면을 켤 수 없습니다.')); }catch(x){ toast('이 브라우저에서는 전체 화면을 켤 수 없습니다.'); } },
-  calOpen(){ UI.calYM=null; UI.calSel=null; closeSheets(); A.tab('cal'); workspaceReveal('.cal-grid'); },
+  calOpen(){ const s=calKeepSel(); UI.calSel=s; UI.calYM=s!=null?(o=>({y:o.y,m:o.m}))(dobj(s)):null; closeSheets(); A.tab('cal'); workspaceReveal(s!=null?'.cal-detail':'.cal-grid'); }, /* 오른쪽 위 달력·F10도 왼쪽 일정 탭처럼 고른 날(또는 '이 날까지 진행' 목표일)을 지킨다. 지났거나 없으면 오늘(국사왕 11-18) */
   calMon(v){ const [y,m]=v.split(':').map(Number); UI.calYM={y,m}; UI.calSel=null; render(); },
   calWk(v){ UI.calSel=(UI.calSel??G.day)+(+v); const o=dobj(UI.calSel); UI.calYM={y:o.y,m:o.m}; render(); }, calAll(){ UI.calAll=!UI.calAll; render(); },
   calDay(v){ UI.calSel=+v; render(); workspaceReveal('.cal-detail'); },
   calJump(v){ const o=dobj(+v); closeSheets(); UI.tab='cal'; UI.calYM={y:o.y,m:o.m}; UI.calSel=+v; render(); workspaceReveal('.cal-detail'); },
   /* 이 날까지 진행: FM의 '~까지 진행'처럼 하루씩 넘기다가 중요한 소식·결정이 생기면 멈춘다 */
-  advTo(v){if(UI.advRun){A.advStop();return;}const T=+v;if(!(T>G.day))return;if(G.res&&!G.live)G.res=null;const d0=G.day,rk0=userRank();return advRunStart(advToSteps(T),(paused)=>{if(G.matchAwait&&!paused){A.awaitGo();return;}if(paused)G.matchAwait=null;const stp=!G.live&&G.stops.length>0;if(stp){closeSheets();stopsOpen();}if(!G.live&&!stp&&wkGames(d0+1,G.day).length){G.res=null;closeSheets();UI.wkres={from:d0+1,to:G.day,rk0};}save();render();if(!paused&&G.day<T){const b=blocker();toast(G.day-d0>=200?`한 번에 200일까지 진행합니다. ${dmd(G.day)}에 멈췄습니다.`:b?`${dmd(G.day)}에 멈췄습니다. ${b}`:`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`);}});},
+  advTo(v){if(UI.advRun){A.advStop();return;}const T=+v;if(!(T>G.day))return;UI.calTgt=T;if(G.res&&!G.live)G.res=null;const d0=G.day,rk0=userRank();return advRunStart(advToSteps(T),(paused)=>{if(G.matchAwait&&!paused){A.awaitGo();return;}if(paused)G.matchAwait=null;const stp=!G.live&&G.stops.length>0;if(stp){closeSheets();stopsOpen();}if(!G.live&&!stp&&wkGames(d0+1,G.day).length){G.res=null;closeSheets();UI.wkres={from:d0+1,to:G.day,rk0};}save();render();if(!paused&&G.day<T){const b=blocker();toast(G.day-d0>=200?`한 번에 200일까지 진행합니다. ${dmd(G.day)}에 멈췄습니다.`:b?`${dmd(G.day)}에 멈췄습니다. ${b}`:`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`);}});},
   /* 경기 직전 멈춤: 직관·직접 관전 예약이 없고 '결과만 보기'를 고른 경기면 포스트시즌이어도 결과만(검수 11-08) */
   awaitGo(){ const d=G.matchAwait.day, P=gmPlanAt(d); closeSheets(); UI.tab='home'; if(G.simPlanned?.day===d&&G.watchPlanned?.day!==d&&!(P&&P.k==='attend'&&!P.done)){ A.matchSim(); return; } A.watchNext(); },
   /* 결과를 먼저 보지 않고 다음 경기를 그래픽 중계로 본다 */
@@ -509,7 +510,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   gmFix(v){ UI.findPos=v; UI.findT=null; UI.castRet=null; delete G.castHold; if(UI.cast){ UI.cast.play=false; CT.tok++; CT.run=false; UI.cast=null; } A.go('trade:find'); spoilFlush(); },
   pwatch(v){ pwatchToggle(+v); save(); const c=UI.cast; if(c&&G.games[c.g]){ cSide(G.games[c.g],c.k); } else { render(); renderSheet(); } },
   mktGo(v){ const x=(UI._mkt||[])[+v]; const m=UI.findM; if(!x||m==null)return; const r=proposeTrade(x.tid,[m],x.give); UI.deskMsg=r.msg; UI.deskOk=r.ok; if(r.ok){ UI.stamp={fans:(()=>{ try{ return tradeFanLines(); }catch(e){ return []; } })(),msg:r.msg,grade:r.grade}; sfx('cheer_hit',.5); UI.findM=null; G.tsug=null; } save(); render(); },
-  jobYes(v){ const r=jobAnswer(v,true); UI.tab='home'; closeSheets(); UI.calSel=null; UI.calYM=null; UI.mail=null; UI.game=null; /* 옛 구단 화면 상태(달력 선택·열린 경기)를 남기지 않는다 */ UI.gmMsg=r; save(); render(); window.scrollTo(0,0); },
+  jobYes(v){ const r=jobAnswer(v,true); UI.tab='home'; closeSheets(); UI.calSel=null; UI.calTgt=null; UI.calYM=null; UI.mail=null; UI.game=null; /* 옛 구단 화면 상태(달력 선택·열린 경기)를 남기지 않는다 */ UI.gmMsg=r; save(); render(); window.scrollTo(0,0); },
   jobNo(v){ jobAnswer(v,false); save(); render(); },
   toTrade(v,el){const p=G.players[+v]; if(UI.trade.tid!==p.team)UI.trade={tid:p.team,give:UI.trade.give||[],get:[],msg:'',sort:UI.trade.sort||'cur'}; else if(el&&el.closest&&el.closest('.bk-c'))UI.trade.get=[]; /* 매물 목록에서 누르면 새로 시작 */ if(!UI.trade.get.includes(p.id))UI.trade.get.push(p.id); UI.trade.seg=p.isP?'pit':'bat'; UI.trade.side='give'; UI.trade.msg=''; closeSheets(); A.go('trade:table');},
   toTradeGive(v){const p=G.players[+v]; if(p&&hasNtc(p))toast(`${p.name}은(는) 트레이드 거부권이 있습니다(${p.ntc}년까지). 상대 구단을 고른 뒤 선수에게 동의를 구해야 보낼 수 있습니다.`); if(!UI.trade.give.includes(p.id))UI.trade.give.push(p.id);UI.trade.seg=p.isP?'pit':'bat';UI.trade.side='get';closeSheets(); A.go('trade:table');},
