@@ -4,9 +4,15 @@
    리그 중간(연전 사이)에 내 덱을 고치면 다음 연전부터 그 덱으로 나간다. 상대 덱은 리그를 시작할 때 받은 사본으로 고정한다 */
 function uld(){ if(!G)return null; const U=G.uld||(G.uld={v:2,tier:0,hist:[],deck:null,league:null,last:null,dn:0,ps:{},opp:{}}); if((U.v|0)<2)FrontOfficeCore.ulMigrate(U); if(!U.car)U.car=FrontOfficeCore.ulCareerInit(U.hist,U.best); if(typeof U.seenS==='number'){ if(Number.isFinite(U.seenS))U.seenS='S'+U.seenS; else delete U.seenS; } if(U.league)ulLgMig(U.league); /* 3연전 리그(사용자 11-18): 예전 리그는 빈 칸만 더해 이어 간다(난수 없음) */ /* 예전 저장: 숫자로 남긴 시즌 확인 표시(NaN은 버린다 → 결산 카드가 한 번 더 보임, 외부 검수 11-17) */ return U; } /* 통산 칸(외부 검수 11-17): 없으면 남은 기록 줄로 한 번 만든다 */ /* v2: 예전 저장은 처음 열 때 옮긴다(선수·상대 기록 칸, 사용자 11-17) */
 const UL_ME='me';
+/* 실제 경기와 같은 건강 벤치 대체. 입력·커리어 세계·난수를 바꾸지 않는다. */
+function ulReadyLineup(e){ if(!e||!Array.isArray(e.P)||!Array.isArray(e.ln)||!Array.isArray(e.bn))return null; const P=new Map(e.P.map(p=>[p.id,p]));
+  try{ const b=ladderBatting({lineup:e.ln.map(([id,pos])=>[P.get(id),pos]),bench:e.bn.map(id=>P.get(id)).filter(Boolean)}); return b.order.map(p=>[p,b.posOf[p.id]]); }catch(err){ return null; } }
+function ulDeckReady(e){ const ln=ulReadyLineup(e); if(!ln||ln.length!==9)return '건강한 야수 9명 이상이 필요합니다. 부상 선수를 대신할 벤치 야수를 덱에 넣어 주세요.';
+  const P=new Map(e.P.map(p=>[p.id,p])); if(![...(e.rot||[]),...(e.pen||[])].some(id=>{const p=P.get(id);return p&&p.isP&&!(p.injOut>0);}))return '등판 가능한 건강한 투수가 필요합니다.'; return ''; }
+
 /* 덱 등록(이 저장의 내 덱). src: 'now'(지금 1군) | 'alb:번호'(앨범 시즌). 가져온 남의 덱(ro)은 등록할 수 없다 */
 function ulSetDeck(e,src){ const C=FrontOfficeCore; if(!e||e.ro)return '가져온 덱은 내 덱으로 등록할 수 없습니다.'; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x);
-  const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg; const U=uld(); const cg=C.ulCapGate(x,U.tier|0,Date.now()); if(!cg.ok||cg.grace)return cg.known?cg.msg+' 덱에서 선수를 빼 상한에 맞춰 주세요.':'연봉 기록이 없는 로스터입니다(게임을 새로 고친 뒤 다시 골라 주세요).'; /* 연봉 상한(사용자 11-17 "공평하게"): 새로 등록하는 덱은 유예 없이 지금 단계 상한 안이어야 한다 */ U.dn=(U.dn||0)+1; U.deck={id:U.dn,src:String(src||'now'),at:G.day,y:G.year,e:x}; return ''; }
+  const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg; const why=ulDeckReady(x); if(why)return why; const U=uld(); const cg=C.ulCapGate(x,U.tier|0,Date.now()); if(!cg.ok||cg.grace)return cg.known?cg.msg+' 덱에서 선수를 빼 상한에 맞춰 주세요.':'연봉 기록이 없는 로스터입니다(게임을 새로 고친 뒤 다시 골라 주세요).'; /* 연봉 상한(사용자 11-17 "공평하게"): 새로 등록하는 덱은 유예 없이 지금 단계 상한 안이어야 한다 */ U.dn=(U.dn||0)+1; U.deck={id:U.dn,src:String(src||'now'),at:G.day,y:G.year,e:x}; return ''; }
 /* 단계 기준 AI 덱: 리그 평균 AI 구단을 만들고 능력치를 올리거나 내려 기준 OVR(총)에 맞춘다.
    타자·투수를 따로 맞춘다(사용자 11-17 "고 오버롤", 포지션 균형): 타자 OVR을 기준−1로 먼저 맞추고, 투수로 총 OVR을 맞춘다. 실제 등록 덱(투수 ≈ 총+1.5, 타자 ≈ 총−1)과 비슷한 모양.
    예전처럼 모두 같이 올리면 레전드 AI가 투수만 98인 덱이 됐다(선발 98·타자 74). 능력치는 20~85 안 */
@@ -21,9 +27,10 @@ function ulAiDecks(n,target,tag){ if(n<=0)return []; if(!UL_AI_BASE||UL_AI_BASE.
 /* 리그 만들기: 서버에서 받은 덱(fetched) → 가져온 우승 덱(cup, 최대 2) → 모자라면 단계 기준 AI. 상대는 사본으로 잠근다.
    fetched는 엔트리 그대로 또는 서버 v1 모양 {e, pid, nick}(사용자 11-17: 상대 플레이어 id·닉네임을 리그 팀에 붙여 두고 리그가 끝나면 맞대결로 보낸다) */
 function ulMakeLeague(o){ o=o||{}; const C=FrontOfficeCore, U=uld(); if(!U||!U.deck)return {ok:false,msg:'먼저 내 덱을 등록해 주세요.'};
+  const why=ulDeckReady(U.deck.e); if(why)return {ok:false,msg:why};
   const now=o.now??Date.now(), cg=C.ulCapGate(U.deck.e,U.tier|0,now); if(!cg.ok)return {ok:false,msg:cg.msg+" '덱'에서 다시 등록해 주세요.",cap:1}; /* 연봉 상한(사용자 11-17): 승격으로 상한이 바뀌었거나 유예가 끝난 예전 덱 */
   const tier=U.tier|0, mine=U.deck.e, seen=new Set([mine.h]), T=[{key:UL_ME,kind:'me',name:mine.name,e:JSON.parse(JSON.stringify(mine))}];
-  const add=(e,kind,m)=>{ if(T.length>=C.UL_TEAMS||!e||!Array.isArray(e.P))return; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); if(seen.has(x.h)||!C.cupValidate(x,{}).ok)return; if((kind==='user'||kind==='cup')&&!C.ulCapGate(x,tier,now).ok)return; /* 검수 11-17 #183: 가져온 우승 덱도 같은 상한(286억 우승 덱이 상대로 나오던 것). 빠진 자리는 단계 기준 AI가 채운다 */ /* 상한을 넘는 유저 덱은 상대로 쓰지 않는다(서버도 거른다) */ x.ovr=x.ovr||cupOvr(x); seen.add(x.h); const t={key:'t'+T.length,kind,name:x.name,e:x}; if(m&&m.pid){ t.pid=String(m.pid); t.nick=String(m.nick||''); } T.push(t); };
+  const add=(e,kind,m)=>{ if(T.length>=C.UL_TEAMS||!e||!Array.isArray(e.P))return; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); if(seen.has(x.h)||!C.cupValidate(x,{}).ok||ulDeckReady(x))return; if((kind==='user'||kind==='cup')&&!C.ulCapGate(x,tier,now).ok)return; /* 검수 11-17 #183: 가져온 우승 덱도 같은 상한(286억 우승 덱이 상대로 나오던 것). 빠진 자리는 단계 기준 AI가 채운다 */ /* 상한을 넘는 유저 덱은 상대로 쓰지 않는다(서버도 거른다) */ x.ovr=x.ovr||cupOvr(x); seen.add(x.h); const t={key:'t'+T.length,kind,name:x.name,e:x}; if(m&&m.pid){ t.pid=String(m.pid); t.nick=String(m.nick||''); } T.push(t); };
   for(const d of o.fetched||[]){ if(d&&d.e&&!Array.isArray(d.P))add(d.e,'user',d); else add(d,'user'); } let nc=0; for(const e of o.cup||[]){ if(nc>=2)break; const k=T.length; add(e,'cup'); if(T.length>k)nc++; }
   const need=C.UL_TEAMS-T.length, avg=C.ulAiTarget(tier,o.avg,o.count); for(const e of ulAiDecks(need,avg))add(e,'ai');
   const sched=C.cupLeagueSched(T.length,3); /* 9라운드 × 연전 5개: 라운드마다 모든 덱이 다른 상대와 3연전(팀당 27경기) */
@@ -32,20 +39,21 @@ function ulMakeLeague(o){ o=o||{}; const C=FrontOfficeCore, U=uld(); if(!U||!U.d
   return {ok:true,league:U.league}; }
 /* 리그 중 내 덱 고치기: 다음 연전부터 */
 function ulEditDeck(e){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L)return '진행 중인 리그가 없습니다.'; if(e&&e.ro)return '가져온 덱은 쓸 수 없습니다.';
-  const x=C.ulSlim(e); { const cur=new Map(L.teams[0].e.P.map(p=>[String(p.id),p])), reg=new Map(((U.deck&&U.deck.e&&U.deck.e.P)||[]).map(p=>[String(p.id),p]));
-    for(const p of x.P||[]){ const c=cur.get(String(p.id)), r=reg.get(String(p.id)); if(c&&r&&(p.injOut||0)===(r.injOut||0)&&(c.injOut||0)<(p.injOut||0))p.injOut=c.injOut||0; } } /* 검수 11-17 #186: 등록 덱 그대로인 선수의 부상은 리그에서 지난 날만큼 줄어든 값으로(덱을 고쳐도 부상이 되살아나지 않게) */
-  x.h=C.cupEntryHash(x); x.ovr=cupOvr(x); const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg;
+  const x=C.ulSlim(e), registered=C.ulSlim(e); { const cur=new Map(L.teams[0].e.P.map(p=>[String(p.id),p])), reg=new Map(((U.deck&&U.deck.e&&U.deck.e.P)||[]).map(p=>[String(p.id),p]));
+    for(const p of x.P||[]){ const c=cur.get(String(p.id)); if(c)p.injOut=c.injOut||0; }
+    for(const p of registered.P||[]){ const r=reg.get(String(p.id)); if(r)p.injOut=r.injOut||0; } } /* 타순 편집은 현재 리그의 회복과 다음 리그 등록 기준을 각각 보존한다. 새 선수만 입력한 기준을 쓴다. */
+  x.h=C.cupEntryHash(x); x.ovr=cupOvr(x); const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg; const why=ulDeckReady(x)||ulDeckReady(registered); if(why)return why; registered.h=C.cupEntryHash(registered); registered.ovr=cupOvr(registered);
   if(C.cupPay(x).pay!==C.cupPay(L.teams[0].e).pay){ const cg=C.ulCapGate(x,L.tier,Date.now()); if(!cg.ok)return cg.msg; } /* 리그 중 통째로 바꾸면(연봉이 달라지면) 그 단계 상한을 다시 본다(사용자 11-17) */
-  L.teams[0].e=x; L.teams[0].name=x.name; L.edits.push({at:L.next,h:x.h}); if(U.deck){ U.deck.e=JSON.parse(JSON.stringify(x)); } return ''; }
+  L.teams[0].e=x; L.teams[0].name=x.name; L.edits.push({at:L.next,h:x.h}); if(U.deck){ U.deck.e=registered; } return ''; }
 /* 연전 하나 */
-function ulRunSeries(L){ const s=L.sched[L.next]; if(!s)return null; const A=L.teams[s.a], B=L.teams[s.b];
+function ulRunSeries(L){ulNewsRepair(L,true);const s=L.sched[L.next];if(!s)return null;const A=L.teams[s.a],B=L.teams[s.b],enc=s.a===0||s.b===0?[ulProfile(A.e),ulProfile(B.e)]:null;
   const res=ulRng(L,s.id,()=>cupMatch(A.e,B.e,{cup:'ul',round:'L'+s.r,match:s.id,best:3,all:1,tie:1,home:s.home,ri:[L.cnt[s.a],L.cnt[s.b]]})); if(!res.ok)throw new Error('경기 실패: '+((res.errors&&res.errors[0]&&res.errors[0].msg)||'')); /* 씨앗 난수(3연전 리그, 사용자 11-18): 본게임 난수 흐름을 쓰지 않는다 */
   ulStatAdd(L,L.bat,L.pit,res,s.a,s.b); /* 검수 11-17 #182: 우리 선수는 기록할 때의 포지션·나이를 같이 남긴다(02_uladder_series.js) */
   L.cnt[s.a]+=res.games.length; L.cnt[s.b]+=res.games.length;
   ulInjTick(L,s.a,res.games.length); ulInjTick(L,s.b,res.games.length);
   const mine=s.a===0||s.b===0, bx=res.games.map(g=>ulBox(g,mine)); if(Array.isArray(L.te))for(const b of bx){ L.te[s.a]+=b.e[0]; L.te[s.b]+=b.e[1]; } /* 경기마다 박스(우리 경기는 타자·투수 줄까지) · 팀 실책 */
-  const x={id:s.id,r:s.r,a:s.a,b:s.b,ha:res.a.h,hb:res.b.h,g:res.games.map(g=>[g.sa,g.sb,g.inn||9,g.walk?1:0]),mvp:res.games.map(g=>g.mvp&&g.mvp.name||''),bx};
-  if(mine)ulKeep(L,s,res.games); L.series.push(x); L.next++; if(Array.isArray(L.news)&&(!L.sched[L.next]||L.sched[L.next].r!==s.r))ulNewsRound(L,s.r); return x; }
+  const x={id:s.id,r:s.r,a:s.a,b:s.b,ha:res.a.h,hb:res.b.h,nm:[A.name,B.name],g:res.games.map(g=>[g.sa,g.sb,g.inn||9,g.walk?1:0]),mvp:res.games.map(g=>g.mvp&&g.mvp.name||''),bx,...(enc?{pr:enc}:{})};
+  if(mine)ulKeep(L,s,res.games); L.series.push(x); L.next++; if(Array.isArray(L.news)&&(!L.sched[L.next]||L.sched[L.next].r!==s.r)){ulNewsPrepare(L,s.r);ulNewsRepair(L,true);} return x; }
 /* 검수 11-17 #186: 연전을 치른 만큼(경기 수 = 날 수) 리그 덱 사본의 부상 남은 날을 줄인다. 연전마다 덱을 새로 깔아서, 줄이지 않으면 3일 부상이 연전마다 3일로 돌아왔다. 난수 없음 */
 function ulInjTick(L,i,n){ const T=L.teams[i]; if(!T||!T.e||!Array.isArray(T.e.P)||!(n>0))return; for(const p of T.e.P)if(p.injOut>0)p.injOut=Math.max(0,p.injOut-n); }
 /* 명경기: 우리 경기 가운데 끝내기·연장·역전·접전 점수(공용 cupDrama)가 높은 3경기만 중계·박스·줄 점수를 남긴다('이 경기 보기') */
@@ -58,16 +66,28 @@ function ulKeep(L,s,games){ const me=s.a===0?'A':'B', op=L.teams[s.a===0?s.b:s.a
 /* 덱 성향(상대 덱 미리보기): 타격·장타·컨택·수비·선발·불펜을 표시 척도(dv)로 */
 const UL_PROF=[['off','타격'],['pow','장타'],['con','컨택'],['def','수비'],['sp','선발'],['pen','불펜']];
 function ulProfile(e){ if(!e||!Array.isArray(e.P))return null; const D=FrontOfficeCore.dv, P=new Map(e.P.map(p=>[p.id,p])), ok=p=>p&&!(p.injOut>0);
-  const L=(e.ln||[]).map(([id,pos])=>[P.get(id),pos]).filter(x=>x[0]), bats=L.map(x=>x[0]);
+  const L=ulReadyLineup(e)||[], bats=L.map(x=>x[0]);
   const rot=(e.rot||[]).map(id=>P.get(id)).filter(ok), pen=(e.pen||[]).map(id=>P.get(id)).filter(ok).map(penV).sort((a,b)=>b-a).slice(0,5);
   return {off:D(avg(bats.map(offV))),pow:D(avg(bats.map(p=>p.r.pow))),con:D(avg(bats.map(p=>p.r.con))),def:D(avg(L.filter(x=>x[1]!=='DH').map(x=>defAt(x[0],x[1])))),sp:D(avg(rot.map(spV))),pen:D(pen.length?avg(pen):0)}; }
 /* 두 덱 비교: 상대가 앞선 곳·우리가 앞선 곳(3 이상 차이) */
 function ulVs(me,op){ const a=ulProfile(me), b=ulProfile(op); if(!a||!b)return null; const rows=UL_PROF.map(([k,n])=>({k,n,me:a[k],op:b[k],d:b[k]-a[k]}));
   const by=rows.slice().sort((x,y)=>y.d-x.d); return {rows,opBest:by.filter(x=>x.d>=3).slice(0,2),meBest:by.slice().reverse().filter(x=>x.d<=-3).slice(0,2)}; }
+/* 정규·PS 각각의 실제 기록 경기 수를 두 기록 화면이 공유한다. 조회는 저장·난수를 바꾸지 않는다. */
+function ulQualifiers(D){const gp=Math.max(1,...(D.teams||[]).map((t,i)=>(D.series||[]).reduce((n,s)=>n+(s.a===i||s.b===i?(s.g||[]).length:0),0)));return{gp,qpa:FrontOfficeCore.ulQualPa(gp),qo:FrontOfficeCore.ulQualOuts(gp)};}
+/* 기사 실패는 이미 끝난 경기를 되돌리지 않는다. 새 라운드는 발행 전에 당시 통계를 보관한다. */
+function ulNewsPrepare(L,r){if(!Array.isArray(L.news)||L.news.some(n=>n&&+n.r===+r))return;const P=L.newsPending||(L.newsPending={});if(!P[r]){const copy=M=>Object.fromEntries(Object.entries(M||{}).map(([k,v])=>[k,{...v}]));P[r]={r:+r,names:L.teams.map(t=>t.name),bat:copy(L.bat),pit:copy(L.pit)};}}
+function ulNewsPrefix(L,r){const series=L.series.filter(s=>+s.r<=r),teams=L.teams.map(t=>({...t}));for(const x of series)if(Array.isArray(x.nm)){if(typeof x.nm[0]==='string')teams[x.a].name=x.nm[0];if(typeof x.nm[1]==='string')teams[x.b].name=x.nm[1];}const cnt=teams.map(()=>0);for(const x of series){cnt[x.a]+=(x.g||[]).length;cnt[x.b]+=(x.g||[]).length;}return{...L,series,teams,cnt};}
+function ulNewsRepair(L,strict=false){if(!L||!Array.isArray(L.sched)||!Array.isArray(L.series)||!Array.isArray(L.news))return 0;const need=new Map(),done=new Map();for(const s of L.sched)need.set(+s.r,(need.get(+s.r)||0)+1);for(const s of L.series)done.set(+s.r,(done.get(+s.r)||0)+1);const rounds=[...need.keys()].filter(r=>Number.isFinite(r)&&(done.get(r)||0)>=need.get(r)).sort((a,b)=>a-b),last=rounds[rounds.length-1];let fixed=0;
+  for(const r of rounds){let packet=L.newsPending&&L.newsPending[r],has=L.news.some(n=>n&&+n.r===r);if(has&&!packet)continue;try{const view=ulNewsPrefix(L,r),prev=ulNewsPrefix(L,r-1),prior=prev.series.length?ulStandX(prev):[];view.lead=prior[0]?.key;view.rk0=Object.fromEntries(prior.map(x=>[x.key,x.rank]));view.news=[];
+    if(packet&&packet.row){view.lead=packet.lead;view.rk0=packet.rk0;}else if(!has){if(packet){view.teams=view.teams.map((t,i)=>({...t,name:packet.names[i]??t.name}));view.bat=packet.bat;view.pit=packet.pit;}else{view.newsRestore=true;view.bat={};view.pit={};}ulNewsRound(view,r);const row=view.news.find(n=>n&&+n.r===r);if(!row)throw Error('라운드 소식을 만들지 못했습니다.');packet=Object.assign(packet||{r},{row,lead:view.lead,rk0:view.rk0});(L.newsPending||(L.newsPending={}))[r]=packet;}
+    if(!has){const i=L.news.findIndex(n=>!Number.isFinite(+n.r)||+n.r>r);if(i<0)L.news.push(packet.row);else L.news.splice(i,0,packet.row);fixed++;}if(r===last){const st=ulStandX(view);L.lead=st[0]?.key;L.rk0=Object.fromEntries(st.map(x=>[x.key,x.rank]));}if(L.newsPending){delete L.newsPending[r];if(!Object.keys(L.newsPending).length)delete L.newsPending;}
+  }catch(err){if(strict)throw err;break;}}return fixed;}
+/* 그 상대를 실제로 만났던 연전의 양쪽 전력. 구형 기록은 마지막 덱으로 추정하지 않는다. */
+function ulEncounter(s){if(!Array.isArray(s.pr)||s.pr.length<2)return null;const me=s.a===0?0:1,op=1-me;if(!s.pr[me]||!s.pr[op]||!UL_PROF.every(([k])=>Number.isFinite(s.pr[me][k])&&Number.isFinite(s.pr[op][k])))return null;return{mine:{...s.pr[me]},prof:{...s.pr[op]}};}
 /* 리그 기록 카드: 리그 1위 기록(홈런·타율·타점·승·탈삼진·세이브), 상대별 전적·천적·최다 연승·최다 점수 차 승 */
-function ulRecords(L){ const B=Object.values(L.bat), Pt=Object.values(L.pit), gpc=27, me=x=>String(x.key).startsWith(UL_ME+':');
+function ulRecords(L){ const B=Object.values(L.bat), Pt=Object.values(L.pit), qpa=ulQualifiers(L).qpa, me=x=>String(x.key).startsWith(UL_ME+':');
   const top=(A,f,k,q)=>{ const x=A.filter(q||(()=>true)).sort((a,b)=>f(b)-f(a)||String(a.key).localeCompare(String(b.key)))[0]; return x&&f(x)>0?{k,name:x.name,team:x.team,me:me(x),v:f(x)}:null; };
-  const avgOf=x=>x.ab?x.h/x.ab:0, qual=x=>(x.pa||0)>=Math.round(gpc*3.1);
+  const avgOf=x=>FrontOfficeCore.ulBatRates(x).avg||0,qual=x=>(x.pa||0)>=qpa;
   const lead=[top(B,x=>x.hr,'홈런'),top(B,avgOf,'타율',qual),top(B,x=>x.rbi,'타점'),top(Pt,x=>x.w||0,'승리'),top(Pt,x=>x.so,'탈삼진'),top(Pt,x=>x.sv||0,'세이브')].filter(Boolean)
     .map(x=>Object.assign(x,{v:x.k==='타율'?x.v.toFixed(3).replace(/^0/,''):x.v}));
   const h2h=new Map(); let run=0, best=0, big=null;
@@ -77,10 +97,10 @@ function ulRecords(L){ const B=Object.values(L.bat), Pt=Object.values(L.pit), gp
   const H=[...h2h.values()], nem=H.filter(x=>x.l>=2&&x.w===0).sort((a,b)=>b.l-a.l)[0]||null, prey=H.filter(x=>x.w>=3&&x.l===0)[0]||null;
   return {lead,h2h:H,nem,prey,streak:best,big}; }
 /* 다음 라운드(연전 5개: 우리 연전 포함)까지 */
-function ulRunRound(L){ L=L||(uld()||{}).league; if(!L||L.next>=L.sched.length)return []; const r=L.sched[L.next].r, out=[]; while(L.next<L.sched.length&&L.sched[L.next].r===r)out.push(ulRunSeries(L)); return out; }
+function ulRunRound(L){ L=L||(uld()||{}).league; if(!L)return [];ulNewsRepair(L,true);if(L.next>=L.sched.length)return []; const r=L.sched[L.next].r, out=[]; while(L.next<L.sched.length&&L.sched[L.next].r===r)out.push(ulRunSeries(L)); return out; }
 function ulStand(L){ const keys=L.teams.map((t,i)=>i), flat=[]; for(const s of L.series)for(const g of s.g)flat.push({a:s.a,b:s.b,sa:g[0],sb:g[1]}); return FrontOfficeCore.cupStandings(keys,flat); }
 /* 리그 끝: 순위·승강·MVP·기록 남기기 */
-function ulFinish(){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L||L.next<L.sched.length)return null;
+function ulFinish(){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L||L.next<L.sched.length)return null;ulNewsRepair(L,true);
   while(ulPostLeft(L))ulRunPost(L); /* 남은 포스트시즌(3연전 리그, 사용자 11-18: '끝까지'·예전 호출)은 여기서 마저 돈다. 승강은 아래 정규 순위로(우승팀은 승격) */
   const P=L.post, myPs=ulPsOf(P,0), st=ulStand(L), me=st.find(x=>x.key===0), mv=C.ulTierAfter(L.tier,me.rank,L.teams.length,myPs); /* 래더 v4(구단주 11-18 §3): 우승팀은 순위와 무관하게 승격(이미 승격권이면 그대로) */
   const no=L.teams.filter(t=>t.kind==='ai').map(t=>t.key), mvp=C.cupMvp(Object.values(L.bat),Object.values(L.pit),no);
@@ -110,10 +130,10 @@ function ulAccum(U,L,st,se){ const C=FrontOfficeCore; U.ps=U.ps||{}; U.opp=U.opp
   const info=new Map(L.teams[0].e.P.map(p=>[String(p.id),{id:p.id,name:p.name,pos:p.pos,isP:p.isP,age:p.age,foreign:p.foreign?1:0}])); for(const x of [...B,...Pt]){ const id=idOf(x.key), q=info.get(id); if(!q){ info.set(id,{id,name:x.name,pos:x.pos||'',isP:x.isP?1:0,age:x.age,foreign:x.fr?1:0}); continue; } if(x.pos&&!q.pos)q.pos=x.pos; if(q.age==null&&x.age!=null)q.age=x.age; } /* 리그 중 덱에서 뺀 선수: 기록할 때 남긴 포지션·나이(검수 11-17 #182) */
   /* 옛 리그가 끝난 채 재독되면 새 경기 집계를 거치지 않는다. 당시 BB/HBP 합계였다는 근거를 마감에도 전달한다. */
   C.ulPsAdd(U.ps,{sid:se.id,tier:L.tier,lid:L.id,P:[...info.values()],bat:B.map(x=>Object.assign({},x,{id:idOf(x.key)})),pit:Pt.map(x=>Object.assign({},x,{id:idOf(x.key)},x.hbp==null?{bbMixed:true}:{}))});
-  const rd=new Map(); for(const s of L.series){ if(s.a!==0&&s.b!==0)continue; const oi=s.a===0?s.b:s.a, o=rd.get(oi)||{w:0,l:0,t:0,rs:0,ra:0}; for(const g of s.g){ const a=s.a===0?g[0]:g[1], b=s.a===0?g[1]:g[0]; o.rs+=a; o.ra+=b; if(a>b)o.w++; else if(a<b)o.l++; else o.t++; } rd.set(oi,o); }
-  const now=Date.now(), mp=ulProfile(L.teams[0].e);
+  const rd=new Map(); for(const s of L.series){ if(s.a!==0&&s.b!==0)continue; const oi=s.a===0?s.b:s.a, o=rd.get(oi)||{w:0,l:0,t:0,rs:0,ra:0}; for(const g of s.g){ const a=s.a===0?g[0]:g[1], b=s.a===0?g[1]:g[0]; o.rs+=a; o.ra+=b; if(a>b)o.w++; else if(a<b)o.l++; else o.t++; }o.enc=ulEncounter(s);rd.set(oi,o); }
+  const now=Date.now();
   L.teams.forEach((t,i)=>{ if(!i)return; const k=t.pid?'p:'+t.pid:t.kind+':'+t.name, r=rd.get(i)||{w:0,l:0,t:0,rs:0,ra:0}, o=U.opp[k]||(U.opp[k]={k,name:t.name,kind:t.kind,n:0,w:0,l:0,t:0,rs:0,ra:0});
-    Object.assign(o,{name:t.name,nick:t.nick||o.nick||'',pid:t.pid||null,kind:t.kind,ovr:t.e.ovr,tier:L.tier,at:now,rank:(st.find(x=>x.key===i)||{}).rank,prof:ulProfile(t.e),mine:mp,m:C.ulDeckMeta(t.e)}); o.n++; for(const f of ['w','l','t','rs','ra'])o[f]+=r[f]; });
+    Object.assign(o,{name:t.name,nick:t.nick||o.nick||'',pid:t.pid||null,kind:t.kind,ovr:t.e.ovr,tier:L.tier,at:now,rank:(st.find(x=>x.key===i)||{}).rank,prof:r.enc?r.enc.prof:null,mine:r.enc?r.enc.mine:null,profileUnknown:!r.enc,m:C.ulDeckMeta(t.e)}); o.n++; for(const f of ['w','l','t','rs','ra'])o[f]+=r[f]; });
   const ks=Object.keys(U.opp); if(ks.length>C.UL_OPP_MAX)ks.sort((a,b)=>(U.opp[a].at||0)-(U.opp[b].at||0)).slice(0,ks.length-C.UL_OPP_MAX).forEach(k=>delete U.opp[k]); }
 /* 붙어 보기(래더 v3, 사용자 11-17 "명예의 전당 … 우승 덱"): 내 덱과 고른 덱(대회 우승 덱·도전 덱)의 3경기 친선전. 단계·기록·시즌에 남지 않는다(화면에만).
    경기는 리그와 같은 cupMatch(가벼운 세계를 잠깐 바꿔 끼움)라 커리어 G·본게임 난수를 건드리지 않는다 */

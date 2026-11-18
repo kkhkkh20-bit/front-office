@@ -19,7 +19,7 @@ function ulAutoEntry(){ if(!G||G.unemp||G.user==null||!team(G.user))return null;
    → {skip:'album'|'noteam'} | {due, why, upload, day, alb, x, cap} */
 function ulAutoPlan(now,force){ const U=uld(), C=FrontOfficeCore; if(!U)return {skip:'noteam'}; const A=U.ar||(U.ar={}); now=now??Date.now();
   if(U.deck&&U.deck.src&&U.deck.src!=='now')return {skip:'album'};
-  const x=ulAutoEntry(); if(!x)return {skip:'noteam'};
+  const x=ulAutoEntry(); if(!x)return {skip:'noteam'}; const why=ulDeckReady(x); if(why)return {skip:'roster',msg:why};
   const alb=ulAutoAlb(), d=C.ulAutoDue(A,now,x.h,alb); if(force){ d.due=true; d.why='force'; d.upload=true; }
   d.alb=alb; d.x=x; d.cap=C.ulCapGate(x,U.tier|0,now).ok?0:1; if(!d.due)return d;
   if(!U.deck||U.deck.e.h!==x.h){ U.dn=(U.dn||0)+1; U.deck={id:U.dn,src:'now',auto:1,at:G.day,y:G.year,e:x}; } else U.deck.auto=1;

@@ -20,7 +20,8 @@ function ulGoalsHtml(U){ const C=FrontOfficeCore, now=Date.now(), D=C.ulDailyGoa
     <div class="ul-bgs">${c.titles.map(x=>`<span class="ul-bg${x.on?' on':''}">${esc(x.n)}</span>`).join('')}</div></section>`; }
 /* 시즌 결산: 시즌이 바뀐 뒤 처음 들어오면 지난 시즌 카드 한 번('확인'을 누르면 접는다) */
 function ulSeasonEndHtml(U){ const C=FrontOfficeCore, se=C.ulSeason(Date.now()), S=U.seas&&U.seas.id!==se.id?U.seas:null; if(!S||String(U.seenS)===String(S.id))return '';
-  const tt=[S.win?'리그 우승':'',S.up?`승격 ${S.up}번`:'',`최고 ${C.ulTierName(S.best)}`].filter(Boolean), M=ulV1On()&&UL.sv.me, T=((M&&M.titles)||[]).filter(t=>t.s===S.id);
+  const ch=Number.isFinite(S.ch)?Math.max(0,S.ch):(U.hist||[]).filter(x=>x.s===S.id&&x.ps==='c').length;
+  const tt=[ch?`리그 우승${ch>1?' '+ch+'번':''}`:'',S.win?`정규리그 1위${S.win>1?' '+S.win+'번':''}`:'',S.up?`승격 ${S.up}번`:'',`최고 ${C.ulTierName(S.best)}`].filter(Boolean), M=ulV1On()&&UL.sv.me, T=((M&&M.titles)||[]).filter(t=>t.s===S.id);
   return `<section class="card ul-send"><h2 class="sec">지난 시즌 결산 <small>${esc(S.label)}</small></h2><div class="ul-send-in">${ulEmblem(S.best|0,56)}<div><p class="ul-send-t"><b>${esc(C.ulTierName(S.best))}</b>까지 올랐습니다</p><p class="small">${esc(tt.join(' · '))}</p></div></div>
     <div class="ul-sc"><div><span>리그</span><b class="num">${S.n}</b></div><div><span>최고 점수</span><b class="num">${S.top}</b></div><div><span>승-패</span><b class="num">${S.w||0}-${S.l||0}</b></div><div><span>평균 순위</span><b class="num">${S.n&&S.rk?(S.rk/S.n).toFixed(1):'-'}</b></div></div>
     ${T.length?`<div class="ul-bgs">${T.map(t=>`<span class="ul-bg on">시즌 ${t.s} ${esc(C.ulTierName(t.tier))} ${t.rank}위</span>`).join('')}</div>`:''}<p class="small muted">단계는 그대로 이어집니다. 새 시즌 목표·순위는 처음부터 셉니다.</p><div class="btns"><button class="btn small" data-a="ulSeenS" data-v="${S.id}">확인</button></div></section>`; }

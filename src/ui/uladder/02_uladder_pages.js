@@ -52,8 +52,8 @@ function ulLobby(U){ const C=FrontOfficeCore, L=U.league, t=U.tier|0, {se,SS}=ul
 function ulSchedHtml(teams,ser,sched,keys,kk){ const nm=i=>teams[i]?esc(teams[i].name):'-', R={};
   for(const s of sched||[])(R[s.r]=R[s.r]||[]).push({r:s.r,a:s.a,b:s.b,g:null});
   for(const [r,a,b,g] of ser){ const L=R[r]=R[r]||[]; const x=L.find(y=>y.a===a&&y.b===b&&!y.g); if(x)x.g=g; else L.push({r,a,b,g}); }
-  const open=UI.ulSchR;
-  return `<div class="ul-sch">${Object.keys(R).map(Number).sort((a,b)=>a-b).map(r=>{ const L=R[r], mine=L.find(x=>x.a===0||x.b===0), done=L.every(x=>x.g), on=open===r||(open==null&&(!done||r===9)&&!Object.keys(R).some(k=>+k<r&&!R[k].every(x=>x.g)));
+  const open=UI.ulSchR, expanded=UI.ulSchOpen;
+  return `<div class="ul-sch">${Object.keys(R).map(Number).sort((a,b)=>a-b).map(r=>{ const L=R[r], mine=L.find(x=>x.a===0||x.b===0), done=L.every(x=>x.g), on=expanded instanceof Set?expanded.has(r):open===r||(open==null&&(!done||r===9)&&!Object.keys(R).some(k=>+k<r&&!R[k].every(x=>x.g)));
     const row=x=>{ const me=x.a===0||x.b===0, wa=x.g?x.g.filter(g=>g[0]>g[1]).length:0, wb=x.g?x.g.filter(g=>g[1]>g[0]).length:0, oppN=me?teams[x.a===0?x.b:x.a].name:'';
       const K=me&&x.g&&keys?keys.map((k,i)=>[k,i]).filter(([k])=>k.r===r&&k.opp===oppN):[];
       return `<div class="ul-sr${me?' me':''}"><span class="${x.g&&wa>wb?'w':''}">${nm(x.a)}</span><b class="num">${x.g?`${wa}-${wb}`:'vs'}</b><span class="${x.g&&wb>wa?'w':''}">${nm(x.b)}</span><em class="num small muted">${x.g?x.g.map(g=>g[0]+':'+g[1]+(g[3]?'끝':g[2]>9?'연':'')).join(' '):'예정'}</em>${K.map(([k,i])=>`<button class="lnk small" data-a="ulKey" data-k="${kk}" data-v="${i}" title="중계·박스 보기">▶ ${esc(k.tag)}</button>`).join('')}</div>`; };
@@ -190,7 +190,7 @@ function ulOppData(U){ const C=FrontOfficeCore, O=Object.values(U.opp||{}).sort(
   let det=''; if(sel){ const V=sel.prof&&sel.mine?UL_PROF.map(([k,n])=>({k,n,me:sel.mine[k],op:sel.prof[k],d:sel.prof[k]-sel.mine[k]})):[], st=V.filter(x=>x.d>=3).sort((a,b)=>b.d-a.d), wk=V.filter(x=>x.d<=-3).sort((a,b)=>a.d-b.d);
     det=`<section class="card"><h2 class="sec">${esc(sel.name)} <small>${sel.nick?esc(sel.nick):UL_KIND[sel.kind]}</small></h2><p class="small">마지막 만남 ${C.ulTierName(sel.tier)} 리그 · 그 리그 ${sel.rank||'-'}위 · OVR ${esc(C.cupOvrTxt(sel.ovr))}${sel.m?` · ${esc(C.UL_ARCH[sel.m.a])}`:''}</p>
       <div class="ul-sc"><div><span>맞대결</span><b class="num">${sel.w}-${sel.l}</b></div><div><span>무</span><b class="num">${sel.t}</b></div><div><span>득점</span><b class="num">${sel.rs}</b></div><div><span>실점</span><b class="num">${sel.ra}</b></div></div>
-      ${V.length?`<div class="ul-vs"><div class="ul-vr ul-vh"><span></span><b>우리</b><i></i><b>상대</b></div>${V.map(x=>{ const w=Math.min(50,Math.abs(x.d)*5); return `<div class="ul-vr"><span>${x.n}</span><b class="num">${x.me}</b><i class="ul-vb"><em class="${x.d>0?'op':'me'}" style="${x.d>0?'left:50%':'right:50%'};width:${w}%"></em></i><b class="num">${x.op}</b></div>`; }).join('')}</div>
+      ${!V.length?'<p class="small muted">당시 전력 자료가 남아 있지 않습니다. 맞대결 전적은 그대로 보관합니다.</p>':''}${V.length?`<div class="ul-vs"><div class="ul-vr ul-vh"><span></span><b>우리</b><i></i><b>상대</b></div>${V.map(x=>{ const w=Math.min(50,Math.abs(x.d)*5); return `<div class="ul-vr"><span>${x.n}</span><b class="num">${x.me}</b><i class="ul-vb"><em class="${x.d>0?'op':'me'}" style="${x.d>0?'left:50%':'right:50%'};width:${w}%"></em></i><b class="num">${x.op}</b></div>`; }).join('')}</div>
       <p class="small"><b>강점</b> ${st.length?st.map(x=>`${x.n} +${x.d}`).join(' · '):'뚜렷하지 않음'}</p><p class="small"><b>약점</b> ${wk.length?wk.map(x=>`${x.n} ${x.d}`).join(' · '):'뚜렷하지 않음'}</p>
       <p class="small muted">${st.length?`${st[0].n}${st[0].k==='sp'||st[0].k==='pen'?' 투수진을 상대로는 출루·장타가 좋은 타순이':' 쪽이 강한 덱이라 투수진 깊이가'} 중요합니다.`:'전력이 비슷한 상대입니다.'}</p>`:''}
       ${sel.pid?ulH2hHtml({pid:sel.pid}):''}</section>`; }
@@ -209,7 +209,7 @@ function ulRankPage(U){ const h=ulRankHtml(U,ulMsgHtml()), C=FrontOfficeCore, L=
   const best=`<section class="card"><h2 class="sec">내 시즌 최고 기록</h2>${L.length?`<table class="ul-st"><tr><th>시즌</th><th>최고 단계</th><th>최고 점수</th><th>리그</th><th>우승</th></tr>${L.map((x,i)=>`<tr class="${i===0?'me':''}"><td>${esc(x.label)}</td><td><span class="ul-tier ul-t${x.best}">${C.ulTierName(x.best)}</span></td><td class="num">${x.top}</td><td class="num">${x.n}</td><td class="num">${x.win||0}</td></tr>`).join('')}</table>`:'<p class="small muted">아직 시즌 기록이 없습니다.</p>'}<p class="small muted">이 기기 기록 · 리그 점수 = 단계 × 100 + 아래에 둔 팀 수 × 10.</p></section>`;
   return h.length>=3?[h[0],h[1],h[2]+best]:[h[0],best,'']; }
 /* ---- 화면 ---- */
-function ulView(){ if(!G)return ''; ulProbe(); const U=uld(), pg=ulPage(); let cols, wide=false;
+function ulView(){ if(!G)return ''; ulProbe(); const U=ulDisplayState(uld()), pg=ulPage(); let cols, wide=false;
   if(pg==='lobby')cols=ulLobby(U); else if(pg==='league')cols=ulLeaguePage(U); else if(pg==='deck')cols=ulDeckPage(U); else if(pg==='data'){ cols=ulDataPage(U); wide=true; } else if(pg==='rec')cols=ulRecPage(U); else cols=ulRankPage(U);
   const top=fmOn()?'':subTabs('uld'), body=wide?`<div class="setc ul-c2">${cols[0]}</div><div class="setc">${cols[1]||''}</div>`:cols.map(c=>`<div class="setc">${c||''}</div>`).join('');
   return `${top}${pg==='data'?UL._dbar:''}<div class="setx ws-own ulx ul-p-${pg}${wide?' ul-wide2':''}">${body}</div>`; }
@@ -223,6 +223,6 @@ Object.assign(A,{
   ulDsSel(v){ UL.ds=Object.assign({},UL_DS0,UL.ds||{},{sel:String(v)}); render(); },
   ulMt(v){ UL.mt=v==='all'?'all':+v; render(); },
   ulOs(v){ UL.os=v; render(); },
-  ulSchR(v,el,e){ if(e)e.preventDefault(); const d=el&&el.closest&&el.closest("details"); if(d){ d.open=!d.open; UI.ulSchR=d.open?+v:-1; return; } UI.ulSchR=UI.ulSchR===+v?-1:+v; render(); }, /* 펼침은 그 자리에서(다시 그리지 않음): 화면 읽기 상태(52_reading_state)가 다음 그리기에 그대로 남긴다 */
+  ulSchR(v,el,e){ if(e)e.preventDefault(); const r=+v;if(!Number.isInteger(r)||r<1)return;const d=el&&el.closest&&el.closest("details");if(!(UI.ulSchOpen instanceof Set)){const scope=el&&el.closest&&el.closest(".ul-sch"),nodes=scope&&scope.querySelectorAll&&scope.querySelectorAll('details.ul-rd[open] > summary[data-a="ulSchR"]');UI.ulSchOpen=new Set(nodes?Array.from(nodes,x=>+x.dataset.v):UI.ulSchR>=1?[+UI.ulSchR]:[]);}const on=d?!d.open:!UI.ulSchOpen.has(r);if(on)UI.ulSchOpen.add(r);else UI.ulSchOpen.delete(r);UI.ulSchR=on?r:-1;if(d){d.open=on;return;}render(); }, /* 펼침은 그 자리에서(다시 그리지 않음): 화면 읽기 상태(52_reading_state)가 다음 그리기에 그대로 남긴다 */
   ulCsv(v){ const f=ulCsvFile(v); if(!f)return; if(!f[1].includes('\r\n'))return ulSay('내보낼 기록이 아직 없습니다.',true); ulSay(ulDownload(f[0],f[1])?`${f[0]}.csv 파일을 받았습니다.`:'이 브라우저에서는 파일을 받을 수 없습니다.',false); },
 });
