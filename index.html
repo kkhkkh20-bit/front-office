@@ -20637,13 +20637,15 @@ const EV_NAME={lead:'기강 문제',pt:'출전 기회 면담',call:'콜업 여�
    예전 저장에서 일상 결정을 모두 맡긴 단장은 따로 정하지 않아도 함께 맡긴 것으로 본다. 직접 가져오면 false로 남긴다 */
 const EV_LATE=new Set(['memo','song']); EV_NAME.memo='기념 유니폼 제작 제안'; EV_NAME.song='응원가 제작 제안';
 function evDelegOn(k){ if(!G||EV_KEY.has(k)||!EV_NAME[k])return false; const D=G.deleg; const v=D&&D[k]; if(v!=null)return !!v; return !!D&&EV_LATE.has(k)&&Object.keys(EV_NAME).every(x=>EV_LATE.has(x)||D[x]); }
+/* 일상 종류(EV_NAME)라도 이번 건은 단장이 직접 정하는 결정: 비서 위임·일괄 맡기기에서 빠진다. 레전드 급 은퇴 결정은 예전 저장의 미결 건도 같은 기준(피드백 11-18) */
+function evOwn(e){ return !!e&&(!!e.key||(e.k==='ret'&&!!e.data&&(!!e.data.leg||e.data.rn!=null))); }
 function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
-  const e={id:'e'+(G.evSeq=(G.evSeq||0)+1),k,day:G.day,exp:G.day+(o.exp||5),title,sit,opts:opts.map(x=>({l:x.l,fx:x.fx})),def:o.def??opts.length-1,data:o.data||{},ref:o.ref??null,from:o.from||'운영팀',done:false};
+  const e={id:'e'+(G.evSeq=(G.evSeq||0)+1),k,day:G.day,exp:G.day+(o.exp||5),title,sit,opts:opts.map(x=>({l:x.l,fx:x.fx})),def:o.def??opts.length-1,data:o.data||{},ref:o.ref??null,from:o.from||'운영팀',done:false}; if(o.key)e.key=true; /* 일상 종류라도 이번 건은 단장이 직접(레전드 은퇴 결정, 피드백 11-18) */
   { const pid=e.data&&e.data.pid!=null?e.data.pid:null; const q=pid!=null?G.players[pid]:null; if(q&&q.team===G.user)e.pt=G.user; } /* 우리 선수에 대한 결정: 결정할 때도 그 선수가 우리 소속인지 다시 본다(evPick) */
   G.evs.push(e); for(let i=0;G.evs.length>40&&i<G.evs.length;)if(G.evs[i].done)G.evs.splice(i,1); else i++; /* 한도는 끝난 결정부터 지운다. 미결 결정은 남긴다(검수 11-09za) */ { const rid=e.ref!=null?e.ref:(e.data&&e.data.pid); if(rid!=null){ G.evRecent=G.evRecent||{}; G.evRecent[k+':'+rid]=G.day; G.evRecent['p:'+rid]=G.day; } }
   const lines=opts.map((x,i)=>`${i+1}. ${x.l}: ${x.fx}`).join('\n');
   const m=mail(e.from,title,`${sit}\n\n${lines}\n\n${dmd(e.exp)}까지 정하지 않으면 "${opts[e.def].l}"(으)로 처리됩니다.`,{imp:true,kind:'결정',cat:o.cat,ref:e.ref,face:o.face??null,acts:opts.map((x,i)=>({l:x.l,a:'evPick',v:e.id+':'+i}))});
-  e.mid=m.id; if(EV_GM.has(k))m.cat='must'; if(evDelegOn(k)||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); }
+  e.mid=m.id; if(EV_GM.has(k))m.cat='must'; if((!evOwn(e)&&evDelegOn(k))||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); }
   else if(k==='gmInv'&&typeof autoOn==='function'&&autoOn('inv')){ e.deleg=true; evPick(e.id,G.auto&&G.auto.inv==='yes'?0:e.def,true); } /* 다른 단장의 식사·통화 초대: 업무 권한 '식사·모임 초대'(일상 결정을 맡겼으면 함께). 기본은 정중히 거절(난수 없음) */
   return e; }
 /* 답변 기한이 지난 미결 결정: 소식함·홈 결정 카드·직접 선택이 같은 판정을 쓴다(다음 날 처리 때 기본안으로, 검수 11-09zzc #26) */
@@ -22520,17 +22522,27 @@ function obRetireEvents(list){ const L=list.filter(o=>o&&o.mine&&(o.ys>=3)).sort
     if(stay)opts.push({l:`은퇴식 + ${stay}`,fx:`은퇴식을 열어 주고(비용 같음) 구단에 남깁니다.${ob.path==='scout'?' 스카우트 자리가 꽉 차 있으면 한 자리를 비워 둘 때까지 후보 맨 앞에 둡니다.':''}`}); /* 둘 다(커뮤니티 요청 11-07) */
     if(stay)opts.push({l:stay,fx:ob.path==='coach'?'코치 후보에 우선 협상 대상으로 올라옵니다(연봉 20% 할인).':ob.path==='scout'?'빈자리가 있으면 바로 스카우트로 합류합니다.':'우리 프런트에서 일하며 경력을 쌓습니다. 언젠가 다른 구단 단장이 될 수도 있습니다.'});
     opts.push({l:'조용히 보내 주기',fx:`${OBPATH[ob.path]}의 길을 스스로 찾습니다.`});
-    evNew('ret',`${ob.name} 은퇴`,`${ob.name}(${ob.pos}, ${ob.age}세)이(가) 은퇴합니다. 우리 구단에서 ${ob.ys}시즌 · WAR ${ob.mineWar}. 은퇴 후 ${ob.path==='media'?'해설위원 제안을 받았다고 합니다':`${OBPATH[ob.path]}의 길을 생각하고 있습니다`}${ob.aim?` (${ob.aim==='mgr'?'언젠가 감독':'언젠가 단장'}을 꿈꿉니다)`:''}.`,opts,{from:ob.name,face:'ob:'+ob.id,data:{ob:ob.id,rn:ob.canRetNo,leg,stay:!!stay,combo:!!stay},def:opts.length-1,exp:10}); } }
-EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)return ''; if(e.data.combo){ if(i===1){ const a=EVH.ret.pick({...e,data:{...e.data,combo:false}},0), b=EVH.ret.pick({...e,data:{...e.data,combo:false}},1); return a+' '+b; } if(i>=2)i--; } const t=team(G.user); const L=e.opts.length;
-    if(i===0){ let r=''; const n0=(G.retNos||[]).length; if(e.data.rn!=null)r=retireNumber(e.data.rn); const rn=(G.retNos||[]).length>n0; /* 지정이 거절되면(이미 쓰인 번호 등) 일반 은퇴식 비용만, 결번 표시 없이(검수 11-09zz) */ const cost=rn?100:e.data.leg?50:20; G.spend.etc=(G.spend.etc||0)+cost; ob.bond+=rn?30:20; ob.ceremony=G.year;
+    evNew('ret',`${ob.name} 은퇴`,`${ob.name}(${ob.pos}, ${ob.age}세)이(가) 은퇴합니다. 우리 구단에서 ${ob.ys}시즌 · WAR ${ob.mineWar}. 은퇴 후 ${ob.path==='media'?'해설위원 제안을 받았다고 합니다':`${OBPATH[ob.path]}의 길을 생각하고 있습니다`}${ob.aim?` (${ob.aim==='mgr'?'언젠가 감독':'언젠가 단장'}을 꿈꿉니다)`:''}.`,opts,{from:ob.name,face:'ob:'+ob.id,data:{ob:ob.id,rn:ob.canRetNo,leg,stay:!!stay,combo:!!stay},def:retDef(ob,leg,rn,opts),key:leg||rn||ob.ys>=5,exp:10}); ob.retEv={leg,rn:ob.canRetNo??null}; } }
+/* 은퇴 결정의 기본안(기한·비서): 영구결번 대상·레전드 급(우리 구단 8시즌 이상 또는 WAR 12 이상)과 우리 구단 5시즌 이상은 은퇴식(결번 대상이면 결번 포함), 그보다 짧으면 조용히 보내 주기.
+   5시즌 이상·레전드 급은 비서에게 넘어가지 않는다(evOwn·key). 자금이 모자라면 은퇴식 처리에서 결번→은퇴식만→조용히 순서로 물러난다(피드백 11-18) */
+function retDef(ob,leg,rn,opts){ return rn||leg||ob.ys>=5?0:opts.length-1; }
+EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)return ''; if(e.data.combo){ if(i===1){ const a=EVH.ret.pick({...e,data:{...e.data,combo:false}},0), b=EVH.ret.pick({...e,data:{...e.data,combo:false}},1); if(ob.ceremony!==G.year)e.pick=2; /* 자금이 모자라 은퇴식을 못 열면 구단에 남기기만 */ return a+' '+b; } if(i>=2)i--; } const t=team(G.user); const L=e.opts.length;
+    if(i===0){ const cw=fanCashWhy(e.data.leg?50:20); if(cw){ if(e.opts&&e.opts.length)e.pick=e.opts.length-1; return `은퇴식을 열지 못해 조용히 보내 드렸습니다. ${cw}`; } /* 자금 부족(독립구단): 조용히 보내 주기로 */
+      let r='', note=''; const n0=(G.retNos||[]).length; if(e.data.rn!=null){ const cw2=fanCashWhy(100); if(cw2)note=`영구결번 행사까지 열 자금이 부족해 은퇴식만 열었습니다(결번은 구단 역사에서 따로 지정할 수 있습니다). `; else r=retireNumber(e.data.rn); } const rn=(G.retNos||[]).length>n0; /* 지정이 거절되면(이미 쓰인 번호 등) 일반 은퇴식 비용만, 결번 표시 없이(검수 11-09zz) */ const cost=rn?100:e.data.leg?50:20; G.spend.etc=(G.spend.etc||0)+cost; ob.bond+=rn?30:20; ob.ceremony=G.year;
       if(rn)ob.retNo=true; const f=rn?5:e.data.leg?3:1; G.pr.fan=clamp(G.pr.fan+f,0,100);
       const lg=rn||e.data.leg; news('선수',`${tfull(t)} ${ob.name} ${lg?'레전드 ':''}은퇴식${rn?`, ${ob.no}번 영구결번`:''}`,lg?`만원 관중이 홈구장을 채운 가운데 ${ob.ys}시즌 동안 뛴 ${ob.name}의 레전드 은퇴식이 열렸습니다. 동료들의 헹가래와 은퇴 기념 영상, 가족과 함께한 시구 속에 마지막 인사를 했습니다.`:`${ob.ys}시즌 동안 뛴 ${ob.name}이(가) 팬들 앞에서 마지막 인사를 했습니다.`,rn?3:2,{fanW:1}); if(lg)try{ chron('honor',`${ob.name} 레전드 은퇴식${rn?` · ${ob.no}번 영구결번`:''}`,null,G.user,{source:'legcer:'+ob.id}); }catch(x){} /* 레전드 급은 제대로(사용자 11-11) */
-      return `${r?r+' ':''}은퇴식 비용 ${money(cost)}. 팬 여론 호전.`; }
+      return `${r?r+' ':''}${note}은퇴식 비용 ${money(cost)}. 팬 여론 호전.`; }
     if(i===1&&e.data.stay){ ob.bond+=15; ob.readyY=G.year;
       if(ob.path==='coach'){ const c=obCoach(ob); c.sal=round5(c.sal*.8); c.res=G.user; G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==ob.id); G.cmarket.unshift(c); return `${ob.name}이(가) 코치 후보 맨 앞에 올라왔습니다(${CROLE[c.role].l}, 연 ${money(c.sal)}).`; }
       if(ob.path==='scout'){ const s=obScout(ob); if(G.scouts.length<scoutMax()){ s.since=G.day; G.scouts.push(s); return `${ob.name}이(가) 스카우트로 합류했습니다.`; } G.scoutMarket.unshift(s); return '스카우트 자리가 꽉 차서 후보 명단에 올렸습니다.'; }
       ob.alt={k:'front',tid:G.user,t:`${tfull(t)} 프런트`}; return `${ob.name}이(가) 우리 프런트에서 일을 시작합니다.`; }
     return ''; } };
+/* 은퇴식을 열지 않고 보낸 우리 선수(조용히·비서·기한 처리): 그 겨울(다음 시즌 개막 전)까지 OB 화면에서 한 번 열 수 있다. 비용·효과는 결정 메일의 은퇴식과 같다(피드백 11-18) */
+function obLateCerCost(ob){ const d=ob&&ob.retEv; return d?(d.rn!=null&&!ob.retNo?100:d.leg?50:20):0; }
+function obLateCerOk(ob){ if(!ob||!ob.retEv||ob.ceremony!=null||G.unemp||!obMine(ob))return false; const P=period(); if(!((ob.retY===G.year&&P==='off')||(ob.retY===G.year-1&&P==='pre')))return false; return !(G.evs||[]).some(e=>e.k==='ret'&&!e.done&&e.data&&e.data.ob===ob.id); }
+function obLateCer(id){ const ob=(G.ob||[]).find(o=>o.id===id); if(!obLateCerOk(ob))return '지금은 은퇴식을 열 수 없습니다. 은퇴한 그 겨울, 다음 시즌 개막 전까지만 열 수 있습니다.';
+  const r=EVH.ret.pick({data:{ob:ob.id,rn:ob.retNo?null:ob.retEv.rn,leg:ob.retEv.leg,combo:false},opts:[]},0); if(ob.ceremony==null)return r; obLateLog(ob); return `${ob.name} 은퇴식을 열었습니다. ${r}`; }
+function obLateLog(ob){ try{ (G.evlog=G.evlog||[]).unshift({d:G.day,y:G.year,t:`${ob.name} 은퇴`,c:'뒤늦은 은퇴식',r:'',k:'ret',id:null,auto:false}); if(G.evlog.length>80)G.evlog.length=80; }catch(e){} }
 function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.spec=ob.isP?'P':'B'; s.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.isP?'투수':'타자'}를 더 정확히 봄`; /* 선수 출신 스카우트: 자기 쪽(투수·타자)을 더 잘 본다 */ s.fid=ob.fid; s.id='s'+ob.id; G.obFace[s.id]=ob.fid;if(ob.age!=null)s.age=ob.age;return applyPersonRelation(staffAttach(s,'scout'),'scout'); }
 
 /* ===== 2대 선수(사용자 11-09r): 은퇴한 국내 선수(OB)의 아들이 커서 신인 드래프트에 나온다 =====
@@ -29521,7 +29533,7 @@ function autoNow(k){ const C=G.contract; const out=[];
   if(k==='cvac'){ const L=coachVacUser('코치진 공백 보강(위임)'); out.push(L.length?`빈 코치 자리 ${L.length}곳을 채웠습니다(${L.map(c=>`${CROLE[c.role].l} ${c.name}`).join(', ')})`:'지금은 빈 코치 자리가 없습니다'); }
   if(AUTO_OPTIN.has(k)){ const r=autoRoutine([k]); out.push(r?'오늘 '+r:'오늘은 처리할 대상이 없습니다'); }
   if(k==='scout'){ out.push(G._scErr?`스카우트 배치는 맡았지만 지금 배치 조정에 실패했습니다(${G._scErr.slice(0,40)}). 다음 달 다시 시도합니다`:'스카우트 배치와 출장을 맡았습니다. 이번 주 출장은 팀장 안대로 보냈고, 다음 주부터 출장 안 메일 없이 팀장이 정합니다'); } /* 실제 결과대로 안내(검수 11-07) */
-  if(k==='ev'||k==='mgr'||k==='inv'){ let nd=0,nv=0; for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))||(e.k==='gmInv'&&autoOn('inv'))){ e.deleg=true; evPick(e.id,e.k==='gmInv'&&G.auto&&G.auto.inv==='yes'?0:e.def,true); if(e.void)nv++; else if(e.done)nd++; } } out.push(nd||!nv?`걸려 있던 결정 ${nd}건을 기본안으로 처리했습니다`:''); if(nv)out.push(`${nv}건은 대상이 떠나 효력을 잃어 처리하지 않았습니다`); }
+  if(k==='ev'||k==='mgr'||k==='inv'){ let nd=0,nv=0; for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&!evOwn(e)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))||(e.k==='gmInv'&&autoOn('inv'))){ e.deleg=true; evPick(e.id,e.k==='gmInv'&&G.auto&&G.auto.inv==='yes'?0:e.def,true); if(e.void)nv++; else if(e.done)nd++; } } out.push(nd||!nv?`걸려 있던 결정 ${nd}건을 기본안으로 처리했습니다`:''); if(nv)out.push(`${nv}건은 대상이 떠나 효력을 잃어 처리하지 않았습니다`); }
   if(C&&!C.done&&autoOn('sal')&&G.day>=KD(1,5)&&dobj(G.day).m<=2)autoConfirm();
   return out.filter(Boolean).join('. '); }
 function handOff(k){ autoSet(k,true); const r=autoNow(k); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) ${AUTO_WHO[k]||'비서'}에게 넘겼습니다.${r?' '+r+'.':''} 설정 · 권한에서 다시 가져올 수 있습니다.`; }
@@ -29536,11 +29548,11 @@ function mailDelegOpts(m){ if(!m||G.unemp)return []; const L=[]; const acts=m.ac
       /* 권한 줄에 있는 결정(감독 요청·일상 결정 종류)은 '위임하기' 하나, 권한 줄이 없는 핵심 결정은 '비서에게 맡기기'(이번 건만)(사용자 11-17) */
       if(e.k==='mreq'||e.k==='mpick'){ if(!autoOn('mgr'))L.push({a:'handOff',v:'mgr',l:'위임하기 · 감독 요청',d:`비서: 이번 건은 ${df}(으)로 답하고, 앞으로 감독 요청도 기본안으로 답합니다`}); }
       else if(e.k==='gmInv'){ if(!autoOn('inv'))L.push({a:'handOff',v:'inv',l:'위임하기 · 식사·모임 초대',d:`비서: 이번 건은 ${df}(으)로 답하고, 앞으로 다른 단장의 식사·통화 초대도 기본안으로 답해 진행을 멈추지 않습니다(권한에서 응하기로 바꿀 수 있음)`}); }
-      else if(EV_NAME[e.k]&&!EV_KEY.has(e.k)){ if(!evDelegOn(e.k))L.push({a:'evDeleg',v:e.id,l:`위임하기 · ${EV_NAME[e.k]}`,d:`비서: 이번 건은 ${df}(으)로 정하고, 앞으로 ${EV_NAME[e.k]}도 기본안으로 처리합니다`}); }
+      else if(EV_NAME[e.k]&&!EV_KEY.has(e.k)&&!evOwn(e)){ if(!evDelegOn(e.k))L.push({a:'evDeleg',v:e.id,l:`위임하기 · ${EV_NAME[e.k]}`,d:`비서: 이번 건은 ${df}(으)로 정하고, 앞으로 ${EV_NAME[e.k]}도 기본안으로 처리합니다`}); }
       if(!L.length)L.push({a:'evHand',v:e.id,l:'비서에게 맡기기',d:`비서: 이번 건만 추천안 ${df}(으)로 정합니다. 같은 종류는 앞으로도 직접 정합니다`}); } }
   return L; }
 /* 결정 종류 하나를 앞으로 맡기고 이번 건도 기본안으로(권한 화면 '종류별로 넘긴 일상 결정'과 같은 G.deleg) */
-function evDeleg(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k)||EV_KEY.has(e.k)||!EV_NAME[e.k])return handOffEv(id); G.deleg=G.deleg||{}; G.deleg[e.k]=true; const r=handOffEv(id); return `${r} 앞으로 ${EV_NAME[e.k]}은(는) 비서가 기본안으로 처리합니다. 설정 · 권한에서 다시 가져올 수 있습니다.`; }
+function evDeleg(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k)||EV_KEY.has(e.k)||evOwn(e)||!EV_NAME[e.k])return handOffEv(id); G.deleg=G.deleg||{}; G.deleg[e.k]=true; const r=handOffEv(id); return `${r} 앞으로 ${EV_NAME[e.k]}은(는) 비서가 기본안으로 처리합니다. 설정 · 권한에서 다시 가져올 수 있습니다.`; }
 /* 확인할 소식을 한 번에: 넘길 수 있는 결정은 이번 건만 비서가 기본안으로(단장 전용 제외). 권한 설정은 바꾸지 않는다 */
 function evHandAll(mails){ let n=0; for(const m of mails||[]){ if(m.kind!=='결정')continue; const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(!e||EV_GM.has(e.k))continue; handOffEv(e.id); if(e.done&&!e.void)n++; } return n; }
 /* 결정 한 건만 넘기기(핵심 결정 포함): 비서가 기본안으로 처리 */
@@ -38211,7 +38223,7 @@ function obView(){ obInit(); const t=team(G.user); const RN=G.retNos||[];
   const candH=cand.length?`<div class="eyebrow" style="margin-top:10px">영구결번 후보</div>${cand.map(({r,i})=>`<div class="obr"><b class="num">${r.no}</b><span><b>${esc(r.name)}</b><i>${r.pos} · ${r.y}년 은퇴 · 우리 구단 ${r.mine.ys}시즌 WAR ${r.mine.war}${r.mine.ovs?` (해외 ${r.mine.ovs} 포함)`:''}</i></span><button class="btn small primary" data-a="retNo" data-v="${i}">영구결번 지정</button></div>`).join('')}`:'';
   const mine=G.ob.filter(obMine).map(o=>({o,w:obWhere(o),m:obMineC(o)})).sort((a,b)=>(b.o.retNo?1:0)-(a.o.retNo?1:0)||b.m.war-a.m.war||b.o.war-a.o.war);
   const mgrC=new Set(obMgrCands().map(o=>o.id));
-  const act=(o,w)=>{ if(w.k==='free'||w.k==='wait'&&o.path==='media'){ if(mgrC.has(o.id))return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:mgr">감독 후보로</button>`;
+  const act=(o,w)=>obLateCerOk(o)?`<button class="btn small primary" data-a="obCer" data-v="${esc(String(o.id))}" title="은퇴식을 열지 않고 보낸 선수: 다음 시즌 개막 전까지 같은 비용으로">은퇴식 열기 (${money(obLateCerCost(o))})</button>`:act0(o,w); const act0=(o,w)=>{ if(w.k==='free'||w.k==='wait'&&o.path==='media'){ if(mgrC.has(o.id))return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:mgr">감독 후보로</button>`;
       if(w.k==='free'&&(o.path==='coach'||o.path==='media'&&o.my>=3))return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:coach">코치로 영입</button>`;
       if(w.k==='free'&&o.path==='scout')return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:scout" ${G.scouts.length>=scoutMax()?'disabled':''}>스카우트로 영입</button>`;
       if(w.k==='free'&&o.path==='front')return `<button class="btn small" data-a="obAct" data-v="${o.id}:front">프런트로 채용</button>`; }
@@ -38836,8 +38848,8 @@ function findTable(L){ const st=p=>{ const h=curLine(p); return !h?'<span class=
 function decisionCard(){ const open=(G.evs||[]).filter(e=>!e.done&&!evExpired(e)); /* 기한이 지난 결정은 소식함과 같이 실행하지 않는다(검수 11-09zzc #26) */ const last=(G.evlog||[]).filter(x=>x.d>=G.day-2&&x.y===G.year).slice(0,2);
   if(!open.length&&!last.length)return '';
   const one=e=>{ const p=e.ref!=null?G.players[e.ref]:null; const pz=p?null:personaOf(e.from);
-    return `<div class="dec"><div class="dec-t">${p?avImg(p):pz?avImg(pz):'<span class="tdi">!</span>'}<div><span class="eyebrow dec-k">${evIcon(e.k)} ${EV_KEY.has(e.k)?'단장 결정':'일상 결정'} · ${dmd(e.exp)}까지${e.exp-G.day<=1?' <b class="bad">내일 자동 처리</b>':''}</span><b>${esc(e.title)}</b>${(()=>{ const L=e.sit.split('\n').filter(Boolean); return L.length>2?`<p>${lk(L[0])}</p><details class="mfold"><summary>자세히</summary><p>${L.slice(1).map(lk).join('<br>')}</p></details>`:`<p>${lk(e.sit).replace(/\n/g,'<br>')}</p>`; })()}</div></div>
-      <div class="dec-o">${e.opts.map((o,i)=>`<button class="dec-b" data-a="evPick" data-v="${e.id}:${i}"><b>${esc(o.l)}</b><span>${esc(o.fx)}</span>${i===e.def?'<i>기한이 지나면 이것으로 처리</i>':''}</button>`).join('')}</div><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><button class="tc-i" data-a="evHand" data-v="${e.id}">이번 건 비서에게 넘기기</button>${!EV_KEY.has(e.k)&&EV_NAME[e.k]?`<button class="tc-i" data-a="evDeleg" data-v="${e.id}">${esc(EV_NAME[e.k])}은(는) 앞으로도 비서에게</button>`:(e.k==='mreq'||e.k==='mpick')?`<button class="tc-i" data-a="handOff" data-v="mgr">감독 요청은 앞으로도 비서에게</button>`:''}</div></div>`; };
+    return `<div class="dec"><div class="dec-t">${p?avImg(p):pz?avImg(pz):'<span class="tdi">!</span>'}<div><span class="eyebrow dec-k">${evIcon(e.k)} ${EV_KEY.has(e.k)||evOwn(e)?'단장 결정':'일상 결정'} · ${dmd(e.exp)}까지${e.exp-G.day<=1?' <b class="bad">내일 자동 처리</b>':''}</span><b>${esc(e.title)}</b>${(()=>{ const L=e.sit.split('\n').filter(Boolean); return L.length>2?`<p>${lk(L[0])}</p><details class="mfold"><summary>자세히</summary><p>${L.slice(1).map(lk).join('<br>')}</p></details>`:`<p>${lk(e.sit).replace(/\n/g,'<br>')}</p>`; })()}</div></div>
+      <div class="dec-o">${e.opts.map((o,i)=>`<button class="dec-b" data-a="evPick" data-v="${e.id}:${i}"><b>${esc(o.l)}</b><span>${esc(o.fx)}</span>${i===e.def?'<i>기한이 지나면 이것으로 처리</i>':''}</button>`).join('')}</div><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><button class="tc-i" data-a="evHand" data-v="${e.id}">이번 건 비서에게 넘기기</button>${!EV_KEY.has(e.k)&&!evOwn(e)&&EV_NAME[e.k]?`<button class="tc-i" data-a="evDeleg" data-v="${e.id}">${esc(EV_NAME[e.k])}은(는) 앞으로도 비서에게</button>`:(e.k==='mreq'||e.k==='mpick')?`<button class="tc-i" data-a="handOff" data-v="mgr">감독 요청은 앞으로도 비서에게</button>`:''}</div></div>`; };
   const done=last.map(x=>`<div class="dec-r"><b>${lk(x.t)}</b><span>결정: ${esc(x.c)}${x.auto?' (자동)':''}</span>${x.r?`<em>${lk(x.r)}</em>`:''}${x.f?`<em class="f">${lk(x.f)}</em>`:''}</div>`).join('');
   const dl=Object.keys(G.deleg||{}).filter(k=>G.deleg[k]&&EV_NAME[k]); const dlx=dl.length?`<p class="small muted" style="margin:6px 0 0">비서에게 맡긴 일: ${dl.map(k=>EV_NAME[k]).join(', ')} <button class="tc-i" data-a="evDelegOff">모두 직접 하기</button></p>`:'';
   return `<section class="card deccard">${open.map(one).join('')}${done?`<div class="dec-rs">${done}</div>`:''}${dlx}</section>`; }
@@ -44526,7 +44538,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   plEx(v){ const id=+v; if(!G.plEx||G.plEx.y!==G.year)G.plEx={y:G.year,ids:[]}; if(!G.plEx.ids.includes(id))G.plEx.ids.push(id); save(); render(); },
   plExClear(){ if(G.plEx)G.plEx.ids=[]; save(); render(); },
   planPick(v){ const [k,p]=String(v).split(':'); if(k!=='')UI.planK=+k; if(p)UI.planPos=p; render(); },
-  evDeleg(v){ const e=(G.evs||[]).find(x=>x.id===v); if(!e||EV_KEY.has(e.k))return; G.deleg=G.deleg||{}; G.deleg[e.k]=true; e.deleg=true; evPick(e.id,e.def,true); save(); render(); try{ toast(`${EV_NAME[e.k]||'이 일'}은(는) 이제 비서가 기본안으로 처리하고 보고합니다.`); }catch(err){} },
+  evDeleg(v){ const e=(G.evs||[]).find(x=>x.id===v); if(!e||EV_KEY.has(e.k)||evOwn(e))return; G.deleg=G.deleg||{}; G.deleg[e.k]=true; e.deleg=true; evPick(e.id,e.def,true); save(); render(); try{ toast(`${EV_NAME[e.k]||'이 일'}은(는) 이제 비서가 기본안으로 처리하고 보고합니다.`); }catch(err){} },
   evDelegOff(){ G.deleg={}; save(); render(); try{ toast('일상 결정도 다시 직접 정합니다.'); }catch(err){} },
   fdAutoN(v){ const F=G.fd; if(!F||F.done)return; const c0=fdAutoRun(+v||5); if(c0==null)return;
     for(const x of F.picks.slice(c0,F.cur))if(x.pid)dlFeedAdd('fd',x,x.pid); /* 상황판 최근 지명도 맡긴 지명까지(검수 11-09zd) */
@@ -44927,6 +44939,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ivFolDel(v){ G.cfg=G.cfg||{}; G.cfg.ivFolDel=v==='1'; if(v==='1'&&G.iv&&G.iv.k==='follow'&&!G.iv.done)ivAuto(); save(); render(); try{ if(UI.sheet!=null)renderSheet(); }catch(e){} },
   actMode(v){ try{ localStorage.setItem(ACT_MODE_KEY,v==='compact'?'compact':'all'); }catch(e){} render(); if(UI.sheet!=null)try{ renderSheet(); }catch(e){} }, /* 선수 화면 버튼 표시(기기마다) */
   ratScale(v){ G.cfg=G.cfg||{}; G.cfg.scale=v==='2080'?'2080':'100'; save(); render(); if(UI.sheet!=null)try{ renderSheet(); }catch(e){} }, /* 능력치 표기 */
+  obCer(v){ const ob=obOf(v); if(!ob)return; const r=obLateCer(ob.id); save(); toast(r); render(); },
   obAct(v){ const [id,k]=v.split(':'); const ob=obOf(id); if(!ob)return; G.obFace=G.obFace||{};
     if(k==='coach'){ let c=(G.cmarket||[]).find(x=>x.ob===id); if(!c){ c=obCoach(ob); G.cmarket.unshift(c); } UI.crole=c.role; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); return; }
     if(k==='mgr'){ if(!(G.mmarket||[]).some(m=>m.ob===id))G.mmarket.unshift(obMgr(ob)); A.go('staff:mgr'); return; }
@@ -46387,7 +46400,7 @@ function personGone(kind,a,k){ const P=s=>`<p class="small">${s}</p>`, L=a=>a.le
     const job=[o.cy?`지도자 ${o.cy}년`:'',o.sy?`스카우트 ${o.sy}년`:'',o.fy?`프런트 ${o.fy}년`:'',o.my?`해설 ${o.my}년`:''].filter(Boolean).join(' · ');
     const m=w.k==='mgr'?G.mgr[w.tid]:null, rn=obRetNoText(o);
     const info=P(`선수 시절: ${tys.length?tys.join(' / '):`${esc(tshort(o.team))} ${o.ys}시즌`}`)+P(`통산 1군 ${o.seasons}시즌 · WAR ${o.war}${o.awards?` · 수상 ${o.awards}회`:''}${o.hof?' · 명예의 전당':''}${rn?` · ${esc(rn)}`:''}`)
-      +P(`${o.retY}년 은퇴 · ${OBPATH[o.path]}의 길${o.aim?` · ${o.aim==='mgr'?'감독':'단장'}을 꿈꿈`:''}${job?` · 은퇴 뒤 ${job}`:''}`)+(m?P(`감독: ${esc(m.career||'')}`):'')
+      +P(`${o.retY}년 은퇴 · ${OBPATH[o.path]}의 길${o.aim?` · ${o.aim==='mgr'?'감독':'단장'}을 꿈꿈`:''}${job?` · 은퇴 뒤 ${job}`:''}`)+(m?P(`감독: ${esc(m.career||'')}`):'')+(obLateCerOk(o)?`<div class="ps-s"><p class="small">은퇴식을 열지 않고 보냈습니다. 다음 시즌 개막 전까지 같은 비용으로 은퇴식을 열 수 있습니다.</p><button class="btn small primary" data-a="obCer" data-v="${esc(String(o.id))}">${obLateCerCost(o)>=100?'레전드 은퇴식과 영구결번':o.retEv.leg?'레전드 은퇴식':'은퇴식'} 열기 (${money(obLateCerCost(o))})</button></div>`:'')
       +(()=>{ /* 지도자 평가(질수없뜸 11-12): 은퇴 선수를 코치로 데려올지 판단할 수 있게 지도·육성 수준과 맞는 보직, 강한 지도 분야 */ try{ if(o.sk==null)return ''; const ab=obAb(o,o.isP?'pc':o.pos==='포수'?'cc':'bc'); const R2={stf:'pc',ctl:'pc',sta:'pc',con:'bc',pow:'bc',eye:'bc',def:'dc',spd:'rc',cat:'cc'}; const best=Object.entries(ab).filter(([k])=>R2[k]&&(o.isP?['stf','ctl','sta'].includes(k):!['stf','ctl','sta'].includes(k))).sort((x,y)=>y[1]-x[1])[0]; const role=o.cy>=6&&o.sk>=62?'hc':best?R2[best[0]]:(o.isP?'pc':'bc'); /* 가장 강한 지도 분야의 보직 */ const top=Object.entries(ab).filter(([k])=>CAB[k]).sort((x,y)=>y[1]-x[1]).slice(0,3).map(([k,v])=>`${esc(CAB[k])} ${dv(v)}`).join(' · ');
         const can=o.path==='coach'||o.path==='media'&&o.my>=3||o.cy>0; return `<div class="ps-s"><div class="eyebrow">지도자 평가</div><p class="small">지도 ${rchip(o.sk)} · 육성 ${rchip(o.dv)} · 맞는 보직 ${esc(CROLE[role]?CROLE[role].l:'코치')}${o.cy?` · 지도자 경력 ${o.cy}년`:''}</p>${top?`<p class="small">강한 지도 분야: ${top}</p>`:''}<p class="small">${can?(w.k==='free'?'지금 코치 시장에서 데려올 수 있는 지도자 후보입니다(코치진 → 후보).':'지도자로 일하고 있습니다.'):`${esc(OBPATH[o.path]||'다른')} 길을 가고 있어 지금은 코치 후보가 아닙니다.`} 지도 경력이 쌓이면 수준이 오릅니다.</p></div>`; }catch(e){ return ''; } })()
       +((o.log||[]).length?`<div class="ps-s"><div class="eyebrow">발자취</div>${L((o.log||[]).slice(-6).reverse().map(x=>`${x.y} · ${esc(x.t)}`))}</div>`:'');
@@ -49286,6 +49299,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-18-ret-mail',d:'11월 18일',t:'레전드 은퇴 결정은 단장이 직접 정합니다',items:[
+    '우리 구단에서 5시즌 이상 뛰었거나 레전드 급(8시즌 이상 또는 WAR 12 이상, 영구결번 대상)인 선수의 은퇴 결정은 "사소한 건 비서가 처리"를 켜도 비서에게 넘어가지 않습니다. 기한이 지나면 기본안이 조용히 보내 주기가 아니라 은퇴식입니다(영구결번 대상이면 영구결번 포함, 5시즌 미만은 그대로 조용히 보내 주기). 독립구단 자금이 모자라면 은퇴식만, 그것도 어려우면 조용히 보내 주고 이유를 알립니다.',
+    '은퇴식을 열지 않고 보낸 우리 선수는 다음 시즌 개막 전까지 OB 화면이나 그 선수 화면에서 같은 비용으로 은퇴식을 한 번 열 수 있습니다. 영구결번은 지금처럼 구단 역사의 영구결번 후보에서 따로 지정할 수 있습니다.']},
   {id:'2026-11-18-mgr-out',d:'11월 18일',t:'감독의 정리 요청과 회의 안건이 같은 기준입니다',items:[
     '감독이 정리를 요청한 선수는 45일 동안 감독의 뜻이 "정리"로 남습니다. 요청을 거절했더라도 주간 회의나 엔트리 말소 건의에서 그 선수를 내리면 감독은 반발하지 않고 받아들이며, 회의 안건도 감독이 원하는 쪽으로 올라옵니다. 아직 답하지 않은 정리 요청이 있는 선수는 회의 안건으로 다시 묻지 않습니다.']},
   {id:'2026-11-18-budget-chip',d:'11월 18일',t:'예산 여유가 늘 보입니다',items:[

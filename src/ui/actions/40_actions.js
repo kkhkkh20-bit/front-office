@@ -97,7 +97,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   plEx(v){ const id=+v; if(!G.plEx||G.plEx.y!==G.year)G.plEx={y:G.year,ids:[]}; if(!G.plEx.ids.includes(id))G.plEx.ids.push(id); save(); render(); },
   plExClear(){ if(G.plEx)G.plEx.ids=[]; save(); render(); },
   planPick(v){ const [k,p]=String(v).split(':'); if(k!=='')UI.planK=+k; if(p)UI.planPos=p; render(); },
-  evDeleg(v){ const e=(G.evs||[]).find(x=>x.id===v); if(!e||EV_KEY.has(e.k))return; G.deleg=G.deleg||{}; G.deleg[e.k]=true; e.deleg=true; evPick(e.id,e.def,true); save(); render(); try{ toast(`${EV_NAME[e.k]||'이 일'}은(는) 이제 비서가 기본안으로 처리하고 보고합니다.`); }catch(err){} },
+  evDeleg(v){ const e=(G.evs||[]).find(x=>x.id===v); if(!e||EV_KEY.has(e.k)||evOwn(e))return; G.deleg=G.deleg||{}; G.deleg[e.k]=true; e.deleg=true; evPick(e.id,e.def,true); save(); render(); try{ toast(`${EV_NAME[e.k]||'이 일'}은(는) 이제 비서가 기본안으로 처리하고 보고합니다.`); }catch(err){} },
   evDelegOff(){ G.deleg={}; save(); render(); try{ toast('일상 결정도 다시 직접 정합니다.'); }catch(err){} },
   fdAutoN(v){ const F=G.fd; if(!F||F.done)return; const c0=fdAutoRun(+v||5); if(c0==null)return;
     for(const x of F.picks.slice(c0,F.cur))if(x.pid)dlFeedAdd('fd',x,x.pid); /* 상황판 최근 지명도 맡긴 지명까지(검수 11-09zd) */
@@ -498,6 +498,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ivFolDel(v){ G.cfg=G.cfg||{}; G.cfg.ivFolDel=v==='1'; if(v==='1'&&G.iv&&G.iv.k==='follow'&&!G.iv.done)ivAuto(); save(); render(); try{ if(UI.sheet!=null)renderSheet(); }catch(e){} },
   actMode(v){ try{ localStorage.setItem(ACT_MODE_KEY,v==='compact'?'compact':'all'); }catch(e){} render(); if(UI.sheet!=null)try{ renderSheet(); }catch(e){} }, /* 선수 화면 버튼 표시(기기마다) */
   ratScale(v){ G.cfg=G.cfg||{}; G.cfg.scale=v==='2080'?'2080':'100'; save(); render(); if(UI.sheet!=null)try{ renderSheet(); }catch(e){} }, /* 능력치 표기 */
+  obCer(v){ const ob=obOf(v); if(!ob)return; const r=obLateCer(ob.id); save(); toast(r); render(); },
   obAct(v){ const [id,k]=v.split(':'); const ob=obOf(id); if(!ob)return; G.obFace=G.obFace||{};
     if(k==='coach'){ let c=(G.cmarket||[]).find(x=>x.ob===id); if(!c){ c=obCoach(ob); G.cmarket.unshift(c); } UI.crole=c.role; UI.smkK='coach'; UI.smkSrc='free'; A.go('staff:smkt'); return; }
     if(k==='mgr'){ if(!(G.mmarket||[]).some(m=>m.ob===id))G.mmarket.unshift(obMgr(ob)); A.go('staff:mgr'); return; }

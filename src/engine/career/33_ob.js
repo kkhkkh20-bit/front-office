@@ -99,17 +99,29 @@ function obRetireEvents(list){ const L=list.filter(o=>o&&o.mine&&(o.ys>=3)).sort
     if(stay)opts.push({l:`은퇴식 + ${stay}`,fx:`은퇴식을 열어 주고(비용 같음) 구단에 남깁니다.${ob.path==='scout'?' 스카우트 자리가 꽉 차 있으면 한 자리를 비워 둘 때까지 후보 맨 앞에 둡니다.':''}`}); /* 둘 다(커뮤니티 요청 11-07) */
     if(stay)opts.push({l:stay,fx:ob.path==='coach'?'코치 후보에 우선 협상 대상으로 올라옵니다(연봉 20% 할인).':ob.path==='scout'?'빈자리가 있으면 바로 스카우트로 합류합니다.':'우리 프런트에서 일하며 경력을 쌓습니다. 언젠가 다른 구단 단장이 될 수도 있습니다.'});
     opts.push({l:'조용히 보내 주기',fx:`${OBPATH[ob.path]}의 길을 스스로 찾습니다.`});
-    evNew('ret',`${ob.name} 은퇴`,`${ob.name}(${ob.pos}, ${ob.age}세)이(가) 은퇴합니다. 우리 구단에서 ${ob.ys}시즌 · WAR ${ob.mineWar}. 은퇴 후 ${ob.path==='media'?'해설위원 제안을 받았다고 합니다':`${OBPATH[ob.path]}의 길을 생각하고 있습니다`}${ob.aim?` (${ob.aim==='mgr'?'언젠가 감독':'언젠가 단장'}을 꿈꿉니다)`:''}.`,opts,{from:ob.name,face:'ob:'+ob.id,data:{ob:ob.id,rn:ob.canRetNo,leg,stay:!!stay,combo:!!stay},def:opts.length-1,exp:10}); } }
-EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)return ''; if(e.data.combo){ if(i===1){ const a=EVH.ret.pick({...e,data:{...e.data,combo:false}},0), b=EVH.ret.pick({...e,data:{...e.data,combo:false}},1); return a+' '+b; } if(i>=2)i--; } const t=team(G.user); const L=e.opts.length;
-    if(i===0){ let r=''; const n0=(G.retNos||[]).length; if(e.data.rn!=null)r=retireNumber(e.data.rn); const rn=(G.retNos||[]).length>n0; /* 지정이 거절되면(이미 쓰인 번호 등) 일반 은퇴식 비용만, 결번 표시 없이(검수 11-09zz) */ const cost=rn?100:e.data.leg?50:20; G.spend.etc=(G.spend.etc||0)+cost; ob.bond+=rn?30:20; ob.ceremony=G.year;
+    evNew('ret',`${ob.name} 은퇴`,`${ob.name}(${ob.pos}, ${ob.age}세)이(가) 은퇴합니다. 우리 구단에서 ${ob.ys}시즌 · WAR ${ob.mineWar}. 은퇴 후 ${ob.path==='media'?'해설위원 제안을 받았다고 합니다':`${OBPATH[ob.path]}의 길을 생각하고 있습니다`}${ob.aim?` (${ob.aim==='mgr'?'언젠가 감독':'언젠가 단장'}을 꿈꿉니다)`:''}.`,opts,{from:ob.name,face:'ob:'+ob.id,data:{ob:ob.id,rn:ob.canRetNo,leg,stay:!!stay,combo:!!stay},def:retDef(ob,leg,rn,opts),key:leg||rn||ob.ys>=5,exp:10}); ob.retEv={leg,rn:ob.canRetNo??null}; } }
+/* 은퇴 결정의 기본안(기한·비서): 영구결번 대상·레전드 급(우리 구단 8시즌 이상 또는 WAR 12 이상)과 우리 구단 5시즌 이상은 은퇴식(결번 대상이면 결번 포함), 그보다 짧으면 조용히 보내 주기.
+   5시즌 이상·레전드 급은 비서에게 넘어가지 않는다(evOwn·key). 자금이 모자라면 은퇴식 처리에서 결번→은퇴식만→조용히 순서로 물러난다(피드백 11-18) */
+function retDef(ob,leg,rn,opts){ return rn||leg||ob.ys>=5?0:opts.length-1; }
+EVH.ret={ pick(e,i){ const ob=(G.ob||[]).find(o=>o.id===e.data.ob); if(!ob)return ''; if(e.data.combo){ if(i===1){ const a=EVH.ret.pick({...e,data:{...e.data,combo:false}},0), b=EVH.ret.pick({...e,data:{...e.data,combo:false}},1); if(ob.ceremony!==G.year)e.pick=2; /* 자금이 모자라 은퇴식을 못 열면 구단에 남기기만 */ return a+' '+b; } if(i>=2)i--; } const t=team(G.user); const L=e.opts.length;
+    if(i===0){ const cw=fanCashWhy(e.data.leg?50:20); if(cw){ if(e.opts&&e.opts.length)e.pick=e.opts.length-1; return `은퇴식을 열지 못해 조용히 보내 드렸습니다. ${cw}`; } /* 자금 부족(독립구단): 조용히 보내 주기로 */
+      let r='', note=''; const n0=(G.retNos||[]).length; if(e.data.rn!=null){ const cw2=fanCashWhy(100); if(cw2)note=`영구결번 행사까지 열 자금이 부족해 은퇴식만 열었습니다(결번은 구단 역사에서 따로 지정할 수 있습니다). `; else r=retireNumber(e.data.rn); } const rn=(G.retNos||[]).length>n0; /* 지정이 거절되면(이미 쓰인 번호 등) 일반 은퇴식 비용만, 결번 표시 없이(검수 11-09zz) */ const cost=rn?100:e.data.leg?50:20; G.spend.etc=(G.spend.etc||0)+cost; ob.bond+=rn?30:20; ob.ceremony=G.year;
       if(rn)ob.retNo=true; const f=rn?5:e.data.leg?3:1; G.pr.fan=clamp(G.pr.fan+f,0,100);
       const lg=rn||e.data.leg; news('선수',`${tfull(t)} ${ob.name} ${lg?'레전드 ':''}은퇴식${rn?`, ${ob.no}번 영구결번`:''}`,lg?`만원 관중이 홈구장을 채운 가운데 ${ob.ys}시즌 동안 뛴 ${ob.name}의 레전드 은퇴식이 열렸습니다. 동료들의 헹가래와 은퇴 기념 영상, 가족과 함께한 시구 속에 마지막 인사를 했습니다.`:`${ob.ys}시즌 동안 뛴 ${ob.name}이(가) 팬들 앞에서 마지막 인사를 했습니다.`,rn?3:2,{fanW:1}); if(lg)try{ chron('honor',`${ob.name} 레전드 은퇴식${rn?` · ${ob.no}번 영구결번`:''}`,null,G.user,{source:'legcer:'+ob.id}); }catch(x){} /* 레전드 급은 제대로(사용자 11-11) */
-      return `${r?r+' ':''}은퇴식 비용 ${money(cost)}. 팬 여론 호전.`; }
+      return `${r?r+' ':''}${note}은퇴식 비용 ${money(cost)}. 팬 여론 호전.`; }
     if(i===1&&e.data.stay){ ob.bond+=15; ob.readyY=G.year;
       if(ob.path==='coach'){ const c=obCoach(ob); c.sal=round5(c.sal*.8); c.res=G.user; G.cmarket=(G.cmarket||[]).filter(x=>x.ob!==ob.id); G.cmarket.unshift(c); return `${ob.name}이(가) 코치 후보 맨 앞에 올라왔습니다(${CROLE[c.role].l}, 연 ${money(c.sal)}).`; }
       if(ob.path==='scout'){ const s=obScout(ob); if(G.scouts.length<scoutMax()){ s.since=G.day; G.scouts.push(s); return `${ob.name}이(가) 스카우트로 합류했습니다.`; } G.scoutMarket.unshift(s); return '스카우트 자리가 꽉 차서 후보 명단에 올렸습니다.'; }
       ob.alt={k:'front',tid:G.user,t:`${tfull(t)} 프런트`}; return `${ob.name}이(가) 우리 프런트에서 일을 시작합니다.`; }
     return ''; } };
+/* 은퇴식을 열지 않고 보낸 우리 선수(조용히·비서·기한 처리): 그 겨울(다음 시즌 개막 전)까지 OB 화면에서 한 번 열 수 있다. 비용·효과는 결정 메일의 은퇴식과 같다(피드백 11-18) */
+/* 예전 저장(이 패치 전에 이미 처리된 결정)은 남아 있는 은퇴 결정 기록에서 읽는다(저장은 바꾸지 않음) */
+function obRetEv(ob){ if(!ob)return null; if(ob.retEv)return ob.retEv; const e=(G.evs||[]).find(x=>x.k==='ret'&&x.data&&x.data.ob===ob.id&&!x.void); return e?{leg:!!e.data.leg,rn:e.data.rn??null}:null; }
+function obLateCerCost(ob){ const d=obRetEv(ob); return d?(d.rn!=null&&!ob.retNo?100:d.leg?50:20):0; }
+function obLateCerOk(ob){ if(!ob||!obRetEv(ob)||ob.ceremony!=null||G.unemp||!obMine(ob))return false; const P=period(); if(!((ob.retY===G.year&&P==='off')||(ob.retY===G.year-1&&P==='pre')))return false; return !(G.evs||[]).some(e=>e.k==='ret'&&!e.done&&e.data&&e.data.ob===ob.id); }
+function obLateCer(id){ const ob=(G.ob||[]).find(o=>o.id===id); if(!obLateCerOk(ob))return '지금은 은퇴식을 열 수 없습니다. 은퇴한 그 겨울, 다음 시즌 개막 전까지만 열 수 있습니다.';
+  const r=EVH.ret.pick({data:{ob:ob.id,rn:ob.retNo?null:obRetEv(ob).rn,leg:obRetEv(ob).leg,combo:false},opts:[]},0); if(ob.ceremony==null)return r; obLateLog(ob); return `${ob.name} 은퇴식을 열었습니다. ${r}`; }
+function obLateLog(ob){ try{ (G.evlog=G.evlog||[]).unshift({d:G.day,y:G.year,t:`${ob.name} 은퇴`,c:'뒤늦은 은퇴식',r:'',k:'ret',id:null,auto:false}); if(G.evlog.length>80)G.evlog.length=80; }catch(e){} }
 function obScout(ob){ const s=mkScout(ob.sc); s.name=ob.name; s.ob=ob.id; s.spec=ob.isP?'P':'B'; s.car=`${tshort(ob.team)} ${ob.pos} 출신 · ${ob.isP?'투수':'타자'}를 더 정확히 봄`; /* 선수 출신 스카우트: 자기 쪽(투수·타자)을 더 잘 본다 */ s.fid=ob.fid; s.id='s'+ob.id; G.obFace[s.id]=ob.fid;if(ob.age!=null)s.age=ob.age;return applyPersonRelation(staffAttach(s,'scout'),'scout'); }
 
 /* ===== 2대 선수(사용자 11-09r): 은퇴한 국내 선수(OB)의 아들이 커서 신인 드래프트에 나온다 =====
