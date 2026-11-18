@@ -116,7 +116,7 @@ function autoNow(k){ const C=G.contract; const out=[];
   if(k==='cvac'){ const L=coachVacUser('코치진 공백 보강(위임)'); out.push(L.length?`빈 코치 자리 ${L.length}곳을 채웠습니다(${L.map(c=>`${CROLE[c.role].l} ${c.name}`).join(', ')})`:'지금은 빈 코치 자리가 없습니다'); }
   if(AUTO_OPTIN.has(k)){ const r=autoRoutine([k]); out.push(r?'오늘 '+r:'오늘은 처리할 대상이 없습니다'); }
   if(k==='scout'){ out.push(G._scErr?`스카우트 배치는 맡았지만 지금 배치 조정에 실패했습니다(${G._scErr.slice(0,40)}). 다음 달 다시 시도합니다`:'스카우트 배치와 출장을 맡았습니다. 이번 주 출장은 팀장 안대로 보냈고, 다음 주부터 출장 안 메일 없이 팀장이 정합니다'); } /* 실제 결과대로 안내(검수 11-07) */
-  if(k==='ev'||k==='mgr'||k==='inv'){ let nd=0,nv=0; for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))||(e.k==='gmInv'&&autoOn('inv'))){ e.deleg=true; evPick(e.id,e.k==='gmInv'&&G.auto&&G.auto.inv==='yes'?0:e.def,true); if(e.void)nv++; else if(e.done)nd++; } } out.push(nd||!nv?`걸려 있던 결정 ${nd}건을 기본안으로 처리했습니다`:''); if(nv)out.push(`${nv}건은 대상이 떠나 효력을 잃어 처리하지 않았습니다`); }
+  if(k==='ev'||k==='mgr'||k==='inv'){ let nd=0,nv=0; for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&!evOwn(e)&&EV_NAME[e.k])||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))||(e.k==='gmInv'&&autoOn('inv'))){ e.deleg=true; evPick(e.id,e.k==='gmInv'&&G.auto&&G.auto.inv==='yes'?0:e.def,true); if(e.void)nv++; else if(e.done)nd++; } } out.push(nd||!nv?`걸려 있던 결정 ${nd}건을 기본안으로 처리했습니다`:''); if(nv)out.push(`${nv}건은 대상이 떠나 효력을 잃어 처리하지 않았습니다`); }
   if(C&&!C.done&&autoOn('sal')&&G.day>=KD(1,5)&&dobj(G.day).m<=2)autoConfirm();
   return out.filter(Boolean).join('. '); }
 function handOff(k){ autoSet(k,true); const r=autoNow(k); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) ${AUTO_WHO[k]||'비서'}에게 넘겼습니다.${r?' '+r+'.':''} 설정 · 권한에서 다시 가져올 수 있습니다.`; }
@@ -131,11 +131,11 @@ function mailDelegOpts(m){ if(!m||G.unemp)return []; const L=[]; const acts=m.ac
       /* 권한 줄에 있는 결정(감독 요청·일상 결정 종류)은 '위임하기' 하나, 권한 줄이 없는 핵심 결정은 '비서에게 맡기기'(이번 건만)(사용자 11-17) */
       if(e.k==='mreq'||e.k==='mpick'){ if(!autoOn('mgr'))L.push({a:'handOff',v:'mgr',l:'위임하기 · 감독 요청',d:`비서: 이번 건은 ${df}(으)로 답하고, 앞으로 감독 요청도 기본안으로 답합니다`}); }
       else if(e.k==='gmInv'){ if(!autoOn('inv'))L.push({a:'handOff',v:'inv',l:'위임하기 · 식사·모임 초대',d:`비서: 이번 건은 ${df}(으)로 답하고, 앞으로 다른 단장의 식사·통화 초대도 기본안으로 답해 진행을 멈추지 않습니다(권한에서 응하기로 바꿀 수 있음)`}); }
-      else if(EV_NAME[e.k]&&!EV_KEY.has(e.k)){ if(!evDelegOn(e.k))L.push({a:'evDeleg',v:e.id,l:`위임하기 · ${EV_NAME[e.k]}`,d:`비서: 이번 건은 ${df}(으)로 정하고, 앞으로 ${EV_NAME[e.k]}도 기본안으로 처리합니다`}); }
+      else if(EV_NAME[e.k]&&!EV_KEY.has(e.k)&&!evOwn(e)){ if(!evDelegOn(e.k))L.push({a:'evDeleg',v:e.id,l:`위임하기 · ${EV_NAME[e.k]}`,d:`비서: 이번 건은 ${df}(으)로 정하고, 앞으로 ${EV_NAME[e.k]}도 기본안으로 처리합니다`}); }
       if(!L.length)L.push({a:'evHand',v:e.id,l:'비서에게 맡기기',d:`비서: 이번 건만 추천안 ${df}(으)로 정합니다. 같은 종류는 앞으로도 직접 정합니다`}); } }
   return L; }
 /* 결정 종류 하나를 앞으로 맡기고 이번 건도 기본안으로(권한 화면 '종류별로 넘긴 일상 결정'과 같은 G.deleg) */
-function evDeleg(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k)||EV_KEY.has(e.k)||!EV_NAME[e.k])return handOffEv(id); G.deleg=G.deleg||{}; G.deleg[e.k]=true; const r=handOffEv(id); return `${r} 앞으로 ${EV_NAME[e.k]}은(는) 비서가 기본안으로 처리합니다. 설정 · 권한에서 다시 가져올 수 있습니다.`; }
+function evDeleg(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k)||EV_KEY.has(e.k)||evOwn(e)||!EV_NAME[e.k])return handOffEv(id); G.deleg=G.deleg||{}; G.deleg[e.k]=true; const r=handOffEv(id); return `${r} 앞으로 ${EV_NAME[e.k]}은(는) 비서가 기본안으로 처리합니다. 설정 · 권한에서 다시 가져올 수 있습니다.`; }
 /* 확인할 소식을 한 번에: 넘길 수 있는 결정은 이번 건만 비서가 기본안으로(단장 전용 제외). 권한 설정은 바꾸지 않는다 */
 function evHandAll(mails){ let n=0; for(const m of mails||[]){ if(m.kind!=='결정')continue; const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(!e||EV_GM.has(e.k))continue; handOffEv(e.id); if(e.done&&!e.void)n++; } return n; }
 /* 결정 한 건만 넘기기(핵심 결정 포함): 비서가 기본안으로 처리 */

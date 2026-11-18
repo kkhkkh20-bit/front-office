@@ -126,7 +126,13 @@ function capOverOwner(u,y){ const ci=capInfo(u.id); if(!(ci.over>0)||u.indie||G.
   const pen=-clamp(Math.round(r*60*nm),2,20);
   const cutR=clamp(.5+r*2.5,.5,1.5)*(n>=2?1.2:1); const cut=Math.round(ci.over*cutR); const prev=u.supCut&&u.supCut.y===y+1?u.supCut.amt:0; u.supCut={y:y+1,amt:prev+cut};
   mail('구단주실',`상한 초과: 다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`상위 40명 연봉이 상한을 ${money(ci.over)}(${Math.round(r*100)}%) 넘었습니다${n>=2?`(${n}년 연속)`:''}. 경쟁균형세와 별도로, 모기업은 "규정을 넘겨 가며 쓴 돈은 구단이 책임지라"며 ${y+1}시즌 지원 한도를 초과분의 ${Math.round(cutR*100)}%인 ${money(cut)} 줄입니다. 구단주 신뢰 ${pen}.`,{kind:'구단주'}); return pen; }
-function financeSeasonOwner(tid,y){ const t=team(tid),S=t.finOwner&&t.finOwner.y===y?t.finOwner:null,g=tid===G.user?G.goals:G.clubT&&G.clubT[tid]&&G.clubT[tid].goals;return {owner:g&&g.y===y&&g.owner||S&&S.owner||t.owner,ownerId:S&&S.ownerId||G.boss&&G.boss[tid]&&G.boss[tid].own.id||'own'+tid,plan:S&&S.plan||planOf(t)}; }
+/* 개막 전에 그 시즌부터 적용한다고 발표한 승계·인수 기록만 금융 정책의 근거로 쓴다.
+   옛 저장도 이력에 실제 일자·적용 연도·후임이 남은 경우에만 보정하며, 이미 끝난 결산은 바꾸지 않는다. */
+function financePreopenOwner(tid,y){ if(y!==G.year||G.last&&G.last.y>=y)return null; const open=G.cal&&G.cal.open; if(!Number.isFinite(open))return null;
+  const H=(((G.ownership||{}).clubs||{})[tid]||{}).history||[]; let hit=null;
+  for(const h of H)if(['acquired','succeeded'].includes(h.kind)&&h.y===y&&Number.isFinite(h.d)&&h.d<open&&h.to&&h.to.effectiveYear===y&&OWNER[h.to.policy]&&h.to.ownerId&&(!hit||h.d>=hit.d))hit=h;
+  return hit?{owner:hit.to.policy,ownerId:hit.to.ownerId}:null; }
+function financeSeasonOwner(tid,y){ const t=team(tid),S=t.finOwner&&t.finOwner.y===y?t.finOwner:null,g=tid===G.user?G.goals:G.clubT&&G.clubT[tid]&&G.clubT[tid].goals,P=financePreopenOwner(tid,y);return {owner:P&&P.owner||S&&S.owner||g&&g.y===y&&g.owner||t.owner,ownerId:P&&P.ownerId||S&&S.ownerId||G.boss&&G.boss[tid]&&G.boss[tid].own.id||'own'+tid,plan:S&&S.plan||planOf(t)}; }
 function financeHistoryOwner(tid,h){const f=h.fins&&h.fins[tid];if(f&&f.owner)return f;const next=Number.isFinite(h.d)&&(((G.ownership||{}).clubs||{})[tid]||{}).history?.filter(x=>x.d>h.d&&x.from&&x.from.policy).sort((a,b)=>a.d-b.d)[0],base=financeSeasonOwner(tid,h.y);return next?{...base,owner:next.from.policy,ownerId:next.from.ownerId}:base;}
 function settlement(){
   try{ asSnap(); }catch(e){} /* 시즌 연봉 규모 기록: 실행위원회 소집 요건은 시즌을 치른 연봉으로 본다 */
@@ -140,7 +146,7 @@ function settlement(){
   const fins={}; const fins_self={};
   for(const t of G.teams){
     const o=order.find(x=>x.tid===t.id); const wp=o.w/Math.max(1,o.w+o.l);
-    const fanM=t.id===G.user&&G.pr?(0.9+G.pr.fan/500):1, adM=(t.id===G.user&&G.pr?(0.85+G.pr.fan/333)*(0.95+G.pr.press/1000):1)*(t.id===ME()&&HARD()?.9:1); /* 하드 모드: 광고·상품 수입 -10% */
+    const P=prOf(t.id), fanM=t.id===G.user&&G.pr?(0.9+G.pr.fan/500):1, adM=(P?(0.85+P.fan/333)*(0.95+P.press/1000):1)*(t.id===ME()&&HARD()?.9:1); /* 하드 모드: 광고·상품 수입 -10% */
     const AT=G.sea.att&&G.sea.att[t.id]; const S=stadOf(t.id); const SPj=stadProj(t.id); const att=SPj.att||Math.round(1e6*t.market*(.62+t.pop*.38+(wp-.5)*1.4)*fanM);
     const MK=G.mktT&&G.mktT[t.id], mkt=t.id===ME()?G.marketing:MK&&MK.fy===y?MK.v:2000; /* 야인 기간 전 소속 구단은 AI 구단과 같은 방식(스폰서·마케팅)으로 결산한다. 그해 단장이 정해 두고 떠난 마케팅 예산은 그해 결산까지 유지(검수 11-09h) */
     const HO=G.hoL&&G.hoL[y+':'+t.id]; if(HO)t.cash-=HO.net; /* 이직 때 먼저 넣은 현금은 되돌리고 아래 명세로 다시 넣는다(검수 11-09h) */
@@ -169,7 +175,7 @@ function settlement(){
     if(t.id===ME()){ const gs=myCPay(); if(gs>0)exp.push(['단장 연봉',gs]); const gb=myCBonus(ps,order); if(gb>0)exp.push(['단장 성과급',gb]); }
     if(t.id===G.user&&G.unemp){ G.spEp=(G.spEp||0)+1; G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,scout:0}; } /* 야인 기간: 전 소속 구단은 AI 구단처럼 운영비 안에서 스태프·감독 비용을 처리한다(따로 더 내지 않는다) */
     if(t.id!==G.user){ const o=optSettle(t.id)+((G.sea.optPd||{})[t.id]||0); if(o>0)exp.push(['계약 옵션 지급',o]); } /* AI도 달성한 옵션을 낸다 */
-    if(t.id===G.user){ const S=G.spend; [['감독 연봉',S.mgr],['코치진 연봉',S.coach||0],['부상 방지 프로그램',S.med],['병원 제휴',S.hosp],['해외 연수',S.dev],['해외 스카우트망',S.intl||0],['전력분석원 연봉',S.data||0],['훈련 시설 유지비',S.fac||0],['단장 결정 지출',S.etc||0],['팬 마케팅·구단 이벤트',S.fan||0],['FA 보상금·양도금',S.comp||0],['방출 정산금',S.rel||0],['FA·다년 계약금',S.faB||0],['계약 옵션 지급',optSettle(t.id)+((G.sea.optPd||{})[t.id]||0)]].forEach(x=>{ if(x[1]>0)exp.push([x[0],Math.round(x[1])]); }); if(S.compIn>0)inc.push(['보상금·양도금 수령',Math.round(S.compIn)]); if(S.coachCompIn>0)inc.push(['코치 보상금',Math.round(S.coachCompIn)]); if(S.tradeIn>0)inc.push(['트레이드 현금 수령',Math.round(S.tradeIn)]); { for(const r of fanInRows(S))if(r[1]>0)inc.push(r); } /* 콜라보·레트로 유니폼은 상품 판매(검수 11-17 #294) */ if(S.postIn>0)inc.push(['포스팅 수입',Math.round(S.postIn)]); if(S.devRef>0)inc.push(['연수비 환급',Math.round(S.devRef)]); G.spEp=(G.spEp||0)+1; G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,scout:0}; }
+    if(t.id===G.user){ const S=G.spend; [['감독 연봉',S.mgr],['코치진 연봉',S.coach||0],['부상 방지 프로그램',S.med],['병원 제휴',S.hosp],['해외 연수',S.dev],['해외 스카우트망',S.intl||0],['전력분석원 연봉',S.data||0],['훈련 시설 유지비',S.fac||0],['단장 결정 지출',S.etc||0],['팬 마케팅·구단 이벤트',S.fan||0],['FA 보상금·양도금',S.comp||0],['방출 정산금',S.rel||0],['FA·다년 계약금',S.faB||0],['계약 옵션 지급',optSettle(t.id)+((G.sea.optPd||{})[t.id]||0)]].forEach(x=>{ if(x[1]>0||x[0]==='팬 마케팅·구단 이벤트'&&x[1]<0)exp.push([x[0],Math.round(x[1])]); }); if(S.compIn>0)inc.push(['보상금·양도금 수령',Math.round(S.compIn)]); if(S.coachCompIn>0)inc.push(['코치 보상금',Math.round(S.coachCompIn)]); if(S.tradeIn>0)inc.push(['트레이드 현금 수령',Math.round(S.tradeIn)]); { for(const r of fanInRows(S))if(r[1]>0)inc.push(r); } /* 콜라보·레트로 유니폼은 상품 판매(검수 11-17 #294) */ if(S.postIn>0)inc.push(['포스팅 수입',Math.round(S.postIn)]); if(S.devRef>0)inc.push(['연수비 환급',Math.round(S.devRef)]); G.spEp=(G.spEp||0)+1; G.spend={mgr:0,coach:0,med:0,hosp:0,dev:0,intl:0,fac:0,etc:0,scout:0}; }
     try{ promoSettle(t.id,inc,exp); }catch(e){} /* 프로모션 데이 장부(38_promotions, 모든 구단 같은 식) */
     try{ for(const [l,v] of aiOpsDue(t,y)){ const r=exp.find(x=>x[0]===l); if(r)r[1]+=v; else exp.push([l,v]); } }catch(e){} /* 그해 AI가 맡은 기간의 운영 비용(99_ai_parity): 지금 우리 구단이어도 부임 전 몫은 이 구단이 낸다 */
     if(HO){ const add=(A,o)=>{ for(const [l,v] of Object.entries(o)){ const r=A.find(x=>x[0]===l); if(r)r[1]+=v; else A.push([l,v]); } }; add(inc,HO.inc); add(exp,HO.exp); }
@@ -338,6 +344,7 @@ function ownershipReplace(tid,q,buyer){
   t.owner=['win','pr','profit'][Math.floor(seededRand(seed+':policy')()*3)];t.trust=60;s.ownerSince=G.year;
   if(typeof ownershipPeopleChanged==='function')ownershipPeopleChanged(tid,old,G.boss[tid],{ownerChanged:true,ceoChanged:buyer});
   const fy=ownershipFY(q),pct={win:110,pr:100,profit:90}[t.owner];ownershipSetSupport(tid,pct,fy);
+  if(fy===G.year&&G.cal&&G.day<G.cal.open&&!(G.last&&G.last.y>=G.year))t.finOwner={y:G.year,owner:t.owner,ownerId:own.id,plan:planOf(t)};
   const capital=buyer?ownershipCapital(tid,q.id+':buyer',Math.max(1500*ecoIdx(),-t.cash+1500*ecoIdx()),'인수기업 운영자금'):null;
   s.lastEventY=G.year;s.pending=null;s.debtYears=0;t.debtY=0;
   const to=ownershipSnapshot(tid);
