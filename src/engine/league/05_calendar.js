@@ -59,7 +59,7 @@ function buildCalendar(y){
   for(const sl of slots){ const P=pool[sl.len]; let i=P.findIndex(r=>r!==l1&&r!==l2); if(i<0)i=P.findIndex(r=>r!==l1); if(i<0)i=0; const r=P.splice(i,1)[0]; const ck=r+':'+sl.len; const flip=oddL?LEN.filter(x=>x===sl.len).length%2===1:(cnt[ck]=(cnt[ck]||0)+1)%2===0; /* 라운드마다 같은 길이 시리즈가 홀수 개면(12구단 2연전 3개) 번갈아 두면 한쪽이 홈을 더 갖는다: 3연전 둘은 한 구단, 2연전 셋은 다른 구단이 모두 홈(6경기씩) */
     for(const d of sl.days)sched[d]=rounds[r].map(([a,b])=>flip?[b,a]:[a,b]); l2=l1; l1=r; }
   const days=Object.keys(sched).map(Number).sort((a,b)=>a-b);
-  return {y,nt:NT,open,asg,end:days[days.length-1],sched,draft:onOrAfter(y,9,14,3),camp:dnum(y,1,25),campEnd:dnum(y,3,5),exh:dnum(y,3,12)};
+  return {y,nt:NT,open,asg,end:days[days.length-1],sched,flDays:Object.keys(sched).map(Number),draft:onOrAfter(y,9,14,3),camp:dnum(y,1,25),campEnd:dnum(y,3,5),exh:dnum(y,3,12)};
 }
 function period(){
   const c=G.cal, d=G.day;

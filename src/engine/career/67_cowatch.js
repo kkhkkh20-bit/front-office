@@ -76,7 +76,7 @@ function cwInvLine(why,who,d,op){ const ow=team(G.user).owner;
   if(why==='last')return '올해 마지막 홈경기예요. 한 해를 같이 마무리합시다.';
   return '같이 경기 봅시다.'; }
 EVH.cwInv={ pick(e,i){ const d=e.data; if(!cwActorMatches(d.who,d.tid,d.person))return '초대한 사람이 자리를 떠나 초대가 종료됐습니다.'; if(i!==0)return `${d.who==='ceo'?'사장':'구단주'}에게 사정을 전했습니다. "다음에 봅시다." 변화는 없습니다.`;
-  const P=gmPlans(); if(d.d<=G.day)return '경기 날짜가 지났습니다.'; P[d.d]={k:'attend',x:d.who==='ceo'?'ceo':'owner',cw:d.why,tid:d.tid??G.user,person:d.person??bossOf(G.user)[d.who==='ceo'?'ceo':'own'].id,done:false};
+  const P=gmPlans(); if(d.d<=G.day)return '경기 날짜가 지났습니다.'; const g=gmGamePick(d.d,G.user,true); if(!g)return '초대받은 홈경기가 열리지 않아 초대가 종료됐습니다.'; P[d.d]={k:'attend',x:d.who==='ceo'?'ceo':'owner',cw:d.why,tid:d.tid??G.user,person:d.person??bossOf(G.user)[d.who==='ceo'?'ceo':'own'].id,op:g.a,gk:gmGameKey(d.d,g.h,g.a,g.ordinal),done:false};
   return `${dmd(d.d)} 홈경기 직관 일정을 ${d.who==='ceo'?'사장':'구단주'} 동석으로 잡았습니다. 전날 다시 알려 드립니다.`; } };
 
 /* ---------- 경기 뒤 보고 (gmAttendResult에서 부른다) ---------- */
