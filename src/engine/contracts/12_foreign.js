@@ -101,8 +101,10 @@ function fUnknown(p,f){ const L=[]; if(f.n<3)L.push('실전 감각(현지 경기
 /* 외국인 후보 정보 수준(구단별): 우리와 AI 구단이 같은 식(fCandSd·fCandCur·fCandMix)으로 후보를 본다. 다른 것은 정보 수준뿐이다.
    우리: 해외 스카우트망 단계·파견 스카우트·관찰 명단 파악도·직접 발굴·자매구단 소개. AI: 해외망 투자 모형이 없어 스카우트진 수준(fScoutLv)을 망 단계로 쓰되 현지 사무소(3단계)까지는 못 가고, 관찰 명단·파견은 없으며, 직접 찾은 후보만 발굴로 친다.
    예전 AI는 실제 능력(ovr)에 작은 오차를 얹어 봐서 우리 화면(조사 전 흐림·실전 감각 착시)보다 훨씬 정확했다(해외 리그 검수: AI도 우리보다 많이 알면 안 된다) */
-function fInfo(tid,p){ const r=origOf(p); if(tid==null||tid===G.user){ const isc0=(G.scouts||[]).filter(s=>s.role==='intl'&&s.region===r).sort((a,b)=>effSkill(b)-effSkill(a))[0];
-    return {r,lv:intlLv(r),k:fwatchK(p.id),mine:fMineFind(p),sis:!!p.fsis,isc0,isc:(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r),tag:'',kbo:!!p.fkbo}; }
+/* 같은 나라의 담당자는 평가·보고·관찰 속도 모두 같은 최상위 직원으로 고른다. 동률도 명단 순서에 의존하지 않는다. */
+function intlScoutFor(r){ return (G.scouts||[]).filter(s=>s.role==='intl'&&s.region===r).sort((a,b)=>effSkill(b)-effSkill(a)||(b.skill||0)-(a.skill||0)||(()=>{ const x=String(a.id??a.name??''), y=String(b.id??b.name??''); return x<y?-1:x>y?1:0; })())[0]; }
+function fInfo(tid,p){ const r=origOf(p); if(tid==null||tid===G.user){ const isc0=intlScoutFor(r);
+    return {r,lv:intlLv(r),k:fwatchK(p.id),mine:fMineFind(p),sis:!!p.fsis,isc0,isc:isc0,tag:'',kbo:!!p.fkbo}; }
   return {r,lv:Math.min(2,Math.floor(fScoutLv(tid)||0)),k:fwatchKT(tid,p.id), /* AI 관찰 명단 파악도(사용자 11-17: 3-3, 우리와 같은 식) */mine:!!(p.fsrc==='scout'&&(p.fknow||[])[0]===tid),sis:false,isc0:null,isc:null,tag:'t'+tid,kbo:!!p.fkbo}; }
 /* KBO 경력 후보(해외 활성화 1-1): 모든 구단이 KBO에서 직접 본 선수라 툴 오차·실전 감각 착시·조사 전 흐림이 작다. 우리와 AI가 같은 배율 */
 const F_KBO_K={sd:.65,bias:.4,fog:.4};
@@ -168,7 +170,7 @@ function fFocusOpts(f){ if(!f||f==='all'||R()>=.75)return {}; if(f==='P'||f==='S
 function setIntlFocus(r,f){ if(!IREG[r]||!FFOC.some(x=>x[0]===f))return; (G.intlFocus=G.intlFocus||{})[r]=f; if(f==='all')delete G.intlFocus[r]; }
 /* 매주 스카우트 발굴: 우리는 스카우트망 지역에서, 다른 구단은 스카우트 수준에 따라 */
 function scoutFindWeek(silent){ const o=dobj(G.day); if(!(foreignOpen()||o.m===10||o.m===11))return; G.fmarket=G.fmarket||[]; if(G.fmarket.length>=70)return; const found=[];
-  if(!G.unemp){ for(const r of Object.keys(IREG)){ const lv=intlLv(r); const isc=(G.scouts||[]).find(s=>s.role==='intl'&&s.region===r); const ch=lv>=1?.13*lv+(isc?isc.skill*.04:0):.03; if(R()<ch){ const asia=IREG[r].asia; const fo=fFocusOpts((G.intlFocus||{})[r]); const q=newForeign(asia?'아시아':'용병',{src:'scout',finder:G.user,flv:lv+(isc?isc.skill/3:0),reg:r,...(fo.isP!=null?{isP:fo.isP}:{}),...(fo.pos?{pos:fo.pos}:{})}); if(fo._f==='SP'){ q.r.sta=Math.max(q.r.sta,60); q.role='SP'; } else if(fo._f==='RP'){ q.r.sta=Math.min(q.r.sta,44); q.role='RP'; } G.fmarket.push(q.id); found.push(q); } } try{ sisLeadWeek(found); }catch(e){} }
+  if(!G.unemp){ for(const r of Object.keys(IREG)){ const lv=intlLv(r); const isc=intlScoutFor(r); const ch=lv>=1?.13*lv+(isc?isc.skill*.04:0):.03; if(R()<ch){ const asia=IREG[r].asia; const fo=fFocusOpts((G.intlFocus||{})[r]); const q=newForeign(asia?'아시아':'용병',{src:'scout',finder:G.user,flv:lv+(isc?isc.skill/3:0),reg:r,...(fo.isP!=null?{isP:fo.isP}:{}),...(fo.pos?{pos:fo.pos}:{})}); if(fo._f==='SP'){ q.r.sta=Math.max(q.r.sta,60); q.role='SP'; } else if(fo._f==='RP'){ q.r.sta=Math.min(q.r.sta,44); q.role='RP'; } G.fmarket.push(q.id); found.push(q); } } try{ sisLeadWeek(found); }catch(e){} }
   for(const t of G.teams){ if(t.id===G.user)continue; const lv=fScoutLv(t.id); if(R()<.12+lv*.05){ const q=newForeign(R()<.25?'아시아':'용병',{src:'scout',finder:t.id,flv:lv}); G.fmarket.push(q.id); } }
   void silent; /* 발굴 소식은 보내지 않는다: 외국인 시장에서 '우리 스카우트 발굴'로 표시하고 관찰 메모를 자세히 보여 준다 */
   return found; }

@@ -10,12 +10,24 @@ const OP_ARG={rival:{l:'라이벌 비교'},fan:{l:'팬·언론 압박'},title:{l
 /* 구단주 성향별로 귀에 들어오는 근거(곱하는 값) */
 const OP_W={win:{rival:1,fan:.4,title:1.2,money:.3,promise:.9},profit:{rival:.5,fan:.7,title:.5,money:1.1,promise:.6},pr:{rival:.7,fan:1.2,title:.7,money:.4,promise:.7}};
 const OP_DAYS=180, OP_WARN=3, OP_WIN=7;
-function opSt(tid){ const t=team(tid); const S=t.opush=t.opush||{L:[],prom:[]}; S.L=S.L||[]; S.prom=S.prom||[]; return S; }
+function opOwnerId(tid){ return bossOf(tid).own.id; }
+/* 옛 저장은 날짜와 실제 소유권 전환 이력으로 귀속한다. 교체 당일의 미표기 기록은 전임 몫으로 보수적으로 처리한다. */
+function opOwnerAt(tid,d,fallback){ const H=G.ownership?.clubs?.[tid]?.history||[], L=H.filter(x=>x.from?.ownerId&&x.to?.ownerId&&x.from.ownerId!==x.to.ownerId).slice().sort((a,b)=>a.d-b.d);
+  const next=L.find(x=>d!=null&&x.d>=d); return next?next.from.ownerId:(fallback??opOwnerId(tid)); }
+function opBindOwner(tid,x,d,fallback){ if(x&&x.ownerId==null)x.ownerId=opOwnerAt(tid,d??x.d,fallback); return x; }
+function opBindState(tid,S,fallback){ for(const x of [...(S.L||[]),...(S.prom||[]),...(S.rs||[]),S.warn])opBindOwner(tid,x,null,fallback); return S; }
+function opSt(tid){ const t=team(tid); const S=t.opush=t.opush||{L:[],prom:[]}; S.L=S.L||[]; S.prom=S.prom||[]; return opBindState(tid,S); }
+/* 교체가 확정되는 순간 표기 없는 기존 안건을 전임에게 묶고, 승인 전 협상만 닫는다. */
+function opOwnerChanged(tid,oldId){ const S=team(tid).opush; if(S)opBindState(tid,S,oldId);
+  for(const e of G.evs||[])if(e.k==='opush'&&e.data?.tid===tid){ opBindOwner(tid,e.data,e.day,oldId);opBindOwner(tid,e.data.ctx,e.day,oldId);if(e.done||e.data.ownerId===opOwnerId(tid))continue;
+    e.done=true;e.void=true;e.res='요청을 반려한 구단주가 바뀌어 재설득 안건이 종료됐습니다. 새 구단주에게 다시 요청해야 합니다.';
+    const m=(G.mail||[]).find(m=>m.id===e.mid);if(m){m.acts=[];m.imp=false;m.read=true;m.body+='\n\n[종료] '+e.res;}G.stops=(G.stops||[]).filter(m=>m.id!==e.mid); }
+  if(tid===G.user){for(const x of G.ownerLog||[])if(x.tid==null||x.tid===tid){x.tid=tid;opBindOwner(tid,x,null,oldId);}} }
 /* 지금 그 구단을 맡은 단장: 사람 단장은 'me', AI 단장은 그 단장 id(단장이 바뀌면 기록이 이어지지 않는다) */
 function opGm(tid){ if(tid===ME())return 'me'; const g=gmOf(tid); return g?g.id:'x'; }
-function opRecent(tid){ const gm=opGm(tid); return opSt(tid).L.filter(x=>x.gm===gm&&G.day-x.d<=OP_DAYS); }
+function opRecent(tid){ const gm=opGm(tid), ownerId=opOwnerId(tid); return opSt(tid).L.filter(x=>x.gm===gm&&x.ownerId===ownerId&&G.day-x.d<=OP_DAYS); }
 function opStrikes(tid){ const L=opRecent(tid); return L.length+L.filter(x=>!x.ok).length; }
-function opWarned(tid){ const w=opSt(tid).warn; return !!(w&&w.gm===opGm(tid)&&G.day-w.d<=OP_DAYS); }
+function opWarned(tid){ const w=opSt(tid).warn; return !!(w&&w.gm===opGm(tid)&&w.ownerId===opOwnerId(tid)&&G.day-w.d<=OP_DAYS); }
 function opLevel(tid){ return opWarned(tid)||opStrikes(tid)>=OP_WARN?2:opStrikes(tid)>=1?1:0; }
 function opPatience(tid){ return ['구단주가 아직 들어 줄 여유가 있습니다','구단주가 같은 이야기를 반기지 않습니다','구단주의 참을성이 바닥나고 있습니다. 또 밀어붙였다 안 되면 사퇴 권고를 받을 수 있습니다'][opLevel(tid)]; }
 /* 단장 명성: 사람 단장은 G.rep, AI 단장은 재임 기간으로 어림한다 */
@@ -45,7 +57,7 @@ function opMoney(tid){ const A=G.sea&&G.sea.att&&G.sea.att[tid], occ=A&&A.cap&&A
   const L=[]; if(a>0)L.push(`관중석이 ${Math.round(occ*100)}% 찼고`); if(b>0)L.push(`지난 시즌 ${money(f.net)} 흑자였습니다`); return {s:Math.round(s*100)/100,my:`${L.join(' ')}${b>0?'':' 표가 팔립니다'}. 쓸 여력은 있습니다.`}; }
 /* 성적 약속: 그 시즌(sponSeason) 결산에서 판정. 포스트시즌·8월 중순 뒤에는 꺼낼 수 없다(거의 정해진 순위로 약속하는 공략 방지). 한 시즌 하나 */
 function opPromiseOf(tid){ const per=period(); if(per==='post')return null; if(per==='season'&&G.day>KD(8,15))return null; const y=sponSeason(), gm=opGm(tid);
-  if(opSt(tid).prom.some(p=>p.y===y&&p.gm===gm&&!p.done))return null; const st=opStand(); let rk;
+  if(opSt(tid).prom.some(p=>p.y===y&&p.gm===gm&&p.ownerId===opOwnerId(tid)&&!p.done))return null; const st=opStand(); let rk;
   if(st){ const i=st.findIndex(o=>o.tid===tid); rk=i<0?5:i+1; } else rk=opLastRk(tid)??6;
   const tgt=rk<=3?3:5; const s=rk<=tgt?.75:rk<=tgt+2?.5:.25; return {k:'promise',s,y,tgt,l:tgt===3?'정규시즌 3위 안':'가을야구(5위 안)',my:`이번에 밀어주시면 ${tgt===3?'정규시즌 3위 안에':'가을야구에'} 꼭 들겠습니다.`}; }
 /* 꺼낼 수 있는 근거 목록(사퇴 카드는 늘 마지막) */
@@ -55,7 +67,7 @@ function opArgs(tid){ const L=[]; const add=(k,x)=>{ if(x)L.push(Object.assign({
 /* --- 사퇴 카드(사용자 11-14 추가): 드물게만. 한 시즌 한 번, 쓰고 나면(성패 무관) 두 시즌 뒤에야 다시. 전에 통했으면 구단주가 기억해 약해진다.
    이 구단의 레전드 단장(오래 맡고 우승·높은 승률)이면 구단주가 더 쉽게 물러서고 사표도 잘 받지 않는다. 우리·AI 같은 규칙 --- */
 const OP_RS_GAP=2;
-function opRsUses(tid){ const gm=opGm(tid); return (opSt(tid).rs||[]).filter(x=>x.gm===gm); }
+function opRsUses(tid){ const gm=opGm(tid); return (opSt(tid).rs||[]).filter(x=>x.gm===gm&&x.ownerId===opOwnerId(tid)); }
 function opResignWhy(tid){ const U=opRsUses(tid); if(!U.length)return ''; const ly=Math.max(...U.map(x=>x.y)); if(ly===G.year)return '사퇴 카드는 이번 시즌에는 더 쓸 수 없습니다'; if(G.year-ly<OP_RS_GAP)return `사퇴 카드는 ${ly+OP_RS_GAP}시즌부터 다시 꺼낼 수 있습니다`; return ''; }
 /* 이 구단에서 쌓은 단장 유산 0~1: 재임 시즌·우승·승률(90_legacy legAt). 새로 온 평범한 단장은 0 */
 function opLegend(tid){ let a=null; try{ a=legAt(tid===ME()?legMeK():(gmOf(tid)||{}).id,tid); }catch(e){} if(!a||!a.s)return 0; const pct=a.w+a.l?a.w/(a.w+a.l):.5;
@@ -83,15 +95,17 @@ function opLine(tid,a,ok,x){ const ow=team(tid).owner||'win'; const R0=a&&a.c!=n
 /* 한 번 들이박기: 굴림·신뢰·기록·경고·약속까지. 돈이나 공사 승인은 부른 쪽이 한다.
    돌려주는 것: {ok,p,cost,out(사퇴 권고/사표 수리),warned,line} */
 var OP_TEST=null; /* 점검용 고정 굴림(배열) */
-function opRun(tid,ctx,a,rolls){ rolls=rolls||OP_TEST; const roll=()=>rolls&&rolls.length?rolls.shift():R(); const t=team(tid); const lv=opLevel(tid), p=opOdds(tid,ctx,a); const ok=roll()<p; const S=opSt(tid), gm=opGm(tid); let cost=0, out=null, warned=false; const lines=[];
-  if(ok){ cost=1; lines.push(opLine(tid,a,true)); if(a.k==='promise')S.prom.push({y:a.y,gm,tgt:a.tgt,l:a.l,d:G.day}); }
+function opRun(tid,ctx,a,rolls,approve){ rolls=rolls||OP_TEST; const roll=()=>rolls&&rolls.length?rolls.shift():R(); const t=team(tid); const lv=opLevel(tid), p=opOdds(tid,ctx,a); const ok=roll()<p; const S=opSt(tid), gm=opGm(tid), ownerId=opOwnerId(tid); let cost=0, out=null, warned=false, applied; const lines=[];
+  /* 승인 실행(특히 착공)이 끝나야 성공 비용·약속을 남긴다. 신청 대기 제한은 재설득 승인에 적용하지 않는다. */
+  if(ok&&approve){ applied=approve(); if(!applied.ok)return {ok:false,blocked:true,p,cost:0,line:applied.txt}; }
+  if(ok){ cost=1; lines.push(opLine(tid,a,true)); if(a.k==='promise')S.prom.push({y:a.y,gm,ownerId,tgt:a.tgt,l:a.l,d:G.day}); }
   else if(a.k==='resign'){ const q=clamp(.3+(50-(t.trust??55))/70+.12*opStrikes(tid)-.4*opLegend(tid),.05,.9); /* 레전드의 사표는 잘 받지 않는다 */ if(roll()<q){ out='accept'; lines.push(opLine(tid,a,false,'accept')); } else { cost=5; lines.push(opLine(tid,a,false,'refuse')); } }
   else { cost=a.s<.25?4:2; if(lv>=2&&roll()<clamp(.45+(50-(t.trust??55))/80,.25,.9)){ out='out'; lines.push(opLine(tid,a,false,'out')); } else lines.push(opLine(tid,a,false)); }
-  if(a.k==='resign'){ S.rs=(S.rs||[]).concat({y:G.year,d:G.day,gm,ok}).slice(-6); }
-  t.trust=clamp((t.trust??55)-cost,0,100); S.L.push({d:G.day,gm,a:a.k,ok,k:ctx&&ctx.k}); if(S.L.length>20)S.L.splice(0,S.L.length-20);
-  if(!out&&!opWarned(tid)&&opStrikes(tid)>=OP_WARN){ S.warn={gm,d:G.day}; warned=true; lines.push('이 얘기는 여기까지 해요. 한 번만 더 이러면 저도 생각이 있어요.'); }
-  (G.opLog=G.opLog||[]).push({y:G.year,tid,me:gm==='me',a:a.k,ok,p:Math.round(p*100)/100,out:!!out,amt:(ctx&&ctx.amt)||0,k:ctx&&ctx.k}); if(G.opLog.length>300)G.opLog.splice(0,G.opLog.length-300);
-  return {ok,p,cost,out,warned,line:lines.join(' ')}; }
+  if(a.k==='resign'){ S.rs=(S.rs||[]).concat({y:G.year,d:G.day,gm,ownerId,ok}).slice(-6); }
+  t.trust=clamp((t.trust??55)-cost,0,100); S.L.push({d:G.day,gm,ownerId,a:a.k,ok,k:ctx&&ctx.k}); if(S.L.length>20)S.L.splice(0,S.L.length-20);
+  if(!out&&!opWarned(tid)&&opStrikes(tid)>=OP_WARN){ S.warn={gm,ownerId,d:G.day}; warned=true; lines.push('이 얘기는 여기까지 해요. 한 번만 더 이러면 저도 생각이 있어요.'); }
+  (G.opLog=G.opLog||[]).push({y:G.year,tid,ownerId,me:gm==='me',a:a.k,ok,p:Math.round(p*100)/100,out:!!out,amt:(ctx&&ctx.amt)||0,k:ctx&&ctx.k}); if(G.opLog.length>300)G.opLog.splice(0,G.opLog.length-300);
+  return {ok,p,cost,out,warned,applied,line:lines.join(' ')}; }
 /* 구단주가 사표를 받거나 사퇴를 권고하면: 사람 단장은 야인, AI 단장은 교체 */
 function opForcedOut(tid,kind){ const t=team(tid);
   if(tid===ME()){ G.rep=clamp((G.rep??50)-3,0,100); const msg=kind==='accept'?'자금 문제로 구단주에게 사표 카드를 꺼냈다가 그대로 수리됐습니다.':'자금 문제로 구단주와 거듭 부딪힌 끝에 사퇴 권고를 받고 물러났습니다.';
@@ -99,36 +113,39 @@ function opForcedOut(tid,kind){ const t=team(tid);
   const g=gmOf(tid); if(!g||g.interim)return; t.trust=45; delete t.opush;
   gmReplace(t,g,{chron:`${g.name} 단장 사퇴 · 구단주와 자금 갈등`,why:kind==='accept'?'자금 문제로 사표를 던졌고 구단주가 받아들였다는 이야기입니다':'자금 문제로 구단주와 거듭 부딪힌 끝에 사퇴 권고를 받았다는 평가입니다'}); }
 /* 결산: 그 시즌 약속을 지켰는지(우리는 settlement, AI는 aiOwnerYear에서 부른다). 돌려주는 값은 신뢰 변화 */
-function opPromSettle(tid,y,rk){ const S=team(tid).opush; if(!S||!S.prom)return 0; const gm=opGm(tid); let d=0;
-  for(const p of S.prom){ if(p.done||p.y!==y)continue; p.done=true; if(p.gm!==gm){ p.void=true; continue; } const kept=rk<=p.tgt; p.kept=kept; d+=kept?2:-8;
+function opPromSettle(tid,y,rk){ const S=team(tid).opush; if(!S||!S.prom)return 0; opBindState(tid,S);const gm=opGm(tid); let d=0;
+  for(const p of S.prom){ if(p.done||p.y!==y)continue; p.done=true; if(p.gm!==gm||p.ownerId!==opOwnerId(tid)){ p.void=true; continue; } const kept=rk<=p.tgt; p.kept=kept; d+=kept?2:-8;
     if(gm==='me')mail('구단주실',kept?'구단주: "약속은 지켰네요"':'구단주: "약속하지 않았나요"',kept?`${p.l} 약속을 지켰습니다(${rk}위). 구단주 신뢰 +2.`:`다시 설득하며 ${p.l}을(를) 약속했지만 ${rk}위에 그쳤습니다. 구단주 신뢰 -8.`,{kind:'구단주',imp:!kept}); }
   S.prom=S.prom.filter(p=>!p.done||p.y>=y-1); return d; }
 
 /* --- 사람 단장: 반려 소식에 '다시 설득하기' 결정을 붙인다(7일). 붙였으면 true(부른 쪽은 반려 메일을 따로 보내지 않는다) --- */
 function ownPushOffer(ctx,subj,body,g){ const t=team(G.user); if(!t||t.indie||G.unemp||G._away)return false;
+  ctx.ownerId=opOwnerId(G.user);
   if(g){ g.pk='op'+(G.opSeq=(G.opSeq||0)+1); ctx.pk=g.pk; }
   const A=opArgs(G.user); const opts=A.map(a=>{ const p=opOdds(G.user,ctx,a); return {l:`${OP_ARG[a.k].l} · ${opHint(p,a)}`,fx:`"${a.my}"${a.k==='promise'?` 받아 주면 ${a.l}이(가) 약속이 됩니다. 못 지키면 결산 때 신뢰가 크게 깎입니다.`:a.k==='resign'?' 안 통하면 사표가 수리될 수 있습니다.':''}`}; });
   opts.push({l:'물러선다',fx:'반려를 받아들입니다. 변화 없음.'});
-  evNew('opush',subj,`${body}\n\n${OP_WIN}일 안에 근거 하나를 들고 다시 설득해 볼 수 있습니다. 성공해도 신뢰가 조금 깎이고, 실패하면 더 깎입니다. 지금 ${opPatience(G.user)}.${opResignWhy(G.user)?` ${opResignWhy(G.user)}.`:''}`,opts,{from:'구단주실',exp:OP_WIN,def:opts.length-1,data:{tid:G.user,ctx,args:A.map(a=>a.k)}});
+  evNew('opush',subj,`${body}\n\n${OP_WIN}일 안에 근거 하나를 들고 다시 설득해 볼 수 있습니다. 성공해도 신뢰가 조금 깎이고, 실패하면 더 깎입니다. 지금 ${opPatience(G.user)}.${opResignWhy(G.user)?` ${opResignWhy(G.user)}.`:''}`,opts,{from:'구단주실',exp:OP_WIN,def:opts.length-1,data:{tid:G.user,ownerId:ctx.ownerId,ctx,args:A.map(a=>a.k)}});
   return true; }
 /* 결정할 때 다시 본다: 그 구단 일인지, 아직 쓸 데가 있는지 */
 function opCtxWhy(ctx){ if(!ctx)return '설득할 일이 없습니다.';
+  if(ctx.ownerId!=null&&ctx.ownerId!==opOwnerId(G.user))return '요청을 반려한 구단주가 바뀌었습니다. 새 구단주에게 다시 요청해야 합니다.';
   if(ctx.k==='cap'){ try{ const e=facCanStart(G.user,ctx.fk); if(e)return e; }catch(e){} return ''; }
   const g=grants().find(x=>x.pk===ctx.pk); if(!g||g.st!=='no'||(g.tid!=null&&g.tid!==G.user))return '이미 끝난 요청입니다.'; const pur=g.pur;
   if(pur&&pur.k==='fa'){ const q=G.players[pur.pid]; if(!(G.fa&&G.fa.open&&!G.fa.closed&&q&&q.team==null&&q.ask&&G.fa.pool.includes(q.id)&&!faOutBlocked(G.user,q)))return '그 FA는 이제 데려올 수 없어 설득할 이유가 없습니다.'; }
   if(pur&&pur.k==='frep'&&G.day>foreignDL())return '외국인 등록 마감이 지났습니다.';
   if(pur&&pur.k==='boost'&&period()==='season'&&G.day>tradeDL())return '트레이드 마감이 지났습니다.'; return ''; }
 function opApplyUser(ctx){
-  if(ctx.k==='cap'){ const r=capexAsk('fac',ctx.fk,true); return r||'모기업 투자로 공사를 시작했습니다.'; }
+  if(ctx.k==='cap'){ const r=capexAsk('fac',ctx.fk,true); return {ok:!r,txt:r||'모기업 투자로 공사를 시작했습니다.'}; }
   const g=grants().find(x=>x.pk===ctx.pk); g.ok=true; g.st=g.pur?'open':'done'; g.push=1; if(g.pur&&g.pur.k==='fac')g.until=G.day+FAC_GRANT_DAYS; /* 공사 기한은 승인한 날부터 */ grantApply(g.amt);
   if(g.pitch&&g.pitch.cmts&&g.pitch.cmts.length){ const ny=G.year+(period()==='off'||period()==='post'?1:0); for(const c of g.pitch.cmts)if(PITCH_CMT[c])(G.pitchCommit=G.pitchCommit||[]).push({y:ny,k:c,v:PITCH_CMT[c].v,l:PITCH_CMT[c].l}); }
-  return `${money(g.amt)}을(를) 받았습니다. ${g.pur?'목적대로 쓰지 않으면 신뢰가 깎입니다.':''}`; }
+  return {ok:true,txt:`${money(g.amt)}을(를) 받았습니다. ${g.pur?'목적대로 쓰지 않으면 신뢰가 깎입니다.':''}`}; }
+function opEventWhy(e){ opBindOwner(e.data.tid,e.data,e.day);opBindOwner(e.data.tid,e.data.ctx,e.day);if(e.data.ownerId!==opOwnerId(e.data.tid))return '요청을 반려한 구단주가 바뀌었습니다. 새 구단주에게 다시 요청해야 합니다.';return opCtxWhy(e.data.ctx); }
 EVH.opush={
-  can(e,i){ if(i>=e.opts.length-1)return ''; if(e.data.tid!==G.user||G.unemp)return '이제 그 구단 일이 아닙니다.'; return opCtxWhy(e.data.ctx); },
-  pick(e,i){ if(i>=e.opts.length-1)return '반려를 받아들였습니다.'; if(e.data.tid!==G.user||G.unemp)return '구단을 떠나 이 일은 끝났습니다.'; const why=opCtxWhy(e.data.ctx); if(why)return why;
+  can(e,i){ if(i>=e.opts.length-1)return ''; if(e.data.tid!==G.user||G.unemp)return '이제 그 구단 일이 아닙니다.'; return opEventWhy(e); },
+  pick(e,i){ if(i>=e.opts.length-1)return '반려를 받아들였습니다.'; if(e.data.tid!==G.user||G.unemp)return '구단을 떠나 이 일은 끝났습니다.'; const why=opEventWhy(e); if(why)return why;
     const k=(e.data.args||[])[i]; const a=opArgs(G.user).find(x=>x.k===k); if(!a){ e.pick=e.opts.length-1; return '그 근거는 이제 사실이 아니라 꺼낼 수 없었습니다. 반려를 받아들였습니다.'; } /* 기다리는 사이 상황이 바뀌면 그 근거는 없다 */
-    const B=bossOf(G.user); const r=opRun(G.user,e.data.ctx,a); let txt=`${B.own.name} 회장: "${r.line}"`;
-    if(r.ok){ const got=opApplyUser(e.data.ctx); txt+=`\n다시 설득했습니다. ${got} 구단주 신뢰 -${r.cost}.${a.k==='promise'?` 약속: ${a.l}(${a.y}시즌 결산 때 확인).`:''}`; }
+    const B=bossOf(G.user); const r=opRun(G.user,e.data.ctx,a,null,e.data.ctx.k==='cap'?()=>opApplyUser(e.data.ctx):null);if(r.blocked)return r.line; let txt=`${B.own.name} 회장: "${r.line}"`;
+    if(r.ok){ const got=r.applied||opApplyUser(e.data.ctx);txt+=`\n다시 설득했습니다. ${got.txt} 구단주 신뢰 -${r.cost}.${a.k==='promise'?` 약속: ${a.l}(${a.y}시즌 결산 때 확인).`:''}`; }
     else txt+=`\n설득하지 못했습니다.${r.cost?` 구단주 신뢰 -${r.cost}.`:''}`;
     if(r.warned)txt+='\n구단주가 경고했습니다. 한 번 더 밀어붙였다 안 되면 자리가 위험합니다.';
     mail('구단주실',r.ok?`구단주 승인(재설득): ${OP_ARG[a.k].l}`:r.out?'구단주: "물러나 주세요"':`구단주 재반려: ${OP_ARG[a.k].l}`,txt,{kind:'구단주',imp:!r.ok});

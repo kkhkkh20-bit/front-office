@@ -57,7 +57,8 @@ function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(
 function actOf(tid){ const ps=playersOf(tid).filter(p=>psOk(p)); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); } /* 포스트시즌 자격 없는 선수는 라인업·마운드에 오르지 않는다(검수 11-07) */
 /* 포스트시즌 출전 자격: 등록 마감(8월 15일) 뒤 데려온 선수는 그해 포스트시즌에 뛸 수 없다 */
 const psOk=p=>!(period()==='post'&&p.acq&&p.acq.tid===p.team&&p.acq.y===G.year&&p.acq.k!=='fd'&&p.acq.k!=='draft'&&p.acq.d>foreignDL());
-const canUp=p=>psOk(p)&&!(p.boy>G.day)&&!p.e1&&!p.ys&&!(p.isP&&rpPlanOf(p.team,p)==='sp2')&&!isAway(p)&&healthy(p)&&!(p.joinY>G.year)&&(p.downDay==null||G.day-p.downDay>=10);
+const entryEligible=(p,day=G.day)=>psOk(p)&&!p.ys&&!(p.isP&&rpPlanOf(p.team,p)==='sp2')&&healthyAt(p,day)&&!(p.joinY>G.year)&&(p.e1||p.downDay==null||day-p.downDay>=10);
+const canUp=p=>!p.e1&&!isAway(p)&&entryEligible(p);
 /* 성적 보기(11-12, AI도 유저처럼 1·2군을 성적으로 돌린다): 감독은 능력치만이 아니라 올해 기록도 본다.
    11-12 첫 판(2군 호성적 +2.5·1군 부진 -2 고정)은 작은 표본에 크게 흔들려 껐다. 안정화(11-14): 표본만큼만 믿는 보조 기준으로 다시 켠다.
    기록이 리그 평균에서 벗어난 정도 × 표본 비중(타석/(타석+150), 아웃/(아웃+120))이라 60타석 호성적은 1점 안팎, 시즌 내내 압도해도 +1.5까지.
@@ -114,22 +115,26 @@ function entryManage(tid,weekly,quiet){ if(!entryOn())return; const lim=entryLim
       if(out&&inn&&v(inn)>v(out)+2.5){ out.e1=false; out.downDay=G.day; inn.e1=true; inn.upDay=G.day; moves.push(`${out.name} 말소(주전·필승조 밖, 최근 1주 넘게 쓰임 적음) · ${inn.name} 콜업(2군에서 더 나은 선수${futLn(inn)})`); } } }
   /* 포수는 1군에 2명 이상: 주전이 지치면 쉬게 할 백업이 있어야 한다(카페 피드백 11-08: 백업 포수를 2군으로 내려 지친 주전이 계속 나옴) */
   for(let g=0;g<3&&(ent=PS.filter(p=>p.e1)).filter(p=>isC(p)&&healthy(p)).length<2;g++){ /* 다친 포수는 세지 않는다(검수 11-09t) */ const c=PS.filter(p=>canUp(p)&&isC(p)).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
-    if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>!p.isP&&!isC(p)&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!core.has(p.id)&&!isC(p)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; moves.push(`${out.name} 말소(백업 포수 자리)`); }
+    if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>isC(p)&&!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!p.isP&&!isC(p)&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!core.has(p.id)&&!isC(p)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; moves.push(`${out.name} 말소(백업 포수 자리)`); }
     c.e1=true; c.upDay=G.day; moves.push(`${c.name} 콜업(1군 포수 2명 유지${futLn(c)})`); }
   /* AI 구단은 건강한 1군 야수 9명 유지: 단기 부상 야수가 자리를 차지해 8명 타순으로 치르지 않게 2군에서 올린다(검수 11-09zn) */
   if(tid!==G.user)for(let g=0;g<9&&(ent=PS.filter(p=>p.e1)).filter(p=>!p.isP&&healthy(p)).length<9;g++){ const c=PS.filter(p=>canUp(p)&&!p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
     if(ent.length>=lim){ const d=depth(tid); const core=new Set([...d.sp,...d.pen.slice(0,4)].map(p=>p.id)); const out=ent.filter(p=>!p.isP&&!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>p.isP&&!core.has(p.id)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; }
     c.e1=true; c.upDay=G.day; }
+  /* 사전검사가 센 콜업 가능 투수를 실제 엔트리에도 채운다. 가득 찬 엔트리의 단기 부상·야수 여분 때문에 7명으로 치르지 않게 한다(검수 11-18 #450~451). */
+  for(let g=0;g<8&&(ent=PS.filter(p=>p.e1)).filter(p=>p.isP&&healthy(p)).length<8;g++){ const c=PS.filter(p=>canUp(p)&&p.isP).sort((a,b)=>v(b)-v(a))[0]; if(!c)break;
+    if(ent.length>=lim){ const d=depth(tid), core=new Set(d.start.map(p=>p.id)); const out=ent.filter(p=>!healthy(p)).sort((a,b)=>v(a)-v(b))[0]||ent.filter(p=>!p.isP&&!core.has(p.id)&&!cProt(p,c,ent)).sort((a,b)=>v(a)-v(b))[0]; if(!out)break; out.e1=false; out.downDay=G.day; moves.push(`${out.name} 말소(건강한 투수 자리)`); }
+    c.e1=true; c.upDay=G.day; moves.push(`${c.name} 콜업(건강한 투수 8명 채우기${futLn(c)})`); }
   if(tid===G.user&&moves.length&&!quiet)note('엔트리',`감독이 1군 엔트리를 조정했습니다: ${moves.join(', ')}.`); }
 /* 돌아온 주축을 다시 1군에(사용자 피드백 11-05: 대표팀에서 돌아온 핵심 3명이 한국시리즈 1차전까지 2군에 남음).
  후보마다 같은 투수·야수 중 기용 순위가 가장 낮은 1군 선수보다 확실히 나으면 바꾼다. 자리가 비면 그냥 올린다 */
 function entryUpgrade(tid,cands,why){ if(!entryOn())return []; const lean=teamLean(tid), v=p=>entryVal(tid,p,lean), lim=entryLimit(), moves=[];
   for(const c of cands.filter(p=>p&&p.team===tid&&canUp(p)) /* 10일 재등록 규칙·입단 예정·차출 중도 같은 기준(검수 11-07) */ /* 2군 선발 수업 투수는 올리지 않는다(바로 말소됨) */.sort((a,b)=>v(b)-v(a))){ const ent=playersOf(tid).filter(p=>p.e1);
     if(ent.length<lim){ c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록`); continue; }
-    const out=ent.filter(p=>p.isP===c.isP&&!cands.includes(p)&&!cProt(p,c,ent)).sort((a,b)=>v(a)-v(b))[0]; if(out&&v(c)>v(out)+1){ out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록 · ${out.name} 말소`); } }
+    const out=ent.filter(p=>p.isP===c.isP&&!cands.includes(p)&&!cProt(p,c,ent)).sort((a,b)=>(isC(c)?Number(isC(b)&&!healthy(b))-Number(isC(a)&&!healthy(a)):0)||v(a)-v(b))[0]; if(out&&(!healthy(out)||v(c)>v(out)+1)){ out.e1=false; out.downDay=G.day; c.e1=true; c.upDay=G.day; moves.push(`${c.name} 등록 · ${out.name} 말소`); } }
   if(tid===G.user&&moves.length)note('엔트리',`감독이 1군 엔트리를 조정했습니다${why?`(${why})`:''}: ${moves.join(', ')}.`); return moves; }
 /* 1군에 올릴 수 없는 사유(canUp이 거짓일 때). 엔트리 관리 화면이 버튼 옆에 같은 문구를 보여 준다(카페 피드백 11-09v) */
-function upWhy(p){ return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':p.susp>G.day?`출장 정지 중입니다(${dmd(p.susp)}부터 출장 가능).`:p.hold?'연봉 미계약 상태입니다. 계약을 먼저 마쳐야 합니다.':!healthy(p)?'부상 중입니다.':p.e1?'이미 1군에 있습니다.':!psOk(p)?'8월 15일 이후 영입한 선수는 포스트시즌 엔트리에 넣을 수 없습니다.':isAway(p)?'대표팀 차출·군 복무 중입니다.':p.joinY>G.year?'다음 시즌 입단 선수입니다.':p.downDay!=null?`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`:'지금은 등록할 수 없습니다.'; }
+function upWhy(p){ return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':p.susp>G.day?`출장 정지 중입니다(${dmd(p.susp)}부터 출장 가능).`:p.hold?'연봉 미계약 상태입니다. 계약을 먼저 마쳐야 합니다.':p.boy>G.day?`훈련 불참 중입니다(${dmd(p.boy)}부터 복귀 가능).`:p.fLeave>G.day?`귀국 휴가·결장 요청 중입니다(${dmd(p.fLeave)}부터 복귀 가능).`:p.injOut>0?'부상 중입니다.':p.frehab?'부상 대체 외국인을 둔 재활 명단에 있습니다.':p.e1?'이미 1군에 있습니다.':!psOk(p)?'8월 15일 이후 영입한 선수는 포스트시즌 엔트리에 넣을 수 없습니다.':isAway(p)?'대표팀 차출·군 복무 중입니다.':p.joinY>G.year?'다음 시즌 입단 선수입니다.':p.downDay!=null&&G.day-p.downDay<10?`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`:'지금은 등록할 수 없습니다.'; }
 function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p.team!==G.user)return '대상이 아닙니다.'; if(!entryOn())return '시즌 중에만 엔트리를 바꿀 수 있습니다.'; if(!m)return '감독이 없습니다.';
   if(up&&!canUp(p))return upWhy(p);
   if(!up&&!p.e1)return '이미 1군에 없습니다.';
@@ -138,7 +143,7 @@ function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p
   { const br=mplBreakListen(`${p.name} ${up?'콜업':'말소'}`); if(br){ m.rel=clamp(m.rel,0,100); return br; } }
   mgrFix(m); const a=clamp(.78-(m.ego-50)/70+(m.rel-60)/120+(mplOn('listen')?.3:0),.15,mplOn('listen')?.98:.95); /* 영입 면담에서 '단장 건의 존중'을 약속받았으면 거의 받아들인다 */ const ok=hn('req'+G.day,id)>-1.2&&R()<a;
   if(!ok){ m.rel=clamp(m.rel-2,0,100); mail('감독실',`${p.name} ${up?'콜업':'말소'} 요청 거절`,`${m.name} 감독: ${up?`${p.name}은(는) 아직 1군에 올릴 때가 아니라고 봅니다.`:`${p.name}은(는) 지금 팀에 필요한 선수입니다.`} 엔트리는 제가 판단하겠습니다.`,{kind:'감독'}); return `${m.name} 감독이 요청을 받아들이지 않았습니다.`; }
-  if(up){ const ent=playersOf(G.user).filter(x=>x.e1); if(ent.length>=entryLimit()){ const d=depth(G.user); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); const lean=teamLean(G.user); const out=ent.filter(x=>x.isP===p.isP&&!core.has(x.id)&&!cProt(x,p,ent)).sort((a,b)=>entryVal(G.user,a,lean)-entryVal(G.user,b,lean))[0]||ent.filter(x=>!core.has(x.id)&&!cProt(x,p,ent))[0]; if(out){ out.e1=false; out.downDay=G.day; } }
+  if(up){ const ent=playersOf(G.user).filter(x=>x.e1); if(ent.length>=entryLimit()){ const d=depth(G.user); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); const lean=teamLean(G.user); const out=ent.filter(x=>isC(p)&&isC(x)&&!healthy(x))[0]||ent.filter(x=>x.isP===p.isP&&!core.has(x.id)&&!cProt(x,p,ent)).sort((a,b)=>entryVal(G.user,a,lean)-entryVal(G.user,b,lean))[0]||ent.filter(x=>!core.has(x.id)&&!cProt(x,p,ent))[0]; if(out){ out.e1=false; out.downDay=G.day; } }
     p.e1=true; p.upDay=G.day; addLog(`${p.name}이(가) 단장 요청으로 1군에 등록되었습니다.`); return `${m.name} 감독이 받아들였습니다. ${p.name} 1군 등록.`; }
   p.e1=false; p.downDay=G.day; entryManage(G.user,false,true); addLog(`${p.name}이(가) 단장 요청으로 1군에서 말소되었습니다.`); return `${m.name} 감독이 받아들였습니다. ${p.name} 말소(${dmd(G.day+10)}부터 재등록 가능).`; }
 /* 육성선수 전환: 연봉 1억 이하·FA·다년계약(다음 시즌 계약 포함) 아님. 깎인 연봉은 전환일부터만(그 전 기간은 원래 연봉, payYear의 ysAdj) */

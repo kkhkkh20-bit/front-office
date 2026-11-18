@@ -45,10 +45,10 @@ function campView(){ const ct=inTabs('cmap',[['home','1군 홈구장'],['farm','
     <div class="cpwrap"><div class="campst" id="campst">${renderCampus(S)}</div>${cpPanel(S,ct.cur)}</div>
     ${cpLegend(ct.cur)}
     <p class="small muted">${ct.cur==='farm'?'2군 선수와 재활·연수 선수가 지내는 훈련장입니다. 실제 구단처럼 홈구장과 떨어져 있습니다.':'1군 엔트리 선수는 홈구장에서 훈련합니다.'} 버스는 원정 경기 피로에 영향을 줍니다(${BUS[busLv()].l}).</p></section>`; }
-function leadCard(){ if(G.unemp)return ''; const cl=climateOf(G.user); const c=cl.cap; const m=G.mgr[G.user]; const ld=c?leadOf(c):null; const adj=G.leadAdj&&G.leadAdj.until>G.day?G.leadAdj:null;
+function leadCard(){if(G.unemp)return '';const cl=climateOf(G.user),c=cl.cap,m=G.mgr[G.user],ld=c?leadOf(c):null,adj=leadAdjOf(G.user);
   const band={loose:['bad','느슨함','집중력이 떨어지고 기행이 잦아집니다'],ok:['','보통','큰 영향은 없습니다'],good:['good','알맞음','선수들이 집중하고 분위기가 좋습니다'],rigid:['warn','너무 엄격','경직된 플레이가 나오고 젊은 선수 불만이 쌓입니다']}[cl.band];
     return `<section class="card"><div class="row between"><h2 class="sec">선수단 리더십</h2><span class="pill ${band[0]}">기강 ${cl.S} · ${band[1]}</span></div>
-    ${c?`<div class="row" style="flex-wrap:nowrap;gap:10px;align-items:center"><button class="pm" data-a="player" data-v="${c.id}">${avImg(c)}<span><b>주장 ${esc(c.name)}</b><i>${posLabel(c)} · ${c.age}세 · 선수단 투표로 선출</i></span></button></div>
+    ${c?`<div class="row" style="flex-wrap:nowrap;gap:10px;align-items:center"><button class="pm" data-a="player" data-v="${c.id}">${avImg(c)}<span><b>${captainTitle(G.user,c)} ${esc(c.name)}</b><i>${posLabel(c)} · ${c.age}세 · ${team(G.user).cap===c.id?'선수단 투표로 선출':'정식 주장 부재 중 현장 대행'}</i></span></button></div>
       <dl class="tsum"><div><dt>리더십 성향</dt><dd>${LEADSTY(ld.str)}</dd></div><div><dt>선수단 영향력</dt><dd>${ld.cha>=14?'큼':ld.cha>=9?'보통':'작음'}</dd></div><div><dt>감독 규율</dt><dd>${m&&m.disc!=null?(m.disc>=65?'엄격':m.disc>=40?'보통':'느슨'):'-'}</dd></div></dl>`:'<p class="small muted">주장이 없습니다. 스프링캠프 때 선수단 투표로 뽑습니다.</p>'}
     <div class="clbar"><i style="left:${cl.S}%"></i><span class="z l">느슨</span><span class="z g">알맞음</span><span class="z r">엄격</span></div>
     <p class="small">${band[2]}.${adj?` 최근 구단 징계로 기강이 ${adj.v>0?'잡혀 있습니다':'흐트러져 있습니다'} · ${dmd(adj.until)}까지`:''}</p>

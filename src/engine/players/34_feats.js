@@ -6,7 +6,7 @@ const FEATMAJ=new Set(['cyc','hr4','h6','pg','nh','tnh','s4040','hr50','h200','a
 /* 리그 통산 몇 번째(종류별 누계). 옛 저장은 남아 있는 연표로 시작한다 */
 function featNth(k){ const N=G.featN=G.featN||{}; if(N[k]==null)N[k]=(G.feats||[]).filter(x=>x.k===k).length; return ++N[k]; }
 /* 선수별 기록(프로필용, 최근 40건). 옛 저장은 리그 연표에 남은 그 선수 기록으로 시작한다 */
-function pFeats(p){ if(!p.feats)p.feats=(G.feats||[]).filter(x=>x.pid===p.id).slice(0,40).map(x=>({i:x.id,y:x.y,d:x.d,k:x.k,txt:x.txt,vs:x.vs||'',n:x.n})); return p.feats; }
+function pFeats(p){ if(!p.feats)p.feats=(G.feats||[]).filter(x=>x.pid===p.id).slice(0,40).map(x=>({i:x.id,y:x.y,d:x.d,k:x.k,txt:x.txt,vs:x.vs||'',n:x.n,tid:x.tid})); return p.feats; }
 const FEAT_PONLY=new Set(['gs','woh']); /* 한 시즌 수십 번 나오는 기록은 리그 연표(600건)를 밀어내지 않게 선수 기록과 누계만 */
 function featFront(list,row){const i=list&&list.indexOf(row);if(i>0){list.splice(i,1);list.unshift(row);}}
 /* 계속되는 한 기록은 ID·통산 회차를 유지하고 최신 달성 날짜의 위치로 옮긴다. */
@@ -22,7 +22,7 @@ function featStreakNews(f,p,previous){if(!f||G.user==null)return;const nth=f.n?`
   else{const n=news('선수',title,body,f.maj?3:1,{ref:p.id,fanW:f.maj?2:1});if(n){n.feat=f.id;n.featTid=f.tid;}}
 }
 function featAdd(k,p,txt,o){ o=o||{}; G.feats=G.feats||[]; const tid=o.tid??(p?(p.team??(G._fsT&&G._fsT[p.id])??null):null); /* 시즌 기록 집계 중 방출된 선수는 기록을 낸 구단으로(검수 11-08) */ const n=k==='mile'||k==='srec'||k==='hs'?null:featNth(k); const f={id:(G.featSeq=(G.featSeq||0)+1),y:G.year,d:G.day,k,pid:p?p.id:null,name:p?p.name:(o.name||''),tid,txt,vs:o.vs||'',maj:FEATMAJ.has(k)||!!o.maj,v:o.v??null}; if(n)f.n=n;
-  if(p){ const L=pFeats(p); L.unshift({i:f.id,y:f.y,d:f.d,k,txt,vs:f.vs,n}); if(L.length>40)L.length=40; }
+  if(p){ const L=pFeats(p); L.unshift({i:f.id,y:f.y,d:f.d,k,txt,vs:f.vs,n,tid}); if(L.length>40)L.length=40; }
   if(!FEAT_PONLY.has(k)){ G.feats.unshift(f); if(G.feats.length>600)G.feats.length=600; }
   o.wire=o.wire&&G.user!=null; /* 개막 전 가상 2025시즌(구단 선택 전)에는 잦은 기록 소식을 내지 않는다 */ const nth=n&&(f.maj||o.wire)?` · 리그 통산 ${n}번째`:'';
   if(f.maj||o.wire){ wire('기록',`${p?p.name+' ':''}${txt}${o.vs?` (${o.vs})`:''}${nth}`,{tid,ref:p?p.id:null,x:{feat:f.id}}); if(tid===G.user&&G.pr&&period()!=='pre'){ const article=news('선수',`${p?p.name+', ':''}${k==='hrc'?txt:FEATK[k]}${n&&f.maj?` (리그 ${n}번째)`:''}`,`${txt}${o.vs?` · ${o.vs}`:''}${nth}`,f.maj?3:1,{ref:p?p.id:null,fanW:f.maj?2:1});if(article){article.feat=f.id;article.featTid=tid;} } }
@@ -50,13 +50,19 @@ function featGame(day,g){ if(!G.cal)return; try{ featPbp(day,g); }catch(e){} for
 const GBK={h:['안타',4],hr:['홈런',3],rbi:['타점',6],r:['득점',4],sb:['도루',3],so:['탈삼진(투수)',10]};
 function gbestSet(k,v,p,vs){ if(!GBK[k]||!(v>=GBK[k][1])||!p)return; G.gbest=G.gbest||{}; const c=G.gbest[k]; if(c&&v<c.v)return; if(c&&v===c.v){ c.tie=(c.tie||0)+1; return; }
   G.gbest[k]={v,name:p.name,pid:p.id,tid:p.team,y:G.year,d:G.day,vs:vs||'',tie:0}; }
+/* 연속 안타는 리그 목록이 밀려나도 선수 기록의 같은 ID로 이어 간다. */
+function featHitStreak(p,vs){const id=p.hstkF,txt=`${p.hstk}경기 연속 안타`,L=pFeats(p);let f=id!=null?(G.feats||[]).find(z=>z.id===id&&z.pid===p.id&&z.k==='hs'):null,pf=id!=null?L.find(z=>z.i===id&&z.k==='hs'):null;
+  if(id==null){p.hstkF=featAdd('hs',p,txt,{vs,v:p.hstk}).id;return;}
+  if(!f){f={id,y:G.year,d:G.day,k:'hs',pid:p.id,name:p.name,tid:p.team,txt,vs:vs||'',v:p.hstk,maj:p.hstk>=28};(G.feats=G.feats||[]).unshift(f);if(G.feats.length>600)G.feats.length=600;G.featSeq=Math.max(G.featSeq||0,...G.feats.map(z=>+z.id||0));}
+  Object.assign(f,{v:p.hstk,txt,y:G.year,d:G.day,vs:vs||'',maj:p.hstk>=28,tid:p.team});
+  if(!pf){pf={i:f.id,k:'hs'};L.unshift(pf);if(L.length>40)L.length=40;}Object.assign(pf,{txt,y:f.y,d:f.d,vs:f.vs,tid:f.tid});featTouch(p,f,pf);}
 /* 경기 단위 타자 기록 (storyGame에서 부른다) */
 function featBat(p,x,vs){ const sg=(x.h||0)-(x.d||0)-(x.tr||0)-(x.hr||0); try{ for(const k of ['h','hr','rbi','r','sb'])gbestSet(k,x[k]||0,p,vs); }catch(e){}
   if(sg>=1&&x.d>=1&&x.tr>=1&&x.hr>=1)featAdd('cyc',p,`사이클링 히트 (${x.ab}타수 ${x.h}안타)`,{vs});
   if(x.hr>=4)featAdd('hr4',p,`한 경기 ${x.hr}홈런`,{vs}); else if(x.hr===3)featAdd('hr3',p,'한 경기 3홈런',{vs});
   if(x.h>=6)featAdd('h6',p,`한 경기 ${x.h}안타`,{vs}); else if(x.h===5)featAdd('h5',p,'한 경기 5안타',{vs});
   if((x.rbi||0)>=8)featAdd('rbi8',p,`한 경기 ${x.rbi}타점`,{vs,maj:x.rbi>=10});
-  if((x.ab||0)+(x.bb||0)+(x.sf||0)>0){ if(x.h>0){ p.hstk=(p.hstk||0)+1; if(p.hstk>=20){ const f=(G.feats||[]).find(z=>z.id===p.hstkF); if(f&&f.pid===p.id){ f.v=p.hstk; f.txt=`${p.hstk}경기 연속 안타`; f.y=G.year; f.d=G.day; f.vs=vs||''; f.maj=p.hstk>=28; const pf=pFeats(p).find(z=>z.i===f.id); if(pf){ pf.txt=f.txt; pf.y=f.y; pf.d=G.day; pf.vs=f.vs; } featTouch(p,f,pf); } /* 갱신한 날의 연도·상대로(검수 11-09zz) */ else p.hstkF=featAdd('hs',p,`${p.hstk}경기 연속 안타`,{vs,v:p.hstk}).id; } } else if(x.ab>0||(x.sf||0)>0){ p.hstk=0; p.hstkF=null; } } } /* 희생플라이는 연속 경기 안타를 끊는다(희생번트·볼넷·사구만 친 경기는 이어진다) */
+  if((x.ab||0)+(x.bb||0)+(x.sf||0)>0){ if(x.h>0){ p.hstk=(p.hstk||0)+1; if(p.hstk>=20)featHitStreak(p,vs); } else if(x.ab>0||(x.sf||0)>0){ p.hstk=0; p.hstkF=null; } } } /* 희생플라이는 연속 경기 안타를 끊는다(희생번트·볼넷·사구만 친 경기는 이어진다) */
 /* 시즌 기록: 정규시즌이 끝날 때 */
 const SBK={hr:['홈런',1],rbi:['타점',1],h:['안타',1],sb:['도루',1],w:['승',1],sv:['세이브',1],so:['탈삼진',1]};
 function featSeason(y){ const B=[], P=[]; G._fsT={}; for(const p of Object.values(G.players)){ const h=seasonTotal(p,y,'1군'); if(!h)continue; G._fsT[p.id]=awTeamOf(p,h,y); /* 타이틀과 같은 소속 기준(검수 11-09zz) */ (p.isP?P:B).push({p,h}); }

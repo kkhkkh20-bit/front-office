@@ -8,10 +8,11 @@ const ovfH=(...a)=>rngHash(...a)/4294967296;
 /* 시즌 진행(주, 실수): 해외 리그 정규시즌 3월 27일~9월 28일(ovlFrac와 같은 구간) */
 const ovfWeek=d=>clamp((d-KD(3,27))/(KD(9,28)-KD(3,27)),0,1)*OVF.nw;
 const _ovfC=new Map();
+let _ovfG=null;
 /* 한 시즌 주별 계획: m·x = 본 줄·다른 수준 줄이 뛰는 주(0/1), w = 주 몫, ev = 구조 사건(콜업·강등·부상·복귀) */
-function ovfPlan(a,L){ const k=a.id+':'+L.y+':'+(L.pa||0)+':'+(L.outs||0)+':'+(L.x?1:0); if(_ovfC.has(k))return _ovfC.get(k); if(_ovfC.size>400)_ovfC.clear();
+function ovfPlan(a,L){ if(_ovfG!==G){_ovfC.clear();_ovfG=G;} let p=null; try{p=a.pj?JSON.parse(a.pj):null;}catch(e){} const k=[a.id,L.y,L.lvl,L.pa||0,L.outs||0,L.x?.lvl||'',a.d??'',(a.lines||[]).length,p?.injOut||0].join(':'); if(_ovfC.has(k))return _ovfC.get(k); if(_ovfC.size>400)_ovfC.clear();
   const id=a.id, y=L.y, nw=OVF.nw, w=[], ev=[]; for(let j=0;j<nw;j++)w.push(.6+.8*ovfH('ow',id,y,j));
-  let p=null; try{ p=a.pj?JSON.parse(a.pj):null; }catch(e){} const av=p?ovsAv(a,p):1, r0=Math.min(nw-2,Math.round((1-av)*nw)); /* 새해에 재활 중이던 몫 */
+  const av=p?ovsAv(a,p):1, r0=Math.min(nw-2,Math.round((1-av)*nw)); /* 새해에 재활 중이던 몫 */
   if(r0>0){ for(let j=0;j<r0;j++)w[j]=0; ev.push({j:r0,k:'ret',t:'재활을 마치고 복귀'}); }
   else if(ovfH('oil',id,y)<.18){ const s=3+Math.floor(ovfH('ois',id,y)*16), n=2+Math.floor(ovfH('oin',id,y)*4); for(let j=s;j<Math.min(nw,s+n);j++)w[j]=0; ev.push({j:s,k:'il',t:`부상자 명단에 올라 ${n}주쯤 쉽니다`}); if(s+n<nw)ev.push({j:s+n,k:'ret',t:'부상을 털고 복귀'}); }
   const m=Array(nw).fill(1), x=L.x?Array(nw).fill(0):null;
@@ -27,12 +28,12 @@ function ovfFrac(a,L,act,k,t){ const nw=OVF.nw, P=ovfPlan(a,L); let tot=0, cum=0
   for(let j=0;j<nw;j++){ const v=act[j]*P.w[j]*(OVF_J[k]?.35+1.3*ovfH('os',a.id,L.y,k,j):1); tot+=v; if(j<ti)cum+=v; else if(j===ti)cum+=v*(t-ti); } return tot>0?cum/tot:0; }
 /* 주 t까지의 기록(본 줄 + 다른 수준 x). 화면의 '진행 중' 기록과 소식이 같은 값 */
 function ovfCum(a,L,t){ const P=ovfPlan(a,L), nw=OVF.nw; if(t>=nw)return L;
-  const mk=(Q,act)=>{ const o={}; for(const k in Q){ if(k==='x')continue; const v=Q[k]; o[k]=typeof v==='number'&&!['y','c','o','rp'].includes(k)?Math.round(v*ovfFrac(a,L,act,k,t)):v; } o.live=1; return o; };
+  const mk=(Q,act)=>{ const o={}; for(const k in Q){ if(k==='x')continue; const v=Q[k]; o[k]=typeof v==='number'&&!['y','c','o','rp'].includes(k)?Math.round(v*ovfFrac(a,L,act,k,t)):v; } ovsBatCumFix(o);o.live=1; return o; };
   const M=mk(L,P.m); if(L.x){ const X=mk(L.x,P.x); if((X.pa||0)+(X.outs||0)>0)M.x=X; } /* 아직 오르내리기 전이면 다른 수준 줄은 없다 */
   if(L.x&&!((M.pa||0)+(M.outs||0))&&M.x){ const X=M.x; delete M.x; return Object.assign(X,{y:L.y,live:1}); } /* 아직 본 수준에서 뛰지 않았다: 지금 뛰는 수준을 앞에 */
   return M; }
 /* 진행 중인 해외파 기록(화면용, ovsPart 대신): f = 해외 리그 진행 비율 */
-function ovsCurPart(a,f){ const L=a&&a.cur; if(!L)return null; if(f>=1)return L; if(a.foreign||a.cand)return ovsPart(L,f); const M=ovfCum(a,L,f*OVF.nw); return a.asY===L.y&&M!==L?Object.assign({},M,{aw:['AS']}):M; } /* 7월에 뽑힌 올스타는 진행 중 줄에도 */
+function ovsCurPart(a,f){ const L=a&&a.cur; if(!L)return null; const M=f>=1?L:a.foreign||a.cand?ovsPart(L,f):ovfCum(a,L,f*OVF.nw); return a.asY===L.y?Object.assign({},M,{aw:[...new Set([...(M.aw||[]),'AS'])]}):M; } /* 7월에 뽑힌 올스타는 100% 마감 직전에도 유지한다. 조회는 원본을 바꾸지 않는다. */
 /* 올스타(빅리그만): 시즌 기록 가치로 정한다. 확률은 시즌 뒤 시상(ovsAwards)과 같은 식, 뽑기는 해시. 7월 초에 발표하고 시즌 뒤 시상도 그 결과를 따른다 */
 function ovsAsP(L,isP){ if(!L||!ovsBig(L.lvl))return 0; const v=ovsVal(L,isP); return isP&&L.rp?(v>=1.6?clamp((v-1.4)/2.5,0,.5):0):clamp((v-3)/3,0,.85); }
 const ovsKr=a=>a&&!a.foreign&&!a.cand&&!a.back&&a.end==null;

@@ -3,8 +3,8 @@
    많이 밀어붙이는 감독은 불펜 3연투·4연투, 멀티이닝, 선발을 일찍 내리고 필승조를 계속 붙이는 운용을 한다.
    투수마다 최근 등판 기록(연투)과 누적 팔 부하를 쌓고, 둘 다 부상 위험과 팔꿈치·어깨 부상 비중을 키운다 */
 function mgrPush(tid){ if(tid==null)return 50; const m=mgrOf(tid); if(!m||m.interim)return 50;
-  const c=G._push&&G._push.d===G.day?G._push:(G._push={d:G.day,v:{}}); if(c.v[tid]!=null)return c.v[tid];
-  let v=mgrArmEff(m); try{ v+=-teamLean(tid)*10; }catch(e){}
+  const c=G._push&&G._push.d===G.day?G._push:(G._push={d:G.day,v:{}}), arm=mgrArmEff(m), key=String(m.id??m.name)+':'+arm; c.k=c.k||{}; if(c.v[tid]!=null&&c.k[tid]===key)return c.v[tid]; c.k[tid]=key;
+  let v=arm; try{ v+=-teamLean(tid)*10; }catch(e){}
   if(period()==='season'&&G.day>=KD(8,15)){ try{ const S=standingsNow(); const pct=x=>x.w/Math.max(1,x.w+x.l); const i=S.findIndex(x=>x.tid===tid); const cut=S[4]; if(i>=0&&cut){ const gb=((cut.w-S[i].w)+(S[i].l-cut.l))/2; if(Math.abs(gb)<=3||i<=1)v+=8; void pct; } }catch(e){} }
   if(G.ps&&period()==='post')v+=15;
   return c.v[tid]=clamp(Math.round(v),15,100); }
@@ -14,18 +14,20 @@ function consecDays(p,day){ const L=p.ld||[]; let n=0, d=day-1; for(let i=L.leng
 function pc7(p,day){ return sum((p.ld||[]).filter(x=>x[0]>=day-7&&x[0]<day).map(x=>x[1])); }
 /* 누적 팔 부하 한도: 선발은 5일 로테이션 100구, 불펜은 이틀에 한 번 20구를 꾸준히 던질 때 한도에 닿는다 */
 /* 선발 한도는 지금 역할이 선발이거나 최근 선발처럼 길게(60구 이상) 던진 투수(대체 선발·불펜 데이)에게 적용한다 */
-function armCap(p){ const s=p.r.sta||50; const SP=1150+(s-50)*18, RP=540+(s-50)*9; if(isSPr(p))return SP; let w=0; for(const x of (p.ld||[]))if(x[1]>=60)w=Math.max(w,clamp(1-(G.day-x[0])/60,0,1)); return RP+(SP-RP)*w; } /* 계투: 최근 긴 등판(60구 이상)일수록 선발 한도에 가깝고, 60일에 걸쳐 계투 한도로 줄어든다(오래된 기록 하나로 한도가 두 배가 되지 않게) */ /* 체력이 좋을수록 시즌 누적 부하를 더 견딘다 */
+function armCap(p){ const s=p.r.sta||50; const SP=1150+(s-50)*18, RP=540+(s-50)*9; if(isSPr(p))return SP; let w=0; for(const x of (p.ld||[]))if(loadApps(x,p.lsD||[]).some(a=>a[0]>=60))w=Math.max(w,clamp(1-(G.day-x[0])/60,0,1)); return RP+(SP-RP)*w; } /* 계투: 최근 긴 한 등판(60구 이상) 노출을 60일에 걸쳐 줄인다. 하루 합계는 긴 한 등판이 아니다. */
 function armRatio(p){ return (p.armw||0)/armCap(p); }
 /* 등판 기록: applyGame에서 투수마다 호출 */
 /* 등판 하나를 1군·퓨처스 공통으로 남긴다: 부하 기록(날짜순) + 마지막 등판일·선발일·투구 수. 선발 선택·불펜 가용 판단이 어느 리그 등판이든 같은 이력을 본다 */
 function pitchApp(p,day,pc,isStart){ const cd=loadLog(p,day,pc,isStart); if(p.lastApp==null||day>=p.lastApp){ if(day!==p.lastApp)p.prevApp=p.lastApp; p.lastPc=day===p.lastApp?(p.lastPc||0)+pc:pc; p.lastApp=day; } /* 같은 날 두 번 던지면 합친다: 다음 날 불펜 가용 판정이 그날 전체 투구 수를 보게(검수 11-09) */ else if(p.prevApp==null||day>p.prevApp)p.prevApp=day; if(isStart&&(p.lastStart==null||day>p.lastStart))p.lastStart=day; return cd; }
 /* 최근 실제 등판들의 부하기여만 비교한다. 이미 쌓인 시즌 부하·일일 회복은 되돌리지 않는다. */
-function loadSpan(L,starts){const days=new Set(L.map(x=>x[0]));let total=0;for(const row of L){const [d,pc]=row;let cd=0;while(days.has(d-cd-1))cd++;const apps=row[3]||[[pc,starts.includes(d)?1:0]];for(const [n,sp] of apps){let v=n*(cd>=2?1.8:cd>=1?1.3:1);if(sp){if(n>105)v+=(n-105)*3;if(starts.some(s=>s<d&&d-s<5))v+=n*.4;if(L.some(r=>r[0]<d&&d-r[0]<=3&&!starts.includes(r[0])&&r[1]>=20))v+=n*.3;}else{if(n>=35)v+=(n-35)*1.5;if(starts.some(s=>s<d&&d-s<=2))v+=n*1.0;}total+=v;}}return total;} /* 보직 왔다갔다(사용자 11-11: 오가게 하면 혹사): 구원 20구 이상 던진 뒤 3일 안에 선발이면 +30%, 선발 뒤 2일 안에 구원으로 쓰면 그 등판 부하 두 배 */
+/* ld[1]은 하루 합계, ld[3]은 [등판 투구 수, 선발 여부] 목록. 옛 DH 저장은 세부를 복원할 수 없어 균등 분할해 합계만으로 긴 등판 혜택을 주지 않는다. 조회 시 저장값을 바꾸지 않는다. */
+function loadApps(row,starts){ if(row[3]&&row[3].length)return row[3]; const n=Math.max(1,row[2]||1); return Array.from({length:n},(_,i)=>[(row[1]||0)/n,i===0&&starts.includes(row[0])?1:0]); }
+function loadSpan(L,starts){const days=new Set(L.map(x=>x[0]));let total=0;for(const row of L){const [d]=row;let cd=0;while(days.has(d-cd-1))cd++;const apps=loadApps(row,starts);for(const [n,sp] of apps){let v=n*(cd>=2?1.8:cd>=1?1.3:1);if(sp){if(n>105)v+=(n-105)*3;if(starts.some(s=>s<d&&d-s<5))v+=n*.4;if(L.some(r=>r[0]<d&&d-r[0]<=3&&loadApps(r,starts).some(a=>!a[1]&&a[0]>=20)))v+=n*.3;}else{if(n>=35)v+=(n-35)*1.5;if(starts.some(s=>s<d&&d-s<=2))v+=n*1.0;}total+=v;}}return total;} /* 보직 전환 가산도 날짜 합계가 아닌 실제 구원 한 등판 20구를 기준으로 한다. */
 function loadLog(p,day,pc,isStart){ const cd=consecDays(p,day),L=p.ld=p.ld||[],SD=(p.lsD||[]).slice(),before=loadSpan(L,SD);const same=L.find(x=>x[0]===day);
-  if(same){const apps=same[3]||(same[3]=[[same[1],SD.includes(day)?1:0]]);apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
+  if(same){const apps=same[3]||(same[3]=loadApps(same,SD));apps.push([pc,isStart?1:0]);same[1]+=pc;same[2]=(same[2]||1)+1;}else L.push([day,pc,1,[[pc,isStart?1:0]]]);L.sort((a,b)=>a[0]-b[0]);
   if(isStart){if(!SD.includes(day))SD.push(day);SD.sort((a,b)=>a-b);if(p.lsS==null||day>p.lsS)p.lsS=day;}
-  p.armw=Math.max(0,(p.armw||0)+loadSpan(L,SD)-before);while(L.length>10)L.shift();if(isStart)p.lsD=SD.slice(-6);
-  if(cd>=3&&p.team===G.user&&p.e1&&period()==='season'){ /* 4일 연속부터(플레이 리뷰 11-12: 3일 연투 알림이 시즌 14통) */ /* 2군(퓨처스) 연투는 2군 감독 몫: 1군 투수만 알린다(제보 11-12) */ const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
+  p.armw=Math.max(0,(p.armw||0)+loadSpan(L,SD)-before);const latest=L[L.length-1][0];while(L.length>10&&L[0][0]<latest-60)L.shift();if(isStart)p.lsD=SD.slice(-6);
+  if(cd>=3&&p.team===G.user&&p.e1&&period()==='season'&&p.loadWarnDay!==day){ /* 같은 날 DH도 4연투 경고는 한 번만 보낸다. */ p.loadWarnDay=day; const m=G.mgr[G.user]; note('부하',`${p.name}이(가) ${cd+1}일 연속 등판했습니다(최근 7일 ${pc7(p,day+1)}구).${m&&!m.interim?` ${m.name} 감독의 투수 운용: ${pushText(mgrPush(G.user))}.`:''}`,p.id); }
   return cd; }
 /* 부상 위험 배수: 연투(급성)와 누적 부하(만성) */
 function loadMult(p,cd,day){ const sp=isSPr(p); const w7=pc7(p,day);
@@ -40,7 +42,7 @@ function loadText(p){ if(!p.isP)return ''; const day=G.day+1; const cd=consecDay
 /* 매주 월요일: 우리 팀 부하 보고 */
 function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user).filter(p=>p.isP&&armRatio(p)>=1.1).sort((a,b)=>armRatio(b)-armRatio(a));
   /* 같은 투수가 같은 단계(높음·위험)로 계속 남아 있으면 매주 되풀이하지 않는다: 새로 한도를 넘었거나 '위험'으로 올라간 투수가 있을 때만 */
-  const lv=p=>armRatio(p)>=1.3?2:1; const prev=G.loadSig||{}; const cur={}; for(const p of hi)cur[p.id]=lv(p); G.loadSig=cur; if(!hi.length)return;
+  const lv=p=>armRatio(p)>=1.3?2:1; const prev=G.loadSig1||{}; const cur={}; for(const p of hi)if(p.e1)cur[p.id]=lv(p); G.loadSig1=cur; if(!hi.length)return;
   /* 1군과 2군(퓨처스)을 나눈다: 2군 투수 운용은 1군 감독 지시와 무관하고, 2군 투수만 바뀐 주에는 보고하지 않는다(제보 11-12: 2군 혹사 보고가 계속 올라옴) */
   const one=hi.filter(p=>p.e1), two=hi.filter(p=>!p.e1); if(!one.some(p=>(prev[p.id]||0)<cur[p.id]))return;
   const m=G.mgr[G.user], fm=(coachesOf(G.user)||{}).fm; const line=p=>`${p.name}(${posLabel(p)}): ${loadText(p)}`;
@@ -51,7 +53,7 @@ function loadWeekly(){ if(period()!=='season')return; const hi=playersOf(G.user)
 const MED_SD={none:.07,c:.05,b:.035,a:0};
 function medInj(p){ const v=p.inj*injStam(p); /* 체력까지 반영한 실제 부상 위험(사용자 11-08) */ if(p.team===G.user)return v; const sd=MED_SD[G.med&&G.med.hosp]??.07; return sd?clamp(v+hn('med'+G.year,p.id)*sd,.02,Math.max(.45,v)):v; } /* 정확한 검진(오차 0)은 우리 선수와 같은 값(검수 11-09zy: 상한 .45로 잘림) */
 function durGrade(v){ return v<.08?['강철 몸','good']:v<.12?['튼튼함','good']:v<.18?['보통','']:v<.26?['잔부상 주의','warn']:['부상 병동','bad']; }
-function injDays2(p){ const H=p.injHist||[], last=H[H.length-1], s0=dnum(G.year-1,1,1); return sum(H.map(h=>{ if(h.d==null)return h.y>=G.year-1?h.days:0; const e=h.bk??(h===last&&p.injOut>0?G.day:h.d+h.days); return Math.max(0,Math.min(e,G.day)-Math.max(h.d,s0)); })); } /* 작년 1월 1일부터 빠진 날: 해를 넘긴 부상도 그 기간 몫은 센다(검수 11-09zy) */
+function injDays2(p){ const H=p.injHist||[], active=injEpisode(p), s0=dnum(G.year-1,1,1), L=[];let legacy=0;for(const h of H){if(h.d==null){if(h.y>=G.year-1)legacy+=h.days||0;continue;}const e=h.bk??(h===active&&p.injOut>0?G.day:h.ret??h.d+h.days),a=Math.max(h.d,s0),b=Math.min(e,G.day);if(b>a)L.push([a,b]);}L.sort((a,b)=>a[0]-b[0]);let n=legacy,end=-Infinity;for(const [a,b]of L){n+=Math.max(0,b-Math.max(a,end));end=Math.max(end,b);}return n; } /* 겹친 재활도 같은 달력 하루는 한 번만 센다. */
 /* 부상 당시 구단: 옛 저장(t 없음)은 이적 기록(tLog)에서 그날 소속을 찾는다(검수 11-09zy) */
 function injTm(p,h){ if(h.t!=null)return h.t; const m=h.d!=null&&(p.tLog||[]).find(x=>x.d>h.d); return m?m.f:p.team; } /* 실제 복귀일(bk)·지금 재활 중이면 오늘까지로 센다: 진단 일수와 다른 조기 복귀·재활 연장(검수 11-09t) */ /* 이미 빠진 날만(앞으로 남은 재활은 아직 결장 이력이 아님, 검수 11-08) */
 function medReport(p){ const v=medInj(p); const [g,c]=durGrade(v); const L=[];
@@ -68,5 +70,5 @@ function medRisky(p){ return medTradeF(p)<.82; }
 /* 선발 빌드업(사용자 11-11: 많이 던진다고 체력이 느는 게 아니라 선발의 몸을 만들어야 한다): 최근 30일 가장 긴 등판이 90구 미만이면 이번 선발은 그보다 18구 많은 데까지(최소 60구). 보통 60→80→95처럼 세 번쯤 걸려 정상 투구 수가 된다.
    시즌 첫 35일의 선발 보직 투수는 스프링캠프에서 몸을 만든 것으로 본다. 1군·퓨처스 등판을 같이 센다. 제한이 없으면 null */
 function spRampCap(p,day){ if(!p||!p.isP)return null; const open=G.cal&&G.cal.open; if(open!=null&&day-open<35&&day>=open&&isSPr(p))return null;
-  const L=(p.ld||[]).filter(x=>x[0]<day&&x[0]>=day-30); const mx=L.reduce((a,x)=>Math.max(a,x[1]||0),0); if(mx>=90)return null; return Math.max(60,mx+18); }
+  const L=(p.ld||[]).filter(x=>x[0]<day&&x[0]>=day-30); const mx=L.reduce((a,x)=>Math.max(a,...loadApps(x,p.lsD||[]).map(v=>v[0]||0)),0); if(mx>=90)return null; return Math.max(60,mx+18); }
 function spRampText(p){ try{ const c=spRampCap(p,G.day+1); return c==null?'':`선발 빌드업 중: 다음 선발은 약 ${Math.round(c)}구까지(최근 30일 가장 긴 등판 기준)`; }catch(e){ return ''; } }

@@ -165,7 +165,8 @@ function ntRecBlock(k,p){ const e=NT_EV[k], ann=KD(e.ann[0],e.ann[1]);
   if(p.susp>ann)return `${p.name}은(는) 최종 발표(${dmd(ann)}) 뒤까지 출장 정지입니다.`;
   return ''; }
 /* 해외파 차출(커뮤니티 요청 11-07): 해외에서 뛰는 국내 선수 중 능력 상위 최대 3명이 대표팀에 합류해 전력에 더해진다(소속 구단 허락을 받은 것으로 본다). 국내 명단 24명과 별도 */
-function ntAbroad(){ const out=[]; for(const a of G.abroad||[]){ if(a.back||a.foreign||!a.pj||!(G.year>=(a.y1??a.y+1)))continue; let o=null, q=null; try{ q=JSON.parse(a.pj); q.age=(a.age||q.age)+(G.year-a.y); o=Math.max(0,(q.injOut||0)-(a.d!=null&&!(a.lines||[]).length?G.day-a.d:0))>0?null:ovr(q); /* 재활 중인 해외파는 뽑지 않는다(검수 11-08) */ }catch(e){} if(o!=null&&o>=55)out.push(ntOvsFix({id:a.id,name:a.name,club:a.club,lg:a.lg,pos:a.pos,isP:!!a.isP,o,sn:ntOvsSnap(q)})); } return out.sort((x,y)=>y.o-x.o).slice(0,3); }
+const ntOvsAge=(a,q)=>Number.isFinite(q?.age)?q.age:a.age;
+function ntAbroad(){ const out=[]; for(const a of G.abroad||[]){ if(a.back||a.foreign||!a.pj||!(G.year>=(a.y1??a.y+1)))continue; let o=null, q=null; try{ q=JSON.parse(a.pj); q.age=ntOvsAge(a,q); o=Math.max(0,(q.injOut||0)-(a.d!=null&&!(a.lines||[]).length?G.day-a.d:0))>0?null:ovr(q); /* 해외 보관본도 매년 성장했으므로 대표 선발 때 체류 연수를 다시 더하지 않는다. */ }catch(e){} if(o!=null&&o>=55)out.push(ntOvsFix({id:a.id,name:a.name,club:a.club,lg:a.lg,pos:a.pos,isP:!!a.isP,o,sn:ntOvsSnap(q)})); } return out.sort((x,y)=>y.o-x.o).slice(0,3); }
 /* ===== 해외파 선수(검수 11-17 #221·#222) =====
    해외파 기록(G.abroad)의 pos는 화면용 한글('포수','중견수','선발')이라 그대로 쓰면 포수가 내야로 세어지고 경기에서 포수 수비가 0이었다.
    pos는 코드('C','CF','P')로, 화면용 한글은 pl에 둔다. 경기용 임시 선수는 발표 때 저장한 모습(sn: 능력·투타·구속·투구폼·세부 수비)으로 만든다.
@@ -175,7 +176,7 @@ function ntPosCode(pos,isP){ if(isP)return 'P'; if(pos&&POSK[pos])return pos; re
 function ntOvsSnap(q){ if(!q||!q.r)return null; return {pos:q.isP?'P':q.pos,th:q.th,bt:q.bt,age:q.age,r:Object.assign({},q.r),v:q.velo,dl:q.delivery||null,dsb:q.dsb||null,role:q.role||null}; }
 /* 예전 저장·옛 발표 명단의 해외파 한 줄을 고친다(두 번 불러도 같다) */
 function ntOvsFix(x){ if(!x)return x; if(!x.pl&&x.pos&&!POSK[x.pos]&&x.pos!=='P')x.pl=x.pos; const c=ntPosCode(x.pos,x.isP); if(x.pos!==c){ if(!x.pl)x.pl=x.isP?'투수':POSK[c]; x.pos=c; }
-  if(!x.sn){ const a=(G.abroad||[]).find(r=>r&&r.id===x.id&&r.pj&&!r.back); if(a)try{ const q=JSON.parse(a.pj); q.age=(a.age||q.age)+(G.year-a.y); x.sn=ntOvsSnap(q); }catch(e){} } return x; }
+  if(!x.sn){ const a=(G.abroad||[]).find(r=>r&&r.id===x.id&&r.pj&&!r.back); if(a)try{ const q=JSON.parse(a.pj); q.age=ntOvsAge(a,q); x.sn=ntOvsSnap(q); }catch(e){} } return x; }
 const ntOvsU=(x,k)=>rngHash('ntovs',x.id,x.name||'',k)/4294967296;
 /* 경기용 해외파 임시 선수(84b ntRosterObjs가 부른다). 임시 선수 번호는 매번 새로 나오므로, 해외파 원래 번호가 비어 있으면 그 번호를 쓴다(번호로 정해지는 세부 성향도 경기마다 같게) */
 function ntOvsTmp(x){ ntOvsFix(x); const sn=x.sn; const pos=x.isP?'P':(sn&&sn.pos&&sn.pos!=='P'?sn.pos:x.pos);
@@ -191,7 +192,7 @@ function ntArcRos(N){ const L=N.ids.map(id=>{ const p=G.players[id]; return p?[i
 /* WBC 해외파 소집일 재검사(검수 11-17 #224): 발표(1월 20일) 때 재활 중이라 빠졌다가 소집일(2월 24일)까지 나은 해외파도 합류한다.
    발표 때 뽑힌 해외파는 그대로 두고(국내 복귀·재활이면 뺀다), 빈자리(최대 3명)를 지금 뽑을 수 있는 해외파로 채운다 */
 function ntOvsRecheck(N){ if(!N||N.k!=='wbc')return []; const now=ntAbroad(), ok=new Map(now.map(x=>[x.id,x])); const prev=(N.ovs||[]).map(ntOvsFix);
-  const keep=prev.filter(x=>ok.has(x.id)), out=prev.filter(x=>!ok.has(x.id)); const add=now.filter(x=>!keep.some(k=>k.id===x.id)).slice(0,Math.max(0,3-keep.length));
+  const keep=prev.filter(x=>ok.has(x.id)).map(x=>ok.get(x.id)), out=prev.filter(x=>!ok.has(x.id)); const add=now.filter(x=>!keep.some(k=>k.id===x.id)).slice(0,Math.max(0,3-keep.length));
   N.ovs=keep.concat(add); if(out.length||add.length){ const e=NT_EV[N.k]; addLog(`${e.n} 해외파 소집일 검사: ${out.length?`${out.map(x=>x.name).join(', ')} 제외(재활·국내 복귀)`:''}${out.length&&add.length?' · ':''}${add.length?`${add.map(x=>`${x.name}(${x.lg} ${x.club})`).join(', ')} 합류`:''}`);
     if(add.length)news('리그',`${e.n} 대표팀 해외파 ${add.map(x=>x.name).join('·')} 합류`,`소집일 검사에서 ${add.map(x=>`${x.name}(${x.lg} ${x.club})`).join(', ')}이(가) 대표팀에 합류했습니다.${out.length?` ${out.map(x=>x.name).join(', ')}은(는) 빠집니다.`:''}`,0,{}); }
   return add; }
@@ -218,5 +219,6 @@ function ntDayCheck(N,d){ N=N||G.nt; d=d==null?G.day:d; if(!N||!N.ids)return [];
   return out; }
 /* 불러오기 수리(두 번 불러도 같다): 해외파 포지션 코드·저장 모습, 지난 대회 기록실 명단의 해외파, 상무 안내 표시(구단·기수별 목록) */
 function ntLoadFix(){ if(!G)return; const N=G.nt; if(N&&N.ovs)N.ovs.forEach(ntOvsFix);
+  if(N?.y===G.year&&!N.tour?.done)for(const x of N.ovs||[]){const a=(G.abroad||[]).find(a=>a.id===x.id&&a.pj&&!a.back);if(a&&x.sn)try{x.sn.age=ntOvsAge(a,JSON.parse(a.pj));}catch(e){}}
   if(N&&N.ovs&&N.ovs.length&&N.tour&&N.tour.done)for(const A of G.ntArc||[]){ if(A.k!==N.k||A.y!==N.y||!A.ros)continue; for(const r of ntArcRos(N))if(String(r[0]).startsWith('o')&&!A.ros.some(x=>x[0]===r[0]))A.ros.push(r); }
   try{ smMailFix(); }catch(e){} }

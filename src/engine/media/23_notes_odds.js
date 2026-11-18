@@ -5,7 +5,7 @@ function teamGames(tid,from,n){ const c=G.cal; const L=[]; if(!c||!c.sched)retur
   return L.sort((a,b)=>a.d-b.d).slice(0,n); }
 let _spC={k:null};
 function projStarters(tid,n){ // 지금 로테이션 순번과 휴식일로 다음 경기 선발을 예상(부상·피로로 바뀔 수 있음)
-  const t=team(tid); const k=G.day+':'+G.games.length+':'+G.year+':'+(t.rot||0)+':'+JSON.stringify(G.makeup||[])+':'+JSON.stringify(G.prole||{})+':'+JSON.stringify(G.policy||null); if(_spC.k!==k||_spC.g!==G)_spC={k,g:G}; /* 세이브(G 객체)가 바뀌면 다시(검수 11-09zh) */
+  const t=team(tid), P=G.ps, s=P&&!P.done&&P.cur; const schedule=JSON.stringify([G.cal&&[G.cal.end,G.cal.sched],P&&[P.done,P.seeds,s&&[s.round,s.hi,s.lo,s.gi,s.days,s.homes]]]); const k=G.day+':'+G.games.length+':'+G.year+':'+(t.rot||0)+':'+schedule+':'+JSON.stringify(G.makeup||[])+':'+JSON.stringify(G.prole||{})+':'+JSON.stringify(G.policy||null); if(_spC.k!==k||_spC.g!==G)_spC={k,g:G}; /* 같은 날 순연·시드·현재 차전이 달라져도 새 일정으로 계산(검수 11-18 #551). 세이브(G 객체)가 바뀌면 다시 */
   const pk=playersOf(tid).filter(p=>p.isP).map(p=>[p.id,p.name,p.e1?1:0,p.injOut||0,p.susp||0,rpPlanOf(tid,p)||'',p.lastApp,p.lastStart,p.role||''].join('|')).join(','), ck=tid+':'+n; if(_spC[ck]&&_spC[ck].pk===pk)return _spC[ck].v; /* 투수 이름·등록·부상·출장정지·보직 계획·마지막 등판이 바뀌면 다시 계산(검수 11-09zh) */
   const dp=depth(tid), sp=dp.sp; const games=teamGames(tid,G.day+1,n); const last={}; sp.forEach(p=>last[p.id]=p.lastStart); let rot=t.rot||0; const out=[]; const fr=(p,d)=>!(p.lastApp!=null&&p.lastApp!==p.lastStart&&last[p.id]===p.lastStart&&d-p.lastApp<2); /* 실제 선발 선택처럼 어제·그제 구원 등판한 투수는 순번을 넘긴다(검수 11-08) */
   for(const g of games){ let pick=null;
@@ -109,19 +109,21 @@ function staffNotes(p){ // 선수 카드 상단 스태프 의견
 
 /* ===== 선수 이야기(커리어 연표) ===== */
 function story(p,t,k){ if(!p)return; (p.story=p.story||[]).push({y:G.year,d:G.day,t,k:k||''}); if(p.story.length>60)p.story.splice(1,1); }
-const MILE={hr:[100,200,300,400,500],h:[1000,1500,2000,2500],w:[100,150,200],sv:[100,200,300,400],so:[1000,1500,2000]};
-const MILEK={hr:'홈런',h:'안타',w:'승',sv:'세이브',so:'탈삼진'};
-function cumInit(p){ if(p.cum)return; const one=p.hist.filter(h=>h.lvl==='1군'); const c={h:0,hr:0,w:0,sv:0,so:0}; for(const h of one){ if(p.isP){ c.w+=h.w||0; c.sv+=h.sv||0; c.so+=h.so||0; } else { c.h+=h.h||0; c.hr+=h.hr||0; } } p.cum=c; p.fl=p.fl||{}; if(one.length)p.fl.deb=1; if(c.hr)p.fl.hr1=1; if(c.w)p.fl.w1=1; if(c.sv)p.fl.sv1=1; }
+const MILE=Object.fromEntries(MILE_W.map(([k,l,goals])=>[k,goals])); /* 예고와 실제 달성은 같은 부문·기준을 쓴다. */
+const MILEK=Object.fromEntries(MILE_W.map(([k,l])=>[k,l]));
+function cumInit(p){ const initFlags=!p.cum||!p.fl,one=(p.hist||[]).filter(h=>h.lvl==='1군'),c=p.cum=p.cum||{};for(const [k,l,goals,near,isP] of MILE_W)if(c[k]==null)c[k]=!!p.isP===isP?one.reduce((s,h)=>s+(h[k]||0),0):0;p.fl=p.fl||{};if(initFlags){if(one.length)p.fl.deb=1;if(c.hr)p.fl.hr1=1;if(c.w)p.fl.w1=1;if(c.sv)p.fl.sv1=1;} }
+function storySeasonCounter(p,repair=false){const h=seasonTotal(p,G.year,'1군')||{},S=p.sct=p.sct?.y===G.year?p.sct:{y:G.year};for(const k of ['h','hr','w','sv'])if(repair||!Number.isFinite(S[k]))S[k]=Math.max(0,h[k]||0);return S;}
+function storyCountersMigrate(){let n=0;for(const p of Object.values(G.players||{})){const before=JSON.stringify([p.cum,p.fl,p.sct]);cumInit(p);storySeasonCounter(p,true);if(JSON.stringify([p.cum,p.fl,p.sct])!==before)n++;}return n;}
 function storyGame(p,x,day,opp,dec,game){ // 1군 경기 하나가 끝난 뒤
   cumInit(p); const f=p.fl, c=p.cum; const vs=`${dmd(day)} vs ${tshort(opp)}`;
   if(!f.deb){ f.deb=1; story(p,`1군 데뷔 · ${vs}`,'debut'); }
-  const add=(k,v)=>{ if(!v)return; const b=c[k]; c[k]+=v; for(const m of MILE[k]) if(b<m&&c[k]>=m){ story(p,`통산 ${m}${MILEK[k]} 달성 · ${vs}`,'mile'); try{ featAdd('mile',p,`통산 ${m}${MILEK[k]}`,{vs,maj:m>=({hr:400,h:2000,w:150,sv:300,so:2000})[k]}); }catch(e){} } };
-  { const S=p.sct=p.sct&&p.sct.y===G.year?p.sct:{y:G.year,h:0,hr:0,w:0,sv:0}; const up=(k,v,ms,txt)=>{ if(!v||G.ps&&G.ps.cur&&period()==='post')return; const b=S[k]; S[k]+=v; for(const m of ms)if(b<m&&S[k]>=m){ story(p,`시즌 ${m}${txt} · ${vs}`,'mile'); if(G.user!=null)wire('기록',`${p.name}(${tshort(p.team)}) 시즌 ${m}${txt} 달성`,{tid:p.team,ref:p.id}); if(p.team===G.user&&G.pr)news('선수',`${p.name}, 시즌 ${m}${txt} 고지`,`${p.name}이(가) ${vs} 경기에서 올 시즌 ${jEulReul(m+txt)} 채웠습니다. 구단 기록에 이름을 올립니다.`,2,{ref:p.id}); } }; /* 시즌 대기록은 달성한 그 경기에 바로 알린다(시즌 끝 진기록과 별도, 사용자 11-08) */
+  const add=(k,v)=>{ if(!v)return; const b=c[k]; c[k]+=v; for(const m of MILE[k]) if(b<m&&c[k]>=m){ story(p,`통산 ${m}${MILEK[k]} 달성 · ${vs}`,'mile'); try{const emit=()=>featAdd('mile',p,`통산 ${m}${MILEK[k]}`,{vs,maj:m>=({hr:400,h:2000,w:150,sv:300,so:2000,hld:200,rbi:1000,sb:400})[k]});if(['hld','rbi','sb'].includes(k)||k==='h'&&m===3000)withRng(rngHash('careerMile',p.id,G.year,day,k,m),emit);else emit();}catch(e){} } };
+  { const S=storySeasonCounter(p); const up=(k,v,ms,txt)=>{ if(!v||G.ps&&G.ps.cur&&period()==='post')return; const b=S[k]; S[k]+=v; for(const m of ms)if(b<m&&S[k]>=m){ story(p,`시즌 ${m}${txt} · ${vs}`,'mile'); if(G.user!=null)wire('기록',`${p.name}(${tshort(p.team)}) 시즌 ${m}${txt} 달성`,{tid:p.team,ref:p.id}); if(p.team===G.user&&G.pr)news('선수',`${p.name}, 시즌 ${m}${txt} 고지`,`${p.name}이(가) ${vs} 경기에서 올 시즌 ${jEulReul(m+txt)} 채웠습니다. 구단 기록에 이름을 올립니다.`,2,{ref:p.id}); } }; /* 실제 기록은 이 호출 뒤 반영된다. 지금까지의 시즌 합계에서 이번 경기만 한 번 더한다. */
     if(p.isP){ up('w',dec.w===p.id?1:0,[20],'승'); up('sv',dec.sv===p.id?1:0,[40],'세이브'); } else { up('h',x.h||0,[200],'안타'); up('hr',x.hr||0,[40,50],'홈런'); } }
   if(p.isP){ if(dec.w===p.id&&!f.w1){ f.w1=1; story(p,`1군 첫 승 · ${vs}`,'first'); } if(dec.sv===p.id&&!f.sv1){ f.sv1=1; story(p,`1군 첫 세이브 · ${vs}`,'first'); }
-    add('w',dec.w===p.id?1:0); add('sv',dec.sv===p.id?1:0); add('so',x.so||0);
+    add('w',dec.w===p.id?1:0); add('sv',dec.sv===p.id?1:0); add('so',x.so||0);add('hld',(dec.hld||[]).includes(p.id)?1:0);
     if(x.outs>=27&&x.h===0&&game?.runsAllowed===0&&game.solo)story(p,`노히트노런 · ${vs}`,'mile'); }
-  else { if(x.hr&&!f.hr1){ f.hr1=1; story(p,`1군 첫 홈런 · ${vs}`,'first'); } if(x.hr>=3)story(p,`한 경기 ${x.hr}홈런 · ${vs}`,'mile'); if(x.h>=5&&(!f.h5||x.h>=6)){ f.h5=1; story(p,`한 경기 ${x.h}안타 · ${vs}`,'mile'); } add('h',x.h||0); add('hr',x.hr||0); try{ featBat(p,x,vs); }catch(e){} }
+  else { if(x.hr&&!f.hr1){ f.hr1=1; story(p,`1군 첫 홈런 · ${vs}`,'first'); } if(x.hr>=3)story(p,`한 경기 ${x.hr}홈런 · ${vs}`,'mile'); if(x.h>=5&&(!f.h5||x.h>=6)){ f.h5=1; story(p,`한 경기 ${x.h}안타 · ${vs}`,'mile'); } add('h',x.h||0); add('hr',x.hr||0);add('rbi',x.rbi||0);add('sb',x.sb||0); try{ featBat(p,x,vs); }catch(e){} }
 }
 function storySeason(y){ // 시즌이 끝나면: 커리어 하이와 규정 이상 시즌
   for(const p of Object.values(G.players)){ if(p.team==null&&!isFree(p))continue; /* 시즌 중 방출돼 무적이 된 선수도 그해 성적으로(검수 11-09zz) */ const h=seasonTotal(p,y,'1군'); if(!h)continue;
@@ -132,19 +134,23 @@ function storySeason(y){ // 시즌이 끝나면: 커리어 하이와 규정 이�
 /* ===== 가을야구 확률(남은 일정 모의 진행) ===== */
 let _poC={k:null};
 function mulberry(a){ return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function playoffOddsScore(homeWon,rnd){ const low=Math.floor(-Math.log(1-rnd())*3), high=low+1+Math.floor(-Math.log(1-rnd())*2); return homeWon?[high,low]:[low,high]; } /* 승패에 맞는 득점 표본. 별도 난수라 기존 모의 승패·실제 경기 난수를 소비하지 않는다(검수 11-18 #552) */
+const poWinP=(home,away)=>home*(1-away)/(home*(1-away)+away*(1-home))+.015;
 function playoffOdds(){
-  if(period()!=='season')return null; const k=G.year+':'+G.day+':'+G.teams.map(t=>{ const r=G.sea.rec[t.id]; return r.w+'-'+r.l; }).join(',')+':'+(G.makeup||[]).length; if(_poC.k===k&&_poC.g===G)return _poC.v; /* 세이브가 바뀌어도 같은 날짜면 재사용하던 캐시(검수 11-07) */
-  const rec=G.sea.rec; if(sum(G.teams.map(t=>rec[t.id].w+rec[t.id].l+(rec[t.id].t||0)))/G.teams.length<20){ _poC={k,v:null,g:G}; return null; } /* 20경기 전에는 확률을 내지 않는다(무승부도 치른 경기, 검수 11-06) */
-  const str0=G.teams.map(t=>{ const r=rec[t.id]; return (r.w+(t.expW||.5)*60)/(r.w+r.l+60); });
-  const rem=(G.makeup||[]).filter(x=>x.y===G.year).map(x=>[x.h,x.a]); for(const d in G.cal.sched){ if(+d>G.day)for(const m of G.cal.sched[d])rem.push(m); } /* 연기 경기도 남은 경기(검수 11-09k) */
-  const n=G.teams.length, N=400, top5=new Array(n).fill(0), first=new Array(n).fill(0), rnd=mulberry(G.day*7919+G.year);
-  const w0=G.teams.map(t=>rec[t.id].w), l0=G.teams.map(t=>rec[t.id].l); const bi=[]; standingsNow().forEach((o,i)=>bi[o.tid]=i); const H0=G.teams.map(()=>new Array(n).fill(0)); G.teams.forEach(t=>{ for(const x of ((G.sea.tl||[])[t.id]||[]))if(x[0]>0)H0[t.id][x[4]]++; }); /* 맞대결 승수: 동률 묶음 순위를 남은 경기 결과까지 넣어 다시 정한다(실제 순위 standingsNow와 같은 기준, 검수 11-09zn) */
-  for(let s=0;s<N;s++){ const w=w0.slice(), l=l0.slice(), H=H0.map(r=>r.slice()); const str=str0.map(x=>clamp(x+(rnd()+rnd()+rnd()-1.5)*.06,.25,.75)); /* 팀 실력 자체의 불확실성 */
-    for(const [h,a] of rem){ const ph=str[h], pa=str[a]; const p=ph*(1-pa)/(ph*(1-pa)+pa*(1-ph))+.015; if(rnd()<p){w[h]++;l[a]++;H[h][a]++;} else {w[a]++;l[h]++;H[a][h]++;} }
-    const pc=i=>w[i]+l[i]?w[i]/(w[i]+l[i]):.5; const ord=[...Array(n).keys()].sort((x,y)=>pc(y)-pc(x)||bi[x]-bi[y]); for(let i=0;i<n;){ let j=i; while(j<n&&Math.abs(pc(ord[j])-pc(ord[i]))<1e-12)j++; if(j-i>1){ const g=ord.slice(i,j), gp=x=>{ let a=0,b=0; for(const y of g)if(y!==x){ a+=H[x][y]; b+=H[y][x]; } return a+b?a/(a+b):.5; }; g.sort((x,y)=>gp(y)-gp(x)||bi[x]-bi[y]); ord.splice(i,j-i,...g); } i=j; } /* 동률은 실제 순위 규정(상대 전적·맞대결 득점)으로 정한 지금 순서대로(검수 11-08: 탈락 확정 팀이 가장 높게 나옴) */
-    const eq=(a,b)=>a!=null&&b!=null&&Math.abs(pc(a)-pc(b))<1e-12; for(const i of [0,4])if(eq(ord[i],ord[i+1])&&!eq(ord[i-1],ord[i])&&!eq(ord[i+1],ord[i+2])&&rnd()<.5)[ord[i],ord[i+1]]=[ord[i+1],ord[i]]; /* 두 팀 동률은 결정전 한 경기 */ /* 동률은 팀마다 한 번 뽑은 값으로 가른다(정렬 중 난수 비교는 한쪽으로 치우쳤다, 검수 11-06) */
-    for(let i=0;i<5;i++)top5[ord[i]]++; first[ord[0]]++; }
-  const v=G.teams.map(t=>({tid:t.id,ps:top5[t.id]/N,first:first[t.id]/N,str:str0[t.id]})); _poC={k,v,g:G}; return v; } /* g: 다른 세이브의 확률을 쓰지 않게(검수 11-08) */
+  if(period()!=='season')return null; const teams=seaTeams(), ids=new Set(teams.map(t=>t.id)); if(!teams.length)return null; /* 내년 참가 구단은 올해 계산에 넣지 않는다(검수 11-18 #709~730) */ const y=G.sea.y??G.year, rec=[]; for(const t of teams)rec[t.id]=G.sea.rec[t.id]||{w:0,l:0,t:0};
+  const rem=(G.makeup||[]).filter(x=>x.y===y).map(x=>[x.h,x.a]); for(const d in G.cal.sched){ if(+d>G.day)for(const m of G.cal.sched[d])rem.push([m[0],m[1]]); } /* 연기 경기도 남은 경기(검수 11-09k) */ for(let i=rem.length-1;i>=0;i--){ const [h,a]=rem[i]; if(h===a||!ids.has(h)||!ids.has(a))rem.splice(i,1); }
+  const n=G.teams.length, H0=G.teams.map(()=>new Array(n).fill(0)), L0=H0.map(r=>r.slice()), R0=H0.map(r=>r.slice()), prev=(G.last&&G.last.order)||[]; for(const t of teams){ for(const x of ((G.sea.tl||[])[t.id]||[])){ if(!ids.has(x[4])||x[4]===t.id)continue; if(x[0]>0)H0[t.id][x[4]]++; else if(x[0]<0)L0[t.id][x[4]]++; R0[t.id][x[4]]+=x[1]||0; } }
+  const k=JSON.stringify([G.year,G.day,y,teams.map(t=>[t.id,rec[t.id].w,rec[t.id].l,rec[t.id].t||0,t.expW??.5,((G.sea.tl||[])[t.id]||[]).map(x=>[x[0],x[1],x[4]])]),rem,prev]); if(_poC.k===k&&_poC.g===G)return _poC.v; /* 맞대결 득점·전년 순위·남은 대진·참가 구단도 캐시 입력(검수 11-18 #552·#709~730) */
+  if(sum(teams.map(t=>rec[t.id].w+rec[t.id].l+(rec[t.id].t||0)))/teams.length<20){ _poC={k,v:null,g:G}; return null; } /* 20경기 전에는 확률을 내지 않는다(무승부도 치른 경기, 검수 11-06) */
+  const str0=[]; for(const t of teams){ const r=rec[t.id]; str0[t.id]=(r.w+(t.expW??.5)*60)/(r.w+r.l+60); }
+  const N=400, top5=new Array(n).fill(0), first=new Array(n).fill(0), rnd=mulberry(G.day*7919+G.year);
+  const w0=[], l0=[]; for(const t of teams){ w0[t.id]=rec[t.id].w; l0[t.id]=rec[t.id].l; }
+  for(let s=0;s<N;s++){ const w=w0.slice(), l=l0.slice(), H=H0.map(r=>r.slice()), L=L0.map(r=>r.slice()), R=R0.map(r=>r.slice()), scoreRnd=mulberry((G.day*7919+G.year)^Math.imul(s+1,0x9E3779B1)); const str=str0.map(x=>clamp(x+(rnd()+rnd()+rnd()-1.5)*.06,.25,.75)); /* 팀 실력 자체의 불확실성 */
+    for(const [h,a] of rem){ const homeWon=rnd()<poWinP(str[h],str[a]), score=playoffOddsScore(homeWon,scoreRnd); if(homeWon){w[h]++;l[a]++;H[h][a]++;L[a][h]++;} else {w[a]++;l[h]++;H[a][h]++;L[h][a]++;} R[h][a]+=score[0]; R[a][h]+=score[1]; }
+    const pc=i=>w[i]+l[i]?w[i]/(w[i]+l[i]):.5; const ord=seasonStandingsOrder(teams.map(t=>({tid:t.id,w:w[t.id],l:l[t.id]})),H,L,R,prev).map(x=>x.tid); /* 모의 최종 승률 묶음의 상대 전적 → 그 묶음 상대 득점 → 전년 순위: 실제 순위와 공용 비교(검수 11-18 #552) */
+    const eq=(a,b)=>a!=null&&b!=null&&Math.abs(pc(a)-pc(b))<1e-12; for(const i of [0,4])if(eq(ord[i],ord[i+1])&&!eq(ord[i-1],ord[i])&&!eq(ord[i+1],ord[i+2])&&rnd()>=poWinP(str[ord[i]],str[ord[i+1]]))[ord[i],ord[i+1]]=[ord[i+1],ord[i]]; /* 두 팀 동률은 결정전 한 경기: 같은 전력 모형으로, 맞대결 우위로 앞선 팀이 홈(검수 11-18 #709~730) */ /* 동률은 팀마다 한 번 뽑은 값으로 가른다(정렬 중 난수 비교는 한쪽으로 치우쳤다, 검수 11-06) */
+    for(let i=0;i<Math.min(5,ord.length);i++)top5[ord[i]]++; first[ord[0]]++; }
+  const v=teams.map(t=>({tid:t.id,ps:top5[t.id]/N,first:first[t.id]/N,str:str0[t.id]})); _poC={k,v,g:G}; return v; } /* g: 다른 세이브의 확률을 쓰지 않게(검수 11-08) */
 
 /* ===== 기록으로 보는 메모(능력치가 아니라 눈에 보이는 성적 기준) ===== */
 const babipOf=h=>{ const d=(h.ab||0)-(h.so||0)-(h.hr||0)+(h.sf||0); return d>0?(h.h-h.hr)/d:null; }; /* (H-HR)/(AB-K-HR+SF), 검수 11-09l */

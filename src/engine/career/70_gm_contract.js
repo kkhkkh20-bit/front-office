@@ -9,11 +9,13 @@ function myCInit(){ if(G.myC||G.unemp||G.user==null)return G.myC; let y0=G.gmSin
 function myCLeft(){ const C=myCInit(); return C?Math.max(0,C.y1-G.year):0; }
 /* 새 계약 시작(취임·이직·재계약) */
 function myCStart(tid,terms,why){ const old=G.myC; const sal=terms&&terms.sal||myCBase(tid), yrs=terms&&terms.yrs||3;
-  const y0=period()==='season'||period()==='post'?G.year:(dobj(G.day).m>=10?G.year+1:G.year);
+  const y0=myCOver()||G.last&&G.last.y>=G.year?G.year+1:period()==='season'||period()==='post'?G.year:(dobj(G.day).m>=10?G.year+1:G.year);
   G.myC={tid,sal,y0,y1:y0+yrs-1,earn:old?old.earn:0,stints:old?old.stints:[],seas:old?old.seas:[]};
   chron('join',`${tname(tid)} 단장 계약: 연봉 ${money(sal)}, ${y0}~${y0+yrs-1}년${why?` (${why})`:''}`,null,tid); }
 /* 한국시리즈가 끝났고 아직 결산 전: 그해 시즌은 이미 끝났다(결산까지 이틀) */
-function myCOver(){ const P=G.ps; return !!(P&&P.done&&P.finDay!=null&&dobj(P.finDay).y===G.year&&!(G.last&&G.last.y>=G.year)); }
+function myCOver(){ const P=G.ps; return !!(P&&P.done&&P.finDay!=null&&dobj(P.finDay).y>=G.year&&(G.sea?.y??G.year)===G.year&&!(G.last&&G.last.y>=G.year)); }
+/* 옛 저장의 시즌 종료 뒤 9월 취임 계약도 다음 시즌부터다. 받은 돈을 추정해 되돌리지는 않는다. */
+function myCStartMigrate(){const C=G.myC,J=G.gmJoin;if(C&&J?.psDone&&J.tid===C.tid&&C.y0===J.y){C.y0++;C.y1++;return 1;}return 0;}
 /* 떠나는 단장의 그해 몫 정리(이직·사임·세대 교체 공통). 시즌이 끝난 뒤면 결산을 기다리지 않고 승패·연봉·성과급·명성을 이 단장에게 닫는다(검수 11-09zb) */
 function myCClose(how){ const C=G.myC; if(!C||C.tid==null)return; const per=period(), r=G.sea&&G.sea.rec&&G.sea.rec[C.tid], over=myCOver();
     /* 시즌 중 떠나면 그 구단에서 쌓은 그해 승패를 통산에 남긴다(검수 11-07: 이직하면 사라짐). 순위·우승은 시즌을 마친 구단 기준이라 part 표시 */
@@ -32,7 +34,7 @@ function myCEnd(how,y){ const C=G.myC; if(!C)return; if(C.tid!=null)myCClose(how
   let fin=null; try{ const L=G.last; if(L&&L.fins&&L.fins[C.tid]&&L.y>=C.y0){ const o=L.order&&L.order.find(x=>x.tid===C.tid); fin={y:L.y,f:JSON.parse(JSON.stringify(L.fins[C.tid])),rank:L.order?L.order.findIndex(x=>x.tid===C.tid)+1:null,w:o?o.w:null,l:o?o.l:null,t:o?o.t||0:0}; } }catch(e){} /* 퇴임 시점의 마지막 시즌 결산: 야인이 되어도 복기할 수 있게 경력에 남긴다 */
   const ye=Math.min(C.y1,y??G.year), p=C.stints[0]; if(C.y0>ye&&p&&p.tid===C.tid&&p.how==='재계약'&&p.y1===C.y0-1){ p.how=how; p.fin=p.fin||fin; } /* 시작 전인 재계약을 끝내면 근무한 지난 계약이 떠난 계약이다(검수 11-09zb) */ else C.stints.unshift({tid:C.tid,y0:Math.min(C.y0,ye),y1:ye, /* 다음 시즌부터인 계약을 시작 전에 끝내면 끝낸 해로 적는다 */sal:C.sal,how,fin}); C.stints.length=Math.min(C.stints.length,20); C.tid=null; }
 /* 결산 지출: 단장 연봉 */
-function myCPay(){ const C=myCInit(); if(!C||G.unemp||C.y0>fyNow())return 0; /* 한국시리즈 뒤 부임해 다음 시즌부터 시작하는 계약은 올해 결산에 연봉이 없다(검수 11-09h) */ if(personalState().settled[fyNow()])return 0; /* 같은 회계연도 두 번째 정산: 지갑·경력 수입·구단 지출 모두 한 번만(검수 11-06) */C.earn+=C.sal;personalSettle(C.sal); return C.sal; }
+function myCPay(){ const C=myCInit(),J=G.gmJoin; if(!C||G.unemp||C.y0>fyNow()||J?.psDone&&J.tid===C.tid&&J.y===fyNow())return 0; /* 한국시리즈 뒤 부임해 다음 시즌부터 시작하는 계약은 올해 결산에 연봉이 없다(검수 11-09h). 옛 9월 취임 계약도 같은 판정. */ if(personalState().settled[fyNow()])return 0; /* 같은 회계연도 두 번째 정산: 지갑·경력 수입·구단 지출 모두 한 번만(검수 11-06) */C.earn+=C.sal;personalSettle(C.sal); return C.sal; }
 /* 결산 지출: 단장 성과급(우승 30%·준우승 15%·가을야구 5%). 구단이 내고 개인 지갑으로 들어온다. 한 해 한 번 */
 function myCBonus(ps,order,dry){ /* dry: 금액만 계산(예산 전망) */ const C=myCInit(); if(!C||G.unemp||C.tid!==G.user||C.bonusY===G.year||C.y0>G.year)return 0; { const J=G.gmJoin; if(J&&J.y===G.year&&J.tid===G.user&&J.psDone)return 0; } /* 가을야구가 끝난 뒤 부임했으면 그해 성과는 전임 단장 몫(경력 기록과 같은 기준, 검수 11-09h) */ const rk=(order||[]).findIndex(o=>o.tid===G.user)+1;
   const k=ps&&ps.champ===G.user?'우승':ps&&ps.runner===G.user?'준우승':rk&&rk<=5?'가을야구':null; if(!k)return 0; const b=Math.round(C.sal*{우승:.3,준우승:.15,가을야구:.05}[k]/10)*10; if(dry)return b;

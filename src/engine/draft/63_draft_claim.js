@@ -10,7 +10,7 @@ const DC_PET_ADD=4, DC_LIKE_SD=2.5;
 function gmObsCount(p){const o=p&&p.gmObs;return o&&o.y===G.year?Math.max(0,o.n||0):p&&p.gmSeen===G.year?1:0;}
 function gmObserve(p){if(!p)return;let o=p.gmObs;if(!o||o.y!==G.year)o=p.gmObs={y:G.year,n:gmObsCount(p),days:[]};if(!(o.days||[]).includes(G.day)){o.days=(o.days||[]).concat(G.day);o.n++;}p.gmSeen=G.year;}
 /* 스카우트 관찰(스카우트 1단계): 배치 기간으로 세지 않고 실제 학교 방문·경기장 관찰 횟수(64_scout_obs obsCount)를 쓴다 */
-function dcScoutObs(p,sc){ return sc?Math.round(obsRaw(p,G.user)):0; }
+function dcScoutObs(p,sc){ return sc?Math.round(obsRaw(p,G.user)*100)/100:0; }
 function dcObs(p,sc){ return obsCount(p,G.user); }
 const dcEvalObs=(p,sc)=>dcObs(p,sc)+gmObsCount(p);
 const DC_CONF=sd=>sd<=4.5?'높음':sd<=7?'보통':'낮음';

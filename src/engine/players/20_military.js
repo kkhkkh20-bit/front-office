@@ -88,7 +88,7 @@ function milDaily(){ const d=G.day;
   const back={}; for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until&&m.until<=d&&!m.done&&!m.exempt){ milChron(p,'전역',m.unit,m.from,m.until); if(p.team!=null)(back[p.team]=back[p.team]||[]).push(p); p.mil={done:true,unit:m.unit,pf:m.from,pu:m.until}; /* 지난 복무 기간: 그해 연봉 계산(payFrac)에 남긴다(검수 11-06). 날짜를 건너뛴 저장도 동일한 기간으로 한 번 정리한다. */ story(p,`${m.unit} 전역`,'mil'); if(p.team===G.user)mail('운영팀',`${p.name} 전역`,`${p.name}이(가) ${m.unit} 복무를 마치고 돌아왔습니다. ${p.ys?'육성 명단':'정식 로스터'} 인원을 확인해 주세요.`,{kind:'병역',ref:p.id}); } }
   try{ ntDaily(d); }catch(e){ console.error(e); } /* 국가대표(아시안게임·올림픽·WBC·프리미어12): 84_national.js. 정원 정리보다 먼저: 입상 병역 특례로 복무 중 선수가 바로 전역해도 AI가 같은 날 68명에 맞춘다(2028 SEED 7 인천 69명) */
   for(const t of G.teams){ if(t.id===ME())continue; if(rosterN(t.id)>ROSTER_MAX)try{ trimRoster(t.id,ROSTER_MAX); }catch(e){} while(ysN(t.id)>YS_MAX){ const p=ysList(t.id).sort((a,b)=>keepScore(a)-keepScore(b))[0]; if(!p)break; toFree(p,'전역 후 육성 정원 초과',0,true); } }
-  for(const tid in back)try{ entryUpgrade(+tid,back[tid],'전역'); }catch(e){} /* 전역한 주축은 당일 엔트리 교체를 검토한다(검수 11-09zx) */ }
+  for(const tid in back)try{ entryUpgrade(+tid,back[tid],'전역'); }catch(e){} /* 전역한 주축은 당일 엔트리 교체를 검토한다(검수 11-09zx) */ try{captainReconcileAll();}catch(e){} }
 /* 날짜별 합류·군 복무를 반영한 정원. 육성은 기존 ysN처럼 입단 예정 계약도 예약한다. */
 function milRosterAt(tid,d,ys=false){ const y=dobj(d).y; return Object.values(G.players).filter(p=>p.team===tid&&!!p.ys===ys&&(ys||!(p.joinY>y))&&!milOn(p,d)&&(ys||!(p.frehab&&p.frehab!=='hold'))).length; }
 /* 곧 군에서 돌아오는 우리 선수: 정식·육성 명단 각각 복귀한다. */
@@ -142,3 +142,4 @@ function smExp(p){ const y=G.year, F={}; for(const yy of [y,y-1]){ const h=seaso
   let s=0; if(p.isP){ const o=F.outs||0; if(o>=60){ const era=(F.er||0)*27/o; s+=clamp((4.5-era)*1.5,-4,6); } else if(o<30)s-=4; }
   else { const pa=F.pa||0; if(pa>=100){ try{ s+=clamp((bRate(F).ops-.7)*20,-4,6); }catch(e){} } else if(pa<30)s-=4; }
   s+=Math.min(3,(F.g||0)/30); const g1=sum((p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2).map(h=>h.g||0)); s+=Math.min(2,g1/30); return s; }
+const _captainEnlist=enlist;enlist=function(...args){const r=_captainEnlist(...args);try{captainReconcile(args[0]?.team);}catch(e){}return r;};

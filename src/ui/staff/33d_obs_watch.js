@@ -21,10 +21,10 @@ function obsRate(x){ const p=x.k==='am'||x.k==='ov'?null:x.x; if(!p||p.fdPool)re
 const obsDropBtn=(x,short)=>x.k==='ov'?'':`<button class="btn small obs-drop" data-a="obsDrop" data-v="${x.k}:${x.id}" title="관찰 명단에서 뺍니다"${short?' aria-label="관심 해제"':''}>${short?'해제':'관심 해제'}</button>`;
 function obsPriBtns(x){ if(x.pri<0)return ''; return `<span class="chips obs-pri" role="group" aria-label="관찰 우선순위">${[2,1,0].map(v=>`<button data-a="obsPri" data-v="${x.id}:${v}" class="${x.pri===v?'on':''}${v===2?' f':''}">${OBS_PRI_L[v]}</button>`).join('')}</span>`; }
 /* 기록 대 평가: 같은 학력·투타(저학년은 같은 학년) 안 백분위 */
-function obsRecVsEval(x){ try{ if(x.k==='dr'){ const p=x.x, L=draftPool().filter(q=>!!q.isP===!!p.isP&&!!q.college===!!p.college); if(L.length<8)return '';
+function obsRecVsEval(x){ try{ const has=(isP,h)=>!!h&&(isP?(h.outs||0)>0:(h.pa||h.ab||0)>0); if(x.k==='dr'){ const p=x.x; if(!has(p.isP,amAmW(p))||!Number.isFinite(amRaw(p)))return '공식 기록이 없어 기록과 평가를 비교하지 않습니다.'; const L=draftPool().filter(q=>!!q.isP===!!p.isP&&!!q.college===!!p.college&&has(q.isP,amAmW(q))&&Number.isFinite(amRaw(q))); if(L.length<8)return '같은 분류의 공식 기록 표본이 부족합니다.';
       const pct=(arr,v)=>Math.max(1,Math.round(arr.filter(a=>a>v).length/arr.length*100)); const rs=L.map(amScore), ev=L.map(q=>draftVal(scoutReport(q),q));
       const a=pct(rs,amScore(p)), b=pct(ev,draftVal(scoutReport(p),p)); return `기록 상위 ${a}% · 우리 평가 상위 ${b}%${Math.abs(a-b)>=20?` → ${a<b?'기록이 평가보다 좋습니다':'평가가 기록보다 좋습니다'}`:' → 기록과 평가가 비슷합니다'}`; }
-    if(x.k==='am'){ const e=x.x, gk=(e.c?'c':'h')+amGrade(e,G.year), yy=amRecYear(); const L=amProspectRows(gk).filter(r=>r.isP===!!e.P&&r.kind==='e'); if(L.length<8)return '';
+    if(x.k==='am'){ const e=x.x, gk=(e.c?'c':'h')+amGrade(e,G.year), yy=amRecYear(), all=amProspectRows(gk).filter(r=>r.isP===!!e.P&&r.kind==='e'), own=all.find(r=>r.id===e.id); if(!own||!has(own.isP,own.h)||!Number.isFinite(amRecScore(own.isP,own.h)))return '공식 기록이 없어 기록과 평가를 비교하지 않습니다.'; const L=all.filter(r=>has(r.isP,r.h)&&Number.isFinite(amRecScore(r.isP,r.h))); if(L.length<8)return '같은 분류의 공식 기록 표본이 부족합니다.';
       const pct=(arr,v)=>Math.max(1,Math.round(arr.filter(a=>a>v).length/arr.length*100)); const me=L.find(r=>r.id===e.id); if(!me)return ''; const rs=L.map(r=>amRecScore(r.isP,r.h)), ev=L.map(r=>amEstU(r.e,G.user).v);
       return `${yy} 기록 상위 ${pct(rs,amRecScore(me.isP,me.h))}% · 우리 평가 상위 ${pct(ev,amEstU(e,G.user).v)}% (같은 학년 ${e.P?'투수':'야수'})`; } }catch(e){} return ''; }
 function obsDetail(x){ if(!x)return `<section class="card obs-det"><p class="small muted">왼쪽에서 선수를 고르면 리포트가 여기에 나옵니다.</p></section>`;
@@ -36,7 +36,7 @@ function obsDetail(x){ if(!x)return `<section class="card obs-det"><p class="sma
     const yy=amRecYear(), sp=amSplitLines(x.x,yy).concat(yy===G.year?[]:[]); if(sp.length)L.push(`<div class="small"><b>${yy} 대회별 기록</b>${sp.map(s=>`<div class="obs-sp"><span>${esc(s.n)}</span><span>${esc(s.t)}</span></div>`).join('')}</div>`);
     { const op=obsOpinions(x.x); if(op)L.push(`<p class="small"><b>두 의견</b> ${op.map(z=>`${esc(z.s.name)} 스카우트 ${esc(z.t)}`).join(' · ')}</p>`); }
     L.push(`<p class="small"><b>평가</b> ${esc(x.ev)} · 신뢰도 ${esc(x.conf)} · 관찰 ${x.obs}회${x.last!=null?` · 마지막 ${obsDay(x.last)}`:''}</p>`);
-    const lg=((G.obsLog||{})[x.id]||[]).slice().reverse(); L.push(`<div class="obs-log"><b class="small">방문 보고</b>${lg.length?lg.map(r=>`<p class="small"><span class="muted">${dmd(r[0])} · ${esc(r[1])}</span> ${esc(r[2])}</p>`).join(''):'<p class="small muted">아직 방문 보고가 없습니다. 집중으로 두면 담당 스카우트가 그 학교를 먼저 찾습니다.</p>'}</div>`); }
+    const lg=obsLogList(x).slice().reverse(); L.push(`<div class="obs-log"><b class="small">방문 보고</b>${lg.length?lg.map(r=>`<p class="small"><span class="muted">${dmd(r[0])} · ${esc(r[1])}</span> ${esc(r[2])}</p>`).join(''):'<p class="small muted">아직 방문 보고가 없습니다. 집중으로 두면 담당 스카우트가 그 학교를 먼저 찾습니다.</p>'}</div>`); }
   else if(x.k==='fo'){ let f=null; try{ f=fScout(x.x); }catch(e){} const rp=scoutReport(x.x);
     L.push(`<p class="small"><b>기록</b> ${esc(f&&f.rec||'지난 리그 기록 없음')}</p><p class="small"><b>스카우트 추정</b> ${esc(rp.role||'-')}${f&&f.mid!=null?` · 예상 ${esc(String(f.mid))}`:''} · 신뢰도 ${esc(x.conf)}</p>`);
     L.push(`<p class="small"><b>파악도</b> ${x.know}%${x.dk?` · 이번 주 +${x.dk}%`:''}${x.eta?` · 파악 완료까지 약 ${x.eta}주`:x.know>=100?' · 파악 완료':''}</p>`);
@@ -45,24 +45,25 @@ function obsDetail(x){ if(!x)return `<section class="card obs-det"><p class="sma
   else { const rp=scoutReport(x.x); L.push(`<p class="small"><b>스카우트</b> ${esc(rp.who||'')}</p><p class="small">${esc((rp.notes||[]).slice(0,2).join(' '))}</p><p class="small">평가 ${esc(x.ev)} · 신뢰도 ${esc(x.conf)}</p><p class="small obs-pot"><b>잠재력</b> ${potChip(rp,x.x)}</p>`); } /* 관찰 명단 합치기(11-16)에서 빠졌던 KBO 관심 선수 잠재력(스카우트 추정, 다른 목록과 같은 potChip)을 되살림 */
   return `<section class="card obs-det">${head}${L.join('')}</section>`; }
 function obsWatchPage(){ if(G.unemp)return '<section class="card"><p class="small muted">구단을 맡고 있지 않습니다.</p></section>';
-  const all=obsRowsAll(), f=UI.obsF||'all'; const L=all.filter(x=>f==='all'||x.k===f).sort((a,b)=>(b.pri-a.pri)||((b.obs??-1)-(a.obs??-1))||a.n.localeCompare(b.n));
+  const all=obsRowsAll(), f=UI.obsF||'all'; const L=all.filter(x=>f==='zero'?(x.k==='am'||x.k==='dr')&&!x.obs:f==='all'||x.k===f).sort((a,b)=>(b.pri-a.pri)||((b.obs??-1)-(a.obs??-1))||a.n.localeCompare(b.n));
   const cap=obsCap(G.user), fN=obsFocusN(G.user); const amL=all.filter(x=>x.k==='am'||x.k==='dr'); const zero=amL.filter(x=>!x.obs), low=amL.filter(x=>x.conf==='낮음');
-  const sel=all.find(x=>String(x.id)===String(UI.obsSel))||L[0]||null;
+  const sel=L.find(x=>String(x.id)===String(UI.obsSel))||L[0]||null;
   const cnt=k=>all.filter(x=>k==='all'||x.k===k).length;
   const kl={am:'저학년',dr:'후보',fo:'외국인',ov:'해외파',kbo:'KBO'}; const RC=new Map(), R=x=>{ if(!RC.has(x))RC.set(x,obsRate(x)); return RC.get(x); };
   const row=x=>`<tr class="${sel&&sel.id===x.id?'on':''}"><td><button class="candidate-name" data-a="obsSel" data-v="${x.id}">${avImg(x.av)}<span>${esc(x.n)}<small>${esc(x.sub)}</small></span></button></td><td><span class="pill">${kl[x.k]}</span></td><td class="obs-cur">${R(x).cur}</td><td class="obs-pot">${R(x).pot}</td><td>${x.pri>=0?obsPriBtns(x):x.k==='fo'?`<span class="small">파악 ${x.know}%${x.dk?` <i class="good">+${x.dk}</i>`:''}</span>`:x.k==='ov'?`<span class="small">${esc(x.ret)}</span>`:'<span class="small muted">-</span>'}</td><td class="num">${x.obs==null?'-':x.obs?`${x.obs}회`:'<b class="bad">0회</b>'}</td><td class="small">${x.last!=null?obsDay(x.last):'-'}</td><td class="small ${x.conf==='낮음'?'warn':''}">${esc(x.conf)}</td><td class="small">${esc(x.ev)}</td><td>${obsDropBtn(x,true)}</td></tr>`;
   const warn=zero.length||low.length?`<p class="note warn small obs-warn" role="status">관찰 0회 ${zero.length}명 · 신뢰도 낮음 ${low.length}명${zero.length?` <button class="btn small" data-a="obsF" data-v="zero">0회만 보기</button>`:''}</p>`:'';
-  const rows=f==='zero'?all.filter(x=>(x.k==='am'||x.k==='dr')&&!x.obs):L;
+  const rows=L, pick=obsFocusPending(G.user), focusWarn=pick?`<p class="note warn small obs-warn" role="status">아마추어 담당이 줄어 기존 집중 ${pick.ids.length}명은 보통으로 관찰합니다. 계속 집중할 선수를 최대 ${cap}명 다시 골라 주세요. <button class="btn small" data-a="obsFocusDone">선택 마침</button></p>`:'';
   const sp=schSponSum(G.user);
   const rowM=x=>`<div class="obs-m${sel&&sel.id===x.id?' on':''}"><button class="candidate-name" data-a="obsSel" data-v="${x.id}">${avImg(x.av)}<span>${esc(x.n)}<small>${esc(x.sub)} · ${kl[x.k]}</small></span></button><span class="small obs-mr">${R(x).cur}${R(x).pot} ${x.obs==null?'':x.obs?`관찰 ${x.obs}회 · `:'<b class="bad">관찰 0회</b> · '}${esc(x.ev)} · 신뢰도 ${esc(x.conf)}</span><div class="obs-mact">${x.pri>=0?obsPriBtns(x):x.k==='fo'?`<span class="small">파악 ${x.know}%${x.dk?` (+${x.dk})`:''}</span>`:x.k==='ov'?`<span class="small">${esc(x.ret)}</span>`:''}${obsDropBtn(x)}</div></div>`;
-  const left=`<section class="card obs-list"><div class="row between wrapr"><h2 class="sec">관찰 명단 ${all.length}</h2><span class="small">집중 <b class="${fN>=cap?'warn':''}">${fN}/${cap}</b> <span class="muted">(스카우트 ${obsScN(G.user)}명 × ${OBS_CAP_K})</span> · 연고 후원 ${sp.home}/${sp.homeAll}곳</span></div>
-    <div class="chips">${OBS_F.map(([k,l])=>`<button data-a="obsF" data-v="${k}" class="${f===k?'on':''}">${l} ${cnt(k)}</button>`).join('')}</div>${warn}
+  const left=`<section class="card obs-list"><div class="row between wrapr"><h2 class="sec">관찰 명단 ${all.length}</h2><span class="small">집중 <b class="${fN>=cap?'warn':''}">${fN}/${cap}</b> <span class="muted">(아마추어 담당 ${obsScN(G.user)}명 × ${OBS_CAP_K})</span> · 연고 후원 ${sp.home}/${sp.homeAll}곳</span></div>
+    <div class="chips">${OBS_F.map(([k,l])=>`<button data-a="obsF" data-v="${k}" class="${f===k?'on':''}">${l} ${cnt(k)}</button>`).join('')}</div>${focusWarn}${warn}
     ${!wide()?`<div class="obs-mlist">${rows.map(rowM).join('')||'<p class="small muted">명단이 비었습니다.</p>'}</div>`:''}<div class="tw obs-scroll${wide()?'':' hide'}"><table class="sqt candidate-table obs-tbl"><thead><tr><th>선수</th><th>구분</th><th>능력</th><th>잠재력</th><th>우선순위</th><th class="num">관찰</th><th>마지막</th><th>신뢰도</th><th>평가</th><th title="관심 해제">행동</th></tr></thead><tbody>${rows.map(row).join('')||`<tr><td colspan="10" class="small muted">명단이 비었습니다. 아마추어 야구 › 선수에서 ☆, 드래프트 후보 ☆, 외국인 시장 '관찰', 선수 화면 '관심 선수'로 담습니다.</td></tr>`}</tbody></table></div>
     <p class="small muted">집중은 담당 스카우트가 그 학교를 먼저 찾고 경기도 더 챙겨 봅니다. 관찰이 쌓일수록 평가 범위가 좁아집니다. 다른 구단도 같은 상한으로 봅니다.</p></section>`;
   return `<div class="obsw">${left}${obsDetail(sel)}</div>`; }
-Object.assign(A,{ obsF(v){ UI.obsF=v; render(); }, obsSel(v){ UI.obsSel=v; render(); },
+Object.assign(A,{ obsF(v){ UI.obsF=v; UI.obsSel=null; render(); }, obsSel(v){ UI.obsSel=v; render(); },
+  obsFocusDone(){ obsFocusFix(G.user); if(G.obsFocusPick)delete G.obsFocusPick[G.user]; save(); render(); },
   obsDrop(v){ const i=String(v).indexOf(':'), k=String(v).slice(0,i), id=+String(v).slice(i+1); if(!Number.isFinite(id))return;
-    if(k==='am'||k==='dr'){ if(amFollowing(G.user,id))amFollow(id,false); const j=(G.shortlist||[]).indexOf(id); if(j>=0)G.shortlist.splice(j,1); }
+    if(k==='am'||k==='dr')amFollow(id,false);
     else if(k==='fo'){ if(fwatchOn(id))fwatchToggle(id); }
     else if(k==='kbo'){ if((G.pwatch||[]).includes(id))pwatchToggle(id); }
     if(String(UI.obsSel)===String(id))UI.obsSel=null; toast('관찰 명단에서 뺐습니다.'); save(); render(); },

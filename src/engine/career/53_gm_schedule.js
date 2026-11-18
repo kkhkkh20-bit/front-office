@@ -16,13 +16,24 @@ const GM_TOURN=[[3,25,4,10,'이마트배 전국고교야구'],[4,25,5,15,'황금
 function gmTourn(d){ const o=dobj(d); for(const t of GM_TOURN){ const a=dnum(o.y,t[0],t[1]), b=dnum(o.y,t[2],t[3]); if(d>=a&&d<=b)return t[4]; } const w=o.w; if(o.m>=3&&o.m<=10&&(w===0||w===6))return '고교야구 주말리그'; return null; }
 function gmPlans(){ return G.gmPlan=G.gmPlan||{}; }
 function gmPlanAt(d){ return gmPlans()[d]||null; }
+/* 예약은 실제 편성 순서의 한 경기에 붙인다. 조회는 난수·저장 상태를 바꾸지 않는다. */
+function gmGameRows(d){ return typeof rainGames==='function'?rainGames(+d):dayGames(+d).map(([h,a],j,L)=>({h,a,ordinal:L.slice(0,j+1).filter(m=>m[0]===h&&m[1]===a).length})); }
+function gmGameKey(d,h,a,i=1){ return {d:+d,h,a,i}; }
+function gmGamePick(d,tid,home,op){ return gmGameRows(d).find(m=>!m.overflow&&(home?m.h===tid:m.h===tid||m.a===tid)&&(op==null||(m.h===tid?m.a:m.h)===op)); }
+function gmWatchBooking(next){ const row=gmGamePick(next.d,G.user,false,next.op); return {day:next.d,op:next.op,...(row?{gk:gmGameKey(next.d,row.h,row.a,row.ordinal)}:{})}; }
+function gmWatchChoose(next,saved){ if(saved&&saved.day>G.day&&gmPlanLive(saved.day,saved))return saved; const p=next&&gmPlanAt(next.d); return p&&p.k==='attend'&&!p.done&&gmPlanLive(next.d,p)?{day:next.d,op:p.op,...(p.gk?{gk:p.gk}:{})}:next?gmWatchBooking(next):null; }
+function gmWatchResult(p){ if(!p)return null; const L=(G.games||[]).map((g,i)=>({g,i})).filter(({g})=>g.gid!=null&&g.day===p.day&&(g.home===G.user||g.away===G.user)&&gmGameMatches(p,g.day,g.home,g.away,g.dh||g.gi||1)); return L.length?{i:L.reduce((a,b)=>b.g.gid<a.g.gid?b:a).i}:null; }
+function gmGameMatches(p,d,h,a,i=1){ if(p.gk)return p.gk.d===+d&&p.gk.h===h&&p.gk.a===a&&p.gk.i===i;
+  const op=h===G.user?a:h; if(p.op!=null&&p.op!==op||p.a!=null&&p.a!==a||p.home!=null&&p.home!==(h===G.user))return false;
+  if(p.op==null&&p.a==null){ const L=gmGameRows(d).filter(m=>p.k==='attend'?m.h===G.user||m.a===G.user:m.h===h); if(L.length!==1||L[0].h!==h||L[0].a!==a)return false; }
+  const rows=gmGameRows(d).filter(m=>m.h===h&&m.a===a); return rows.length<=1&&i===1; }
 /* 독립 구단에도 개인 구단주는 있다. 모기업 유무 대신 실제 동행 인물을 확인한다. */
 function gmCompanion(x,tid=G.user){return ['owner','ceo'].includes(x)?bossOf(tid)[x==='ceo'?'ceo':'own']||null:null;}
 function gmPlanLeave(tid){const text='소속 구단을 떠나 직관 일정을 종료했습니다.';const mids=new Set(Object.values(G.gmPlan||{}).filter(p=>p.tid==null||p.tid===tid).map(p=>p.mid).filter(Boolean));for(const m of G.mail||[])if(mids.has(m.id)||m.ctx?.tid===tid&&(m.acts||[]).some(a=>a.a==='watchPlan')){m.ctx={...m.ctx,tid};m.read=true;m.imp=false;m.closed={label:'기한 종료',text,expired:true};if(!(m.body||'').includes('[종료] '+text))m.body=(m.body||'')+'\n\n[종료] '+text;m.acts=[];mids.add(m.id);}G.stops=(G.stops||[]).filter(m=>!mids.has(m.id));}
 /* 그날 우리 경기 상대(엔진이 치를 순서: 미룬 경기·정규 편성·포스트시즌 차전) */
 function gmOpsOn(d){ const L=dayGames(d).filter(m=>m.includes(G.user)).map(m=>m[0]===G.user?m[1]:m[0]); const q=psOursAt(d); if(q)L.push(q.op); return L; }
 /* 직관 예약은 잡은 경기(상대)에 붙는다: 그 상대 경기가 그날 열려야 유효(옛 저장은 상대 없이 그날 경기만, 검수 11-09zo) */
-function gmPlanLive(d,q){ const L=gmOpsOn(+d); return q.op==null?L.length>0:L.includes(q.op); }
+function gmPlanLive(d,q){ if(q.gk)return gmGameRows(d).some(m=>gmGameMatches(q,+d,m.h,m.a,m.ordinal)); const L=gmOpsOn(+d); return q.op==null?L.length>0:L.includes(q.op); }
 function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P=gmPlans(); const drop=()=>{ const o=P[d]; if(o&&o.mid){ G.mail=G.mail.filter(m=>m.id!==o.mid); G.stops=(G.stops||[]).filter(m=>m.id!==o.mid); } }; /* 정지 목록의 알림도 함께(검수 11-09zzc #25) */ /* 같은 날 일정을 바꾸거나 지우면 옛 '내일 직관' 알림은 지운다. 변경이 거절되면 그대로 둔다(검수 11-06) */ if(!k){ drop(); delete P[d]; return '일정을 지웠습니다.'; }
   const ops=gmOpsOn(d);
   if(k==='attend'&&!ops.length)return '그날은 우리 경기가 없습니다.';
@@ -34,7 +45,8 @@ function gmPlanSet(d,k,x){ if(d<=G.day)return '지난 날짜입니다.'; const P
   if(k==='tryout'&&!tryIsDay(+d))return '그날은 공개 트라이아웃이 없습니다.'; /* 94_tryout */
   const fg=k==='fut'||k==='farm'?flGameOn(G.user,d):null; if(k==='fut'&&!fg)return '그날은 우리 2군 경기가 없습니다.'; if(k==='farm'&&fg)k='fut'; /* 2군 경기가 있는 날 방문은 경기 관전으로 */
   if(k==='attend'&&x==='owner'){ const n=Object.entries(P).filter(([dd,p])=>p.k==='attend'&&p.x==='owner'&&!p.done&&+dd>G.day&&+dd!==+d&&gmPlanLive(dd,p)).length; /* 열리지 않을 경기(일찍 끝난 시리즈의 남은 차전) 예약은 세지 않는다(검수 11-09zo) */ /* 같은 날을 다시 잡는 것은 새 예약이 아니다 */ /* 앞으로 유효한 일정만 센다 */ if(n>=2)return '구단주와의 직관은 한 번에 두 경기까지만 잡을 수 있습니다.'; }
-  drop(); P[d]={k,x:k==='fut'?null:x||null,done:false,...(k==='fut'?{op:fg.op,home:fg.home}:{}),...(k==='attend'?{op:ops[0],tid:G.user,...(['owner','ceo'].includes(x)?{person:bossOf(G.user)[x==='ceo'?'ceo':'own'].id}:{})}:{})};
+  const game=k==='attend'?gmGamePick(d,G.user,false):null;
+  drop(); P[d]={k,x:k==='fut'?null:x||null,done:false,...(k==='fut'?{op:fg.op,home:fg.home,fr:fg.r}:{}),...(k==='attend'?{op:ops[0],tid:G.user,...(game?{gk:gmGameKey(d,game.h,game.a,game.ordinal)}:{}),...(['owner','ceo'].includes(x)?{person:bossOf(G.user)[x==='ceo'?'ceo':'own'].id}:{})}:{})};
   if(k==='attend'&&+d===G.day+1)gmAttendWarn(P[d]); /* 내일 경기를 오늘 잡으면 전날 알림을 바로 보낸다(검수 11-06) */
   if(k==='tryout')return `${dmd(d)} 공개 트라이아웃 참관을 잡았습니다.`;
   return k==='attend'?`${dmd(d)} 경기 직관을 잡았습니다${x==='owner'?'(구단주 동행)':x==='ceo'?'(사장 동행)':''}. 전날 알려 드립니다.`:k==='scout'?`${dmd(d)} ${x} ${gmTourn(d)} 관전 출장을 잡았습니다.`:k==='school'?`${dmd(d)} ${x} 방문을 잡았습니다.`:k==='fut'?`${dmd(d)} 2군 ${flName(fg.op)}전 관전을 잡았습니다.`:`${dmd(d)} 2군 훈련장 방문을 잡았습니다.`; }
@@ -85,9 +97,11 @@ function gmPlanDaily(){ if(G.unemp)return; try{ const o=dobj(G.day); if(o.m===3&
   if(p.k==='scout'){ p.done=true; gmScoutTrip(p.x); }
   else if(p.k==='school'){ p.done=true; gmSchoolVisit(p.x); } }
 /* 2군 관전·방문은 그날 퓨처스 경기가 끝난 뒤(flPlayDay 다음에 부른다). 경기가 열리지 않았으면 훈련장만 둘러본다 */
-function gmPlanFarmDaily(){ if(G.unemp)return; const p=gmPlanAt(G.day); if(!p||p.done||(p.k!=='farm'&&p.k!=='fut'))return; p.done=true; const g=flOurGame(G.day); if(g)gmFutWatch(g); else gmFarmVisit(p.k==='fut'); }
+function gmPlanFarmDaily(){ if(G.unemp)return; const p=gmPlanAt(G.day); if(!p||p.done||(p.k!=='farm'&&p.k!=='fut'))return; const g=flOurGame(G.day); p.done=true;
+  if(p.k==='fut'&&g&&!flPlanMatches(p,g)){ p.cancelled='퓨처스 대진 변경'; p.miss=true; note('일정',`${dmd(G.day)} 예약한 2군 상대와 실제 대진이 달라 관전 일정을 취소했습니다. 다시 예약할 수 있습니다.`); return; }
+  if(g)gmFutWatch(g); else gmFarmVisit(p.k==='fut'); }
 /* 직관 경기가 끝난 뒤(applyGame 이후 호출) */
-function gmAttendResult(rec){ const p=gmPlanAt(rec.day); if(!p||p.k!=='attend'||p.done)return; if(p.op!=null&&p.op!==(rec.home===G.user?rec.away:rec.home))return; /* 다른 상대 경기로 예약을 쓰지 않는다(검수 11-09zo) */ if(['owner','ceo'].includes(p.x)&&!cwActorMatches(p.x==='ceo'?'ceo':'own',p.tid,p.person)){p.done=true;p.cancelled=gmCompanion(p.x,p.tid??G.user)?'인물 교체':'동행 인물 부재';note('일정','함께 가기로 한 사람이 자리를 떠나 직관 일정을 취소했습니다. 불이익은 없습니다.');return;} if((p.x==='owner'||p.x==='ceo')&&cwStart(rec,p))return; /* 구단주·사장 동석: 동석 관람 대화로 */ p.done=true; const t=team(G.user); const ms=rec.home===G.user?rec.hs-rec.as:rec.as-rec.hs; const L=[];
+function gmAttendResult(rec){ const p=gmPlanAt(rec.day); if(!p||p.k!=='attend'||p.done)return; if(!gmGameMatches(p,rec.day,rec.home,rec.away,rec.dh||rec.gi||1))return; /* 날짜·대진·DH 순번까지 일치한 경기만 */ if(['owner','ceo'].includes(p.x)&&!cwActorMatches(p.x==='ceo'?'ceo':'own',p.tid,p.person)){p.done=true;p.cancelled=gmCompanion(p.x,p.tid??G.user)?'인물 교체':'동행 인물 부재';note('일정','함께 가기로 한 사람이 자리를 떠나 직관 일정을 취소했습니다. 불이익은 없습니다.');return;} if((p.x==='owner'||p.x==='ceo')&&cwStart(rec,p))return; /* 구단주·사장 동석: 동석 관람 대화로 */ p.done=true; const t=team(G.user); const ms=rec.home===G.user?rec.hs-rec.as:rec.as-rec.hs; const L=[];
   const m=G.mgr[G.user]; if(m&&!m.interim){ m.rel=clamp(m.rel+1,0,100); L.push('감독 관계 조금 개선'); } for(const q of playersOf(G.user).filter(q=>q.e1))q.mor=clamp((q.mor??60)+1,0,100); L.push('1군 선수단 기분 조금 상승');
   if(p.x==='owner'){ const d=ms>0?1.5:ms<=-5?-1.5:0; t.trust=clamp(t.trust+d,0,100); L.push(d?`구단주 신뢰 ${d>0?'조금 상승':'조금 하락'}`:'구단주 신뢰 변화 없음');
     const B=bossOf(G.user); const cm=mail('구단주실',`구단주와 함께 본 경기: ${ms>0?'승리':ms<0?'패배':'무승부'}`,`${ms>0?'"오늘 같은 경기를 자주 보고 싶군요. 수고했습니다."':ms<=-5?'"이런 경기를 보여 주려고 날 부른 겁니까?"':'"쉽지 않은 경기였군요. 계속 지켜보겠습니다."'}\n\n${L.join(' · ')}`,{kind:'구단주'}); if(cm&&cm.id)cm.sgid=rec.gid; void B; } /* 중계를 마칠 때까지 감출 소식(검수 11-09zzc #11) */
@@ -101,7 +115,7 @@ function gmScoutTrip(reg){ const tn=gmTourn(G.day)||'고교 대회'; const C=(G.
   if(TS)for(const x of TS){ const s=x.kind==='e'?amPipe().L[x.id]:G.players[x.id]; if(s&&!seen.includes(s))obsAdd(s,G.user,1); } /* 단장이 직접 본 후보는 gmObserve로 센다(관찰 횟수 하나, 스카우트 1단계) */
   const box=TS?`\n\n오늘 경기에서 본 기록\n${TS.filter(x=>x.kind==='p').slice(0,6).map(x=>{ const p=G.players[x.id]; return p?`${p.name}(${p.school}): ${x.b}`:''; }).filter(Boolean).join('\n')}${low.length?`\n저학년: ${low.slice(0,3).map(x=>{ const e=amPipe().L[x.id]; return e?`${e.n}(${e.s} ${amGrade(e,G.year)}학년) ${x.b}`:''; }).filter(Boolean).join(' · ')}`:''}`:'';
   /* 단장 눈에 들어온 선수도 실제 잠재력이 아니라 직접 본 평가(오차 포함)로 고른다 */ const ev=new Map(seen.map(p=>{ const rp=scoutReport(p); return [p.id,rp.ofp??rp.cur]; })); const top=[...seen].sort((a,b)=>ev.get(b.id)-ev.get(a.id)).slice(0,3); const gem=seen.find(p=>ev.get(p.id)>=58&&(p.press==null||p.press>30)&&R()<.5);
-  if(gem){ gem.gmGem=G.year; (G.shortlist=G.shortlist||[]); if(!G.shortlist.includes(gem.id))G.shortlist.push(gem.id); }
+  if(gem){ gem.gmGem=G.year; amFollow(gem.id,true); }
   mail('단장 노트',`${reg} ${tn} 관전`,`직접 본 후보 ${seen.length}명. 이 선수들은 평가 오차가 줄었습니다.\n눈에 들어온 선수: ${top.map(p=>`${p.name}(${posLabel(p)}, ${p.school||p.region})`).join(', ')}${box}${gem?`\n\n눈여겨본 선수: ${gem.name}(${posLabel(gem)}) — 언론 순위는 낮지만 직접 보니 그릇이 커 보입니다. 한두 번 본 인상이라 틀릴 수 있습니다. 관심 명단에 넣었습니다.`:''}`,{kind:'스카우트',acts:[{l:'드래프트 후보',a:'go',v:'transfer:draft'}],ref:gem?gem.id:top[0]&&top[0].id}); }
 /* 올해 초와 견준 실제 능력 변화를 말로 */
 function gmDirWord(p){ const b=G.ovr0&&G.ovr0.y===G.year?G.ovr0.m[p.id]:null; if(b==null)return '아직 지켜보는 중'; const x=ovr(p)-b; return x>=1.5?'올라오는 중':x>=.5?'조금씩 늘고 있음':x>-.5?'정체':'주춤'; }

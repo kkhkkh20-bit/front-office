@@ -110,12 +110,12 @@ const QUICK=process.env.QUICK==='1';
   const negResult=async label=>{ where=`${label} · 다년계약 결과`;
     const r=await ev(()=>{ const out={}; closeSheets(); A.tab('roster'); const L=playersOf(G.user).filter(p=>canExtend(p)).sort((a,b)=>ovr(b)-ovr(a)); if(L.length<2)return {skip:true};
       const a=L[0], b=L[1]; G.agRel=G.agRel||{};
-      A.player(a.id); A.ngtOpen('ext:'+a.id); UI.ngt.T.annual=MIN_SAL; UI.ngt.T.bonus=0; UI.ngt.T.opt=0; A.ngtSubmit();
+      A.player(a.id); A.ngtOpen('ext:'+a.id); UI.ngt.T.annual=MIN_SAL; UI.ngt.T.bonus=0; UI.ngt.T.opt=0; renderSheet(); A.ngtSubmit();
       out.first=(document.querySelector('#sheet .ng-res')||{}).innerText||''; /* 계약 1단계: 한 주 한 번 대신 성향별 라운드 한도. 한도를 넘기면 에이전트가 접고 다시 받는 날을 알린다 */
-      for(let i=0;i<6&&!a.extNg?.fold;i++){ UI.ngt.T.annual=MIN_SAL; A.ngtSubmit(); }
+      for(let i=0;i<6&&!a.extNg?.fold;i++){ UI.ngt.T.annual=MIN_SAL; renderSheet(); A.ngtSubmit(); }
       const res=document.querySelector('#sheet .ng-res'); out.noRes=res?res.innerText:''; const sb=document.querySelector('#sheet [data-a="ngtSubmit"]'); out.noBtn=sb?(sb.disabled?'off':'on'):'none';
       out.again=out.noRes;
-      closeSheets(); A.player(b.id); A.ngtOpen('ext:'+b.id); const d=ngtExtDem(b,UI.ngt.T.years); UI.ngt.T.annual=round5(d*1.5); UI.ngt.T.bonus=0; UI.ngt.T.opt=0; A.ngtSubmit();
+      closeSheets(); A.player(b.id); A.ngtOpen('ext:'+b.id); const d=ngtExtDem(b,UI.ngt.T.years); UI.ngt.T.annual=round5(d*1.5); UI.ngt.T.bonus=0; UI.ngt.T.opt=0; renderSheet(); A.ngtSubmit();
       if(UI.ngt&&b.extCounter){ A.ngtCounter(); }
       out.done=!!b.extNext||(b.ext&&b.faC); const st=document.querySelector('.stamp-w'); out.stamp=!!st;
       if(st){ const r=st.getBoundingClientRect(); const e=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2); out.top=!!(e&&e.closest('.stamp-w')); }
@@ -169,8 +169,8 @@ const QUICK=process.env.QUICK==='1';
   const faUpCheck=async label=>{ where=`${label} · FA 예정자`; const r=await ev(()=>{ closeSheets(); A.go('transfer:fa'); const sec=[...document.querySelectorAll('#app section')].find(x=>x.innerText.includes('올 시즌 뒤 FA 예정자')); return sec?sec.querySelectorAll('.fur').length:-1; });
     if(r===-1)add('FA 예정자','FA 시장 화면에 올 시즌 뒤 FA 예정자 목록이 없음'); else if(r===0)add('FA 예정자','FA 예정자 목록이 비어 있음'); };
   const wkCheck=async label=>{ where=`${label} · 경기 결과 창`;
-    const r=await ev(()=>{ G.live=null; G.res=null; G.stops=[]; (G.evs||[]).forEach(e=>{ if(!e.done)try{ evPick(e.id,e.def??0,true); }catch(x){ e.done=true; } }); G.mail.forEach(m=>m.read=true); closeSheets(); A.adv('event');
-      const n=G.dig&&G.dig.games?G.dig.games.length:0; const rows=document.querySelectorAll('#sheet .wkres .wk-g').length; return {n,rows,res:!!G.res}; });
+    const r=await ev(async()=>{ const day0=G.day; G.live=null; G.res=null; G.stops=[]; (G.evs||[]).forEach(e=>{ if(!e.done)try{ evPick(e.id,e.def??0,true); }catch(x){ e.done=true; } }); G.mail.forEach(m=>m.read=true); closeSheets(); A.adv('event'); while(UI.advRun)await new Promise(resolve=>setTimeout(resolve,10));
+      const n=G.day>day0&&G.dig&&G.dig.games?G.dig.games.length:0; const rows=document.querySelectorAll('#sheet .wkres .wk-g').length; return {n,rows,res:!!G.res}; });
     if(!r||r.res||!r.n)return; if(r.rows!==r.n)add('경기 결과',`경기 ${r.n}개를 넘겼는데 결과 창 경기 ${r.rows}개`);
     await ev(()=>{ const b=document.querySelector('#sheet .wk-g [data-a="openGame"]'); if(b)b.click(); }); await pg.waitForTimeout(80); await pg.keyboard.press('Escape'); await pg.waitForTimeout(80);
     if(!(await ev(()=>!!document.querySelector('#sheet .wkres'))))add('경기 결과','박스스코어를 닫으면 결과 창으로 돌아오지 않음');
@@ -217,26 +217,26 @@ const QUICK=process.env.QUICK==='1';
     }catch(e){ bad.push('실행 오류: '+(e&&e.message||e)); } finally{ G=JSON.parse(keep); UI.sheet=UI0.sheet; UI.game=UI0.game; _tsC=null; closeSheets(); render(); } return bad; });
     if(r)for(const m of r)add('일정·순위·기록',m); }
   /* 저장 안전(검수 11-06): 저장이 실패하면 현재 진행과 기존 슬롯이 보존되고, 다른 탭이 활성 슬롯을 바꿔도 각 탭은 자신이 연 슬롯에만 쓴다 */
-  { where='저장 안전'; const r=await ev(()=>{ const bad=[]; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); } const g0=G, cur0=CUR_SLOT, LS=Storage.prototype, si=LS.setItem;
-    const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; delete G._ck; CUR_SLOT=cur0; try{ slotRevSync(CUR_SLOT); }catch(e){} UI.title=false; closeSheets(); render(); }; /* 저장소를 시험 전으로 되돌리면 다른 탭이 쓴 것처럼 보이므로 슬롯 판 번호도 맞춘다(11-07 다른 탭 보호 뒤) */
+  { where='저장 안전'; const r=await ev(async()=>{ const bad=[]; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); } const g0=G, cur0=CUR_SLOT, LS=Storage.prototype, si=LS.setItem, saveImpl=SaveStore.use({...SaveStore.web,name:'quota-both-stores',big:{...SaveStore.web.big,ok:()=>false}});
+    const restore=()=>{ LS.setItem=si; SaveStore.use(saveImpl); localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; delete G._ck; CUR_SLOT=cur0; try{ slotRevSync(CUR_SLOT); }catch(e){} UI.title=false; closeSheets(); render(); }; /* 저장소를 시험 전으로 되돌리면 다른 탭이 쓴 것처럼 보이므로 슬롯 판 번호도 맞춘다(11-07 다른 탭 보호 뒤) */
     try{ saveNow(); const me=curSlot(), other=me===1?2:1; const otherBody=localStorage.getItem(slotKey(other));
       { const m=meta(); m.active=other; setMeta(m); G.day+=0; saveNow(); if(localStorage.getItem(slotKey(other))!==otherBody)bad.push('다른 탭이 바꾼 활성 슬롯에 저장됨'); const m2=meta(); m2.active=me; setMeta(m2); }
       const mine0=localStorage.getItem(slotKey(me));
-      G._ck=1; /* 바뀐 것이 없으면 저장을 건너뛰므로(검수 11-09 #7) 진행이 있는 상태로 만든다 */ LS.setItem=function(k,v){ if(k===slotKey(me))throw new Error('quota-sim'); return si.call(this,k,v); }; A.slotLoad(me); if(G!==g0)bad.push('저장 실패 뒤 같은 슬롯을 다시 열어 진행이 사라짐'); A.newgame(); if(G!==g0)bad.push('저장 실패인데 새 구단 시작으로 현재 게임을 닫음'); LS.setItem=si;
+      G._ck=1; /* 바뀐 것이 없으면 저장을 건너뛰므로(검수 11-09 #7) 진행이 있는 상태로 만든다 */ LS.setItem=function(k,v){ if(k===slotKey(me))throw new Error('quota-sim'); return si.call(this,k,v); }; await A.slotLoad(me); if(G!==g0)bad.push('저장 실패 뒤 같은 슬롯을 다시 열어 진행이 사라짐'); A.newgame(); if(G!==g0)bad.push('저장 실패인데 새 구단 시작으로 현재 게임을 닫음'); LS.setItem=si;
       G._ck=2; LS.setItem=function(k,v){ if(k===META)throw new Error('quota-sim'); return si.call(this,k,v); }; const ok=saveNow(); LS.setItem=si; if(ok)bad.push('목록 기록이 실패했는데 저장 성공');
-      { const m=meta(); const empty=SLOT_IDS.find(n=>!m.slots[n]); if(empty){ si.call(localStorage,slotKey(empty),'x'); A.slotCopy(); if(localStorage.getItem(slotKey(empty))!=='x')bad.push('목록에 빠진 세이브를 빈 슬롯으로 보고 덮어씀'); localStorage.removeItem(slotKey(empty)); } }
-      { const before=localStorage.getItem(slotKey(me)); const txt=prepG(); UI.title=true; LS.setItem=function(k,v){ if(k===META)throw new Error('quota-sim'); return si.call(this,k,v); }; importText(txt); LS.setItem=si; UI.title=false; G=g0; if(localStorage.getItem(slotKey(me))!==before)bad.push('새 슬롯 가져오기가 기존 세이브를 덮어씀'); }
+      { const m=meta(); const empty=SLOT_IDS.find(n=>!m.slots[n]); if(empty){ si.call(localStorage,slotKey(empty),'x'); await A.slotCopy(); if(localStorage.getItem(slotKey(empty))!=='x')bad.push('목록에 빠진 세이브를 빈 슬롯으로 보고 덮어씀'); localStorage.removeItem(slotKey(empty)); } }
+      { const before=localStorage.getItem(slotKey(me)); const txt=prepG(); UI.title=true; LS.setItem=function(k,v){ if(k===META)throw new Error('quota-sim'); return si.call(this,k,v); }; await importText(txt); LS.setItem=si; UI.title=false; G=g0; if(localStorage.getItem(slotKey(me))!==before)bad.push('새 슬롯 가져오기가 기존 세이브를 덮어씀'); }
       { const q=Object.values(G.players).find(p=>p.team!=null&&!p.isP); const t0=q.team; q.team=null; q.use={y:G.year,pos:{SS:81}}; q.l10=[1,2,3]; const J=JSON.parse(prepG()); if(!J.players[q.id].use||!J.players[q.id].l10)bad.push('무적 선수 기용 기록이 저장에서 빠짐'); q.team=t0; delete q.use; delete q.l10; }
       if(G.games&&G.games[0]){ const c0=UI.cast; UI.cast={hold:true,g:0,k:17}; const J=JSON.parse(prepG()); UI.cast=c0; delete G.castHold; if(!J.castHold||J.castHold.k!==17)bad.push('저장의 중계 재개 위치가 다름'); }
     }catch(e){ bad.push('실행 오류: '+(e&&e.message||e)); } finally{ restore(); } return bad; });
     if(r)for(const m of r)add('저장 안전',m); }
   /* 슬롯 전환(검수 11-06): 현재 게임 저장과 활성 슬롯 변경이 모두 성공한 뒤에만 새 슬롯으로 전환한다. 기록 캐시는 세이브를 구분한다 */
-  { where='슬롯 전환'; const r=await ev(()=>{  const bad=[]; const cur=meta().active||1, other=cur===1?2:1; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); }
-  const g0=G; const LS=Storage.prototype, si=LS.setItem; const restore=()=>{ LS.setItem=si; localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; delete G._ck; try{ slotRevSync(curSlot()); }catch(e){} closeSheets(); UI.title=false; render(); };
+  { where='슬롯 전환'; const r=await ev(async()=>{  const bad=[]; const cur=meta().active||1, other=cur===1?2:1; const keepK={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keepK[k]=localStorage.getItem(k); }
+  const g0=G; const LS=Storage.prototype, si=LS.setItem, saveImpl=SaveStore.use({...SaveStore.web,name:'quota-both-stores',big:{...SaveStore.web.big,ok:()=>false}}); const restore=()=>{ LS.setItem=si; SaveStore.use(saveImpl); localStorage.clear(); for(const k in keepK)si.call(localStorage,k,keepK[k]); G=g0; delete G._ck; try{ slotRevSync(curSlot()); }catch(e){} closeSheets(); UI.title=false; render(); };
   try{ saveNow(); const snap=localStorage.getItem(slotKey(cur)); G.day+=0; const gB=JSON.parse(JSON.stringify(G)); gB.name='슬롯검사'; G=gB; G._slotMark='B'; si.call(localStorage,slotKey(other),packG()); G=g0; delete G._slotMark;
-    /* 1) 활성 슬롯 변경만 실패 */ LS.setItem=function(k,v){ if(k===META)throw new Error('quota-sim'); return si.call(this,k,v); }; A.slotLoad(other); LS.setItem=si;
+    /* 1) 활성 슬롯 변경만 실패 */ LS.setItem=function(k,v){ if(k===META)throw new Error('quota-sim'); return si.call(this,k,v); }; await A.slotLoad(other); LS.setItem=si;
     if(G!==g0)bad.push('활성 슬롯 변경에 실패했는데 다른 슬롯으로 전환함'); if((meta().active||1)!==cur)bad.push('활성 슬롯 번호가 바뀜'); saveNow(); const o2=unpack(localStorage.getItem(slotKey(other))); if(!o2||o2._slotMark!=='B')bad.push('다른 슬롯이 덮어써짐');
-    /* 2) 현재 게임 저장 실패 */ G._ck=3; LS.setItem=function(k,v){ if(k===slotKey(cur))throw new Error('quota-sim'); return si.call(this,k,v); }; A.slotLoad(other); LS.setItem=si;
+    /* 2) 현재 게임 저장 실패 */ G._ck=3; LS.setItem=function(k,v){ if(k===slotKey(cur))throw new Error('quota-sim'); return si.call(this,k,v); }; await A.slotLoad(other); LS.setItem=si;
     if(G!==g0)bad.push('현재 게임 저장에 실패했는데 다른 슬롯으로 이동함');
     /* 3) 기록 캐시: 다른 세이브면 다시 센다 */ const r1=playerRows(G.year); const gC=unpack(packG()); const ids=Object.keys(gC.players); gC.players={[ids[0]]:gC.players[ids[0]]}; const gk=G; G=gC; const r2=playerRows(G.year); G=gk; if(r2===r1)bad.push('다른 세이브인데 직전 세이브 선수 기록 캐시를 씀');
   }catch(e){ bad.push('실행 오류: '+(e&&e.message||e)); } finally{ restore(); } return bad;  }); if(r){ for(const m of r)add('슬롯 전환',m); } }
