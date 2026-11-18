@@ -24,7 +24,7 @@ function outletRep(name){ const L=pressInit().filter(r=>r.outlet===name); return
 function repContact(id,kind){ const r=repById(id); if(!r)return '기자를 찾을 수 없습니다.'; G.repc=G.repc||{}; const c=G.repc[id]=G.repc[id]||{};
   const dim=r.rel>60?Math.max(.3,1-(r.rel-60)/40):1; const sty=r.style==='cr'?.7:r.style==='fr'?1.2:1;
   if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return `${r.name} 기자와는 ${dmd(c.call+14)}부터 다시 통화할 수 있습니다.`; c.call=G.day; const d=Math.max(1,Math.round(ri(1,3)*dim*sty)); repRel(r,d,'단장 전화'); return `${r.outlet} ${r.name} 기자와 통화했습니다. 친분이 올라 ${relLabel(r.rel)}입니다.`; }
-  if(kind==='meal'){ if(c.meal!=null&&c.meal>G.day-30)return `${r.name} 기자와 식사는 ${dmd(c.meal+30)}부터 가능합니다.`; c.meal=G.day; G.spend.etc=(G.spend.etc||0)+10; const d=Math.max(1,Math.round(ri(3,6)*dim*sty)); repRel(r,d,'단장과 식사'); return `${r.outlet} ${r.name} 기자와 저녁을 먹었습니다(1천만 원). 친분이 올라 ${relLabel(r.rel)}입니다.${r.style==='cr'?' 비판적인 기자라 쉽게 가까워지지는 않습니다.':''}`; }
+  if(kind==='meal'){ if(c.meal!=null&&c.meal>G.day-30)return `${r.name} 기자와 식사는 ${dmd(c.meal+30)}부터 가능합니다.`; c.meal=G.day; ledgerMe('etc',10); const d=Math.max(1,Math.round(ri(3,6)*dim*sty)); repRel(r,d,'단장과 식사'); return `${r.outlet} ${r.name} 기자와 저녁을 먹었습니다(1천만 원). 친분이 올라 ${relLabel(r.rel)}입니다.${r.style==='cr'?' 비판적인 기자라 쉽게 가까워지지는 않습니다.':''}`; }
   return ''; }
 
 /* ---------- 언론 플레이 ---------- */

@@ -66,9 +66,9 @@ function cheerGame(day,h){ if(h!==G.user||G.unemp){ if(!G._away&&(G.fanYrT||{})[
 function cheerMonthPay(S){ const o=dobj(G.day-1), from=dnum(o.y,o.m,1), n=Math.max(1,G.day-from), d=Math.max(from,S.payFrom??S.d0??from), fee=Math.max(cheerPay(),S.payPeak||0); return Math.round(fee*clamp((G.day-d)/n,0,1)*10)/10; }
 /* 매달 1일: 대행사 수수료, 팬서비스 → 팬 여론, 인기 단원 → 상품 수입, 팔로워 기사. 1월에는 한 해 정리 */
 function cheerMonthly(){ if(G.unemp||!G.fanOps||!G.fanOps.cs)return; const S=G.fanOps.cs; prInit(); cheerFill(S);
-  const pay=cheerMonthPay(S); S.payPeak=0; S.payFrom=G.day; G.spend.fan=(G.spend.fan||0)+pay;
+  const pay=cheerMonthPay(S); S.payPeak=0; S.payFrom=G.day; ledgerMe('fan',pay);
   if(period()==='season')G.pr.fan=clamp(G.pr.fan+(avg(S.L.map(m=>m.svc))-10)*.03,0,100);
-  const inc=Math.round(sum(S.L.map(m=>Math.max(0,m.pop-12)))*.6); if(inc)G.spend.fanIn=(G.spend.fanIn||0)+inc;
+  const inc=Math.round(sum(S.L.map(m=>Math.max(0,m.pop-12)))*.6); if(inc)ledgerMe('fanIn',inc);
   for(const m of S.L){ const k=m.fol>=300000?3:m.fol>=100000?1:0; if(k>(m.fm||0)){ m.fm=k; cheerNews(`${tshort(G.user)} 치어리더 ${m.name}, SNS 팔로워 ${k===3?'30만':'10만'} 돌파`,`${m.name}의 응원 영상과 팬서비스가 꾸준히 사랑받고 있습니다. 구단 상품 매장에서도 관련 굿즈 문의가 늘었습니다.`,1); /* 이직 중 달성도 리그 소식으로(검수 11-09zza) */ } }
   if(dobj(G.day).m===1)cheerYear(S); }
 function cheerYear(S){ const L=[];
@@ -90,6 +90,6 @@ function cheerMeetLeft(){ const S=cheerSq(); return S.ev!=null&&G.day-S.ev<14?`$
 function cheerMeet(){ if(G.unemp)return '지금은 구단 단장이 아닙니다.'; if(!(G.fanOps&&G.fanOps.cs))return '먼저 응원단 대행사와 계약하세요.'; const S=cheerSq(), left=cheerMeetLeft(); if(left)return '치어리더 팬 사인회: '+left;
   const U=S.L.filter(m=>!m.inj&&m.fat<85).sort((a,b)=>b.pop-a.pop).slice(0,4); if(U.length<2)return '나설 수 있는 단원이 모자랍니다(부상·피로).';
   const why=fanCashWhy(5); if(why)return '치어리더 팬 사인회: '+why;
-  prInit(); S.ev=G.day; G.spend.fan=(G.spend.fan||0)+5; const sv=avg(U.map(m=>m.svc)), up=sv>=13?2:1; G.pr.fan=clamp(G.pr.fan+up,0,100);
+  prInit(); S.ev=G.day; ledgerMe('fan',5); const sv=avg(U.map(m=>m.svc)), up=sv>=13?2:1; G.pr.fan=clamp(G.pr.fan+up,0,100);
   for(const m of U){ m.fat=Math.min(100,m.fat+18); m.fol+=Math.round(m.pop*rnd(200,400)*(1+(m.svc-10)/20)); if(R()<m.svc/40)m.pop=Math.min(20,m.pop+1); }
   const msg=`치어리더 팬 사인회를 열었습니다(${U.map(m=>m.name).join(', ')}). 팬 여론 호전, 참가 단원 피로 증가.`; fanLog(msg); return msg; }

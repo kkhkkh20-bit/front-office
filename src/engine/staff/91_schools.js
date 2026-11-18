@@ -94,7 +94,7 @@ function schTipFor(tid){ const me=tid===G.user; const C=(G.draftClass||[]).map(i
 /* 학교 후원(야구부 장비·전지훈련 지원): 구단마다 한 해 한 번, 1천만 원, 친분 +8 */
 const schGave=(S,tid)=>!!S&&!!S.gy&&typeof S.gy==='object'&&S.gy[tid??G.user]===G.year;
 function schGift(n){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const S=schList()[n]; if(!S)return '학교가 없습니다.'; if(schGave(S))return `${n}에는 올해 이미 후원했습니다.`;
-  schSponsor(S,G.user); try{ _dcc=null; }catch(e){} /* 스카우트 주장 캐시도 새로(검수 11-09e #24) */ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+10; return `${n} 야구부에 장비를 후원했습니다(${money(10)}). ${S.coach.name} 감독과 친분 ${schRelLbl(schRel(S))}.`; }
+  schSponsor(S,G.user); try{ _dcc=null; }catch(e){} /* 스카우트 주장 캐시도 새로(검수 11-09e #24) */ ledgerMe('etc',10); return `${n} 야구부에 장비를 후원했습니다(${money(10)}). ${S.coach.name} 감독과 친분 ${schRelLbl(schRel(S))}.`; }
 /* 학교 친분이 평가 오차에 주는 배수(우리 구단만): 친분 0이면 1.08배, 100이면 0.92배, 귀띔받은 선수는 0.85배 더 */
 function schSdM(p,tid){ tid=tid??G.user; const S=p&&p.prospect&&p.school&&G.schools?G.schools[p.school]||null:null; /* 학교 목록을 여기서 만들지 않는다(난수 소비 없이, 저장·불러오기 결정성) */ if(!S)return 1; return clamp((1.08-schRel(S,tid)*.0016)*(schTipKnown(p,tid)?.85:1),.75,1.08); } /* 모든 구단 같은 식(스카우트 1단계) */
 
@@ -113,6 +113,6 @@ function schSponsor(S,tid){ if(!S.gy||typeof S.gy!=='object')S.gy={}; S.gy[tid]=
 function schSponGrow(n){ const S=(G.schools||{})[n]; if(!S||!S.gy||typeof S.gy!=='object')return 0; return Object.values(S.gy).some(y=>y>=G.year-1)?.12:0; }
 /* AI 구단: 4월 1일 연고 권역 고교를 형편만큼(운영 자금 5천만 원은 남긴다) 후보 많은 학교부터 후원한다 */
 function schAiSponsor(t){ const A0=areaDef(teamArea(t.id)); if(!A0||!G.schools)return 0; const cnt=n=>Object.values(amPipe().L).filter(e=>e.s===n).length; let n=0;
-  for(const name of [...A0.hs].sort((p,q)=>cnt(q)-cnt(p)||(p<q?-1:1))){ const S=G.schools[name]; if(!S||schGave(S,t.id)||(t.cash||0)<60)continue; t.cash-=10; schSponsor(S,t.id); n++; } return n; }
+  for(const name of [...A0.hs].sort((p,q)=>cnt(q)-cnt(p)||(p<q?-1:1))){ const S=G.schools[name]; if(!S||schGave(S,t.id)||(t.cash||0)<60)continue; ledger(t.id,'etc',10); schSponsor(S,t.id); n++; } return n; }
 /* 후원 현황(화면): 그 구단이 올해 후원한 학교 수와 연고 권역 안 수 */
 function schSponSum(tid){ tid=tid??G.user; const L=Object.values(schList()).filter(S=>schGave(S,tid)); const home=teamArea(tid); return {n:L.length,home:L.filter(S=>S.area===home).length,homeAll:(areaDef(home)||{hs:[]}).hs.length}; }

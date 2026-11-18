@@ -71,7 +71,7 @@ const EVH={
       if(R()>.2*clamp(sum(w)/L.length,.15,1.5))return null; /* 선수단 성향에 따라 0.03~0.3 */
       let x=R()*sum(w), pk=L[0]; for(let i=0;i<L.length;i++){ x-=w[i]; if(x<=0){ pk=L[i]; break; } }
       return {p:pk,ty:wpick({gamble:.15,drink:.4,sns:.45})}; },
-    make(d){ const p=d.p, S=SCAND[d.ty]; prInit(); G.pr.fan=clamp(G.pr.fan-S.fan,0,100); G.pr.press=clamp(G.pr.press-S.press,0,100); G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+S.sp;
+    make(d){ const p=d.p, S=SCAND[d.ty]; prInit(); G.pr.fan=clamp(G.pr.fan-S.fan,0,100); G.pr.press=clamp(G.pr.press-S.press,0,100); ledgerMe('etc',S.sp);
       if(S.kbo)p.susp=G.day+gDays(S.kbo); story(p,`${S.t}로 ${ASSOC.s} 징계${S.kbo?` (출장정지 ${S.kbo}경기)`:' (제재금)'}`,'inj'); news('구단',`${tshort(G.user)} ${p.name}, ${S.t} 파문`,`${S.d} ${ASSOC.s} 상벌위원회는 ${S.kbo?`출장정지 ${S.kbo}경기와 `:''}제재금을 부과했습니다. 후원사 일부가 광고를 중단해 약 ${money(S.sp)}의 손실이 예상됩니다.`,-3,{ref:p.id});
       evNew('scandal',`${p.name} ${S.t}: 구단 징계를 정해 주세요`,`${p.name}(${posLabel(p)}, ${p.age}세) ${S.d}\n${ASSOC.s} 징계: ${S.kbo?`출장정지 ${S.kbo}경기 + 제재금`:'제재금'}\n후원 손실 약 ${money(S.sp)}, 팬 여론 악화, 언론 논조 악화가 이미 반영됐습니다. 구단 자체 징계 수위에 따라 여론과 후원사 반응이 달라집니다.`,
         [{l:'협회 징계만 따르기',fx:'선수 기분은 지키지만 "봐주기" 비판으로 팬 여론과 언론 논조가 더 떨어집니다.'},
@@ -83,7 +83,7 @@ const EVH={
       if(i===1){ p.susp=base+gDays(S.club); G.pr.fan=clamp(G.pr.fan-1,0,100); p.mor=clamp((p.mor??60)-8,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:1}); return `${p.name} 출장정지가 ${S.club}경기 늘었습니다. 선수 기분 크게 하락.`; }
       if(i===2){ p.susp=Math.max(base,G.cal?G.cal.end+1:base+120); G.pr.fan=clamp(G.pr.fan+3,0,100); G.pr.press=clamp(G.pr.press+4,0,100); p.mor=clamp((p.mor??60)-20,0,100); evFollow(21,'scandal',{pid:p.id,ty:e.data.ty,c:2}); return `${p.name}은(는) 올 시즌 뛸 수 없습니다. 팬 여론 호전, 언론 논조 호전.`; }
       const nm=p.name; if(p.foreign)releaseForeign(p.id); else releasePlayer(p.id); G.pr.fan=clamp(G.pr.fan+4,0,100); G.pr.press=clamp(G.pr.press+5,0,100); evFollow(21,'scandal',{pid:null,ty:e.data.ty,c:3,nm}); return `${nm}을(를) 방출했습니다. 팬 여론 호전, 언론 논조 호전.`; },
-    follow(d,tid){ const S=SCAND[d.ty], here=!G.unemp&&tid===G.user; if(!here&&d.c<2)return; if(d.c>=2){ const back=Math.round(S.sp*.5), led=here?Math.min(back,(G.spend&&G.spend.etc)||0):0; if(led)G.spend.etc-=led; if(back>led){ team(tid).cash+=back-led; hoBook(tid,[['후원사 복귀',back-led]],[]); } /* 이직으로 손실이 옛 장부에서 구단 현금으로 넘어갔으면 만회도 구단 현금으로(검수 11-09za) */ if(here)mail('마케팅팀','후원사 일부 복귀',`강한 자체 징계 뒤 광고를 중단했던 후원사 일부가 돌아왔습니다. 손실 ${money(back)}을(를) 만회했습니다.`,{kind:'재정'}); }
+    follow(d,tid){ const S=SCAND[d.ty], here=!G.unemp&&tid===G.user; if(!here&&d.c<2)return; if(d.c>=2){ const back=Math.round(S.sp*.5), led=here?Math.min(back,(G.spend&&G.spend.etc)||0):0; if(led)ledgerMe('etc',-led); if(back>led)ledger(tid,'etc',-(back-led),{me:false,ho:[[['후원사 복귀',back-led]],[]]}); /* 이직으로 손실이 옛 장부에서 구단 현금으로 넘어갔으면 만회도 구단 현금으로(검수 11-09za) */ if(here)mail('마케팅팀','후원사 일부 복귀',`강한 자체 징계 뒤 광고를 중단했던 후원사 일부가 돌아왔습니다. 손실 ${money(back)}을(를) 만회했습니다.`,{kind:'재정'}); }
       else if(d.c===0){ G.pr.fan=clamp(G.pr.fan-2,0,100); mail('마케팅팀','징계 논란이 이어집니다',`"구단이 감싼다"는 비판이 계속되고 있습니다. 팬 여론이 조금 더 떨어졌습니다.`,{kind:'재정'}); } } },
   /* 출전 시간 불만: 시즌 100경기가 지난 뒤에만 생긴다. 선수는 먼저 감독에게 따지고, 그게 기사로 나오면 단장이 후속 조치를 정한다.
      감독이 스스로 수습하면(자존심이 낮을수록) 단장에게 올라오지 않고 '기회 약속' 기사로 끝난다 */
@@ -169,7 +169,7 @@ const EVH={
     /* 비서 기준: 자동 판단은 AI 구단 멘토 지정과 같은 함수(mentorWhy: 긴축·쓸 수 있는 돈·24세 이하 선수) */
     autoPick(e,pol){ if(pol==='yes')return 0; if(pol==='no')return 1; const why=mentorWhy(G.user); e.why=why?`자동 판단: ${why}`:'자동 판단: 수당을 낼 여유가 있고 24세 이하 선수가 있음'; return why?1:0; },
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '';
-      if(i===0){ mentorRemember(ME(),{id:p.id,y:G.year}); team(ME()).mentorDoneY=G.year; G.spend.etc=(G.spend.etc||0)+50; p.mor=clamp(p.mor+8,0,100); return `${p.name} 멘토 지정. 올 시즌 젊은 선수들 성장에 도움이 됩니다. 수당 5천만.`; }
+      if(i===0){ mentorRemember(ME(),{id:p.id,y:G.year}); team(ME()).mentorDoneY=G.year; ledgerMe('etc',50); p.mor=clamp(p.mor+8,0,100); return `${p.name} 멘토 지정. 올 시즌 젊은 선수들 성장에 도움이 됩니다. 수당 5천만.`; }
       p.mor=clamp(p.mor-3,0,100); return `${p.name} 기분 하락.`; } },
   /* 마케팅 행사 */
   fan:{ w:.6, check(){ const n=(G.evlog||[]).filter(x=>x.k==='fan'&&x.y===G.year).length; return n<2&&G.pr.fan<56&&!team(G.user).indie?{fan:Math.round(G.pr.fan)}:null; },
@@ -178,8 +178,8 @@ const EVH={
        {l:'유니폼 증정 경기 (8천만)',fx:'팬 여론이 조금 오릅니다.'},
        {l:'하지 않는다',fx:'변화가 없습니다.'}],{from:'마케팅팀',def:2}); },
     pick(e,i){ const t=team(G.user);
-      if(i===0){ G.spend.etc=(G.spend.etc||0)+200; G.pr.fan=clamp(G.pr.fan+8,0,100); t.pop=clamp(t.pop+.01,0,1.5); return '2억 지출. 팬 여론 크게 호전, 구단 인기 소폭 상승.'; }
-      if(i===1){ G.spend.etc=(G.spend.etc||0)+80; G.pr.fan=clamp(G.pr.fan+3,0,100); return '8천만 지출. 팬 여론 호전.'; } return ''; } },
+      if(i===0){ ledgerMe('etc',200); G.pr.fan=clamp(G.pr.fan+8,0,100); t.pop=clamp(t.pop+.01,0,1.5); return '2억 지출. 팬 여론 크게 호전, 구단 인기 소폭 상승.'; }
+      if(i===1){ ledgerMe('etc',80); G.pr.fan=clamp(G.pr.fan+3,0,100); return '8천만 지출. 팬 여론 호전.'; } return ''; } },
   /* FA 앞둔 주축의 다년계약 요구 */
   agent:{ w:.8, check(){ const top=playersOf(G.user).map(ovr).sort((a,b)=>b-a); const bar=top[11]||50; const L=playersOf(G.user).filter(p=>canExtend(p)&&!p.faC&&p.svc===faSvc(p)-1&&ovr(p)>=bar&&!p.agentY); /* 다년계약을 실제로 협상할 수 있는 선수만(피드백 11-17 연장: 35세 이상은 요구만 오고 협상 버튼이 없었다) */ return L.sort((a,b)=>ovr(b)-ovr(a))[0]||null; },
     make(p){ p.agentY=G.year; evNew('agent',`${p.name} 측, 다년계약 요구`,`올 시즌 뒤 FA가 되는 ${p.name}(${posLabel(p)}, ${p.age}세)의 에이전트가 시즌 중 다년계약 협상을 원합니다.\n올해 기록: ${evLine(p)}`,

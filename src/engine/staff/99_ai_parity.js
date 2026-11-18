@@ -108,7 +108,7 @@ function mentorStateMigrate(){ if(!G)return;
 function mentorWhy(tid){ const t=team(tid); if(!t)return '구단 없음'; if(planOf(t)==='tight')return '긴축 운영 중'; const cash=tid===ME()?spendable(tid):(t.cash||0); if(cash<50)return '수당 5천만을 낼 돈이 부족함'; if(!domestic(tid).some(q=>q.age<=24))return '성장 효과를 볼 24세 이하 선수가 없음'; return ''; }
 function aiMentorPick(){ if(period()!=='season')return; for(const t of G.teams){ if(t.id===ME())continue; if(mentorWasPaid(t.id)){t.mentorDoneY=G.year;continue;} if(mentorWhy(t.id))continue;
     const p=playersOf(t.id).filter(q=>{ initPers(q); return q.age>=33&&q.pers.pro>=13&&!q.foreign; }).sort((a,b)=>b.age-a.age)[0]; if(!p)continue;
-    t.cash-=50; p.mor=clamp((p.mor??60)+8,0,100); t.mentorY=G.year; t.mentorDoneY=G.year; mentorRemember(t.id,{id:p.id,y:G.year}); } }
+    ledger(t.id,'etc',50); p.mor=clamp((p.mor??60)+8,0,100); t.mentorY=G.year; t.mentorDoneY=G.year; mentorRemember(t.id,{id:p.id,y:G.year}); } }
 
 /* --- 보조 코치: 매달 1일 코치 시장(cmAiMonthly 끝). 시설이 줄어 정원을 넘으면 정리(잔여 연봉 절반) --- */
 function aiAsstMonthly(tid,off){ const t=team(tid); if(!t||tid===ME())return; const O=orgOf(tid); const X=O.coachX=O.coachX||[]; pcTrim(tid); const n=axSlots(tid)-pcN(tid); /* 플레잉코치가 쓰는 자리는 뺀다(99c_playing_coach) */

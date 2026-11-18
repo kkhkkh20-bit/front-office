@@ -42,10 +42,10 @@ function sprcOdds(tid,lvl,k){ const D=(lvl===1?SPRC1:SPRC2)[k]; if(!D)return {q:
   const q=k==='home'?1:clamp(.62+(rep-50)/100+(pv?.2:0)-sprcTaken(lvl,k)/D.sl*.25-late+(sb?.25:0),.25,.97);
   const c=Math.max(0,Math.round(D.c*(1-(rep-50)/250+late)*(sb?.8:1)/10)*10); return {q,c,pv,sb}; }
 /* 같은 장부의 예약은 지출 취소, 이직·결산을 거친 예약은 돈을 낸 구단 현금으로 환급. */
-function sprcRefund(tid,P,lvl){ const old=P['c'+lvl]||0,back=Math.round(old*.7),pay=P['pay'+lvl]; if(!back)return 0; let ledger=0;
-  if(pay&&pay.mode==='ledger'&&pay.ep===G.spEp&&tid===ME()){ ledger=Math.min(back,G.spend.etc||0); G.spend.etc-=ledger; }
-  if(back>ledger){ team(tid).cash+=back-ledger; if(typeof hoBook==='function')hoBook(tid,[['캠프 예약 환급',back-ledger]],[]); } return back; }
-function sprcCharge(tid,P,lvl,k,c){ const user=tid===ME(); if(user)G.spend.etc=(G.spend.etc||0)+c; else { team(tid).cash-=c; if(c&&typeof hoBook==='function')hoBook(tid,[],[['스프링캠프 예약',c]]); } P['s'+lvl]=k; P['c'+lvl]=c; P['pay'+lvl]={tid,ep:G.spEp,mode:user?'ledger':'cash'}; P.c=(P.c1||0)+(P.c2||0); }
+function sprcRefund(tid,P,lvl){ const old=P['c'+lvl]||0,back=Math.round(old*.7),pay=P['pay'+lvl]; if(!back)return 0; let led=0;
+  if(pay&&pay.mode==='ledger'&&pay.ep===G.spEp&&tid===ME()){ led=Math.min(back,G.spend.etc||0); if(led)ledgerMe('etc',-led); }
+  if(back>led)ledger(tid,'etc',-(back-led),{me:false,ho:[[['캠프 예약 환급',back-led]],[]]}); return back; }
+function sprcCharge(tid,P,lvl,k,c){ const user=ledger(tid,'etc',c,{ho:c?'스프링캠프 예약':null}); P['s'+lvl]=k; P['c'+lvl]=c; P['pay'+lvl]={tid,ep:G.spEp,mode:user?'ledger':'cash'}; P.c=(P.c1||0)+(P.c2||0); }
 /* 예약: 성공하면 비용을 내고 자리를 잡는다. 이미 잡은 자리를 바꾸면 위약금 30%를 뺀 나머지를 돌려받는다 */
 function sprcBook(lvl,k){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; if(!sprcOpen())return '캠프 장소는 11월부터 1월 24일까지 정합니다.'; lvl=+lvl; const D=(lvl===1?SPRC1:SPRC2)[k]; if(!D)return '없는 장소입니다.';
   const P=sprcPlan(G.user), key=lvl===1?'s1':'s2'; if(P[key]===k)return ''; if(sprcTaken(lvl,k)>=D.sl&&!sisSite(G.user,lvl,k))return `${D.l}은(는) 이미 다른 구단으로 꽉 찼습니다.`; /* 자매구단이 자리를 마련해 준다 */
@@ -199,4 +199,4 @@ const acadFee=tid=>(ACAD[acadLv(tid)]||ACAD[0]).y||0; /* 연 제휴비 */
 const acadLv=tid=>Math.min(3,((tid==null||tid===G.user?G.acad:((G.orgT||{})[tid]||{}).acad)||{}).lv||0);
 const ovsLim=(o,tid)=>o.lim+acadLv(tid);
 function acadUp(){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; const lv=acadLv(); if(lv>=3)return '이미 최고 단계입니다.'; const n=ACAD[lv+1], t=team(G.user); if(spendable(G.user)<n.c)return `쓸 수 있는 돈이 부족합니다(${money(n.c)} 필요, ${spendTxt()}).`;
-  const k0=spendPay(n.c); G.spend.facB=(G.spend.facB||0)+k0; facInit(); G.fac.inv=(G.fac.inv||0)+n.c; (G.fac.hist=G.fac.hist||[]).push({d:G.day,k:'acad',lv:lv+1,c:n.c,src:'cash',...(k0<n.c?{sup:n.c-k0}:{})}); G.acad={lv:lv+1,d:G.day}; addLog(`특수 아카데미 제휴: ${n.l}(${money(n.c)}).`); return ''; }
+  const k0=ledgerPay(G.user,'facB',n.c,{me:true}); facInit(); G.fac.inv=(G.fac.inv||0)+n.c; (G.fac.hist=G.fac.hist||[]).push({d:G.day,k:'acad',lv:lv+1,c:n.c,src:'cash',...(k0<n.c?{sup:n.c-k0}:{})}); G.acad={lv:lv+1,d:G.day}; addLog(`특수 아카데미 제휴: ${n.l}(${money(n.c)}).`); return ''; }

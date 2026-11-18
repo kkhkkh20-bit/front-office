@@ -1,3 +1,22 @@
+/* ===== 재정 장부 공통 창구 =====
+ 우리 구단은 결산 장부 G.spend[key]에 쌓았다가 결산 때 반영하고, AI 구단은 현금 t.cash를 바로 바꾼다. 이 분기는 여기서만 한다.
+ amt: 지출이면 양수(환급·취소는 음수). o.inc: 수입 항목(우리 G.spend[key]+=amt, AI 현금 +amt)
+ o.me: 우리 장부 판정을 호출부가 정할 때(기본 tid===ME()). 장부 회차·이직 여부까지 보는 곳은 그 판정을 넘긴다
+ o.ho: AI 구단 연간 장부(hoBook) 항목. 이름이면 지출(o.inc면 수입)로 amt를 적고, [수입목록, 지출목록]이면 그대로 넘긴다
+ 돌려주는 값: 우리 장부에 적었으면 true */
+function ledger(tid,key,amt,o){ const me=o&&o.me!=null?!!o.me:tid===ME();
+  if(me){ G.spend=G.spend||{}; G.spend[key]=(G.spend[key]||0)+amt; return true; }
+  const inc=!!(o&&o.inc); if(inc)team(tid).cash+=amt; else team(tid).cash-=amt;
+  const ho=o&&o.ho; if(ho){ if(Array.isArray(ho))hoBook(tid,ho[0],ho[1]); else if(inc)hoBook(tid,[[ho,amt]],[]); else hoBook(tid,[],[[ho,amt]]); }
+  return false; }
+/* 지금 단장이 맡은 구단의 결산 장부에만 적는 일회성 지출·수입(이벤트 비용 등). 호출부가 이미 우리 구단 일로 정한 곳 */
+function ledgerMe(key,amt){ return ledger(G.user,key,amt,{me:true}); }
+/* 공사·보수처럼 그 자리에서 치르는 지출: 우리 구단은 현금에서 낼 수 있는 만큼(spendPay)만 그 항목에 적고 모자란 몫은 spendPay가 기타 지출로 넘긴다.
+ AI 구단은 현금에서 전액. 돌려주는 값: 현금에서 낸 몫(AI는 전액) */
+function ledgerPay(tid,key,amt,o){ const me=o&&o.me!=null?!!o.me:tid===ME(); if(me){ const k0=spendPay(amt); ledger(tid,key,k0,{me:true}); return k0; } ledger(tid,key,amt,Object.assign({},o,{me:false})); return amt; }
+/* 트레이드 현금(from이 to에게 amt): 낸 구단은 기타 지출(우리 구단이면 트레이드 약정 현금 trC에도), 받은 구단은 트레이드 수입(tradeIn).
+ 우리 구단 거래·받은 제안 수락·AI끼리 거래가 같은 함수를 쓴다 */
+function tradeCashPay(from,to,amt){ if(!amt)return; if(ledger(from,'etc',amt))ledgerMe('trC',amt); ledger(to,'tradeIn',amt,{inc:true}); }
 /* ===== 올해 예산(다음 결산까지 연간 예상) ===== */
 function finYearEnd(){ const y=(G.last&&G.last.y>=G.year)?G.year+1:G.year; if(y===G.year&&G.ps&&G.ps.finDay!=null)return G.ps.finDay; if(y===G.year&&G.cal&&G.cal.end)return Math.min(dnum(y,11,5),G.cal.end+30); return dnum(y,11,5); } /* 결산은 한국시리즈 이틀 뒤: 알면 그날, 모르면 정규시즌 끝 +30일로 어림 */
 /* 이미 현금에 반영한 인수 출자는 영업 흑자·지원 필요액과 구분한다. 결산과 예산 전망이 같은 회수 식을 쓴다. */

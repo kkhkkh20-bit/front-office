@@ -16,7 +16,7 @@ function poachCoach(tid,role,toRole){ if(!G.coach||tid===G.user)return '대상�
   if(G.poachCd[c.id]>G.day)return `${c.name} 코치는 ${dmd(G.poachCd[c.id])}까지 다시 만나 주지 않습니다.`; const t=team(tid);
   const draw=R(); if(!T.ctr&&draw>=T.chance){ G.poachCd[c.id]=G.day+30; t.rel=clamp(t.rel-1,0,100); return `${c.name} 코치가 제의를 거절했습니다. "${T.clan?`${G.mgr[tid].name} 감독님을 두고 갈 수 없습니다`:'지금 팀에서 하던 일을 마무리하고 싶습니다'}." (${tshort(tid)} 단장 친분 조금 하락)`; } /* 확정 수락도 기존 난수 한 번은 소비 */
   if(T.ctr)delete G.poachCtr[c.id]; else { const ct=cmCounter(tid,c,T); if(ct)return ct; } /* 원 소속 구단의 역제안 */
-  const C=G.coach[G.user]; const old=C[toRole]; if(old){ const pay=coachSev(old); /* 직접 해지와 같은 정산(검수 11-08) */ G.spend.coach=(G.spend.coach||0)+pay; addLog(`${CROLE[toRole].l} ${old.name}와(과) 결별했습니다(잔여 연봉 정산 ${money(pay)}).`); staffHistory('coach',old,'계약 종료',G.user,`${CROLE[toRole].l} · ${c.name} 영입으로 교체 · 잔여 연봉 정산 ${money(pay)}`);old.yrs=0; old.clan=null; G.cmarket.push(old); }
+  const C=G.coach[G.user]; const old=C[toRole]; if(old){ const pay=coachSev(old); /* 직접 해지와 같은 정산(검수 11-08) */ ledgerMe('coach',pay); addLog(`${CROLE[toRole].l} ${old.name}와(과) 결별했습니다(잔여 연봉 정산 ${money(pay)}).`); staffHistory('coach',old,'계약 종료',G.user,`${CROLE[toRole].l} · ${c.name} 영입으로 교체 · 잔여 연봉 정산 ${money(pay)}`);old.yrs=0; old.clan=null; G.cmarket.push(old); }
   coachCompPay(G.user,tid,T.comp);
   G.coach[tid][role]=null; coachInterimLeft(tid,c); staffHistory('coach',c,'이적',tid,`${CROLE[role].l} → ${tshort(G.user)} ${CROLE[toRole].l}${T.comp?` · 보상금 ${money(T.comp)}`:''}`); try{ coachVacFill(tid,`${c.name} 코치 이적에 따른 후임 선임`,[role]); }catch(e){} /* 후임은 AI끼리 빼 갈 때와 같이 코치 시장에서(89c_coach_vacancy, 검수 11-17 #265). 감독대행이던 코치면 대행도 다시(#264) */
   c.role=toRole; try{ coachSync(c); }catch(e){} c.sal=T.sal; staffCt(c,coachContractYears(c,2)); c.clan=null; c.from=tid; c.loy=15; /* 새 구단에서 충성도와 계약을 다시 시작(#498·#518) */ C[toRole]=c;if(old)interimLeft(old);staffHistory('coach',c,'영입',G.user,`${tshort(tid)} ${CROLE[role].l} 출신 · ${CROLE[toRole].l} · 연봉 ${money(c.sal)} · ${c.yrs}년`);t.rel=clamp(t.rel-(T.comp?2:4),0,100); obHireBonus(c.ob,CROLE[toRole].l); poachAdd(G.user);
@@ -41,8 +41,8 @@ function autoProt(q){ const sy=stoveY(); return !!(q.foreign||q.joinY>G.year||(q
 function compPool(tid){ return domestic(tid).concat(awayOf(tid).filter(q=>!q.foreign)).filter(q=>!autoProt(q)); }
 function aiProtect(tid,n){ const t=team(tid); return compPool(tid).sort((a,b)=>aiVal(t,b)-aiVal(t,a)).slice(0,n).map(q=>q.id); }
 /* 우리 구단의 일회성 현금 지출·수입은 결산 장부(G.spend)에 올려 예산 여유와 결산에 함께 반영한다 */
-function payOut(tid,amt,key){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.spend[key]||0)+amt; } else team(tid).cash-=amt; }
-function payIn(tid,amt,key='compIn'){ if(!amt)return; if(tid===ME()){ G.spend[key]=(G.spend[key]||0)+amt; } /* key: 장부 수입 항목(기본 보상금·양도금, 트레이드 현금은 tradeIn) */ else team(tid).cash+=amt; }
+function payOut(tid,amt,key){ if(!amt)return; ledger(tid,key,amt); } /* 재정 장부 공통 창구(ledger, 19_budget)의 얇은 포장 */
+function payIn(tid,amt,key='compIn'){ if(!amt)return; ledger(tid,key,amt,{inc:true}); } /* key: 장부 수입 항목(기본 보상금·양도금, 트레이드 현금은 tradeIn) */
 /* 영입 전에 보여 주는 보상 안내(플레이 테스트 11-13: 계약 뒤에야 보상금 통보). 원소속 구단에 줄 것: 등급별 보상선수·보상금 */
 function faCompTxt(p){ if(!p||!p.faGrade||p.faFrom==null||p.faFrom===G.user)return ''; const g=COMP[p.faGrade], prev=p.faPrevSal??p.sal??0; if(!g)return '';
   return p.faGrade==='C'?`${p.faGrade}등급 · ${tshort(p.faFrom)}에 보상금 ${money(Math.round(prev*g.cash))}(직전 연봉의 ${Math.round(g.cash*100)}%)만 줍니다.`

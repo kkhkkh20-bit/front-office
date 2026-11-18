@@ -316,7 +316,7 @@ function mgrScnFx(m,fx,X){if(!m||G.unemp||G.mgr?.[G.user]?.id!==m.id)return ['�
   if(fx.pref&&MPREF[fx.pref[0]]){ const [k,d]=fx.pref; mgrAttr(m); m[k]=clamp((m[k]??50)+d,20,90); out.push(`감독 기용 성향: ${MPREF[k]} ${d>0?'늘림':'줄임'}`); }
   if(fx.rest){ const p=P(fx.rest); if(p){ const f0=p.fat||0; p.fat=Math.max(0,f0-20); out.push(`${p.name} 휴식`); } }
   if(fx.hint){ const p=P(fx.hint); if(p){ mgrAttr(m); const err=hn('mgrhint'+m.id,p.id)*Math.max(0,90-(m.eye||50))/8; const v=Math.round(clamp((p.pot||ovr(p))+err,20,99)/5)*5; out.push(`감독 귀띔: ${p.name}(${p.age}세) 잠재력 추정 ${dv(v)}점 안팎으로 봅니다(지금 능력 ${dv(ovr(p))}점, 감독 눈 기준).`); } }
-  if(fx.cash){ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+fx.cash; out.push(`구단 지출 ${money(fx.cash)}`); }
+  if(fx.cash){ ledgerMe('etc',fx.cash); out.push(`구단 지출 ${money(fx.cash)}`); }
   if(fx.wire){ try{ wire('감독',`${tshort(G.user)} ${fx.wire}`,{tid:G.user}); }catch(e){} out.push(`리그 소식: ${fx.wire}`); }
   if(fx.req&&MREQ[fx.req]){const need=fx.req==='an'?null:mgrReqNeed(fx.req),R0=G.mgrReq={v:2,tid:G.user,k:fx.req,mid:m.id,d:G.day,until:mgrReqUntil(fx.req),an:G.acqSeq||0,ids:Object.values(G.players).filter(p=>p.team===G.user).map(p=>p.id),sids:anaList().map(a=>a.id),n0:anaList().length,min:Math.max(mreqMin(fx.req),need?Math.ceil(need.v+3):0),slot:need?.slot};(G.mgrReqSeen=G.mgrReqSeen||{})[G.user+':'+m.id+':'+fx.req]=G.day;out.push(`감독 요청: ${dmd(R0.until)}까지 ${MREQ[fx.req]} 보강 · 조건: ${mgrReqCond(R0)}`);}
   return out; }

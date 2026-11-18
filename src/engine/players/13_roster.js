@@ -10,7 +10,7 @@ const AI_YS_MAX=YS_MAX;
 function trimRoster(tid,max){
   let ps=playersOf(tid).filter(p=>!p.foreign&&!p.ys); const out=[]; max=(max||ROSTER_MAX)-(rosterN(tid)-ps.length); /* 정원은 rosterN과 같은 기준(국가대표 차출 포함, 부상 대체를 둔 재활 외국인 제외, 검수 11-09zx) */ const ysCap=tid===G.user?YS_MAX:AI_YS_MAX;
   const keep=p=>keepScore(p)+(team(tid).mode==='contend'?(p.age>=26?1:0):(p.age<=24?1:0));
-  while(ps.length>max){ ps.sort((a,b)=>keep(a)-keep(b)); const p=ps.shift(); out.push(p); if(p.age<=24&&ysOk(p)&&p.pot-ovr(p)>=8&&ysN(tid)<ysCap){ ysSet(p); } /* 사용자와 같은 전환 조건(다음 시즌 계약 선수 제외, 검수 11-07) */ else { const c=relCost(p).tot; if(c>0){ if(tid===G.user)G.spend.rel=(G.spend.rel||0)+c; else team(tid).cash-=c; } /* 일반 방출과 같은 잔여 연봉 정산(검수 11-05: AI가 계약 부담을 공짜로 없앴다) */ if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출`,c); else retireOut(p,`${tname(tid)}에서 방출된 뒤 은퇴`); } }
+  while(ps.length>max){ ps.sort((a,b)=>keep(a)-keep(b)); const p=ps.shift(); out.push(p); if(p.age<=24&&ysOk(p)&&p.pot-ovr(p)>=8&&ysN(tid)<ysCap){ ysSet(p); } /* 사용자와 같은 전환 조건(다음 시즌 계약 선수 제외, 검수 11-07) */ else { const c=relCost(p).tot; if(c>0)ledger(tid,'rel',c,{me:tid===G.user}); /* 일반 방출과 같은 잔여 연봉 정산(검수 11-05: AI가 계약 부담을 공짜로 없앴다) */ if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(tid)}에서 방출`,c); else retireOut(p,`${tname(tid)}에서 방출된 뒤 은퇴`); } }
   return out;
 }
 /* AI 구단 겨울 정리: 육성선수는 25세가 넘거나 한도를 넘으면 내보낸다(실제 구단도 해마다 10명 안팎을 정리한다).
