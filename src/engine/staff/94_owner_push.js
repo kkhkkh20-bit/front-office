@@ -131,12 +131,12 @@ function opCtxWhy(ctx){ if(!ctx)return '설득할 일이 없습니다.';
   if(ctx.ownerId!=null&&ctx.ownerId!==opOwnerId(G.user))return '요청을 반려한 구단주가 바뀌었습니다. 새 구단주에게 다시 요청해야 합니다.';
   if(ctx.k==='cap'){ try{ const e=facCanStart(G.user,ctx.fk); if(e)return e; }catch(e){} return ''; }
   const g=grants().find(x=>x.pk===ctx.pk); if(!g||g.st!=='no'||(g.tid!=null&&g.tid!==G.user))return '이미 끝난 요청입니다.'; const pur=g.pur;
-  if(pur&&pur.k==='fa'){ const q=G.players[pur.pid]; if(!(G.fa&&G.fa.open&&!G.fa.closed&&q&&q.team==null&&q.ask&&G.fa.pool.includes(q.id)&&!faOutBlocked(G.user,q)))return '그 FA는 이제 데려올 수 없어 설득할 이유가 없습니다.'; }
+  if(pur&&pur.k==='fa'){ const q=G.players[pur.pid]; if(g.until!=null&&G.day>g.until)return 'FA 영입 자금의 답변 기한이 지났습니다.'; const why=faSupportTargetWhy(q); if(why)return '그 FA는 이제 데려올 수 없어 설득할 이유가 없습니다. '+why; if(g.pitch&&!faSupportCap(q).ok)return '현재 요구 보수는 샐러리캡을 넘어 직접 설득을 다시 진행할 수 없습니다.'; }
   if(pur&&pur.k==='frep'&&G.day>foreignDL())return '외국인 등록 마감이 지났습니다.';
   if(pur&&pur.k==='boost'&&period()==='season'&&G.day>tradeDL())return '트레이드 마감이 지났습니다.'; return ''; }
 function opApplyUser(ctx){
   if(ctx.k==='cap'){ const r=capexAsk('fac',ctx.fk,true); return {ok:!r,txt:r||'모기업 투자로 공사를 시작했습니다.'}; }
-  const g=grants().find(x=>x.pk===ctx.pk); g.ok=true; g.st=g.pur?'open':'done'; g.push=1; if(g.pur&&g.pur.k==='fac')g.until=G.day+FAC_GRANT_DAYS; /* 공사 기한은 승인한 날부터 */ grantApply(g.amt);
+  const why=opCtxWhy(ctx); if(why)return {ok:false,txt:why}; const g=grants().find(x=>x.pk===ctx.pk); if(g.pur&&g.pur.k==='fa')g.y=sponSeason(); g.ok=true; g.st=g.pur?'open':'done'; g.push=1; if(g.pur&&g.pur.k==='fac')g.until=G.day+FAC_GRANT_DAYS; /* 공사 기한은 승인한 날부터 */ grantApply(g.amt);
   if(g.pitch&&g.pitch.cmts&&g.pitch.cmts.length){ const ny=G.year+(period()==='off'||period()==='post'?1:0); for(const c of g.pitch.cmts)if(PITCH_CMT[c])(G.pitchCommit=G.pitchCommit||[]).push({y:ny,k:c,v:PITCH_CMT[c].v,l:PITCH_CMT[c].l}); }
   return {ok:true,txt:`${money(g.amt)}을(를) 받았습니다. ${g.pur?'목적대로 쓰지 않으면 신뢰가 깎입니다.':''}`}; }
 function opEventWhy(e){ opBindOwner(e.data.tid,e.data,e.day);opBindOwner(e.data.tid,e.data.ctx,e.day);if(e.data.ownerId!==opOwnerId(e.data.tid))return '요청을 반려한 구단주가 바뀌었습니다. 새 구단주에게 다시 요청해야 합니다.';return opCtxWhy(e.data.ctx); }

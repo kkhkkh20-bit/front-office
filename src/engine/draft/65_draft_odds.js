@@ -27,13 +27,14 @@ function doPicks(tid){ const d=G.draft, live=d&&!d.done; const L=live?d.picks.sl
 function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; const pool=((live?d.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null);
   const picks=doPicks(tid), rest=tid===G.user?(live?draftRestOf():draftRestPre()):null;
   const reports=new Map(pool.map(p=>[p.id,scoutReport(p)]));
+  const boardOrder=draftBoardOrder();
   const picked0=live?d.picks.filter(k=>k.tid===tid&&k.pid>0).map(k=>G.players[k.pid]).filter(Boolean):[];
-  const key=JSON.stringify([tid,G.year,G.day,live?d.cur:-1,picks,rest,dplanOf(),draftPolK(),G.shortlist||[],pool.map(p=>[p.id,reports.get(p.id),obsCount(p,tid),p.press,amDraftAdj(p)]),G.teams.map(t=>[t.id,t.mode,draftNeed(t.id)]),rosterProj(tid)]);
+  const key=JSON.stringify([tid,G.year,G.day,live?d.cur:-1,picks,rest,dplanOf(),draftPolK(),boardOrder,pool.map(p=>[p.id,reports.get(p.id),obsCount(p,tid),p.press,amDraftAdj(p)]),G.teams.map(t=>[t.id,t.mode,draftNeed(t.id)]),rosterProj(tid)]);
   if(_doc&&_doc.g===G&&_doc.k===key)return _doc.r;
   const own=new Map(pool.map(p=>[p.id,doOwn(tid,p)])); const rum=draftRumors(tid); const RB={}; for(const r of rum)RB[r.tid+':'+r.id]=DO_RUM_B*r.q;
   const base=pool.map(p=>{ const o=own.get(p.id), w1=1/(o.sd*o.sd), w2=1/(DO_PUB_SD*DO_PUB_SD); const m=(o.v*w1+doPress(p)*w2)/(w1+w2); return {p,m,s:Math.sqrt(1/(w1+w2)),cur:o.cur??40,adj:amDraftAdj(p),g:dGrp(p)}; });
   const clubs=[...new Set(picks.map(k=>k.tid))]; const need={}, cw={}; for(const c of clubs){ need[c]=draftNeed(c); const t=team(c); cw[c]=t.mode==='contend'?.5:.25; } /* 자리 필요는 각 구단 로스터(공개)로, 성향은 운영 방향(공개)으로 */
-  const board=(G.shortlist||[]).filter(id=>pool.some(p=>p.id===id));
+  const board=boardOrder.filter(id=>pool.some(p=>p.id===id));
   const rr=doRand('dodds:'+G.year+':'+G.day+':'+tid+':'+(live?d.cur:-1)); const gn=()=>{ let u=0; while(!u)u=rr(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*rr()); };
   const P={}; for(const p of pool)P[p.id]={av:0,av2:0,by:{},r1:0};
   const myIdx=picks.map((k,i)=>k.tid===tid&&rest?.mode!=='pass'?i:-1).filter(i=>i>=0); const slot=picks.map(()=>({}));
