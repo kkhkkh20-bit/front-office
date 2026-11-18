@@ -19,10 +19,10 @@ function archetype(t,p){ // t: 평가된 도구 점수
   if(t.pow>=62&&t.con<50)return '거포형'; if(t.pow>=57&&t.con>=55)return '중장거리 강타자'; if(t.con>=58&&t.spd>=58)return '교타형 리드오프';
   if(t.con>=60)return '교타자'; if(t.spd>=62)return '준족형'; if(t.def>=62&&t.con+t.pow<100)return '수비형'; if(t.eye>=62)return '선구안형'; return '밸런스형';
 }
+/* 평가 말은 수준만(FM식): 포지션은 다른 칸에 있으므로 붙이지 않는다(카페 11-18: '리그 최정상급'과 '올스타급 선발'·'상위권 주전 3루'가 들쭉날쭉) */
 function roleOf(ofp,p){
-  const pos=p.isP?(isSP(p)?'선발':'불펜'):POSS[p.pos];
-  if(ofp>=70)return '리그 최정상급'; if(ofp>=65)return '올스타급 '+pos; if(ofp>=60)return '상위권 주전 '+pos; if(ofp>=55)return '주전 '+pos;
-  if(ofp>=50)return p.isP?(isSP(p)?'4~5선발':'필승조급 불펜'):'평균 주전·핵심 백업'; if(ofp>=45)return '1군 백업'; if(ofp>=40)return '1.5군'; return '1군 전력 외';
+  if(ofp>=70)return '리그 최정상급'; if(ofp>=65)return '올스타급'; if(ofp>=60)return '상위권 주전'; if(ofp>=55)return '주전급';
+  if(ofp>=50)return p.isP?(isSP(p)?'4~5선발':'필승조급'):'평균 주전·핵심 백업'; if(ofp>=45)return '1군 백업'; if(ofp>=40)return '1.5군'; return '1군 전력 외';
 }
 /* 잠재력은 끝까지 추정이다. 우리 선수도 스카우트 능력·트래킹 분석원·함께한 시즌 수만큼만 정확해지고, 오차가 0이 되지는 않는다.
    추정은 관찰이 쌓이는 만큼 오차 폭이 줄어 실제 쪽으로 다가간다(오차 방향은 구단마다 고정: potZ) */

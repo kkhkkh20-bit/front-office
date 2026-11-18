@@ -361,7 +361,10 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   trimClose(){ UI.trimOn=false;UI.trimHidden=true;UI.trimSel=[];UI.trimN=0;UI.it=UI.it||{};UI.it.roster='list';UI.tab='roster';UI.rosterTeam=null;closeSheets();render();window.scrollTo(0,0); },
   trimSel(v){ const id=+v, S=UI.trimSel=UI.trimSel||[]; const i=S.indexOf(id); if(i>=0)S.splice(i,1); else S.push(id); render(); },
   trimMore(){ UI.trimN=(UI.trimN||10)+10; render(); },
-  trimClr(){ UI.trimSel=[]; render(); },
+  trimClr(){ UI.trimSel=[]; UI.trimYsSel=[]; render(); },
+  trimYsSel(v){ const id=+v, S=UI.trimYsSel=UI.trimYsSel||[]; const i=S.indexOf(id); if(i>=0)S.splice(i,1); else S.push(id); render(); }, /* 정리 모드 육성선수 고르기(카페 11-18) */
+  trimYsUp(v){ const p=G.players[+v]; const r=fromYS(+v); UI.trimMsg=r||`${p?p.name:'선수'}을(를) 정식 선수로 등록했습니다.`; if(!r)UI.trimYsSel=(UI.trimYsSel||[]).filter(id=>id!==+v); save(); render(); },
+  ysRelBatch(){ const L=(UI.trimYsSel||[]).map(id=>G.players[id]).filter(p=>p&&p.ys&&p.team===G.user); L.forEach(p=>releasePlayer(p.id)); UI.trimYsSel=[]; UI.trimMsg=L.length?`육성선수 ${L.length}명을 방출했습니다.`:''; save(); render(); },
   relBatch(){ releaseMany(UI.trimSel||[]); UI.trimSel=[]; save(); render(); },
   tpartnerGo(v){UI.trade={tid:+v,give:(UI.trade&&UI.trade.give)||[],get:[],msg:'',seg:'bat',side:'get',sort:'cur'}; A.go('trade:table');},
   lseg(v){ if(v==='find'){ A.go('trade:find'); return; } UI.lseg=lsegFix(v);render();window.scrollTo(0,0);},

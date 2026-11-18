@@ -38,6 +38,7 @@ button,input,select{font:inherit;color:inherit}
 .goset{display:flex;align-items:stretch}
 .goset .step{border:0;background:#ffffff14;color:#dce5ec;font:600 13px var(--f-num);padding:0 8px;cursor:pointer;border-right:1px solid #00000040;letter-spacing:.02em}
 .goset .step:first-child{border-radius:4px 0 0 4px}
+@media (max-width:699px){.goset .advday{display:none}} /* 휴대폰: 하루 진행은 진행 ▾ 메뉴에서 */
 .goset .continue{border:0;background:var(--go);color:#fff;font:700 16px var(--f-ui);padding:0 14px;min-height:40px;border-radius:0 4px 4px 0;cursor:pointer;display:flex;align-items:center;gap:6px}
 .goset .continue:hover{background:var(--go-hi)}
 .goset button[disabled]{opacity:.45;cursor:not-allowed}

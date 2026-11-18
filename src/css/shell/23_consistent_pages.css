@@ -294,3 +294,5 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 @media(min-width:1001px) and (max-width:1399px){.trc-room{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}}
 /* 검수 11-12: 높이가 아주 낮은 화면(가로 휴대폰 320 등)에서는 여러 줄로 접히는 안쪽 탭을 한 줄 가로 넘김으로(역사 탭 10개가 130px을 차지해 내용이 잘림) */
 @media (max-height:420px){#app main .seg.itabs.wrapt{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;grid-template-columns:none}#app main .seg.itabs.wrapt>button{flex:0 0 auto;white-space:nowrap}#app main .seg.itabs.wrapt::-webkit-scrollbar{display:none}}
+/* 정리 모드 육성선수 칸(카페 11-18): 몇 명이어도 위 추천 후보 카드와 같은 폭 */
+.trimc .trim-ys+.tgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}.trimc .trim-ys{margin-top:12px}

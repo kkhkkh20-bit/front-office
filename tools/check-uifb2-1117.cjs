@@ -38,7 +38,7 @@ try{for(const [W,H] of [[1920,1080],[1440,900],[1366,768],[390,844]]){const pc=W
     assert.equal(new Set(r.rows).size,r.rows.length,'시즌 통계 줄 중복 없음 '+r.rows.join(','));
     assert.doesNotMatch(r.carTxt,/성격/,'경력 아래 성격 없음');
     if(W>=1600){assert.ok(r.ct&&r.fm&&Math.abs(r.ct.l-r.fm.l)<2&&r.ct.t>=r.fm.b-1,'계약은 인물 카드 아래 '+JSON.stringify({fm:r.fm,ct:r.ct}));assert.match(r.ctTxt,/^계약/);
-      assert.ok(r.id&&r.car&&Math.abs(r.id.l-r.car.l)<2&&r.id.b<=r.car.t+1&&r.id.l>r.st.r,'오른쪽 열: 신분 → 경력');assert.match(r.idTxt,/^신분/);assert.doesNotMatch(r.idTxt,/연봉|FA 자격/,'신분 칸에 계약 없음');
+      assert.ok(r.id&&r.car&&Math.abs(r.id.l-r.car.l)<2&&r.car.b<=r.id.t+1&&r.id.l>r.st.r&&r.car.h>r.id.h,'오른쪽 열: 위 경력(큰 칸) → 아래 신분(카페 11-18) '+JSON.stringify({id:r.id,car:r.car}));assert.match(r.idTxt,/^신분/);assert.doesNotMatch(r.idTxt,/연봉|FA 자격/,'신분 칸에 계약 없음');
       if(H>=1000)assert.ok(r.st.h>=H*.29,`시즌 통계 칸 높이 ${Math.round(r.st.h)}`);}
     await fit('선수 능력');await shot('2-player-abil');
     await p.click('#sheet .st-head .st-lvl [data-v="2"]');assert.equal(await p.evaluate(()=>UI.cLvl),'2','2군만 단추 동작');assert.ok(await p.evaluate(()=>!!document.querySelector('#sheet .st-head .st-lvl')),'다시 그려도 제목 줄');await p.click('#sheet .st-head .st-lvl [data-v="1"]');
