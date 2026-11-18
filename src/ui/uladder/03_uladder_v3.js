@@ -2,7 +2,7 @@
    설계: docs/design/ladder-cup-v3-2026-11-17.md. 페이지 짜기는 02_uladder_pages.js, 여기는 v3에서 더한 조각:
    결과 공개 카드(순위·승강·점수·MVP·목표 진척) · 우리 연전 카드 · 리그 시작 직후 상대 9팀 · 매일·주간 목표와 꾸미기(테두리·칭호) · 시즌 결산 · 점수표 표 · 붙어 보기(친선 3경기) */
 /* 탭으로 나뉜 글(점수표·타자·투수)을 표로. 탭이 없는 줄은 한 칸 전체(제목 줄) */
-function ulTabTbl(txt){ const L=String(txt||'').split('\n').filter(x=>x.trim()); if(!L.some(x=>x.includes('\t')))return `<pre class="ul-pre">${esc(txt||'')}</pre>`; const n=Math.max(...L.map(x=>x.split('\t').length));
+function ulTabTbl(txt){txt=cupBoxLabel(txt); const L=String(txt||'').split('\n').filter(x=>x.trim()); if(!L.some(x=>x.includes('\t')))return `<pre class="ul-pre">${esc(txt||'')}</pre>`; const n=Math.max(...L.map(x=>x.split('\t').length));
   return `<div class="ul-tw ul-box"><table class="ul-st ul-bx">${L.map((x,i)=>{ const c=x.split('\t'); return c.length<2?`<tr class="ul-bxh"><td colspan="${n}">${esc(x)}</td></tr>`:`<tr${i===0||/^팀/.test(c[0])?' class="ul-bxh"':''}>${c.map((v,j)=>`<td${j?' class="num"':''}>${esc(v.trim())}</td>`).join('')}</tr>`; }).join('')}</table></div>`; }
 /* 꾸미기(테두리·칭호): 매일·주간 목표 도장으로만 생긴다 */
 const ulCos=U=>FrontOfficeCore.ulCosmetic(U&&U.gl);

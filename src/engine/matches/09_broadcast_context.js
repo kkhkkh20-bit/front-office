@@ -17,8 +17,10 @@ function broadcastFormUpdate(p,x){
 function broadcastTeamFacts(day,home,away){
   const year=dobj(day).y;if((G.sea?.y??G.year)!==year)return null;
   const rec=L=>({w:L.filter(x=>x[0]>0).length,l:L.filter(x=>x[0]<0).length,t:L.filter(x=>x[0]===0).length}),teams={};
-  for(const t of G.teams){const L=(G.sea?.tl?.[t.id]||[]).filter(x=>x[5]<=day),last=L.length?Math.sign(L[L.length-1][0]):0;let n=0;for(let i=L.length-1;i>=0&&Math.sign(L[i][0])===last;i--)n++;teams[t.id]={rec:rec(L),recent:rec(L.slice(-5)),streak:{s:last,n}};}
-  const order=G.teams.map(t=>t.id).sort((a,b)=>{const A=teams[a].rec,B=teams[b].rec;return B.w/Math.max(1,B.w+B.l)-A.w/Math.max(1,A.w+A.l);});order.forEach((tid,i)=>teams[tid].rank=i+1);
+  const logs={};for(const t of seaTeams(year)){const L=logs[t.id]=(G.sea?.tl?.[t.id]||[]).filter(x=>x[5]<=day),last=L.length?Math.sign(L[L.length-1][0]):0;let n=0;for(let i=L.length-1;i>=0&&Math.sign(L[i][0])===last;i--)n++;teams[t.id]={rec:rec(L),recent:rec(L.slice(-5)),streak:{s:last,n}};}
+  /* 순위표(standingsNow/standFm)와 같은 동률 묶음 규칙. 과거 중계에는 그 날짜까지의 경기만 쓴다. */
+  const pct=tid=>{const r=teams[tid].rec;return r.w/Math.max(1,r.w+r.l);},prev=G.last?.order||[],prior=tid=>{const i=prev.findIndex(x=>(x.tid??x)===tid);return i<0?99:i;},order=Object.keys(teams).map(Number).sort((a,b)=>pct(b)-pct(a)),ranked=[];
+  for(let i=0;i<order.length;){let j=i;while(j<order.length&&Math.abs(pct(order[j])-pct(order[i]))<1e-12)j++;const group=order.slice(i,j),ids=new Set(group),vs=tid=>{let w=0,l=0,r=0;for(const x of logs[tid])if(ids.has(x[4])&&x[4]!==tid){if(x[0]>0)w++;else if(x[0]<0)l++;r+=x[1]||0;}return {p:w+l?w/(w+l):.5,r};},scores=new Map(group.map(tid=>[tid,vs(tid)]));ranked.push(...group.sort((a,b)=>scores.get(b).p-scores.get(a).p||scores.get(b).r-scores.get(a).r||prior(a)-prior(b)||a-b));i=j;}ranked.forEach((tid,i)=>teams[tid].rank=i+1);
   const h2h=rec((G.sea?.tl?.[away]||[]).filter(x=>x[5]<=day&&x[4]===home));return {year,teams,h2h};
 }
 function broadcastSeriesFacts(day,home,away){const s=G.ps?.cur;if(!s||![s.hi,s.lo].includes(home)||![s.hi,s.lo].includes(away))return null;const round=ROUNDK[s.round];if(!round)return null;
