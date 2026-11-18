@@ -15,7 +15,7 @@ function obView(){ obInit(); const t=team(G.user); const RN=G.retNos||[];
   const candH=cand.length?`<div class="eyebrow" style="margin-top:10px">영구결번 후보</div>${cand.map(({r,i})=>`<div class="obr"><b class="num">${r.no}</b><span><b>${esc(r.name)}</b><i>${r.pos} · ${r.y}년 은퇴 · 우리 구단 ${r.mine.ys}시즌 WAR ${r.mine.war}${r.mine.ovs?` (해외 ${r.mine.ovs} 포함)`:''}</i></span><button class="btn small primary" data-a="retNo" data-v="${i}">영구결번 지정</button></div>`).join('')}`:'';
   const mine=G.ob.filter(obMine).map(o=>({o,w:obWhere(o),m:obMineC(o)})).sort((a,b)=>(b.o.retNo?1:0)-(a.o.retNo?1:0)||b.m.war-a.m.war||b.o.war-a.o.war);
   const mgrC=new Set(obMgrCands().map(o=>o.id));
-  const act=(o,w)=>{ if(w.k==='free'||w.k==='wait'&&o.path==='media'){ if(mgrC.has(o.id))return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:mgr">감독 후보로</button>`;
+  const act=(o,w)=>obLateCerOk(o)?`<button class="btn small primary" data-a="obCer" data-v="${esc(String(o.id))}" title="은퇴식을 열지 않고 보낸 선수: 다음 시즌 개막 전까지 같은 비용으로">은퇴식 열기 (${money(obLateCerCost(o))})</button>`:act0(o,w); const act0=(o,w)=>{ if(w.k==='free'||w.k==='wait'&&o.path==='media'){ if(mgrC.has(o.id))return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:mgr">감독 후보로</button>`;
       if(w.k==='free'&&(o.path==='coach'||o.path==='media'&&o.my>=3))return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:coach">코치로 영입</button>`;
       if(w.k==='free'&&o.path==='scout')return `<button class="btn small primary" data-a="obAct" data-v="${o.id}:scout" ${G.scouts.length>=scoutMax()?'disabled':''}>스카우트로 영입</button>`;
       if(w.k==='free'&&o.path==='front')return `<button class="btn small" data-a="obAct" data-v="${o.id}:front">프런트로 채용</button>`; }
