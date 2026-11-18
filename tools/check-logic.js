@@ -8195,7 +8195,7 @@ T('[래더 3연전] 순위표·팀 기록이 경기 박스와 맞는다: 박스 
   const TS=ulTeamStats(L); for(const t of TS.T){ const B=Object.values(L.bat).filter(x=>String(x.key).startsWith(t.key+':')); ok(t.hr===B.reduce((a,x)=>a+(x.hr||0),0)&&t.h===B.reduce((a,x)=>a+(x.h||0),0)&&t.e===L.te[t.i],'팀 기록 '+t.name); }
   const hrBox=L.teams.map(()=>0); for(const s of L.series)for(const b of s.bx)for(const [sd,,n] of b.hr)hrBox[sd?s.b:s.a]+=n; ok(TS.T.every(t=>t.hr===hrBox[t.i]),'팀 홈런 = 박스 홈런 '+JSON.stringify([TS.T.map(t=>t.hr),hrBox]));
   ok(TS.rank.era.every(r=>r>=1&&r<=10)&&TS.lg.ops>0&&TS.lg.era>0,'리그 순위·평균'); const LD=ulLeaders(L); ok(LD.qpa===84&&LD.qo===81&&LD.cats.length===10&&LD.cats.find(c=>c[0]==='타율')[1].every(x=>x.pa>=84)&&LD.cats.find(c=>c[0]==='평균자책점')[1].every(x=>x.outs>=81),'규정 타석·이닝(27경기) '+[LD.qpa,LD.qo]); });
-T('[래더 3연전] 포스트시즌: 정규 1~4위가 1-4·2-3 준결승(3전 2선승), 승자끼리 결승(5전 3선승, 높은 시드가 홈). 정규 1위·우승·준우승을 따로 남기고, 승강은 정규 순위 그대로',()=>{ fresh(); const C=FrontOfficeCore;
+T('[래더 3연전] 포스트시즌: 정규 1~4위가 1-4·2-3 준결승(3전 2선승), 승자끼리 결승(5전 3선승, 높은 시드가 홈). 정규 1위·우승·준우승을 따로 남기고, 승강은 정규 순위(우승팀은 승격)',()=>{ fresh(); const C=FrontOfficeCore;
   ok(C.ulPsWin([[3,1],[2,5],[4,0]],3)==='a'&&C.ulPsWin([[3,1]],3)===null&&C.ulPsWin([[1,3],[0,2],[5,4],[1,2]],5)==='b','시리즈 승자');
   ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({seed:23}).league; while(L.next<L.sched.length)ulRunRound(L); const st=ulStand(L), P=ulPostInit(L);
   ok(JSON.stringify(P.seeds)===JSON.stringify(st.slice(0,4).map(x=>x.key)),'시드 = 정규 1~4위'); ok(P.S[0].a===P.seeds[0]&&P.S[0].b===P.seeds[3]&&P.S[1].a===P.seeds[1]&&P.S[1].b===P.seeds[2]&&P.S[0].best===3&&P.S[2].best===5,'대진 '+JSON.stringify(P.S.map(x=>[x.a,x.b,x.best])));
@@ -8203,7 +8203,7 @@ T('[래더 3연전] 포스트시즌: 정규 1~4위가 1-4·2-3 준결승(3전 2�
   ok(W(P.S[0],2)&&W(P.S[1],2)&&W(P.S[2],3),'2선승·3선승·무승부 없음 '+JSON.stringify(P.S.map(s=>s.g)));
   ok(new Set([P.S[2].a,P.S[2].b]).size===2&&[P.S[2].a,P.S[2].b].sort().join()===[P.S[0].w,P.S[1].w].sort().join()&&P.seeds.indexOf(P.S[2].a)<P.seeds.indexOf(P.S[2].b),'결승 = 준결승 승자, 높은 시드가 a');
   ok(P.champ===P.S[2].w&&P.runner===(P.S[2].w===P.S[2].a?P.S[2].b:P.S[2].a)&&P.S.every(s=>s.bx.length===s.g.length&&s.bx.every(b=>b.b&&b.p)),'우승·준우승·포스트시즌 박스');
-  const rk=st.find(x=>x.key===0).rank, my=ulPsOf(P,0), res=ulFinish(); ok(res.rank===rk&&res.to===C.ulTierAfter(L.tier,rk,10).tier&&G.uld.tier===res.to,'승강은 정규 순위 '+JSON.stringify([rk,my,res.to]));
+  const rk=st.find(x=>x.key===0).rank, my=ulPsOf(P,0), res=ulFinish(); ok(res.rank===rk&&res.to===C.ulTierAfter(L.tier,rk,10,my).tier&&G.uld.tier===res.to&&(my!=='c'||res.move==='up'||L.tier===4),'승강은 정규 순위(래더 v4: 우승팀은 승격) '+JSON.stringify([rk,my,res.to]));
   ok(res.ps&&res.ps.champ===P.champ&&res.ps.my===my&&res.ps.champN===L.teams[P.champ].name&&res.psb===(C.UL_PS_PTS[my]||0)&&res.pts===C.ulPts(L.tier,rk),'결과의 포스트시즌·리그 점수 '+JSON.stringify([res.ps.my,res.psb,res.pts]));
   ok((G.uld.hist[0].ps||'')===my&&(my==='c')===!!C.ulBadges(G.uld.hist,G.uld.car).find(b=>b.k==='champ').on&&(G.uld.seas.ch|0)===(my==='c'?1:0)&&(G.uld.car.by[0].ch|0)===(my==='c'?1:0),'덱 기록·배지·시즌·통산 '+JSON.stringify([G.uld.hist[0].ps,G.uld.seas.ch]));
   ok(res.awards&&res.awards.hr&&res.awards.pit&&res.lg&&res.lg.post&&res.lg.series.length===45&&res.exp&&res.exp.rank>=1,'시상·다시 보기·예상 '+JSON.stringify(res.awards.hr));
@@ -8230,6 +8230,39 @@ T('[래더 3연전] 저장 크기·기록 올리기: 끝난 리그 전체 기록
   const up=ulRecUp(L,res), sz=JSON.stringify(up).length; ok(sz<3072&&up.b.length>=9&&up.b.length<=12&&up.p.length>=5&&up.p.length<=10,'올리는 요약 '+sz+'B');
   ok(up.team.n===L.teams[0].name&&up.team.rs===res.rs&&up.team.hr===Object.values(L.bat).filter(x=>x.key.startsWith('me:')).reduce((a,x)=>a+(x.hr||0),0),'팀 요약');
   ok(up.b.every(x=>x.length===11&&x[1]>=1&&x[1]<=27&&x[3]<=x[2]&&x[4]<=x[3]&&x[6]<=x[4]&&x[5]>=x[4]&&x[5]<=4*x[4]&&x[9]+x[3]+x[10]<=x[2])&&up.p.every(x=>x.length===8&&x[2]>0&&x[4]<=x[2]+3),'선수 줄이 서버 검사(records.js)를 통과할 모양'); });
+T('[래더 자동 등록] 이름: 닉네임을 정하지 않으면 구단명#4자리 태그(12자 안), 단장 이름은 쓰지 않는다. 직접 정한 닉네임은 그대로',()=>{ fresh(); const C=FrontOfficeCore;
+  ok(C.ulAutoName('부산 자이언츠','3812')==='부산 자이언츠#3812','기본 '+C.ulAutoName('부산 자이언츠','3812'));
+  const L=C.ulAutoName('아주아주긴구단이름입니다요','7'); ok([...L].length<=12&&L.endsWith('#0007')&&C.cupName(L)===L,'긴 구단명 '+L);
+  ok(C.ulAutoName('','12')==='구단#0012'&&C.ulAutoName('시1발','1234')==='구단#1234','쓸 수 없는 구단명 '+C.ulAutoName('시1발','1234'));
+  const nm=C.ulAutoName(tfull(G.user),'0042'); ok(nm.endsWith('#0042')&&nm.startsWith([...C.cupName(tfull(G.user))].slice(0,2).join(''))&&!(G.gmP&&G.gmP.name&&nm.includes(G.gmP.name)),'단장 이름 '+nm);
+  ok(C.ulShowName('하늘',true,'부산 자이언츠','1')==='하늘'&&C.ulShowName('하늘',false,'부산 자이언츠','1')==='부산 자이언츠#0001','보이는 이름'); });
+T('[래더 자동 등록] 하루 한 번(그날 처음·날짜 넘김)과 시즌 종료에만 살펴보고, 1군이 그대로면 올리지 않는다. 못 보낸 것은 다시. 본게임 난수·커리어 세계는 그대로',()=>{ fresh(); cupAlbum(); uld();
+  const snap=()=>{ const o=Object.assign({},G); delete o.uld; return JSON.stringify(o); }, w0=snap(), r0=__rngState(), t0=Date.UTC(2026,10,20,3), D=864e5;
+  let p=ulAutoPlan(t0); ok(p.due&&p.why==='first'&&p.upload&&G.uld.deck&&G.uld.deck.auto===1&&G.uld.deck.src==='now'&&G.uld.deck.e.h===p.x.h,'처음 '+JSON.stringify([p.why,p.upload]));
+  ok(G.uld.deck.e.P.length>=20&&G.uld.deck.e.P.length<=26&&!G.uld.league,'1군 덱 '+G.uld.deck.e.P.length);
+  ulAutoDone(p,'ok',null,t0); p=ulAutoPlan(t0+3600e3); ok(!p.due&&!p.upload,'같은 날 다시 안 봄');
+  p=ulAutoPlan(t0+D); ok(p.due&&p.why==='day'&&!p.upload,'다음 날: 그대로면 안 올림 '+JSON.stringify([p.why,p.upload])); ulAutoDone(p,'same',null,t0+D); ok(!ulAutoPlan(t0+D+60e3).due,'본 날 기록');
+  ok(__rngState()===r0,'본게임 난수 변경'); { const a=JSON.parse(w0), b=JSON.parse(snap()), dk=Object.keys(Object.assign({},a,b)).filter(k=>JSON.stringify(a[k])!==JSON.stringify(b[k])); const pd=[]; if(dk.includes('players'))for(const id in b.players){ const x=a.players[id]||{}, y=b.players[id]; for(const k of Object.keys(Object.assign({},x,y)))if(JSON.stringify(x[k])!==JSON.stringify(y[k]))pd.push(id+'.'+k+':'+JSON.stringify(x[k])+'>'+JSON.stringify(y[k])); } ok(!dk.length,'커리어 세계 변경 '+dk.join()+' '+pd.slice(0,6).join(' ')); }
+  const pl=G.players[G.uld.deck.e.P[0].id]; pl.sal+=1; let q=ulAutoPlan(t0+2*D); ok(q.due&&q.upload&&G.uld.deck.e.h===q.x.h,'바뀐 덱은 올림');
+  ulAutoDone(q,'fail',null,t0+2*D); q=ulAutoPlan(t0+2*D+60e3); ok(q.due&&q.why==='pend'&&q.upload,'연결이 끊겨 못 보낸 것은 다시 '+q.why); ulAutoDone(q,'ok',null,t0+2*D+120e3); ok(!G.uld.ar.pend&&G.uld.ar.h===q.x.h,'보낸 뒤');
+  ok(!ulAutoPlan(t0+2*D+150e3).due,'보낸 뒤 같은 날'); cupAlbumAdd('auto'); q=ulAutoPlan(t0+2*D+180e3); ok(q.due&&q.why==='season'&&!q.upload,'시즌 종료(같은 날이어도 봄) '+q.why);
+  ok(__rngState()===r0,'난수'); });
+T('[래더 자동 등록] 연봉 상한을 넘는 1군도 덱으로 등록되지만, 그 단계 리그는 지금 안내(상한 초과)로 막는다',()=>{ fresh(); uld(); for(const p of Object.values(G.players))if(p.team===G.user)p.sal=(p.sal||0)+2000;
+  const p=ulAutoPlan(Date.UTC(2026,10,20,3)); ok(p.due&&p.cap===1&&G.uld.deck&&G.uld.deck.e.h===p.x.h&&G.uld.ar.cap===1,'상한 초과도 등록 '+JSON.stringify([p.cap]));
+  const r=ulMakeLeague({seed:5}); ok(!r.ok&&r.cap&&r.msg.includes('상한')&&!G.uld.league,'그 단계 리그는 막음 '+r.msg); });
+T('[래더 자동 등록] 직접 다시 등록은 하루 1회, 앨범 시즌 덱을 직접 고르면 자동 갱신을 멈추고, 맡은 구단이 없으면 쉰다',()=>{ fresh(); const C=FrontOfficeCore, t=Date.UTC(2026,10,20,3), D=864e5; uld();
+  ok(C.ulManOk(null,t)&&C.ulManOk({},t),'처음'); ulAutoPlan(t); ulAutoManual('now',[],t); ok(!C.ulManOk(G.uld.ar,t)&&!C.ulManOk(G.uld.ar,t+3600e3)&&C.ulManOk(G.uld.ar,t+D),'하루 1회');
+  const a=cupAlbumAdd('hand'); ok(a&&!ulSetDeck(a.e,'alb:'+a.id),'앨범 덱 등록'); ulAutoManual('alb:'+a.id,[],t); ok(G.uld.deck.auto===0&&ulAutoPlan(t+2*D).skip==='album','앨범 덱이면 자동 갱신 멈춤');
+  G.uld.deck.src='now'; G.unemp=true; ok(ulAutoPlan(t+2*D).skip==='noteam','실업 중 쉼'); });
+T('[래더 우승 승격] 리그 우승팀은 정규 순위와 무관하게 승격하고, 이미 승격권(1·2위)이면 한 단계만(추가 효과 없음). 레전드·준우승·4강은 그대로',()=>{ fresh(); const C=FrontOfficeCore;
+  const f=(t,r,ps)=>{ const x=C.ulTierAfter(t,r,10,ps); return x.tier+x.move+(x.champ?'*':''); };
+  ok(f(0,3,'c')==='1up*'&&f(2,4,'c')==='3up*'&&f(1,1,'c')==='2up'&&f(1,2,'c')==='2up'&&f(4,3,'c')==='4stay'&&f(4,1,'c')==='4stay'&&f(1,3,'r')==='1stay'&&f(1,3,'s')==='1stay'&&f(2,9,'')==='1down'&&f(2,3)==='2stay','규칙 '+[f(0,3,'c'),f(1,1,'c'),f(4,3,'c')].join());
+  ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({seed:23}).league; while(L.next<L.sched.length)ulRunRound(L);
+  const pw={1:10,2:9,0:8}; for(let k=3;k<10;k++)pw[k]=10-k; for(const s of L.series)for(const g of s.g){ const a=pw[s.a]>pw[s.b]; g[0]=a?5:1; g[1]=a?1:5; } /* 우리 덱을 정규 3위로 */
+  const st=ulStand(L); ok(st.find(x=>x.key===0).rank===3,'정규 3위 '+st.map(x=>x.key).join());
+  const P=ulPostInit(L); while(ulPostLeft(L))ulRunPost(L); P.champ=0; P.runner=1;
+  const r0=__rngState(), res=ulFinish(); ok(res.rank===3&&res.to===1&&res.move==='up'&&res.chp===1&&G.uld.tier===1,'3위 우승 승격 '+JSON.stringify([res.rank,res.to,res.move,res.chp]));
+  const h=G.uld.hist[G.uld.hist.length-1]; ok(h.move==='up'&&h.ps==='c'&&h.to===1,'기록 줄 '+JSON.stringify(h)); ok(__rngState()===r0,'결산은 난수 없음'); });
 T('[래더 3연전] 예상 성적(덱 전력): OVR이 높을수록 예상 승수가 많고 예상 순위가 앞서며, 같으면 반반. 리그를 시작할 때 정해 결과에 예상 대비 실제(운)를 남긴다',()=>{ const C=FrontOfficeCore;
   ok(Math.abs(C.ulWinP(70,70)-.5)<1e-9&&Math.abs(C.ulWinP(80,70)-.7)<.01&&C.ulWinP(60,70)<.5,'한 경기 승리 확률 '+C.ulWinP(80,70));
   const X=C.ulExpect([70,75,65,70]); ok(X.rank.join()==='2,1,4,3'&&X.w[1]>X.w[0]&&Math.abs(X.w.reduce((a,b)=>a+b,0)-18)<.3,'예상 '+JSON.stringify(X));

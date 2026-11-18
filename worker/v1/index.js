@@ -5,11 +5,11 @@
      POST   /api/v1/player                        새 익명 플레이어 {nickname, platform} → {player, token}. 토큰을 붙이면 닉네임·플랫폼 바꾸기
      GET    /api/v1/player/me                     DELETE /api/v1/player  (내 기록 전부 지우기)
      POST   /api/v1/player/link  {provider, ticket|code}   POST /api/v1/player/login {provider, ticket|code, platform} → 새 기기 토큰
-     PUT    /api/v1/ladder/deck  {e, tier?, wid?}  GET /api/v1/ladder/opponents?tier=&ovr=&n=9
+     PUT    /api/v1/ladder/deck  {e, tier?, wid?, auto?, man?, dev?}  PUT /api/v1/ladder/auto {on}  POST /api/v1/ladder/live {key, tier, round, post, teams, st} (래더 v4: worker/v1/ladauto.js)  GET /api/v1/ladder/opponents?tier=&ovr=&n=9
      POST   /api/v1/ladder/result {key, rank, teams, w, l, d, opps:[{pid,w,l,d}], ps?, rec?}
      GET    /api/v1/ladder/leaderboard?tier=|all&season=   GET /api/v1/ladder/feed   GET /api/v1/ladder/meta?tier=|all (덱 구성 집계, 10분 캐시)   GET /api/v1/ladder/records?season=&tier=|all (기록실: 시즌 개인·팀 순위·우승 벽, 120초 캐시)   GET /api/v1/ladder/me   GET /api/v1/ladder/rivals   GET /api/v1/ladder/h2h/PID
      클라우드 저장(R2 env.SAVES, 없으면 503 not_configured): GET cloud · GET/PUT/DELETE saves[/SLOT] · POST player/link-code[/redeem] · POST player/recovery[/redeem] · GET player/devices · PUT player/devices/me · DELETE player/devices/ID (worker/v1/cloud.js)
-     관리자: GET admin/stats · GET admin/export?kind=decks|results&n=&cursor=&from=&to= (CSV용 줄, 페이지) · GET admin/players?q= · PUT admin/hide {pid, hide} · DELETE admin/player/PID · DELETE admin/deck/PID · POST admin/season/roll · POST admin/migrate
+     관리자: GET admin/stats · GET admin/export?kind=decks|results&n=&cursor=&from=&to= (CSV용 줄, 페이지) · GET admin/players?q= · PUT admin/hide {pid, hide} · DELETE admin/player/PID · DELETE admin/deck/PID · POST admin/season/roll · POST admin/migrate · GET admin/dash · GET admin/decks?q=&tier= · GET admin/league?id=|live= (래더 v4 한눈 보기)
    계정 연결과 기기 토큰(srv2 #64): 연결(POST player/link)은 지금 플레이어에 계정을 붙일 뿐 토큰을 바꾸지 않는다. 그래서 연결 전의 익명 기기 토큰과
      새 기기에서 login으로 받은 토큰이 모두 같은 플레이어로 풀린다(기기마다 devices 한 줄). 다른 익명 플레이어가 있는 기기에서 login하면 그 기기는 받은 토큰으로
      바꿔 쓰면 되고, 예전 익명 플레이어는 따로 남는다(합치지 않는다. 원하면 DELETE /player). 한 계정은 한 플레이어에만: 이미 다른 플레이어에 붙어 있으면 409 linked_other(동시에 와도 하나만 성공).
@@ -26,9 +26,10 @@ import { SCHEMA_VERSION } from './schema.js';
 import { cloudPublic, cloudRoute, _cloudReset } from './cloud.js';
 import { records, _recReset } from './records.js';
 import { cacheGen } from './ladder.js';
+import { autoSet, livePut, _autoReset } from './ladauto.js';
 
 let schemaOk = false, fetcher = (...a) => fetch(...a);
-export function _v1Reset() { schemaOk = false; _cloudReset(); _recReset(); }
+export function _v1Reset() { schemaOk = false; _cloudReset(); _recReset(); _autoReset(); }
 export function _setFetch(f) { fetcher = f || ((...a) => fetch(...a)); }
 
 async function schemaVersion(db) {
@@ -75,6 +76,8 @@ async function route(req, env, url, now) {
     if (rest === 'player/link' && req.method === 'POST') return await link(req, env, db, me, now);
     if (rest === 'ladder/deck' && req.method === 'PUT') return await putDeck(req, db, me, now, env);
     if (rest === 'ladder/deck' && req.method === 'DELETE') { await deleteDeck(db, me.id); return json(200, { ok: true }); }
+    if (rest === 'ladder/auto' && req.method === 'PUT') return await autoSet(req, db, me, now); /* 래더 v4: 자동 참가 켜기·끄기(끄면 서버 덱 지움) */
+    if (rest === 'ladder/live' && req.method === 'POST') return await livePut(req, db, me, now); /* 진행 중 리그(관리자 한눈 보기) */
     if (rest === 'ladder/opponents' && req.method === 'GET') return await opponents(url, db, me, now, env);
     if (rest === 'ladder/result' && req.method === 'POST') return await postResult(req, db, me, now);
     if (rest === 'ladder/me' && req.method === 'GET') return await meView(db, me, now);

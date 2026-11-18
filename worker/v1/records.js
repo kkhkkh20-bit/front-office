@@ -124,6 +124,13 @@ export async function records(url, db, now, s, gen) {
   const q = url.searchParams.get('tier'), all = q == null || q === '' || q === 'all', tier = all ? null : qInt(q, 0, 0, UL_TIERS.length - 1);
   return cached(url, `rec/g${gen}/${season}/${all ? 'all' : tier}`, REC_SEC, async () => {
     if (!(await ensureRec(db))) return err(503, 'schema_missing');
+    const R = await recData(db, season, all, tier);
+    return pub({ ok: true, season, tier: all ? 'all' : tier, current: season === s.id, at: now, leagues: R.leagues, min: { pa: REC_MIN_PA, ip: REC_MIN_OUTS / 3 }, boards: R.boards, champs: R.champs }, REC_SEC);
+  });
+}
+/* 시즌 기록 계산(기록실·관리자 한눈 보기 '서버 기록 1위'가 같이 쓴다). all이면 단계를 넘어 합한다 */
+export async function recData(db, season, all, tier) {
+  {
     const tw = all ? '' : ' AND l.tier = ?', ta = all ? [] : [tier], J = 'JOIN players p ON p.id = l.player_id AND p.hidden = 0';
     /* 단계를 고르면 그 단계 리그 기록만, 전체면 단계를 넘어 합한다 */
     const B = (await db.prepare(`SELECT l.player_id AS pid, p.nickname AS nick, l.name, MAX(l.team) AS team, MAX(l.tier) AS tier, SUM(l.g) AS g, SUM(l.pa) AS pa, SUM(l.ab) AS ab, SUM(l.h) AS h, SUM(l.tb) AS tb, SUM(l.hr) AS hr, SUM(l.rbi) AS rbi, SUM(l.sb) AS sb, SUM(l.ob) AS ob, SUM(l.sf) AS sf, MIN(l.at) AS at FROM ladder_lines l ${J} WHERE l.season = ? AND l.kind = 'b'${tw} GROUP BY l.player_id, l.name LIMIT 3000`).bind(season, ...ta).all()).results || [];
@@ -134,6 +141,6 @@ export async function records(url, db, now, s, gen) {
     boards.titles = ((await db.prepare(`SELECT l.player_id AS pid, p.nickname AS nick, MAX(l.team) AS team, MAX(l.tier) AS tier, COUNT(*) AS v, MIN(l.at) AS at ${TT} WHERE l.season = ? AND l.ps = 'c'${tw} GROUP BY l.player_id ORDER BY v DESC, at ASC LIMIT ?`).bind(season, ...ta, REC_N).all()).results || []);
     const champs = (await db.prepare(`SELECT l.player_id AS pid, p.nickname AS nick, l.team, l.tier, l.w, l.l, l.d, l.rank, l.at ${TT} WHERE l.season = ? AND l.ps = 'c'${tw} ORDER BY l.id DESC LIMIT ?`).bind(season, ...ta, REC_CH).all()).results || [];
     const n = await db.prepare(`SELECT COUNT(*) AS n FROM ladder_teams l WHERE l.season = ?${tw}`).bind(season, ...ta).first();
-    return pub({ ok: true, season, tier: all ? 'all' : tier, current: season === s.id, at: now, leagues: (n && n.n) || 0, min: { pa: REC_MIN_PA, ip: REC_MIN_OUTS / 3 }, boards, champs }, REC_SEC);
-  });
+    return { leagues: (n && n.n) || 0, boards, champs };
+  }
 }
