@@ -329,7 +329,8 @@ function amFollowProspect(id,sen=[]){ const p=G.players?.[id]||sen.find(p=>p.id=
 function amFollowIds(tid){ return [...new Set([...(G.amFw?.[tid]||[]),...amFollowBoard(tid).filter(id=>amFollowProspect(amFollowId(id)))].map(amFollowId))].filter(id=>typeof id!=='number'||G.amU?.L?.[id]||amFollowProspect(id)).slice(-AM_FW_MAX); }
 function amFollowFix(tid,sen=[]){ const L=amFollowL(tid), ids=amFollowIds(tid), S=new Set(ids); L.splice(0,L.length,...ids);
   const P=G.amPr?.[tid]; if(P)for(const k of Object.keys(P))if(!S.has(amFollowId(k)))delete P[k];
-  const old=amFollowBoard(tid), SL=[...new Set([...old.filter(id=>!amFollowProspect(amFollowId(id),sen)).map(amFollowId),...ids.filter(id=>amFollowProspect(id,sen))])];
+  /* 카페 11-18: 보드 순서(사용자가 ▲▼로 바꾼 순서)는 그대로 두고, 빠진 후보만 지우고 새 후보는 끝에 붙인다(예전에는 매일 관심 등록 순서로 다시 짜여 하루 지나면 되돌아갔다). 결정적·RNG 없음, 여러 번 불러도 같다 */
+  const old=amFollowBoard(tid).map(amFollowId), SL=[], seen=new Set(); for(const id of old){ if(seen.has(id)||amFollowProspect(id,sen)&&!S.has(id))continue; seen.add(id); SL.push(id); } for(const id of ids)if(!seen.has(id)&&amFollowProspect(id,sen)){ seen.add(id); SL.push(id); }
   if(tid===G.user)G.shortlist=SL; else if(G.dClub?.[tid])G.dClub[tid].shortlist=SL; return L; }
 function amFollow(id,on,tid){ tid=tid??G.user; id=amFollowId(id); const L=amFollowFix(tid), i=L.indexOf(id), off=on===false||on==null&&i>=0;
   if(off){ if(i>=0)L.splice(i,1); const SL=amFollowBoard(tid); for(let j=SL.length-1;j>=0;j--)if(amFollowId(SL[j])===id)SL.splice(j,1); if(G.amPr?.[tid])delete G.amPr[tid][id]; }
