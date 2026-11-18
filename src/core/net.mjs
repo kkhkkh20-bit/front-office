@@ -10,6 +10,7 @@
    - 서버가 v1을 아직 안 켰으면(503 not_configured) status='off' → 화면은 지금의 KV 래더(/api/ladder)를 그대로 쓴다. */
 export const NET_V = 1;
 export const NET_FLAG = 'fo-net-v1', NET_TOKEN = 'fo-net-v1-token', NET_PLAYER = 'fo-net-v1-player', NET_QUEUE = 'fo-net-v1-queue', NET_QMAX = 60;
+export const NET_DEV = 'fo-net-v1-dev'; /* 래더 v4: 이 기기 표식(무작위 32자, 서버는 해시만 둔다. '같은 기기에서 여러 덱' 감지용, docs/privacy.md). 토큰을 버려도 남는다 */
 /* 결과 보내기 응답 나누기: ok(받음) · drop(영구 거절, 줄에서 뺌) · auth(401, 다시 로그인) · wait(429) · retry(연결 실패·5xx) */
 export const netResultKind = r => r.ok ? 'ok' : r.status === 401 ? 'auth' : r.status === 429 ? 'wait' : r.off || r.offline || !r.status || r.status >= 500 || r.status === 408 || r.status === 403 ? 'retry' : 'drop';
 const g = () => (typeof globalThis !== 'undefined' ? globalThis : {});
@@ -79,7 +80,12 @@ export function netCreate(o) {
     return r;
   };
   N.rename = async nickname => { const r = await N.call('POST', '/player', { nickname, platform }); if (r.ok) st.set(NET_PLAYER, JSON.stringify(r.data.player)); return r; };
-  N.putDeck = (e, tier, wid) => N.call('PUT', '/ladder/deck', { e, tier, wid });
+  /* 기기 표식: 처음 한 번 crypto로 만든다(crypto가 없으면 보내지 않는다. 본게임 난수 Math.random은 쓰지 않는다) */
+  N.devId = () => { let d = st.get(NET_DEV); if (d && /^[0-9a-f]{32}$/.test(d)) return d; try { const a = new Uint8Array(16); g().crypto.getRandomValues(a); d = [...a].map(x => x.toString(16).padStart(2, '0')).join(''); st.set(NET_DEV, d); return d; } catch (e) { return null; } };
+  /* 덱 올리기. x: {auto:1}(자동 등록) · {man:1}(직접 등록, 하루 1회) · 없으면 맞추기. 래더 v4 */
+  N.putDeck = (e, tier, wid, x) => N.call('PUT', '/ladder/deck', Object.assign({ e, tier, wid }, x || {}, x && (x.auto || x.man) ? { dev: N.devId() } : {}));
+  N.autoSet = on => N.call('PUT', '/ladder/auto', { on: !!on }, { retries: 1 }); /* 자동 참가 켜기·끄기(끄면 서버 덱 지움) */
+  N.live = body => N.call('POST', '/ladder/live', body, { retries: 0 }); /* 진행 중 리그(관리자 한눈 보기). 실패해도 그만 */
   N.opponents = q => N.call('GET', '/ladder/opponents?' + new URLSearchParams(Object.assign({ n: 9 }, q || {})));
   N.leaderboard = (tier, season) => N.call('GET', `/ladder/leaderboard?tier=${tier === 'all' ? 'all' : tier | 0}${season ? '&season=' + (season | 0) : ''}`, null, { auth: false });
   N.meta = tier => N.call('GET', `/ladder/meta?tier=${tier === 'all' || tier == null ? 'all' : tier | 0}`, null, { auth: false }); /* 덱 구성 집계(래더 v2, 10분 캐시) */

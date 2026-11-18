@@ -141,6 +141,7 @@ function clubBody(s){
       const ret=`<section class="card"><h2 class="sec">영구결번 기준</h2><div class="chips">${[[40,'WAR 40 · 8시즌'],[60,'WAR 60 · 10시즌'],[100,'WAR 100 · 10시즌']].map(([v,l])=>`<button data-a="retWar" data-v="${v}" class="${retWarT()===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단에서 쌓은 WAR와 시즌 수가 기준을 넘는 선수가 은퇴하면 영구결번을 지정할 수 있습니다. 시즌 WAR는 리그 1위가 7~9 정도라, 100은 15년 내내 최상위급이어야 닿습니다.</p></section>`;
       const col=(h,c)=>c?`<div class="setc"><h3 class="set-g">${h}</h3>${c}</div>`:'', wrap=(cols,x,pre)=>`<div class="setx setp${x?' '+x:''} ws-own">${pre||''}${cols}</div>`;
       if(g==='save')return wrap(col('저장 슬롯',slotsCard(false))+col('파일·코드로 옮기기',exportCard(true))+col('클라우드 · 기기 옮기기',(typeof cloudCard==='function'?cloudCard()||(xfAvail()&&CL.st==='off'?'<p class="small muted cl-off">클라우드 저장(여러 기기에서 같은 저장 이어 하기)은 준비 중입니다.</p>':''):'')+(transferCard()||'<section class="card"><p class="small muted">기기 옮기기는 웹판(게임 주소로 연 화면)에서만 쓸 수 있습니다. 파일로 내보내기를 써 주세요.</p></section>')));
+      if(g==='uld')return wrap(col('자동 참가',typeof ulAutoCard==='function'?ulAutoCard():'')+col('닉네임',typeof ulNickCard==='function'?ulNickCard():'')+col('다시 등록·기록',typeof ulAutoNowCard==='function'?ulAutoNowCard():''),'setp-uld'); /* 설정 › 래더(구단주 11-18 래더 v4 §1) */
       if(g==='info'){ /* 정보: 카페·버전 | 패치 노트 | 대회 기록·크레딧·플레이 기록·관리자. 관리자 들어가는 길은 '설정 › 정보 › 관리자' 그대로(docs) */
         const pn=fmOn()?patchCard():`<section class="card"><details class="mfold"><summary>패치 노트</summary>${patchCard()}</details></section>`;
         return wrap(col('공식 카페',fb)+col('패치 노트',pn)+col('기록·개인정보',cupHofCard()+`<section class="card">${creditsLine()}</section>`+teleCard()+cupAdminLink()),'setp-info'); }
@@ -149,12 +150,12 @@ function clubBody(s){
         const it=inTabs('setg',[['run','진행'],['rule','경기·규칙'],['view','표시']],'run');
         return wrap(`<div class="setc">${{run,rule,view}[it.cur]}</div>`,'set-tabs',it.bar); }
       return wrap(col('진행',run)+col('경기·규칙',rule)+col('표시·구단 이름',view)); },
-    setsave:()=>H0.set('save'), setinfo:()=>H0.set('info')}; if(s==='info')return fmOn()?clubFm():ownershipCard(G.user)+prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
+    setsave:()=>H0.set('save'), setuld:()=>H0.set('uld'), setinfo:()=>H0.set('info')}; if(s==='info')return fmOn()?clubFm():ownershipCard(G.user)+prestigeCard()+csec('우승 트로피 진열장',trophyCase(G.user))+(uniRow(G.user)?csec('유니폼',uniRow(G.user)):'')+H0.stad(); /* 구단 정보: 하위 메뉴로 따로(사용자 11-08). 휴대폰은 FM 배치 대신 카드로 */
   const h=mergedBody('club',s,H0);
   return h;
 }
 /* 설정 · 권한: 구단 메뉴에서 빼서 톱니(사이드바 아래·전체 메뉴 아래)로 */
-function cfgView(){ const s=curSub('cfg'); return subTabs('cfg')+clubBody({auth:'auth',save:'setsave',info:'setinfo'}[s]||'set'); } /* 설정 하위 탭 넷(사용자 11-17) */
+function cfgView(){ const s=curSub('cfg'); return subTabs('cfg')+clubBody({auth:'auth',save:'setsave',uld:'setuld',info:'setinfo'}[s]||'set'); } /* 설정 하위 탭 넷(사용자 11-17) */
 function gamesView(){
   if(!G.games.length)return csec('우리 경기','<p class="small muted">아직 치른 경기가 없습니다.</p>');
   return csec('우리 경기',`<div class="list">${G.games.slice(0,30).map((g,i)=>{ const home=g.home===G.user; const op=home?g.away:g.home; return `<button class="item wa" data-a="openGame" data-v="${i}">${badge(op,26)}<span class="nm"><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span> ${home?'vs':'@'} ${tname(op)}${g.kind?` <span class="small muted">${esc(g.kind)}</span>`:''}</span><span class="sub">${dmd(g.day)}${g.inn>9?` · 연장 ${g.inn}회`:''}</span><span class="rt num">${home?g.hs:g.as} : ${home?g.as:g.hs}</span></button>`; }).join('')}</div>`);
@@ -271,7 +272,8 @@ function champHero(){ const L=G.last; if(!L)return ''; const me=L.tid??G.user; c
 function resultBody0(){
   const L=G.last; const me=L.tid??G.user; /* 결산 뒤 이직해도 성적·월별·신뢰·결산표 모두 결산한 구단 기준(검수 11-09h) */ const ps=L.ps; const f=L.fins[me]; const uo=L.order.find(o=>o.tid===me);
   const rank=L.order.findIndex(o=>o.tid===me)+1; const tr=L.trust;
-  const psRow=(label,s)=>s?`<div class="item" style="cursor:default"><span class="nm">${label}</span><span class="sub">${tname(s[0])} ${s[2]}-${s[3]} ${tname(s[1])}</span></div>`:'';
+  const PM=(()=>{ try{ return psMvpOf(L.y); }catch(e){ return null; } })(), psK={'와일드카드':'wc','준플레이오프':'spo','플레이오프':'po','한국시리즈':'ks'};
+  const psRow=(label,s)=>{ if(!s)return ''; const m=PM&&PM.s[psK[label]]; return `<div class="item" style="cursor:default"><span class="nm">${label}</span><span class="sub">${tname(s[0])} ${s[2]}-${s[3]} ${tname(s[1])}${m?` · MVP ${esc(m.n)}`:''}</span></div>`; }; /* 시리즈 MVP(93_award_race) */
   return `<div class="res2"><div class="res2-a"><p>${me!==G.user?`${esc(tname(me))} · `:''}<b>${recStr(uo)} · ${rank}위</b> · ${ps.champ===me?'한국시리즈 우승':rank<=5?'가을야구 진출':'가을야구 탈락'}</p>
     <div class="months">${(L.months||[]).map(x=>`<div><span>${x.m}</span><b>${x.w}-${x.l}${x.t?`-${x.t}`:''}</b></div>`).join('')}${(()=>{ const M=L.months||[]; if(!M.length)return ''; const w=sum(M.map(x=>x.w)), l=sum(M.map(x=>x.l)), t=sum(M.map(x=>x.t||0)); return `<div class="tot"><span>합계</span><b>${w}-${l}${t?`-${t}`:''}</b></div>`; })()}</div>
     <p class="small">구단주 신뢰 ${tr.before} → <b>${tr.after}</b> <span class="pill ${tr.delta>=0?'good':'bad'}">${tr.delta>=0?'+':''}${tr.delta}</span></p>

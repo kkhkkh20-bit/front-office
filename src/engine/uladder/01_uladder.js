@@ -81,15 +81,15 @@ function ulRunRound(L){ L=L||(uld()||{}).league; if(!L||L.next>=L.sched.length)r
 function ulStand(L){ const keys=L.teams.map((t,i)=>i), flat=[]; for(const s of L.series)for(const g of s.g)flat.push({a:s.a,b:s.b,sa:g[0],sb:g[1]}); return FrontOfficeCore.cupStandings(keys,flat); }
 /* 리그 끝: 순위·승강·MVP·기록 남기기 */
 function ulFinish(){ const C=FrontOfficeCore, U=uld(), L=U&&U.league; if(!L||L.next<L.sched.length)return null;
-  while(ulPostLeft(L))ulRunPost(L); /* 남은 포스트시즌(3연전 리그, 사용자 11-18: '끝까지'·예전 호출)은 여기서 마저 돈다. 승강은 아래 정규 순위로 */
-  const P=L.post, myPs=ulPsOf(P,0), st=ulStand(L), me=st.find(x=>x.key===0), mv=C.ulTierAfter(L.tier,me.rank,L.teams.length);
+  while(ulPostLeft(L))ulRunPost(L); /* 남은 포스트시즌(3연전 리그, 사용자 11-18: '끝까지'·예전 호출)은 여기서 마저 돈다. 승강은 아래 정규 순위로(우승팀은 승격) */
+  const P=L.post, myPs=ulPsOf(P,0), st=ulStand(L), me=st.find(x=>x.key===0), mv=C.ulTierAfter(L.tier,me.rank,L.teams.length,myPs); /* 래더 v4(구단주 11-18 §3): 우승팀은 순위와 무관하게 승격(이미 승격권이면 그대로) */
   const no=L.teams.filter(t=>t.kind==='ai').map(t=>t.key), mvp=C.cupMvp(Object.values(L.bat),Object.values(L.pit),no);
   const myMvp=C.cupMvp(Object.values(L.bat).filter(x=>x.key.startsWith(UL_ME+':')),Object.values(L.pit).filter(x=>x.key.startsWith(UL_ME+':')),[]);
   const pts=C.ulPts(L.tier,me.rank,L.teams.length), se=C.ulSeason(Date.now());
   const ms0=C.ulMissions(U.seas&&U.seas.id===se.id?U.seas:null,U.hist,se.id,L.tier).filter(m=>m.done).length; /* 래더 v3: 시즌 목표가 이번 리그로 몇 개 찼는지(결과 화면) */
   if(U.seas&&U.seas.id!==se.id){ (U.seasons=U.seasons||[]).push(U.seas); if(U.seasons.length>26)U.seasons.shift(); }
   U.seas=C.ulSeasonAdd2(U.seas,se.id,se.label,{tier:L.tier,rank:me.rank,to:mv.tier,move:mv.move,w:me.w,l:me.l,t:me.t,rs:me.rs,ra:me.ra,ps:myPs});
-  const res={id:L.id,tier:L.tier,to:mv.tier,move:mv.move,rank:me.rank,w:me.w,l:me.l,t:me.t,d:L.deck,name:L.teams[0].name,at:G.day,y:G.year,mvp,myMvp,pts,season:se.id,rec:ulRecords(L),keys:L.keys||[],
+  const res={id:L.id,tier:L.tier,to:mv.tier,move:mv.move,chp:mv.champ?1:0,rank:me.rank,w:me.w,l:me.l,t:me.t,d:L.deck,name:L.teams[0].name,at:G.day,y:G.year,mvp,myMvp,pts,season:se.id,rec:ulRecords(L),keys:L.keys||[],
     stand:st.map(x=>({rank:x.rank,name:L.teams[x.key].name,kind:L.teams[x.key].kind,w:x.w,l:x.l,t:x.t,pct:x.pct,gb:x.gb,diff:x.diff,ovr:L.teams[x.key].e.ovr})),edits:L.edits.length,src:L.src};
   res.teams=L.teams.map(t=>({name:t.name,kind:t.kind,nick:t.nick||'',ovr:t.e.ovr})); res.ser=L.series.map(x=>[x.r,x.a,x.b,x.g]); res.rs=me.rs; res.ra=me.ra; /* 끝난 리그 일정·결과(사용자 11-17) */
   /* 3연전 리그(사용자 11-18): 포스트시즌(정규 1위와 우승·준우승을 따로) · 시상 · 예상 대비 실제 · 다시 보는 전체 기록 */

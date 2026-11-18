@@ -45,7 +45,7 @@ function resultHome(){
   return `<section class="card hero rescard">
     <div class="row between"><span class="eyebrow">${g.kind?esc(g.kind)+' · ':''}${dmd(g.day)} ${WD[dobj(g.day).w]}${reg?` · ${n}/${seasonG()}경기`:''}${g.att?` · 관중 ${g.att.toLocaleString('ko-KR')}${g.so?'(매진)':''}`:''}${g.min?` · 경기 시간 ${gtTxt(g.min)}`:''}</span><span class="pill ${g.res==='승'?'good':g.res==='패'?'bad':''}">${g.res}</span></div>
     <div class="scoreline">${badge(g.away,34)}<b class="tn2"><i>${esc(tsplit(g.away)[0])}</i>${esc(tsplit(g.away)[1])}</b><span class="num">${g.as}</span><i>:</i><span class="num">${g.hs}</span><b class="tn2"><i>${esc(tsplit(g.home)[0])}</i>${esc(tsplit(g.home)[1])}</b>${badge(g.home,34)}</div>
-    ${lineScore(g,null)}
+    ${pgBoard(g,{slim:true})}
     ${(()=>{ const c=gameChar(g); return c?`<p class="small gchar ${c.k==='blown'||c.k==='rout'||c.k==='nobat'?'bad':c.k==='comeback'||c.k==='romp'?'good':''}"><b>${esc(c.t)}</b>${c.sub?` <span class="muted">${esc(c.sub)}</span>`:''}</p>`:''; })()}
     ${pf.length?`<div class="pfs">${pf.join('')}</div>`:''}
     ${others}

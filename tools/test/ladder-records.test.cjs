@@ -43,7 +43,7 @@ dbTest('결과에 붙은 기록: 시즌 홈런·타율(규정 타석)·OPS·ERA(
   let j = await J('POST', '/api/v1/ladder/result', res('lg-a1', 1, { ps: 'c' }), a.A); assert.equal(j._s, 200, JSON.stringify(j)); assert.equal(j.rec, 4); assert.equal(j.ps, 'c');
   assert.equal(j.delta, 30 + 3, '우승 보너스 3점'); assert.equal(j.tier, 1, '단계는 정규 순위(1위 승격) 그대로');
   j = await J('POST', '/api/v1/ladder/result', res('lg-a1', 1, { ps: 'c' }), a.A); assert.equal(j.dup, true); assert.equal(sql('SELECT COUNT(*) AS n FROM ladder_lines')[0].n, 4, '같은 리그 두 번');
-  j = await J('POST', '/api/v1/ladder/result', res('lg-a2', 3, { ps: 'c' }), a.A); assert.equal(j.delta, 19 + 3); assert.equal(j.tier, 1, '3위 잔류(우승해도 승격 아님)');
+  j = await J('POST', '/api/v1/ladder/result', res('lg-a2', 3, { ps: 'c' }), a.A); assert.equal(j.delta, 19 + 3); assert.equal(j.tier, 2, '래더 v4(구단주 11-18 §3): 정규 3위라도 우승팀은 승격'); assert.equal(j.move, 'up');
   j = await J('POST', '/api/v1/ladder/result', res('lg-b1', 2, { ps: 'r', team: '달빛팀', b: [bat('홈런왕', 14)], p: [pit('철완', 170, 25, 80, 0, 7)] }), b.A); assert.equal(j.delta, 24 + 1, '준우승 보너스 1점');
   j = await J('POST', '/api/v1/ladder/result', res('lg-c1', 7, { team: '은하팀', b: [['교타왕', 8, 40, 36, 20, 24, 0, 3, 0, 4, 0]], p: [pit('짧은투수', 30, 0, 20)], x: { ps: 'z' } }), c.A); assert.equal(j.delta, 7, '알 수 없는 포스트시즌 값은 보너스 없음');
   const R = await J('GET', '/api/v1/ladder/records'); assert.equal(R._s, 200, JSON.stringify(R));

@@ -2,7 +2,7 @@
    정규: 9라운드, 라운드마다 10팀이 모두 다른 상대와 3연전(팀당 27경기). 화면은 라운드 하나씩('다음 3연전') 또는 '끝까지'로 보여 준다.
    경기는 리그 씨앗(L.seed, 리그를 만들 때 crypto로 한 번)과 연전 id로 정한 따로 난수(withRng)로 돈다: 같은 씨앗·같은 덱이면 같은 결과이고,
    본게임 난수 흐름(Math.random)은 한 번도 쓰지 않는다. 연전 사이에 덱을 고칠 수 있어서 미리 다 돌려 두지 않고, 라운드를 열 때 돌린다(결과는 씨앗으로 정해져 있다).
-   정규가 끝나면 상위 4팀 포스트시즌: 준결승 1-4위·2-3위 3전 2선승 → 결승 5전 3선승(시리즈 하나씩 공개). 승강은 정규 순위 그대로.
+   정규가 끝나면 상위 4팀 포스트시즌: 준결승 1-4위·2-3위 3전 2선승 → 결승 5전 3선승(시리즈 하나씩 공개). 승강은 정규 순위 그대로, 다만 우승팀은 순위와 무관하게 승격(래더 v4).
    기록: 경기마다 작은 박스(줄 점수·R/H/E·승패세·홈런, 우리 경기와 포스트시즌은 타자·투수 줄까지) · 팀 실책 · 라운드 소식 · 끝난 뒤 시상.
    예전 리그(씨앗 없음, v1)는 처음 열 때 빈 칸만 더해(난수 없음, 여러 번 해도 같음) 예전처럼 평범한 난수로 이어 간다 */
 function ulSeed32(){ try{ const a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]>>>0; }catch(e){ return ((Date.now()>>>0)^0x9e3779b9)>>>0; } } /* 씨앗은 본게임 난수가 아니라 기기 난수(crypto)에서 */
@@ -27,7 +27,7 @@ function ulBox(g,full){ const LN=ulLineOf(g), S=g.stats||{bat:[],pit:[]}, side=k
   return x; }
 /* 경기 기록 더하기(정규 L.bat·L.pit, 포스트시즌 L.pbat·L.ppit): 팀 키:선수 id 줄. 처음 만들 때 포지션·나이를 그 팀 덱에서 적는다(개인 순위·신인상·팀 표) */
 function ulStatAdd(L,BM,PM,res,a,b){ const key={A:L.teams[a].key,B:L.teams[b].key}, mi={A:a,B:b}, PP={A:new Map(L.teams[a].e.P.map(p=>[String(p.id),p])),B:new Map(L.teams[b].e.P.map(p=>[String(p.id),p]))};
-  const snap=(t,kk,id)=>{ const p=PP[kk].get(String(id)); if(!p)return; if(mi[kk]===0||!t.pos){ t.pos=p.pos||''; if(p.age!=null)t.age=p.age; if(p.isP)t.isP=1; if(p.foreign)t.fr=1; } }; /* 우리 선수는 기록할 때의 포지션·나이(검수 11-17 #182), 상대는 처음 값 */
+  const snap=(t,kk,id)=>{ const p=PP[kk].get(String(id)); if(!p)return; if(!t.pos)t.pos=p.pos||''; if(t.age==null&&p.age!=null)t.age=p.age; if(t.isP==null)t.isP=p.isP?1:0; if(t.fr==null)t.fr=p.foreign?1:0; }; /* 모든 팀은 첫 출전 당시 정보를 유지하고 옛 저장의 빈 칸만 보완한다. */
   for(const g of res.games){ for(const x of g.stats.bat){ const id=String(x.key).split(':')[1], k=key[x.k]+':'+id, t=BM[k]||(BM[k]={key:k,team:L.teams[mi[x.k]].name,name:x.name,g:0}); t.g++; snap(t,x.k,id); for(const f of ['pa','ab','h','d','tr','hr','bb','hbp','sf','rbi','r','sb','so'])t[f]=(t[f]||0)+(x[f]||0); }
     for(const p of g.stats.pit){ const id=String(p.key).split(':')[1], k=key[p.k]+':'+id, t=PM[k]||(PM[k]={key:k,team:L.teams[mi[p.k]].name,name:p.name,g:0}); if(t.g&&t.hbp==null||p.hbp==null||p.bbMixed)t.bbMixed=true; t.g++; snap(t,p.k,id); for(const f of ['outs','h','bb','hbp','so','r','er','hr','w','l','sv','gs'])t[f]=(t[f]||0)+(p[f]||0); } } }
 /* 팀마다 경기 결과 줄(1 승 · −1 패 · 0 무, 정규만, 오래된 것부터) */
@@ -37,11 +37,11 @@ function ulStandX(D){ const C=FrontOfficeCore, flat=[]; for(const s of D.series|
   const st=C.cupStandings(D.teams.map((t,i)=>i),flat), RS=ulTeamRes(D), ex=D.exp||C.ulExpect(D.teams.map(t=>ulOvrOf(t).t||0)), done=(D.series||[]).length, all=(D.sched&&D.sched.length)||45;
   return st.map(x=>{ const f=C.ulForm(RS[x.key]), g=x.w+x.l+x.t; return Object.assign(x,{l5:f.l5,strk:f.strk,run:f.run,py:C.ulPyth(x.rs,x.ra),pyw:Math.round(C.ulPyth(x.rs,x.ra)*g*10)/10,exw:Math.round(ex.w[x.key]*done/all*10)/10,exr:ex.rank[x.key]}); }); }
 /* 팀 기록(타격·투구·수비) + 리그 평균. 정규 L.bat·L.pit 합, 실책은 박스(L.te) */
-function ulTeamStats(D){ const C=FrontOfficeCore, B=Object.values(D.bat||{}), P=Object.values(D.pit||{});
+function ulTeamStats(D){ const C=FrontOfficeCore, B=Object.values(D.bat||{}), P=Object.values(D.pit||{}), LB={},LP={};
   const T=D.teams.map((t,i)=>{ const pre=t.key+':', b={}, p={}; for(const x of B)if(String(x.key).startsWith(pre))for(const f of C.UL_BF)b[f]=(b[f]||0)+(x[f]||0); for(const x of P)if(String(x.key).startsWith(pre)){ for(const f of C.UL_PF)p[f]=(p[f]||0)+(x[f]||0); if(x.bbMixed)p.bbMixed=true; }
-    const br=C.ulBatRates(b), pr=C.ulPitRates(p), ip=(p.outs||0)/3; return {i,key:t.key,name:t.name,kind:t.kind,avg:br.avg,obp:br.obp,slg:br.slg,ops:br.ops,hr:b.hr||0,sb:b.sb||0,r:b.r||0,h:b.h||0,pa:b.pa||0,
-      era:pr.era,whip:ip?Math.round(((p.h||0)+(p.bb||0)+(p.hbp||0))/ip*100)/100:null,so:p.so||0,bb:(p.bb||0)+(p.hbp||0),hra:p.hr||0,e:(D.te||[])[i]||0,outs:p.outs||0}; });
-  const avgOf=k=>{ const v=T.map(x=>x[k]).filter(x=>x!=null); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null; }, lg={}; for(const k of ['avg','obp','slg','ops','hr','sb','era','whip','so','bb','e'])lg[k]=avgOf(k);
+    for(const f of C.UL_BF)LB[f]=(LB[f]||0)+(b[f]||0); for(const f of C.UL_PF)LP[f]=(LP[f]||0)+(p[f]||0); if(p.bbMixed)LP.bbMixed=true; const br=C.ulBatRates(b), pr=C.ulPitRates(p); return {i,key:t.key,name:t.name,kind:t.kind,avg:br.avg,obp:br.obp,slg:br.slg,ops:br.ops,hr:b.hr||0,sb:b.sb||0,r:b.r||0,h:b.h||0,pa:b.pa||0,
+      era:pr.era,whip:pr.whip,so:p.so||0,bb:(p.bb||0)+(p.hbp||0),hra:p.hr||0,e:(D.te||[])[i]||0,outs:p.outs||0}; });
+  const avgOf=k=>{ const v=T.map(x=>x[k]).filter(x=>x!=null); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null; }, lg={}; for(const k of ['hr','sb','so','bb','e'])lg[k]=avgOf(k); Object.assign(lg,C.ulBatRates(LB)); const rateP=C.ulPitRates(LP);lg.era=rateP.era;lg.whip=rateP.whip;
   const lower=new Set(['era','whip','bb','e']), rank={}; for(const k of Object.keys(lg)){ const v=T.map(x=>x[k]); rank[k]=T.map(x=>x[k]==null?null:1+v.filter(y=>y!=null&&(lower.has(k)?y<x[k]:y>x[k])).length); }
   return {T,lg,rank,partialE:!!D.teP}; }
 /* 개인 순위(규정: 경기 × 3.1 타석, 경기 × 1 이닝). top n */

@@ -205,7 +205,11 @@ function foreignCheck(tid,p,excludeId,tmp){
   const cap=fCap(tid,tmp?null:excludeId); const tot=sum(yb.map(fCommit))+p.ask; /* 교체는 기존 선수를 뺀 한도로(부상 대체는 원 선수가 재활 명단에 남아 가산 유지) */ if(tot>cap)return `외국인 3명 연봉 총액이 한도 ${Math.round(cap/USD)}만 달러(약 ${money(cap)})를 넘습니다.`;
   return '';
 }
-function remainFrac(){ const c=G.cal; if(G.day<c.open)return 1; if(G.day>c.end)return 0; const left=Object.keys(c.sched).filter(d=>+d>G.day).length; return left/Math.max(1,Object.keys(c.sched).length); } /* 일정 날짜 수로 나눈다(구단 수에 따라 144·154·132일) */
+function remainFrac(tid=G.user){ const c=G.cal; if(!c||!c.sched||G.day<c.open)return 1; let total=0,left=0; const slots={};
+  for(const [date,L] of Object.entries(c.sched))for(const [h,a] of L)if(h===tid||a===tid){ total++; if(+date>G.day)left++; const k=date+':'+h+':'+a; slots[k]=(slots[k]||0)+1; }
+  const used={},ids=new Set(); for(const r of G.makeup||[]){ if(r.y!==G.year||r.h!==tid&&r.a!==tid)continue; if(r.rid!=null){if(ids.has(r.rid))continue;ids.add(r.rid);} const d=r.sourceDay??r.d,k=d+':'+r.h+':'+r.a,n=used[k]=(used[k]||0)+1;
+    if(n<=(slots[k]||0)){if(d<=G.day)left++;}else{total++;left++;} }
+  return total?clamp(left/total,0,1):0; } /* 실제 구단 경기 수: DH는 두 경기, 재처리 대기는 원 편성을 중복 합산하지 않는다. 조회는 무변경·무난수. */
 function signForeign(tid,id){
   const p=G.players[id];
   if(p&&(period()==='post'||(period()==='season'&&G.day>foreignDL())))return '8월 15일이 지나 이번 시즌에는 외국인 선수를 새로 등록할 수 없습니다.'; if(p&&!foreignOpen())return '지금은 외국인 선수 영입 기간이 아닙니다(12월부터).'; /* 시장이 닫힌 11월(검수 11-06) */ /* 기본 계약 함수도 등록 마감을 지킨다(검수 11-06) */
@@ -214,7 +218,7 @@ function signForeign(tid,id){
   const mid=period()==='season';
   { const h=foResFor(p); if(!(h&&h.tid===tid))p.rsy=0; } /* 재계약 연차는 그 구단에서 쌓은 것만: 다른 구단이 새로 데려오면 한도 가산 없음(검수 11-06) */
   story(p,`${tname(tid)} 입단 (${p.foreign==='아시아'?'아시아쿼터':'외국인 선수'}, ${money(p.ask)})`,'move'); p.team=tid; p.sal=p.ask; p.yrs=1; p.fjD=G.day; delete p.fMulti; /* 새 구단 계약은 1년부터. shortcut: 2년 계약 도중 방출해도 다음 해 보장분은 따로 물리지 않는다, 방출 정산을 다년으로 넓힐 때 함께 */ if(G.formY===G.year&&!(p.sf&&p.sf.y===G.year))p.sf={y:G.year,v:clamp(N(0,3),-5,5),m:0}; p.fy=dobj(G.day).m>=10?G.year+1:G.year; if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80));
-  const cost=Math.round(p.ask*remainFrac());
+  const cost=Math.round(p.ask*remainFrac(tid));
   if(mid||G.day>=G.cal.open){ G.sea.fspend[tid]=(G.sea.fspend[tid]||0)+cost; }
   if(mid){ const key=p.foreign==='아시아'?'asiaRepl':'repl'; G.sea[key]=G.sea[key]||{}; G.sea[key][tid]=(G.sea[key][tid]||0)+1; try{ gmInc(tid,'fRep'); }catch(e){} }
   G.fmarket=(G.fmarket||[]).filter(x=>x!==id); mvLog('외국인',p,null,tid,`${p.nat||''} ${money(p.ask)}${mid?' · 시즌 중 교체':''}`,p.ask);
@@ -291,7 +295,7 @@ function aiForeignReview(tid){
     const q=G.day>G.cal.open+30?(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&x.foreign==='용병'&&x.isP===p.isP&&fKnows(tid,x)&&!foHeld(x)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a))[0]:null; const good=!!h&&(p.isP?(h.outs>=90&&pRate(h).era<=4.0):(h.pa>=120&&bRate(h).ops>=.800)); /* 올해 잘하고 있는 선수는 시장에 더 좋아 보이는 후보가 있어도 바꾸지 않는다(안정화 점검: 리그 홈런 1위 외국인 타자를 5월에 내보냈다) */ const up=!bad&&!good&&q&&fScoreBy(tid,q)>ovr(p)+6;
     { const u1=bad?R():1; if((!bad||u1>=.7)&&up)R(); } /* 예전 무작위(부진 70%·더 나은 후보 10%) 자리: 난수 순서만 지킨다 */
     if(aiFoSwap(tid,p,bad,up,q)){ const nm=p.name; const qOk=q&&!foreignCheck(tid,Object.assign({},q,{ask:Math.min(q.ask,fNewCap())}),p.id); if(!qOk&&!bad)continue; if(!qOk&&fReplLeft(tid)<=0)continue; if(!qOk&&fCap(tid,p.id)-sum(foreignOf(tid).filter(x=>x.foreign==='용병'&&x!==p).map(fCommit))<300)continue; /* 내보낸 뒤 줄어든 총액 한도로 대체 선수를 구할 여지가 없으면 방출하지 않는다(검수 11-09zl) */ if(qOk&&foCutIn(tid,q,p.id))return; /* 우리 관찰 후보면 바로 데려가지 않고 끼어들 기한부터 */ /* 새 선수를 데려올 수 있는지 먼저 본다(검수 11-06: 보류권 후보 때문에 기존 선수만 잃음) */
-      const n0=foreignOf(tid).filter(x=>x.foreign==='용병').length; releaseForeign(p.id); if(!qOk||signForeign(tid,q.id))aiForeignFill(tid); const n1=foreignOf(tid).filter(x=>x.foreign==='용병').length; wire('외국인',n1>=n0?`${tname(tid)}이(가) 외국인 선수 ${nm}을(를) 교체했습니다.`:`${tname(tid)}이(가) 외국인 선수 ${nm}을(를) 방출했습니다.`,{tid}); return; }
+      const before=new Set(playersOf(tid).filter(x=>x.foreign==='용병').map(x=>x.id)); releaseForeign(p.id); if(!qOk||signForeign(tid,q.id))aiForeignFill(tid); const signed=foreignOf(tid).some(x=>x.foreign==='용병'&&!before.has(x.id)); wire('외국인',signed?`${tname(tid)}이(가) 외국인 선수 ${nm}을(를) 교체했습니다.`:`${tname(tid)}이(가) 외국인 선수 ${nm}을(를) 방출했습니다.`,{tid}); return; }
   }
 }
 

@@ -135,10 +135,16 @@ function entryUpgrade(tid,cands,why){ if(!entryOn())return []; const lean=teamLe
   if(tid===G.user&&moves.length)note('엔트리',`감독이 1군 엔트리를 조정했습니다${why?`(${why})`:''}: ${moves.join(', ')}.`); return moves; }
 /* 1군에 올릴 수 없는 사유(canUp이 거짓일 때). 엔트리 관리 화면이 버튼 옆에 같은 문구를 보여 준다(카페 피드백 11-09v) */
 function upWhy(p){ return p.isP&&rpPlanOf(p.team,p)==='sp2'?'2군 선발 수업 중입니다. 보직을 먼저 바꿔 주세요.':p.ys?'육성선수는 정식 선수로 등록해야 1군에 올릴 수 있습니다.':p.susp>G.day?`출장 정지 중입니다(${dmd(p.susp)}부터 출장 가능).`:p.hold?'연봉 미계약 상태입니다. 계약을 먼저 마쳐야 합니다.':p.boy>G.day?`훈련 불참 중입니다(${dmd(p.boy)}부터 복귀 가능).`:p.fLeave>G.day?`귀국 휴가·결장 요청 중입니다(${dmd(p.fLeave)}부터 복귀 가능).`:p.injOut>0?'부상 중입니다.':p.frehab?'부상 대체 외국인을 둔 재활 명단에 있습니다.':p.e1?'이미 1군에 있습니다.':!psOk(p)?'8월 15일 이후 영입한 선수는 포스트시즌 엔트리에 넣을 수 없습니다.':isAway(p)?'대표팀 차출·군 복무 중입니다.':p.joinY>G.year?'다음 시즌 입단 선수입니다.':p.downDay!=null&&G.day-p.downDay<10?`말소 후 10일이 지나야 다시 등록할 수 있습니다(${dmd(p.downDay+10)}부터).`:'지금은 등록할 수 없습니다.'; }
+/* 직접 건의·감독 메일·회의가 실행 직전 같은 인원 보호를 사용한다. */
+function entryDownWhy(p,tid=G.user){ if(!p||p.team!==tid)return '대상이 아닙니다.'; if(!p.e1)return '이미 1군에 없습니다.';
+  if(!p.isP&&healthy(p)&&playersOf(tid).filter(x=>x.e1&&!x.isP&&healthy(x)).length<=9&&!playersOf(tid).some(x=>!x.isP&&canUp(x)))return '1군의 건강한 야수가 9명뿐이고 2군에서 바로 올릴 야수가 없어(재등록 대기·부상) 말소하면 타순을 채울 수 없습니다.';return ''; }
+function entryUpPlan(p,tid=G.user,cross=false){ if(!p||p.team!==tid)return {why:'선수가 우리 구단에 없습니다.'};if(!canUp(p))return {why:upWhy(p)};const ent=playersOf(tid).filter(x=>x.e1);if(ent.length<entryLimit())return {out:null};
+  const d=depth(tid),core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)),lean=teamLean(tid);
+  const out=ent.find(x=>isC(p)&&isC(x)&&!healthy(x))||ent.filter(x=>x.isP===p.isP&&!core.has(x.id)&&!cProt(x,p,ent)).sort((a,b)=>ovr(a)-ovr(b))[0]||(cross?ent.find(x=>!core.has(x.id)&&!cProt(x,p,ent)):null);
+  return out?{out}:{why:`1군 엔트리에 자리가 없어 ${p.name}을(를) 올리지 못했습니다(내릴 비핵심 선수가 없음).`}; }
 function reqEntry(id,up){ const p=G.players[id]; const m=G.mgr[G.user]; if(!p||p.team!==G.user)return '대상이 아닙니다.'; if(!entryOn())return '시즌 중에만 엔트리를 바꿀 수 있습니다.'; if(!m)return '감독이 없습니다.';
   if(up&&!canUp(p))return upWhy(p);
-  if(!up&&!p.e1)return '이미 1군에 없습니다.';
-  if(!up&&!p.isP&&healthy(p)&&playersOf(G.user).filter(x=>x.e1&&!x.isP&&healthy(x)).length<=9&&!playersOf(G.user).some(x=>!x.isP&&canUp(x)))return '1군의 건강한 야수가 9명뿐이고 2군에서 바로 올릴 야수가 없어(재등록 대기·부상) 말소하면 타순을 채울 수 없습니다.'; /* 검수 11-09zx */
+  if(!up){const why=entryDownWhy(p);if(why)return why;} /* 검수 11-09zx */
   if(!up&&mgrOutReq(p)){ mgrOutGrant(p,'down'); p.e1=false; p.downDay=G.day; entryManage(G.user,false,true); addLog(`${p.name}이(가) 단장 요청으로 1군에서 말소되었습니다.`); return `${m.name} 감독이 정리를 요청했던 선수라 바로 받아들였습니다. ${p.name} 말소(${dmd(G.day+10)}부터 재등록 가능). 감독 관계 조금 개선.`; } /* 감독 스스로 정리해 달라던 선수를 '필요한 선수'라며 거절하지 않게(카페 11-08) */
   { const br=mplBreakListen(`${p.name} ${up?'콜업':'말소'}`); if(br){ m.rel=clamp(m.rel,0,100); return br; } }
   mgrFix(m); const a=clamp(.78-(m.ego-50)/70+(m.rel-60)/120+(mplOn('listen')?.3:0),.15,mplOn('listen')?.98:.95); /* 영입 면담에서 '단장 건의 존중'을 약속받았으면 거의 받아들인다 */ const ok=hn('req'+G.day,id)>-1.2&&R()<a;
