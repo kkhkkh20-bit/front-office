@@ -15,12 +15,13 @@
  * 보관: 엔트리 본문과 메타데이터(이름·연도·OVR·시각). IP는 기기 옮기기와 같이 해시로만 횟수를 센다.
  * 공개 GET(대회 설정·명단·결과·연재·경기 기록)은 worker/kvcache.js로 짧게(60~600초) 담아 둔다. 관리자·신청 쓰기 뒤에는 같은 인스턴스·데이터센터 캐시를 비운다. */
 import { readText } from './v1/http.js';
+import { deckGuard, guardStatus, GUARD_MSG } from './v1/guard.js';
 import { CUP_DEFAULT, cupValidate, cupName, cupBadName, cupKstMs, cupKstDay, cupEntryHash, cupSeed, cupOvrTxt, cupTeamsOk } from '../src/core/cup.mjs';
 import { cached, cacheGet, cachePut, cacheBust } from './kvcache.js';
 
 export const CUP_MAX_BYTES = 400 * 1024;
 export const CUP_RUN_MAX = 12 * 1024 * 1024; /* 돌린 결과 전체(경기 기록 포함) */
-const MSG = {
+const MSG = { ...GUARD_MSG,
   no_cup: '지금 열린 대회가 없습니다.',
   closed: '접수가 마감됐습니다.',
   daily: '신청은 하루에 한 번만 할 수 있습니다. 내일 다시 시도해 주세요.',
@@ -128,6 +129,7 @@ export async function handleCup(req, env, url, now, rateLimited) {
   e.name = cupName(e.name); e.cup = c.id;
   const v = cupValidate(Object.assign({}, e, { h: undefined }), c);
   if (!v.ok) return err(400, 'bad_entry', { errors: v.errors.map(x => x.msg) });
+  { const an = deckGuard(e, null, 'cup', e.wid); if (an) return err(guardStatus(an), an.code, { errors: an.errors }); delete e.edited; } /* 편집 표시·이상치 거절(구단주 11-18 §8) */
   if (v.elig.length) return err(403, 'not_eligible', { errors: v.elig.map(x => x.msg) });
   const day = `cupD:${c.id}:${e.wid}:${cupKstDay(now)}`;
   if (await kv.get(day)) return err(429, 'daily');

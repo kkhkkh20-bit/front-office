@@ -211,6 +211,7 @@ function ulRankPage(U){ const h=ulRankHtml(U,ulMsgHtml()), C=FrontOfficeCore, L=
 /* ---- 화면 ---- */
 function ulView(){ if(!G)return ''; ulProbe(); const U=ulDisplayState(uld()), pg=ulPage(); let cols, wide=false;
   if(pg==='lobby')cols=ulLobby(U); else if(pg==='league')cols=ulLeaguePage(U); else if(pg==='deck')cols=ulDeckPage(U); else if(pg==='data'){ cols=ulDataPage(U); wide=true; } else if(pg==='rec')cols=ulRecPage(U); else cols=ulRankPage(U);
+  { const ed=ulEdited(); if(ed&&cols&&cols.length)cols[0]=`<div class="note bad ul-edited" role="status">${esc(ed)}</div>`+(cols[0]||''); } /* 편집된 저장: 래더 등록을 막은 이유(22d_edited). 편집 안 한 저장에는 아무것도 보이지 않는다 */
   const top=fmOn()?'':subTabs('uld'), body=wide?`<div class="setc ul-c2">${cols[0]}</div><div class="setc">${cols[1]||''}</div>`:cols.map(c=>`<div class="setc">${c||''}</div>`).join('');
   return `${top}${pg==='data'?UL._dbar:''}<div class="setx ws-own ulx ul-p-${pg}${wide?' ul-wide2':''}">${body}</div>`; }
 Object.assign(A,{

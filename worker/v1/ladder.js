@@ -9,6 +9,7 @@ import { statStmts, takeUsage, addUsage } from './usage.js';
 import { ladderKvPool, ladderKvTier } from '../uladder.js';
 import { ensureRec, recParse, recStmts, PS_BONUS } from './records.js';
 import { ensureAuto, regGet, regCheck, regStmt, leagueStmts } from './ladauto.js';
+import { deckGuard, guardStatus } from './guard.js';
 
 export const DECK_MAX = 40 * 1024, OPP_MAX = 9, BOARD_N = 20, FEED_N = 30, STALE = 45 * 86400e3;
 /* 순위 규칙 하나(srv2 #36): 포인트 많은 순 → 우승(리그 1위) 많은 순 → 그 점수에 먼저 도달한 순(updated 이른 순) → 플레이어 id.
@@ -53,6 +54,8 @@ export async function putDeck(req, db, me, now, env) {
   if (!b.e || typeof b.e !== 'object') return err(400, 'bad_deck');
   if (cupBadName(b.e.name)) return err(400, 'bad_name');
   const e = ulSlim(b.e); e.name = cupName(e.name); const v = cupValidate(e, {}); if (!v.ok) return err(400, 'bad_deck', { errors: v.errors.map(x => x.msg) });
+  /* 편집된 저장(edited)·이상치(능력치 범위·OVR 분포·연봉 합계) 거절(구단주 11-18 §8). 받은 덱에는 edited를 남기지 않는다(해시가 화면과 같게) */
+  { const an = deckGuard(e, b, 'v1', me.id); if (an) { try { await db.batch(statStmts(db, now, { ['rej_' + an.code]: 1 })); } catch (x) {} return err(guardStatus(an), an.code, { errors: an.errors }); } delete e.edited; }
   e.h = cupEntryHash(e); const body = JSON.stringify(e), bytes = byteLen(body); if (bytes > DECK_MAX) return err(413, 'too_large');
   const s = await currentSeason(db, now);
   const anyEntry = await db.prepare('SELECT 1 AS x FROM ladder_entries WHERE player_id = ? LIMIT 1').bind(me.id).first();

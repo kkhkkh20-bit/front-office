@@ -180,7 +180,9 @@ function castHoldSync(){ const c=UI.cast||UI.castRet, g=G&&c&&c.hold&&G.games[c.
   G.castHold={g:c.g,gid:g.gid,k:c.k||0,play:UI.cast===c?!!c.play:!!c.wasPlay,pre:c.pre?1:0,spd:c.spd||1,mode:c.mode==='all'?'all':'hl',...(c.pitch&&c.pitch.k===c.k&&c.pitch.shown>0?{pi:c.pitch.shown}:{}),...(UI.cwAfter?{cw:UI.cwAfter}:{}),...(ps?{ps}:{})}; }
 /* 저장 전 화면 상태가 이 세이브(G) 것인지 먼저 맞춘다(검수 11-09zzc #1: 가져온 백업에 이전 게임의 중계 위치가 저장됨) */
 let _saveGStage=false; /* 가져오기 저장 확인 전에는 현재 화면 상태를 건드리거나 새 게임에 섞지 않는다 */
-function prepG(){ if(_saveGStage)return JSON.stringify(G); try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } const P=prepImg(); _svParts=P; return P?prepJoin(P):JSON.stringify(G); }
+function prepG(){ if(_saveGStage){ rdgStampSafe(); return JSON.stringify(G); } try{ if(typeof uiSaveSync==='function')uiSaveSync(); }catch(e){} castHoldSync(); if(G){ const w=UI.wkres; if(w)G.wkHold={from:w.from,to:w.to,rk0:w.rk0}; else delete G.wkHold; } rdgStampSafe(); const P=prepImg(); _svParts=P; return P?prepJoin(P):JSON.stringify(G); }
+/* 능력치 지문(엔진 22d_edited): 정상 저장이 문자열로 만들기 직전에 적는다. 불러올 때 saveCheck가 이주 전 원본과 맞춰 본다 */
+function rdgStampSafe(){ try{ if(G)rdgStamp(G); }catch(e){} }
 /* 직접 넣은 사진(G.cimg·cimgO, base64 수백 KB~수 MB)은 거의 바뀌지 않는다: 사진 묶음 JSON은 바뀔 때만 다시 만들고, 나머지만 문자열화해 뒤에 잇는다(성능 11-18, IndexedDB로 가는 큰 세이브).
    사진이 작으면(256KB 미만) 예전처럼 한 번에. 사진 키가 JSON 맨 뒤로 갈 뿐 내용은 같다 */
 const IMG_KS=['cimg','cimgO']; let _imgC={g:null,v:0,o:{},s:''}, _svParts=null;
