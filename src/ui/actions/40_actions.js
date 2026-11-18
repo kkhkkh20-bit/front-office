@@ -517,8 +517,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   toTradeGive(v){const p=G.players[+v]; if(p&&hasNtc(p))toast(`${p.name}은(는) 트레이드 거부권이 있습니다(${p.ntc}년까지). 상대 구단을 고른 뒤 선수에게 동의를 구해야 보낼 수 있습니다.`); if(!UI.trade.give.includes(p.id))UI.trade.give.push(p.id);UI.trade.seg=p.isP?'pit':'bat';UI.trade.side='get';closeSheets(); A.go('trade:table');},
   anF(v){ UI.anF=v; render(); },
   ctF(v){ UI.ctF=v; render(); },
-  signFree(v){ const r=signFree(+v); if(r){ try{ toast(r); }catch(e){} } save(); render(); },
-  trySign(v){ const [id,ys]=String(v).split(':'); const r=trySign(+id,G.user,ys==='1'); try{ toast(r||'계약했습니다.'); }catch(e){} save(); render(); },
+  signFree(v){ const r=signFree(+v); if(r){ if(UI._cfmPass)UI._cfmWhy=r; try{ toast(r); }catch(e){} } save(); render(); },
+  trySign(v){ const [id,ys,quoted]=String(v).split(':'), p=G.players[+id], developing=ys==='1'; const changed=p&&quoted!=null&&Number.isFinite(+quoted)&&+quoted!==trySal(p,developing)&&!tryWhy(p,G.user,developing); const r=changed?'요구 연봉이 달라졌습니다. 새 금액을 확인한 뒤 다시 계약해 주세요.':trySign(+id,G.user,developing); try{ toast(r||'계약했습니다.'); }catch(e){} save(); render(); },
   tryF(v){ UI.tryF=v; render(); },
   scF(v){ UI.scF=v; render(); },
   hireScout(v){ const [sid,rz]=String(v).split(':'); const res=stOffer('sc',sid,+rz||0); toast(res.msg); save(); render(); }, /* 명단 반영·기록은 stOffer가 한다(화면에서 넣다가 빠뜨려 후보가 사라졌다, 카페 11-15) */

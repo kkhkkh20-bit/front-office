@@ -246,7 +246,7 @@ function fwatchWeek(){ G.fwatch=G.fwatch||[]; const out=[]; try{ fwAiWeek(); }ca
     else if(p.fkbo)wire('외국인',`KBO 경력 외국인 ${p.name}, ${lg}(으)로 한국행 접어`,{ref:p.id});
     p._ovsLg=lg==='MLB 콜업'?'MLB':'NPB'; dropP(id); }
   /* 올해 기록: 시장의 모든 외국인 후보가 그 리그 수준대로 매주 쌓는다(공개 기록이라 우리와 AI 구단이 똑같이 본다. 예전에는 우리 관찰 후보만 쌓였다) */
-  if(period()==='season')for(const id of G.fmarket||[]){ const p=G.players[id]; if(!p||p.team!=null||!p.prevLvl)continue; const r=origOf(p); const LA=lgAdjF(p.prevLvl)||[r==='jp'?-1:r==='la'?4:2,r==='jp'?-1:r==='la'?4:2]; const add=p.isP?simPit(p,ri(9,21),LA[1]):simBat(p,ri(14,26),LA[0]); const n=p.now&&p.now.y===G.year?p.now:(p.now={y:G.year,lvl:p.prevLvl}); for(const k in add)if(typeof add[k]==='number')n[k]=(n[k]||0)+add[k]; }
+  if(period()==='season')for(const id of G.fmarket||[]){ const p=G.players[id]; if(!p||p.team!=null||!p.prevLvl)continue; const r=origOf(p); const LA=lgAdjF(p.prevLvl)||[r==='jp'?-1:r==='la'?4:2,r==='jp'?-1:r==='la'?4:2]; const add=p.isP?simPit(p,ri(9,21),LA[1]):simBat(p,ri(14,26),LA[0]); const n=p.now&&p.now.y===G.year?p.now:(p.now={y:G.year,lvl:p.prevLvl}); for(const k in add)if(typeof add[k]==='number')n[k]=(n[k]||0)+add[k];p.ovpNowD=G.day; }
   G.fwatch=G.fwatch.filter(w=>!w.gone);
   /* 스카우트 자동 관찰: 빈자리가 있으면 감독이 원하는 유형(없으면 우리 팀에 필요한 유형) 후보를 주 1~2명씩 올린다(자동 3명까지) */
   try{ if(!G.unemp&&(foreignOpen()||period()==='season')&&G.fwatch.length<8&&G.fwatch.filter(w=>w.auto).length<3){ const W=mgrWantForeign(); const need=fNeed(G.user); const on=new Set(G.fwatch.map(w=>w.id).concat(G.fwNo||[])); /* fwNo: 지금 구단에서 뺀 기록(이직하면 구단별로 바뀐다) */

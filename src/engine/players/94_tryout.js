@@ -67,7 +67,8 @@ const TRY_NEED={P:38,C:6,SS:4,IF:12,OF:12};
 const tryBk=p=>p.isP?'P':p.pos==='C'?'C':p.pos==='SS'?'SS':['LF','CF','RF'].includes(p.pos)?'OF':'IF';
 function tryNeed(tid){ const n={P:0,C:0,SS:0,IF:0,OF:0}; for(const p of Object.values(G.players))if(p.team===tid&&!p.foreign)n[tryBk(p)]++; const o={}; for(const k in TRY_NEED)o[k]=Math.max(0,TRY_NEED[k]-n[k]); return o; }
 const tryNextY=()=>dobj(G.day).m>=9; /* 9월 뒤 계약은 다음 시즌부터(신인과 같게) */
-function tryRegN(tid){ return rosterN(tid)+Object.values(G.players).filter(p=>p.team===tid&&!p.ys&&p.joinY>G.year).length; }
+const tryCapSeason=()=>tryNextY()?G.year+1:sponSeason();
+function tryRegN(tid){ return domesticRegN(tid,tryNextY()); }
 /* 계약 가능 여부(사람·AI 같은 규칙). ys: 육성선수 계약 */
 /* noCap: 자리(정원·육성 한도)만 빼고 본다 — 자리를 비우기(방출) 전에 그 계약이 다른 이유로 막히지 않는지 먼저 확인(검수 11-17 #178) */
 function tryWhy(p,tid,ys,noCap){ const T=tryCur(); if(!T||!p||!T.ids.includes(p.id))return '트라이아웃 대상이 아닙니다.'; if(p.team!=null)return '이미 다른 구단과 계약했습니다.';
@@ -77,16 +78,17 @@ function tryWhy(p,tid,ys,noCap){ const T=tryCur(); if(!T||!p||!T.ids.includes(p.
   if((p.relT===tid&&G.day-(p.relD??-999)<365)||(p.relBan&&p.relBan[tid]>G.day))return '방출한 구단은 1년 동안 다시 계약할 수 없습니다.';
   if(p.wv)return '웨이버 공시 중입니다.';
   if(ys){ if(!noCap&&ysN(tid)>=YS_MAX)return `육성선수가 ${YS_MAX}명으로 꽉 찼습니다.`; if(k==='vet'&&freeAsk(p)>100)return '요구 연봉이 1억 원을 넘어 육성선수로는 계약할 수 없습니다.'; }
-  else if(!noCap&&tryRegN(tid)>=ROSTER_MAX)return `정식 선수 자리가 없습니다(${ROSTER_MAX}명).`;
-  if(tid===G.user&&G.unemp)return '구단을 맡고 있지 않습니다.'; return ''; }
+  else if(!noCap&&tryRegN(tid)>=ROSTER_MAX)return domesticRosterWhy(tid,tryNextY());
+  if(tid===G.user&&G.unemp)return '구단을 맡고 있지 않습니다.'; return domesticCapWhy(domesticCapCheck(p,tid,trySal(p,ys),'try'+p.id,tryCapSeason())); }
 function trySal(p,ys){ return tryKindOf(p)==='vet'?(ys?Math.max(MIN_SAL,Math.min(100,freeAsk(p))):freeAsk(p)):MIN_SAL; }
 function trySign(id,tid,ys){ tid=tid??G.user; const p=G.players[id]; const why=tryWhy(p,tid,!!ys); if(why)return why; const T=tryCur(), k=tryKindOf(p), sal=trySal(p,!!ys);
-  if(tid===G.user&&sal>MIN_SAL){ const s=sponSeason(); const cc=capOwnerCheck(capPayWith(G.user,p.id,sal,s).tot,capPayWith(G.user,null,null,s).tot,s,'try'+p.id); if(cc&&!cc.ok)return cc.msg; if(cc)capOwnerOk(cc,`트라이아웃 ${p.name} 영입`); }
+  const cc=domesticCapCheck(p,tid,sal,'try'+p.id,tryCapSeason());
   p.team=tid; p.sal=sal; p.yrs=1; p.ys=!!ys; p.e1=false; delete p.freeSince; delete p.freeDay; delete p.udY; if(tryNextY())p.joinY=G.year+1; else delete p.joinY; p.mor=clamp((p.mor??55)+8,0,100);
   p.tryS={y:T.y,k,ys:!!ys,tid,d:G.day}; delete p.tryK; try{ draftClassPrune(); }catch(e){} /* 계약한 선수는 어떤 길이든 드래프트 명단에 남지 않는다 */
   mvLog('트라이아웃',p,null,tid,`${ys?'육성선수':'정식 선수'} · 연 ${money(sal)}`,sal); story(p,`${T.y} ${k==='ud'?'드래프트 미지명 뒤':'KBO 공개 트라이아웃'} · ${tname(tid)} ${ys?'육성선수':'정식'} 계약`,'move');
   try{ milLate(p,tid); }catch(e){}
   (G.tryLog=G.tryLog||[]).push({y:T.y,id:p.id,tid,k,ys:!!ys,d:G.day,pos:p.isP?'P':p.pos,age:p.age}); if(G.tryLog.length>300)G.tryLog.shift();
+  if(cc&&cc.ok)capOwnerOk(cc,`트라이아웃 ${p.name} 영입`);
   if(tid===G.user)addLog(`${TRY_K[k]} ${p.name}(${posLabel(p)}, ${p.age}세)과(와) ${ys?'육성선수':'정식 선수'} 계약을 맺었습니다.`); else wire('이적',`${tshort(tid)}, ${TRY_K[k]} ${p.name}(${posLabel(p)}) ${ys?'육성':'정식'} 계약`,{tid,ref:p.id});
   return ''; }
 /* AI 구단 하루 판단(테스트 다음 날부터 6일, 미지명은 드래프트 이틀 뒤부터 5일): 필요한 자리 + 자기 추정 + 정원/육성 여유 */
@@ -94,13 +96,17 @@ function tryAiDay(udOnly){ const T=tryCur(); if(!T)return 0; const C=T.ids.map(i
   for(const t of G.teams){ if(t.id===ME()||G.tryLog&&G.tryLog.filter(x=>x.y===T.y&&x.tid===t.id).length>=TRY_AI_MAX)continue; if(relU('tryai'+G.day,t.id)>=.45)continue;
     const need=tryNeed(t.id); let ysRoom=YS_MAX-ysN(t.id); const regRoom=ROSTER_MAX-3-tryRegN(t.id);
     const own=domestic(t.id).filter(p=>!p.ys).map(ovr).sort((a,b)=>b-a), bar=own[Math.min(own.length-1,40)]||38;
-    let best=null, bv=-1e9; for(const p of C){ if(p.team!=null)continue; if(tryWhy(p,t.id,true,true)&&tryWhy(p,t.id,false,true))continue; /* 이 구단이 어떤 계약으로도 못 데려오는 선수(방출 1년 제한 등)는 후보에서 뺀다 */ const e=tryEst(p,t.id); const v=tryVal(e,p)+(need[tryBk(p)]||0)*1.2; if(v>bv){ bv=v; best={p,e,v}; } }
-    if(!best)continue; const {p,e}=best, k=tryKindOf(p), young=p.age<=26;
-    const reg=k!=='ud'&&regRoom>0&&e.cur>=bar-1, ysWant=!reg&&young&&e.pot>=40&&(k!=='vet'||freeAsk(p)<=100);
-    /* 육성 자리가 꽉 찼으면 가장 기대가 낮은 육성선수(22세 이상)보다 확실히 나을 때만 그 선수를 내보내고 데려간다. 사람 단장도 방출 뒤 같은 계약을 할 수 있다 */
-    if(ysWant&&ysRoom<=0){ const w=ysList(t.id).filter(q=>q.age>=22&&!(q.tryS&&q.tryS.y===T.y)).map(q=>({q,v:ovr(q)*.55+q.pot*.45-Math.max(0,q.age-27)*1.2})).sort((a,b)=>a.v-b.v)[0];
-      if(w&&best.v-(need[tryBk(p)]||0)*1.2>w.v+4&&!tryWhy(p,t.id,true,true)){ /* 검수 11-17 #178: 육성 계약이 자리 말고 다른 이유로 막히면 먼저 내보내지 않는다(내보내고 계약 실패해 14명으로 끝나던 문제) */ const q=w.q; if(q.age<=33&&ovr(q)>=30)toFree(q,`${tname(t.id)}에서 방출(육성선수 정리)`); else retireOut(q,`${tname(t.id)}에서 방출된 뒤 은퇴`); ysRoom=YS_MAX-ysN(t.id); } }
-    const ys=ysWant&&ysRoom>0;
+    let best=null, bv=-1e9; for(const p of C){ if(p.team!=null)continue; if(tryWhy(p,t.id,true,true)&&tryWhy(p,t.id,false,true))continue;
+      const e=tryEst(p,t.id), v=tryVal(e,p)+(need[tryBk(p)]||0)*1.2, k=tryKindOf(p), young=p.age<=26;
+      const reg=k!=='ud'&&regRoom>0&&e.cur>=bar-1&&!tryWhy(p,t.id,false);
+      const ysWant=!reg&&young&&e.pot>=40&&(k!=='vet'||freeAsk(p)<=100)&&!tryWhy(p,t.id,true,true);
+      let ys=ysWant&&ysRoom>0, replace=null;
+      /* 후보의 실제 계약 방식·자리·상한까지 맞는 경우만 순위를 매긴다. 육성 교체도 계약 불가 후보를 위해 먼저 방출하지 않는다. */
+      if(ysWant&&ysRoom<=0){ const w=ysList(t.id).filter(q=>q.age>=22&&!(q.tryS&&q.tryS.y===T.y)).map(q=>({q,v:ovr(q)*.55+q.pot*.45-Math.max(0,q.age-27)*1.2})).sort((a,b)=>a.v-b.v)[0];
+        if(w&&v-(need[tryBk(p)]||0)*1.2>w.v+4)replace=w.q; }
+      if(!reg&&!ys&&!replace)continue; if(v>bv){ bv=v; best={p,e,v,reg,ys,replace}; } }
+    if(!best)continue; const {p,reg,replace}=best; let ys=best.ys;
+    if(replace){ if(tryWhy(p,t.id,true,true))continue; if(replace.age<=33&&ovr(replace)>=30)toFree(replace,`${tname(t.id)}에서 방출(육성선수 정리)`); else retireOut(replace,`${tname(t.id)}에서 방출된 뒤 은퇴`); ysRoom=YS_MAX-ysN(t.id); ys=ysRoom>0; }
     if(!reg&&!ys)continue; if(!trySign(p.id,t.id,ys))n++; }
   return n; }
 /* 마감(1월 20일): 남은 미지명 신인은 떠나고, 독립리그·방출 선수는 무적 선수로 남는다 */

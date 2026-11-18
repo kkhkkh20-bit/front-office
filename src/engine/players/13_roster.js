@@ -81,7 +81,7 @@ function capStateTxt(pay,tid=G.user){ const cap=capOf(sponSeason()), over=Math.r
 /* 트레이드로 연봉을 떠안는 AI 구단의 상한 판단(11-15 커뮤니티 "다른 팀도 죄다 상한에 걸려 넘기지도 못한다"). 예전에는 상한을 1원이라도 넘기면 무조건 거절했다.
    이제 상한은 세금만 내면 넘길 수 있다(사용자 구단주 결재와 같은 절대 한도 capOwnerLim: 상한 +10%, 성적 우선·신뢰 70 이상 +15%). 그 안에서는 늘어나는 초과분에 낼 세금만큼 값을 더 요구하고(evalTrade),
    빚이 깊거나(현금 -30억 아래) 긴축 중인 구단은 상한을 넘겨 받지 않는다. pay: 거래 뒤 상위 40명, before: 지금 */
-function aiCapTake(tid,pay,before){ const t=team(tid); if(!t||tid===ME())return null; const cap=capOf(sponSeason()); pay=Math.round(pay); before=Math.round(before??0);
+function aiCapTake(tid,pay,before,s){ const t=team(tid); if(!t||tid===ME())return null; const cap=capOf(s??sponSeason()); pay=Math.round(pay); before=Math.round(before??0);
   if(!(pay>cap)||pay<=before)return null; const inc=pay-Math.max(cap,before), lim=Math.floor(cap*(1+capOwnerLim(t))), n=(t.capOver||0)+1;
   const tight=!t.indie&&((t.cash||0)<-3000||planOf(t)==='tight'), hard=pay>lim||tight;
   return {hard,tight:tight&&pay<=lim,pay,inc,over:pay-cap,lim,n,tax:Math.round(inc*capRate(n))}; }
@@ -92,7 +92,7 @@ const capPLabel=p=>p>=.7?'높음':p>=.4?'반반':'낮음';
 /* pay: 움직임 뒤 상한 합계, before: 움직임 전, s: 그 합계를 재는 시즌, key: 결재 건(선수·거래). 결재가 필요 없으면 null */
 function capOwnerCheck(pay,before,s,key){ if(G.unemp)return null; const t=team(G.user); if(!t||t.indie)return null; s=s??sponSeason(); const cap=capOf(s); pay=Math.round(pay); before=Math.round(before??0);
   if(!(pay>cap)||pay<=before)return null; /* 상한 안이거나 합계를 늘리지 않는 움직임은 결재가 필요 없다 */
-  const B=bossOf(G.user), who=B&&B.own?B.own.name+' 회장':'구단주'; const r=(pay-cap)/cap, L=capOwnerLim(t), lim=Math.floor(cap*(1+L)), n=(t.capOver||0)+1;
+  const B=bossPeek(G.user), who=B&&B.own?B.own.name+' 회장':'구단주'; const r=(pay-cap)/cap, L=capOwnerLim(t), lim=Math.floor(cap*(1+L)), n=(t.capOver||0)+1;
   const base={pay,before,cap,s,over:pay-cap,r,lim,L,n,who,key};
   const why=`${s}시즌 상위 40명 연봉이 ${money(pay)}으로 상한 ${money(cap)}을 ${money(pay-cap)}(${Math.round(r*100)}%) 넘습니다`;
   if(pay>lim)return {...base,ok:false,hard:true,p:0,msg:`구단주 승인 불가 · ${why}. ${who}은(는) 상한의 ${Math.round(L*100)}%(${money(lim)})를 넘는 지출은 어떤 경우에도 허락하지 않습니다${L<.15?' (성적 우선 구단주가 단장을 크게 신뢰하면 15%까지)':''}. 금액을 줄이거나 연봉이 많은 선수를 먼저 정리하세요.`};
