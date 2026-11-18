@@ -15,7 +15,7 @@ function mcfLive(){ const S=G.mcf; return S&&S.mid!=null&&S.mid===mcfMid()?S:nul
 /* 불러오기 정리(멱등): 감독이 이미 바뀐 상태는 비우고, 구단주 간섭 기록은 구단에 남긴다(#253) */
 function mcfMigrate(){ const S=G.mcf; if(!S)return; if(S.own&&S.own.y!=null&&!G.unemp){ /* 옛 저장은 감독별 상태에만 적었다: 그해 지금 구단 기록으로 옮긴다 */ const t=team(G.user); if(t&&!(t.ownMed&&t.ownMed.y>=S.own.y))t.ownMed={y:S.own.y,k:S.own.k}; }
   const F=S.fire; if(F&&F.k==='cond'&&!F.done&&!F.gt){ const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{}; F.g0=(F.g0||0)+(r.t||0); F.gt=1; } /* 옛 조건부 승인은 무승부를 세지 않았다: 지금까지의 무승부를 시작점에 더해 경기 수 기준으로 옮긴다 */
-  if(S.mid!==mcfMid())G.mcf=null; }
+  if(S.mid!==mcfMid())G.mcf=null; mcfAskFix(); }
 function mmem(m){ return m.mem=m.mem||{forced:0,slight:0,kept:0,broke:0,ign:0,warn:0}; }
 const mcfOn=()=>!G.unemp&&!G.gameOver&&G.mgr&&G.mgr[G.user]&&!G.mgr[G.user].interim;
 /* 감독의 고집: 단장 요구를 받아들이는 정도. 고집(ego)·관계·쌓인 강요·영입 면담 약속(경청)으로 정해진다 */
@@ -39,7 +39,7 @@ function mcfPlan(){ if(!mcfOn())return; const m=G.mgr[G.user], S=mcf(); if(S.pla
   const youthT=(m.youth||50)>=62; let need=null; try{ need=mgrNeedRole(G.user); }catch(e){}
   const ask=need?{k:need.k,l:MROLE[need.k].l}:null;
   const prev=S.plan&&S.plan.y===G.year-1?S.plan:null; /* 작년 구상을 기억한다: 같은 유망주·같은 문장을 되풀이하지 않게(플레이 테스트 11-13) */
-  S.plan={y:G.year,day:G.day,goal,yng:yng?yng.id:null,vet:vet?vet.id:null,youthT,ask,st:'open',items:[]};
+  S.plan={y:G.year,day:G.day,an:G.acqSeq||0,ids:playersOf(G.user).map(p=>p.id),tid:G.user,until:G.cal?G.cal.open+45:null,goal,yng:yng?yng.id:null,vet:vet?vet.id:null,youthT,ask,st:'open',items:[]};
   const V=(k,arr)=>arr[Math.floor(u01('mplan'+G.year+k,m.id||0)*arr.length)%arr.length];
   const again=yng&&prev&&prev.yng===yng.id;
   const nm=`${m.name} 감독`; const lines=[V('g',[`목표는 ${goal}입니다.`,`올해는 ${goal}을(를) 보고 갑니다.`,`솔직히 말씀드리면 ${goal}이(가) 현실적인 목표입니다.`]),
@@ -70,7 +70,7 @@ function mcfWantsUp(){ const L=playersOf(G.user).filter(p=>!p.e1&&(typeof canUp!
   if(typeof playerWantsUp==='function'){ let W=[]; try{ W=(playerWantsUp(G.user)||[]).map(x=>x&&x.p).filter(Boolean); }catch(e){} const ids=new Set(W.map(p=>p.id)); return L.filter(p=>ids.has(p.id)&&seasonTotal(p,G.year,'퓨처스')); } /* 선수 쪽 훅: playerWantsUp(tid) → [{p,t,gap,why,weeks,heat}] */
   return L.filter(p=>{ const h=seasonTotal(p,G.year,'퓨처스'); return h&&(p.isP?h.outs>=60&&pRate(h).era<=3.0:h.pa>=60&&bRate(h).ops>=.85); }); }
 function mcfAgenda(){ const m=G.mgr[G.user]; const S=mcf(); const X=mgrSit(); const d=depth(G.user); const A=[]; const nm=`${m.name} 감독`; mgrAttr(m);
-  /* 주전 부진 */ { const c=X.cold&&X.cold[0]; if(c&&c.h.pa>=80&&bRate(c.h).ops<.6){ const p=c.p, ops=bRate(c.h).ops; const oq=mgrOutReq(p); const keep=!oq&&(p.age>=30||m.ego>=60); /* 감독이 정리를 요청한 선수면 감독 입장은 '정리'다(피드백 11-18). 아직 답하지 않은 요청이 있으면 같은 질문을 또 하지 않는다 */ if(!(oq&&oq.st==='ask'))A.push({k:'slump:'+p.id,sc:(.64-ops)*25+1,pid:p.id,t:`${p.name} 부진(OPS ${fmt3(ops)}, ${c.h.pa}타석)`,
+  /* 주전 부진 */ { const c=(X.cold||[]).find(c=>c.h.pa>=80&&bRate(c.h).ops<.6&&mgrOutReq(c.p)?.st!=='ask'); if(c&&c.h.pa>=80&&bRate(c.h).ops<.6){ const p=c.p, ops=bRate(c.h).ops; const oq=mgrOutReq(p); const keep=!oq&&(p.age>=30||m.ego>=60); /* 감독이 정리를 요청한 선수면 감독 입장은 '정리'다(피드백 11-18). 아직 답하지 않은 요청이 있으면 같은 질문을 또 하지 않는다 */ if(!(oq&&oq.st==='ask'))A.push({k:'slump:'+p.id,sc:(.64-ops)*25+1,pid:p.id,t:`${p.name} 부진(OPS ${fmt3(ops)}, ${c.h.pa}타석)`,
       s:`${nm}: "${oq?`${p.name}은(는) 이미 정리를 말씀드린 선수입니다. 이번에는 내려 주십시오.`:keep?`${p.name}은(는) 해 온 선수입니다. 곧 올라옵니다. 빼면 더 무너집니다.`:`${p.name} 고민입니다. 단장님 생각은 어떻습니까?`}"`,o:[{l:'2군에서 재정비시키십시오',fx:oq?'말소 지시. 감독이 원하던 일입니다':'말소 지시. 감독이 반발할 수 있습니다',a:'down'},{l:'선발 출전을 줄이십시오',fx:'2주간 기용 순위를 낮춥니다',a:'less'},{l:'감독님 판단대로',fx:'그대로 기용',a:'none'}]}); } }
   /* 2군 콜업 요구 */ { const W=mcfWantsUp().sort((a,b)=>ovr(b)-ovr(a))[0]; if(W){ const h=seasonTotal(W,G.year,'퓨처스'); const want=(m.youth||50)>=62||mcfStake()===0; const line=W.isP?`2군 ${ipStr(h.outs)}이닝 ERA ${pRate(h).era.toFixed(2)}`:`2군 ${h.pa}타석 OPS ${fmt3(bRate(h).ops)}`;
       A.push({k:'up:'+W.id,sc:1.2+(W.age<=24?.4:0),pid:W.id,t:`${W.name} 콜업 요구(${line})`,s:`${W.name} 측이 1군 기회를 원합니다. ${nm}: "${want?'저도 한번 보고 싶습니다.':'지금 1군 자리는 성적 내는 선수 몫입니다. 2군 성적만으로는 모릅니다.'}"`,
@@ -85,16 +85,24 @@ function mcfAgenda(){ const m=G.mgr[G.user]; const S=mcf(); const X=mgrSit(); co
       if(it.k==='yng'){ const u=mcfUse(p)-(it.h0||0); if(u<(p.isP?30:25)){ A.push({k:'plan:'+p.id,sc:1.5+(it.esc||0)*.5,pid:p.id,it,t:`구상 약속 점검: ${p.name} 기용`,s:`개막 전 ${nm}은 ${p.name}에게 기회를 주기로 했지만 지금까지 ${p.isP?ipStr(u)+'이닝':u+'타석'}뿐입니다. ${nm}: "${mcfStake()>0?'지금은 이겨야 할 때입니다.':'기회를 보고 있었습니다.'}"`,
         o:[{l:'약속을 지키십시오',fx:'강하게 요구. 감독 관계 악화, 기용이 확실히 늘어납니다',a:'force'},{l:'성적이 우선입니다. 넘어가죠',fx:'약속을 접습니다',a:'drop'}]}); } } } }
   return A; }
+/* 회의 휴식은 기용 점수가 아니라 실제 등판 자격이다. 전임의 지시는 읽지 않는다. */
+function mcfPitchRest(p,day){ if(!p||G.unemp||p.team!==G.user)return false; const S=mcfLive(),f=S&&S.fav&&S.fav[p.id]; return !!(f&&f.why==='rest'&&f.until>=day&&(f.from==null||f.from<=day)); }
+function mcfRestCommit(p,h,o,m,S,tag){ S.fav[p.id]={v:-8,from:G.day,until:G.day+2,half:h,why:'rest'}; if((m.pen||50)>=58||(m.arm||50)>=58)m.rel=clamp(m.rel-2,0,100); return `${p.name} 휴식(${tag}).${o.coach?` 투수코치 ${o.coach}의 의견을 따랐습니다.`:''}`; }
+function mcfDropCommit(p,m,S){ const it=S.plan&&S.plan.items.find(x=>x.pid===p.id); if(it)it.done=true; delete S.fav[p.id]; mmem(m).ign++; return `약속을 접었습니다. ${m.name} 감독은 단장이 물러섰다고 기억합니다.`; }
 function mcfWeek(){ if(!mcfOn()||period()!=='season'||!G.cal||G.day<G.cal.open+6)return; const S=mcf(); try{ mcfMedia(); }catch(e){} try{ ownMeddle(); }catch(e){}
   if((G.evs||[]).some(e=>!e.done&&e.k==='magd'))return;
   const A0=mcfAgenda().filter(a=>{ const o=S.ag[a.k]; return a.sc>=1&&(!o||G.day-o.d>=35||a.sc>=o.sc*1.3); }).sort((a,b)=>b.sc-a.sc); /* 같은 안건은 4주 안에, 더 나빠지지 않으면 다시 올리지 않는다 */
   if(!A0.length)return; if(S.agLast&&G.day-S.agLast<=7&&A0[0].sc<1.8)return; /* 지난주에 회의했으면 급한 안건만 */ const A=A0.slice(0,A0[1]&&A0[1].sc>=2?2:1); S.agLast=G.day;
-  for(const a of A){ S.ag[a.k]={d:G.day,sc:a.sc}; evNew('magd',`주간 회의 안건: ${a.t}`,a.s,a.o.map(x=>({l:x.l,fx:x.fx})),{from:'감독실',def:a.o.length-1,exp:3,data:{a:a.o.map(x=>({a:x.a,cid:x.cid,coach:x.coach})),pid:a.pid,k:a.k,mid:S.mid}}); } }
+  for(const a of A){ S.ag[a.k]={d:G.day,sc:a.sc}; evNew('magd',`주간 회의 안건: ${a.t}`,a.s,a.o.map(x=>({l:x.l,fx:x.fx})),{from:'감독실',def:Math.max(0,a.o.findIndex(x=>x.a==='none'||x.a==='wait')),exp:3,data:{a:a.o.map(x=>({a:x.a,cid:x.cid,coach:x.coach})),pid:a.pid,k:a.k,mid:S.mid}}); } }
 function mcfOrder(m,push){ const r=mcfReact(m,push), M=mmem(m); if(r==='no'){ m.rel=clamp(m.rel-3,0,100); M.slight++; } else if(r==='half'){ m.rel=clamp(m.rel-1,0,100); M.forced++; } else M.kept++; return r; }
 function mcfAgdPick(e,i){ const m=G.mgr[G.user]; const S=mcf(); if(!m||m.interim||S.mid!==e.data.mid)return '감독이 바뀌어 안건이 무효가 됐습니다.'; const o=e.data.a[i]||{}; const p=G.players[e.data.pid]; const nm=`${m.name} 감독`; mgrAttr(m);
   if(o.a==='none'||o.a==='wait'){ if(o.a==='wait'&&p){ p.mor=clamp((p.mor??60)-2,0,100); } if(o.coach){ return `${nm}이 그대로 씁니다. 투수코치 ${o.coach}은(는) 말을 아꼈습니다.`; } m.rel=clamp(m.rel+.5,0,100); return o.a==='wait'?`${p?p.name+' ':''}기분 조금 하락. 다음 주에 다시 봅니다.`:`${nm}: "맡겨 주십시오."`; }
   if(o.a==='shop'){ const L=Object.values(G.players).filter(q=>q.team!=null&&q.team!==G.user&&q.aiListed&&q.isP&&isSPr(q)).sort((a,b)=>spV(b)-spV(a)).slice(0,3); return L.length?`시장에 나온 선발: ${L.map(q=>`${q.name}(${tshort(q.team)})`).join(', ')}. 트레이드 화면에서 확인하세요.`:'지금 매물로 나온 선발은 없습니다. 직접 문의해야 합니다.'; }
   if(!p||p.team!==G.user)return '선수가 우리 구단에 없습니다.';
+  if(o.a==='drop')return mcfDropCommit(p,m,S);
+  if(o.a==='down'){const why=entryDownWhy(p);if(why)return why;}
+  const up=o.a==='up'||o.a==='upsp',q=up?(o.a==='upsp'?G.players[o.cid]:p):null,plan=up?entryUpPlan(q):null;
+  if(up&&plan.why)return plan.why;
   if((o.a==='down'||o.a==='less')&&mgrOutReq(p)){ /* 감독이 정리를 원하던 선수: 같은 방향 지시는 그대로 받아들인다(피드백 11-18, 요청 메일·말소 건의와 같은 판정) */ if(o.a==='less'){ S.fav[p.id]={v:-3,until:G.day+14,half:false,why:'agd'}; return `${nm}: "저도 그렇게 생각합니다." ${p.name} 2주간 선발 출전 축소.`; }
     if(p.e1){ p.e1=false; p.downDay=G.day; try{ entryManage(G.user,false,true); }catch(x){} } mgrOutGrant(p,'down'); return `${nm}: "제가 말씀드린 대로입니다." ${p.name} 말소(${dmd(G.day+10)}부터 재등록 가능). 감독 관계 조금 개선.`; }
   const push=o.a==='force'?2:o.a==='rest'&&((m.pen||50)>=58||(m.arm||50)>=58)?1.2:o.a==='up'&&!((m.youth||50)>=62||mcfStake()===0)?1:o.a==='down'&&(p.age>=30||m.ego>=60)?1:.5;
@@ -103,16 +111,15 @@ function mcfAgdPick(e,i){ const m=G.mgr[G.user]; const S=mcf(); if(!m||m.interim
   const h=r==='half';
   if(o.a==='down'){ p.e1=false; p.downDay=G.day; try{ entryManage(G.user,false,true); }catch(x){} return `${p.name} 말소(${tag}).`; }
   if(o.a==='less'){ S.fav[p.id]={v:-3,until:G.day+14,half:h,why:'agd'}; return `${p.name} 2주간 선발 출전 축소(${tag}).`; }
-  if(o.a==='rest'){ S.fav[p.id]={v:-8,until:G.day+4,half:h,why:'rest'}; if((m.pen||50)>=58||(m.arm||50)>=58)m.rel=clamp(m.rel-2,0,100); return `${p.name} 휴식(${tag}).${o.coach?` 투수코치 ${o.coach}의 의견을 따랐습니다.`:''}`; }
-  if(o.a==='up'||o.a==='upsp'){ const q=o.a==='upsp'?G.players[o.cid]:p; if(!q||q.team!==G.user)return ''; if(typeof canUp==='function'&&!canUp(q))return `${q.name}은(는) 지금 올릴 수 없습니다.`; const ent=playersOf(G.user).filter(x=>x.e1); if(ent.length>=entryLimit()){ const d=depth(G.user); const core=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); const out=ent.filter(x=>x.isP===q.isP&&!core.has(x.id)).sort((a,b)=>ovr(a)-ovr(b))[0]; if(out){ out.e1=false; out.downDay=G.day; } else return `1군 엔트리에 자리가 없어 ${q.name}을(를) 올리지 못했습니다(내릴 비핵심 선수가 없음).`; }
-    q.e1=true; q.upDay=G.day; S.fav[q.id]=h?{v:-1.5,until:G.day+14,half:false,why:'grudge'}:{v:2.5,until:G.day+21,half:false,why:'up'}; /* 받아들였으면 3주는 1군에서 기회, 마지못해면 조용히 다시 내린다 */ return `${q.name} 콜업(${tag}).${h?' 감독은 올리긴 했지만 중요한 순간에는 잘 쓰지 않을 것 같습니다.':''}`; }
+  if(o.a==='rest')return mcfRestCommit(p,h,o,m,S,tag);
+  if(up){ if(plan.out){plan.out.e1=false;plan.out.downDay=G.day;}
+    q.e1=true; q.upDay=G.day; if(o.a==='upsp'){(G.prole=G.prole||{})[q.id]={k:'sp',tid:G.user,d:G.day};if(G.bprole)delete G.bprole[q.id];try{roleSync(G.user);}catch(x){}} S.fav[q.id]=h?{v:-1.5,until:G.day+14,half:false,why:'grudge'}:{v:2.5,until:G.day+21,half:false,why:'up'}; /* 받아들였으면 3주는 1군에서 기회, 마지못해면 조용히 다시 내린다 */ return `${q.name} 콜업(${tag}).${h?' 감독은 올리긴 했지만 중요한 순간에는 잘 쓰지 않을 것 같습니다.':''}`; }
   if(o.a==='force'){ S.fav[p.id]={v:5,until:dnum(G.year,12,31),half:h,why:'force'}; m.rel=clamp(m.rel-4,0,100); mmem(m).forced++; const it=S.plan&&S.plan.items.find(x=>x.pid===p.id); if(it){ it.h0=mcfUse(p); it.esc=(it.esc||0)+1; } return `${nm}: "${h?'...알겠습니다.':'약속은 약속이죠.'}" ${p.name} 기용을 늘립니다(${tag}). 감독 관계 악화.`; }
-  if(o.a==='drop'){ const it=S.plan&&S.plan.items.find(x=>x.pid===p.id); if(it)it.done=true; delete S.fav[p.id]; mmem(m).ign++; return `약속을 접었습니다. ${nm}은 단장이 물러섰다고 기억합니다.`; }
   return ''; }
 
 /* ---------- 4. 감독 언론 플레이 ---------- */
 function mcfMedia(){ const m=G.mgr[G.user]; if(!m||m.interim)return; const S=mcf(), M=mmem(m); if(S.media.d&&G.day-S.media.d<21)return; const X=mgrSit(); const st=X.streak||0;
-  const P=S.plan, askOpen=P&&P.ask&&G.cal&&G.day>G.cal.open+45&&!P.askDone&&!mcfAskMet(P); const refused=grants().filter(g=>g.by==='gm'&&!g.ok&&G.day-(g.d||0)<=60).length;
+  const P=S.plan, askOpen=P&&P.ask&&G.cal&&G.day>G.cal.open+45&&!P.askDone&&!mcfAskMet(P); const refused=grants().filter(g=>g.by==='gm'&&!g.ok&&(g.tid==null||g.tid===G.user)&&G.day-(g.d||0)<=60).length;
   const sty=typeof mgrTalkSty==='function'?mgrTalkSty(m):'calm'; const loud=(m.ego-50)/500+(sty==='media'?.05:sty==='fire'?.03:0)-(S.media.hush&&S.media.hush>G.day?.06:0);
   const why=M.forced>=2&&m.rel<55?'meddle':askOpen?'ask':refused&&st<=-3?'support':st<=-5?'thin':m.rel>=78&&st>=4?'praise':null; if(!why)return;
   const p=clamp(.04+loud+(why==='praise'?.03:0)+M.slight*.015+(m.rel<35?.05:0),0,.45); if(R()>=p)return; S.media={d:G.day,why,hush:S.media.hush};
@@ -121,7 +128,12 @@ function mcfMedia(){ const m=G.mgr[G.user]; if(!m||m.interim)return; const S=mcf
   if(why==='praise')return;
   evNew('mmedia',`${nm} 언론 발언 대응`,`${nm}이 기자들 앞에서 말했습니다. ${T} 기자들이 단장의 답을 기다립니다.`,[{l:'공개 반박',fx:'구단 입장은 지킵니다. 감독 관계 크게 하락, 불화설'},{l:'무시',fx:'말이 커지지 않으면 묻힙니다. 여론 소폭 하락'},{l:'공개 지지',fx:'감독 관계 상승. 성적이 계속 나쁘면 구단주가 책임을 묻습니다'},{l:'비공개 경고',fx:'감독 관계 소폭 하락. 고집 센 감독은 오히려 더 시끄러워집니다'}],{from:'홍보팀',def:1,exp:3,data:{why,mid:S.mid}});
   try{ ivRequest('mgr_media',{say:T,why}); }catch(e){} }
-function mcfAskMet(P){ if(!P||!P.ask)return true; return playersOf(G.user).some(q=>q.acq&&q.acq.d>=P.day&&roleOk(q,P.ask.k)); }
+/* 영입 때의 역할 충족을 보관한다. 이후 이적·능력 변화로 이행을 취소하지 않는다. */
+function mcfAskReceipt(P,p,a){ if(!P||!P.ask||!p||!a)return null; const tid=P.tid??G.user,until=P.until??(G.cal?G.cal.open+45:null); if(a.tid!==tid||(a.y!=null&&a.y!==P.y)||a.d<P.day||(until!=null&&a.d>until)||(P.an!=null?!(a.n>P.an):a.d<=P.day)||(P.ids||[]).includes(p.id)||!roleOk(p,P.ask.k))return null; return {id:p.id,d:a.d,n:a.n,k:P.ask.k,tid}; }
+function mcfAcquired(p,tid){ if(G.unemp||tid!==G.user||!p||p.team!==tid)return; const S=mcfLive(),P=S&&S.plan; if(!P||P.y!==G.year||tid!==(P.tid??G.user)||P.askReceipt)return; const r=mcfAskReceipt(P,p,p.acq); if(r)P.askReceipt=r; }
+function mcfAskFix(){ const S=mcfLive(),P=S&&S.plan; if(!P||P.y!==G.year||!P.ask||P.askReceipt)return 0; const tid=P.tid??G.user; for(const p of Object.values(G.players)){ if(p.team!==tid)continue; const r=mcfAskReceipt(P,p,p.acq); if(r){ P.askReceipt=r; return 1; } } return 0; }
+function mcfAskMet(P){ if(!P||!P.ask)return true; const tid=P.tid??G.user; if(P.askReceipt&&P.askReceipt.tid===tid&&P.askReceipt.k===P.ask.k)return true; return Object.values(G.players).some(p=>p.team===tid&&mcfAskReceipt(P,p,p.acq)); }
+
 function mcfMediaPick(e,i){ const m=G.mgr[G.user]; const S=mcf(); if(!m||m.interim||S.mid!==e.data.mid)return ''; prInit(); const t=team(G.user), M=mmem(m); const nm=`${m.name} 감독`;
   if(i===0){ m.rel=clamp(m.rel-7,0,100); G.pr.press=clamp(G.pr.press-2,0,100); t.trust=clamp(t.trust-1,0,100); news('언론',`${tshort(G.user)} 단장, ${nm} 발언 정면 반박`,'프런트와 현장의 불화가 수면 위로 올라왔습니다.',-2); return `집안싸움이 밖으로 새어 나갔습니다. 감독과 사이가 크게 틀어졌고, 언론과 구단주 시선도 조금 차가워졌습니다.`; }
   if(i===1){ G.pr.fan=clamp(G.pr.fan-1,0,100); return `팬 여론 조금 악화. ${nm}은 단장이 답하지 않았다고 기억합니다.`; }

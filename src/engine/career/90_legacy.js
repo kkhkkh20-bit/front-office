@@ -40,6 +40,8 @@ function legSeason(owners){ const L=G.last; if(!L||!L.order)return; const D=legE
     if(u&&owner?.endD)try{withRng(y*1009+tid*37,()=>legHonor(tid,k,n));}catch(e){} /* 마지막 결산으로 기준을 채운 퇴임 단장에게도 공로를 남긴다. 후속 기사는 주 난수를 쓰지 않는다. */
   }if(G.gmLegFinish?.y===y)delete G.gmLegFinish;legTrim(D);try{legOwnerOffer();}catch(e){} try{legStadOffer();}catch(e){} }
 function legOwners(){legTrack();const O={},St=G.gmSt||{};for(const t of G.teams){if(t.id===G.user&&!G.unemp){const J=G.gmJoin&&G.gmJoin.y===G.year&&G.gmJoin.tid===t.id?G.gmJoin:null;O[t.id]={k:legMeK(),n:legMeName(),u:1,w:J?.w||0,l:J?.l||0,ties:J?.t||0,psDone:!!J?.psDone};}else if(t.gm){const x=St[t.id],y=G.sea&&G.sea.y;const st=x&&x.k===t.gm.id&&x.y===y?x:null;O[t.id]={k:t.gm.id,n:t.gm.name,w:st?st.w0:0,l:st?st.l0:0,ties:st?st.t0||0:0,...(t.gm.interim?{i:1}:{})};}}return O;}
+/* 우승 결정 경기의 실제 단장을 저장한다. 결산 전 이직·복귀나 재처리로 덮어쓰지 않는다. */
+function legFinishOwners(){ if(!G.ps?.done)return null; const O=legOwners(), F=G.gmLegFinish?.y===G.year?G.gmLegFinish:(G.gmLegFinish={y:G.year,by:{}}); for(const [tid,o] of Object.entries(O))if(!F.by[tid])F.by[tid]={...o}; return F; }
 /* 구단별 지금 단장의 재임 시작점(그해 부임 때 팀 승패). 시즌 도중 단장이 바뀌면 떠난 단장에게 그때까지 승패를 남긴다(검수 131·132: 경질 전 정식 단장 몫이 대행·후임에게 넘어가거나 사라짐) */
 function legTrack(){ const S=G.sea; if(!S||!S.rec||!G.teams)return; const St=G.gmSt=G.gmSt||{}; const y=S.y??G.year, settled=!!(G.last&&G.last.y>=y)||G.gmRec?.y>=y; const over=G.ps&&G.ps.done&&!settled;
   for(const t of G.teams){ const me=t.id===G.user&&!G.unemp, g=t.gm; const cur=me?{k:legMeK(),n:legMeName(),u:1}:g?{k:g.id,n:g.name,i:!!g.interim}:null; const r=S.rec[t.id]||{w:0,l:0,t:0}; let x=St[t.id];
@@ -68,7 +70,7 @@ function legOwnerOffer(){ G.gmLeg=G.gmLeg||{hon:[],pres:null}; if(G.gmLeg.pres||
   return G.gmLeg.pres; }
 /* 답하기 전에 그 구단을 떠나면 제안은 끝난다: 소식함에 미결로 남지 않게(PR #4 검수) */
 function legPresVoid(tid,k){ const P=G.gmLeg&&G.gmLeg.pres; if(!P||P.ans!=null||P.tid!==tid||P.k!==k)return; /* 제안 기록은 그대로 두고(답은 legPresAns가 막는다) 소식함 미결 버튼만 닫는다 */ for(const m of (G.mail||[]))if(m.id===P.mid||(m.acts||[]).some(a=>a.a==='legPres')){ m.acts=(m.acts||[]).filter(a=>a.a!=='legPres'); m.read=true; m.imp=false; } }
-function legPresAns(v){ const P=G.gmLeg&&G.gmLeg.pres; if(!P||P.ans!=null)return '이미 답했습니다.';if(G.unemp||P.tid!==G.user||P.k!==legMeK())return '이전 구단 또는 전임 단장에게 온 제안이라 답할 수 없습니다.'; P.ans=v?1:0; P.ad=G.year;
+function legPresAns(v){ const P=G.gmLeg&&G.gmLeg.pres; if(!P||P.ans!=null)return '이미 답했습니다.';if(G.unemp||P.tid!==G.user||P.k!==legMeK())return '이전 구단 또는 전임 단장에게 온 제안이라 답할 수 없습니다.'; P.ans=v?1:0; P.ad=G.year; for(const m of G.mail||[])if(m.id===P.mid||(m.acts||[]).some(a=>a.a==='legPres')){m.acts=(m.acts||[]).filter(a=>a.a!=='legPres');m.imp=false;m.read=true;m.closed={label:'답변 완료',text:v?'제안을 수락했습니다.':'제안을 사양했습니다.'};G.stops=(G.stops||[]).filter(x=>x.id!==m.id);}
   try{ chron('gm',`${legMeName()} 단장, 구단주의 ${P.role} 제안을 ${v?'수락':'사양'}`,null,P.tid); }catch(e){}
   if(v)try{ news('구단',`${tshort(P.tid)} ${legMeName()} 단장, ${P.role}${P.role.startsWith('대표')?' 겸임':''}`,`${P.s}시즌 동안 구단을 이끈 ${legMeName()} 단장이 구단주의 제안을 받아들였습니다.`,1); }catch(e){}
   return ''; }
@@ -88,13 +90,13 @@ function legPeople(){ const M=new Map(); for(const x of legRec().L){ let p=M.get
   const L=[...M.values()]; L.forEach(p=>p.sc=legScore(p)); return L.sort((a,b)=>b.sc-a.sc||b.c-a.c||b.s-a.s); }
 (function(){
   const wrap=(name,after,before)=>{ try{ const f=eval(name); if(typeof f!=='function')return; const g=function(){ let b; if(before)try{ b=before.apply(this,arguments); }catch(e){} const r=f.apply(this,arguments); if(after)try{ after.call(this,r,arguments,b); }catch(e){} return r; }; eval(name+'=g'); }catch(e){} };
-  wrap('settlement',(r,a,b)=>legSeason(b),()=>{legEnsure();return legOwners();});
+  wrap('settlementCore',(r,a,b)=>legSeason(b),()=>{legEnsure();return legOwners();});
   /* 단장이 바뀐 날 경기 전에 재임 구간을 끊는다(사용자 결정은 날 사이에, AI 경질은 그날 일일 처리에서 일어난다) */
   wrap('processDay',null,()=>legTrack()); wrap('playDay',null,()=>legTrack()); wrap('psDay',null,()=>legTrack());
-  wrap('switchTeam',()=>legTrack(),function(tid){legEnsure();if(myCOver()){const g=team(tid)?.gm;if(g&&!g.interim){const F=G.gmLegFinish?.y===G.year?G.gmLegFinish:(G.gmLegFinish={y:G.year,by:{}});legTrack();const st=G.gmSt?.[tid],from=st&&st.k===g.id?st:null;F.by[tid]={k:g.id,n:g.name,endD:G.day,w:from?.w0||0,l:from?.l0||0,ties:from?.t0||0};}}});
-  wrap('archPlayer',(r,a)=>{const p=a[0],x=p&&G.arch?.[p.id];if(x&&p.fr)x.fr={...p.fr};});
+  wrap('switchTeam',()=>legTrack(),function(tid){legEnsure();if(myCOver()){const g=team(tid)?.gm;if(g&&!g.interim){const F=G.gmLegFinish?.y===G.year?G.gmLegFinish:(G.gmLegFinish={y:G.year,by:{}});legTrack();const st=G.gmSt?.[tid],from=st&&st.k===g.id?st:null;if(!F.by[tid])F.by[tid]={k:g.id,n:g.name,endD:G.day,w:from?.w0||0,l:from?.l0||0,ties:from?.t0||0};}}});
+  wrap('archPlayer',(r,a)=>{const p=a[0],x=p&&G.arch?.[p.id];if(x&&p.fr)x.fr={...p.fr};if(x)meTradeAgeMigrate();});
   /* 맡은 구단을 떠나는 모든 길(이직·사임·경질·계약 만료·세대 교체)이 지나는 곳 */
-  wrap('myCClose',(r,a,b)=>{if(b?.tid!=null){const D=legEnsure();for(const x of D.L)if(x.k===b.k&&x.t===b.tid&&!x.endD)x.endD=G.day;legHonor(b.tid,b.k,b.n);legPresVoid(b.tid,b.k);}},()=>{legEnsure();const tid=G.myC&&G.myC.tid,J=G.gmJoin;if(tid!=null&&myCOver()&&!(J&&J.y===G.year&&J.tid===tid&&J.psDone)){const F=G.gmLegFinish?.y===G.year?G.gmLegFinish:(G.gmLegFinish={y:G.year,by:{}});F.by[tid]={k:legMeK(),n:legMeName(),u:1,w:J?.w||0,l:J?.l||0,ties:J?.t||0,endD:G.day};}return {tid,k:legMeK(),n:legMeName()};});
+  wrap('myCClose',(r,a,b)=>{if(b?.tid!=null){const D=legEnsure();for(const x of D.L)if(x.k===b.k&&x.t===b.tid&&!x.endD)x.endD=G.day;legHonor(b.tid,b.k,b.n);legPresVoid(b.tid,b.k);}},()=>{legEnsure();const tid=G.myC&&G.myC.tid,J=G.gmJoin;if(tid!=null&&myCOver()&&!(J&&J.y===G.year&&J.tid===tid&&J.psDone)){const F=G.gmLegFinish?.y===G.year?G.gmLegFinish:(G.gmLegFinish={y:G.year,by:{}});if(!F.by[tid])F.by[tid]={k:legMeK(),n:legMeName(),u:1,w:J?.w||0,l:J?.l||0,ties:J?.t||0,endD:G.day};else if(F.by[tid].k===legMeK())F.by[tid].endD=G.day;}return {tid,k:legMeK(),n:legMeName()};});
 })();
 
 /* ===== 내 이름의 구장 (장기 기획 11-11) =====
