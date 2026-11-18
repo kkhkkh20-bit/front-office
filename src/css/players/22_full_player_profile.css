@@ -366,31 +366,44 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview:has(.pf-career.pf-off) .pf-fm-info.pf-ident{grid-area:1/5/4/6}
   #sheet .pf-overview:has(.pf-fm-info.pf-ident.pf-off) .pf-career{grid-area:1/5/4/6}
 }
-/* 인물 카드 얼굴 크게(카페 고기고 11-18 "선수 정보 창에서 사진이 작게 나온다"). 1600px 이상은 계약 상자가 카드 아래로 오면서(11-17) 카드가 낮아져
-   세로 flex에서 사진 칸이 52px까지 눌렸다. 사진은 왼쪽 위 큰 칸, 현재 능력·잠재력은 사진 오른쪽에 위아래로. 등번호·구단은 사진 위 배지.
-   첫 줄 높이는 현재 능력·잠재력 높이(약 140px) 이상, 카드에 남는 높이가 있으면 최대 clamp(150px,19vh,200px)까지 사진이 커진다. 연봉 줄은 한두 줄로 */
-@media(min-width:1600px){
-  #sheet .pf-overview .pf-fmcard{display:grid!important;grid-template-columns:clamp(128px,8.4vw,150px) minmax(0,1fr);grid-template-rows:minmax(auto,clamp(150px,19vh,200px)) repeat(4,auto);grid-template-areas:"face key" "name name" "stats stats" "role role" "pay pay";align-content:start;gap:6px 0}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-face{grid-area:face;min-height:0;height:auto;max-height:none;padding:0;display:block;overflow:hidden;background:linear-gradient(160deg,var(--pt,var(--team-dk,#1a2430)),#0d1217 85%)}
-  #sheet .pf-overview .pf-fmcard .pf-fm-face>.av{position:absolute;inset:0;width:100%;height:100%;max-height:none;max-width:none;margin:0;aspect-ratio:auto;object-fit:cover;object-position:50% 8%;border:0;border-radius:0;background:none}
-  #sheet .pf-overview .pf-fmcard .pf-fm-face>.av.ini{display:grid;place-items:center;font-size:44px}
-  #sheet .pf-overview .pf-fmcard .pf-fm-face::after{height:28%}
-  #sheet .pf-overview .pf-fmcard .pf-fm-no{left:6px;top:6px;padding:2px 6px;border-radius:4px;background:rgba(5,8,12,.62);font-size:var(--ui-title);line-height:1.1}
-  #sheet .pf-overview .pf-fmcard .pf-fm-team{right:6px;top:6px;line-height:0}
-  #sheet .pf-overview .pf-fmcard .pf-fm-face>.ph-pen{right:6px;bottom:6px;width:28px;height:28px}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-key{grid-area:key;grid-template-columns:minmax(0,1fr);align-content:center;gap:5px;padding:6px 8px 0}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-key>div{padding:4px 2px;gap:1px}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-key b{line-height:1.05}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-key b.pf-fm-pot,#sheet .pf-overview .pf-fmcard>.pf-fm-key .current-rating-stars{font-size:13px;line-height:1.3}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-role{line-height:1.3}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-stats>div{padding-block:3px}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-key .pf-rg-s{display:inline;margin-left:3px;font-size:11px}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-pay{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 8px;padding-bottom:8px}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-pay>small{white-space:nowrap}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-name{grid-area:name}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-stats{grid-area:stats}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-role{grid-area:role}
-  #sheet .pf-overview .pf-fmcard>.pf-fm-pay{grid-area:pay}
+/* 인물 카드 얼굴 크게(카페 고기고 11-18 "선수 정보 창에서 사진이 작게 나온다", 구단주 11-18 "가운데 정렬, 더 크게"). PC 전체(1100px 이상) 같은 모양:
+   사진은 카드 폭 가득 채운 가운데 머리(구단주 11-18 "사진이 가득 차야 해": cover, 위쪽 기준으로 얼굴·상체를 남기고 아래를 자름), 등번호·구단은 사진 위 모서리 배지, 연필은 사진 오른쪽 아래. 이름·나이, 현재 능력·잠재력(좌우)은 사진 아래.
+   1600px 이상은 계약 상자가 카드 아래로 오면서(11-17) 카드가 낮아져 사진이 52px까지 눌렸다: 아래 줄(올해 성적·역할·연봉)을 한 줄씩으로 줄이고,
+   사진 칸이 남는 높이를 모두 쓴다(최대 clamp(190px,30vh,320px), 최소 120px) */
+@media(min-width:1100px){
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card){display:flex!important;flex-direction:column;gap:6px}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>*{flex:none}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-face{flex:1 1 0;min-height:120px;height:auto;max-height:clamp(190px,30vh,320px);padding:0;display:block;overflow:hidden;background:linear-gradient(160deg,var(--pt,var(--team-dk,#1a2430)),#0d1217 85%)}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face>.av{position:absolute;inset:0;width:100%;height:100%;max-height:none;max-width:none;margin:0;aspect-ratio:auto;object-fit:cover;object-position:50% 0;border:0;border-radius:0;background:none}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face>.av.ini{display:grid;place-items:center;font-size:56px}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face::after{height:22%}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-no{left:8px;top:8px;padding:2px 7px;border-radius:4px;background:rgba(5,8,12,.62);line-height:1.1}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-team{right:8px;top:8px;line-height:0}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face>.ph-pen{right:8px;bottom:8px;width:30px;height:30px}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-name{gap:0;line-height:1.25}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-key>div{padding:4px 2px;gap:1px}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-key b{line-height:1.05}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-key b.pf-fm-pot,#sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-key .current-rating-stars{font-size:13px;line-height:1.3}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-key .pf-rg-s{display:inline;margin-left:3px;font-size:11px}
+  /* 올해 성적: 이름과 숫자를 한 줄로 */
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-stats>div{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 4px;padding:3px 2px}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-stats b{font-size:15px;line-height:1.2}
+  /* 역할·장래 예상·학력: 한 문단(가운데 점으로 잇기) */
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-role{display:block;line-height:1.35;font-size:11.5px}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-role>*{display:inline}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-role>span::before{content:" · "}
+  /* 연봉·계약·비교에 담기: 한 줄(좁으면 두 줄) */
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-pay{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 8px;padding-bottom:8px;line-height:1.3}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-pay>small{white-space:nowrap}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-pay>.tc-i{min-height:24px;padding-block:1px}
+}
+/* 1600px 이상·높이 1000px 미만(1600×900 등): 아래 줄 높이 31vh → 28vh. 인물 카드(위 두 줄)에 약 27px을 돌려 사진을 180px 이상으로(구단주 11-18) */
+@media(min-width:1600px) and (min-height:850px) and (max-height:999px){
+  #sheet .pf-overview :is(.pf-season-table,.pf-pos-mini,.pf-pitch-head,.pf-career,.pf-ctc){max-height:clamp(170px,28vh,340px)}
+  #sheet .pf-overview .pf-season-table{min-height:clamp(170px,28vh,340px)!important}
+  /* 능력 차트 칸이 내용보다 낮으면 가운데 정렬이 제목을 위로 밀어 잘랐다: 넘칠 때는 위부터 */
+  #sheet .pf-overview .pf-radar{justify-content:safe center}
+  #sheet .pf-overview .pf-radar .radar{min-height:170px}
 }
 /* 휴대폰·좁은 화면 머리말: 사진이 연필 버튼 틀(.ph-w)에 싸이면서 위 112px 규칙(.pf-name>img)이 빠져 84px로 작아졌다. 틀 안 사진도 크게 */
 @media(max-width:1099px){.pf-screen .pf-name>.ph-w>img.av.big{width:clamp(96px,28vw,112px);height:clamp(96px,28vw,112px);border-radius:8px;object-fit:cover;object-position:50% 10%;border:1px solid var(--pt2,var(--line2))}}
