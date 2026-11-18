@@ -9512,6 +9512,10 @@ T('[검수 #1018] 정상기기갱신은 지난서버거절을 지우고 연결�
 T('[검수 #1019] 실제 그만두기 동작은 해당 리그 종료를 알리고 로컬 경력은 보존한다 [래더자동추가검수]',()=>{const src=__ladderLive1019Ui(),A0={},L={net:1,nk:'world.quit1019'},U={league:L,car:{w:83,l:59},hist:[{id:1}],last:{id:0}},raw=JSON.stringify([U.car,U.hist,U.last]),calls=[];const api=new Function('A','uld','confirm','ulLiveEnd','save','render','G',src+';return A;')(A0,()=>U,()=>true,x=>{calls.push(x);return true;},()=>{},()=>{},{});api.ulQuit();ok(calls.length===1&&calls[0]===L&&!U.league,'실제 그만두기의 종료 통지 또는 리그 정리가 누락');ok(JSON.stringify([U.car,U.hist,U.last])===raw,'그만두기가 기존 경력과 결과를 변경');});
 T('[검수 #1020] 진행 보고 단계는 준결승 전과 1차 준결승 완료 결승 전 결승 완료를 구분한다 [래더자동추가검수]',()=>{const src=__ladderPhase1020Ui(),phase=new Function('A','setInterval','setTimeout','document',src+';return ulLivePhase;')({},()=>{},()=>{},{addEventListener(){}}),L={next:45,sched:Array(45),post:{next:0}},got=[];for(let n=0;n<4;n++){L.post.next=n;got.push(phase(L));}ok(got.map(x=>x.stage).join(',')==='semi-ready,semi-one-done,final-ready,complete','완료한 시리즈별 진행 단계가 같음');ok(got.every((x,i)=>x.postDone===i&&x.postTotal===3),'시리즈 진행 수가 잘못됨');L.post=null;ok(phase(L).stage==='regular-done','정규 완료/준결승 전 단계가 빠짐');});
 
+/* Async UI and request/ack regression coverage: node tools/check-uladder-manual.cjs.
+   Actual Worker/day/OFF atomicity coverage: node --test tools/test/ladder-manual-1008.test.cjs. */
+T('[검수 #1014~1015] 직접 등록 일자는 전달받은 요청 시각으로 기록하고 다음 한국 날짜를 소모하지 않는다 [래더자동검수]',()=>{const before=JSON.stringify(G.uld),t=Date.UTC(2026,10,18,14,59,59),C=FrontOfficeCore;try{uld();G.uld.ar={};ulAutoManual('now',[17,19],t);ok(G.uld.ar.man===C.ulDayId(t)&&!C.ulManOk(G.uld.ar,t)&&C.ulManOk(G.uld.ar,t+2000),'직접등록 한국 날짜');ok(JSON.stringify(G.uld.ar.drop)==='[17,19]','제외 선수 유지');ulAutoManual('alb:77',[17],t);ok(G.uld.ar.drop.length===0,'앨범에 1군 제외선수 전이');}finally{G.uld=before?JSON.parse(before):undefined;}});
+
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
