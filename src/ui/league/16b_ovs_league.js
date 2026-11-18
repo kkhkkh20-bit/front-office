@@ -3,9 +3,10 @@
 const ovsAwPills=(L,lg)=>(L&&L.aw||[]).map(k=>`<span class="pill warn">${esc(ovsAwNm(k,lg))}</span>`).join(' ');
 function ovlView(){ if(!G.ovl||OVL_LGS.some(l=>!G.ovl[l]))return csec('해외 리그','<p class="small muted">다음 날짜 진행 때 해외 리그 기록이 시작됩니다.</p>');
   { const I=UI.it=UI.it||{}, o=I.ovlv; if(['MLB','AAA','NPB'].includes(o)){ I.ovlv='stand'; I.ovls=o; } else if(o==='etc'){ I.ovlv='stand'; I.ovls=I.ovle==='LMB'?'LMB':'CPBL'; } } /* 예전 탭(리그별 5개) → 순위 한 탭(해외 활성화 2-4) */
-  const t=inTabs('ovlv',[['alum','KBO 출신'],['top','주목 선수'],['stand','순위'],['champ','역대 우승'],['moves','진출 기록']],'alum');
+  const t=inTabs('ovlv',[['alum','KBO 출신'],['top','주목 선수'],['world','세계 선수'],['stand','순위'],['champ','역대 우승'],['moves','진출 기록']],'alum');
   if(t.cur==='stand'){ const e=inTabs('ovls',[['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['CPBL','CPBL'],['LMB','멕시코리그']],'MLB'); return t.bar+e.bar+ovlStandView(e.cur); }
   if(t.cur==='top')return t.bar+ovlTopView();
+  if(t.cur==='world')return t.bar+ovlWorldView(); /* 세계척도 P2·P3: 해외 구단 주목 선수(16d_world_view) */
   if(t.cur==='champ')return t.bar+ovlChampView();
   if(t.cur==='moves')return t.bar+abroadView();
   return t.bar+ovlAlumView(); }
@@ -81,7 +82,7 @@ function ovlChampView(){ const K=['MLB','AAA','NPB','CPBL','LMB'], H=K.map(lg=>G
 const ovqWatched=id=>{ try{ return ovwOn(id)||fwatchOn(id); }catch(e){ return false; } };
 function ovqWhyShort(w){ w=String(w||''); if(!w)return ''; const y=w.match(/(\d{4})년부터/); return /12월 1일/.test(w)&&/교체/.test(w)?'교체 소진 · 12월 1일부터':/12월 1일/.test(w)?'12월 1일부터 문의':/개막 뒤/.test(w)?'시즌 중 교체 기간에 문의':y?`${y[1]}년부터 문의`:/MLB/.test(w)?'MLB에서 뛰는 중':/세라/.test(w)?'나이 많음':/보류권/.test(w)?'다른 구단 보류권':/시즌을 마친 뒤/.test(w)?'첫 해외 시즌 뒤':/다음 겨울/.test(w)?'다음 겨울에 문의':'문의 불가'; }
 function ovqBtns(id,cls){ if(G.unemp)return ''; let t=null, why=''; try{ t=ovqTarget(id); why=t?ovqWhy(G.user,id):''; }catch(e){ return ''; } if(!t)return '';
-  const on=fwatchIntent(id), v=esc(String(t.id)), ask=t.k==='mkt'?'영입 협상':'영입 문의';
+  const on=fwatchIntent(id), v=esc(String(t.id)), ask=t.k==='mkt'?'영입 협상':'영입 문의'; if(t.k==='wps')return `<span class="ovq-acts${cls?' '+cls:''}"><button class="tc-i ovq-b${on?' on':''}" data-a="ovwT" data-v="${v}" aria-pressed="${on}">${on?'관찰 해제':'관찰 등록'}</button></span>`; /* 세계 주목 선수: 관찰만(영입 경로는 P4) */
   return `<span class="ovq-acts${cls?' '+cls:''}"><button class="tc-i ovq-b${on?' on':''}" data-a="ovwT" data-v="${v}" aria-pressed="${on}" title="${on?'관찰을 그만둡니다':'관찰 명단에 올립니다'}">${on?'관찰 해제':'관찰 등록'}</button><button class="tc-i ovq-b${why?' off':''}" data-a="ovqAsk" data-v="${v}" title="${esc(why||(t.k==='mkt'?'외국인 영입 협상 창을 엽니다':'외국인 시장으로 불러 영입 협상 창을 엽니다'))}">${ask}</button></span>`; }
 function ovqRowActs(id){ const b=ovqBtns(id); if(!b)return ''; let w=''; try{ w=ovqWhy(G.user,id); }catch(e){} return `<span class="ovq-row">${b}${w?`<span class="small muted">${esc(ovqWhyShort(w))}</span>`:''}</span>`; }
 function ovqTeamBtn(lvl,c,label){ const k=ovlKey(lvl); if(!OVL_C[k]||c==null||c<0||lvl==='NPB 2군')return esc(label||''); return `<button class="lnk ovq-tm" data-a="ovlTeam" data-v="${k}:${c}" title="${esc(ovlNm(k,c))} 순위 보기">${esc(label||ovlNm(k,c))}</button>`; }
