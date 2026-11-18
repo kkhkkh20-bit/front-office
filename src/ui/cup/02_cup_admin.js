@@ -102,7 +102,7 @@ async function admRunAll(cfg,ents,drop,prog){ const C=FrontOfficeCore, N=cfg.tea
   const lab=h=>{ const e=ents2[h]; return e.ai?e.name:`${e.name} ${e.year}`; };
   const stats={L:{bat:{},pit:{}},P1:{bat:{},pit:{}},P2:{bat:{},pit:{}},P3:{bat:{},pit:{}},PS:{bat:{},pit:{}}};
   const add=(T,res,labs)=>{ for(const g of res.games){ for(const b of g.stats.bat){ const t=T.bat[b.key]||(T.bat[b.key]={key:b.key,team:labs[b.k],name:b.name,g:0}); t.g++; for(const k of ['pa','ab','h','d','tr','hr','bb','hbp','sf','rbi','r','sb','so'])t[k]=(t[k]||0)+(b[k]||0); }
-    for(const p of g.stats.pit){ const t=T.pit[p.key]||(T.pit[p.key]={key:p.key,team:labs[p.k],name:p.name,g:0}); t.g++; for(const k of ['outs','h','bb','so','r','er','hr','w','l','sv','gs'])t[k]=(t[k]||0)+(p[k]||0); } } };
+    for(const p of g.stats.pit){ const t=T.pit[p.key]||(T.pit[p.key]={key:p.key,team:labs[p.k],name:p.name,g:0});if(t.g&&t.hbp==null||p.hbp==null||p.bbMixed)t.bbMixed=true;t.g++; for(const k of ['outs','h','bb','hbp','so','r','er','hr','w','l','sv','gs'])t[k]=(t[k]||0)+(p[k]||0); } } };
   const keep=(id,title,a,b,res)=>{ recs[id]={title,a:lab(a),b:lab(b),g:res.games.map(g=>[g.sa,g.sb,g.inn||9,g.walk?1:0]),games:res.games.map(g=>({sa:g.sa,sb:g.sb,log:g.log,bat:g.bat,pit:g.pit,line:g.line}))}; };
   const slim=g=>({sa:g.sa,sb:g.sb,walk:!!g.walk,inn:g.inn||9,lc:g.lc||0,mvp:g.mvp||null});
   for(let i=0;i<sched.length;i++){ const s=sched[i], a=keys[s.a], b=keys[s.b]; const o={cup:cfg.id,round:'L'+s.r,match:s.id,best:cfg.meet||3,all:1,tie:1,home:s.home,ri:[cnt[s.a],cnt[s.b]]};

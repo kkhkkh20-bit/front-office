@@ -4,8 +4,12 @@
 function pcH(g,k,s){ const t='pc'+g.day+':'+g.home+':'+k+':'+s; let h=2166136261; for(let i=0;i<t.length;i++){ h^=t.charCodeAt(i); h=Math.imul(h,16777619); } h^=h>>>13; h=Math.imul(h,1274126177); h^=h>>>16; return (h>>>0)/4294967296; } /* 고르게 퍼진 고정 난수 */
 /* 병살 경로(사용자 11-17: 여러 병살 코스). [잡은 수비수, 2루 중계(없으면 직접 밟음), 표기, 1루 받는 선수]. 같은 항목을 여러 번 넣어 흔한 경로를 자주 */
 function dpPats(){ return [['SS','2B','6-4-3','1B'],['SS','2B','6-4-3','1B'],['SS','2B','6-4-3','1B'],['SS',null,'6-3','1B'],['2B','SS','4-6-3','1B'],['2B','SS','4-6-3','1B'],['2B',null,'4-3','1B'],['3B','2B','5-4-3','1B'],['3B','2B','5-4-3','1B'],['1B','SS','3-6-3','1B'],['1B','SS','3-6-1','P'],['P','SS','1-6-3','1B']]; }
+/* 기록된 최초 처리 야수에 맞춘 표준 경로. 야수 기록도 없으면 숫자 경로를 사실처럼 읽지 않는다. */
+function pcDpPat(g,k){const f=gamePA(g.pbp[k]).fielder,p=dpPats().find(p=>p[0]===f);return p?{start:p[0],pivot:p[1],label:p[2],first:p[3],known:true}:{start:'SS',pivot:'2B',label:'',first:'1B',known:false};}
 /* 안타 타구 모양(사용자 11-17: 라디오 중계처럼 정확하게). 해설 문장과 3D 화면이 같은 결정을 쓴다: 각도 th(음수=왼쪽), 거리 r(cPolar 칸), 뜬공 arc, 땅볼 gb, 해설 구절 */
 function hitShape(g,k,o){ const h=t=>pcH(g,k,t), j=h('hsj')*2-1;
+  const fact=gamePA(g.pbp[k]);if(fact.bunt==='hit')return {th:fact.fielder==='1B'?35:-35,r:13,arc:false,gb:true,c:'짧게 댄 번트, 1루 세이프! 번트 안타'};
+  if(['1B','2B','3B'].includes(o)&&PC_POS[fact.fielder]&&fact.bipType){const th=({P:0,C:0,'1B':37,'2B':17,SS:-17,'3B':-37,LF:-29,CF:0,RF:29})[fact.fielder],gb=fact.bipType==='GB',arc=['FB','PU'].includes(fact.bipType),how=gb?'땅볼':fact.bipType==='LD'?'직선 타구':'뜬 타구';return {th,r:o==='3B'?87:o==='2B'?78:58,arc,gb,c:`${PC_POS[fact.fielder]} 쪽 ${how}${o==='1B'?' 안타':''}`};}
   if(o==='2B'){ const where=pcPick(g,k,'t2',['lc','rc','lc','rc','ll','rl','wall']), kind=h('t2a');
     if(where==='lc'||where==='rc'){ const sd=where==='lc'?-1:1, side=where==='lc'?'좌중간':'우중간'; return kind<.5?{th:sd*(15+j*4),r:78+h('t2r')*8,arc:false,gb:false,c:pcPick(g,k,'t2l',[`빨랫줄 같은 타구가 ${side}을 가릅니다`,`쭉 뻗는 라인드라이브, ${side}을 꿰뚫습니다`])}:{th:sd*(15+j*4),r:80+h('t2r')*8,arc:true,gb:false,c:`높이 뜬 타구, ${side} 깊숙한 곳에 떨어집니다`}; }
     if(where==='ll'||where==='rl'){ const sd=where==='ll'?-1:1, base=where==='ll'?'3루':'1루', line=where==='ll'?'좌익선상':'우익선상'; return kind<.55?{th:sd*(41+j*2),r:66+h('t2r')*8,arc:false,gb:true,c:`${base} 선상을 타고 빠지는 타구, ${line} 끝까지 굴러갑니다`}:{th:sd*(40+j*2),r:66+h('t2r')*8,arc:false,gb:false,c:`${line}에 떨어지는 날카로운 타구`}; }
@@ -59,19 +63,22 @@ function pbpCallBase(g,k){ const L=g.pbp, x=L[k]; if(!x)return {c:'',a:''}; cons
       const sea=seasonAt(g,k,x[1],false),n=sea?sea.hr+1:0;a=n?`시즌 ${n}호 홈런입니다.`:'';if(today.hr>=1)a+=` 오늘만 ${today.hr+1}번째 홈런, 멀티 홈런 경기입니다.`;break; }
     case '3B': c=`${BN}, ${hitShape(g,k,'3B').c}! 3루까지 달립니다. 3루타!`; a=b&&b.r.spd>=62?'발이 빠르니까 3루까지 가능한 타구였습니다.':''; break;
     case '2B': c=`${BN}, ${hitShape(g,k,'2B').c}! 2루타.`; break;
-    case '1B':{ const inf=b&&b.r.spd>=64&&pcH(g,k,'if')<.25; c=inf?`${BN}, ${fld(pk('ip',['SS','3B','2B']))} 쪽 느린 땅볼, 1루 세이프! 내야 안타.`:`${BN}, ${hitShape(g,k,'1B').c}.`; break; }
+    case '1B':{const fact=gamePA(x);const inf=!fact.bunt&&!fact.bipType&&b&&b.r.spd>=64&&pcH(g,k,'if')<.25; c=inf?`${BN}, ${fld(pk('ip',['SS','3B','2B']))} 쪽 느린 땅볼, 1루 세이프! 내야 안타.`:`${BN}, ${hitShape(g,k,'1B').c}.`; break; }
     case 'BB': if(lastPitch){c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pitches.length===4?'스트레이트 볼넷.':lastPitch.s===2?'풀카운트 끝에 볼넷.':'볼넷으로 걸어 나갑니다.'}`;if(loaded)a='투수에게 가장 뼈아픈 실점입니다.';break;}c=loaded?`${BN}, 볼넷! 밀어내기로 1점이 들어옵니다.`:`${BN}, ${pk('bb',['볼넷으로 걸어 나갑니다.','풀카운트 끝에 볼넷.','공 네 개가 모두 빠집니다. 스트레이트 볼넷.','끈질기게 커트하더니 볼넷을 얻어 냅니다.'])}`; if(loaded)a='투수에게 가장 뼈아픈 실점입니다.'; break;
     case 'K':{ const best=p?pcBest(p):''; const look=lastPitch?lastPitch.res==='루킹 삼진':pcH(g,k,'kl')<.28; c=lastPitch?`${BN}, ${lastPitch.t}에 ${look?'루킹':'헛스윙'} 삼진!`:look?`${BN}, ${pk('kl2',['바깥쪽 꽉 찬 공에 그대로 서서 삼진!','몸쪽 꽉 찬 직구에 루킹 삼진!'])}`:`${BN}, ${best&&pcH(g,k,'kb')<.6?`결정구 ${best}에 `:''}헛스윙 삼진!`;
       const pt=pcPitToday(g,k,x[2]); if(pt.so+1>=6)a=`${PN}, 오늘 벌써 ${pt.so+1}번째 탈삼진입니다.`; else if(pcHand(b,p)&&pcH(g,k,'hh')<.5)a=`${pcHand(b,p)} 승부, 타자가 불리한 싸움이었습니다.`; break; }
-    case 'DP':{ const pat=pk('dp',dpPats()); c=`${BN}, ${fld(pat[0])} 정면 땅볼! ${pat[1]?`${PC_POS[pat[1]]} ${pcFielder(g,half,pat[1],k)||''}에게, ${pat[3]==='P'?'다시 1루 커버 들어온 투수에게':'다시 1루로'}`:'직접 2루를 밟고 1루로'}! ${pat[2]} 병살!`; a=p&&gbT(p)>.6?`${PN}은(는) 땅볼 유도형 투수입니다. 원하던 그림이 나왔습니다.`:pk('dpa',['한 번에 불이 꺼집니다.','공격 흐름이 완전히 끊겼습니다.']); break; }
+    case 'DP':{const pat=pcDpPat(g,k);c=pat.known?`${BN}, ${fld(pat.start)} 정면 땅볼! 2루와 1루에서 아웃, ${pat.label} 병살!`:`${BN}, 땅볼 병살! 선행 주자와 타자가 모두 아웃됩니다.`; a=p&&gbT(p)>.6?`${PN}은(는) 땅볼 유도형 투수입니다. 원하던 그림이 나왔습니다.`:pk('dpa',['한 번에 불이 꺼집니다.','공격 흐름이 완전히 끊겼습니다.']); break; }
     case 'SAC':{ c=`${BN}, 희생번트! 주자를 ${pre.bases[1]?'2·3루':'2루'}로 보냅니다.`; const m=mgrOf(atT); if(m&&!m.interim&&m.small>=62)a=`${m.name} 감독다운 작전입니다. 한 점을 짜내겠다는 뜻입니다.`; break; }
-    case 'OUT':{ if(x[16]){ const fm=(x[14]||[])[0]; c=`${BN}, 번트 실패! ${pcName(g,x[16])}, ${fm?fm.to:2}루에서 포스아웃. 타자는 1루에 남습니다.`; a='작전이 어긋났습니다.'; break; } /* 번트 실패 포스아웃(검수 11-08) */ if(batAfter){ const ep=pcErrPos(g,k)||pk('ep',['SS','3B','2B']); c=`${BN}, ${fld(ep)}의 실책! 타자 주자 1루에 살아 나갑니다.`; a='수비에서 나온 실수가 아쉽습니다.'; break; }
-      if(runs>0&&(x[13]||x.length<=10)){ c=`${BN}, ${fld(pk('sf',['LF','CF','RF']))} 쪽 뜬공, 3루 주자 홈인! 희생플라이로 ${runs}점.`; break; }
-      if(runs>0){ c=`${BN}, ${fld(pk('gp',['SS','2B','3B','1B']))} 땅볼! 1루에서 아웃되는 사이 3루 주자 홈인, ${runs}점.`; break; } /* 득점 땅볼은 희생플라이가 아니다: 엔진 기록(희생플라이 칸)대로(검수 11-08) */
-      const r=pcH(g,k,'ot'), gb=p?gbT(p)*.08:0; if(r<.45+gb){ const pos=pk('gp',['SS','2B','3B','1B','SS','2B','P']); const f=pcFAt(g,half,pos,k); const nice=f&&pos!=='P'&&fieldV(f,pos)>=63&&pcH(g,k,'gn')<.35;
-        c=nice?`${BN}, ${fld(pos)} 옆으로 빠지는 땅볼! 몸을 날려 잡고 1루 송구, 아웃!`:pos==='1B'?`${BN}, ${fld(pos)} 앞 땅볼, 직접 베이스를 밟습니다. 아웃.`:`${BN}, ${fld(pos)} ${pk('gt',['앞 땅볼. 1루에서 아웃.','정면 땅볼, 가볍게 처리합니다.','쪽 평범한 땅볼. 아웃.','앞 느린 땅볼, 달려 나와 1루로. 아웃.'])}`; if(nice)a=`${nm(f.id)}의 수비가 안타 하나를 지웠습니다.`; }
-      else if(r<.85){ const pos=pk('fp',['LF','CF','RF','CF']); c=`${BN}, ${fld(pos)} ${pk('ft',['쪽 높이 뜬 공. 잡아냅니다.','쪽 뜬공, 여유 있게 잡습니다.','쪽으로 뻗어 가는 타구... 워닝 트랙에서 잡힙니다!','앞 얕은 뜬공, 달려 나와 잡습니다.'])}`; const f=pcFAt(g,half,pos,k); if(f&&fieldV(f,pos)>=64&&pcH(g,k,'fr')<.4)a=`${nm(f.id)}, 수비 범위가 넓습니다. 쉽게 잡았습니다.`; }
-      else c=`${BN}, 잘 맞은 타구! 그러나 ${fld(pk('lp',['SS','2B','3B','1B']))} 정면 직선타.`; break; }
+    case 'OUT':{const fact=gamePA(x),target=cOutTarget(g,k);if(fact.bunt==='fc'){c=`${BN}, 번트 실패! ${target?`${nm(target.id)}, ${target.base}루에서 포스아웃.`:'앞선 주자가 포스아웃됩니다.'} 타자는 1루에 살아남습니다.`;a='작전이 어긋났습니다.';break;}
+      if(fact.bunt==='out'){c=`${BN}, 번트 실패. 타자가 1루에서 아웃됩니다.${pre.bases.every((id,i)=>!id||x[5][i]===id)?' 주자는 그대로입니다.':''}`;break;}
+      if(fact.error&&batAfter){const ep=pcErrPos(g,k)||fact.fielder;c=`${BN}, ${ep?fld(ep)+'의':'수비'} 실책! 타자 주자 1루에 살아 나갑니다.`;a='수비에서 나온 실수가 아쉽습니다.';break;}
+      if(fact.fc){c=`${BN}, 야수선택! ${target?`${nm(target.id)}, ${target.base}루에서 포스아웃.`:'선행 주자가 아웃됩니다.'} 타자는 1루에 살아남습니다.`;break;}
+      if(fact.sf){c=`${BN}, ${fact.fielder?fld(fact.fielder)+' 쪽':'외야'} 뜬공. 3루 주자 홈인! 희생플라이로 ${runs}점.`;break;}
+      const pos=PC_POS[fact.fielder]?fact.fielder:null,t=fact.bipType;
+      if(t==='GB')c=`${BN}, ${pos?fld(pos)+' 앞 ':''}땅볼. 1루에서 아웃${runs?`되는 사이 주자 홈인, ${runs}점.`:'.'}`;
+      else if(t==='LD')c=`${BN}, ${pos?fld(pos)+' 정면 ':''}직선타, 잡아냅니다. 아웃.`;
+      else if(t==='FB'||t==='PU')c=`${BN}, ${pos?fld(pos)+' 쪽 ':''}뜬공, 잡아냅니다. 아웃.`;
+      else c=`${BN}, ${pos?fld(pos)+' 쪽 ':''}타구를 처리합니다. 아웃${runs?`, 그 사이 주자 홈인, ${runs}점.`:'.'}`;break; }
     default: c=`${BN} ${OUTK[o]||o}`; }
   /* 득점 상황 */
   if(runs>0&&o!=='HR'&&o!=='BB'&&!(o==='OUT'&&!batAfter))c+=` ${runs}점!`;

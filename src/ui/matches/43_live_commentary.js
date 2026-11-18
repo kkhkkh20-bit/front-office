@@ -56,13 +56,13 @@ function pbpCall(g,k){
   case 'HR':{const kind=m.runs===4?'만루 홈런':m.runs>1?m.runs+'점 홈런':'솔로 홈런';c=today.hr?`또 홈런을 쳤어요! ${today.hr===1?'멀티홈런':`오늘 ${today.hr+1}홈런`}, ${name}!`:pick('homer-result',[`${name}, 넘어갑니다! ${kind}!`,`아, 이게 뭔가요! ${name}의 ${kind}!`,`담장 밖으로! ${name}, ${kind}!`,`이 한 방에 구장이 들썩입니다! ${name}, ${kind}!`,`제대로 후렸어요! ${name}, ${kind}!`,`잡을 수 없는 곳으로! ${name}, ${kind}!`]);break;}
   case '2B':c=`${name}, ${hitShape(g,k,'2B').c}! 2루타!`+pick('double',['',' 한 방에 득점권입니다.',' 귀중한 장타예요.',' 외야를 흔들어 놓습니다.']);break; /* 무슨 타구인지 먼저(사용자 11-17: 라디오 중계처럼 정확하게). 화면 타구와 같은 hitShape */
   case '3B':c=`${name}, ${hitShape(g,k,'3B').c}! `+pick('triple',['2루를 돌아 3루까지! 3루타!','멈추지 않아요! 3루타!','달리고 또 달립니다! 3루타!']);break;
-  case '1B':c=/내야 안타/.test(raw.c)?raw.c:`${name}, ${hitShape(g,k,'1B').c}!`+pick('single',['',' 살아 나갑니다.',' 공격을 이어 갑니다.',' 방망이가 답합니다.']);break;
+  case '1B':c=gamePA(x).bunt==='hit'||/내야 안타/.test(raw.c)?raw.c:`${name}, ${hitShape(g,k,'1B').c}!`+pick('single',['',' 살아 나갑니다.',' 공격을 이어 갑니다.',' 방망이가 답합니다.']);break;
   case 'HBP':c=m.loaded?`아, 몸에 맞았어요! ${name}, 밀어내기 사구!`:`아, 몸에 맞았습니다! ${name}, 사구로 1루에 나갑니다.`;break;
   case 'BB':c=m.loaded?`${name}, 밀어내기 볼넷! ${storedPitchSequence(x)?.length===4?'공 네 개로 한 점!':'한 점을 거저 얻습니다!'}`:`${name}, 볼넷! 기다림 끝에 1루를 얻습니다.`;break;
   case 'K':{const q=storedPitchSequence(x)?.at(-1);c=q?`${name}, ${q.t}에 ${q.res==='루킹 삼진'?'루킹':'헛스윙'} 삼진!`:`${name}, 삼진! 마운드가 웃습니다!`;break;}
   case 'DP':c=`${raw.c.replace(/\s*$/,'')}${/이닝 종료|이닝이 끝/.test(raw.c)?'':x[4]===3?' 이닝이 끝납니다!':' 아웃 두 개가 한꺼번에 올라갑니다!'}`;break; /* 어느 수비수 정면, 어떤 경로의 병살인지(42_commentary, 화면과 같은 dpPats) */
   case 'SAC':c=`${name}, 짧게 댔습니다! 희생번트로 주자를 보냅니다.`;break;
-  default:c=x[16]?`${name}, 번트 실패! 앞선 주자가 포스아웃됩니다!`:x[9]?`아, 이게 뭔가요! 수비 실책! ${name}, 살아 나갑니다!`:x[5].includes(x[1])?`${name}, 1루에서 살아남습니다!`:raw.c.replace('몸을 날려 잡고','잡아내고').replace('워닝 트랙에서','수비 위치에서');
+  default:c=raw.c.replace('몸을 날려 잡고','잡아내고').replace('워닝 트랙에서','수비 위치에서');
  }
  if(hit&&!today.h&&g.broadcast?.regular&&form?.hitless>=3)c=`${form.hitless+1}경기 만의 안타! 긴 침묵을 깹니다! `+c; /* 특별한 순간은 앞에 붙이고 타구 묘사는 남긴다 */
  if(hit&&m.runs&&m.pre.outs===2&&o!=='HR')c+=` 2아웃 적시타!`;
