@@ -57,7 +57,7 @@ function mySayTail(t,tone){ const k=VTONE_UP.includes(tone)?'up':VTONE_DN.includ
    성향(GMT)과 따로 정해지고, 성향이 한쪽을 조금 끌어올린다. 예전 저장은 단장 id로 같은 값을 만든다 */
 function gmAbil(g){ if(!g||g.interim)return null; if(!g.ab){ const u=k=>u01('gma'+k,g.id); const v=x=>Math.round(clamp(30+x*60,25,92)); g.ab={eye:v(u('e')),neg:v(u('n')),plan:v(u('p')),money:v(u('m'))};
     const up=(k,d)=>{ g.ab[k]=Math.min(95,g.ab[k]+d); }; if(g.trait==='data')up('eye',10); if(g.trait==='hard')up('neg',12); if(g.trait==='miser')up('money',12); if(g.trait==='prospect')up('plan',6); if(g.trait==='gambler')g.ab.money=Math.max(25,g.ab.money-8); } return g.ab; }
-const gmAbOf=tid=>{ if(tid==null||tid===ME())return null; const t=team(tid); return t&&t.gm?gmAbil(t.gm):null; };
+const gmAbOf=tid=>{ if(tid==null||tid===ME())return null; const t=team(tid),g=t&&t.gm; return g?gmAbil(g.ab?g:{...g}):null; };
 /* 재임 성적: 이 단장이 맡은 뒤 시즌별 순위(지난 시즌까지) */
 function gmRecord(tid){ const g=team(tid).gm; if(!g||g.interim)return null; const H=(G.history||[]).filter(h=>h.y>=(g.recordY??g.since)&&h.order); const rk=H.map(h=>h.order.findIndex(o=>o.tid===tid)+1).filter(x=>x>0); return {n:rk.length,avg:rk.length?rk.reduce((a,x)=>a+x,0)/rk.length:null,best:rk.length?Math.min(...rk):null,ch:H.filter(h=>h.champ===tid).length,ps:rk.filter(x=>x<=5).length}; }
 function gmOf(tid){ if(tid===ME())return null; /* 야인이면 전 구단도 그 구단 단장(검수 11-07) */ const t=team(tid); if(!t.gm)t.gm=mkGM(tid); return t.gm; }
