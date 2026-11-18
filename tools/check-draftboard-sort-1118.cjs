@@ -40,7 +40,9 @@ const assert=require('node:assert/strict'),path=require('node:path'),fs=require(
  const before=await order();await page.evaluate(id=>{amFollow(id,false);render();},before[2]);
  log('뺀 후보만 빠지고 나머지 순서 유지',JSON.stringify(await order())===JSON.stringify(before.filter((_,i)=>i!==2)));
  /* 4) AI 구단은 영향 없음 */
- log('AI 구단 보드 상태 무관',await page.evaluate(()=>Object.keys(G.dbSort||{}).every(k=>k==='auto'||k==='undo')));
+ log('보드 설정과 되돌리기는 현재 구단·시즌에 귀속',await page.evaluate(()=>{const s=G.dbSort||{};return Object.keys(s).every(k=>['auto','undo','tid','undoTid','undoY'].includes(k))&&s.tid===G.user&&(!s.undo||s.undoTid===G.user&&s.undoY===G.year);}));
+ const ai=await page.evaluate(()=>{const d0=G.draft,s0=G.dbSort,r0=FO_RNG;let n=0,out;FO_RNG=()=>{n++;return r0();};try{const tid=G.teams.find(t=>t.id!==G.user).id;G.draft={done:false,cls:G.draftClass.slice(),picks:[{tid,rd:1}],cur:0};G.dbSort={tid:G.user,auto:false};const a=aiDraftPick(tid);G.dbSort={tid:G.user,auto:true};const b=aiDraftPick(tid);out={a,b,rngSame:n===0};}finally{G.draft=d0;G.dbSort=s0;FO_RNG=r0;}return out;});
+ log('AI 실제 지명은 사용자 자동 정렬과 무관·본 난수 불변',ai.a!=null&&ai.a===ai.b&&ai.rngSame,JSON.stringify(ai));
  /* 5) 화면 맞춤: PC 전체 스크롤 없음, 휴대폰 390 가로 넘침 없음 */
  for(const size of [{width:1366,height:768},{width:1920,height:1080},{width:390,height:844}]){await page.setViewportSize(size);await page.evaluate(()=>{UI.df.seg='mine';A.go('transfer:draft');render();window.scrollTo(0,0);});
    const fit=await page.evaluate(()=>({w:innerWidth,sw:document.documentElement.scrollWidth,h:innerHeight,sh:document.documentElement.scrollHeight,btn:(()=>{const b=document.querySelector('[data-a="dbSort"]');if(!b)return null;const r=b.getBoundingClientRect();return {l:r.left,r:r.right};})()}));

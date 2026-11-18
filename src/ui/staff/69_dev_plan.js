@@ -64,13 +64,13 @@ function trnEnvBox(p){ const f=tbFactors(p,isRegular(p)?new Set([p.id]):null); c
 /* 연수 후보 줄에 주요 능력치(카페 11-15: 선수마다 열어 보기 번거롭다). 우리 선수라 코치진이 아는 값 그대로 */
 function ovsAbLine(p){ const r=p.r||{}; const L=p.isP?[['구위','stf'],['제구','ctl'],['체력','sta']]:[['컨택','con'],['파워','pow'],['선구','eye'],['주루','spd'],['수비','def']]; return L.filter(([l,k])=>r[k]!=null).map(([l,k])=>`<span class="small muted">${l}</span> ${rchip(r[k])}`).join(' '); }
 function ovsBody(){ const y=G.year; const T={big:'크게 늘어 옴',good:'성장 확인',flat:'변화 없음',form:'폼 흐트러짐',inj:'부상'};
-  const fk=G.fall&&G.fall.y===y?G.fall.k:undefined; const fo=fallOpen();
+  const decision=fallDecision(), fk=decision?decision.k:undefined; const fo=fallOpen();
   const fdl=dnum(y,10,10)-G.day, fwin=fo?`신청 기간 9월 1일~10월 10일 · 마감 ${fdl>0?`D-${fdl}`:'오늘'}`:`신청 기간 9월 1일~10월 10일${dobj(G.day).m<9?' · 아직 열리지 않음':' · 마감됨'}`;
   const fall=`<section class="card fall-card${fo&&fk===undefined?' fall-open':''}"><div class="row between"><span class="eyebrow">가을 교육리그 · 구단 단위</span><span class="small ${fo&&fk===undefined?'warn':'muted'}">${fwin}</span></div>
     ${fo&&fk===undefined?`<p class="small warn"><b>아직 신청하지 않았습니다.</b> 정하지 않으면 불참합니다.${autoOn('fall')?' 자동 신청이 켜져 있어 육성팀이 쓸 수 있는 돈 안에서 신청합니다.':''}</p>`:''}
     <p class="small">25세 이하 선수 20명 안팎이 10월 중순부터 한 달 실전을 치릅니다. 대부분 작은 성장이고, 가끔 눈에 띄게 좋아지는 선수가 나옵니다.</p>
-    ${fo?`<div class="talk">${Object.entries(FALL).map(([k,v])=>`<button class="btn small ${fk===k?'on':''}" data-a="fallSet" data-v="${k}">${v.l} ${money(v.c)}</button>`).join('')}<button class="btn small ${fk===null?'on':''}" data-a="fallSet" data-v="">불참 · 자체 마무리 훈련</button></div>`:`<p class="small muted">올해: ${fk?FALL[fk].l:fk===null?'불참':'정하지 않음(불참)'}</p>`}
-    <p class="small muted">${Object.values(FALL).map(v=>`${v.l}: ${v.d}`).join(' ')}</p></section>`;
+    ${fo?`<div class="talk">${Object.entries(FALL).map(([k,v])=>{const why=fk===k?'':fallEntryWhy(G.user,k,true);return `<button class="btn small ${fk===k?'on':''}" data-a="fallSet" data-v="${k}"${why?` disabled title="${esc(why)}"`:''}>${v.l} ${money(v.c)}</button>`;}).join('')}<button class="btn small ${fk===null?'on':''}" data-a="fallSet" data-v="">불참 · 자체 마무리 훈련</button></div>`:`<p class="small muted">올해: ${fk?FALL[fk].l:fk===null?'불참':'정하지 않음(불참)'}</p>`}
+    ${fo?`<p class="small fall-why" role="status">${Object.entries(FALL).map(([k,v])=>{const why=fk===k?'':fallEntryWhy(G.user,k,true);return why?`${v.l}: ${esc(why)}`:'';}).filter(Boolean).join(' ')}</p>`:''}<p class="small muted">${Object.values(FALL).map(v=>`${v.l}: ${v.d}`).join(' ')}</p></section>`;
   const mode=inTabs('ovsMode',[['program','연수 프로그램'],['support','교육리그·지원'],['history','지난 연수']], 'program');
   const message=UI.devMsg?`<div class="note${UI.devOk?'':' bad'}">${esc(UI.devMsg)}</div>`:'';
   const fban=mode.cur!=='support'&&fo&&fk===undefined?`<div class="note fall-ban"><span>가을 교육리그 신청 기간입니다(10월 10일까지 · ${fdl>0?`D-${fdl}`:'오늘 마감'}). 25세 이하 선수가 한 달 실전으로 성장합니다.</span> <button class="btn small primary" data-a="fallGo">교육리그 신청하기</button></div>`:''; /* 국사왕 11-18: 교육리그가 다른 탭 아래에 있어 몇 해를 놓침 */
