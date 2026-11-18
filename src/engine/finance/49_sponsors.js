@@ -123,7 +123,7 @@ function sponPitchWhy(slot){ if(G.unemp)return '지금은 구단 단장이 아�
   if((S.off||[]).filter(o=>o.slot===slot&&o.exp>=G.day).length>=3)return `${SPON_SLOT[slot].l}에는 이미 유효한 제안이 3건 있어 영업해도 새 제안을 받을 수 없습니다(자리마다 제안은 3건까지). 제안을 거절하거나 기한이 지난 뒤 다시 지시하세요. 영업비는 나가지 않았습니다.`;
   if(team(G.user).indie&&spendable(G.user)-Math.max(0,(G.spend.etc||0)-(G.spend.trC||0))<30)return '스폰서 영업비 3천만 원을 낼 구단 현금이 부족합니다.';return ''; }
 function sponPitch(slot){if(G.unemp)return '지금은 구단 단장이 아닙니다.';const S=sponInit(),why=sponPitchWhy(slot);if(why)return why;S.pitch=S.pitch||[];
-  G.spend.etc=(G.spend.etc||0)+30; S.pitch.push({slot,day:G.day,due:G.day+ri(7,14),done:false,fee:30,rep:G.rep??50,fy:fyNow(),ep:G.spEp||0,tid:G.user});
+  ledgerMe('etc',30); S.pitch.push({slot,day:G.day,due:G.day+ri(7,14),done:false,fee:30,rep:G.rep??50,fy:fyNow(),ep:G.spEp||0,tid:G.user});
   return `마케팅팀이 ${SPON_SLOT[slot].l} 영업을 시작했습니다(영업비 3천만 원). 1~2주 뒤 결과를 보고합니다.`; }
 function sponPitchFull(S,slot){return (S.off||[]).filter(o=>o.slot===slot&&o.exp>=G.day).length>=3;}
 function sponPitchRoomStop(S,tid){for(const x of S.pitch||[])if(!x.done&&sponPitchFull(S,x.slot))sponPitchEnd(S,x,null,'full',tid);}
@@ -140,7 +140,7 @@ function sponPitchRefund(x){ const fee=x.fee??30, span=Math.max(1,x.due-x.day); 
 function sponPitchBookTid(S){if(S===G.spon)return G.unemp?G.unemp.from:G.user;for(const k in G.sponT||{})if(G.sponT[k]===S)return +k;return null;}
 function sponPitchEnd(S,x,co,reason,tid){ if(!x||x.done)return 0;tid=tid??x.tid??sponPitchBookTid(S);if(tid==null)return 0;x.done=true;x.end={d:G.day,co:co||null,reason:reason||'contract'};const back=sponPitchRefund(x);x.end.back=back;
   const same=tid===ME()&&x.fy===fyNow()&&(x.ep||0)===(G.spEp||0)&&!!G.spend;
-  if(back>0){if(same)G.spend.etc=(G.spend.etc||0)-back;else{team(tid).cash+=back;if(x.fy===fyNow())hoBook(tid,[],[['단장 결정 지출',-back]]);else hoBook(tid,[['스폰서 영업비 환급',back]],[]);}}
+  if(back>0)ledger(tid,'etc',-back,{me:same,ho:x.fy===fyNow()?[[],[['단장 결정 지출',-back]]]:[[['스폰서 영업비 환급',back]],[]]});
   if(tid===ME())mail('마케팅팀',`영업 종료: ${SPON_SLOT[x.slot].l}`,`${reason==='full'?'유효한 제안이 3건으로 차서 새 제안을 받을 자리가 없어':co?`${co}와(과) ${SPON_SLOT[x.slot].l} 계약을 맺어`:`${SPON_SLOT[x.slot].l} 자리가 계약으로 채워져`} 진행 중이던 영업(${dsh(x.day)} 지시)을 마쳤습니다. 새로 받은 영업 제안은 없습니다.\n\n환급 기준: 영업비 ${money(x.fee??30)} 가운데 남은 일정(${dsh(G.day)}~${dsh(x.due)}) 비율만큼 돌려받습니다. 이번 환급 ${money(back)}${back>0?(same?'은 단장 결정 지출에서 뺍니다':'은 구단 현금으로 돌려받습니다'):''}.`,{kind:'스폰서'});return back; }
 function sponPitchMake(S,slot,tid){ S.off=(S.off||[]).filter(o=>o.exp>=G.day); const room=Math.max(0,3-S.off.filter(o=>o.slot===slot).length), n=Math.min(room,R()<.35?2:1), made=[]; let tries=0; for(let i=0;i<n&&tries<12;i++){ tries++; const o=sponMake(slot,{tid,S}); o.amt=round5(o.amt*rnd(.92,1.02)); if(S.off.some(z=>z.slot===slot&&z.co===o.co)){ i--; continue; } S.off.push(o); made.push(o); } return made; }
 /* 단장이 떠난 구단의 영업(돈은 이미 냈다)도 예정일에 결과를 낸다: 제안은 그 구단 계약서에 남아 돌아오면 볼 수 있다(검수 11-06) */
