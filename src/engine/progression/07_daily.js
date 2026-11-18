@@ -106,6 +106,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   if(o.d===1)try{ fanMonthly(); }catch(e){} if(o.d===1)try{ fanAwayMonthly(); }catch(e){} /* 팬 마케팅 운영비·채널 수입 */
   if(o.d===15)try{ smNews(); }catch(e){} /* 스타 마케팅 캠페인 기사 */ /* 능력치 변화 표시(약 6개월 전과 비교) */
   if(o.d===1&&o.m>=6&&o.m<=9&&period()==='season')try{ titleRaceNews(); }catch(e){}
+  try{ awRaceDaily(); }catch(e){ console.error(e); } /* MVP 레이스·신인왕 경쟁 기사(93_award_race) */
   if(day===KD(11,5))try{ fcampStart(); }catch(e){} if(day===KD(11,25))try{ fcampEnd(); }catch(e){}
   try{ amDaily(day); }catch(e){ console.error(e); } /* 고교·대학 경기(13_amateur_league): 단장 관전(gmPlanDaily)보다 먼저 */ try{ draftPressNews(day); }catch(e){} try{ ovsStoryDaily(); }catch(e){}
   try{ sponDaily(); if(o.w===1)mvWeekly(); }catch(e){}
@@ -115,6 +116,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   try{ ivDaily(); }catch(e){}
   try{ fanPulseDaily(); }catch(e){} try{ truckWeekly(); }catch(e){}
   try{ cwDaily(); }catch(e){} try{ aiPlanDaily(); }catch(e){} try{ gmAiFieldDaily(); }catch(e){} try{ achFirstDaily(); }catch(e){} try{ gmPlanDaily(); }catch(e){} try{ champDaily(); }catch(e){} try{ mgrVisit(); }catch(e){} try{ fdEvalDaily(); }catch(e){}
+  try{ awPredDaily(); }catch(e){} /* 시상식 전날 예상 기사(93_award_race) */
   try{ awardsDaily(); }catch(e){} /* 미결 시상은 발표 연도와 실제 날짜로 처리한다. 연말에 정한 작년 시상도 다음 해에 이어진다. */
   dailyCost(); try{ stadDaily(); newStadDaily(); }catch(e){} try{ promoDaily(); }catch(e){} try{evDaily();}catch(e){} try{ fPubDaily(); }catch(e){} try{ ovsDaily(); }catch(e){} try{ compDaily(); }catch(e){} try{ wvDaily(); }catch(e){} try{ sd2Daily(day); }catch(e){} try{ tryDaily(day); }catch(e){ console.error(e); } /* 미지명 육성 계약·공개 트라이아웃(94_tryout) */ try{ proStaleFix(); }catch(e){ console.error(e); } /* 어떤 길로 계약했든 신인 후보 표시가 남지 않게(카페 11-17, 난수 없음) */ try{ gameRulesMail(day); }catch(e){} try{ marketDaily(); }catch(e){}
   milDaily();

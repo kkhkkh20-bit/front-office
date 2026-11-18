@@ -100,6 +100,7 @@ function psDay(day){
   try{ psRec(s.round,g); }catch(e){} /* 포스트시즌 기록은 모든 구단 선수에게(정규시즌 기록과 따로) */
   let st=null; try{ st=stadGame(day,h,a); }catch(e){ console.error(e); } /* 실제 열린 가을 홈경기도 같은 구장 장부와 당시 관중·좌석을 남긴다(검수 11-18 #549). */
   let rec=null, ownRec=null; if(h===G.user||a===G.user){ rec=gameRecord(day,h,a,g,`${ROUNDK[s.round]} ${s.gi}차전`); rec.season=P.y??G.year; if(!G.unemp)ownRec=rec; if(st){ rec.att=st.att;rec.so=st.so;rec.cap=st.cap; } try{ gmTenTick(); }catch(e){} /* 포스트시즌 경기도 단장 재임 경기(검수 148) */ keepGame(rec); ulog(rec); if(!G.unemp)G.res={i:0}; }
+  try{ psMvpGame(s.round,s.gi,g,day,rec); }catch(e){ console.error(e); } /* 경기 MVP: 모든 구단 경기, 기록만 보고(93_award_race) */
   try{ if(rec){ try{ prAfterGame(rec); }catch(e){ console.error(e); } try{ gmAttendResult(rec); }catch(e){} } }
   finally{ psFinishSeries(day,s,g,ownRec); } /* 정상 경기의 난수 호출 순서는 유지하고, 후속 보도 실패와 무관하게 진출·우승·결산일을 확정한다(검수 11-18 #548). */
 }
@@ -116,6 +117,7 @@ function psFinishSeries(day,s,g,ownRec){ const P=G.ps; if(!s||!s.need||!P||P.don
       if((P.tbq||[]).length){ const q=P.tbq.shift(); const hi=P.order[q[0]].tid, lo=P.order[q[0]+1].tid; P.tbPos=q[0]; P.cur=mkSeries('tb',hi,lo,day+1); } else { P.round='wc'; P.cur=mkSeries('wc',P.seeds[3],P.seeds[4],day+2); try{ psSeedNews(); }catch(e){ console.error(e); } } return; } /* 결정전 승자가 그 순위를 갖는다 */
     const nx={wc:['spo',P.seeds[2]],spo:['po',P.seeds[1]],po:['ks',P.seeds[0]]}[s.round];
     try{ psOutNews(s.round,P.res[s.round]); }catch(e){ console.error(e); }
+    try{ psMvpSeries(s.round,done[0]); }catch(e){ console.error(e); } /* 와일드카드·준플레이오프·플레이오프 시리즈 MVP(한국시리즈는 champCelebrate) */
     if(nx){ P.round=nx[0]; P.cur=mkSeries(nx[0],nx[1],done[0],day+2); }
     else { P.done=true; P.cur=null; P.champ=done[0]; P.runner=done[1]; P.finDay=day+2; legFinishOwners(); if(done[0]===G.user&&!G.unemp){ G.champScene={y:G.year,day,op:done[1],w:P.res.ks[2],l:P.res.ks[3]}; if(g&&g.walk&&h===G.user)(G.champWo=G.champWo||{})[G.year]=1; } /* 끝내기 우승은 우승 순간 첫 장면을 '끝내기'로(카페 11-11 안토) */ /* 우승 장면을 한 번 띄운다(사용자 11-08) */ const titleMail=stop('포스트시즌',`${tname(done[0])}이(가) 한국시리즈 우승을 차지했습니다.${done[0]===G.user?' 우리 구단이 정상에 올랐습니다.':''}`); if(ownRec&&titleMail)titleMail.sgid=ownRec.gid; try{ champCelebrate(); }catch(e){ console.error(e); } try{ titleNews(done[0],done[1]); }catch(e){ console.error(e); } }
   }
