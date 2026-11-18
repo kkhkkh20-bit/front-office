@@ -36,6 +36,3 @@ function mgrType(m){ if(!m)return {n:'-',d:''}; mgrAttr(m); const ck=m.small+','
 function mgrType0(m){ const s=(m.small-50)*.8, d=(m.dfn-50)*1.05, p=(m.pen-50)*.8, a=(m.arm-50)*1.05, y=(m.youth-50)*.8;
   const c=[['combo_d',Math.min(s,d)+6],['combo_o',Math.min(-s,-d)+6],['pen_all',Math.min(p,a)+6],['sp_care',Math.min(-p,-a)+6],['youth',y-4],['dfn',d],['bat',-d],['small',s],['big',-s],['gamble',a-3],['care',-a-3]];
   c.sort((x,z)=>z[1]-x[1]); const k=c[0][1]>=14?c[0][0]:'bal'; return {k,n:MTYPE[k][0],d:MTYPE[k][1]}; }
-/* 성향 축 5개: 화면 표시용 */
-function mgrAxes(m){ mgrAttr(m); const ax=(v,lo,mid,hi)=>v>=62?hi:v<=38?lo:mid;
-  return [['공격',ax(m.small,'빅볼','균형','스몰볼')],['수비',ax(m.dfn,'타격 중시','균형','수비 중시')],['투수 교체',ax(m.pen,'선발 중심','보통','불펜 중심')],['투수 관리',ax(m.arm,'보호형','보통','혹사형')],['기조',ax(m.youth,'성적형','균형','육성형')]]; }

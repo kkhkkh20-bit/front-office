@@ -60,7 +60,6 @@ function olsFit(X,y,w){ const k=X[0].length+1; const A=Array.from({length:k},()=
   for(let i=0;i<X.length;i++){ const r=[1,...X[i]], wi=w[i]; for(let a=0;a<k;a++){ for(let b=0;b<k;b++)A[a][b]+=wi*r[a]*r[b]; A[a][k]+=wi*r[a]*y[i]; } }
   for(let a=0;a<k;a++)A[a][a]+=1e-6; for(let c=0;c<k;c++){ let m=c; for(let r=c+1;r<k;r++)if(Math.abs(A[r][c])>Math.abs(A[m][c]))m=r; [A[c],A[m]]=[A[m],A[c]]; const d=A[c][c]||1e-9; for(let r=0;r<k;r++){ if(r===c)continue; const f=A[r][c]/d; for(let j=c;j<=k;j++)A[r][j]-=f*A[c][j]; } }
   return A.map((r,i)=>r[k]/(r[i]||1e-9)); }
-const fdFeat=(p,L)=>p.isP?[L.k9,L.h.bb*9/L.n,(L.h.hr||0)*9/L.n,L.whip,Math.min(7,L.ipg),L.g?L.gs/L.g:0]:[L.obp,L.slg,L.iso,Math.min(1.5,L.bbk),L.sb/Math.max(1,L.n)*100,L.avg];
 /* 추천의 관점(정답지가 아니다):
    - 스카우트: 지난 시즌 '겉 기록'(타율·홈런·타점·도루 / ERA·승·삼진)과 눈으로 본 툴. 힘·발·구위를 좋아하고 선구안·제구는 덜 쳐준다. 운 좋은 시즌에 잘 속는다.
    - 전력분석팀: 최근 2년 세부 지표(출루·순장타·볼삼비·타구속도 / FIP·K-BB·헛스윙)를 표본 크기만큼 믿는다. 수비와 나이에 따른 변화는 계산에 넣지 않는다.
@@ -103,8 +102,6 @@ function fdPotEst(p){ if(!G.fd||!p)return null; const sk=(G.scouts||[]).reduce((
   return v; }
 /* 전성기 예상 나이: 남은 성장이 끝나는 해(다 큰 선수는 지금) */
 function fdPeakAge(p){ return Math.max(p.age,DT.norm.grow+1); }
-/* 화면용: 스카우트 등급과 분석팀 등급(분석원이 있을 때만) */
-function fdViews(p){ if(!G.fd)return null; const S=fdSeenBy(G.user,p); const lv=dataLv(G.user); return {sc:S.sc,an:lv>=1?S.an:null,up:p.age<=26&&S.pot-S.o>=6}; }
 function fdSlot(p){ return p.isP?'P':p.pos; }
 /* AI 구단 지명 방향(stanceOf): 우승 도전은 지금 능력과 비싼 주전을 감수(상한 100%까지), 내년 도전은 25~30세, 리빌딩은 유망주를 보고 연봉을 아낀다 */
 const FD_ST={win:{pw:.25,old:.8,cap:1,sal:.012},next:{pw:.35,old:1.2,cap:1,sal:.02,mid:1},rebuild:{pw:.5,old:1.3,cap:.97,sal:.03,young:.6}}; /* 사용자는 상한 가까이 쓰므로 AI도 연봉을 아끼느라 전력을 버리지 않게 연봉 감점을 줄였다 */
@@ -278,7 +275,6 @@ function draftRestPick(){ const d=G.draft; const R0=draftRestOf(); const pk=R0&&
   passCurrent(); return {pk,pass:true}; }
 function userAutoPick(ok){ const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null&&(!ok||ok(G.players[id]))); let best=null,bs=-1; /* ok: 조건(등급 등)을 채운 후보 중에서만 */
   for(const id of av){ const rp=scoutReport(G.players[id]); const v=draftUserScore(G.players[id],null,null,rp); /* 빅보드 라운드 목표(스카우트 1단계) */ if(v>bs){bs=v;best=id;} } return best; }
-
 
 /* 다음 우리 차례 전에 다른 구단이 데려갈 확률: 사이에 지명하는 구단들이 각자 상위 후보 중에서 고른다고 보고 여러 번 굴려 본다 */
 const FD_POL={need:'빈자리 우선',now:'즉시 전력',young:'젊은 선수',cheap:'연봉 절약',board:'내 관심 명단 우선'};

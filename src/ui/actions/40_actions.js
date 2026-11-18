@@ -62,9 +62,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   dlSpdC(){ const o=['slow','norm','fast']; const i=o.indexOf(UI.dspeed||'norm'); A.dlSpd(o[(i+1)%3]); },
   fdTab(v){ UI.fdTab=v; render(); window.scrollTo(0,0); },
   fdSlot(v){ UI.fdTab='list'; if(v==='P'){ UI.fdG='P'; UI.fdF='all'; } else { UI.fdG='B'; UI.fdF=v==='DH'?'all':v; } UI.fdSub=1; UI.fdMore=60; UI.fdS=''; UI.fdAb=[]; render(); const el=document.querySelector('.fdt-w'); if(el)el.closest('.card').scrollIntoView({behavior:'smooth',block:'start'}); },
-  revOpen(){ if(UI.rev){ UI.rev.open=true; render(); } },
   revClose(){ UI.fdJust=UI.rev?UI.rev.pid:null; UI.rev=null; render(); if(G.fd&&!G.fd.done&&G.fd.picks[G.fd.cur]&&G.fd.picks[G.fd.cur].tid!==G.user)setTimeout(()=>dliveStart('fd'),250); },
-  fdRec(){ const p=fdUserRec(1)[0]; if(p)A.fdPick(p.id); },
   fdAdv(){ dliveStart('fd'); },
   fdListMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
   fdPlus(){ const F=G.fd; if(!F||F.done)return; F.man=Math.min(FD_ROUNDS,(F.man||FD_MAN)+FD_MORE); save(); render(); dliveStart('fd'); },
@@ -85,7 +83,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ngtWithdraw(){ const N=UI.ngt; if(!N)return; delete G.fa.offers[N.id]; N.msg='제안을 거둬들였습니다.'; save(); render(); renderSheet(); },
   ngtClose(v,el,e){ if(el&&el.classList.contains('scrim')&&e&&e.target.closest('[data-stop]'))return; UI.ngt=null; renderSheet(); render(); },
   meetClose(){ const M=UI.meet,y=M?.returnY||0;meetKeep();UI.meet=null;if(M){UI.sheet=M.bs;UI.person=M.bp;}render();if(M?.returnDetail&&document.documentElement.classList.contains('detail-page-open'))sheetScrollTo(y);else scrollTo(0,y); },
-  mgrAsk(v){ const r=mgrTalk(v); UI.mgrMsg=''; save(); render(); if(r.warm)try{ toast('감독이 고마워합니다'); }catch(e){} },
   annClose(){ (UI.annQ||[]).shift(); annRender(); },
   annPlayer(v){ (UI.annQ||[]).shift(); annRender(); A.player(+v); },
   pactSel(v){ const id=+v; let L=UI.pactSel||[]; L=L.includes(id)?L.filter(x=>x!==id):L.concat(id).slice(-2); UI.pactSel=L; render(); },
@@ -97,13 +94,12 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   plEx(v){ const id=+v; if(!G.plEx||G.plEx.y!==G.year)G.plEx={y:G.year,ids:[]}; if(!G.plEx.ids.includes(id))G.plEx.ids.push(id); save(); render(); },
   plExClear(){ if(G.plEx)G.plEx.ids=[]; save(); render(); },
   planPick(v){ const [k,p]=String(v).split(':'); if(k!=='')UI.planK=+k; if(p)UI.planPos=p; render(); },
-  evDeleg(v){ const e=(G.evs||[]).find(x=>x.id===v); if(!e||EV_KEY.has(e.k)||evOwn(e))return; G.deleg=G.deleg||{}; G.deleg[e.k]=true; e.deleg=true; evPick(e.id,e.def,true); save(); render(); try{ toast(`${EV_NAME[e.k]||'이 일'}은(는) 이제 비서가 기본안으로 처리하고 보고합니다.`); }catch(err){} },
   evDelegOff(){ G.deleg={}; save(); render(); try{ toast('일상 결정도 다시 직접 정합니다.'); }catch(err){} },
   fdAutoN(v){ const F=G.fd; if(!F||F.done)return; const c0=fdAutoRun(+v||5); if(c0==null)return;
     for(const x of F.picks.slice(c0,F.cur))if(x.pid)dlFeedAdd('fd',x,x.pid); /* 상황판 최근 지명도 맡긴 지명까지(검수 11-09zd) */
     UI.rev=null; save(); render(); const M=F.done?null:fdMoney(); try{ toast(F.done?'창단 드래프트가 끝났습니다.':fdManDone()?`${F.man}라운드 직접 지명을 마쳤습니다. 나머지를 맡기거나 더 뽑을지 고르세요.`:`자동 지명을 마쳤습니다. 다시 우리 차례입니다.${M&&M.room<0?` 연봉 한도를 ${money(-M.room)} 넘었습니다.`:''}`); }catch(e){} },
   fdF(v){ UI.fdF=v; UI.fdSub=0; UI.fdMore=60; render(); }, fdPos(v){ const [g,k]=String(v).split(':'); UI.fdSub=0; if(UI.fdG!==g){ UI.fdG=g; UI.fdS=''; UI.fdD=0; UI.fdAb=[]; } UI.fdF=k; UI.fdMore=60; render(); }, fdAb(v){ const a=new Set(UI.fdAb||[]); a.has(v)?a.delete(v):a.add(v); UI.fdAb=[...a]; UI.fdMore=60; render(); }, fdS(v){ if(UI.fdS===v&&v!=='rec')UI.fdD=UI.fdD?0:1; else { UI.fdS=v; UI.fdD=0; } UI.fdMore=60; render(); },
-  fdG(v){ UI.fdG=v; UI.fdF='all'; UI.fdSub=0; UI.fdS=''; UI.fdAb=[]; UI.fdMore=60; render(); }, fdY(){ UI.fdY=!UI.fdY; render(); }, fdLog(){ UI.fdLog=!UI.fdLog; render(); }, fdLogT(v,el){ UI.fdLogT=el&&el.value!=null?el.value:v; render(); }, fdFilt(){ UI.fdFiltOpen=!UI.fdFiltOpen; render(); }, fdTop(){ UI.fdTop=!UI.fdTop; render(); }, fdNeed(){ UI.fdNeed=!UI.fdNeed; render(); }, fdQ(){ UI.fdQ=!UI.fdQ; UI.fdMore=60; render(); }, fdPol(v){ G.fdPol=v; save(); render(); }, fdPolB(v){ A.fdPol(v); }, fdAgeR(v){ const [x,y]=String(v).split('-').map(Number); UI.fdA0=x; UI.fdA1=y; UI.fdMore=60; render(); }, fdLogTB(v){ UI.fdLogT=v; render(); }, drdB(v){ const [id,r]=String(v).split(':').map(Number); dmemoOf(id).rd=r; save(); render(); }, fdO(){ UI.fdO=!UI.fdO; render(); }, fdMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
+  fdG(v){ UI.fdG=v; UI.fdF='all'; UI.fdSub=0; UI.fdS=''; UI.fdAb=[]; UI.fdMore=60; render(); }, fdY(){ UI.fdY=!UI.fdY; render(); }, fdLog(){ UI.fdLog=!UI.fdLog; render(); }, fdLogT(v,el){ UI.fdLogT=el&&el.value!=null?el.value:v; render(); }, fdFilt(){ UI.fdFiltOpen=!UI.fdFiltOpen; render(); }, fdNeed(){ UI.fdNeed=!UI.fdNeed; render(); }, fdQ(){ UI.fdQ=!UI.fdQ; UI.fdMore=60; render(); }, fdPol(v){ G.fdPol=v; save(); render(); }, fdPolB(v){ A.fdPol(v); }, fdAgeR(v){ const [x,y]=String(v).split('-').map(Number); UI.fdA0=x; UI.fdA1=y; UI.fdMore=60; render(); }, fdLogTB(v){ UI.fdLogT=v; render(); }, drdB(v){ const [id,r]=String(v).split(':').map(Number); dmemoOf(id).rd=r; save(); render(); }, fdO(){ UI.fdO=!UI.fdO; render(); }, fdMore(){ UI.fdMore=(UI.fdMore||60)+60; render(); },
   nsTalk(){ UI.stadMsg=newStadTalk(); save(); render(); },
   stadXpTalk(v){ UI.stadMsg=stadXpTalk(G.user,v); save(); render(); },
   stadXpStart(){ UI.stadMsg=stadXpStart(G.user); save(); render(); },
@@ -150,7 +146,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   menu(){ UI.sheet=null;UI.mail=null;UI.game=null;UI.posSheet=null; UI.menu=true; renderSheet(); },
   ffset(v){ const [k,x]=v.split(':'); UI.ff=Object.assign({t:'yb',r:'all',s:'cur'},UI.ff||{}); UI.ff[k]=x; if(k==='t'){ UI.ff.r='all'; const on=document.querySelector('[data-a="itab"][data-v^="fview:"].on'); if(on)(UI.it=UI.it||{}).fview=on.dataset.v.split(':')[1]; } /* 외국인↔아시아쿼터를 바꿔도 보던 탭(후보·우리 선수 등)을 그대로(카페 11-09b) */ UI.fmsg2=''; render(); },
   setIntl(v){ const [r,l]=v.split(':'); G.intl[r]=+l; addLog(`${IREG[r].l} 스카우트망을 ${INET[+l].l} 단계로 조정했습니다.`); save(); render(); },
-  signFc(v){ const p=G.players[+v]; const err=foreignCheck(G.user,p); if(err){UI.fmsg2=err;render();return;} UI.fmsg2=''; signForeign(G.user,p.id); save(); render(); },
   tutSkip(){ tutSkip(); save(); render(); },
   hireMgr(v){ const [id,y,c]=v.split(':'); { const blk=mgrHireBlk(); if(blk){ UI.mgrMsg=blk; toast(blk); render(); return; } } /* 현 감독 경질을 뜻하는 선임은 구단주 동의가 먼저(검수 11-17 #244) */ const err=hireMgr(id,+y,c==='1',UI.mplSel||[]); if(err){ UI.mgrMsg=err; toast(err); render(); return; } UI.mplSel=[]; UI.mgrCandidate=null; UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
   fireAsk(){ const r=mgrFireAsk(); if(r.k==='ok')UI.confirmFire=true; else { UI.confirmFire=false; try{ toast(r.msg); }catch(e){} } save(); render(); }, fireCancel(){ UI.confirmFire=false; render(); }, /* 감독 경질은 구단주 동의가 먼저(11-12) */
@@ -160,8 +155,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   setHosp(v){ const L=setHospital(v); if(L&&L.length)note('의무',`재활 중인 선수 남은 기간: ${L.join(', ')}`); save(); render(); },
   medOk(){ G.medSet=true; save(); render(); },
   talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0,ext:!!r.ext}; save(); render(); },
-  devSet(v){ const [id,k]=v.split(':'); UI.devMsg=setDev(+id,k||null); if(!UI.devMsg&&k)sfx('confirm',.5); save(); if(UI.sheet!=null)renderSheet(); render(); },
-  devOff(v){ setDev(+v,null); save(); render(); },
   ovsSet(v){ const [id,k]=v.split(':'); UI.devOk=false; UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
   fallSet(v){ UI.devMsg=setFall(v||null); save(); render(); },
   listP(v){ listPlayer(+v); save(); render(); },
@@ -195,7 +188,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   advTo(v){if(UI.advRun){A.advStop();return;}const T=+v;if(!(T>G.day))return;if(G.res&&!G.live)G.res=null;const d0=G.day,rk0=userRank();return advRunStart(advToSteps(T),(paused)=>{if(G.matchAwait&&!paused){A.awaitGo();return;}if(paused)G.matchAwait=null;const stp=!G.live&&G.stops.length>0;if(stp){closeSheets();stopsOpen();}if(!G.live&&!stp&&wkGames(d0+1,G.day).length){G.res=null;closeSheets();UI.wkres={from:d0+1,to:G.day,rk0};}save();render();if(!paused&&G.day<T){const b=blocker();toast(G.day-d0>=200?`한 번에 200일까지 진행합니다. ${dmd(G.day)}에 멈췄습니다.`:b?`${dmd(G.day)}에 멈췄습니다. ${b}`:`${dmd(G.day)}에 멈췄습니다. 확인할 소식이 있습니다.`);}});},
   /* 경기 직전 멈춤: 직관·직접 관전 예약이 없고 '결과만 보기'를 고른 경기면 포스트시즌이어도 결과만(검수 11-08) */
   awaitGo(){ const d=G.matchAwait.day, P=gmPlanAt(d); closeSheets(); UI.tab='home'; if(G.simPlanned?.day===d&&G.watchPlanned?.day!==d&&!(P&&P.k==='attend'&&!P.done)){ A.matchSim(); return; } A.watchNext(); },
-  resNext(){ G.res=null; A.adv('next'); },
   /* 결과를 먼저 보지 않고 다음 경기를 그래픽 중계로 본다 */
   watchPlan(v){ const d=+v, P=gmPlanAt(d), nx=nextGames(1)[0]; if(!P||P.k!=='attend'||P.done||!nx||nx.d!==d||!gmPlanLive(d,P)){ toast('이 직관 일정은 취소됐거나 이미 지난 경기입니다.'); render(); return; } G.watchPlanned={day:d,op:P.op,...(P.gk?{gk:P.gk}:{})}; A.watchNext(); }, /* 직관 알림 버튼: 그 예약이 아직 유효하고 다음 경기가 그 날일 때만(검수 11-06) */
   watchNext(){ const next=nextGames(1)[0],request=gmWatchChoose(next,G.watchPlanned||G.simPlanned); if(!request){ toast('남은 우리 경기가 없습니다.'); G.matchAwait=null; G.watchPlanned=null; render(); return; } G.simPlanned=null; /* 탈락 뒤 버튼: 다른 팀 경기를 끝까지 넘기지 않는다(검수 11-08) */G.watchPlanned=request;UI.matchPreview=false; if(G.res&&!G.live)G.res=null; if(blocker()){ save();render(); return; } const d0=G.day; advance('watch'); G.res=gmWatchResult(G.watchPlanned||request); if(G.res&&G.games[G.res.i]?.pbp?.length)UI._castHold=1; /* 아래 render가 중계를 열기 전에 우승 장면을 먼저 띄우지 않게(사용자 11-09) */ if(!G.res&&!G.live&&G.stops.length){ closeSheets(); stopsOpen(); save(); render(); return; } /* 경기 전에 핵심 결정 마감 재알림으로 멈춤(검수 11-09z) */ { const g0=G.res&&G.games[G.res.i]; if(G.cwS&&!G.cwS.done&&g0&&G.cwS.day===g0.day&&g0.pbp&&g0.pbp.length)UI.cwAuto=G.cwS.id; } /* 함께 본 경기: 중계를 먼저 보고, 닫을 때 동석 결과(사용자 피드백 11-05: 결과가 중계보다 먼저 떴다) */ setTimeout(()=>dayTick(d0),30); closeSheets(); UI.tab='home'; UI.mail=null; save(); render(); window.scrollTo(0,0); const g=G.res&&G.games[G.res.i];if(g){G.watchPlanned=null;G.matchAwait=null;save();} if(G.cwS&&!G.cwS.done&&g&&G.cwS.day===g.day){ if(g.pbp&&g.pbp.length){ UI.cwAfter=G.cwS.id; UI._castHold=1; A.cast(G.res.i); return; } A.cwOpen(); return; } if(g&&g.pbp&&g.pbp.length){ UI._castHold=1; A.cast(G.res.i); } }, /* hold: 방금 계산한 우리 경기라 중계를 마칠 때까지 결과를 감춘다(spoilG) */
@@ -396,7 +388,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   castPlay(){ const c=UI.cast; if(!c)return; if(c.pre){ if(document.querySelector('.cs-prep-start')?.disabled===false)A.castStart(); else castStart2D(c); return; } /* 3D 준비 중에 재생을 누르면 기본 중계로 바로 시작 */ const L=G.games[c.g].pbp; if(c.k>=L.length)c.k=0; c.play=!c.play; CT.tok++; CT.run=false; cBallHide(); if(c.play){castResumePitch();castLoop();} else { cDraw(c.k,250); sndStop('amb'); sndStop('chant'); } const pb=document.getElementById('cs-play'); if(pb)pb.textContent=c.play?'일시정지':'재생'; },
   castStep(v){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp, pa=i=>i>=0&&i<L.length&&typeof L[i][1]==='number'; let i=c.k; if(+v>0){ i++; while(i<L.length&&!pa(i))i++; } else { i--; while(i>0&&!pa(i))i--; } castJump(i); }, /* 다음·이전 '타석'으로(도루·교체 줄은 건너뜀), 재생 상태는 그대로(검수 11-07) */
   castWin(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp, sc=i=>typeof L[i][7]==='number'&&typeof L[i][8]==='number'?L[i][7]+':'+L[i][8]:null; let prev='0:0'; for(let i=0;i<c.k&&i<L.length;i++){ const v=sc(i); if(v)prev=v; } let to=-1; for(let i=c.k;i<L.length;i++){ const v=sc(i); if(v&&v!==prev){ to=i; break; } } if(to<0)return toast('지금 장면 뒤로는 건너뛸 득점 장면이 없습니다.'); castJump(to,true); }, /* '결승 장면'은 승패를 미리 알려 줘서 '다음 득점'으로 바꿨다(플레이테스트 4 #2) */
-  castInn(){ const c=UI.cast; if(!c)return; const L=G.games[c.g].pbp; const h=L[Math.min(c.k,L.length-1)][0]; const i=L.findIndex((y,j)=>j>c.k&&y[0]!==h); castJump(i<0?L.length:i); },
   cmkFold(v,el){ const d=el&&el.closest('details'); UI.cmkFoldOpen=d?!d.open:!UI.cmkFoldOpen; render(); document.querySelectorAll(".cmk-det").forEach(x=>x.open=UI.cmkFoldOpen); }, /* 휴대폰에서 펼친 상태를 다시 그려도 유지 */
   attrCmp(v){ UI.attrCmp=v; render(); },
   champSceneClose(){ const C=G.champScene; if(C){ C.seen=true; save(); } document.getElementById('champScene')?.remove(); if(C)A.champMoment(C.y); }, /* 우승 장면을 닫으면 우승 순간 사진(사이트에서만) */
@@ -414,12 +405,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(!old||old.n!==n||!saveActionSame(old.source)){const info=slotInfo(),memo=m.slots[source.slot]?.memo;if(memo!=null)info.memo=memo;UI.overAsk={n,rev:revOf(m,n),body,source,data:packJ(source.j),info};UI.slotMsg=`슬롯 ${n}의 저장(${m.slots[n]?.name||''})을 지우고 지금 진행(${dstr(G.day)})으로 덮어씁니다. 되돌릴 수 없습니다. 한 번 더 누르면 덮어씁니다.`;render();return false;}
     UI.overAsk=null;if(revOf(m,n)!==old.rev||body!==old.body){UI.slotMsg=`슬롯 ${n}에 다른 탭(창)이 그사이 저장해 덮어쓰지 않았습니다. 다시 확인해 주세요.`;render();return false;}const ok=await writeSlotConfirmed(n,old.data,old.info,old.rev,{replace:true,body:old.body});UI.slotMsg=ok?`슬롯 ${n}에 지금 상황(${old.info.date})을 덮어 저장했습니다. 계속 진행하는 곳은 슬롯 ${old.source.slot}입니다.`:`덮어쓰지 못했습니다. ${SAVE_ERR||''}`.trim();render();return ok;},
   slotAll(){ UI.slotAll=!UI.slotAll; render(); },
-  dview(v){ UI.dview=v; render(); },
   dpick(v){ UI.open=UI.open||{}; UI.open.dviewMenu=false; if(v==='hist'||v==='fd'){ UI.drv=v; render(); return; } UI.drv=null; UI.df=UI.df||{pos:'all',typ:'all',reg:'all',sort:'rk',seg:'board',more:20}; UI.df.seg=v==='card'?'board':v; if(v==='card'||v==='board')UI.dview=v==='card'?'card':'list'; render(); }, /* 드래프트 '보기 ▾'(33_scouting_train draftViewMenu) */
   jumpTo(v){ const e=document.getElementById(v); if(e)e.scrollIntoView({block:'start',behavior:'smooth'}); }, /* 긴 화면 바로 가기(jumpBar) */
   tpOpen(v,el){ const c=el&&el.closest('.tmk'); if(c){ c.classList.toggle('open');const open=c.classList.contains('open');(UI.teamOpen=UI.teamOpen||{})[v]=open;el.textContent=open?'접기':'자세히';el.setAttribute('aria-expanded',String(open)); } },
-  mfcShow(v){ const el=document.getElementById('m-'+v); if(el&&!el.classList.contains('open')){ el.classList.add('open'); const b=el.querySelector('.mfc-more'); if(b)b.textContent='접기'; } },
-  mfcOpen(v){ const el=document.getElementById('m-'+v); if(el){ el.classList.toggle('open'); const b=el.querySelector('.mfc-more'); if(b)b.textContent=el.classList.contains('open')?'접기':'전체 보기'; } },
   lrAll(){ UI.lrAll=!UI.lrAll; render(); },
   extOpen(v){ A.player(v); A.jump('ext'); },
   /* 연장 협상 창 바로 열기(연장 요구 소식·면담 계약 이야기·소식 버튼): 열 수 없으면 이유를 알린다(피드백 11-17 연장) */
@@ -432,7 +420,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   lrfQ(){ UI.lrf=Object.assign({q:true,t:'all'},UI.lrf); UI.lrf.q=!UI.lrf.q; render(); },
   sbd(v){ if(v==='')return; UI.sbd=+v; render(); },
   nseg(v){ UI.nseg=v; UI.fbo=null; render(); },
-  ibOld(){ UI.ibOld=!UI.ibOld; render(); },
   milAll(){ UI.milAll=!UI.milAll; render(); },
   fbOpen(v){ UI.fbo=v; UI.fbf='all'; A.go('club:fans'); },
   fbo(v){ UI.fbo=UI.fbo===v?null:v; render(); },
@@ -524,7 +511,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   toTrade(v,el){const p=G.players[+v]; if(UI.trade.tid!==p.team)UI.trade={tid:p.team,give:UI.trade.give||[],get:[],msg:'',sort:UI.trade.sort||'cur'}; else if(el&&el.closest&&el.closest('.bk-c'))UI.trade.get=[]; /* 매물 목록에서 누르면 새로 시작 */ if(!UI.trade.get.includes(p.id))UI.trade.get.push(p.id); UI.trade.seg=p.isP?'pit':'bat'; UI.trade.side='give'; UI.trade.msg=''; closeSheets(); A.go('trade:table');},
   toTradeGive(v){const p=G.players[+v]; if(p&&hasNtc(p))toast(`${p.name}은(는) 트레이드 거부권이 있습니다(${p.ntc}년까지). 상대 구단을 고른 뒤 선수에게 동의를 구해야 보낼 수 있습니다.`); if(!UI.trade.give.includes(p.id))UI.trade.give.push(p.id);UI.trade.seg=p.isP?'pit':'bat';UI.trade.side='get';closeSheets(); A.go('trade:table');},
   anF(v){ UI.anF=v; render(); },
-  frF(v){ UI.frF=v; render(); }, ctF(v){ UI.ctF=v; render(); },
+  ctF(v){ UI.ctF=v; render(); },
   signFree(v){ const r=signFree(+v); if(r){ try{ toast(r); }catch(e){} } save(); render(); },
   trySign(v){ const [id,ys]=String(v).split(':'); const r=trySign(+id,G.user,ys==='1'); try{ toast(r||'계약했습니다.'); }catch(e){} save(); render(); },
   tryF(v){ UI.tryF=v; render(); },
@@ -544,7 +531,6 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   extOffer(v){ const e=UI.ext; if(!e)return; const r=offerExtension(+v,e.annual,e.years); e.msg=r.msg; e.ok=r.ok; save(); render(); },
   mkt(v,el){G.marketing=+el.value;save();render();}, mktStep(v){ if(period()!=='pre')return; G.marketing=clamp((G.marketing||2000)+(+v||0),500,6000); save(); render(); }, /* 1억 단위 조정(플레이 테스트 11-13: 트랙을 누르면 한 번에 12억씩 바뀌었다) */
   askNew(){UI.confirmNew=true;render();},
-  cancelNew(){UI.confirmNew=false;render();},
   newgame(){ if(G&&!saveOK()){ toast(`지금 게임(${dstr(G.day)})을 저장하지 못해 새 구단을 시작하지 않았습니다. ${SAVE_ERR||''}`.trim()); return; } if(saveHold(()=>A.newgame(),'새 구단을 시작하지'))return; if(!confDrop('new'))return; /* 저장 실패면 현재 게임을 닫지 않는다(검수 11-06) */ G=null; UI.confirmNew=false; UI.newSlot=null; UI.tab='home'; closeSheets(); render(); window.scrollTo(0,0); },
   /* 보관(읽기 전용) 표시: 자동 저장과 덮어쓰기가 이 슬롯에 쓰지 않는다. 진행 중 슬롯은 보관할 수 없다(플레이테스트 3) */
   slotLock(v){ const n=+v, m=meta(), s=m.slots[n]; if(!s)return; if(G&&n===curSlot()){ UI.slotMsg=`슬롯 ${n}은(는) 지금 진행 중이라 보관할 수 없습니다. "빈 슬롯에 따로 저장"으로 사본을 만든 뒤 그 사본을 보관하세요.`; render(); return; } s.lock=!s.lock; if(!setMeta(m)){ UI.slotMsg='저장 공간이 가득 차 보관 표시를 바꾸지 못했습니다.'; render(); return; } UI.slotMsg=s.lock?`슬롯 ${n}을(를) 보관했습니다. 이 슬롯은 덮어쓰지 않으며, 불러오면 빈 슬롯에 사본을 만들어 이어 합니다.`:`슬롯 ${n}의 보관을 풀었습니다.`; render(); },

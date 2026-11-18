@@ -1,6 +1,5 @@
 /* ===== 훈련 방향(선수 화면 육성 탭, 스태프·육성 > 훈련·육성 > 훈련 방향) ===== */
 const TRN_L={stf:'구위',ctl:'제구',sta:'체력',con:'컨택',pow:'장타',eye:'선구',def:'수비',spd:'주루'};
-function trnCoachOf(p,f){ const c=trnCoach(p.team,f==='bal'?(p.isP?'stf':'con'):f); return c; }
 function trnCard(p){ if(p.team!==G.user||p.prospect||(p.joinY>G.year))return ''; /* 외국인도 엔진에서 집중 훈련을 한다: 카드를 보여 준다(검수 11-09o) */
   if(p.age>33){ const T=G.trn&&G.trn[p.id], on=T&&T.by==='gm'&&T.f!=='bal'&&TRN[trnG(p)][T.f], o=on?trnObs(p):null; /* 33세에 내린 집중 지시는 34세에도 이어진다: 보여 주고 풀 수 있게(검수 11-09o) */
     return `<section class="card"><span class="eyebrow">훈련 방향</span><p class="small muted">34세 이상은 코치진이 몸 관리 위주로 운영합니다.</p>${on?`<p class="small">단장 요청 <b>${TRN[trnG(p)][T.f].l}</b> 집중이 이어지고 있습니다${o?` (${o.w}주 · 코치 평가: ${esc(o.lv)})`:''}. 나이 때문에 효과는 작습니다.</p><div class="talk"><button class="btn small" data-a="trnSet" data-v="${p.id}:coach">코치진 계획으로</button></div>`:''}${trnIBox(p)}${UI.trnMsg&&UI.trnMsg.id===p.id?`<div class="note">${esc(UI.trnMsg.t)}</div>`:''}</section>`; }

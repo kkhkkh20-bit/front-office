@@ -46,10 +46,6 @@ function offPrepCard(){ if(!offPrepOn())return ''; const R=offPrepRows(); if(!R.
 
 /* 선수 시트 계약 금액: 그 시즌 현금 지출 · 보장 총액 · 연평균(상한 반영)을 한 줄씩 */
 function ctMoneyKv(p){ const o=ctOn(p)&&p.opt&&p.opt.until>=ctSeason()?p.opt:null,op=o?`<dt>옵션</dt><dd class="ctm-dd">최대${p.foreign&&optFrac(p)<1?'':' 연'} ${money(o.a)} · ${esc(optLabel(p))}${o.from!=null?' · '+o.from+(o.until!==o.from?'~'+o.until:'')+'시즌':''}</dd>`:''; const m=ctMoney(p); if(!m)return op; return `<dt>${m.sy}시즌 현금 지출</dt><dd class="ctm-dd">${money(m.cash)}${m.bNow?`<i>계약금 ${money(m.bNow)} 포함</i>`:''}</dd><dt>보장 총액</dt><dd class="ctm-dd">${money(m.tot)}<i>${m.yrs}년${m.bTot?` · 계약금 ${money(m.bTot)}`:''}${m.add?` · 구단 옵션 실행 +${m.add.y}년(연 ${money(m.add.a)})`:''}</i></dd><dt>연평균(상한 반영)</dt><dd class="ctm-dd">${money(m.avg)}</dd>${op}`; }
-/* ---------- 외국인 재계약 "15% 깎아 협상" 위험 표시: 엔진 fReNegChance와 같은 식 ---------- */
-function fNegRiskH(p){ const C=G.contract; if(!C||C.done)return ''; if((C.fneg||{})[p.id])return `<span class="opz-risk small muted">이미 한 번 협상했습니다 · 다시 협상할 수 없습니다</span>`;
-  let r; try{ r=fReNegChance(p); }catch(e){ return ''; } const b=1-r.ch; const lv=b>=.55?['높음','bad']:b>=.35?['보통','warn']:['낮음','good'];
-  return `<span class="opz-risk small"><span class="${lv[1]}">결렬 가능성 ${lv[0]}</span> · 결렬되면 다시 협상할 수 없고 선수는 떠납니다${r.star?' · 지난 시즌 WAR 3 이상이라 잘 받아들이지 않습니다':''}</span>`; }
 
 /* ---------- 시즌 회고 메일: 선수별 후속 조치(유지 · 재계약 검토 · 대체 후보 찾기) ---------- */
 function rvExt(p,y){ if(canExtend(p))return {a:'ngtOpen',v:'ext:'+p.id};

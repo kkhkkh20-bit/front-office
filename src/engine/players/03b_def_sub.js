@@ -13,7 +13,6 @@
 let DEF_SPLIT=1;
 const DSUB_K=['rng','arm','fld'];
 const DSUB_W={rng:.4,arm:.3,fld:.3}; /* 종합 수비 = 세부 능력 무게 평균 */
-const DSUB_L={rng:'수비 범위',arm:'송구(어깨)',fld:'포구'};
 /* 자리별 전형(무게 평균 0): 같은 종합 수비라도 포수는 어깨, 1루는 포구, 중견은 범위가 앞선다 */
 const DSUB_ARCH={C:{rng:-4,arm:4,fld:4/3},SS:{rng:1.5,arm:1,fld:-3},'2B':{rng:1,arm:-3,fld:5/3},'3B':{rng:-2,arm:3,fld:-1/3},'1B':{rng:-1.5,arm:-3,fld:5},LF:{rng:0,arm:-3,fld:3},CF:{rng:3,arm:-1,fld:-3},RF:{rng:-1,arm:4,fld:-8/3},DH:{rng:-1.5,arm:-1,fld:3}};
 /* 자리별 세부 능력 중요도(포지션 적합): 경기에서 그 자리 타구·실책·송구가 차지하는 몫에 맞춘 무게 */

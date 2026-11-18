@@ -145,7 +145,13 @@ A.advMoreX=function(v,el,e){ if(e&&e.target&&e.target.closest&&e.target.closest(
 /* 진행 ▾ > 멈춤 조건: 설정 화면의 '진행 멈춤' 칸으로 바로 간다 */
 A.stopCfg=function(){ closeSheets(); UI.it=Object.assign(UI.it||{},{setg:'run'}); /* 휴대폰 게임 설정 안쪽 탭: 진행 멈춤은 '진행' 탭 */ A.go('cfg:set'); const c=document.getElementById('stopCard'); if(c)try{ c.scrollIntoView({block:'start'}); }catch(e){} };
 A.advPick=function(v){ UI.advMore=false; advMoreRender(); v=String(v); if(v==='week')return A.adv('week'); if(v==='mon')return A.advTo(G.day+30); if(v.startsWith('key:'))return A.advTo(+v.slice(4)-1); };
-for(const k of Object.keys(GUARD)){ const f=A[k]; if(!f)continue; A[k]=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v,el); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; }
+/* 결재창 감싸기: GUARD[k]가 있는 액션 A[k]는 결재 문서를 먼저 띄우고, 결재(cfmOk) 뒤 _cfmPass로 원래 동작을 한다.
+   파일 순서와 상관없이 적용된다: 여기(41)에서 한 번, 모든 화면 파일을 읽은 뒤(99_boot guardAll) 한 번, 클릭·키 디스패치 때마다 한 번 더 확인한다.
+   그래서 41보다 뒤 파일에서 정의한 액션(응원단 crewFire, 자매결연 sisEnd, 코치 연수 coachStudySend, 아카데미 acadUp)도 손으로 GUARD를 부르지 않는다.
+   감싼 함수에는 _gw 표시가 붙어 두 번 감싸지 않는다(텔레메트리 teleActWrap은 이 표시를 물려받는다). */
+function guardWrap(k){ const f=A[k]; if(typeof f!=='function'||f._gw||!GUARD[k])return; const w=function(v,el,e){ if(UI._cfmPass)return f.call(A,v,el,e); let d=null; try{ d=GUARD[k](v,el); }catch(err){ d=null; } if(!d)return f.call(A,v,el,e); UI.cfm={k,v,doc:d}; cfmRender(); }; w._gw=1; A[k]=w; }
+function guardAll(){ for(const k of Object.keys(GUARD))guardWrap(k); }
+guardAll();
 A.advSpace=function(v){ setTimeout(()=>{ A.adv(v); },0); }; /* 진행 확인 뒤 실제 진행은 버튼과 같은 경로(외국인 자리 결재 등)를 거친다 */
 A.cfmNo=function(){ const c=UI.cfm; UI.cfm=null; cfmRender(); if(c&&c.doc&&c.doc.noGo)c.doc.noGo(); };
 A.cfmOk=function(){ const c=UI.cfm; if(!c)return; UI.cfm=null; cfmRender(); if(c.doc.onOk)c.doc.onOk(); const n0=c.doc.chk?c.doc.chk():null; UI._cfmWhy=null; UI._cfmPass=true; const s0=G.mailSeq||0; try{ A[c.k](c.v); }finally{ UI._cfmPass=false; }
@@ -165,7 +171,8 @@ document.addEventListener('click',e=>{
   const a=el.dataset.a;
   if(UI.advRun&&a!=='adv'&&a!=='advStop'){e.preventDefault(); const now=Date.now(); if(!(UI._advTapT>now-1500)){ UI._advTapT=now; toast(`${dmd(G.day)} 날짜를 진행하는 중이라 다른 버튼은 멈춘 뒤에 됩니다. 위의 "진행 멈추기"를 누르세요.`); } return;} /* 진행 중 누른 버튼이 말없이 무시돼 고장처럼 보였다(제보 11-15) */
   if(a==='start'&&el.matches('.tmk.open')&&!e.target.closest('.tp-h'))return;
-  if(['playerTab','castSeek','analysisY','tsel','mkt','offA','extA','lfTeam','lrfT','lfSort','rosterTeam','blkWant','impFile','recF','fdPol','fdSsel','fdLogT','ppRep','ppPid'].includes(a))return;
+  /* 값을 고르는 칸(선택 상자·슬라이더·파일·글상자)은 클릭이 아니라 아래 change/input 처리(selApply)가 맡는다. 클릭 쪽은 태그로만 거른다.
+     (예전 이름 목록 19개는 이제 optRow 버튼(data-a="opt")으로 바뀌었거나 슬라이더·파일 칸이라 이 줄과 같은 일을 했다) */
   if(el.matches('select,input[type=range],input[type=file],textarea'))return;
   if(a==='closeSheet'){ if(e.target.closest('.x')||e.target.closest('button[data-a="closeSheet"]')||!e.target.closest('[data-stop]')){ /* 시트 안의 '닫기' 버튼도 닫는다(바깥 여백·× 말고) */ if(closeTop())return; const back=UI.sheet!=null&&UI.castRet&&!UI.castRet.parked&&UI.castRet; closeSheets(); if(back){ UI.cast=back; back.play=!!back.wasPlay&&back.k<G.games[back.g].pbp.length; renderSheet(); } /* 선수 창을 열기 전 재생 상태로 돌아간다(×·뒤로·Esc 같게, 검수 11-07) */ } return; }
   /* 연속 터치 보호: 방금 누른 자리(30px 안)에 0.4초 안에 다른 내용의 버튼이 새로 그려졌는데 또 눌리면 무시한다.
@@ -174,12 +181,15 @@ document.addEventListener('click',e=>{
     const navigation=['advStop','tab','sub','go','retiredGo','trophyGo','itab','ovsPick','ovsList','ovsFlt','ovsBulkOpen','ovsBulkClose','ovsBulkTog','ovsCenter','protOpt','cpPos','peopleStep','relGo','pgGo','ptab','cardFlip','cardNext','cardPrev','cardHome','stopTg','advAskTog','crole','csort','coachSlot','coachFind','smkGo','smkK','smkSrc','findPos','findTeam','findSort','tside','tpool','tsideGo','dpick','jumpTo','tradePick','tradeReview','tpartner','tradeGm','toTrade','toTradeGive','networkOpen','networkPerson','networkRecruit','networkFilter','networkSearch','networkReset','networkPage','coachStudyOpen','coachStudyProgram','coachStudyFocus','relBulkMode','relBulkToggle','relBulkAll','relBulkClear','relBulkTopic','freePage','freeSort','freeReset','fbarTog','fbarReset','fbqClear','freeOpt'].includes(a);
     if(!navigation&&L&&now-L.t<400&&Math.hypot((e.clientX||0)-L.x,(e.clientY||0)-L.y)<30&&L.r!==UI._rN&&L.sig!==sig){ e.preventDefault(); return; }
     UI._clk={t:now,x:e.clientX||0,y:e.clientY||0,r:UI._rN,sig}; }
-  if(A[a]){ e.preventDefault(); UI._tapAnchor=tapAnchor(el); try{ A[a](el.dataset.v,el,e); }finally{ UI._tapAnchor=null; try{ metaSync(); }catch(e){} } } /* 다시 그린 뒤 누른 버튼 위치 유지(52_reading_state) */
+  if(A[a]){ e.preventDefault(); guardWrap(a); UI._tapAnchor=tapAnchor(el); try{ A[a](el.dataset.v,el,e); }finally{ UI._tapAnchor=null; try{ metaSync(); }catch(e){} } } /* 다시 그린 뒤 누른 버튼 위치 유지(52_reading_state) */
 });
 /* 선택 상자 대신 버튼 줄(optRow): 버튼을 누르면 같은 값을 고른 것처럼 아래 change 처리를 그대로 탄다 */
 function optRow(a,cur,opts,x,cls){ return `<span class="chips optrow${cls?' '+cls:''}" role="group">${opts.map(([v,l])=>`<button type="button" data-a="opt" data-k="${a}"${x!=null?` data-x="${x}"`:''} data-v="${esc(String(v))}" class="${String(cur)===String(v)?'on':''}" aria-pressed="${String(cur)===String(v)}">${l}</button>`).join('')}</span>`; }
 A.opt=(v,el,e)=>selApply({dataset:{a:el.dataset.k,v:el.dataset.x},value:v,tagName:'SELECT',files:null},e);
 document.addEventListener('change',e=>{ const el=e.target.closest('[data-a]'); if(!el)return; selApply(el,e); });
+/* change 처리 이름 중 A 액션과 같은 이름(castSeek·analysisY·mkt·offA·extA·fdPol·fdLogT·troF·admSort·dsAx 등)이 있어도 겹쳐 실행되지 않는다:
+   클릭 디스패치는 위에서 선택 상자·슬라이더·파일·글상자를 건너뛰고, 버튼(data-a)은 change를 내지 않는다. optRow 버튼은 data-a="opt"라 클릭만 탄다.
+   evPick·start처럼 change 분기가 없는 이름은 여기서 아무것도 하지 않는다. troF·admSort는 SELECT일 때만 받는다 */
 function selApply(el,e){ const a=el.dataset.a;
   if(a&&a.startsWith('lad')&&(el.tagName==='SELECT'||el.tagName==='INPUT')&&A[a]){A[a](el.value,el,e);return;}
   if(a&&/^ul[A-Z]/.test(a)&&el.tagName==='SELECT'&&A[a]){A[a](el.value,el,e);return;} /* 유저 래더 덱 고치기(src/ui/uladder) */
@@ -253,7 +263,7 @@ document.addEventListener('keydown',e=>{
   if(e.key===' '&&UI.ivSh&&G.iv&&G.iv.done){ e.preventDefault(); closeSheets(); render(); return; } /* 끝난 인터뷰는 스페이스바로 닫기 */
   /* 스페이스바(어느 화면에서나): 안 읽은 소식이 있으면 차례로 열고, 없으면 어디까지 진행할지 묻는다 */
   if(e.key===' '&&!document.documentElement.classList.contains('detail-page-open')&&UI.sheet==null&&!UI.menu&&UI.game==null&&!UI.cer&&!UI.ivSh&&!UI.cmpSh&&!UI.ngt&&!UI.meet&&!UI.negWin&&!UI.cast&&!UI.title&&!(e.target.matches&&e.target.matches('input,select,textarea,summary,[contenteditable]'))){ e.preventDefault(); if(e.repeat)return; /* 누르고 있어도 한 번만. 포커스된 버튼(계속 등)을 스페이스바가 직접 누르지 않게 막는다 */ if(e.target.blur&&e.target.matches&&e.target.matches('button'))e.target.blur(); ibSpace(); return; }
-  if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('g.pos[data-a],.tcard[data-a]')){ e.preventDefault(); const a=e.target.dataset.a; A[a](e.target.dataset.v); }
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('g.pos[data-a],.tcard[data-a]')){ e.preventDefault(); const a=e.target.dataset.a; guardWrap(a); A[a](e.target.dataset.v); }
 });
 
 /* 부팅(저장 불러오기·첫 화면)은 모든 화면 파일이 읽힌 뒤 실행되도록 99_boot.js로 옮겼다 */

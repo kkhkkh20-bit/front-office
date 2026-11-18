@@ -36,11 +36,6 @@ function isoBar(x,y,w,pct,txt,fs){ fs=fs||8; const hh=Math.max(2.5,fs*.45);
 /* 조명탑(화면 좌표의 바닥점) */
 function isoLight(x,y,ht,w){ w=w||9; return `<g><line x1="${isoN(x)}" y1="${isoN(y)}" x2="${isoN(x)}" y2="${isoN(y-ht)}" stroke="${ISO.pole}" stroke-width="${isoN(w*.17)}"/><circle cx="${isoN(x)}" cy="${isoN(y-ht-1)}" r="${isoN(w*.85)}" fill="${ISO.lamp}" opacity=".15"/><rect x="${isoN(x-w/2)}" y="${isoN(y-ht-w*.45)}" width="${w}" height="${isoN(w*.55)}" rx="1" fill="${ISO.lamp}"/></g>`; }
 
-/* 작은 선수 인형: 그림자 타원 + 다리 + 몸통 + 머리(모자). 발이 (x, y). o.c 상의, o.d 하의·모자, o.bat 방망이, o.bar 바벨, o.glove 글러브 */
-function isoMan(x,y,o){ o=o||{}; const c=o.c||ISO.b1, d=o.d||ISO.wL, s=o.s||1;
-  const ex=o.bat?`<path class="imb" d="M3 -9L9.5 -17.5" stroke="${ISO.dirt}" stroke-width="1.7" stroke-linecap="round"/>`:o.bar?`<g class="imb"><path d="M-7 -21H7" stroke="${ISO.hub}" stroke-width="1.4"/><rect x="-8.5" y="-23.5" width="2.4" height="5" fill="${ISO.tire}"/><rect x="6.1" y="-23.5" width="2.4" height="5" fill="${ISO.tire}"/></g>`:o.glove?`<circle class="imb" cx="-4.6" cy="-9.5" r="1.9" fill="#8a5a2b"/>`:'';
-  return `<g${x||y?` transform="translate(${isoN(x)} ${isoN(y)})${s!==1?` scale(${s})`:''}"`:s!==1?` transform="scale(${s})"`:''}><ellipse rx="5.6" ry="2.6" fill="#0007"/><g class="imx"><path d="M-2.2 -.4V-6.5M2.2 -.4V-6.5" stroke="${d}" stroke-width="2.3" stroke-linecap="round"/><path d="M-4.2 -5.6Q-4.4 -14 0 -14Q4.4 -14 4.2 -5.6Z" fill="${c}"/><path d="M.6 -14Q4.4 -14 4.2 -5.6H.6Z" fill="#0003"/>${ex}<circle cy="-16.9" r="3.1" fill="#e2b58f"/><path d="M-3.3 -17.3A3.3 3.3 0 0 1 3.3 -17.3Z" fill="${o.h||d}"/></g></g>`; }
-
 /* 야구장 바닥: (ox, oy)가 홈 쪽 뒤 모서리, 한 변 F. 안쪽은 0~80 단위로 그린다. 홈(6,6)·1루(28,6)·2루(28,28)·3루(6,28)·마운드(17,17)
    o.turf 잔디 단계(1~5), o.worn 낡은 구장 */
 function isoField(ox,oy,F,o){ o=o||{}; const k=F/80, t=o.turf||2; const g2=t>=3?ISO.g2:ISO.g1; let s='';
@@ -49,8 +44,6 @@ function isoField(ox,oy,F,o){ o=o||{}; const k=F/80, t=o.turf||2; const g2=t>=3?
   s+=`<path d="M73 0H80V80H0V73H73Z" fill="${ISO.dirt}" opacity="${o.worn?.3:.5}"/><rect x="3" y="3" width="28" height="28" fill="${ISO.dirt}"/><rect x="10" y="10" width="14" height="14" fill="${o.worn?'#3f5a36':g2}"/><circle cx="17" cy="17" r="2.6" fill="${ISO.dirt}"/>`;
   s+=`<path d="M6 6H80M6 6V80" stroke="#fff" stroke-opacity=".75" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"/><g fill="#fff"><rect x="27" y="5" width="2" height="2"/><rect x="27" y="27" width="2" height="2"/><rect x="5" y="27" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/></g>`;
   return `<g transform="matrix(${isoN(k)} ${isoN(k/2)} ${isoN(-k)} ${isoN(k/2)} ${isoN(ox)} ${isoN(oy)})">${s}</g>`; }
-/* 필드 좌표(0~80) → 화면 좌표 */
-function isoFieldPt(ox,oy,F,a,b){ const k=F/80; return isoXY(ox,oy,a*k,b*k,0); }
 
 /* 구장 외관. 지역 좌표: 필드 뒤 모서리(홈 뒤)가 (100,40), 필드 한 변 80.
    o.lv={seat,fnb,prem,vis,turf}(1~5), o.build=[{k,pct}], o.col 우리 구단 색, o.dome, o.fs 글자 크기, o.proj={stage,pct,label} 신구장, o.labels 공사 글자 표시 */

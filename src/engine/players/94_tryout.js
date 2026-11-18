@@ -21,7 +21,6 @@ const tryAnnD=y=>dnum(y,11,24), tryDayD=y=>dnum(y,12,2), tryCloseD=y=>dnum(y+1,1
 /* 지금 열려 있는(또는 준비 중인) 트라이아웃: 드래프트 해 기준 y. 1월에는 지난해 것 */
 function tryCur(){ const T=G.tryout; if(!T)return null; return G.day<=tryCloseD(T.y)&&!T.done?T:null; }
 function tryIsDay(d){ return d===tryDayD(dobj(d).y); }
-function tryKind(p){ return p&&(p.tryK||(p.ovsWait?'ovs':null)); }
 /* 드래프트가 끝날 때(11_founding_draft finishDraft): 미지명 중 재목만 남긴다 */
 function tryUdPick(cls){ const L=(cls||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&!p.ovsRet); return new Set(L.map(p=>({p,v:p.pot*.7+ovr(p)*.3+hn('tryud',p.id)*2})).sort((a,b)=>b.v-a.v).slice(0,TRY_UD).map(x=>x.p.id)); }
 function tryUdKeep(p,y){ p.prospect=false; p.team=null; p.tryK='ud'; p.udY=y; delete p.press; story(p,`${y} 신인 드래프트 미지명 · 육성선수 계약을 기다리는 중`,'draft');

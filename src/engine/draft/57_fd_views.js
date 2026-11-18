@@ -12,9 +12,7 @@ function fdScoutSd(){ const sk=(G.scouts||[]).reduce((a,s)=>Math.max(a,s.skill||
    S 특급 90+(리그에 몇 명) · A 상급 84~89(구단 간판) · B 중상급 78~83(좀 하는 선수) · C 중급 70~77(1군 보통) · D 하급 62~69(1.5군) · E 최하급 ~61(2군급) */
 const fdToolNum=v=>Math.round(clamp(74+(v-52.5)/9*7,30,99));
 const FD_G=v=>{ const n=fdToolNum(v); return n>=90?'S':n>=84?'A':n>=78?'B':n>=70?'C':n>=62?'D':'E'; };
-const FD_GN={S:'특급',A:'상급',B:'중상급',C:'중급',D:'하급',E:'최하급'};
 const fdGc=g=>({S:'var(--r75)',A:'var(--r65)',B:'var(--r55)',C:'var(--r50)',D:'var(--r45)',E:'var(--r35)'})[g]||'var(--r20)'; /* 등급 색 */
-const FD_GLEG='S 특급(리그에 몇 명) · A 상급(구단 간판) · B 중상급 · C 중급(1군 보통, 74점 안팎) · D 하급(1.5군) · E 최하급(2군급)';
 /* 스카우트 버릇(등급 단위, 1등급 ≈ 9~10): 눈에 보이는 툴은 작고(±3) 오차 큼 툴은 크다(±7) */
 function fdScoutBias(k,vis,sid){ return vis?clamp(hn('fsb'+k+sid,'x')*1.5,-3,3):clamp(hn('fsb'+k+sid,'x')*4.5,-7,7); }
 /* 우리 스카우트 성향: 지난 리포트와 실제 결과를 맞춰 본 기록이라 지명 전에 안다(실제 구단도 스카우트의 버릇을 알고 보정한다) */

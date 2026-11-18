@@ -260,7 +260,6 @@ function ourNewsView(){ G.newsSeen=Math.max(newsSeen(),...(G.news||[]).map(n=>n.
   const own=(G.news||[]).filter(n=>!n.oth); /* 다른 구단 기사는 빼고 우리 구단 기사만(플레이테스트 4 #18) */ const kinds=[...new Set(own.map(n=>n.k).filter(Boolean))]; const ns=own.filter(n=>!UI.nk||n.k===UI.nk);
   const kc=`<div class="chips"><button data-a="nk" data-v="" class="${!UI.nk?'on':''}">전체</button>${kinds.map(k=>`<button data-a="nk" data-v="${esc(k)}" class="${UI.nk===k?'on':''}">${esc(k)}</button>`).join('')}</div>`;
   return csec('우리 구단 기사',kc+(ns.length?(()=>{ const P=pager('news'+(UI.nk||''),ns.slice(0,120),8); return `<div class="newslist">${P.items.map(n=>newsItem(n,true)).join('')}</div>${P.bar}`; })():'<p class="small muted">기사가 없습니다.</p>')); }
-function newsView(){ return ourNewsView(); }
 
 
 /* ---------- PC(FM '주요 일정' 배치): 일정·결과 ----------

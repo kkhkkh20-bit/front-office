@@ -41,10 +41,6 @@ function liveCard(){
     ${done?`<div class="btns"><button class="btn" data-a="openGame" data-v="${G.live.i}">박스스코어</button><button class="btn primary" data-a="liveDone">확인</button></div>`:`<div class="btns"><button class="btn primary" data-a="liveNext">다음 이닝</button><button class="btn" data-a="liveEnd">경기 끝까지</button></div>`}
   </section>`;
 }
-function offersCard(){
-  const OS=(G.offers||[]).filter(o=>!o.blk); if(!OS.length)return '';
-  return OS.map(offerOne).join('');
-}
 function offerOne(o){ { const t=team(o.from); const why=offerBlockMsg(o); /* 그사이 성사될 수 없게 된 제안은 수락 대신 사유 */ const li=id=>{const p=G.players[id]; return p?pcard(p,{foot:rosterFoot(p)}):''};
     return `<section class="card hero"><div class="row between"><span class="eyebrow">트레이드 제안 · ${dmd(o.exp)}까지</span><span class="small muted">관계 ${relLabel(t.rel)}</span></div>
     <h2 class="sec">${tname(o.from)}</h2>
@@ -153,10 +149,6 @@ function medBody(){ const IL=injNowList();
   <div class="eyebrow">제휴 병원 ${hiI('병원을 바꾸면 새 부상은 물론, 재활이 2주 넘게 남은 선수에게도 그날부터 새 병원 효과가 적용됩니다. 짧은 부상은 그대로입니다.\n병원 이름은 모두 가상입니다. 비용은 하루 단위로 쌓여 시즌 결산 때 나갑니다.')}</div><div class="list">${Object.entries(HOSP).map(([k,h])=>`<button class="item" data-a="setHosp" data-v="${k}"><span class="nm">${G.med.hosp===k?'<span class="pill good">선택됨</span> ':''}${esc(h.name)}</span><span class="sub">${esc(h.d)}</span><span class="rt num">${h.c?money(h.c):'-'}</span></button>`).join('')}</div>
   <p class="small muted">지난 결산 이후 의료비 ${money(G.spend.med+G.spend.hosp)}</p>
   ${G.medSet?'':'<button class="btn primary block" data-a="medOk">이대로 운영</button>'}`;
-}
-function devBody(){
-  const dv=inTabs('devv',[['trn','훈련 방향'],['ovs',`해외 연수${(G.ovs||[]).length?' '+(G.ovs||[]).length+'명':''}`]],'trn');
-  return dv.bar+(dv.cur==='ovs'?ovsBody():trnListBody());
 }
 function devPage(){
   if(G.camp&&!G.camp.done)G.camp.seen=true;
