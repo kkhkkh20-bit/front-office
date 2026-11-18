@@ -24,6 +24,13 @@
   "style_reference_mode": "Text-only observations of KBO professional makeup; no real face photo is input for this candidate",
   "source_photo_reference": "/workspace/generated_images/exec-e5be72d4-7f19-4342-8f76-a25e662c62de.png",
   "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-812e18aa-56bc-4746-ae2d-8dc74112fce1.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
-  "exclude_from_casting": true,
-  "final_selection_status": "DRAFT_REVIEW_ONLY_NOT_RUNTIME_READY"
+  "exclude_from_casting": false,
+  "final_selection_status": "SELECTED_REVISION02_FINAL_ACTUAL_ATLAS_PASSED",
+  "final_runtime_id": "v22_cheer22_green_04",
+  "final_index": 33,
+  "final_sheet_sha256": {
+    "512": "99a042140909f36819e840955396a5b4bfbf6a3d79b35d5dad6a16fed8031fd2",
+    "256": "7693b663cbae8af7fae5130e6e12e5401e7634c794be56cf46a227d1ca0ca6f6",
+    "128": "08bb42ffa6cbb779eb43288de56633290c5719732b2949cdecd3575bb51f1e9f"
+  }
 }

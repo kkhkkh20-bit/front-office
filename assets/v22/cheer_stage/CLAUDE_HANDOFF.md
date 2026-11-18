@@ -1,3 +1,15 @@
+# v22 revision2 — 아이돌 프로필 수준의 새 성인 응원단 캐스팅
+
+#8 navy03, #33 green04, #44 sky03을 아이돌 프로필 수준으로 예쁘고 화사한20대 성인 인상을 목표로 새 가상 인물로 캐스팅했습니다. 기존 인물의 화장 보완만으로는 사용자 요구에 부족하다는 추가 피드백을 반영했습니다. 얼굴 비율과 눈 크기는 정상적인 사람 범위로 검토했습니다. 실제 LG 공식 응원단 사진은 화장과 헤어 완성도 참고용으로만 사용했습니다. 나머지45명은 원본 사진과 crop을 보존했습니다. 모든48명의 id/index/역할/uc와 시트 경로는 같습니다.
+
+현재 최종판은 manifest.revision=2이며 production_complete=true, runtime_ready=48입니다. 비교판은 `previews/revision02_idol_cast_before_after.png`(왼쪽 BEFORE/오른쪽 AFTER), 변경 내역은 `validation/revision02_changes.json`입니다. 아래 revision1 설명은 이전 수정 이력입니다.
+
+- 128px: 신규끼리 최대 0.553502083, 기존116명과 최대 0.450729132; 사용자 승인 raw cosine<0.60 통과.
+- 256px: 신규끼리 최대 0.509119570, 기존116명과 최대 0.442692041; 사용자 승인 raw cosine<0.60 통과.
+- 512px: 신규끼리 최대 0.491940558, 기존116명과 최대 0.476058245; 사용자 승인 raw cosine<0.60 통과.
+
+사용자가 새 시안의 미모 방향을 승인하고 유사도 기준을0.60미만으로 완화했습니다. 원래0.40기준의 탈락 값은 drafts/revision02_idol_cast/validation_failed_original_threshold.json에 보존했으며 점수·모델·정렬·코덱·구도 기준은 바꾸지 않았습니다. 승인 기록: validation/revision02_similarity_policy.json.
+
 # 사용자 검수 반영 v22 수정판 (revision 1)
 
 지적한21명은 교체했고, 나머지 단발5명은 얼굴을 유지하는 방향으로 긴 머리로 수정했습니다. 총27칸을 수정했습니다. 원본 사진은22칸 보존했고, 그중21칸은 crop도 그대로입니다. 나머지1칸(orange05,index28)은 최종 압축 후 눈높이 기준을 맞추기 위해 전체 crop만1.54% 작게 조정했습니다. 얼굴·머리·의상은 변경하지 않았습니다. 48명의 runtime id/index/역할/색 계열이 모두 이전과 같습니다. 같은 번호의 새 사진으로 교체하시면 됩니다.

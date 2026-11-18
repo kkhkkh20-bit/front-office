@@ -38,13 +38,15 @@
     452
   ],
   "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-03ca4900-fef9-4ef0-9c3b-b301b9aedabb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
-  "final_selection_status": "SELECTED_REVISION01_FINAL_ACTUAL_ATLAS_PASSED",
-  "exclude_from_casting": false,
+  "final_selection_status": "SUPERSEDED_BY_USER_APPROVED_REVISION02",
+  "exclude_from_casting": true,
   "final_runtime_id": "v22_cheer22_green_04",
   "final_index": 33,
   "final_sheet_sha256": {
     "512": "1a8f07b7f80effef14867d25a05c72ea369257b2e9844f69137a38c5e7301240",
     "256": "64380bb9b65f07d176a67809c596d9b03fa977ae1d73f6385d1a34508ecb1641",
     "128": "67e493e54e68e49925b13b338fbe92440f2fc39a66f01341f100b17fc4a9a588"
-  }
+  },
+  "superseded_runtime_id": "v22_cheer22_green_04",
+  "superseded_by_candidate": "v22_cheer22_green_04_a1902"
 }

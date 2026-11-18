@@ -28,5 +28,9 @@
     627,
     1254
   ],
-  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+  "operation": "independent four-portrait whole-photo stage edit/outpaint",
+  "exclude_from_casting": true,
+  "final_selection_status": "SUPERSEDED_BY_USER_APPROVED_REVISION02",
+  "superseded_runtime_id": "v22_cheer22_navy_03",
+  "superseded_by_candidate": "v22_cheer22_navy_03_a1401"
 }

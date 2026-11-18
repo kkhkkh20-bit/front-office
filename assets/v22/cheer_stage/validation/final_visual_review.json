@@ -1,8 +1,8 @@
 {
   "passed": true,
-  "reviewer": "assistant visual review, not user approval",
-  "reviewed_at_utc": "2026-11-18T01:56:33.661682+00:00",
-  "source_final_sheet_256_sha256": "64380bb9b65f07d176a67809c596d9b03fa977ae1d73f6385d1a34508ecb1641",
+  "reviewer": "assistant full48 visual review; user accepted the three new idol-style casts and0.60similarity criterion",
+  "reviewed_at_kst": "2026-11-18T13:56:19.098119+09:00",
+  "source_final_sheet_256_sha256": "7693b663cbae8af7fae5130e6e12e5401e7634c794be56cf46a227d1ca0ca6f6",
   "reviewed_ids": [
     "v22_cheer22_red_01",
     "v22_cheer22_red_02",
@@ -53,18 +53,19 @@
     "v22_cheer22_sky_05",
     "v22_ccap22_sky_06"
   ],
-  "review_surface": "previews/by_color.png derived from actual decoded final256 atlas, all48; generated native and512 crops inspected for retakes",
+  "user_accepted_new_cast_indices": [
+    8,
+    33,
+    44
+  ],
+  "user_approval_quote": "좀 유사해도 됨. 좋아",
   "checks": {
-    "believable_Korean_young_adult_stage_casting_direction": true,
-    "captains_not_intentionally_aged": true,
-    "normal_eye_and_face_proportions": true,
-    "natural_skin_and_teeth": true,
-    "no_bob_for_revised_hairstyles": true,
-    "long_wave_pony_half_up_and_varied_black_brown_colors": true,
-    "matching_modest_costume_within_color": true,
-    "night_stadium_backgrounds": true,
-    "no_logos_glasses_hats": true,
-    "no_broken_photos_or_obscuring_hands": true
+    "normal_adult_face_eye_proportions": true,
+    "idol_profile_style_three_new_casts": true,
+    "polished_stage_makeup_and_long_hair": true,
+    "modest_matching_costume_within_color": true,
+    "night_stadium_photo_style": true,
+    "no_logos_hats_glasses_or_broken_images": true
   },
-  "notes": "Creative adult casting and photographic style judgment; not biometric inference of ethnicity or exact age. Does not override any numeric gate and is not user aesthetic approval."
+  "notes": "User accepted some similarity; numeric acceptance is the separately recorded raw0.60gate. Original0.40failure reports retained. Visual review is not ethnicity or exact-age inference."
 }

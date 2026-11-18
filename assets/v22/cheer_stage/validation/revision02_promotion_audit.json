@@ -1,0 +1,12 @@
+{
+  "revision": 2,
+  "threshold_change_user_approved": true,
+  "original_threshold": 0.4,
+  "approved_threshold": 0.6,
+  "raw_resolution_stats_equal_preapproval_draft": true,
+  "frozen_model_hashes_equal_preapproval_draft": true,
+  "actual_runtime_tile_RGB_sha256_verified": 144,
+  "no_pixels_or_raw_scores_changed_for_approval": true,
+  "preserved_original_photos_and_crops": 45,
+  "source_records": "drafts/revision02_idol_cast/validation_failed_original_threshold.json"
+}

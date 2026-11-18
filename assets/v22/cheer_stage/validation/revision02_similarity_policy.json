@@ -1,0 +1,13 @@
+{
+  "revision": 2,
+  "threshold": 0.6,
+  "operator": "<",
+  "previous_threshold": 0.4,
+  "user_approved": true,
+  "approval_quote": "좀 유사해도 됨. 좋아",
+  "approved_proposal": "이 외형을 우선해 유사도 기준을 0.60 미만으로 완화할까요?",
+  "approval_recorded_at_kst": "2026-11-18T13:55:48.726504+09:00",
+  "scope": "v22 cheerleader revision2 new fictional idol-style cast, whole final atlas at128/256/512 against all48 and116legacy",
+  "unchanged": "Raw scores, frozen model, five-point alignment, fixed q80 codec, geometry and native resolution requirements; no epsilon or score transformation",
+  "original_040_failure_retained": "drafts/revision02_idol_cast/validation_failed_original_threshold.json"
+}
