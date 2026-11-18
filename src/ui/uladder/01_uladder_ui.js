@@ -137,13 +137,13 @@ Object.assign(A,{
   /* 서버 기록 지우기(개인정보: docs/privacy.md, 사용자 11-17): v1 플레이어 전부 + 이 세계의 예전 KV 덱. 이 기기에서는 서버 래더를 끈다(자동으로 다시 만들지 않게) */
   /* 두 서버(새 래더 서버 v1 · 예전 덱 서버 KV)를 따로 확인한다. 하나라도 실패하면 어느 쪽인지 알리고, 남은 지우기를 저장(uld().svDel)해 '남은 것 다시 지우기'로 이어 한다(외부 검수 11-17: 예전 서버가 503이어도 '지웠습니다'라고 하던 문제) */
   async ulSvDel(v){ if(UL.busy)return; const U=uld(), P0=U&&U.svDel, retry=v==='retry'&&P0;
-    if(!retry&&!confirm('서버에 있는 내 래더 기록(닉네임·덱·시즌 기록·맞대결)을 지웁니다. 되돌릴 수 없습니다. 이 기기의 리그 기록은 그대로 남습니다.'))return;
+    if(!retry&&!confirm('서버에 있는 내 래더 기록(닉네임·덱·시즌 기록·맞대결)을 지웁니다.'+(typeof clOn==='function'&&clOn()?' 클라우드 저장(올린 저장 본문)과 연결된 기기도 함께 지워집니다.':'')+' 되돌릴 수 없습니다. 이 기기의 리그 기록과 저장은 그대로 남습니다.'))return;
     const P=retry?{v1:!!P0.v1,kv:P0.kv||null}:{v1:true,kv:G&&G.wid?G.wid:null}; if(U){ U.svDel=Object.assign({},P); ulSave(); } /* 시작 전에 남겨 둔다: 도중에 창을 닫아도 다음에 이어 지운다 */
     UL.busy=true; render(); const C=FrontOfficeCore;
     if(P.v1){ try{ const r=await ulNet().deleteMe(); if(r&&(r.ok||r.status===401))P.v1=false; }catch(e){} }
     if(P.kv){ try{ const {r}=await ulApi('/deck/'+encodeURIComponent(P.kv),{method:'DELETE'}); if(r&&(r.ok||r.status===404))P.kv=null; }catch(e){} }
     UL.busy=false; const U2=uld();
-    if(!P.v1){ C.netSetEnabled(false); Object.assign(UL,{v1:'no',me:null,srv:'',v1sync:''}); ulSvStale(); UL.sv.me=null; UL.sv.rv=null; }
+    if(!P.v1){ try{ if(typeof clForgetAll==='function')clForgetAll(); }catch(e){} C.netSetEnabled(false); Object.assign(UL,{v1:'no',me:null,srv:'',v1sync:''}); ulSvStale(); UL.sv.me=null; UL.sv.rv=null; }
     if(!P.v1&&!P.kv){ if(U2){ delete U2.svDel; ulSave(); } return ulSay('서버 기록을 지웠습니다. 이 기기에서는 서버 래더를 껐습니다. 리그는 이 기기에서 그대로 할 수 있습니다.'); }
     if(U2){ U2.svDel=P; ulSave(); }
     ulSay(`서버 기록을 다 지우지 못했습니다. ${P.v1&&P.kv?'새 래더 서버와 예전 덱 서버 모두':P.v1?'새 래더 서버(닉네임·시즌 기록)':'예전 덱 서버(등록 덱)'}에 아직 남아 있습니다.${!P.v1?' 새 래더 서버 기록은 지웠습니다.':!P.kv&&G&&G.wid?' 예전 덱 서버 기록은 지웠습니다.':''} 잠시 뒤 '남은 서버 기록 다시 지우기'를 눌러 주세요.`,true); },

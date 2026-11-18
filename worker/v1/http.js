@@ -22,6 +22,16 @@ export const MSG = {
   method: '지원하지 않는 요청입니다.',
   server: '서버에서 처리하지 못했습니다. 잠시 뒤 다시 시도해 주세요.',
   busy: '같은 기록을 동시에 고치는 요청이 많습니다. 잠시 뒤 다시 보냅니다.',
+  /* 클라우드 저장(worker/v1/cloud.js) */
+  conflict: '다른 기기가 이 슬롯을 더 최근에 저장했습니다. 덮어쓰지 않았습니다.',
+  precondition_required: '저장 판번호(If-Match)가 없는 요청은 받지 않습니다.',
+  bad_rev: '저장 판번호 형식이 올바르지 않습니다.',
+  bad_format: '게임 클라우드 저장 형식이 아닙니다.',
+  bad_slot: '슬롯 이름이 올바르지 않습니다.',
+  slot_limit: '클라우드 슬롯은 3개까지입니다. 안 쓰는 클라우드 슬롯을 지운 뒤 다시 올려 주세요.',
+  daily_limit: '오늘 클라우드에 올릴 수 있는 횟수를 다 썼습니다. 내일 다시 올립니다. 이 기기 저장은 그대로입니다.',
+  bad_code: '코드가 맞지 않거나 시간이 지났습니다. 다시 확인해 주세요.',
+  bad_device: '기기 번호가 올바르지 않습니다.',
 };
 const BASE = { 'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff' };
 export function json(status, body, extra) {
@@ -43,17 +53,21 @@ export function cors(req, url, env, res) {
   if (!o || o === url.origin || !originOk(req, url, env)) return res;
   const h = new Headers(res.headers);
   h.set('Access-Control-Allow-Origin', o); h.append('Vary', 'Origin');
-  h.set('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-FT-Client');
+  h.set('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-FT-Client, If-Match, If-None-Match, X-Save-Day, X-Save-Wid, X-Save-Date, X-Save-Team, X-Save-Ver, X-Save-At');
   h.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); h.set('Access-Control-Max-Age', '86400');
-  h.set('Access-Control-Expose-Headers', 'Retry-After'); /* 429의 기다릴 시간을 앱이 읽게(srv2) */
+  h.set('Access-Control-Expose-Headers', 'Retry-After, ETag, X-Save-Rev, X-Save-Current, X-Save-Day, X-Save-Wid'); /* 429의 기다릴 시간을 앱이 읽게(srv2) */
   return new Response(res.body, { status: res.status, headers: h });
 }
 
 export const BODY_MAX = 120 * 1024;
 /* 본문을 바이트로 센다(srv2: 글자 수가 아니라). Content-Length가 크면 읽지 않고, 없거나 거짓이어도 읽는 동안 max를 넘으면 멈춘다 → {text} | {error:'too_large'} */
 export async function readText(req, max = BODY_MAX) {
+  const r = await readBytes(req, max); return r.error ? r : { text: new TextDecoder().decode(r.bytes) };
+}
+/* 같은 규칙으로 바이트 그대로(클라우드 저장 본문) → {bytes: Uint8Array} | {error:'too_large'} */
+export async function readBytes(req, max = BODY_MAX) {
   const len = +req.headers.get('Content-Length'); if (len > max) return { error: 'too_large' };
-  if (!req.body) return { text: '' };
+  if (!req.body) return { bytes: new Uint8Array(0) };
   const rd = req.body.getReader(), parts = []; let n = 0;
   for (;;) {
     const { done, value } = await rd.read(); if (done) break;
@@ -61,7 +75,7 @@ export async function readText(req, max = BODY_MAX) {
     parts.push(value);
   }
   const buf = new Uint8Array(n); let o = 0; for (const p of parts) { buf.set(p, o); o += p.byteLength; }
-  return { text: new TextDecoder().decode(buf) };
+  return { bytes: buf };
 }
 export const byteLen = s => new TextEncoder().encode(s).length;
 export async function readJson(req, max = BODY_MAX) {

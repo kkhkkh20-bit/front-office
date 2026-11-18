@@ -1,6 +1,7 @@
 # 계정 클라우드 저장 설계 (초안, 2026-11-17)
 
-상태: **설계만 있고 구현하지 않았습니다.** 운영자가 정해야 할 것은 맨 아래 "정할 것"에 모았습니다.
+상태: **11-18 구현(1~3단계).** 운영자 결정: 가입 없음(익명 플레이어 자동), 기본 꺼짐(사용자가 켬), 기기 연결 코드 + 복구 코드, R2 본문(`fronttime-saves`)·D1 목록(`migrations/0003_cloud_saves.sql`, 문서의 '0002'는 0003이 됨), 슬롯 3개·3판·하루 200번. 서버 `worker/v1/cloud.js`, 화면 `src/ui/shell/01d_cloud.js`, 점검 `tools/test/cloud-save.test.cjs`·`tools/check-cloud-save-ui.cjs`, 설정 `docs/server-setup.md` 7절.
+구현에서 달라진 점: 연결 API 이름은 `POST /api/v1/player/link-code`·`/link-code/redeem`(코드는 KV가 아니라 D1 `cloud_codes`에 해시로), 복구 코드 `POST /api/v1/player/recovery`·`/recovery/redeem`. 클라우드 슬롯 이름은 게임 세계 번호(`G.wid`). 본문은 `'FTS1'` 4바이트 + deflate. 떠날 때 올리기는 keepalive 없이 보통 요청(실패하면 다음 기회에). 처음 화면 '이어하기' 직전 자동 비교는 아직 없음(목록·설정 카드에서 '클라우드가 더 최근' 표시와 받기).
 
 ## 0. 배경
 

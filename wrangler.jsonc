@@ -16,6 +16,10 @@
   // 대시보드에서 바인딩을 추가했다면 그대로 두어도 된다. 설정 파일로 관리하려면 아래 주석을 풀고 database_id에 대시보드의 ID를 넣는다.
   // 주의: 대시보드로만 추가한 바인딩은 다음 자동 배포(Workers Builds) 때 이 파일 기준으로 사라질 수 있다 → 이 블록을 푸는 것을 권장.
   "d1_databases": [{ "binding": "DB", "database_name": "fronttime-db", "database_id": "4a7684f1-5f5b-412d-8849-f6130a8f9e39", "migrations_dir": "migrations" }],
+  // 클라우드 저장 본문(Cloudflare R2, docs/server-setup.md 7절). fronttime-saves (11-18 운영자 생성).
+  // 바인딩이 없으면 클라우드 저장 API(/api/v1/saves 등)만 503 not_configured이고 게임 화면은 클라우드 저장 카드를 숨긴다(나머지는 그대로).
+  // PR 미리보기 빌드도 같은 버킷을 쓴다(저장은 플레이어별 경로라 섞이지 않는다).
+  "r2_buckets": [{ "binding": "SAVES", "bucket_name": "fronttime-saves" }],
   // 선택: 매일 시즌 교체 확인(Cron Trigger, 무료). 없어도 요청이 들어올 때 바꾼다.
   // "triggers": { "crons": ["7 15 * * *"] },
   // 선택: 요청 수 제한(Workers Rate Limiting). 없으면 서버 메모리에서 대략 센다.
