@@ -505,11 +505,11 @@ function aiOffer(){ return slotsHold(aiOfferRun); } /* 리그 자리표 열쇠�
 function aiOfferRun(){ const ts=G.teams.filter(x=>x.id!==G.user&&!tradeCool(x.id)) /* 막 거래한 구단은 30일 동안 새 제안을 하지 않는다 */.map(t=>({t,w:gmHeat(t.id)+R()*.8})).sort((a,b)=>b.w-a.w).slice(0,3);
   for(const x of ts){ if(aiOfferFrom(x.t))return true; } return false; }
 function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.user);
-  const mine=domestic(G.user).filter(p=>!(p.joinY>G.year)&&healthy(p)&&!hasNtc(p)&&!faLock(p)&&!p.noTrade&&offerContactOk(t.id,p.id)) /* 단장이 '트레이드 불가'로 정한 선수는 다른 구단이 묻지 않는다(커뮤니티 11-12) */.map(p=>({p,v:tval(t,p,'in')})).filter(x=>x.v>(x.p.listed?1.5:3)).sort((a,b)=>b.v-a.v).slice(0,8);
+  const mine=domestic(G.user).filter(p=>tradeEligible(p,{foreign:false,ys:false,recent:false})&&!p.noTrade&&offerContactOk(t.id,p.id)) /* 단장이 '트레이드 불가'로 정한 선수는 다른 구단이 묻지 않는다(커뮤니티 11-12) */.map(p=>({p,v:tval(t,p,'in')})).filter(x=>x.v>(x.p.listed?1.5:3)).sort((a,b)=>b.v-a.v).slice(0,8);
   if(!mine.length)return false; const listed=mine.filter(x=>x.p.listed); const tg=listed.length&&R()<.7?pick(listed):pick(mine);
   const tgU=tval(U,tg.p,'out'); // 우리가 그 선수를 내줄 때 느끼는 가치
   const core=new Set(domestic(t.id).map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id));
-  let pool=domestic(t.id).filter(p=>!core.has(p.id)&&healthy(p)&&!p.ys&&!hasNtc(p)).map(p=>({p,v:tval(t,p,'out'),u:tval(U,p,'in')})).filter(x=>x.v>0&&x.u>.3).sort((a,b)=>a.v-b.v);
+  let pool=domestic(t.id).filter(p=>!core.has(p.id)&&tradeEligible(p,{foreign:false,joinY:false,faLock:false,recent:false})).map(p=>({p,v:tval(t,p,'out'),u:tval(U,p,'in')})).filter(x=>x.v>0&&x.u>.3).sort((a,b)=>a.v-b.v);
   /* 운영 전략: 유망주 수집·긴축 구단은 스물일곱 넘은 선수를 내놓고(어린 선수는 지킨다), 우승 도전 구단은 주전 대신 어린 선수를 내놓는다 */
   const pl=planOf(t); { const f=pl==='build'||pl==='tight'?pool.filter(x=>x.p.age>=27):pl==='win'?pool.filter(x=>x.p.age<=26||!startersOf(t.id).has(x.p.id)):pool; if(f.length)pool=f; }
   { const D=domTradeTax(t,G.user,true); if(D.refuse)pool=pool.filter(x=>!startersOf(t.id).has(x.p.id)); } /* 독주 견제: 우리가 독주하면 우승 경쟁 구단은 주전을 제안하지 않는다(86b_dynasty) */
@@ -532,22 +532,7 @@ function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.us
 }
 /* 받은 제안이 지금 성사될 수 있는지(거부권·소속·상대 정원·샐러리캡). 막히면 사유, 되면 null.
    수락할 때와 AI가 제안을 만들 때 같은 판정을 쓴다: 예전에는 만들 때 이 검사를 안 해 수락하면 샐러리캡으로 취소되는 제안이 잦았다 */
-function offerBlockMsg(o,strict){ { const msg=tradeRecentMsg([...(o.give||[]),...(o.get||[])]); if(msg)return msg; const cd=tradeCool(o.from,o.give,o.cash||0,o.pk); if(cd)return '최근 거래 횟수 또는 거래 간격 제한으로 지금은 거래할 수 없습니다.'; } /* strict: 제안을 만들 때는 evalTrade가 받아들이는 조건만(독주 견제·반복 웃돈 포함), 수락할 때는 역제안과 같은 여유(.15) */ { const m=faLockMsg([...(o.get||[]),...(o.give||[])]); if(m)return m; } /* AI 제안 수락도 FA 공시 전 잠금을 따른다(코드 리뷰 11-13) */
-  { const nt=ntcOfFor(o.get,o.from); if(nt)return `${nt.name}은(는) 트레이드 거부권이 있어 보낼 수 없습니다. 선수에게 ${tshort(o.from)}행 동의를 구할 수 있습니다.`; }
-  { const nt=ntcOf(o.give); if(nt)return `${tname(o.from)} ${nt.name}은(는) 트레이드 거부권이 있어 데려올 수 없습니다.`; }
-  if([...o.give,...o.get].some(id=>!G.players[id]))return '선수 상황이 바뀌어 성사되지 않았습니다.';
-  if(o.give.some(id=>G.players[id].team!==o.from)||o.get.some(id=>G.players[id].team!==G.user))return '선수 상황이 바뀌어 성사되지 않았습니다.';
-  const cash=o.cash==null?0:+o.cash,pk=pkNorm(o.pk); const t0=team(o.from);
-  if(!Number.isSafeInteger(cash)||Math.abs(cash)>3000)return '현금 조건이 올바르지 않습니다(최대 30억 원).';
-  if(cash>0&&spendable(G.user)<cash)return '우리 구단의 트레이드 현금 여유가 부족합니다.';
-  if(cash<0&&(t0.cash||0)<-cash)return '상대 구단의 트레이드 현금 여유가 부족합니다.';
-  {const why=pkCheck(o.from,o.get,o.give,pk);if(why)return why;}
-  const ev=evalTrade(o.from,o.get,o.give,cash,pk);
-  if(ev.theirN>ROSTER_MAX||ev.theirN<ROSTER_MIN)return `${tfull(t0)} 로스터 사정이 바뀌어 성사되지 않았습니다(정식 ${ev.theirN}명).`;
-  if(ev.capT&&ev.capT.hard)return `${tfull(t0)} 단장: 그사이 연봉 사정이 바뀌어 구단주가 허락하는 한도를 넘게 됐습니다. 이 제안을 지킬 수 없습니다.`; /* 소프트캡(13_roster aiCapTake): 한도 안이면 세금만큼 값으로 따진다(아래 evalTrade) */
-  { const tol=strict?0:Math.max(1.5,ev.outV)*.15; if(!ev.ok&&((ev.dom&&ev.dom.refuse)||ev.gain<ev.need-tol))return `${tfull(t0)} 단장: 다시 따져 보니 이 조건으로는 어렵겠습니다.`; } /* 공략 방지: AI 제안도 직접 협상과 같은 값(evalTrade)으로 판정 */
-  return null;
-}
+function offerBlockMsg(o,strict){ const r=tradeLegal({from:G.user,to:o.from,give:o.get,get:o.give,cash:o.cash,pk:o.pk},{path:'offer',strict}); return r.ok?null:r.msg; } /* 우리는 o.get을 보내고 o.give를 받는다. 검사 목록·문구는 16b_trade_rules(TRADE_RULES.offer). strict: 제안을 만들 때는 evalTrade가 받아들이는 조건만, 수락할 때는 역제안과 같은 여유(.15) */
 function answerOffer(id,yes){
   const o=(G.offers||[]).find(x=>x.id===id); if(!o)return {ok:false,msg:'제안이 없습니다.'};
   G.offers=G.offers.filter(x=>x.id!==id); offerMailDone(o.id);

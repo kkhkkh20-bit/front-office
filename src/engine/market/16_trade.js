@@ -254,36 +254,15 @@ function aiCapMsg(t,c){ return `${tfull(t)} 단장: ${c.tight?'모기업이 지�
 /* 상대 단장이 얹어 달라고 부를 수 있는 우리 선수(역제안 공통, 커뮤니티 점검 11-17): proposeTrade가 막는 선수(소속·외국인·육성·부상·거부권·FA 잠금·입단 전)는 빼고,
    상대가 거의 값을 치지 않는 선수(TRADE_ADD_MIN 이하)도 뺀다. 예전에는 값 0짜리 선수를 얹으라고 해 따라 해도 한 번도 성사되지 않았다 */
 const TRADE_ADD_MIN=.5;
-function tradeAddable(tid,give,p){ return !!p&&p.team===G.user&&!p.foreign&&!p.ys&&healthy(p)&&!(p.joinY>G.year)&&!give.includes(p.id)&&!ntcOfFor([p.id],tid)&&!faLock(p)&&!recentTr(p); }
+function tradeAddable(tid,give,p){ return !!p&&!give.includes(p.id)&&tradeEligible(p,{tid:G.user,ntc:tid}); }
 /* 상대가 낸 역제안을 그대로 수락하면 proposeTrade의 모든 검사(FA 잠금·소속·거부권·외국인·현금·지명권·간격·구단주·연봉 상한·로스터)를 통과하고 받아들여지는지 */
 function tradeCtrOk(tid,c){ const give=c.give||[], get=c.get||[], cash=Math.round(c.cash||0), pk=pkNorm(c.pk);
   if(!tradePreflight(tid,give,get,cash,pk,false).ok)return false;
-  const e=evalTrade(tid,give,get,cash,pk); if(!(e.ok&&e.theirN<=ROSTER_MAX&&e.theirN>=ROSTER_MIN))return false; /* 값 판정을 먼저(구단주 검사는 예산을 다시 계산해 무겁다) */
+  const e=evalTrade(tid,give,get,cash,pk); if(!(e.ok&&tradeSizeOk(e)))return false; /* 값 판정을 먼저(구단주 검사는 예산을 다시 계산해 무겁다) */
   const oc=tradeOwnerCheck(give,get,cash); if(oc&&!oc.ok)return false; const cc=tradeCapCheck(give,get); return !(cc&&!cc.ok); }
 
 /* 실제 제출·추천·역제안이 공유하는 자격 검사. 예산 승인은 값 판정 뒤 검사할 수 있다. */
-function tradePreflight(tid,give,get,cash,pk,budget=true){ const t=team(tid); cash=Math.round(cash||0); pk=pkNorm(pk);
-  { const msg=tradeRecentMsg([...give,...get]); if(msg)return {ok:false,msg}; }
-  if(!tradeOpen())return {ok:false,msg:'트레이드 마감(7월 31일)이 지났습니다. 포스트시즌이 끝난 뒤 다시 할 수 있습니다.'};
-  if(!give.length&&!get.length)return {ok:false,msg:'주고받을 선수를 골라 주세요.'};
-  { const m=faLockMsg([...give,...get]); if(m)return {ok:false,msg:m}; }
-  if(give.some(id=>!G.players[id]||G.players[id].team!==G.user)||get.some(id=>!G.players[id]||G.players[id].team!==tid))return {ok:false,msg:'선수 소속이 바뀌었습니다. 목록을 다시 확인하세요.'}; /* 우리 선수만 보내고 그 구단 선수만 받는다 */
-  { const nt=ntcOfFor(give,tid); if(nt)return {ok:false,ntc:nt.id,msg:`${nt.name}은(는) 계약서에 트레이드 거부권이 있어 동의 없이 보낼 수 없습니다(${nt.ntc}년까지). 선수에게 ${tshort(tid)}행 동의를 구할 수 있습니다.`}; }
-  { const nt=ntcOf(get); if(nt)return {ok:false,msg:`${tname(tid)} ${nt.name}은(는) 계약서에 트레이드 거부권이 있어 데려올 수 없습니다(${nt.ntc}년까지).`}; }
-  if(Math.abs(cash)>3000)return {ok:false,msg:'현금은 한 번에 30억 원까지 주고받을 수 있습니다.'};
-  if(cash<0&&!give.length)return {ok:false,msg:'선수를 보내지 않고 현금만 받는 거래는 할 수 없습니다.'};
-  if(cash<0&&(t.cash||0)<-cash)return {ok:false,msg:`${tname(tid)}은(는) 그만한 현금 여유가 없습니다(보유 ${money(Math.max(0,t.cash||0))}).`};
-  if(cash>0&&!get.length)return {ok:false,msg:'현금만 주고 선수를 받지 않는 거래는 할 수 없습니다.'};
-  if(cash>0){ const myC=spendable(G.user); /* 약정 현금과 구단주 지원 여유를 포함한 실제 지출 가능액 */ if(myC<cash)return {ok:false,msg:`우리 구단 선수 영입 자금(${team(G.user).indie?'독립구단이라 보유 현금만, 앞선 거래 약정분 제외':'보유 현금 + 구단주 지원 여유'} ${money(Math.max(0,myC))})이 얹을 현금 ${money(cash)}보다 적습니다.`}; }
-  if([...give,...get].some(id=>G.players[id].foreign))return {ok:false,msg:'외국인 선수는 트레이드할 수 없습니다.'};
-  { const pe=pkCheck(tid,give,get,pk); if(pe)return {ok:false,msg:pe}; }
-  const gmn=`${tfull(t)} ${gmOf(tid).name} 단장`;
-  { const cd=tradeCool(tid,get,cash,pk); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)}) 뒤 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
-  if(!budget)return {ok:true};
-  const oc0=tradeOwnerCheck(give,get,cash); if(oc0&&!oc0.ok)return {ok:false,owner:true,msg:oc0.msg};
-  const cc0=tradeCapCheck(give,get); if(cc0&&!cc0.ok)return {ok:false,owner:true,msg:cc0.msg};
-  return {ok:true,oc0,cc0};
-}
+function tradePreflight(tid,give,get,cash,pk,budget=true){ cash=Math.round(cash||0); pk=pkNorm(pk); return tradeLegal({from:G.user,to:tid,give,get,cash,pk},{path:'user',budget}); } /* 검사 목록·문구는 16b_trade_rules(TRADE_RULES.user) */
 /* 조회 때가 아닌 실제 협상 제출 때만 견제로 바뀐 결과를 집계한다. */
 function tradeEvalLog(tid,get,e){ if(!e||!e.dom||tid===G.user||!get.length)return; const k=G.user+':'+tid+':'+get.join(','); if(e.dom.refuse&&e.gain>=e.need)domLog('ref',k); else if(!e.ok&&e.gain>=e.need-e.dom.v)domLog('over',k); }
 /* 한 번 협상에서 역제안을 주고받는 횟수: 이만큼 오가면 상대 단장이 협상을 접는다(강경파는 2번) */
