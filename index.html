@@ -4463,6 +4463,34 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview:has(.pf-career.pf-off) .pf-fm-info.pf-ident{grid-area:1/5/4/6}
   #sheet .pf-overview:has(.pf-fm-info.pf-ident.pf-off) .pf-career{grid-area:1/5/4/6}
 }
+/* 인물 카드 얼굴 크게(카페 고기고 11-18 "선수 정보 창에서 사진이 작게 나온다"). 1600px 이상은 계약 상자가 카드 아래로 오면서(11-17) 카드가 낮아져
+   세로 flex에서 사진 칸이 52px까지 눌렸다. 사진은 왼쪽 위 큰 칸, 현재 능력·잠재력은 사진 오른쪽에 위아래로. 등번호·구단은 사진 위 배지.
+   첫 줄 높이는 현재 능력·잠재력 높이(약 140px) 이상, 카드에 남는 높이가 있으면 최대 clamp(150px,19vh,200px)까지 사진이 커진다. 연봉 줄은 한두 줄로 */
+@media(min-width:1600px){
+  #sheet .pf-overview .pf-fmcard{display:grid!important;grid-template-columns:clamp(128px,8.4vw,150px) minmax(0,1fr);grid-template-rows:minmax(auto,clamp(150px,19vh,200px)) repeat(4,auto);grid-template-areas:"face key" "name name" "stats stats" "role role" "pay pay";align-content:start;gap:6px 0}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-face{grid-area:face;min-height:0;height:auto;max-height:none;padding:0;display:block;overflow:hidden;background:linear-gradient(160deg,var(--pt,var(--team-dk,#1a2430)),#0d1217 85%)}
+  #sheet .pf-overview .pf-fmcard .pf-fm-face>.av{position:absolute;inset:0;width:100%;height:100%;max-height:none;max-width:none;margin:0;aspect-ratio:auto;object-fit:cover;object-position:50% 8%;border:0;border-radius:0;background:none}
+  #sheet .pf-overview .pf-fmcard .pf-fm-face>.av.ini{display:grid;place-items:center;font-size:44px}
+  #sheet .pf-overview .pf-fmcard .pf-fm-face::after{height:28%}
+  #sheet .pf-overview .pf-fmcard .pf-fm-no{left:6px;top:6px;padding:2px 6px;border-radius:4px;background:rgba(5,8,12,.62);font-size:var(--ui-title);line-height:1.1}
+  #sheet .pf-overview .pf-fmcard .pf-fm-team{right:6px;top:6px;line-height:0}
+  #sheet .pf-overview .pf-fmcard .pf-fm-face>.ph-pen{right:6px;bottom:6px;width:28px;height:28px}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-key{grid-area:key;grid-template-columns:minmax(0,1fr);align-content:center;gap:5px;padding:6px 8px 0}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-key>div{padding:4px 2px;gap:1px}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-key b{line-height:1.05}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-key b.pf-fm-pot,#sheet .pf-overview .pf-fmcard>.pf-fm-key .current-rating-stars{font-size:13px;line-height:1.3}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-role{line-height:1.3}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-stats>div{padding-block:3px}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-key .pf-rg-s{display:inline;margin-left:3px;font-size:11px}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-pay{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 8px;padding-bottom:8px}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-pay>small{white-space:nowrap}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-name{grid-area:name}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-stats{grid-area:stats}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-role{grid-area:role}
+  #sheet .pf-overview .pf-fmcard>.pf-fm-pay{grid-area:pay}
+}
+/* 휴대폰·좁은 화면 머리말: 사진이 연필 버튼 틀(.ph-w)에 싸이면서 위 112px 규칙(.pf-name>img)이 빠져 84px로 작아졌다. 틀 안 사진도 크게 */
+@media(max-width:1099px){.pf-screen .pf-name>.ph-w>img.av.big{width:clamp(96px,28vw,112px);height:clamp(96px,28vw,112px);border-radius:8px;object-fit:cover;object-position:50% 10%;border:1px solid var(--pt2,var(--line2))}}
 /* 모든 상세는 실제 상단바·탐색 메뉴 아래의 본문 영역을 쓴다. */
 html.detail-page-open,html.detail-page-open body{overflow:hidden}
 .detail-page-open #sheet{position:fixed;top:var(--app-header-h,0px);left:var(--app-side-w,0px);right:0;bottom:var(--app-footer-h,0px);z-index:16;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;background:var(--bg);min-width:0;scrollbar-gutter:stable}
@@ -50596,6 +50624,9 @@ const PATCH=[
     '해외에서 돌아오는 국내 선수의 복귀 협상, 구단 이름을 눌러 그 리그 순위로 가는 링크도 같은 화면에 있습니다.',
     '해외파 소식에 KBO를 떠난 외국인과 관찰했던 후보의 콜업·홈런·큰 시즌·한국행 추진도 오릅니다.',
     '포스팅이 무산된 선수는 이듬해 한 번 더 도전하고, 빅리그급 스타는 해외 FA 때도 미국행을 더 원합니다.']},
+  {id:'2026-11-18-sheet-face',d:'11월 18일',t:'선수 정보 창 얼굴 사진이 커졌습니다',items:[
+    '선수 능력 탭 왼쪽 인물 카드에서 얼굴 사진을 크게(PC 1600px 기준 약 130×160px) 보여 줍니다. 등번호와 구단은 사진 위 배지로, 현재 능력·잠재력은 사진 오른쪽에 둡니다. 휴대폰 머리말 사진도 다시 크게 보입니다.'
+  ]},
   {id:'2026-11-18-perf',d:'11월 18일',t:'진행·화면이 가벼워졌습니다(오래 한 세이브·휴대폰)',items:[
     '다른 구단끼리 트레이드를 따지는 주간 시장, 외국인 시장 관심도, 트레이드 묶음 찾기가 구단 명단을 한 번만 걸러 씁니다. 오래 한 세이브에서 주간 진행일이 몇 배 빨라집니다(결과는 그대로).',
     '경기 반영 중 오류에 대비한 경기 전 사본을 가볍게 뜹니다. 퓨처스까지 하루 열 경기 남짓에 드는 시간이 1/3 정도로 줄었습니다.',
