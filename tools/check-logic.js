@@ -9121,6 +9121,68 @@ T('[피드백 11-18 은퇴 결정] 조용히 보낸 레전드도 그 겨울에 �
   delete ob.retEv; /* 예전 저장: 이 패치 전에 처리된 결정도 남은 결정 기록으로 연다 */  const f0=G.pr.fan; ok(obLateCerOk(ob),'조용히 보낸 뒤 은퇴식을 열 수 없음'); ok(obLateCerCost(ob)===50,'비용이 원래 선택과 다름: '+obLateCerCost(ob)); const e0=G.spend.etc||0; const r=obLateCer(ob.id);
   ok(ob.ceremony===G.year&&(G.spend.etc||0)-e0===50&&G.pr.fan>=f0,'뒤늦은 은퇴식: '+r+' 비용 '+((G.spend.etc||0)-e0)); const e1=G.spend.etc; const r2=obLateCer(ob.id); ok(G.spend.etc===e1&&!obLateCerOk(ob),'두 번 열림: '+r2);
   const ob2={...ob,id:'ob-1118d',ceremony:undefined,retY:G.year-1}; delete ob2.ceremony; G.ob.push(ob2); ok(!obLateCerOk(ob2),'지난 겨울 은퇴 선수가 스토브리그에 열림'); });
+/* [시상 레이스] MVP 레이스·시상 전 예상·포스트시즌 경기/시리즈 MVP(93_award_race) */
+const awr_setup=()=>{ fresh(); const y=G.year; G.day=dnum(y,6,1); G.sea.y=y; for(const t of G.teams){ G.sea.rec[t.id].w=30; G.sea.rec[t.id].l=25; G.sea.rec[t.id].t=0; }
+  const T=G.teams.map(t=>t.id), bats=T.slice(0,4).map(tid=>domestic(tid).find(p=>!p.isP&&!p.prospect)), stat=[[95,30,80],[80,22,60],[85,12,45],[70,8,30]];
+  bats.forEach((p,i)=>{ Object.assign(lineFor(p,y,p.team,'1군'),{g:55,pa:240,ab:210,h:stat[i][0],d:15,tr:1,hr:stat[i][1],rbi:stat[i][2],bb:25,so:40,r:40}); }); return {y,bats}; };
+T('[시상 레이스] 6월 MVP 레이스·신인왕 경쟁 기사는 기록 점수 순 상위 3명이고 주 난수를 쓰지 않는다',()=>{ const {y,bats}=awr_setup(); const n0=G.news.length, r=__rngState();
+  awRaceDaily(); ok(__rngState()===r,'레이스 기사가 주 난수를 씀');
+  const top=awRaceTop(y,'mvp'); ok(top.length===3,'상위 3명 아님 '+top.length); for(let i=1;i<top.length;i++)ok(top[i-1].b>=top[i].b,'점수 순 아님');
+  const rk=awRaceRank(); for(const c of top){ const p=G.players[c.id], h=seasonTotal(p,y,'1군'), x={p,h,w:warOf(h,p)}; ok(Math.abs(awBase(x,rk[awTeamOf(p,h,y)]??9)-c.b)<1e-3,'시상 점수식과 다름 '+c.name); }
+  const it=G.news.find(n=>n.t.startsWith('6월 MVP 레이스')); ok(it,'6월 MVP 레이스 기사 없음'); const pos=top.map(c=>it.b.indexOf(c.name)); ok(pos.every(v=>v>=0)&&pos[0]<pos[1]&&pos[1]<pos[2],'기사 순서가 점수 순과 다름 '+pos);
+  ok(top[0].id===bats[0].id,'가장 잘한 타자가 1위가 아님'); ok(G.awRace&&G.awRace[y]&&G.awRace[y].some(z=>z.k==='mvp'),'레이스 기록 없음');
+  G.day=dnum(y,6,2); const n1=G.news.length; awRaceDaily(); ok(G.news.length===n1,'6월 2일에도 기사');
+  G.day=dnum(y,9,1); for(let d=0;d<14;d++){ G.day=dnum(y,9,1)+d; awRaceDaily(); } const wk=G.news.filter(n=>/^9월 \\d주 MVP 레이스/.test(n.t)); ok(wk.length===2,'9월 주간 기사 수 '+wk.length); ok(G.news.length-n0<=8,'기사 과다 '+(G.news.length-n0)); });
+T('[시상 레이스] 시상 전 예상은 실제 선정과 같은 기록 점수(MVP awBase·골든글러브 ggCandidate)로 정하고 발표 뒤 비교한다',()=>{ const {y}=awr_setup(); G.ps={order:standingsNow().map(o=>({tid:o.tid}))}; G.day=dnum(y,10,20); const A=seasonAwards(y);
+  const C=A.cand.mvp; ok(C.length&&C.every(c=>typeof c.b==='number'),'후보 기록 점수 없음');
+  for(const c of C){ const p=G.players[c.id]; if(!p)continue; const h=seasonTotal(p,y,'1군'); const rk=G.ps.order.findIndex(o=>o.tid===awTeamOf(p,h)); ok(Math.abs(awBase({p,h,w:warOf(h,p)},rk)-c.b)<1e-3,'예상 점수가 시상 점수식과 다름 '+c.name); ok(Math.abs(c.s-c.b)<1.5,'기자 표심 흔들림 범위 밖'); }
+  const best=[...C].sort((a,b)=>b.b-a.b||b.w-a.w||a.id-b.id)[0]; ok(awPredMvp(A).mvp===best.id,'MVP 예상이 기록 점수 1위가 아님');
+  const OF=A.cand.gg.OF||[]; if(OF.length>=3){ const g=awPredGG(A); const want=[...OF].sort((a,b)=>b.s-a.s||a.id-b.id).slice(0,3).map(c=>c.id); ok(JSON.stringify(g.OF)===JSON.stringify(want),'외야 예상이 점수 상위 3명이 아님');
+    const c0=OF.find(c=>c.id===want[0]), p=G.players[c0.id], h=seasonTotal(p,y,'1군'); ok(Math.abs(ggCandidate({p,h,w:warOf(h,p)},'OF').s-c0.s)<1e-9,'골든글러브 예상 점수식이 투표 점수식과 다름'); }
+  const r=__rngState(); G.day=A.days.mvp-1; awPredDaily(); ok(__rngState()===r,'예상 기사가 주 난수를 씀'); ok(A.pred&&A.pred.mvp&&A.pred.mvp.mvp===best.id,'MVP 예상 저장 안 됨'); ok(G.news.some(n=>n.t.includes(y+' MVP·신인왕 예상')),'MVP 예상 기사 없음');
+  awPredDaily(); ok(G.news.filter(n=>n.t.includes(y+' MVP·신인왕 예상')).length===1,'예상 기사 중복');
+  G.day=A.days.mvp; awardsDaily(); const mv=G.news.find(n=>n.t.includes(y+' 정규시즌 MVP')); ok(mv&&/예상/.test(mv.b),'발표 기사에 예상 비교 없음'); const h=awPredHit(A,'mvp'); ok(h&&h.n>=1&&h.hit===(A.pred.mvp.mvp===A.mvp.id?1:0)+(A.roy&&A.pred.mvp.roy===A.roy.id?1:0),'적중 집계 오류');
+  for(let d=G.day+1;d<A.days.gg;d++){ G.day=d; ggVotingDaily(); awPredDaily(); } ok(A.pred.gg&&A.pred.gg.g,'골든글러브 예상 없음'); ok(G.news.some(n=>n.t.includes(y+' 골든글러브 예상')),'골든글러브 예상 기사 없음');
+  G.day=A.days.gg; awardsDaily(); ok(!A.pend.gg,'골든글러브 발표 안 됨'); const gh=awPredHit(A,'gg'); ok(gh&&gh.n>=1&&gh.hit<=gh.n,'골든글러브 적중 집계 '+JSON.stringify(gh)); });
+T('[시상 레이스] 포스트시즌 경기 MVP는 이긴 팀에서 박스 점수가 가장 높은 선수를 같은 결과로 고른다',()=>{ fresh(); const y=G.year, [a,b]=G.teams.map(t=>t.id);
+  const box={h:{tid:a,bat:[{id:11,n:'홈타자',ab:4,h:2,hr:1,rbi:2,r:1},{id:12,n:'홈동점',ab:4,h:2,hr:1,rbi:2,r:1}],pit:[{id:13,n:'홈선발',outs:18,er:2,h:5,bb:2,so:5,d:'승'}]},a:{tid:b,bat:[{id:21,n:'원정영웅',ab:5,h:4,hr:2,rbi:5,r:3}],pit:[{id:22,n:'원정투수',outs:15,er:4,h:8,bb:3,so:3,d:'패'}]}};
+  const m=psGameMvpBox(box,'h'); ok(m&&m.t===a,'진 팀 선수가 경기 MVP '+JSON.stringify(m)); ok(m.id===11,'동점이면 번호가 작은 선수가 아님 '+m.id); ok(psGameMvpBox(box,'h').id===m.id,'같은 기록인데 결과가 바뀜');
+  ok(psGameMvpBox(box,null).id===21,'무승부면 양 팀 최고 선수');
+  const r=__rngState(), rec={box}; const g={score:{h:5,a:3}}; psMvpGame('spo',2,g,G.day,rec); psMvpGame('spo',2,g,G.day,rec); ok(__rngState()===r,'경기 MVP가 주 난수를 씀');
+  ok(rec.mvp&&rec.mvp.id===11,'경기 기록에 MVP 없음'); const Y=G.psMvp[y]; ok(Y&&Y.g.length===1&&Y.g[0][0]==='spo'&&Y.g[0][1]===2,'경기 MVP 저장 중복/누락 '+JSON.stringify(Y)); ok((G.wire||[]).some(w=>w.t.includes('준플레이오프 2차전 MVP')),'리그 소식 없음');
+  ok(psMvpGame('tb',1,g,G.day,{box})===null,'순위 결정전까지 경기 MVP'); });
+T('[시상 레이스] 실제 포스트시즌 경기에서 경기 MVP를 남기고 경기 난수 순서는 그대로다',()=>{ __seed(4242); ps547_setup(); const s0=JSON.stringify(G.ps.cur), day=G.day; const save=JSON.stringify(G);
+  psDay(day); const r1=__rngState(), sc1=JSON.stringify(G.ps.cur.pts), rec=G.games.find(g=>g.day===day&&(g.home===G.user||g.away===G.user)); ok(rec&&rec.mvp,'경기 기록에 MVP 없음');
+  const win=rec.hs>rec.as?rec.home:rec.as>rec.hs?rec.away:null; if(win!=null)ok(rec.mvp.t===win,'이긴 팀이 아닌 선수가 경기 MVP'); ok(G.psMvp[G.year].g.length===1,'경기 MVP 저장 수');
+  __seed(4242); ps547_setup(); const f=psMvpGame; try{ psMvpGame=()=>null; psDay(G.day); }finally{ psMvpGame=f; } ok(__rngState()===r1&&JSON.stringify(G.ps.cur.pts)===sc1,'경기 MVP가 경기 난수 순서를 바꿈'); });
+T('[시상 레이스] 와일드카드·준플레이오프·플레이오프·한국시리즈 시리즈 MVP를 같은 식으로 남긴다',()=>{ fresh(); const y=G.year, t=G.teams[1].id, o=G.teams[2].id, P=domestic(t).filter(p=>!p.isP).slice(0,2), Q=domestic(t).find(p=>p.isP), X=domestic(o).find(p=>!p.isP);
+  const mk=()=>({[P[0].id]:{t,n:P[0].name,isP:false,g:3,ab:12,h:6,d:1,hr:2,rbi:6,bb:1},[P[1].id]:{t,n:P[1].name,isP:false,g:3,ab:12,h:3,hr:0,rbi:1},[Q.id]:{t,n:Q.name,isP:true,g:1,outs:18,er:1,so:7,w:1},[X.id]:{t:o,n:X.name,isP:false,g:3,ab:12,h:9,hr:4,rbi:10}});
+  G.psSer={[y]:{wc:mk(),spo:mk(),po:mk(),ks:mk()}}; const r=__rngState();
+  for(const rd of ['wc','spo','po'])psMvpSeries(rd,t); const m=champSeriesMvp(y,t); psMvpSeries('ks',t,m); ok(__rngState()===r,'시리즈 MVP가 주 난수를 씀');
+  const S=G.psMvp[y].s; ok(['wc','spo','po','ks'].every(k=>S[k]&&S[k].id===P[0].id&&S[k].t===t),'시리즈 MVP 누락/진 팀 선수 '+JSON.stringify(S)); ok(m.id===psSeriesMvp(y,'ks',t).id,'한국시리즈 MVP 식이 다름');
+  ok(G.news.filter(n=>/시리즈 MVP/.test(n.t)).length===3,'시리즈 MVP 기사 수'); psMvpSeries('wc',t); ok(G.news.filter(n=>/시리즈 MVP/.test(n.t)).length===3,'시리즈 MVP 중복 기사');
+  const v=psMvpOf(y); ok(v&&v.s.po.n===P[0].name,'화면용 정리 없음'); });
+/* [올스타] 팬 투표 중간 발표·올스타전·홈런 더비·시상·올스타 역대(93b_all_star_game) */
+const asg_setup=()=>{ fresh(); const y=G.year; G.sea.y=y; let k=0; for(const t of G.teams)for(const p of domestic(t.id).filter(q=>!q.prospect&&!q.ys)){ k++; if(p.isP)Object.assign(lineFor(p,y,t.id,'1군'),{g:15,gs:p.id%2?8:0,outs:150+k%40,h:40,er:10+k%15,bb:12,so:40+k%30,w:5,sv:p.id%2?0:6}); else Object.assign(lineFor(p,y,t.id,'1군'),{g:60,pa:250,ab:220,h:60+k%30,d:10,hr:5+k%17,rbi:30,bb:20,so:40,r:30,pos:p.pos}); }
+  G.day=G.cal.asg-14; return {y,A:allStarSelect()}; };
+const asg_snap=()=>JSON.stringify(Object.values(G.players).map(p=>[p.id,p.hist,p.fat||0,p.injOut||0,p.lastApp||0,p.psY||null]));
+T('[올스타] 올스타전은 본게임 엔진으로 치르되 시즌 기록·피로·부상·주 난수에 남지 않고, 같은 저장이면 같은 결과다',()=>{ const {y,A}=asg_setup(); ok(A.teams['나눔'].length>=12&&A.teams['드림'].length>=12,'명단 부족');
+  const s0=asg_snap(), r=__rngState(); const g=asgPlayGame(A); ok(g&&Number.isFinite(g.hs)&&Number.isFinite(g.as),'올스타전 결과 없음'); ok(__rngState()===r,'올스타전이 주 난수를 씀'); ok(asg_snap()===s0,'올스타전이 시즌 기록·피로·부상을 바꿈');
+  ok(g.box&&g.box.h.bat.length>=9&&g.box.a.pit.length>=1,'박스스코어 없음'); ok(g.mvp&&g.mvp.id!=null,'올스타전 MVP 없음'); if(g.win)ok(g.mvp.side===g.win,'진 진영 선수가 MVP');
+  const keep=JSON.stringify({hs:g.hs,as:g.as,m:g.mvp}); delete A.game; const g2=asgPlayGame(A); ok(JSON.stringify({hs:g2.hs,as:g2.as,m:g2.mvp})===keep,'같은 상태인데 올스타전 결과가 바뀜');
+  const m2=psGameMvpBox(g2.box,g2.win==='나눔'?'h':g2.win==='드림'?'a':null); ok(m2&&m2.id===g2.mvp.id,'올스타전 MVP가 경기 MVP 식과 다름'); });
+T('[올스타] 팬 투표 중간 발표·홈런 더비는 기록·인기로 정해지고 주 난수를 쓰지 않으며, 행사 날 기사가 나온다',()=>{ const {y,A}=asg_setup(); const r=__rngState();
+  G.day=G.cal.asg-28; asgVoteDaily(); G.day=G.cal.asg-21; asgVoteDaily(); asgVoteDaily(); ok(__rngState()===r,'중간 발표가 주 난수를 씀'); ok(G.news.filter(n=>n.t.includes(y+' 올스타 팬 투표')).length===2,'중간 발표 기사 수');
+  const V=G.asVote[y]; ok(V[1]&&V[2],'중간 발표 기록 없음'); const a=V[1].top['나눔'][0], b=V[2].top['나눔'][0]; ok(a&&b&&a[1]===b[1]&&b[2]>a[2],'2차 득표가 1차보다 늘지 않음');
+  const H=asgDerby(A); ok(H&&H.L.length>=2&&H.L.some(x=>x[0]===H.w),'홈런 더비 결과 없음'); const keep=JSON.stringify(H); delete A.hrd; ok(JSON.stringify(asgDerby(A))===keep,'홈런 더비가 같은 상태에서 달라짐'); ok(__rngState()===r,'홈런 더비가 주 난수를 씀');
+  delete A.hrd; G.day=G.cal.asg; const s0=asg_snap(); allStarDaily(); ok(A.played&&A.game&&A.hrd,'행사 날 올스타전·홈런 더비 안 열림'); ok(__rngState()===r,'행사 날 주 난수 변경'); ok(asg_snap()===s0,'행사가 시즌 기록을 바꿈');
+  ok(G.news.some(n=>n.t.includes(y+' 올스타전'))&&G.news.some(n=>n.t.includes(y+' 홈런 더비 우승')),'행사 기사 없음'); const n=G.news.length; allStarDaily(); ok(G.news.length===n,'행사 기사 중복'); });
+T('[올스타] 시상·올스타 역대는 해마다 MVP·신인왕·골든글러브·올스타를 모아 보여 주고 상태·난수를 바꾸지 않는다',()=>{ const {y,A}=asg_setup(); G.day=G.cal.asg; allStarDaily(); const p=domestic(G.user)[0], q=domestic(G.user)[1];
+  G.awards=G.awards||{}; G.awards[y-1]={y:y-1,pend:{mvp:false,gg:false},mvp:{id:p.id,name:p.name,t:G.user,line:'',v:90},roy:{id:q.id,name:q.name,t:G.user,line:'',v:80},gg:{C:{id:q.id,name:q.name,t:G.user,v:200},OF0:{id:p.id,name:p.name,t:G.user,v:250}},cand:{mvp:[],roy:[],gg:{}}};
+  G.psMvp={[y-1]:{g:[],s:{po:{id:p.id,n:p.name,t:G.user,line:'x'}}}};
+  const s=JSON.stringify(G), r=__rngState(); const R=awardHistoryRows(); ok(JSON.stringify(G)===s&&__rngState()===r,'역대 조회가 상태·난수를 바꿈');
+  const a=R.find(o=>o.y===y), b=R.find(o=>o.y===y-1); ok(R[0].y===y&&a&&b,'연도별 줄 없음'); ok(a.as&&a.as.st['나눔'].length>=10&&a.as.game&&a.as.hrd,'올해 올스타 줄 '+JSON.stringify(a.as&&{n:a.as.n,g:!!a.as.game}));
+  ok(b.mvp.id===p.id&&b.roy.id===q.id&&b.gg.length===2&&b.gg[0].k==='C','지난해 시상 줄'); ok(b.ps&&b.ps.po.id===p.id,'시리즈 MVP 줄'); ok(!a.mvp&&!a.gg,'발표 전 시상이 보임'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
