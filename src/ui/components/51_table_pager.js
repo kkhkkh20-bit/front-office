@@ -150,7 +150,8 @@ function workspaceFit(host){
     const buttons=[...Array(pages)].map((_,i)=>{const b=document.createElement('button');b.type='button';b.className='ws-page';b.dataset.wsPage=i;b.textContent=panels.filter((_,k)=>pageOf[k]===i).map(label).join(' · ');b.onclick=()=>{page=i;sync();try{ fitPages(); }catch(e){}};return b;}); /* 새로 보인 칸의 목록도 쪽으로 나눈다(UI 3단계 3-0) */
     const sync=()=>{show();buttons.forEach((b,i)=>{b.classList.toggle('on',i===page);b.setAttribute('aria-current',i===page?'true':'false');});wsRowHint(bar);};
     bar.append(...buttons);const navigation=root.querySelector(':scope > .ws-navigation');
-    if(navigation&&innerHeight<500&&innerWidth>=500)navigation.append(bar);else root.insertBefore(bar,deck);sync();
+    const rh=fmOn()&&!workspaceCompact()&&root.querySelector(':scope > .roster-heading>div:first-child'); /* PC 선수단: 묶음 버튼 줄은 본문 첫 줄 왼쪽 빈자리로(사용자 11-18) */
+    if(navigation&&innerHeight<500&&innerWidth>=500)navigation.append(bar);else if(rh)rh.append(bar);else root.insertBefore(bar,deck);sync();
   }
   root.querySelectorAll('.ws-tab-row').forEach(wsRowHint);
   workspaceObserve();
@@ -194,7 +195,7 @@ function workspaceObserve(){if(typeof ResizeObserver==='undefined')return;
 
 function workspaceReveal(selector){
   const panel=document.querySelector(selector)?.closest('.ws-panel');
-  if(panel&&panel.hidden){ const deck=panel.parentElement,bar=deck.parentElement.querySelector(':scope > .ws-pages,:scope > .ws-navigation > .ws-pages');
+  if(panel&&panel.hidden){ const deck=panel.parentElement,bar=deck.parentElement.querySelector(':scope > .ws-pages,:scope > .ws-navigation > .ws-pages,:scope > .roster-heading .ws-pages');
     const columns=+deck.style.getPropertyValue('--ws-columns')||1;
     bar?.querySelector(`[data-ws-page="${panel._wsPage??Math.floor([...deck.children].indexOf(panel)/columns)}"]`)?.click(); }
   const fb=document.querySelector(selector)?.closest('.fbar-p[hidden]')?.closest('[data-fbar]'); if(fb)A.fbarTog(fb.dataset.fbar); /* 필터 바 칸 안의 조건이면 칸을 연다 */
