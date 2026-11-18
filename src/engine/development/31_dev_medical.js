@@ -125,13 +125,13 @@ function ovsHandOff(old,tid){ const A=G.ovsAi=G.ovsAi||{y:G.year,fall:{}}; for(c
 function ovsWhy(p,k,tid){ const enl=p&&p.mil&&p.mil.from!=null&&p.mil.until>G.day&&!p.mil.done&&!p.mil.exempt&&p.mil.from<=ovsEndD(k); return !p?'리그를 떠남':p.team!==tid?`${tshort(p.team)}(으)로 이적`:isAway(p)||milServing(p)?'군 복무·대표팀':p.joinY>G.year?'합류 전 신인':p.hold?'연봉 미계약':enl?`연수 기간 중 입대(${dmd(p.mil.from)})`:(p.injOut||0)>14?'부상':null; }
 function ovsGoCheck(k){ const L=(G.ovs||[]).filter(x=>x.prog===k&&!x.go); const out=[]; for(const x of L){ const p=G.players[x.pid]; const why=ovsWhy(p,k,G.user); if(why){ out.push(`${p?p.name:'선수'}: ${why}`); ovsRefund(x); G.ovs=G.ovs.filter(y=>y!==x); } } /* 프로그램 끝나는 날까지의 입대 일정도 본다 */
   if(out.length&&!G.unemp)mail('육성팀',`${OVS[k].l} 출발 전 확인: ${out.length}명 취소`,`${out.join('\n')}\n\n참가할 수 없어 예약을 취소하고 1인 참가비를 돌려받았습니다.`,{kind:'연수'}); return out; }
-function ovsFin(k){ const y=G.year; const out=[]; const C=G.coach&&G.coach[G.user]; const cd=C?(k==='abl'?(C.fm||C.fp||{}).dv:(C.pc||{}).dv):50;
+function ovsFin(k){ const y=G.year; const out=[]; const C=G.coach&&G.coach[G.user]; const cd=effC(C&&(k==='abl'?(C.fm||C.fp):C.pc),G.user,'dv');
   for(const x of (G.ovs||[]).filter(x=>x.prog===k)){ const p=G.players[x.pid]; if(!p||p.team!==G.user)continue; if(milServing(p)||isAway(p)){ out.push(`${p.name}: 연수 도중 입대·차출로 귀국해 결과 없음`); continue; } /* 결과 때도 실제로 참가 중인지 다시 본다 */ const r=ovsRoll(p,OVS[k],cd); out.push(`${p.name}: ${r.txt}`); }
   const young=(G.ovs||[]).filter(x=>x.prog===k).map(x=>G.players[x.pid]).filter(p=>p&&p.team===G.user); G.ovs=(G.ovs||[]).filter(x=>x.prog!==k);
   if(k==='jpl'&&!G.unemp){ const v=vetSelfTrain(young); if(v.length)out.push('', '[베테랑 개인 훈련(자비)]', ...v); }
   if(out.length&&!G.unemp)mail('육성팀',`${OVS[k].l} 결과`,out.join('\n')+'\n\n연수 결과는 선수마다 크게 갈립니다. 어린 선수, 배우는 속도가 빠른 선수, 더 클 여지가 큰 선수일수록 크게 늘 가능성이 높고, 부상 체질이면 다칠 위험이 큽니다.',{kind:'연수'});
   const A=G.ovsAi&&(G.ovsAi.y===y||G.ovsAi.y===y-1)?G.ovsAi:null; const hot=[];
-  if(A&&A[k]){ for(const t in A[k])for(const id of A[k][t]){ const p=G.players[id]; if(!p||p.team!==+t||milServing(p)||isAway(p))continue; /* AI도 복무·차출 중이면 결과 없음 */ const TC=G.coach&&G.coach[+t]; const r=ovsRoll(p,OVS[k],TC?(k==='abl'?(TC.fm||TC.fp||{}).dv:(TC.pc||{}).dv):50); /* 그 구단 동행 코치 육성력(우리 구단과 같은 식) */ if(r.t==='big')hot.push(`${tshort(+t)} ${p.name}: ${r.txt}`); else if(r.t==='inj')hot.push(`${tshort(+t)} ${p.name}: 연수 중 부상(약 ${p.injOut}일)`); } A[k]={}; }
+  if(A&&A[k]){ for(const t in A[k])for(const id of A[k][t]){ const p=G.players[id]; if(!p||p.team!==+t||milServing(p)||isAway(p))continue; /* AI도 복무·차출 중이면 결과 없음 */ const TC=G.coach&&G.coach[+t]; const r=ovsRoll(p,OVS[k],effC(TC&&(k==='abl'?(TC.fm||TC.fp):TC.pc),+t,'dv')); /* 그 구단 당일 지도 가능한 코치 육성력(우리 구단과 같은 식) */ if(r.t==='big')hot.push(`${tshort(+t)} ${p.name}: ${r.txt}`); else if(r.t==='inj')hot.push(`${tshort(+t)} ${p.name}: 연수 중 부상(약 ${p.injOut}일)`); } A[k]={}; }
   if(hot.length)news('리그',`${OVS[k].l}에서 돌아온 선수들`,hot.slice(0,5).join('\n'),0); }
 /* 날짜: 10/11 교육리그 개막 · 11/15 교육리그 결과·호주 출국 · 12/1 미국·일본 연수 출발 · 1/5 미국·일본 결과 · 2/1 호주 결과 */
 function tabDaily(day){ const d=dobj(day); const y=G.year;

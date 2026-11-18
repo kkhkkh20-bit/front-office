@@ -10,17 +10,17 @@ const cvacVal=(c,tid)=>{ const x={...c,clan:null}; return effC(x,tid,'sk',1)+eff
 function cvacOk(c,tid,k,win){ if(!c||c.role!==k)return false; if(typeof schMarketWhy==='function'&&schMarketWhy(c))return false;
   if(c.age>=66||(c.from===tid&&c.fromY===G.year)||(c.bid&&c.bid.exp>=G.day))return false;
   if(win&&c.fromY===G.year)return false; /* 겨울 정리 때는 이번 겨울 계약이 끝난 코치를 바로 데려가지 않는다(예전 겨울 후임 규칙 x.fromY!==G.year와 같게): 원소속 구단(우리 포함)이 다음 달 시장까지 다시 데려올 수 있게. 우리·AI 같음 */
-  if(c.res!=null&&c.res!==tid)return false; /* 우선 협상 후보는 그 구단만 */
-  return cmCanPay(team(tid),c,null); }
+  return coachCanHire(tid,c,{auto:true,cur:null})&&cmCanPay(team(tid),c,null); }
 const cvacSeed=(...a)=>rngHash('cvac',G.year,G.day,G.nextId,...a);
 /* tid 구단의 k 자리에 데려올 코치(시장 후보, 없으면 새 후보를 시장에 올려서). 고르기만 하고 계약은 cvacHire */
 function cvacPick(tid,k,win){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,tid,k,win)).map(c=>[c,cvacVal(c,tid)]).sort((a,b)=>b[1]-a[1]||(a[0].sal||0)-(b[0].sal||0)).map(x=>x[0]); /* 값은 후보마다 한 번만(정렬 비교마다 effC 두 번을 다시 계산하던 것, 카페 11-17 렉). 순서는 같다 */
   if(L.length)return L[0];
   let c=null; withRng(cvacSeed('new',tid,k),()=>{ for(let i=0;i<6&&!c;i++){ const x=mkCandCoach(k); if(x&&x.role===k&&cmCanPay(team(tid),x,null))c=x; } if(!c){ c=mkCoach(k,{boost:-ri(2,6)}); c.sal=round5(Math.min(c.sal,140)); } }); /* 형편 안 새 후보가 끝내 없으면 젊은 지도자 수준(시장의 낮은 쪽) */
   (G.cmarket=G.cmarket||[]).push(c); return c; }
-function cvacYears(tid,c){ return withRng(cvacSeed('yrs',tid,c.id),()=>ri(1,3)); }
+function cvacYears(tid,c){ return withRng(cvacSeed('yrs',tid,c.id),()=>coachContractYears(c,ri(1,3))); }
 /* 계약: 우리 구단은 단장이 누르는 영입과 같은 hireCoach, AI는 월간 시장 영입과 같은 처리 */
 function cvacHire(tid,c,why,start){ const yrs=cvacYears(tid,c), k=c.role;
+  if(!coachCanHire(tid,c,{years:yrs,auto:true,cur:null})||!cmCanPay(team(tid),c,null))return null;
   if(tid===ME()){ const e=hireCoach(c.id,yrs); if(e)return null; if(start!=null&&start!==c.cs)staffCt(c,yrs,start); return c; }
   const C=G.coach[tid]; G.cmarket=G.cmarket.filter(x=>x!==c); c.clan=null; delete c.res; delete c.folM; delete c.gmFol;
   staffCt(c,yrs,start??ctStartS()); C[k]=c; staffHistory('coach',c,'영입',tid,`${why||'코치진 공백 보강'} · ${yrs}년 · 연 ${money(c.sal)}`); stAttr(c); c.loy=20;
