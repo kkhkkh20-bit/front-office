@@ -5246,9 +5246,17 @@ T('[피드백 11-18 트레이드] 급매 매물이 더 자주 나온다: 주마�
 T('[피드백 11-18 트레이드] 거절하면 필요한 값·제시한 값과 붙은 웃돈(독주 견제·반복 거래)을 짧게 알려 준다',()=>{ fresh(); mkDyn(G.user); const t=G.teams.find(x=>x.id!==G.user&&domTradeTax(x,G.user,false).k>0); const pr=benchPair(t.id,0); ok(pr,'준비 실패');
   const junk=domestic(G.user).filter(p=>!p.foreign&&!hasNtc(p)&&!faLock(p)&&!startersOf(G.user).has(p.id)&&p.id!==pr.mine.id).sort((a,b)=>ovr(a)-ovr(b))[0];
   G.trades=[{y:G.year,d:G.day,with:-9,give:[],get:[],me:G.user},{y:G.year,d:G.day,with:-8,give:[],get:[],me:G.user}]; const e=evalTrade(t.id,[junk.id],[pr.their.id]);
-  const note=tradeGapNote(e); ok(note.includes('필요한 값 '+Math.max(0,e.outV+e.need).toFixed(1))&&note.includes('제시하신 값 '+e.inV.toFixed(1)),'값 요약이 틀림: '+note); ok(note.includes('독주 견제 +')&&note.includes('반복 거래 +')&&note.includes('비주전 거래라 웃돈 감면'),'웃돈 내역이 없음: '+note);
+  const note=tradeGapNote(e), rq=Math.max(0,e.outV+e.need), dg=rq.toFixed(1)===e.inV.toFixed(1)?2:1; ok(note.includes('필요한 값 '+rq.toFixed(dg))&&note.includes('제시하신 값 '+e.inV.toFixed(dg)),'값 요약이 틀림: '+note); ok(note.includes('독주 견제 +')&&note.includes('반복 거래 +')&&note.includes('비주전 거래라 웃돈 감면'),'웃돈 내역이 없음: '+note);
   ok(tradeGapNote({inV:1,outV:2,need:3,parts:{sub:true}}).includes('주전 대체 요구'),'주전 대체 요구 표시 없음');
   if(!e.ok){ const r=proposeTrade(t.id,[junk.id],[pr.their.id]); ok(!r.ok&&r.msg.includes('필요한 값'),'거절 메시지에 값 요약이 없음: '+r.msg); } G.trades=[]; });
+T('[피드백 11-18 트레이드] 현금이 한도에 닿으면 얼마부터 더 얹어도 그대로인지 알려 주고, 웃돈은 실제로 붙은 값으로 보여 준다(30억을 붙여도 안 움직임)',()=>{ fresh(); mkDyn(G.user); const t=G.teams.find(x=>x.id!==G.user&&domTradeTax(x,G.user,false).k>0); const pr=benchPair(t.id,0); ok(pr,'준비 실패');
+  const junk=domestic(G.user).filter(p=>!p.foreign&&!hasNtc(p)&&!faLock(p)&&!startersOf(G.user).has(p.id)&&p.id!==pr.mine.id).sort((a,b)=>ovr(a)-ovr(b))[0];
+  const e30=evalTrade(t.id,[junk.id],[pr.their.id],3000); ok(e30.cashFull&&e30.cashUse>0&&e30.cashUse<3000,'30억이 한도를 넘는데 표시 안 함 '+e30.cashUse);
+  const eU=evalTrade(t.id,[junk.id],[pr.their.id],e30.cashUse); ok(Math.abs(eU.cashV-e30.cashV)<1e-9&&Math.abs(eU.cashV-e30.cashCap)<1e-9,'한도 금액에서 이미 같은 값이 아님 '+eU.cashV+' / '+e30.cashV); /* 그 금액이면 이미 한도: 그 위로는 값이 같다 */
+  const eL=evalTrade(t.id,[junk.id],[pr.their.id],Math.max(0,e30.cashUse-20)); ok(!eL.cashFull&&eL.cashV<e30.cashV,'한도 아래 현금을 한도로 봄');
+  const n30=tradeGapNote(e30); { const rq=Math.max(0,e30.outV+e30.need); if(!e30.ok&&rq.toFixed(1)===e30.inV.toFixed(1))ok(n30.includes('필요한 값 '+rq.toFixed(2)),'반올림하면 같아 보이는데 거절: 한 자리 더 보여야 함 '+n30); ok(!tradeGapNote({inV:1.05,outV:.4,need:.68,parts:{}}).includes('1.1, 제시하신 값 1.1'),'1.08 대 1.05가 1.1 대 1.1로 보임'); } ok(n30.includes('까지만 칩니다')&&n30.includes(money(e30.cashUse)),'한도 안내 없음: '+n30); ok(!tradeGapNote(eL).includes('까지만 칩니다'),'한도 아래인데 한도 안내');
+  ok(Math.abs(e30.parts.domV-e30.parts.dom*Math.max(1.5,e30.outV))<1e-9&&e30.parts.domV>0,'독주 견제 실제 값 '+e30.parts.domV); const vf=x=>x<1?x.toFixed(2):x.toFixed(1); ok(n30.includes('독주 견제 +'+vf(e30.parts.domV)),'독주 견제를 실제 값으로 안 보여 줌: '+n30);
+  ok(e30.ok===evalTrade(t.id,[junk.id],[pr.their.id],3000).ok&&Math.abs(e30.gain-evalTrade(t.id,[junk.id],[pr.their.id],1000).gain)<1e-9,'표시만 바꿨는데 판정이 달라짐'); });
 T('[피드백 11-18 트레이드] AI끼리도 같은 견제 감면: 비주전만 내주면 독주 견제 웃돈이 1/4이다',()=>{ fresh(); const X=G.teams.find(t=>t.id!==G.user).id; mkDyn(X); const riv=topRival(X);
   const a=domTradeTax(riv,X,false,true), b=domTradeTax(riv,X,false,false), c=domTradeTax(riv,X,true,true); ok(b.k>0&&Math.abs(a.k-b.k*DOM_BENCH)<1e-9,'비주전 감면이 1/4가 아님'); ok(c.k===b.k,'주전 거래에 감면이 붙음'); });
 

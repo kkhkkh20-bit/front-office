@@ -165,23 +165,24 @@ function tradeUrgent(tid,p){ return !!(p&&G.players[p.id]===p&&p.team===tid&&p.a
    공략 방지는 그대로: 상대 눈에 받는 값이 내주는 값+요구치(need) 이상이어야 하고(작은 맞교환을 되풀이해 공짜로 값을 올릴 수 없다), 같은 구단 연 2건·30일 간격, 지명권·현금 한도도 그대로. 지명권을 받아 가는 거래는 해당 없음. 우리·AI 같은 식(27_other_gms도 같은 견제 할인) */
 const TR_BENCH={rep:.25,margin:.015,min:.15};
 function trBenchOnly(tid,ids){ if(!ids||!ids.length)return false; const S=startersOf(tid), C=tvCore6(tid); return ids.every(id=>{ const p=G.players[id]; return !!p&&p.team===tid&&!S.has(id)&&!C.has(id); }); }
-function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=null; const bench=tid!==G.user&&!pk.get.length&&trBenchOnly(tid,get); const parts={dom:0,rep:0,sub:false,core:false,bench}; /* parts: 거절 때 보여 줄 웃돈 내역(tradeGapNote) */
+function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=null; const bench=tid!==G.user&&!pk.get.length&&trBenchOnly(tid,get); const parts={dom:0,rep:0,domV:0,repV:0,sub:false,core:false,bench}; /* parts: 거절 때 보여 줄 웃돈 내역(tradeGapNote) */
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
   _evOut=new Set(get.map(id=>P(id)).filter(q=>{ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(q)]; return sl&&sl.ps.some(x=>x.id===q.id); }).map(pSlot));
   let inV, outV, premiumV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t)*pkHoard(ME(),k,pk.give,pk.get)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=null; }
-  const cashV=Math.min(cashVal(t,cash),CASH_SHARE*Math.max(1.5,outV)); inV+=cashV; /* 현금은 내주는 값의 22%까지만 메운다 */
+  const cashCap=CASH_SHARE*Math.max(1.5,outV), cashV=Math.min(cashVal(t,cash),cashCap); inV+=cashV; /* 현금은 내주는 값의 22%까지만 메운다 */
+  const cashFull=cash>0&&cashVal(t,cash)>cashCap+1e-9, cashUse=cashFull?cashFor(t,cashCap):0; /* 한도를 넘긴 현금: 얼마부터 더 얹어도 값이 그대로인지(피드백 11-18: 30억을 붙여도 반응 막대가 안 움직였다) */
   const theirN=rosterN(tid)+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
   const ov=Math.max(0,outV); let need=tradeNeed(t,outV)-(get.some(id=>P(id)&&P(id).aiListed)?Math.min(1.5,ov*.3):0)-(hit.length?Math.min(.6,.2+ov*.1):0); /* 양보 폭은 선수 값에 비례(커뮤니티 피드백 11-11: 값 0.6짜리 급매 유망주를 1.5 고정 양보로 거의 공짜에 넘겼다) */ /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-Math.min(.9,ov*.3):-Math.min(.3,ov*.12)); /* 급매는 손해를 조금 보더라도 넘긴다(받을 값의 30%까지) */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
   const theirPay=capPayAs(tid,give,get); /* 연봉 차액을 더하지 않고 상위 40명을 다시 고른다 */
   const capT=tid!==G.user?aiCapTake(tid,theirPay,capInfo(tid).pay):null; if(capT&&!capT.hard)need+=cashCost(t,-capT.tax); /* 상한을 넘겨 떠안으면 낼 세금만큼 값을 더 요구한다(소프트캡, 13_roster aiCapTake) */
   const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ if(tradeUrgent(tid,P(id)))continue; const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,premiumV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*.06*Math.max(3,outV);
   /* 같은 구단과 올해 거래를 반복할수록, 상대 핵심 선수를 데려갈수록 웃돈을 요구한다 */
-  if(tid!==G.user){ const mine=x=>x.y===G.year&&(x.me==null||x.me===G.user); /* 지금 구단이 한 거래만(이직 전 구단 거래 제외, 검수 11-08c) */ const nT=(G.trades||[]).filter(x=>mine(x)&&x.with===tid).length; const urgentOnly=get.length&&get.every(id=>tradeUrgent(tid,P(id)))&&!pk.get.length&&cash>=0, repeatedV=urgentOnly?0:Math.max(1.5,premiumV); const rk=bench?TR_BENCH.rep:1; if(nT){ need+=repeatedV*.25*rk*nT; if(repeatedV)parts.rep+=.25*rk*nT; }
+  if(tid!==G.user){ const mine=x=>x.y===G.year&&(x.me==null||x.me===G.user); /* 지금 구단이 한 거래만(이직 전 구단 거래 제외, 검수 11-08c) */ const nT=(G.trades||[]).filter(x=>mine(x)&&x.with===tid).length; const urgentOnly=get.length&&get.every(id=>tradeUrgent(tid,P(id)))&&!pk.get.length&&cash>=0, repeatedV=urgentOnly?0:Math.max(1.5,premiumV); const rk=bench?TR_BENCH.rep:1; if(nT){ need+=repeatedV*.25*rk*nT; parts.repV+=repeatedV*.25*rk*nT; if(repeatedV)parts.rep+=.25*rk*nT; }
     /* 리그 전체 눈치: 한 시즌에 우리가 트레이드를 많이 할수록(세 번째부터) 다른 단장들도 값을 올린다. KBO는 구단당 한 해 트레이드가 몇 건 안 된다 */
-    { const nA=(G.trades||[]).filter(mine).length; if(nA>=2){ need+=repeatedV*.12*rk*(nA-1); if(repeatedV)parts.rep+=.12*rk*(nA-1); } }
+    { const nA=(G.trades||[]).filter(mine).length; if(nA>=2){ need+=repeatedV*.12*rk*(nA-1); parts.repV+=repeatedV*.12*rk*(nA-1); if(repeatedV)parts.rep+=.12*rk*(nA-1); } }
     if(HARD())need+=Math.max(1.5,outV)*.25; /* 하드 모드: 다른 단장들이 25% 더 요구한다 */
-    { const S=startersOf(tid); const D=domTradeTax(t,G.user,get.some(id=>S.has(id)&&!(P(id)&&P(id).aiListed)),bench); if(D.k>0){ need+=Math.max(1.5,outV)*D.k; domX={k:D.k,refuse:D.refuse}; parts.dom=D.k; } } /* 독주 견제(86b_dynasty): 우리가 독주 구단이면 경쟁 구단은 값을 올리고, 우승 경쟁 중인 구단은 주전을 내주지 않는다. 리빌딩 구단은 팔되 비싸게 */
+    { const S=startersOf(tid); const D=domTradeTax(t,G.user,get.some(id=>S.has(id)&&!(P(id)&&P(id).aiListed)),bench); if(D.k>0){ need+=Math.max(1.5,outV)*D.k; domX={k:D.k,refuse:D.refuse}; parts.dom=D.k; parts.domV=Math.max(1.5,outV)*D.k; } } /* 독주 견제(86b_dynasty): 우리가 독주 구단이면 경쟁 구단은 값을 올리고, 우승 경쟁 중인 구단은 주전을 내주지 않는다. 리빌딩 구단은 팔되 비싸게 */
     const core=new Set(domestic(tid).filter(q=>!q.ys&&!q.aiListed).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(q=>q.id)); if(get.some(id=>core.has(id))){ need+=Math.max(1,outV)*.2; parts.core=true; } }
   /* 한 명의 주축을 여러 명의 B급과 바꾸지 않는다: 받는 선수 중 가장 좋은 선수가 내주는 주축의 75%는 돼야 한다 */
   { const outs=get.map(id=>tval(t,P(id),'out')).filter(x=>x>0); const ins=give.map(id=>tval(t,P(id),'in')); const topO=outs.length?Math.max(...outs):0, topI=ins.length?Math.max(...ins):0;
@@ -197,7 +198,7 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=
      예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
   if(!get.some(id=>P(id)&&P(id).aiListed))need=bench?Math.max(need,Math.max(0,outV)*TR_BENCH.margin,TR_BENCH.min):Math.max(need,Math.max(0,outV)*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%(비주전 거래는 1.5%, 그래도 최소 0.15)는 더 받아야 한다(예전 -10%까지 손해 감수) */
   const gain=inV-outV; const ok=gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); if(domX&&tid!==G.user&&get.length){ const k=tid+':'+get.join(','); if(domX.refuse&&gain>=need)domLog('ref',k); else if(!ok&&gain>=need-Math.max(1.5,outV)*domX.k)domLog('over',k); } /* 견제가 결과를 바꾼 경우만 센다 */
-  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,parts,...(domX?{dom:domX}:{})};
+  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{})};
 }
 /* FA 신청을 앞둔 선수: 시즌 결산 뒤 FA 공시(스토브리그 시작) 전까지는 트레이드할 수 없다. 데려가도 곧 FA로 나가는 선수를 지명권·유망주와 바꾸던 허점(커뮤니티 11-12) */
 let _faLk={k:null,s:null};
@@ -278,10 +279,14 @@ function proposeTrade(tid,give,get,cash,pk){
 }
 
 
-/* 거절 때 값 계산 요약(피드백 11-18): 상대 눈에 필요한 값(내주는 값+요구치)과 제시한 값(현금 포함), 붙은 웃돈. 비율은 상대가 내주는 값 대비 */
-function tradeGapNote(e){ if(!e||!Number.isFinite(e.inV)||!Number.isFinite(e.outV))return ''; const P=e.parts||{}, s=[], pc=x=>Math.max(1,Math.round(x*100));
-  if(P.dom>=.005)s.push(`독주 견제 +${pc(P.dom)}%`); if(P.rep>=.005)s.push(`반복 거래 +${pc(P.rep)}%`); if(P.core)s.push('핵심 선수 +20%'); if(P.sub)s.push('주전 대체 요구');
-  return `저희 계산으로는 필요한 값 ${Math.max(0,e.outV+e.need).toFixed(1)}, 제시하신 값 ${e.inV.toFixed(1)}입니다${s.length?`(${s.join(', ')}${P.bench?', 비주전 거래라 웃돈 감면':''})`:''}.`; }
+/* 거절 때 값 계산 요약(피드백 11-18): 상대 눈에 필요한 값(내주는 값+요구치)과 제시한 값(현금 포함), 붙은 웃돈.
+   웃돈은 실제로 붙은 값으로 보여 준다: 독주 견제·반복 거래는 내주는 값이 1.5보다 작아도 1.5를 기준으로 붙어서, 비율(+8%)만 보이면 값 0.4짜리 백업에 실제로는 30% 넘게 붙는 걸 알 수 없었다(피드백 11-18 2차).
+   현금이 한도(내주는 값의 22%, 최소 1.5 기준)를 넘었으면 얼마부터는 더 얹어도 그대로인지 알려 준다(30억을 붙여도 안 움직였다) */
+function tradeGapNote(e){ if(!e||!Number.isFinite(e.inV)||!Number.isFinite(e.outV))return ''; const P=e.parts||{}, s=[], pc=x=>Math.max(1,Math.round(x*100)), vf=x=>x<1?x.toFixed(2):x.toFixed(1);
+  if(P.dom>=.005)s.push(P.domV>0?`독주 견제 +${vf(P.domV)}`:`독주 견제 +${pc(P.dom)}%`); if(P.rep>=.005)s.push(P.repV>0?`반복 거래 +${vf(P.repV)}`:`반복 거래 +${pc(P.rep)}%`); if(P.core)s.push('핵심 선수 +20%'); if(P.sub)s.push('주전 대체 요구');
+  const cs=e.cashFull?` 현금은 이 거래에서 ${money(Math.max(10,e.cashUse||0))}어치(값 ${vf(e.cashCap)})까지만 칩니다. 더 얹어도 달라지지 않으니 선수를 바꾸거나 더해 주세요.`:'';
+  const rq=Math.max(0,e.outV+e.need), dg=rq.toFixed(1)===e.inV.toFixed(1)?2:1; /* 반올림하면 같아 보이는데 거절이면 한 자리 더(1.1 대 1.1로 보여 '거의 됐다'고 오해) */
+  return `저희 계산으로는 필요한 값 ${rq.toFixed(dg)}, 제시하신 값 ${e.inV.toFixed(dg)}입니다${s.length?`(${s.join(', ')}${P.bench?', 비주전 거래라 웃돈 감면':''})`:''}.${cs}`; }
 /* 거절 이유를 한마디로: 상대 구단 사정(리빌딩·우승 경쟁·연봉)과 맞지 않는 선수를 내밀 때 */
 function tradeWhyNot(t,give,get,pk){ const P=id=>G.players[id]; const g=give.map(P).filter(Boolean), o=get.map(P).filter(Boolean); const pl=planOf(t); const npk=pk&&pk.give?pk.give.length:0;
   if(!g.length)return pl==='win'&&npk?'저희는 올해 우승을 보고 있습니다. 지명권보다 당장 1군에서 뛸 선수가 필요합니다.':'';
