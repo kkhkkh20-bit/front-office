@@ -221,6 +221,7 @@ function ownershipPeopleChanged(tid,oldBoss,newBoss,{ownerChanged=false,ceoChang
   if(!roles.length)return null;
   const H=G.ownershipPeopleHistory||(G.ownershipPeopleHistory=[]),key=tid+':'+roles.map(k=>k+':'+oldBoss[k].id+'>'+newBoss[k].id).join('|');
   if(H.some(h=>h.key===key))return null;
+  if(roles.includes('own')&&typeof opOwnerChanged==='function')opOwnerChanged(tid,oldBoss.own.id);
   const copy=x=>JSON.parse(JSON.stringify(x)),A={key,tid,day:G.day,year:G.year,oldBoss:{},newPeople:{},contacts:{},invitations:[],plans:[],meetings:[]};
   const changed=who=>roles.includes(who==='ceo'?'ceo':'own');
   for(const k of roles){
