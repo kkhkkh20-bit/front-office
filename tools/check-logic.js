@@ -27,6 +27,9 @@ globalThis.__uiSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','sr
 /* [검수 11-17 기록 표] 시나리오용: 선수 기록 표(39_player_sheet: psTable·statTable0·amRowY·amCareerRow)와 일괄 수정 구단 묶음(72_cosmetic: cosmScopes) 소스. UI는 빈 객체, esc·wOf는 화면 정의 그대로 */
 globalThis.__sheetSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui',f),'utf8'), sh=R('players/39_player_sheet.js'), cs=R('players/72_cosmetic.js'), core=R('runtime/00_core.js'); const cut=(t,a,b)=>t.slice(t.indexOf(a),t.indexOf(b));
   return 'const UI={};\n'+core.split('\n').find(l=>l.startsWith('const esc='))+'\nfunction wOf(h,p){ return warPub(h,p); }\n'+cut(sh,'function psTable(','/* 통산 기록 범위')+'\n'+cut(sh,'function statLvl(','function keyBar(')+'\n'+cut(cs,'function cosmScopes(','function cosmTeamTxt(')+'\n;({UI,psTable,statTable0,amRowY,amCareerRow,cosmScopes})'; };
+/* [코치 채용 성능] 시나리오용: 코치 시장 후보 목록(34_staff: cmkList)과 쪽 나누기(23_trade_compare: pager) 소스. UI는 빈 객체 */
+globalThis.__cmkSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui',f),'utf8'), st=R('staff/34_staff.js'), tc=R('market/23_trade_compare.js'); const cut=(t,a,b)=>t.slice(t.indexOf(a),t.indexOf(b));
+  return 'const UI={};\n'+cut(tc,'function pager(','function cardPageSize(')+'\n'+cut(st,'const CMK_ROWS=','function coachMarket(')+'\n;({UI,pager,cmkList,CMK_ROWS})'; };
 globalThis.__milRosterPlanSrc=()=>fs.readFileSync(path.join(__dirname,'..','src/ui/players/25_squad_glance.js'),'utf8');
 const oe=console.error; console.error=()=>{};
 const env=new Function('T',fs.readFileSync(ENGINE,'utf8')+`
@@ -7394,6 +7397,14 @@ T('[드래프트 확률 성능] 카페 11-17 렉: 빠른 난수(doRand)는 seede
   simTo(()=>G.draft&&!G.draft.done); advanceDraft(true); const r0=__rngState(); _doc=null; const A=JSON.stringify(draftOdds(G.user)); _doc=null; const B=JSON.stringify(draftOdds(G.user)); ok(A===B,'같은 상태에서 결과가 다름'); ok(__rngState()===r0,'본 난수를 씀');
   const O=JSON.parse(A); ok(O.picks.length>0&&Object.values(O.P).every(v=>v.av>=0&&v.av<=1),'확률 범위 이상'); });
 T('[코치 채용 성능] 카페 11-17 렉: 빈자리 후보 고르기(cvacPick)는 값을 한 번씩만 계산해도 예전 정렬(비교마다 계산)과 같은 후보를 고른다',()=>{ fresh(); const o=otherT(); for(const k of CKEYS){ const L=(G.cmarket||[]).filter(c=>cvacOk(c,o,k,false)); if(!L.length)continue; const old=[...L].sort((a,b)=>cvacVal(b,o)-cvacVal(a,o)||(a.sal||0)-(b.sal||0))[0]; const n0=(G.cmarket||[]).length; const c=cvacPick(o,k,false); ok(c===old&&(G.cmarket||[]).length===n0,k+' 다른 후보: '+(c&&c.name)+' / '+old.name); } });
+T('[코치 채용 성능] 카페 11-17 채용 렉: 코치 시장 비교 표를 20명씩 쪽으로 나눠도, 쪽을 이어 붙이면 예전 한 장 목록(보직·이름·정렬)과 같은 후보가 같은 순서로 나오고 본 난수를 쓰지 않는다',()=>{ fresh(); const F=eval(globalThis.__cmkSrc()); const M=G.cmarket; ok(M&&M.length>5,'시장 후보가 없음');
+  for(const c of M.slice(0,30))M.push(Object.assign({},c,{id:c.id+'_tie'})); /* 같은 능력·연봉 후보(동점)도 순서가 같아야 한다 */ while(M.length<130)M.push(Object.assign({},M[M.length%40],{id:'cmkx'+M.length,sk:(M.length*7)%60+30}));
+  const SF={tot:c=>-(c.sk+c.dv),sk:c=>-c.sk,dv:c=>-c.dv,sal:c=>c.sal}, r0=globalThis.__rngState(), nm=M[3].name.slice(0,1);
+  for(const role of ['all',...CKEYS])for(const srt of Object.keys(SF))for(const cq of ['',nm]){ const old=M.filter(c=>(role==='all'||c.role===role)&&(!cq||c.name.includes(cq))).sort((a,b)=>SF[srt](a)-SF[srt](b)); const L=F.cmkList(M,role,cq,srt);
+    ok(L.length===old.length&&L.every((c,i)=>c===old[i]),role+'/'+srt+'/'+cq+' 목록이 다름'); const key='cmt'+role+srt; const n=Math.max(1,Math.ceil(L.length/F.CMK_ROWS)); let all=[];
+    for(let i=0;i<n+1;i++){ F.UI.pg={[key]:i}; const P=F.pager(key,L,F.CMK_ROWS); ok(P.items.length<=F.CMK_ROWS,'한 쪽이 '+F.CMK_ROWS+'명을 넘음'); if(i<n)all=all.concat(P.items); else ok(P.i===n-1,'마지막 쪽 뒤로 넘어감'); }
+    ok(all.length===old.length&&all.every((c,i)=>c===old[i]),role+'/'+srt+' 쪽을 이어 붙인 목록이 다름'); }
+  ok(globalThis.__rngState()===r0,'목록·쪽 나누기가 본 난수를 씀'); });
 
 /* ===== 외부 검수 11-17 스폰서(#277~#287): 예산·마케팅 소식·결산이 sponPay 하나로 같은 금액 ===== */
 const SP17=(o)=>{ fresh(); o=o||{}; if(o.hard){ G.cfg=G.cfg||{}; G.cfg.hard=true; } sponInit(); const T=G.teams.map(t=>t.id), me=G.user, oth=T.filter(t=>t!==me); G.spon.c={x:{co:'가상사',ind:'금융',amt:1000,ps:o.ps??480,champ:0,y0:G.year,until:G.year+1,first:1}}; G.spon.cutL=[]; G.spon.off=[]; G.sea.y=G.year; return {T,me,oth}; };
