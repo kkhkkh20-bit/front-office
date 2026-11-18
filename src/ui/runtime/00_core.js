@@ -148,7 +148,7 @@ let CUR_SLOT=null; function curSlot(){ return CUR_SLOT??(meta().active||1); }
 let SLOT_REV=0, SLOT_TAG='', SAVE_CONFL=false, SLOT_NEW=false; function slotRevSync(n,m){ m=m||meta(); SLOT_REV=revOf(m,n);SLOT_TAG=sbTag(m.slots[n]);SAVE_CONFL=false;SLOT_NEW=false; } /* SLOT_NEW: 이 슬롯에 다른 게임(새 게임·가져온 백업)을 처음 쓰는 중 */
 function revOf(m,n){ return (m.slots[n]&&m.slots[n].rev)||0; }
 /* 새 판번호: 무작위 소수를 붙여, 슬롯을 지우고 같은 번호로 다시 만들어도 옛 탭의 판번호와 겹치지 않는다(검수 11-09 #1: 복사본 판번호가 늘 0이라 옛 탭이 새 복사본을 덮음) */
-function revNext(r0){ return Math.max(Math.floor(r0)+1,Date.now())+Math.random(); }
+function revNext(r0){ let nonce; try{const a=new Uint32Array(1);crypto.getRandomValues(a);nonce=a[0]/4294967296;}catch(e){const t=typeof performance!=='undefined'?performance.now():Date.now();nonce=((t*1000+(revNext.seq=(revNext.seq||0)+1))%1048576)/1048576;} return Math.max(Math.floor(r0)+1,Date.now())+nonce; } /* 저장 판번호는 경기 난수와 독립된 보조 값을 사용한다. */
 function slotHas(n){ return sbGet(n)!=null; }
 /* 이번 실행에서 열지 못한 슬롯(본문 손상·복원 실패): 이어하기 대상에서 뺀다(검수 11-09 #16) */
 const SLOT_BAD={}, SLOT_BAD_AT={};

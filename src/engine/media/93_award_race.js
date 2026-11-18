@@ -6,16 +6,17 @@
    모든 구단에 같은 식을 쓰고, 기록만 보고 정한다(주 난수 R()·N()을 쓰지 않는다. 기사도 withRng 안에서 내 주 난수 순서를 바꾸지 않는다). */
 
 /* 시즌 중 후보: 지금까지 치른 팀 경기 수로 규정타석·규정이닝을 비례 적용(시상 자격과 같은 기준) */
-function awRaceRows(y){ const rows=[]; for(const p of Object.values(G.players)){ if(p.team==null||p.arch)continue; const h=seasonTotal(p,y,'1군'); if(!h)continue; rows.push({p,h,w:warOf(h,p)}); } return rows; }
+function awRaceRows(y){ const rows=[]; for(const p of Object.values(G.players)){ if(p.arch)continue; const h=seasonTotal(p,y,'1군'); if(!h)continue; rows.push({p,h,w:warOf(h,p)}); }
+  for(const id in (G.arch||{})){ if(G.players[id])continue; const a=G.arch[id], R=(a.rows||[]).filter(r=>r.y===y); if(!R.length)continue; const p=archP(a), h=seasonTotal(p,y,'1군'); if(h)rows.push({p,h,w:sum(R.map(r=>r.war||0))}); } return rows; }
 function awRaceRank(){ const r={}; try{ standingsNow().forEach((x,i)=>{ r[x.tid]=i; }); }catch(e){} return r; }
-function awRaceQual(x,y){ const g=tgp(awTeamOf(x.p,x.h,y),y)||0; if(g<=0)return false; const f=g/144;
+function awRaceQual(x,y,tit=awTitleHolders(y)){ if(tit.has(x.p.id))return true; const g=tgp(awTeamOf(x.p,x.h,y),y)||0; if(g<=0)return false; const f=g/144;
   return x.p.isP?((x.h.outs||0)>=g*3||(x.h.w||0)>=10*f||(x.h.sv||0)>=30*f||(x.h.hld||0)>=30*f):(x.h.pa||0)>=Math.round(g*3.1); }
 function awRaceScore(x,y,rk){ return awBase(x,rk[awTeamOf(x.p,x.h,y)]??9); }
-function awRaceRow(x,y,rk){ return {id:x.p.id,name:x.p.name,t:x.p.team,pos:(()=>{ try{ return posLabel(x.p); }catch(e){ return ''; } })(),line:statLine(x.h,x.p),w:+x.w.toFixed(1),b:+awRaceScore(x,y,rk).toFixed(3)}; }
+function awRaceRow(x,y,rk){ return {id:x.p.id,name:x.p.name,t:awClub(x.p,x.h,y),pos:(()=>{ try{ return posLabel(x.p); }catch(e){ return ''; } })(),line:statLine(x.h,x.p),w:+x.w.toFixed(1),b:+awRaceScore(x,y,rk).toFixed(3)}; }
 /* 순서: 기록 점수 → WAR → 선수 번호(동점도 늘 같은 순서) */
 const awRaceSort=(a,b)=>b.b-a.b||b.w-a.w||a.id-b.id;
-function awRaceTop(y,kind,n=3){ const rk=awRaceRank(), R=awRaceRows(y);
-  const L=kind==='roy'?R.filter(x=>awRookieOK(x,y)&&((x.h.pa||0)>=30||(x.h.outs||0)>=45)):R.filter(x=>awRaceQual(x,y));
+function awRaceTop(y,kind,n=3){ const rk=awRaceRank(), R=awRaceRows(y), tit=kind==='roy'?null:awTitleHolders(y);
+  const L=kind==='roy'?R.filter(x=>awRookieOK(x,y)&&((x.h.pa||0)>=30||(x.h.outs||0)>=45)):R.filter(x=>awRaceQual(x,y,tit));
   return L.map(x=>awRaceRow(x,y,rk)).sort(awRaceSort).slice(0,n); }
 function awRaceLine(c,i){ return `${i+1}. ${awN(c)}(${tshort(c.t)}${c.pos?' · '+c.pos:''}) ${c.line}`; }
 function awRaceNote(y,k,top){ const H=(G.awRace=G.awRace||{}), L=(H[y]=H[y]||[]); L.push({d:G.day,k,ids:top.map(c=>c.id)}); if(L.length>40)L.splice(0,L.length-40); const ys=Object.keys(H).map(Number).sort((a,b)=>a-b); while(ys.length>5)delete H[ys.shift()]; }

@@ -6,7 +6,8 @@
    - 8월 15일까지 정식 계약한 선수만 포스트시즌에 나가므로 대체 계약은 정규시즌 끝에 끝난다.
    shortcut: 일반 외국인만 대상(아시아쿼터 대체는 세칙 확인 전이라 뺐다), 세칙이 확인되면 넓힌다 */
 const F_TMP_DAYS=42, F_TMP_MON=10*USD;
-const fTmpFee=q=>Math.min(Math.round(F_TMP_MON*fEcoK()),round5(Math.min(q.ask,fNewCap())/6)); /* 한 달 지급액(시즌 6개월 기준 환산) */
+const fTmpMonthlyCap=()=>Math.round(F_TMP_MON*fEcoK());
+const fTmpFee=q=>Math.min(fTmpMonthlyCap(),round5(Math.min(q.ask,fNewCap())/6)); /* 한 달 지급액(시즌 6개월 기준 환산) */
 /* 처음 받은 진단 일수: 42일 진단 메일을 받은 다음 날 41일로 줄어 막히지 않게(검수 11-06). 규정은 진단 기준이다 */
 /* 실제 임시 입단과 정식 자격 취득은 다른 시점이다. 최초 적응 보호 날짜는 전환으로 미루지 않는다. */
 function fTmpJoined(p,tid,d=G.day){ if(!p||p.team!==tid)return false; p.fjD=d; delete p.ftmpFormal; return true; }
@@ -14,13 +15,15 @@ function fTmpRecordFix(){let n=0;for(const p of Object.values(G.players||{})){co
 function fTmpConverted(p,tid,d=G.day){ if(!p||p.team!==tid)return false; const a=p.ftmpFormal; if(a&&a.tid===tid&&a.joined===p.fjD)return false;
   p.ftmpFormal={tid,d,n:G.acqSeq=(G.acqSeq||0)+1,joined:p.fjD}; gmInc(tid,'fRep'); return true; }
 /* 긴 진단을 식별한다. 짧은 겹부상은 기존 긴 재활의 안내를 새로 만들지 않는다. */
-function fTmpNotify(o){ if(fTmpErr(G.user,o))return false; const H=(o.injHist||[]).filter(h=>h.days>=F_TMP_DAYS&&h.bk==null&&(h.ret??h.d+h.days)>G.day).sort((a,b)=>(b.ret??b.d+b.days)-(a.ret??a.d+a.days)),h=H[0];
+function fTmpNotify(o){ if(fTmpErr(G.user,o))return false; const H=fTmpActiveInj(o).filter(h=>h.days>=F_TMP_DAYS).sort((a,b)=>(b.ret??b.d+b.days)-(a.ret??a.d+a.days)),h=H[0];
   const id=h&&h.id!=null?h.id:'legacy:'+o.injK+':'+(h&&h.d!=null?h.d:G.day+(o.injOut||0));
   if(o.ftmpN&&o.ftmpN.id===id&&o.ftmpN.tid===G.user)return false;
   if(!o.ftmpN&&h&&o.ftmpM>=h.d&&o.ftmpM<=G.day){o.ftmpN={id,tid:G.user,d:o.ftmpM};return false;}
   o.ftmpM=G.day;o.ftmpN={id,tid:G.user,d:G.day};
-  mail('운영팀',`${o.name} ${fTmpDx(o)}일 진단: 부상 대체 외국인 등록 가능`,`${o.name}(${posLabel(o)})이(가) ${fTmpDx(o)}일 치료 진단을 받았습니다(남은 재활 ${o.injOut}일). 리그 규정상 6주 이상 부상이면 재활 선수 명단에 올리고 대체 외국인을 등록할 수 있습니다. 교체 횟수는 쓰지 않고, 보수는 한 달 10만 달러(약 ${money(F_TMP_MON)})까지입니다. 원 선수가 돌아오면 둘 중 한 명을 고릅니다.`,{kind:'외국인',ref:o.id,acts:[{l:'대체 선수 고르기',a:'fTmpStart',v:o.id}]});return true; }
-function fTmpDx(o){ const h=(o.injHist||[]).slice(-1)[0]; return h&&h.d!=null&&h.d+h.days>=G.day+o.injOut-1?Math.max(h.days,o.injOut):o.injOut||0; }
+  mail('운영팀',`${o.name} ${fTmpDx(o)}일 진단: 부상 대체 외국인 등록 가능`,`${o.name}(${posLabel(o)})이(가) ${fTmpDx(o)}일 치료 진단을 받았습니다(남은 재활 ${o.injOut}일). 리그 규정상 6주 이상 부상이면 재활 선수 명단에 올리고 대체 외국인을 등록할 수 있습니다. 교체 횟수는 쓰지 않고, 보수는 한 달 10만 달러(약 ${money(fTmpMonthlyCap())})까지입니다. 원 선수가 돌아오면 둘 중 한 명을 고릅니다.`,{kind:'외국인',ref:o.id,acts:[{l:'대체 선수 고르기',a:'fTmpStart',v:o.id}]});return true; }
+/* 겹부상은 마지막 진단 한 건으로 긴 재활 자격을 지우지 않는다. 복귀·만료한 기록은 제외한다. */
+function fTmpActiveInj(o){ return (o&&o.injHist||[]).filter(h=>h&&h.bk==null&&h.d!=null&&h.d<=G.day&&(h.ret??h.d+h.days)>G.day&&h.days>0); }
+function fTmpDx(o){ return Math.max(o&&o.injOut||0,...fTmpActiveInj(o).map(h=>h.days)); }
 function fTmpErr(tid,o,q){
   if(period()!=='season'||G.day>foreignDL())return '부상 대체 외국인은 정규시즌 8월 15일까지 등록할 수 있습니다.';
   if(!o||o.team!==tid||o.foreign!=='용병')return '대체 대상은 우리 구단 일반 외국인 선수입니다.';
@@ -48,6 +51,7 @@ function fTmpConvert(q){ const e=fTmpConvertErr(q); if(e)return e; const tid=q.t
   if(o&&o.team===tid){ delete o.frehab; releaseForeign(o.id); }
   return fTmpConvertDo(q,tid); }
 function fTmpConvertErr(q){ if(!q||!q.ftmp||q.team==null||G.players[q.id]!==q)return '이미 정리된 대체 계약입니다.'; const tid=q.team, o=G.players[q.ftmp.o], oIn=!!(o&&o.team===tid);
+  if(period()!=='season')return '부상 대체 선수의 정식 전환은 정규시즌에만 할 수 있습니다.';
   if(oIn&&o.frehab!==q.id)return '원 선수와 대체 선수의 재활 명단 연결이 맞지 않아 정식 전환할 수 없습니다. 원 선수는 방출하지 않습니다.';
   if(fReplLeft(tid)<=0||G.day>foreignDL())return '교체 횟수가 없거나 8월 15일이 지나 정식 계약할 수 없습니다.';
   const e=fTmpFitErr(tid,[...fYBNow(tid,o,q),q],oIn?o.id:null); /* 일반 영입과 같은 구성 제한(검수 11-06)·구단 실제 한도(신생 구단 가산, 다른 재활 명단 선수 재계약 가산 포함)에서 원 선수 가산만 뺀다(검수 11-17 #231·#232) */
@@ -85,15 +89,14 @@ function fTmpStaleFix(){ let n=0; for(const o of Object.values(G?.players||{})){
    신생 구단(일반 외국인 4명)은 정원·같은 유형 제한이 다르다(검수 11-17 #229), 그사이 다른 영입으로 총액이 늘었으면 복귀도 한도를 지킨다(검수 11-17 #228) */
 function fBackErr(o,q){ if(!o||o.foreign!=='용병'||o.team==null)return ''; const e=fTmpFitErr(o.team,[...fYBNow(o.team,o,q),o],null); return e?`${o.name}이(가) 돌아오면 ${e}`:''; }
 const fBackClash=(o,q)=>!!fBackErr(o,q);
-EVH.ftmp={ can(e,i){ const q=G.players[e.data.qid], stale=fTmpCardCheck(e,q); if(stale)return stale; if(i===1)return fTmpConvertErr(q); /* 정식 계약이 안 되면 결정으로 남기지 않는다(검수 11-08: 거절된 뒤 대체 선수까지 방출) */ return fTmpReinj(q); }, /* 누를 때 다시 본다: 원 선수가 다시 다쳤으면 결정을 닫고 이유를 알린다(검수 11-17 #235) */
+EVH.ftmp={ canAuto:true, canLate:true, can(e,i){ const q=G.players[e.data.qid], stale=fTmpCardCheck(e,q); if(stale)return stale; if(i===1)return fTmpConvertErr(q); /* 정식 계약이 안 되면 결정으로 남기지 않는다(검수 11-08: 거절된 뒤 대체 선수까지 방출) */ return fTmpReinj(q)||fBackErr(G.players[q.ftmp.o],q); }, /* 누를 때 다시 본다: 원 선수가 다시 다쳤으면 결정을 닫고 이유를 알린다(검수 11-17 #235) */
   pick(e,i){ const q=G.players[e.data.qid], stale=fTmpCardCheck(e,q); if(stale)return stale; let pre=''; if(i===1){ const err=fTmpConvert(q); if(!err)return `${q.name}과(와) 정식 계약했습니다.`; pre=err+' 원 선수 복귀로 처리합니다. '; } /* 자동 처리 중 전환이 막히면 기본(원 선수 복귀)으로 */
     { const w=fTmpReinj(q); if(w){ e.void=true; return pre+w; } } /* 기한 자동 처리도 다시 다친 원 선수는 복귀시키지 않는다(검수 11-17 #235) */
-    const o=G.players[q.ftmp.o], be=o&&o.team===q.team?fBackErr(o,q):''; fTmpEnd(q,'원 선수 복귀');
-    if(be){ o.frehab='hold'; return pre+`${q.name}의 대체 계약을 끝냈습니다. ${be}. 그래서 ${o.name}은(는) 다른 외국인을 정리할 때까지 재활 선수 명단에 남습니다(보류권 유지).`; } /* 복귀를 골랐는데 두 선수가 다 떠나지 않게(검수 11-06), 총액 한도도 같은 판정(검수 11-17 #228) */
+    const o=G.players[q.ftmp.o], be=o&&o.team===q.team?fBackErr(o,q):''; if(be)return pre+be+'. 선수 구성을 조정한 뒤 다시 선택해 주세요. 대체 계약은 그대로 유지합니다.'; fTmpEnd(q,'원 선수 복귀');
     return pre+'원 선수가 돌아오고 대체 선수는 떠납니다.'; } };
-EVH.ftmp2={ can(e,i){ const q=G.players[e.data.qid], stale=fTmpCardCheck(e,q); return stale||i===0&&!fTmpExitChoice(e)&&fTmpConvertErr(q)||''; }, pick(e,i){ const q=G.players[e.data.qid], stale=fTmpCardCheck(e,q); if(stale)return stale; if(i===0&&!fTmpExitChoice(e)){ const err=fTmpConvert(q); if(!err)return `${q.name}과(와) 정식 계약했습니다.`; fTmpEnd(q,'정식 전환 불가'); return err; } fTmpEnd(q,i===0?'정식 전환 불가':'대체 계약 종료'); return `${q.name}의 대체 계약을 끝냈습니다. 교체 횟수는 그대로입니다.`; } };
+EVH.ftmp2={ canAuto:true, can(e,i){ const q=G.players[e.data.qid], stale=fTmpCardCheck(e,q); return stale||i===0&&!fTmpExitChoice(e)&&fTmpConvertErr(q)||''; }, pick(e,i){ const q=G.players[e.data.qid], stale=fTmpCardCheck(e,q); if(stale)return stale; if(i===0&&!fTmpExitChoice(e)){ const err=fTmpConvert(q); if(!err)return `${q.name}과(와) 정식 계약했습니다.`; fTmpEnd(q,'정식 전환 불가'); return err; } fTmpEnd(q,i===0?'정식 전환 불가':'대체 계약 종료'); return `${q.name}의 대체 계약을 끝냈습니다. 교체 횟수는 그대로입니다.`; } };
 /* 8월 15일 외국인 등록 마감 7일 전 안내(커뮤니티 11-13 리아네트: 마감이 지나 대체 선수를 정식 계약할 수 없게 되고 외국인 한 명이 사라졌다) */
-EVH.ftmp3={ can(e,i){ const q=G.players[e.data.qid]; return i===0&&q&&q.ftmp?fTmpConvertErr(q):''; }, pick(e,i){ const q=G.players[e.data.qid]; if(!q||!q.ftmp)return '이미 정리된 계약입니다.'; if(i===0){ const err=fTmpConvert(q); return err||`${q.name}과(와) 정식 계약했습니다.`; } return `${q.name}은(는) 대체 선수로 남습니다. 8월 15일이 지나면 정식 계약은 할 수 없고, 원 선수가 돌아오면 대체 계약이 끝납니다.`; } };
+EVH.ftmp3={ canAuto:true, can(e,i){ const q=G.players[e.data.qid]; return i===0&&q&&q.ftmp?fTmpConvertErr(q):''; }, pick(e,i){ const q=G.players[e.data.qid]; if(!q||!q.ftmp)return '이미 정리된 계약입니다.'; if(i===0){ const err=fTmpConvert(q); return err||`${q.name}과(와) 정식 계약했습니다.`; } return `${q.name}은(는) 대체 선수로 남습니다. 8월 15일이 지나면 정식 계약은 할 수 없고, 원 선수가 돌아오면 대체 계약이 끝납니다.`; } };
 function fTmpDLWarn(){ if(G.unemp||period()!=='season')return; const dl=foreignDL(); if(G.day!==dl-7&&G.day!==dl-1)return;
   for(const q of playersOf(G.user).filter(x=>x.ftmp)){ const o=G.players[q.ftmp.o]; if((G.evs||[]).some(e=>!e.done&&e.k==='ftmp3'&&e.data&&e.data.qid===q.id))continue; const can=!fTmpConvertErr(q);
     evNew('ftmp3',`외국인 등록 마감 ${dl-G.day}일 전: 대체 선수 ${q.name}`,`KBO 규정상 8월 15일까지 정식 계약한 외국인만 남은 시즌·포스트시즌을 뜁니다. 부상 대체 선수 ${q.name}(${posLabel(q)}, 능력 ${dvo(q)})을(를) 남기려면 마감 전에 ${o?`${o.name}을(를) 방출하고 `:''}정식 계약해야 합니다. 마감이 지나면 대체 선수는 원 선수가 돌아오거나 정규시즌이 끝날 때까지만 뜁니다. 원 선수를 먼저 방출하면 마감 뒤에는 대체 선수도 정식 계약할 수 없어 외국인 자리가 빕니다.`,
@@ -107,10 +110,10 @@ function fTmpDaily(){ const per=period(); fTmpStaleFix(); try{ fTmpDLWarn(); }ca
         const linkBad=!!(o&&o.team===t.id); evNew('ftmp2',`대체 선수 ${q.name} 거취`,`${linkBad?'원 선수는 구단에 남아 있지만 재활 명단 연결이 맞지 않습니다. 원 선수는 방출하지 않고 대체 계약을 정리합니다.':'원 선수가 팀을 떠났습니다.'} 부상 대체로 뛰는 ${q.name}(${posLabel(q)}, 능력 ${dvo(q)})을(를) 어떻게 할지 정해야 합니다.`,[...(can?[{l:`${q.name} 정식 계약`,fx:`교체 횟수 1회 차감, 남은 경기 비율만큼 연봉 ${money(Math.round(q.sal*remainFrac(q.team)))}.`}]:[{l:'정식 계약 불가',fx:`${ce} 고르면 대체 계약을 끝냅니다.`}]),{l:'대체 계약 종료',fx:`${q.name}이(가) 떠납니다. 교체 횟수는 그대로입니다.`}],{from:'운영팀',cat:'must',ref:q.id,data:{qid:q.id,oid:q.ftmp.o,tmpD:q.ftmp.d,convert:can,linkBad},def:1,exp:5}); continue; }
       if(fTmpConvert(q))fTmpEnd(q,'원 선수 이탈'); continue; } /* AI: 원 선수가 떠났으면 정식 계약으로(못 하면 계약 종료) */
     if(o.injOut>0){ if(t.id===G.user&&q.ftmp.ask)fTmpReinj(q); continue; } /* 원 선수 재활 중. 복귀 결정을 보낸 뒤 다시 다쳤으면 그 결정을 닫는다(검수 11-17 #235) */
-    if(t.id!==G.user||G.unemp){ if(fBackErr(o,q)){ if(!fTmpConvert(q))continue; fTmpEnd(q,'원 선수 복귀'); continue; } if(ovr(q)>ovr(o)+3&&!fTmpConvert(q))continue; fTmpEnd(q,'원 선수 복귀'); continue; } /* AI도 우리와 같은 길: 복귀가 막히면 정식 전환, 그것도 안 되면 대체 선수만 떠나고 원 선수는 재활 명단에 남는다(검수 11-17 #230: 두 선수를 다 잃음) */
+    if(t.id!==G.user||G.unemp){ if(fBackErr(o,q)){ fTmpConvert(q); continue; } /* 복귀와 전환이 모두 막히면 출전 중인 대체 계약을 유지한다. 구성 변경 뒤 다시 확인한다. */ if(ovr(q)>ovr(o)+3&&!fTmpConvert(q))continue; fTmpEnd(q,'원 선수 복귀'); continue; } /* AI도 복귀가 막히면 정식 전환을 확인한다. 둘 다 불가하면 현재 대체 계약을 유지하고 구성이 바뀐 뒤 다시 판단한다. */
     if(q.ftmp.ask)continue; q.ftmp.ask=G.day; const ce=fTmpConvertErr(q), can=!ce, be=fBackErr(o,q); /* 메일도 누를 때와 같은 판정으로 보여 준다(검수 11-17 #236) */
     evNew('ftmp',`${o.name} 복귀: 대체 선수 ${q.name} 거취`,`${o.name}(${posLabel(o)}, 능력 ${dvo(o)})이(가) 재활을 마쳤습니다. 부상 대체로 뛴 ${q.name}(${posLabel(q)}, 능력 ${dvo(q)})을(를) 어떻게 할지 정해야 합니다. 정할 때까지 ${o.name}은(는) 재활 선수 명단에 남습니다.`,
-      [{l:`${o.name} 복귀`,fx:`${q.name}의 대체 계약을 끝냅니다. 교체 횟수는 그대로입니다.${be?` 다만 지금은 ${be}. 그래서 ${o.name}은(는) 다른 외국인을 정리할 때까지 재활 선수 명단에 남습니다.`:''}`},{l:`${o.name} 방출 · ${q.name} 정식 계약`,fx:can?`${o.name}을(를) 방출하고(남은 연봉 지급) ${q.name}과(와) 정식 계약합니다. 교체 횟수 1회 차감, 남은 경기 비율만큼 연봉 ${money(Math.round(q.sal*remainFrac(q.team)))}.`:`지금은 할 수 없습니다: ${ce}`}],
+      [{l:`${o.name} 복귀`,fx:be?`지금은 ${be}. 대체 계약은 유지합니다. 선수 구성을 조정한 뒤 복귀를 다시 선택해 주세요.`:`${q.name}의 대체 계약을 끝냅니다. 교체 횟수는 그대로입니다.`},{l:`${o.name} 방출 · ${q.name} 정식 계약`,fx:can?`${o.name}을(를) 방출하고(남은 연봉 지급) ${q.name}과(와) 정식 계약합니다. 교체 횟수 1회 차감, 남은 경기 비율만큼 연봉 ${money(Math.round(q.sal*remainFrac(q.team)))}.`:`지금은 할 수 없습니다: ${ce}`}],
       {from:'운영팀',cat:'must',ref:q.id,data:{qid:q.id,oid:q.ftmp.o,tmpD:q.ftmp.d},def:0,exp:5}); }
   if(per==='season')for(const t of G.teams)for(const q of playersOf(t.id).filter(x=>x.ftmp&&G.day-x.ftmp.d>=x.ftmp.paid&&x.ftmp.ask!==G.day&&x.ftmp.left!==G.day)){ const nd=Math.min(30,Math.max(0,G.cal.end-G.day+1)); q.ftmp.paid+=30; G.sea.fspend[t.id]=(G.sea.fspend[t.id]||0)+Math.round(q.ftmp.fee*nd/30); } /* 그날 복귀·이탈 처리 뒤에도 남은 대체 선수만 한 달치 연장(검수 11-09zl: 복귀일에 연장 비용). 정규시즌 남은 날만큼만(검수 11-08). 결정을 미뤄도 등록돼 있는 동안은 지급(검수 11-06) */
   for(const t of G.teams)for(const o of playersOf(t.id))if(o.frehab==='hold'&&!fBackErr(o,null)){ delete o.frehab; if(t.id===G.user)note('운영팀',`${o.name}이(가) 재활 선수 명단에서 돌아와 다시 뛸 수 있습니다.`); } /* 다른 외국인을 정리하면 복귀 */
