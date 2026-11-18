@@ -4482,6 +4482,18 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .roster-heading{min-height:32px;margin-bottom:0;padding-right:190px}
   .roster-heading select{max-width:260px;min-height:30px;padding:4px 10px;font-size:13px}
   .roster-heading .chipn{font-size:var(--ui-caption);padding:3px 6px}
+  /* 사용자 11-18: 1군·정식·육성 수와 등번호 정리·정리 모드는 하위 탭 줄 빈자리로(rosterHeadFit), 묶음 버튼은 본문 첫 줄 왼쪽, 야수/투수는 명단 제목 줄로 올린다 */
+  .fm2>.rh-tools{display:flex;align-items:center;gap:4px;flex:0 0 auto;margin:0;padding-right:8px;border-right:1px solid #ffffff1f;white-space:nowrap}
+  .fm2>.rh-tools .chipn{background:#00000030;border-color:#ffffff1f;color:#e3eaf0;font-size:var(--ui-caption);padding:2px 5px}
+  .fm2>.rh-tools .btn.small{min-height:24px;height:26px;padding:2px 8px;font-size:var(--ui-caption);background:#ffffff0f;border-color:#ffffff2e;color:#e3eaf0}
+  .fm2>.rh-tools .btn.small:hover{background:#ffffff1f;color:#fff}
+  .fm2>.rh-tools .btn.small[aria-pressed=true]{border-color:var(--team-hi);color:#fff}
+  html.fm-ptabs .fm2>.rh-tools{display:none}
+  .fmsh .roster-heading.rh-up:not(:has(>div:first-child>*)){display:none}
+  .fmsh .roster-heading .ws-pages{margin:0}
+  .fmsh .roster-caption .rseg-cap{display:flex;flex:none;margin:0 auto 0 4px}
+  .fmsh .roster-caption .rseg-cap button{padding:3px 10px;min-height:27px;font-size:var(--ui-caption);white-space:nowrap}
+  .fmsh .roster-caption>h2.sec{order:-1}
   .roster-navigation .seg button{font-size:12px;padding:6px 13px;min-height:30px}
   .roster-navigation .seg.itabs{margin:0}
   .roster-list.card{padding:10px 12px;margin:0}
@@ -42448,7 +42460,7 @@ function rosterView(){
     <p class="small">${cv.sc?`<b>${esc(cv.sc.name)} 스카우트</b>(${cv.reg} · 능력 ${'★'.repeat(cv.sc.skill)})가 담당합니다. ${cv.sc.skill>=3?'1군과 2군 선수까지 현재 능력을 평가합니다.':'1군 선수만 평가합니다. 2군까지 보려면 능력 3 이상 스카우트가 필요합니다.'}`:`<b>${cv.reg}</b> 지역을 맡은 스카우트가 없습니다. 1군 기록만 볼 수 있고 능력 평가는 없습니다.`} 다른 구단 선수의 잠재력은 알 수 없습니다.${hidden?` 파악하지 못한 2군 선수 ${hidden}명은 명단에서 빠졌습니다.`:''}</p></section>`;
   const eN=playersOf(tid).filter(p=>p.e1).length;
   const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
-  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}${fm&&it.cur==='list'?segT:''}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
+  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small rh-tools"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small tipme fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
   if(it.cur==='depth'){ const FS=futSquadView(tid); /* PC 세 칸 묶음: [배치도 | 1군 | 부상·재활] [2군 야수 | 2군 투수 | 육성선수](카페 국사왕 11-17) */
     return head+bar+fmCols(fieldC.replace('<section class="card">','<section class="card" data-wsl="포지션 배치도">')+csec(`1군 야수 · 벤치 · 투수진 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,glancePitch(tid)).replace('<section class="card">','<section class="card" data-wsl="1군 야수·투수진">'))+FS.injC+FS.farm; }
@@ -42487,6 +42499,19 @@ function rosterView(){
     <div class="roster-tools">${filterBar({id:'roster',inline:true,cls:'roster-fbar',q:{k:'rq',v:rq,ph:'이름 검색',label:'선수 이름 검색'},groups:[{l:'범위',a:'rscope',cur:sc,def:'one',opts:[['one','1군'],['two','2군'],['all','전체']]},{l:'시즌',a:'rsea',cur:UI.rsea||'cur',def:'cur',opts:[['cur',`${statY()} 시즌`],['prev',`${statY()-1} 시즌`],['car','통산']]},{l:seg==='bat'?'포지션':'유형',a:'rpos',cur:pf,def:'all',opts:posOpts},{l:'보기',html:`<div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div>`}],extra:`<div class="roster-filter-body">${sel?`<div class="roster-short-controls">${sel}</div>`:''}</div>`})}</div>${body}${futLink}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section></div>`;
 }
+/* PC: 1군·정식·육성 수와 등번호 정리·정리 모드를 위 하위 탭 줄(fm2)의 빈 자리로 올린다(사용자 11-18: 위 빈 공간에 하나씩 올리기).
+   하위 탭이 잘리거나 줄이 넘치면(좁은 PC) 본문 첫 줄(roster-heading)에 그대로 둔다. 본문만 다시 그려져 집을 잃은 옛 묶음은 지운다 */
+function rosterHeadFit(){ if(typeof document==='undefined')return; const fm2=document.querySelector('#app .fm2');
+  document.querySelectorAll('#app .fm2>.rh-tools').forEach(x=>{ if(!x._home||!x._home.isConnected)x.remove(); });
+  const tools=document.querySelector('#app .rh-tools'); if(!tools)return;
+  const head=tools._home||tools.parentElement; tools._home=head;
+  const back=()=>{ if(tools.parentElement!==head)head.append(tools); head.classList.remove('rh-up'); };
+  const meta=fm2&&fm2.querySelector(':scope>.fm-meta');
+  if(!fmOn()||!meta||fm2.classList.contains('fm2-compact')||UI.tab!=='roster'||document.documentElement.classList.contains('fm-ptabs')){ back(); return; }
+  if(tools.parentElement!==fm2)fm2.insertBefore(tools,meta); head.classList.add('rh-up');
+  const sub=fm2.querySelector(':scope>.fm-sub'), nav=sub&&sub.querySelector('nav.subtabs');
+  if(!nav||nav.scrollWidth>nav.clientWidth+1||sub.scrollWidth>sub.clientWidth+1||fm2.scrollWidth>fm2.clientWidth+1)back(); }
+if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ rosterHeadFit(); }catch(e){} },160); }); }
 /* 엔트리 관리(카페 피드백 11-09v): 1군 말소·2군 콜업을 한곳에서. 엔트리는 감독 권한이라 단장은 건의(reqEntry)만, 불가 사유는 엔진 문구(upWhy) 그대로.
    2군은 올해 퓨처스 성적과 성적순 정렬 */
 const ENT_SORT={bat:[['cur','능력'],['ops','OPS'],['avg','타율'],['hr','홈런'],['pa','타석']],pit:[['cur','능력'],['era','ERA'],['ip','이닝'],['k9','K/9'],['whip','WHIP']]};
@@ -43257,7 +43282,7 @@ function spoilMask0(g,p,keepDetail=false){ /* 경기 직전 사본이 있으면 
 /* 창을 다시 그려도 키보드 초점이 남게(외부 검수 11-17: 일괄 수정 창에서 그림이 늦게 와 다시 그리면 '파일 불러오기' 초점이 사라짐). 초점이 창 안 단추·입력칸이었고 다시 그린 뒤 body로 떨어졌을 때만 같은 칸에 돌려준다 */
 function sheetFocusKey(el){ try{ const a=document.activeElement; if(!el||!a||a===document.body||!el.contains(a))return null; const d=a.dataset||{}, E=v=>CSS.escape(String(v)); const k=a.id?'#'+E(a.id):d.a?`[data-a="${E(d.a)}"]`+(d.v!=null?`[data-v="${E(d.v)}"]`:''):d.cosm?`[data-cosm="${E(d.cosm)}"]`:a.classList.contains('cosm-nm')&&d.id!=null?`.cosm-nm[data-id="${E(d.id)}"]`:null; if(!k)return null; let s=null; try{ if(typeof a.selectionStart==='number')s=[a.selectionStart,a.selectionEnd]; }catch(e){} return {k,s}; }catch(e){ return null; } }
 function sheetFocusBack(el,f){ try{ if(!f||!el||(document.activeElement&&document.activeElement!==document.body))return; const n=el.querySelector(f.k); if(!n)return; n.focus({preventScroll:true}); if(f.s)try{ n.setSelectionRange(f.s[0],f.s[1]); }catch(e){} }catch(e){} }
-function renderSheet(){ const el=$('#sheet');rememberReading(el); const _fk=sheetFocusKey(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ topTitleSync(); }catch(e){} try{ const ng=el&&el.querySelector('.sheet.ngt'); if(ng){ const k=[...ng.children].filter(c=>getComputedStyle(c).display!=='none'); ng.style.setProperty('--ng-pre',Math.max(1,k.findIndex(c=>c.classList.contains('ng-rows')))); } }catch(e){} /* 협상실 PC: 조건 줄 칸이 남은 높이를 채우게(UI 3단계 3-4) */ try{ twPager(); workspaceFit(); workspaceDetail(); twPager(); fitPages(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} sheetFocusBack(el,_fk); }
+function renderSheet(){ const el=$('#sheet');rememberReading(el); const _fk=sheetFocusKey(el); const had=el&&!!el.querySelector('.sheet');const old=el?.querySelector('.sheet,.cast'),position=UI._detailStack?.at(-1);if(old&&position&&position.key===old.dataset.detailKey)position.y=sheetScrollY(); { const un=spoilMask(); try{ renderSheet0(); } finally{ un(); } } detailPageSync(el); try{ el?.querySelectorAll('.ptabs').forEach(wsRowHint); fmTitleSync(); }catch(e){} UI._rN=(UI._rN||0)+1; try{ document.documentElement.classList.toggle('modal-open',!!(el&&el.querySelector('.scrim,.sheet'))); }catch(e){} /* 창이 열리면 뒤 화면 스크롤 잠금(아이폰에서 고정 창 터치 위치가 어긋나는 것 방지) */ try{ autoLink(el); }catch(e){} if(had){ const sh=el.querySelector('.sheet'); if(sh)sh.classList.add('noanim'); } markHints(el); try{ pfFit(); }catch(e){} try{ topTitleSync(); }catch(e){} try{ const ng=el&&el.querySelector('.sheet.ngt'); if(ng){ const k=[...ng.children].filter(c=>getComputedStyle(c).display!=='none'); ng.style.setProperty('--ng-pre',Math.max(1,k.findIndex(c=>c.classList.contains('ng-rows')))); } }catch(e){} /* 협상실 PC: 조건 줄 칸이 남은 높이를 채우게(UI 3단계 3-4) */ try{ twPager(); rosterHeadFit(); workspaceFit(); workspaceDetail(); twPager(); fitPages(); /* 작업 칸을 나눈 뒤 실제 표 폭으로 열 묶음을 확정한다. */ }catch(e){} if(UI._detailPendingScroll!=null){sheetScrollTo(UI._detailPendingScroll);UI._detailPendingScroll=null;}restoreReading(el);if(UI.meet)meetWire(); try{ champSceneShow(); }catch(e){} sheetFocusBack(el,_fk); }
 function renderSheet0(){
   const el=$('#sheet');
   if(!G){ el.innerHTML=''; return; }
@@ -45669,7 +45694,8 @@ function workspaceFit(host){
     const buttons=[...Array(pages)].map((_,i)=>{const b=document.createElement('button');b.type='button';b.className='ws-page';b.dataset.wsPage=i;b.textContent=panels.filter((_,k)=>pageOf[k]===i).map(label).join(' · ');b.onclick=()=>{page=i;sync();try{ fitPages(); }catch(e){}};return b;}); /* 새로 보인 칸의 목록도 쪽으로 나눈다(UI 3단계 3-0) */
     const sync=()=>{show();buttons.forEach((b,i)=>{b.classList.toggle('on',i===page);b.setAttribute('aria-current',i===page?'true':'false');});wsRowHint(bar);};
     bar.append(...buttons);const navigation=root.querySelector(':scope > .ws-navigation');
-    if(navigation&&innerHeight<500&&innerWidth>=500)navigation.append(bar);else root.insertBefore(bar,deck);sync();
+    const rh=fmOn()&&!workspaceCompact()&&root.querySelector(':scope > .roster-heading>div:first-child'); /* PC 선수단: 묶음 버튼 줄은 본문 첫 줄 왼쪽 빈자리로(사용자 11-18) */
+    if(navigation&&innerHeight<500&&innerWidth>=500)navigation.append(bar);else if(rh)rh.append(bar);else root.insertBefore(bar,deck);sync();
   }
   root.querySelectorAll('.ws-tab-row').forEach(wsRowHint);
   workspaceObserve();
@@ -45713,7 +45739,7 @@ function workspaceObserve(){if(typeof ResizeObserver==='undefined')return;
 
 function workspaceReveal(selector){
   const panel=document.querySelector(selector)?.closest('.ws-panel');
-  if(panel&&panel.hidden){ const deck=panel.parentElement,bar=deck.parentElement.querySelector(':scope > .ws-pages,:scope > .ws-navigation > .ws-pages');
+  if(panel&&panel.hidden){ const deck=panel.parentElement,bar=deck.parentElement.querySelector(':scope > .ws-pages,:scope > .ws-navigation > .ws-pages,:scope > .roster-heading .ws-pages');
     const columns=+deck.style.getPropertyValue('--ws-columns')||1;
     bar?.querySelector(`[data-ws-page="${panel._wsPage??Math.floor([...deck.children].indexOf(panel)/columns)}"]`)?.click(); }
   const fb=document.querySelector(selector)?.closest('.fbar-p[hidden]')?.closest('[data-fbar]'); if(fb)A.fbarTog(fb.dataset.fbar); /* 필터 바 칸 안의 조건이면 칸을 연다 */
@@ -48291,6 +48317,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-18-squadhead',d:'11월 18일',t:'선수단 위쪽 빈자리 활용',items:[
+    '넓은 PC 선수단: 1군·정식·육성 수와 등번호 정리·정리 모드가 하위 탭 줄의 빈자리로 올라가고, 전력 구성 묶음 버튼은 본문 첫 줄 왼쪽, 야수/투수 전환은 명단 제목 옆으로 옮겨 표와 칸이 더 위에서 시작합니다. 자리가 모자란 화면에서는 본문 첫 줄에 그대로 남습니다.']},
   {id:'2026-11-18-potest',d:'11월 18일',t:'잠재력 평가는 관찰이 쌓일수록 실제에 다가갑니다',items:[
     '우리 구단이 한 선수에게 받은 잠재력 인상은 시즌이 바뀌어도, 담당 스카우트가 바뀌어도, 육성 선수로 등록하거나 풀어도 그대로 이어집니다. 우리 팀에서 뛴 시즌이 늘고 스카우트·트래킹 분석원이 좋아질수록 평가 오차가 줄어 별이 실제 잠재력 쪽으로 조금씩 옮겨 갑니다. 진짜 잠재력이 오르내리면 별도 따라 바뀝니다. 다른 구단 선수를 보는 프로 담당 스카우트 평가도 같은 방식입니다.']},
   {id:'2026-11-18-extask',d:'11월 18일',t:'연장 요구·면담에서 바로 연장 협상',items:[

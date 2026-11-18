@@ -22,6 +22,7 @@ try{for(const [W,H] of [[1920,1080],[1440,900],[1366,768],[390,844]]){const pc=W
   assert.ok(inj.h.includes(inj.name+'(')&&/부상·재활 \d+명/.test(inj.h),'[검수 11-17 #179] 1군 등록 부상 선수가 부상·재활 칸에 없음');
   for(const id of farm.ids)assert.ok(R.farmIds.includes(id),`2군 선수 ${id}가 2군 묶음에 있음`);assert.ok(R.farmIds.includes(farm.ys),'육성선수도 2군 묶음에');
   if(W>=1600)assert.deepEqual(R.tabs,['포지션 배치도 · 1군 야수·투수진 · 부상·재활','2군 야수 · 2군 투수 · 육성선수'],'PC 묶음 탭 이름 '+JSON.stringify(R.tabs));
+  if(W>=1600){const up=await p.evaluate(()=>({tools:!!document.querySelector('#app .fm2>.rh-tools [data-a=noEditOpen]'),pages:!!document.querySelector('#app .roster-heading .ws-pages')}));assert.ok(up.tools&&up.pages,'[사용자 11-18] 수·버튼은 하위 탭 줄 빈자리, 묶음 버튼은 본문 첫 줄 '+JSON.stringify(up));} /* 넓은 PC: 위 빈공간에 한 줄씩 올린다 */
   await fit('전력 구성 1');await shot('1-depth');
   if(R.tabs.length>1){await p.locator('#app .ws-pages .ws-page').last().click();await p.waitForTimeout(150);await fit('전력 구성 2');await shot('1-depth-2');
     if(W>=1600){const vis=await p.evaluate(()=>[...document.querySelectorAll('#app .ws-panels>.ws-panel:not([hidden])')].map(e=>e.dataset.wsl));assert.deepEqual(vis,['2군 야수','2군 투수','육성선수'],'2군 탭 한 화면');}}

@@ -67,7 +67,7 @@ function rosterView(){
     <p class="small">${cv.sc?`<b>${esc(cv.sc.name)} 스카우트</b>(${cv.reg} · 능력 ${'★'.repeat(cv.sc.skill)})가 담당합니다. ${cv.sc.skill>=3?'1군과 2군 선수까지 현재 능력을 평가합니다.':'1군 선수만 평가합니다. 2군까지 보려면 능력 3 이상 스카우트가 필요합니다.'}`:`<b>${cv.reg}</b> 지역을 맡은 스카우트가 없습니다. 1군 기록만 볼 수 있고 능력 평가는 없습니다.`} 다른 구단 선수의 잠재력은 알 수 없습니다.${hidden?` 파악하지 못한 2군 선수 ${hidden}명은 명단에서 빠졌습니다.`:''}</p></section>`;
   const eN=playersOf(tid).filter(p=>p.e1).length;
   const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
-  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}${fm&&it.cur==='list'?segT:''}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
+  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small rh-tools"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small tipme fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
   if(it.cur==='depth'){ const FS=futSquadView(tid); /* PC 세 칸 묶음: [배치도 | 1군 | 부상·재활] [2군 야수 | 2군 투수 | 육성선수](카페 국사왕 11-17) */
     return head+bar+fmCols(fieldC.replace('<section class="card">','<section class="card" data-wsl="포지션 배치도">')+csec(`1군 야수 · 벤치 · 투수진 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,glancePitch(tid)).replace('<section class="card">','<section class="card" data-wsl="1군 야수·투수진">'))+FS.injC+FS.farm; }
@@ -106,6 +106,19 @@ function rosterView(){
     <div class="roster-tools">${filterBar({id:'roster',inline:true,cls:'roster-fbar',q:{k:'rq',v:rq,ph:'이름 검색',label:'선수 이름 검색'},groups:[{l:'범위',a:'rscope',cur:sc,def:'one',opts:[['one','1군'],['two','2군'],['all','전체']]},{l:'시즌',a:'rsea',cur:UI.rsea||'cur',def:'cur',opts:[['cur',`${statY()} 시즌`],['prev',`${statY()-1} 시즌`],['car','통산']]},{l:seg==='bat'?'포지션':'유형',a:'rpos',cur:pf,def:'all',opts:posOpts},{l:'보기',html:`<div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div>`}],extra:`<div class="roster-filter-body">${sel?`<div class="roster-short-controls">${sel}</div>`:''}</div>`})}</div>${body}${futLink}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section></div>`;
 }
+/* PC: 1군·정식·육성 수와 등번호 정리·정리 모드를 위 하위 탭 줄(fm2)의 빈 자리로 올린다(사용자 11-18: 위 빈 공간에 하나씩 올리기).
+   하위 탭이 잘리거나 줄이 넘치면(좁은 PC) 본문 첫 줄(roster-heading)에 그대로 둔다. 본문만 다시 그려져 집을 잃은 옛 묶음은 지운다 */
+function rosterHeadFit(){ if(typeof document==='undefined')return; const fm2=document.querySelector('#app .fm2');
+  document.querySelectorAll('#app .fm2>.rh-tools').forEach(x=>{ if(!x._home||!x._home.isConnected)x.remove(); });
+  const tools=document.querySelector('#app .rh-tools'); if(!tools)return;
+  const head=tools._home||tools.parentElement; tools._home=head;
+  const back=()=>{ if(tools.parentElement!==head)head.append(tools); head.classList.remove('rh-up'); };
+  const meta=fm2&&fm2.querySelector(':scope>.fm-meta');
+  if(!fmOn()||!meta||fm2.classList.contains('fm2-compact')||UI.tab!=='roster'||document.documentElement.classList.contains('fm-ptabs')){ back(); return; }
+  if(tools.parentElement!==fm2)fm2.insertBefore(tools,meta); head.classList.add('rh-up');
+  const sub=fm2.querySelector(':scope>.fm-sub'), nav=sub&&sub.querySelector('nav.subtabs');
+  if(!nav||nav.scrollWidth>nav.clientWidth+1||sub.scrollWidth>sub.clientWidth+1||fm2.scrollWidth>fm2.clientWidth+1)back(); }
+if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ rosterHeadFit(); }catch(e){} },160); }); }
 /* 엔트리 관리(카페 피드백 11-09v): 1군 말소·2군 콜업을 한곳에서. 엔트리는 감독 권한이라 단장은 건의(reqEntry)만, 불가 사유는 엔진 문구(upWhy) 그대로.
    2군은 올해 퓨처스 성적과 성적순 정렬 */
 const ENT_SORT={bat:[['cur','능력'],['ops','OPS'],['avg','타율'],['hr','홈런'],['pa','타석']],pit:[['cur','능력'],['era','ERA'],['ip','이닝'],['k9','K/9'],['whip','WHIP']]};
