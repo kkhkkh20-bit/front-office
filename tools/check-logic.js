@@ -93,6 +93,12 @@ const simTo=cond=>{ let n=0; while(n++<800&&!cond()){ G.live=null; G.res=null; G
   (G.comp||[]).forEach(c=>{ try{ if(c.stage!=='done')compAuto(c); }catch(x){} }); try{ if(rosterN(G.user)>ROSTER_MAX)trimRoster(G.user,ROSTER_MAX); }catch(x){} const d0=G.day; try{ advance('day'); }catch(e){ throw new Error('simTo: '+dmd(G.day)+' 하루 진행 중 오류 — '+e.message); } if(G.day===d0&&!cond()&&n>=799)break; }
   if(!cond())throw new Error('simTo: 목표 조건에 도달하지 못함(멈춘 날 '+dmd(G.day)+(blocker&&blocker()?' · 진행 막힘: '+String(blocker()).slice(0,80):'')+')'); }; /* 예외를 날짜만 넘겨 숨기지 않고, 조건에 못 가면 실패(거짓 통과 방지) */
 
+T('[피드백 11-18 FA 지원금] 구단주가 영입 자금을 낸 FA는 요구 조건(계약금·보상금)대로 제안할 수 있다: 예산 여유가 마이너스여도 지원금이 구멍에 묻히지 않고, 상한 결재도 막지 않는다',()=>{ fresh(); const t=team(G.user); t.owner='pr'; t.trust=70; G.grants=[]; const s=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; s.faFrom=s.team; s.team=null; s.faGrade='A'; s.age=29; s.faPrevSal=500; s.ask={annual:3000,years:5};
+  G.fa={pool:[s.id],offers:{},ai:{},neg:{},open:true,openDay:G.day,closed:false,results:[],cap:2,outN:{},y0:G.year}; t.cash=3500; G.spend.etc=(G.spend.etc||0)+Math.max(0,budget().roomGoal+1500); const sp0=spendable(G.user); ok(budget().roomGoal<0,'준비 실패: 예산 여유가 마이너스가 아님 '+budget().roomGoal);
+  for(let k=0;k<60&&!grants().some(g=>g.by==='own'&&g.kind==='fa');k++)ownerPush(); const g=grants().find(g=>g.by==='own'&&g.kind==='fa'); ok(g&&g.pur.pid===s.id,'준비 실패: 구단주 FA 주문 없음');
+  const D=termsDemand(s,'fa',{annual:s.ask.annual,years:s.ask.years}); const o={annual:Math.round(termsVal(D,D)),years:D.years,terms:D}; const need=D.bonus+1500; ok(need>sp0,'준비 실패: 지원 없이도 낼 수 있는 조건 '+need+' / '+sp0);
+  const f=faFundsCheck(s,o); ok(!f,'구단주가 영입 자금 '+g.amt+'을 냈는데 자금 부족: '+(f&&f.msg)); const c=faCapCheck(s,o); ok(!c||c.ok,'영입 자금을 낸 선수의 상한 결재 거절: '+(c&&c.msg)); const r=faNegotiate(s.id,o); ok(!r.owner,'협상실 제안이 막힘: '+r.msg);
+  G.grants=[]; ok(faFundsCheck(s,o),'지원금이 없으면 같은 조건은 자금 부족이어야 함(점검 설정 확인)'); });
 /* 검수 11-17 #308~338: 지명·구단 이직·계약 정산 회귀 시나리오 */
 const revPool=()=>{ fresh(); return G.draftClass.map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null); };
 const revLive=(L,picks)=>{ G.draft={y:G.year,cls:L.map(p=>p.id),picks,cur:0,done:false}; };

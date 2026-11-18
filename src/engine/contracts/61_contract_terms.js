@@ -15,9 +15,10 @@ function termsMul(t,d){ let m=1; if(t.role!=null&&d&&d.role!=null){ const g=t.ro
   return m; }
 function termsVal(t,d){ return termsEq(t,d)*termsMul(t,d); }
 /* 요구 묶음: 환산 연봉 요구액(base)을 계약금·연봉으로 나눈다. 대형 FA일수록 계약금 비중이 크다(KBO 관행) */
+/* FA 요구 계약금: 등급·나이에 따른 총액 비율(요구 조건·구단주 FA 자금이 같은 식을 쓴다) */
+function faBonusDemand(p,annual,years){ const bs=(p.faGrade==='A'?.42:p.faGrade==='B'?.32:.15)*(p.age>=34?.6:p.age>=32?.8:1); return bs>0?round5(annual*Math.max(1,years||1)*bs):0; }
 function termsDemand(p,kind,base){ const y=Math.max(1,base.years||1); const o=ovr(p);
-  const bs=kind==='fa'?(p.faGrade==='A'?.42:p.faGrade==='B'?.32:.15)*(p.age>=34?.6:p.age>=32?.8:1):0; /* 비FA 다년계약·연봉 협상은 계약금 없음(KBO 규약 제81조, 실제화 11-17) */
-  const bonus=bs>0?round5(base.annual*y*bs):0; const annual=Math.max(MIN_SAL,Math.ceil((base.annual-bonus*CT_BON/y)/5)*5);
+  const bonus=kind==='fa'?faBonusDemand(p,base.annual,y):0; /* 비FA 다년계약·연봉 협상은 계약금 없음(KBO 규약 제81조, 실제화 11-17) */ const annual=Math.max(MIN_SAL,Math.ceil((base.annual-bonus*CT_BON/y)/5)*5);
   const role=kind==='fa'?(o>=58?0:o>=50?1:2):null; const ntc=kind!=='sal'&&o>=64&&p.age>=29&&hasAgent(p)&&(agentOf(p).size==='big'||agentOf(p).style==='hard');
   const ag=hasAgent(p)?agentOf(p):null; return {years:y,bonus,annual,opt:0,role,ntc,ov:agOptV(ag),...(kind!=='sal'?{pv:pmVals(p,kind)}:{})}; }
 /* FA 실제 요구(환산 연봉): 에이전트 성향·경쟁 구단 수·원소속 할인을 반영한 금액. 이만큼이면 '요구 충족'(다른 구단과의 비교는 별도) */
