@@ -69,11 +69,7 @@ function ldaKV(){ const k=LDA.kv||{}, C=FrontOfficeCore, cn=k.counts||[], mx=Mat
   const tiers=`<section class="card"><h2 class="sec">등록 덱 ${k.n!=null?ldaN(k.n)+'개':''}</h2>${cn.length?`<div class="lda-tiers">${cn.map((n,t)=>[n,t]).reverse().map(([n,t])=>`<div><span>${esc(C.ulTierName(t))}</span><span class="lda-hb"><i style="width:${n/mx*100}%"></i></span><span class="num small">덱 ${n}</span></div>`).join('')}</div>`:'<p class="small muted">단계별 수를 받지 못했습니다.</p>'}</section>`;
   const recent=`<section class="card"><h2 class="sec">최근 등록 덱</h2><div class="adm-ents">${(k.decks||[]).map(x=>`<div class="adm-day"><span><b>${esc(x.name||'')}</b> ${esc(x.year||'')} <span class="small muted">${C.ulTierName(x.tier)} · OVR ${esc(C.cupOvrTxt(x.ovr))} · ${ldaAgo(x.at)}</span>${x.hidden||x.hide?' <span class="pill">숨김</span>':''}</span></div>`).join('')||'<p class="small muted">없습니다.</p>'}</div><p class="small muted">숨기기·삭제는 '프런트컵' 탭의 6. 유저 래더 관리에서 합니다.</p></section>`;
   return [info,tiers,recent]; }
-function ladderAdminView(){
-  if(!LDA.st)setTimeout(ldaLoad,0);
-  const head=`<section class="card lda-head"><div class="row"><h2 class="sec" style="margin:0;flex:1">래더 현황</h2><span class="small muted" data-lda-at>${LDA.ref?'새로 받는 중 · ':''}${LDA.at?ldaAgo(LDA.at)+' 받음 · 30초마다 새로고침':''}${LDA.st==='d1'?' · 서버 v1(D1)':LDA.st==='kv'?' · KV 기본 정보':''}</span><button class="btn small" data-a="ldaLoad"${LDA.st==='loading'?' disabled':''}>새로고침</button></div>${LDA.msg?`<div class="note${LDA.bad?' bad':''}">${esc(LDA.msg)}</div>`:''}</section>`;
-  const cols=LDA.st==='d1'&&LDA.d?ldaD1():LDA.st==='kv'?ldaKV():[LDA.st==='err'?'':'<section class="card"><p class="small muted">불러오는 중입니다.</p></section>','',''];
-  return `<div class="setc">${head}${cols[0]}</div><div class="setc">${cols[1]}</div><div class="setc">${cols[2]}</div>`; }
+/* ladderAdminView(래더 현황 화면 전체)는 대시보드(04_ladder_dash.js)로 옮겼다. 이 파일의 ldaD1·ldaKV는 '운영' 탭 칸으로 쓴다 */
 Object.assign(A,{
   ldaLoad(){ ldaLoad(); },
   /* 숨기기·삭제(srv2 #56): 성공하면 현황을 다시 받아 상위·소식·최근 덱·합계를 서버 값으로 맞춘다. 공개 화면 반영 지연은 서버가 알려 준 대로(#62) */
@@ -94,7 +90,7 @@ Object.assign(A,{
     LDA.csvRange=R0; LDA.csvPage={kind,page,total,returned:R.length,from:R.length?from:0,to:from+R.length-1,truncated:!!j.truncated,next:j.next||null};
     const name='ladder-admin-'+kind+(R0.from||R0.to?'-'+(R0.from||'')+'_'+(R0.to||''):'')+(page>1?'-p'+page:'');
     LDA.msg=ulDownload(name,csv)?`${R.length}줄을 CSV로 받았습니다.${j.truncated?` 전체 ${ldaN(total)}줄 가운데 일부입니다. 아래 '다음 페이지'로 이어 받으세요.`:''}`:'이 브라우저에서는 파일을 받을 수 없습니다.'; LDA.bad=false; LDA.csv=csv; render(); },
-  admTab(v){ ADM.tab=v==='ld'?'ld':'cup'; if(ADM.tab==='ld'&&LDA.st!=='loading')LDA.st=''; render(); },
+  admTab(v){ ADM.tab=v==='cup'?'cup':'ld'; if(ADM.tab==='ld'&&LDA.st!=='loading')LDA.st=''; render(); },
 });
 /* ===== 래더 v4 관리자 한눈 보기(구단주 11-18, docs/design/ladder-v4-2026-11-18.md §10) =====
    GET /api/v1/admin/dash(등록 현황·리그 상황·시즌 판·이상 감지) + admin/decks(검색·단계 필터) + admin/league(들여다보기). 30초마다 조용히 새로 받는다(입력 중이면 미룬다).
@@ -157,4 +153,4 @@ Object.assign(A,{
 });
 /* 30초마다 새로고침: 래더 현황이 열려 있고, 화면이 보이고, 검색 칸에 입력 중이 아닐 때만 */
 const LDA_REFRESH_MS=30e3;
-try{ setInterval(()=>{ try{ if(typeof ADM==='undefined'||ADM.tab!=='ld'||LDA.st!=='d1'||!document.querySelector('.ldax')||document.visibilityState==='hidden')return; const f=document.activeElement; if(f&&f.closest&&f.closest('.ldax')&&/INPUT|SELECT|TEXTAREA/.test(f.tagName))return; if(Date.now()-LDA.at>=LDA_REFRESH_MS-1e3)ldaLoad(true,true); }catch(e){} },5e3); }catch(e){}
+try{ setInterval(()=>{ try{ if(typeof ADM==='undefined'||ADM.tab==='cup'||(typeof LDX!=='undefined'&&LDX.tab!=='ops')||LDA.st!=='d1'||!document.querySelector('.ldax')||document.visibilityState==='hidden')return; const f=document.activeElement; if(f&&f.closest&&f.closest('.ldax')&&/INPUT|SELECT|TEXTAREA/.test(f.tagName))return; if(Date.now()-LDA.at>=LDA_REFRESH_MS-1e3)ldaLoad(true,true); }catch(e){} },5e3); }catch(e){}

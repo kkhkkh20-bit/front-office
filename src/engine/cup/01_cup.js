@@ -150,7 +150,7 @@ function cupGameOut(g,c){ const {aHome,CA,CB,key,i}=c; const kOf=k=>(k==='h')===
       stats.bat.push({key:E[k].h+':'+(id-off[k]),k,name:p.name,pa:x.pa,ab:x.ab,h:x.h,d:x.d,tr:x.tr,hr:x.hr,bb:x.bb,hbp:x.hbp||0,sf:x.sf||0,rbi:x.rbi,r:x.r,sb:x.sb||0,so:x.so}); }
     for(const id of s.pitchers){ const x=s.box.get(id), p=P(id); if(!x||!p)continue; const dec=g.dec.w===id?'승':g.dec.l===id?'패':g.dec.sv===id?'세':(g.dec.hld||[]).includes(id)?'홀':'';
       pit.push(`${label(k)} ${p.name}\t${ip(x.outs)}\t${x.h}\t${x.bb}\t${x.hbp||0}\t${x.so}\t${x.r||0}\t${x.er}\t${dec}`);
-      stats.pit.push({key:E[k].h+':'+(id-off[k]),k,name:p.name,outs:x.outs,h:x.h,bb:x.bb,hbp:x.hbp||0,so:x.so,r:x.r||0,er:x.er,hr:x.hr||0,w:dec==='승'?1:0,l:dec==='패'?1:0,sv:dec==='세'?1:0,gs:id===s.pitchers[0]?1:0}); } }
+      stats.pit.push({key:E[k].h+':'+(id-off[k]),k,name:p.name,outs:x.outs,h:x.h,bb:x.bb,hbp:x.hbp||0,so:x.so,r:x.r||0,er:x.er,hr:x.hr||0,w:dec==='승'?1:0,l:dec==='패'?1:0,sv:dec==='세'?1:0,hld:dec==='홀'?1:0,gs:id===s.pitchers[0]?1:0}); } }
   /* 줄 점수 */
   const lineA=g.line[sideK.A], lineB=g.line[sideK.B], n=Math.max(lineA.length,lineB.length,9), err=k=>[...S[sideK[k]].box.values()].reduce((a,x)=>a+(x.e||0),0);
   const row=(k,Ln,first)=>`${label(k)}\t${Array.from({length:n},(_,j)=>Ln[j]==null?(first?'':'-'):Ln[j]).join('\t')}\t${k==='A'?sa:sb}\t${stats.bat.filter(b=>b.k===k).reduce((a,b)=>a+b.h,0)}\t${err(k)}`;

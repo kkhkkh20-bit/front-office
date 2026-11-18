@@ -4,7 +4,7 @@
      ladder_live    진행 중 리그(플레이어마다 하나): 단계·라운드·포스트시즌·팀 이름(상대 pid)·지금 순위. 라운드마다 덮어쓰고 결과가 오면 지운다
      ladder_leagues 끝난 리그 요약(결과와 같은 batch): 순위표·우승·준우승·정규 1위·이상 표시(flag: mismatch 결과 대조 불일치 · winrate 비정상 승률)
    개인 정보: 닉네임·덱 이름 말고 없다. 기기 번호는 기기에서 만든 무작위 값의 해시(이름·IP 아님), '같은 기기에서 여러 덱' 감지에만 쓴다(docs/privacy.md) */
-import { UL_TIERS, ulCap } from '../../src/core/uladder.mjs';
+import { UL_TIERS } from '../../src/core/uladder.mjs';
 import { cupName, cupBadName } from '../../src/core/cup.mjs';
 import { json, err, readJson, kstDay, qInt } from './http.js';
 import { PID, sha256 } from './auth.js';
@@ -95,12 +95,12 @@ export function regStmt(db, pid, o, now) {
     ON CONFLICT (player_id) DO UPDATE SET auto = CASE WHEN ? THEN auto ELSE excluded.auto END, cap_ok = excluded.cap_ok, pay_x = excluded.pay_x, dev = COALESCE(excluded.dev, dev), man_day = COALESCE(excluded.man_day, man_day), at = excluded.at`)
     .bind(pid, a, o.capOk ? 1 : 0, o.payX, o.dev, o.man ? kstDay(now) : null, now, now, pid, pid, keep);
 }
-/* 덱 등록 전 검사: {auto, man, dev, capOk, payX} 또는 {error: Response}. 자동 등록은 상한을 넘어도 받는다(그 단계 리그에는 못 나감: 상대 고르기·리그 시작이 거른다) */
+/* 덱 등록 전 검사: {auto, man, dev, capOk, payX} 또는 {error: Response}. 연봉 상한은 없다(구단주 11-18) */
 export async function regCheck(db, me, b, e, tier, had, now) {
   const auto = b.auto ? 1 : b.man ? 0 : null, man = b.man ? 1 : 0, reg = await regGet(db, me.id);
   if (reg && reg.off) return { error: err(409, 'auto_off') };
   if (man && had && reg && reg.man_day === kstDay(now)) return { error: err(429, 'reg_wait', {at:now,man_day:reg.man_day}) };
-  const c = ulCap(e, tier); return { auto, man, dev: await devHash(b.dev), capOk: !!c.ok, payX: c.r, cap: c };
+  return { auto, man, dev: await devHash(b.dev), capOk: 1, payX: null }; /* 래더 상한 없음(구단주 11-18): cap_ok·pay_x 열은 남기되 1·null로만 적는다 */
 }
 /* PUT /ladder/auto {on}: 끄면 서버 덱(덱·구성 요약·진행 중 리그)을 지우고 off=1. 켜면 off=0(덱은 다음 자동 갱신 때 다시 올라온다) */
 export async function autoSet(req, db, me, now) {
@@ -191,9 +191,9 @@ async function liveRows(db, now) { return ((await db.prepare('SELECT l.player_id
 const activeBy = L => { const m = new Map(); for (const x of L) { const s = new Set([x.pid, ...x.teams.map(t => t[1]).filter(Boolean)]); for (const p of s) m.set(p, (m.get(p) || 0) + 1); } return m; };
 export async function adminDash(db, now, s) {
   await ensureAuto(db); const t0 = dayStart(now), cnt = async (q, ...a) => ((await db.prepare(q).bind(...a).first()) || { n: 0 }).n || 0;
-  const tr = (await db.prepare('SELECT d.tier, SUM(CASE WHEN r.auto = 1 THEN 1 ELSE 0 END) AS auto, SUM(CASE WHEN r.auto = 1 THEN 0 ELSE 1 END) AS manual, SUM(CASE WHEN r.cap_ok = 0 THEN 1 ELSE 0 END) AS over, COUNT(*) AS n FROM decks d LEFT JOIN ladder_reg r ON r.player_id = d.player_id GROUP BY d.tier').all()).results || [];
-  const tiers = UL_TIERS.map((name, t) => { const x = tr.find(y => y.tier === t) || {}; return { tier: t, name, n: x.n || 0, auto: x.auto || 0, manual: x.manual || 0, over: x.over || 0 }; });
-  const reg = { tiers, total: tiers.reduce((a, x) => a + x.n, 0), auto: tiers.reduce((a, x) => a + x.auto, 0), manual: tiers.reduce((a, x) => a + x.manual, 0), over: tiers.reduce((a, x) => a + x.over, 0),
+  const tr = (await db.prepare('SELECT d.tier, SUM(CASE WHEN r.auto = 1 THEN 1 ELSE 0 END) AS auto, SUM(CASE WHEN r.auto = 1 THEN 0 ELSE 1 END) AS manual, COUNT(*) AS n FROM decks d LEFT JOIN ladder_reg r ON r.player_id = d.player_id GROUP BY d.tier').all()).results || [];
+  const tiers = UL_TIERS.map((name, t) => { const x = tr.find(y => y.tier === t) || {}; return { tier: t, name, n: x.n || 0, auto: x.auto || 0, manual: x.manual || 0 }; });
+  const reg = { tiers, total: tiers.reduce((a, x) => a + x.n, 0), auto: tiers.reduce((a, x) => a + x.auto, 0), manual: tiers.reduce((a, x) => a + x.manual, 0),
     new_today: await cnt('SELECT COUNT(*) AS n FROM decks WHERE created >= ?', t0), new_7d: await cnt('SELECT COUNT(*) AS n FROM decks WHERE created >= ?', t0 - 6 * DAY), off: await cnt('SELECT COUNT(*) AS n FROM ladder_reg WHERE off = 1') };
   const L = await liveRows(db, now);
   const live = L.slice(0, 40).map(x => ({ pid: x.pid, nickname: x.nickname, hidden: x.hidden, key: x.lkey, tier: x.tier, round: x.round, post: x.post, stage: x.stage || null, postDone: x.post_done, postTotal: x.post_total, decks: x.teams.length, users: x.teams.filter(t => t[2] === 'user').length, at: x.at, started: x.started }));
@@ -213,9 +213,9 @@ export async function adminDecks(url, db, now) {
   const W = [], A = []; if (q) { W.push('(p.nickname LIKE ? OR d.name LIKE ? OR d.player_id = ?)'); A.push('%' + q + '%', '%' + q + '%', q); } if (tier != null) { W.push('d.tier = ?'); A.push(tier); }
   const where = W.length ? ' WHERE ' + W.join(' AND ') : '';
   const total = ((await db.prepare('SELECT COUNT(*) AS n FROM decks d JOIN players p ON p.id = d.player_id' + where).bind(...A).first()) || { n: 0 }).n;
-  const rows = (await db.prepare('SELECT d.player_id AS pid, p.nickname, p.hidden, p.platform, d.name, d.tier, d.ovr, d.created, d.at, r.auto, r.cap_ok, r.pay_x FROM decks d JOIN players p ON p.id = d.player_id LEFT JOIN ladder_reg r ON r.player_id = d.player_id' + where + ' ORDER BY d.at DESC LIMIT ?').bind(...A, n).all()).results || [];
+  const rows = (await db.prepare('SELECT d.player_id AS pid, p.nickname, p.hidden, p.platform, d.name, d.tier, d.ovr, d.created, d.at, r.auto FROM decks d JOIN players p ON p.id = d.player_id LEFT JOIN ladder_reg r ON r.player_id = d.player_id' + where + ' ORDER BY d.at DESC LIMIT ?').bind(...A, n).all()).results || [];
   const act = activeBy(await liveRows(db, now));
-  return json(200, { ok: true, total, returned: rows.length, decks: rows.map(x => Object.assign(x, { auto: x.auto ? 1 : 0, cap_ok: x.cap_ok == null ? 1 : x.cap_ok, active: act.get(x.pid) || 0 })) });
+  return json(200, { ok: true, total, returned: rows.length, decks: rows.map(x => Object.assign(x, { auto: x.auto ? 1 : 0, active: act.get(x.pid) || 0 })) });
 }
 /* 리그 들여다보기: ?id=(끝난 리그) 순위표·팀 기록·선수 줄 | ?live=PID 진행 중 리그 순위·팀 */
 export async function adminLeague(url, db) {

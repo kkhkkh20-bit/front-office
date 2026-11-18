@@ -80,15 +80,10 @@ test('횟수 제한: 세계 id당 하루 등록 수, 다음 날 풀림, IP당 �
  const o=ops(env); const h=await H('GET','/api/health'); assert.equal(h.status,200); const j=await h.json(); assert.equal(j.ok,true); assert.ok(j.build); assert.deepEqual(dOps(o,ops(env)),{read:0,write:0,del:0,list:0});
  const {handle}=await W; assert.equal((await (await handle(req('GET','/api/health'),{},clock.now)).json()).kv,false);
 });
-test('연봉 상한(사용자 11-17 "공평하게"): KV 덱 등록도 같은 규칙(넘으면 over_cap, 연봉 없으면 no_pay), 상대 고르기는 넘는 덱·유예 끝난 예전 덱을 뺀다',async()=>{ const {env,H,clock}=await setup(); const C=await import(path.join(root,'src/core/uladder.mjs'));
- const pricey=o=>{ const e=deck(o); for(const p of e.P)p.sal=700; return e; }; /* 168억 > 143.97억 */ let r=await H('PUT','/api/ladder/deck',{wid:wid(1),tier:3,e:pricey()}); assert.equal(r.status,400); let j=await r.json(); assert.equal(j.error,'over_cap'); assert.ok(/챔피언스 상한/.test(j.errors[0]),j.errors[0]);
- const nosal=deck(); for(const p of nosal.P)delete p.sal; r=await H('PUT','/api/ladder/deck',{wid:wid(1),tier:0,e:nosal}); assert.equal((await r.json()).error,'no_pay');
- assert.ok(![...env.SAVE_KV.m.keys()].some(k=>k.startsWith('ulD:')),'거절한 덱은 쓰지 않는다');
- assert.equal((await H('PUT','/api/ladder/deck',{wid:wid(1),tier:3,e:deck({name:'알뜰'})})).status,200);
- assert.equal((await H('PUT','/api/ladder/deck',{wid:wid(2),tier:3,e:deck({name:'예전',ovr:{t:61,p:60,b:60}})})).status,200);
- const k='ulD:'+wid(2), was=env.SAVE_KV.m.get(k), old=JSON.parse(was.v); for(const p of old.P)delete p.sal; delete old.payRef; env.SAVE_KV.m.set(k,{v:JSON.stringify(old),meta:was.meta}); /* 상한 전에 올린 예전 덱 */
- let o=await (await H('GET',`/api/ladder/opp?wid=${wid(9)}&tier=3&ovr=60&n=9`)).json(); assert.deepEqual(o.decks.map(x=>x.name).sort(),['알뜰','예전'],'유예 중에는 예전 덱도');
- clock.now=C.UL_CAP_FROM+1000; o=await (await H('GET',`/api/ladder/opp?wid=${wid(9)}&tier=3&ovr=60&n=9`)).json(); assert.deepEqual(o.decks.map(x=>x.name),['알뜰'],'유예가 끝나면 예전 덱은 빠짐');
+test('래더 연봉 상한 없음(구단주 11-18): 예전 KV 덱 등록도 비싼 덱·연봉 기록 없는 덱을 받고, 상대 고르기도 빼지 않는다',async()=>{ const {env,H,clock}=await setup(); const C=await import(path.join(root,'src/core/uladder.mjs'));
+ const pricey=o=>{ const e=deck(o); for(const p of e.P)p.sal=700; return e; }; let r=await H('PUT','/api/ladder/deck',{wid:wid(1),tier:3,e:pricey({name:'비쌈'})}); assert.equal(r.status,200,'168억도 받음');
+ const nosal=deck({name:'예전',ovr:{t:61,p:60,b:60}}); for(const p of nosal.P)delete p.sal; r=await H('PUT','/api/ladder/deck',{wid:wid(2),tier:3,e:nosal}); assert.equal(r.status,200,'연봉 기록 없어도 받음');
+ clock.now=C.UL_CAP_FROM+1000; const o=await (await H('GET',`/api/ladder/opp?wid=${wid(9)}&tier=3&ovr=60&n=9`)).json(); assert.deepEqual(o.decks.map(x=>x.name).sort(),['비쌈','예전'],'모두 상대로 나옴');
 });
 test('깨진 JSON 본문(외부 검수 11-17): 래더·대회·관리자·v1 끝점은 500이 아니라 400, 엔트리 안 칸 형식이 틀려도(bn이 객체 등) 멈추지 않고 형식 오류, 없는 날짜는 마감으로 못 씀', async()=>{ const {handle}=await W; fakeCaches(); const env={SAVE_KV:fakeKV(),CUP_ADMIN:'s3cret'}; const raw=(m,p,b,h)=>handle(req(m,p,b,Object.assign({'Content-Type':'application/json'},h||{})),env,Date.UTC(2026,10,20));
  await raw('PUT','/api/cup/admin/config',JSON.stringify({id:'cup1',title:'컵',deadline:'2099-12-31 21:00'}),{Authorization:'Bearer s3cret'});
@@ -106,8 +101,8 @@ test('깨진 JSON 본문(외부 검수 11-17): 래더·대회·관리자·v1 끝
 test('연봉 상한 경계(외부 검수 11-17 #28): 정확히 143.97억은 들어가고(이하 포함) 1(백만원)만 넘어도 막힌다. 화면·서버가 같은 함수(cupPayCheck), 대회 배수도 같은 규칙, OVR 빠진 엔트리도 시드 정렬이 멈추지 않는다', async()=>{
  const {cupPayCheck,CUP_CAP_WON,cupSeed,cupValidate}=await import(path.join(root,'src/core/cup.mjs')); const {ulCap,ulCapGate}=await import(path.join(root,'src/core/uladder.mjs'));
  const at=pay=>{ const e=deck(); const n=e.P.length; e.P.forEach((p,i)=>{ p.sal=Math.floor(pay/n)+(i<pay%n?1:0); }); return e; };
- assert.equal(CUP_CAP_WON,14397); assert.equal(cupPayCheck(at(14397),1).ok,true,'딱 상한'); assert.equal(cupPayCheck(at(14398),1).ok,false,'1 넘음'); assert.equal(ulCap(at(14397),3).ok,true); assert.equal(ulCapGate(at(14398),4,Date.now()).ok,false);
+ assert.equal(CUP_CAP_WON,14397); assert.equal(cupPayCheck(at(14397),1).ok,true,'딱 상한'); assert.equal(cupPayCheck(at(14398),1).ok,false,'1 넘음'); assert.equal(ulCap(at(14397),3).ok,true); assert.equal(ulCapGate(at(14398),4,Date.now()).ok,true,'래더는 상한 없음(구단주 11-18)');
  assert.equal(cupPayCheck(at(Math.floor(14397*1.25)),1.25).ok,true); assert.equal(cupPayCheck(at(Math.floor(14397*1.25)+1),1.25).ok,false);
  assert.equal(cupValidate(at(14398),{payCapX:1}).elig[0].k,'payx'); assert.match(cupValidate(at(14398),{payCapX:1}).elig[0].msg,/143\.97억 × 1/);
- const {env,H}=await setup(); let r=await H('PUT','/api/ladder/deck',{wid:wid(31),tier:0,e:at(14397)}); assert.equal(r.status,200,'서버도 딱 상한은 받음'); r=await H('PUT','/api/ladder/deck',{wid:wid(32),tier:0,e:at(14398)}); assert.equal(r.status,400,'서버도 1 넘으면 거절');
+ const {env,H}=await setup(); let r=await H('PUT','/api/ladder/deck',{wid:wid(31),tier:0,e:at(14397)}); assert.equal(r.status,200,'서버도 딱 상한은 받음'); r=await H('PUT','/api/ladder/deck',{wid:wid(32),tier:0,e:at(14398)}); assert.equal(r.status,200,'래더는 넘어도 받음(대회 배수만 상한)');
  const L=cupSeed([{h:'a',ovr:{t:60,p:60,b:60}},{h:'b'},{h:'c',ovr:{t:70,p:70,b:70}}]); assert.deepEqual(L.map(x=>x.h),['c','a','b']); });

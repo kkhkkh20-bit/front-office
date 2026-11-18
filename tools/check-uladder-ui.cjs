@@ -120,25 +120,15 @@ const { chromium } = require('playwright');
     /* 덱: 선수 카드마다 래더 기록 */
     await p.evaluate(() => A.ulGoPg('deck')); { const d = await p.evaluate(() => ({ n: document.querySelectorAll('.ulp').length, st: [...document.querySelectorAll('.ulp-s')].filter(x => /경기/.test(x.innerText)).length, arch: (document.querySelector('.ul-arch') || {}).innerText }));
       assert.ok(d.n >= 24 && d.st >= 14, '덱 선수 카드·래더 기록 ' + JSON.stringify(d)); assert.ok(d.arch, '덱 성향'); } console.log('덱 화면 통과');
-    /* 연봉 상한(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 덱 칸에 상한·덱 연봉·여유, 넘으면 등록이 막히고 뺄 선수 추천 → 추천대로 빼면 등록(서버도 상한 안) */
-    { const cs = process.env.CAPSHOT, snapCap = async (pg, name) => { if (!cs) return; await pg.evaluate(() => { render(); const el = document.querySelector('.ul-cap'); if (el) el.scrollIntoView({ block: 'center' }); }); await pg.waitForTimeout(600); await pg.screenshot({ path: path.join(cs, name) }); };
-      const toP2 = async () => { await p2.evaluate(s => { G = JSON.parse(s); UL.src = 'now'; UL.drop = null; A.go('uld:deck'); }, await p.evaluate(() => JSON.stringify(G))); await p2.waitForSelector('.ul-cap'); assert.ok(await p2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '휴대폰 덱(상한) 가로 스크롤'); };
-      let c = await p.evaluate(() => { const t = document.querySelector('.ul-cap'); return t && { txt: t.innerText, all: t.textContent, over: t.classList.contains('ul-cap-over'), dis: document.querySelector('[data-a="ulReg"]').disabled, tier: G.uld.tier, x: FrontOfficeCore.ulCapX(G.uld.tier) }; });
-      assert.ok(c && !c.over && !c.dis, '상한 안 덱 등록 칸 ' + JSON.stringify(c)); assert.match(c.txt, new RegExp(`연봉 상한 · \\S+ 143\\.97억[\\s\\S]*상한[\\s\\S]*덱 연봉[\\s\\S]*여유[\\s\\S]*상한 대비`)); assert.match(c.all, /모든 단계 같은 금액\(첫 시즌 샐러리캡 143\.97억\)/, '설명(ⓘ 도움말)');
-      await snapCap(p, 'deck_under_1440.png'); await toP2(); await snapCap(p2, 'deck_under_390.png');
-      /* 우리 구단 최고 연봉 선수 연봉을 상한보다 5억 넘게 올린다(리그 평균은 다른 구단 기준이라 그대로) → 넘침 */
+    /* 래더 연봉 상한 없음(구단주 11-18 "래더는 일단 상한을 두지 말고 자유롭게"): 상한 칸·선수 빼기가 없고, 예전 상한을 넘는 1군도 그대로 등록된다(서버 D1도 받음) */
+    { assert.equal(await p.evaluate(() => document.querySelectorAll('.ul-cap,[data-a="ulCapDrop"],[data-a="ulCapAuto"]').length), 0, '상한 칸 없음'); assert.match(await p.evaluate(() => document.querySelector('.ul-free').innerText), /연봉 상한이 없습니다/);
       const h0 = await p.evaluate(() => { const e = ulRegEntry().e, c = FrontOfficeCore.ulCap(e, G.uld.tier), top = e.P.slice().sort((a, b) => b.sal - a.sal)[0], q = G.players[top.id]; UL.capT = [q.id, q.sal]; q.sal += c.room + 500; render(); return G.uld.deck.e.h; });
-      c = await p.evaluate(() => { const t = document.querySelector('.ul-cap'); return { txt: t.innerText, over: t.classList.contains('ul-cap-over'), dis: document.querySelector('[data-a="ulReg"]').disabled, sug: t.querySelectorAll('.ul-crs')[0].querySelectorAll('.ul-cr').length }; });
-      assert.ok(c.over && c.dis && c.sug >= 1, '넘는 덱: 빨간 칸·등록 막힘·뺄 선수 ' + JSON.stringify(c)); assert.match(c.txt, /초과[\s\S]*상한을 넘어 등록할 수 없습니다[\s\S]*이 선수를 빼면 들어갑니다/);
-      await snapCap(p, 'deck_over_1440.png'); await toP2(); assert.ok(await p2.evaluate(() => { const x = document.querySelector('.ul-cap .ul-cr [data-a="ulCapDrop"]'); return document.querySelector('.ul-cap.ul-cap-over') && document.querySelector('[data-a="ulReg"]').disabled && x && x.offsetWidth > 0; }), '휴대폰도 막힘·빼기 단추 보임'); await snapCap(p2, 'deck_over_390.png');
-      await p.evaluate(() => A.ulReg()); await p.waitForFunction(() => /상한/.test(UL.msg) && UL.bad, null, { timeout: 10000 }); assert.equal(await p.evaluate(() => G.uld.deck.e.h), h0, '단추를 건너뛰어도(직접 호출) 넘는 덱은 등록 안 됨');
-      await p.click('[data-a="ulCapAuto"]'); await p.waitForFunction(() => !document.querySelector('.ul-cap.ul-cap-over') && !document.querySelector('[data-a="ulReg"]').disabled, null, { timeout: 10000 });
-      assert.match(await p.evaluate(() => document.querySelector('.ul-cap').innerText), /뺀 선수 \d명[\s\S]*되돌리기/); await snapCap(p, 'deck_fixed_1440.png');
+      assert.equal(await p.evaluate(() => document.querySelector('[data-a="ulReg"]').disabled), false, '예전 상한을 넘어도 등록 단추가 열림');
       await p.click('[data-a="ulReg"]'); await p.waitForFunction(h => /덱을 등록했습니다/.test(document.body.innerText) && G.uld.deck.e.h !== h, h0, { timeout: 30000 });
-      const sv = await p.evaluate(() => { const e = G.uld.deck.e; return { n: e.P.length, ok: FrontOfficeCore.ulCap(e, G.uld.tier).ok }; }); assert.ok(sv.ok && sv.n < 26, '줄인 덱 ' + JSON.stringify(sv));
-      const body = JSON.parse(sql('SELECT d.body FROM decks d JOIN players p ON p.id = d.player_id WHERE p.wid = ?', myWid)[0].body), tierNow = await p.evaluate(() => G.uld.tier);
-      const Cm = await import(path.resolve(__dirname, '../src/core/uladder.mjs')); assert.ok(Cm.ulCap(body, tierNow).ok && body.P.every(q => typeof q.sal === 'number') && body.payRef > 0, '서버(D1)에 상한 안 덱·선수 연봉·리그 평균');
-      await p.evaluate(() => { G.players[UL.capT[0]].sal = UL.capT[1]; UL.msg = ''; render(); }); console.log('연봉 상한(덱 칸·등록 막기·추천대로 빼기·서버 저장) 통과'); }
+      const sv = await p.evaluate(() => { const e = G.uld.deck.e; return { n: e.P.length, ok: FrontOfficeCore.ulCap(e, G.uld.tier).ok }; }); assert.ok(!sv.ok && sv.n >= 24, '1군 그대로(예전 상한 초과) ' + JSON.stringify(sv));
+      const body = JSON.parse(sql('SELECT d.body FROM decks d JOIN players p ON p.id = d.player_id WHERE p.wid = ?', myWid)[0].body);
+      assert.ok(body.P.length >= 24, '서버(D1)에 그대로 저장');
+      await p.evaluate(() => { G.players[UL.capT[0]].sal = UL.capT[1]; UL.msg = ''; render(); }); console.log('래더 연봉 상한 없음(상한 칸 없음·넘는 덱 등록·서버 저장) 통과'); }
     /* 기록·데이터: 우리 선수(정렬·거르기·시즌별)·팀·선수 구성(서버 집계)·상대 분석·CSV */
     await p.evaluate(() => { UI.it.uldata = 'pl'; A.ulGoPg('data'); }); await p.waitForSelector('.ul-dt tbody tr');
     { const n0 = await p.evaluate(() => document.querySelectorAll('.ul-dt tbody tr').length); assert.ok(n0 >= 9, '타자 줄 ' + n0); await p.click('.ul-dt [data-a="ulDsSort"][data-v="hr"]');

@@ -1,6 +1,6 @@
 /* 래더 v4(구단주 11-18, docs/design/ladder-v4-2026-11-18.md): 자동 등록·자동 참가 끄기·하루 1회 직접 재등록·우승팀 승격·관리자 한눈 보기(서버). 가짜 D1(node:sqlite).
    - 0005 SQL = ladauto.js AUTO_SQL, 표가 없어도 처음 쓸 때 만듦
-   - 자동 등록: 상한을 넘어도 받되(cap_ok 0) 상대 목록에 안 나감, 직접 등록은 상한 넘으면 거절, 직접 다시 등록은 하루 1회(자동은 세지 않음), 기기 번호는 해시만
+   - 자동 등록: 래더 연봉 상한 없음(구단주 11-18) — 비싼 덱도 받고 상대 목록에 나감(cap_ok 1·pay_x null), 직접 다시 등록은 하루 1회(자동은 세지 않음), 기기 번호는 해시만
    - 자동 참가 끄기: 서버 덱·진행 중 리그 지움, 자동 등록 409, 다시 켜기
    - 관리자: 인증, 등록 현황(단계별 자동/직접·오늘·7일·상한 초과·끔), 진행 중 리그·끝난 리그(우승·준우승·정규 1위)·들여다보기, 시즌 판, 이상 감지(결과 불일치·비정상 승률·같은 기기 여러 덱), 덱 목록 검색·단계·진행 중 리그 수 */
 const test = require('node:test'), assert = require('node:assert/strict'), path = require('node:path'), fs = require('node:fs');
@@ -41,18 +41,19 @@ test('결과 대조: 순위표와 결과 줄이 다르면 mismatch, 27전 27승�
   assert.equal(leagueFlags({ rank: 1, teams: 10, w: 27, l: 0, d: 0, ps: 'c', st: [] }), 'winrate');
   assert.equal(leagueFlags({ rank: 1, teams: 10, w: 20, l: 6, d: 0, ps: '', st: [] }), 'mismatch', '10팀인데 27경기가 아님');
 });
-dbTest('자동 등록: 상한을 넘어도 받되 상대 목록에는 안 나간다. 직접 등록은 상한을 넘으면 거절, 직접 다시 등록은 하루 1회(자동은 세지 않음). 기기 번호는 해시만', async () => {
+dbTest('자동 등록(래더 연봉 상한 없음, 구단주 11-18): 비싼 덱도 자동·직접 모두 받고 상대 목록에 나간다(cap_ok 1·pay_x null). 직접 다시 등록은 하루 1회(자동은 세지 않음). 기기 번호는 해시만', async () => {
   const { J, mk, sql, clock } = await setup();
   const a = await mk('부산 자이언츠#3812'), b = await mk('달빛#0001'), c = await mk('새벽별');
-  let j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ sal: 1000 }), auto: 1, dev: DEV }, a.A); assert.equal(j._s, 200, JSON.stringify(j)); assert.equal(j.auto, 1); assert.equal(j.cap_ok, false, '상한 초과 표시'); assert.ok(j.pay_x > 1);
-  j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ sal: 1000 }), man: 1 }, b.A); assert.equal(j._s, 400); assert.equal(j.error, 'over_cap', '직접 등록은 지금처럼 거절');
+  let j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ sal: 1000 }), auto: 1, dev: DEV }, a.A); assert.equal(j._s, 200, JSON.stringify(j)); assert.equal(j.auto, 1); assert.equal(j.cap_ok, true, '상한 없음'); assert.equal(j.pay_x, null);
+  j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ sal: 1000 }), man: 1 }, b.A); assert.equal(j._s, 200, '직접 등록도 상한 없음'); assert.equal(sql('SELECT cap_ok FROM ladder_reg WHERE player_id = ?', b.id)[0].cap_ok, 1);
+  clock.now += 86400e3;
   j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '달빛팀' }), man: 1, dev: DEV }, b.A); assert.equal(j._s, 200); assert.equal(j.auto, 0);
   j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '달빛팀', tag: 2 }), man: 1 }, b.A); assert.equal(j._s, 429); assert.equal(j.error, 'reg_wait'); assert.match(j.message, /하루에 한 번/);
   j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '달빛팀', tag: 3 }), auto: 1 }, b.A); assert.equal(j._s, 200, '자동 갱신은 하루 1회 직접 등록과 따로'); assert.equal(sql('SELECT auto FROM ladder_reg WHERE player_id = ?', b.id)[0].auto, 1);
   j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '새벽팀' }) }, c.A); assert.equal(j._s, 200, '맞추기(자동·직접 표시 없음)는 그대로'); assert.equal(sql('SELECT auto, man_day FROM ladder_reg WHERE player_id = ?', c.id)[0].man_day, null);
-  const r = sql('SELECT * FROM ladder_reg WHERE player_id = ?', a.id)[0]; assert.equal(r.cap_ok, 0); assert.equal(r.auto, 1); assert.equal(r.dev.length, 16); assert.notEqual(r.dev, DEV.slice(0, 16), '기기 번호 그대로 두지 않음');
+  const r = sql('SELECT * FROM ladder_reg WHERE player_id = ?', a.id)[0]; assert.equal(r.cap_ok, 1); assert.equal(r.pay_x, null); assert.equal(r.auto, 1); assert.equal(r.dev.length, 16); assert.notEqual(r.dev, DEV.slice(0, 16), '기기 번호 그대로 두지 않음');
   assert.ok(!JSON.stringify(sql('SELECT * FROM ladder_reg')).includes(DEV), '기기 번호 원문 없음');
-  const o = await J('GET', '/api/v1/ladder/opponents?n=9', null, c.A); assert.equal(o._s, 200); assert.ok(!o.decks.some(d => d.pid === a.id), '상한 초과 덱은 상대로 안 나감'); assert.ok(o.decks.some(d => d.pid === b.id));
+  const o = await J('GET', '/api/v1/ladder/opponents?n=9', null, c.A); assert.equal(o._s, 200); assert.ok(o.decks.some(d => d.pid === a.id), '비싼 덱도 상대로 나감(상한 없음)'); assert.ok(o.decks.some(d => d.pid === b.id));
   clock.now += 86400e3; j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '달빛팀', tag: 4 }), man: 1 }, b.A); assert.equal(j._s, 200, '다음 날 다시 직접 등록');
 });
 dbTest('자동 참가 끄기: 서버 덱·진행 중 리그를 지우고, 끈 동안 자동 등록은 409. 다시 켜면 받는다. 표가 없던 서버도 처음 쓸 때 만든다', async () => {
@@ -95,7 +96,7 @@ dbTest('관리자 한눈 보기: 인증, 등록 현황, 진행 중·끝난 리�
   j = await J('POST', '/api/v1/ladder/result', { key: 'lg-l1', rank: 1, teams: 10, w: 27, l: 0, d: 0, opps: [], ps: 'c', st: [['라이온즈', 20, 7, 0, 'me']], champ: '라이온즈', runner: '팀3' }, P[2].A); assert.equal(j._s, 200);
   j = await J('POST', '/api/v1/ladder/result', { key: 'lg-l2', rank: 1, teams: 10, w: 26, l: 1, d: 0, opps: [], ps: 'c' }, P[2].A); assert.equal(j._s, 200);
   const D = await J('GET', '/api/v1/admin/dash', null, AK); assert.equal(D._s, 200, JSON.stringify(D));
-  assert.equal(D.reg.total, 4); assert.equal(D.reg.auto, 3); assert.equal(D.reg.manual, 1); assert.equal(D.reg.over, 1); assert.equal(D.reg.off, 1); assert.equal(D.reg.new_today, 4); assert.equal(D.reg.new_7d, 4);
+  assert.equal(D.reg.total, 4); assert.equal(D.reg.auto, 3); assert.equal(D.reg.manual, 1); assert.ok(!('over' in D.reg), '상한 초과 집계 없음'); assert.equal(D.reg.off, 1); assert.equal(D.reg.new_today, 4); assert.equal(D.reg.new_7d, 4);
   assert.ok(D.reg.tiers.length === 5 && D.reg.tiers.some(t => t.auto > 0));
   assert.equal(D.live.length, 1); assert.deepEqual([D.live[0].tier, D.live[0].round, D.live[0].decks, D.live[0].post], [0, 3, 3, 0]);
   assert.equal(D.recent.length, 3); const t1 = D.recent.find(x => x.lkey === 'lg-t1'); assert.deepEqual([t1.champ, t1.runner, t1.top, t1.flag], ['타이거즈', '팀2', '타이거즈', '']);
@@ -109,7 +110,7 @@ dbTest('관리자 한눈 보기: 인증, 등록 현황, 진행 중·끝난 리�
   assert.equal((await J('GET', '/api/v1/admin/league?id=999', null, AK))._s, 404);
   /* 덱 목록 */
   let K = await J('GET', '/api/v1/admin/decks', null, AK); assert.equal(K.total, 4); const rl = K.decks.find(x => x.pid === P[2].id); assert.equal(rl.active, 1, '상대로 나간 진행 중 리그'); assert.equal(K.decks.find(x => x.pid === P[1].id).active, 1);
-  assert.equal(K.decks.find(x => x.pid === P[0].id).cap_ok, 0); assert.ok(K.decks.find(x => x.pid === P[0].id).pay_x > 1);
+  assert.ok(!('cap_ok' in K.decks.find(x => x.pid === P[0].id)) && !('pay_x' in K.decks.find(x => x.pid === P[0].id)), '상한 열은 내보내지 않음');
   K = await J('GET', '/api/v1/admin/decks?q=' + encodeURIComponent('베어'), null, AK); assert.deepEqual(K.decks.map(x => x.name), ['베어스']);
   K = await J('GET', '/api/v1/admin/decks?tier=1', null, AK); assert.ok(K.decks.every(x => x.tier === 1)); assert.ok(K.decks.length >= 1, '우승으로 마이너 승격한 덱');
   /* 플레이어 삭제는 자동 등록 줄도 지운다 */

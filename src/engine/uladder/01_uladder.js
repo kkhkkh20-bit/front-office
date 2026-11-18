@@ -13,7 +13,7 @@ function ulDeckReady(e){ const ln=ulReadyLineup(e); if(!ln||ln.length!==9)return
 
 /* 덱 등록(이 저장의 내 덱). src: 'now'(지금 1군) | 'alb:번호'(앨범 시즌). 가져온 남의 덱(ro)은 등록할 수 없다 */
 function ulSetDeck(e,src){ const C=FrontOfficeCore; { const ed=editedBlock(); if(ed)return ed; } /* 편집된 저장은 래더 등록 불가(22d_edited) */ if(!e||e.ro)return '가져온 덱은 내 덱으로 등록할 수 없습니다.'; const x=C.ulSlim(e); x.h=C.cupEntryHash(x); x.ovr=cupOvr(x);
-  const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg; const why=ulDeckReady(x); if(why)return why; const U=uld(); const cg=C.ulCapGate(x,U.tier|0,Date.now()); if(!cg.ok||cg.grace)return cg.known?cg.msg+' 덱에서 선수를 빼 상한에 맞춰 주세요.':'연봉 기록이 없는 로스터입니다(게임을 새로 고친 뒤 다시 골라 주세요).'; /* 연봉 상한(사용자 11-17 "공평하게"): 새로 등록하는 덱은 유예 없이 지금 단계 상한 안이어야 한다 */ U.dn=(U.dn||0)+1; U.deck={id:U.dn,src:String(src||'now'),at:G.day,y:G.year,e:x}; return ''; }
+  const v=C.cupValidate(x,{}); if(!v.ok)return v.errors[0].msg; const why=ulDeckReady(x); if(why)return why; const U=uld(); /* 래더 연봉 상한 없음(구단주 11-18 "래더는 일단 상한을 두지 말고 자유롭게") */ U.dn=(U.dn||0)+1; U.deck={id:U.dn,src:String(src||'now'),at:G.day,y:G.year,e:x}; return ''; }
 /* 단계 기준 AI 덱: 리그 평균 AI 구단을 만들고 능력치를 올리거나 내려 기준 OVR(총)에 맞춘다.
    타자·투수를 따로 맞춘다(사용자 11-17 "고 오버롤", 포지션 균형): 타자 OVR을 기준−1로 먼저 맞추고, 투수로 총 OVR을 맞춘다. 실제 등록 덱(투수 ≈ 총+1.5, 타자 ≈ 총−1)과 비슷한 모양.
    예전처럼 모두 같이 올리면 레전드 AI가 투수만 98인 덱이 됐다(선발 98·타자 74). 능력치는 20~85 안 */

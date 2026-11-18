@@ -64,6 +64,7 @@ const { chromium } = require('playwright');
     await p.evaluate(() => { A.go('cfg:info'); }); await p.click('[data-a="admAsk"]'); await p.fill('#admKey', 'wrong-key'); await p.click('[data-a="admKeyOk"]');
     await p.waitForFunction(() => /키가 맞지 않습니다/.test(document.body.innerText), null, { timeout: 10000 }); assert.equal(await p.evaluate(() => !!document.querySelector('[data-a="admOpen"]')), false, '틀린 키인데 관리자 메뉴');
     await p.fill('#admKey', 'test-admin'); await p.click('[data-a="admKeyOk"]'); await p.waitForSelector('[data-a="admOpen"]', { timeout: 10000 }); await p.waitForTimeout(450); /* 연속 터치 보호(0.4초): 키 확인 버튼 자리에 새로 그려진 '관리자 페이지'를 곧바로 누르면 실수 터치로 보고 무시한다(사람은 서버 응답을 기다린 뒤 누름) */ await p.click('[data-a="admOpen"]');
+    /* 관리자 첫 탭은 래더 현황(구단주 11-18). 프런트컵 탭으로 */ await p.waitForSelector('[data-a="admTab"][data-v="cup"]', { timeout: 10000 }); assert.equal(await p.evaluate(() => document.querySelector('.adm-tabs button').dataset.v), 'ld', '래더가 첫 탭'); await p.click('[data-a="admTab"][data-v="cup"]');
     p.on('dialog', d => d.accept());
     await p.waitForSelector('#admId', { state: 'attached', timeout: 10000 }); { const t = await p.evaluate(() => document.querySelector('.adm-now').innerText); assert.match(t, /서버 연결 OK · 관리자 키 맞음/); }
     if (!(await p.isVisible('#admId'))) { await p.waitForTimeout(450); await p.click('#adm-s1 [data-a="admS1"]'); await p.waitForSelector('#admId', { timeout: 5000 }); } /* 접수 중이면 설정 칸은 접혀 있다(래더 v3) */

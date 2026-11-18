@@ -142,10 +142,8 @@ async function ulManualRetry(){const U=uld(),M=U&&U.ar&&U.ar.manual;if(!M||!U.de
 function ulSrcEntry(src){ const name=FrontOfficeCore.cupName(UL.name||(uld()&&uld().deck&&uld().deck.e.name)||team(G.user).nick);
   if(src==='now'){ if(G.unemp)return null; return cupEntryNow({name}); }
   const x=cupAlbum().find(a=>'alb:'+a.id===src); if(!x)return null; const e=JSON.parse(JSON.stringify(x.e)); e.name=name; e.ovr=cupOvr(e); return e; }
-/* 등록할 덱 = 고른 로스터 − 상한 맞추려고 뺀 선수(사용자 11-17 "연봉에 제약… 공평하게"). UL.drop = {src, ids}: 로스터를 바꾸면 비운다. {e, err} */
-function ulRegEntry(){ const e=ulSrcEntry(UL.src); if(!e)return {e:null,err:''}; const D=UL.drop&&UL.drop.src===UL.src?UL.drop.ids:[]; if(!D.length)return {e,err:''};
-  const r=FrontOfficeCore.ulCapDrop(e,D); if(r.err)return {e:null,err:r.err}; r.e.ovr=cupOvr(r.e); return {e:r.e,err:''}; }
-const ulDropIds=()=>UL.drop&&UL.drop.src===UL.src?UL.drop.ids:[];
+/* 등록할 덱 = 고른 로스터 그대로(래더 연봉 상한 없음, 구단주 11-18: 예전 '선수 빼기'는 없앴다). {e, err} */
+function ulRegEntry(){ const e=ulSrcEntry(UL.src); return e?{e,err:''}:{e:null,err:''}; }
 const ulSrcOpts=()=>[['now','지금 1군'],...cupAlbum().slice().reverse().map(a=>['alb:'+a.id,`${a.y} ${a.k==='auto'?'시즌 종료':'직접 저장'}${a.e.res&&a.e.res.rank?` ${a.e.res.rank}위`:''} · OVR ${FrontOfficeCore.cupOvrTxt(a.e.ovr)}`])];
 /* 리그 시작: 서버에서 같은 단계 덱 받기(한 번) → 가져온 우승 덱(이 기기·명예의 전당) → AI */
 async function ulStart(){ const U=uld(), C=FrontOfficeCore, tk=ulTok(); if(!U||!U.deck||UL.busy)return; UL.busy=true; ulSay('같은 단계 덱을 받는 중입니다.');
@@ -181,16 +179,11 @@ function ulPsFeed(L,s){ const A=L.teams[s.a], B=L.teams[s.b], wa=s.g.filter(g=>g
 /* 진행 중 칸을 바꾸면 그 리그는 거기서 멈춘다(바뀐 칸은 이미 저장 쪽이 마무리, 여기서는 아무것도 쓰지 않는다) */
 function ulSave0(){}
 Object.assign(A,{
-  ulSrc(v){ UL.src=v; UL.drop=null; render(); },
-  /* 연봉 상한 맞추기(사용자 11-17): 선수 빼기·되돌리기·추천대로 빼기 */
-  ulCapDrop(v){ const id=+v, was=ulDropIds().slice(), D=was.includes(id)?was.filter(x=>x!==id):was.concat(id); UL.drop={src:UL.src,ids:D};
-    const r=ulRegEntry(); if(!r.e){ UL.drop={src:UL.src,ids:was}; return ulSay(r.err||'이 선수는 뺄 수 없습니다.',true); } UL.msg=''; render(); },
-  ulCapAuto(){ const r=ulRegEntry(); if(!r.e)return; const s=FrontOfficeCore.ulCapSuggest(r.e,uld().tier|0); if(!s.ids.length)return ulSay('뺄 선수를 찾지 못했습니다. 본게임에서 1군을 바꿔 주세요.',true); UL.drop={src:UL.src,ids:ulDropIds().concat(s.ids)}; ulSay(s.ok?`${s.ids.length}명을 빼면 상한 안에 들어갑니다.`:`${s.ids.length}명을 빼도 상한을 넘습니다. 본게임에서 1군을 바꿔 주세요.`,!s.ok); },
-  ulCapReset(){ UL.drop=null; UL.msg=''; render(); },
+  ulSrc(v){ UL.src=v; render(); },
   ulPick(){ UL.pick=!UL.pick; render(); },
   async ulReg(){if(UL.busy||ULA.busy)return;const U=uld(),now=Date.now();if(!U)return;const el=document.getElementById('ulName');if(el)UL.name=el.value;const n=FrontOfficeCore.cupName(UL.name||team(G.user).nick);if(FrontOfficeCore.cupBadName(n))return ulSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true);
     if(!FrontOfficeCore.ulManOk(U.ar,now))return ulSay(UL_MAN_WAIT,true);const R=ulRegEntry(),e=R.e;if(!e)return ulSay(R.err||'이 덱을 만들 수 없습니다(구단을 맡고 있을 때 지금 1군을 등록합니다).',true);
-    const src=UL.src,drop=ulDropIds().slice(),m=ulSetDeck(e,src);if(m)return ulSay(m,true);UL.drop=null;const M=ulManualRemember(U,src,drop,now),tk=ulTok(),intent=ulAutoIntentKey(),key=ulV1DeckKey(U);let tail='';
+    const src=UL.src,drop=[],m=ulSetDeck(e,src);if(m)return ulSay(m,true);const M=ulManualRemember(U,src,drop,now),tk=ulTok(),intent=ulAutoIntentKey(),key=ulV1DeckKey(U);let tail='';
     if(U.league){ulEditDeck(U.deck.e);tail=' 진행 중인 리그에는 다음 연전부터 이 덱으로 나갑니다.';}ulSave();UL.busy=true;render();const r=await ulUploadResult(now);
     if(!ulSame(tk)||uld()!==U)return;UL.busy=false;if(key!==ulV1DeckKey(U)||intent!==ulAutoIntentKey()||r.status==='stale')return;ulManualFinish(U,M,r);ulSave();
     if(r.status==='ok'||r.status==='offline')ulSay(`${U.deck.e.name} 덱을 등록했습니다(OVR ${FrontOfficeCore.cupOvrTxt(U.deck.e.ovr)}).${r.status==='ok'?' 같은 단계 유저들이 이 덱을 상대로 만납니다.':''}${tail}`);
