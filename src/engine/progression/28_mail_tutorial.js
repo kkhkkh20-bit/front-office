@@ -18,7 +18,7 @@ function evStops(e){ if(e&&EV_GM.has(e.k))return true; const m=e&&e.mid!=null&&G
 /* 소식이 가리킨 구단·회차를 보존한다. 다음 제안/시즌의 상태로 옛 버튼이 살아나지 않게 한다. */
 function mailContext(subj,acts){ const c={tid:G.user},has=k=>(acts||[]).some(a=>k.includes(a.a));
   if(has(['renewMgr','pactKeep','pactEnd'])){c.mid=G.mgr?.[G.user]?.id;c.pact=G.pact?.day;}
-  if(has(['jobYes','jobNo']))c.job=(G.jobs||[]).find(j=>!j.done&&j.tid===+(acts||[]).find(a=>a.a==='jobYes'||a.a==='jobNo').v)?.exp;
+  if(has(['jobYes','jobNo'])){const j=jobGet((acts||[]).find(a=>a.a==='jobYes'||a.a==='jobNo').v);if(j){c.job=j.exp;c.jobId=j.id;}}
   if(has(['stKeep','stLet']))c.raid=(G.stRaid||[]).find(r=>r.id===String((acts||[]).find(a=>a.a==='stKeep'||a.a==='stLet').v).split(':')[0])?.exp;
   if(has(['scoutPlanGo']))c.scout=scoutPlan().filter(x=>x.move).map(x=>({id:x.s.id,role:x.role,key:x.key}));
   if(has(['cwOpen']))c.cw=G.cwS?.id;
@@ -43,7 +43,7 @@ function mailPrune(){ for(const m of G.mail)if(!m.read&&G.day-(m.day??G.day)>14&
 function mailLiveAct(m,a){ const c=m.ctx||{}, id=String(a.v??'').split(':')[0];
   if(a.a==='stKeep'||a.a==='stLet')return (G.stRaid||[]).some(r=>r.id===id&&(c.raid==null||r.exp===c.raid));
   if(a.a==='cmKeep'||a.a==='cmLet')return !!cmRaidFind(String(a.v));
-  if(a.a==='jobYes'||a.a==='jobNo')return (G.jobs||[]).some(j=>!j.done&&j.tid===+a.v&&(c.job==null||j.exp===c.job));
+  if(a.a==='jobYes'||a.a==='jobNo'){const j=jobMailOffer(m,a);return !!(j&&!j.done&&G.day<j.exp);}
   return false; }
 function headline(t){ const i=t.search(/[.!?](\s|$)/); return i>0&&i<46?t.slice(0,i):t.length>40?t.slice(0,38)+'…':t; }
 function kindActs(kind,ref){ const a=[]; if(ref!=null&&G.players[ref])a.push({l:'선수 보기',a:'player',v:ref}); if(GOTO[kind])a.push({l:'해당 화면으로',a:'goWork',v:GOTO[kind]}); return a; }

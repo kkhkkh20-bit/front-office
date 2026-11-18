@@ -19,7 +19,7 @@ const IB_ANS=new Set(['stKeep','stLet','cmKeep','cmLet','jobYes','jobNo']);
 function ibAnsDue(m){ const a=(m.acts||[]).find(x=>IB_ANS.has(x.a)); if(!a)return null; const id=String(a.v).split(':')[0], c=m.ctx||{};
   if(a.a[0]==='s'){ const r=(G.stRaid||[]).find(x=>x.id===id&&(c.raid==null||x.exp===c.raid)); return r?r.exp:null; }
   if(a.a[0]==='c')return +String(a.v).split(':')[2]||null;
-  const j=(G.jobs||[]).find(x=>!x.done&&x.tid===+a.v); return j?j.exp-1:null; } /* 단장직 제의는 기한 전날까지 답할 수 있다 */
+  const j=jobMailOffer(m,a); return j&&!j.done?j.exp-1:null; } /* 단장직 제의는 기한 전날까지 답할 수 있다 */
 function ibDue(m){ { const sp=ibSpon(m); if(sp&&sp.length)return Math.min(...sp.map(x=>x.exp)); } if(m.oid){ const o=(G.offers||[]).find(x=>x.id===m.oid); return o&&o.exp!=null?o.exp:null; } if(/^\[인터뷰 요청\]/.test(m.subj))return G.iv?G.iv.exp:null; const a=(m.acts||[]).find(x=>x.a==='evPick'); if(a){ const e=(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e?e.exp:null; } return ibAnsDue(m); }
 function ibDecideList(){ return G.mail.filter(ibDecide).sort((a,b)=>(ibDue(a)??1e9)-(ibDue(b)??1e9)); } /* 마감 빠른 순 */
 function mailEvPick(m){ const a=(m.acts||[]).find(x=>x.a==='evPick'); const e=a&&(G.evs||[]).find(x=>x.id===String(a.v).split(':')[0]); return e&&e.pick!=null&&e.opts[e.pick]?` · "${e.opts[e.pick].l}"${e.auto?'(기본안)':''}`:''; }

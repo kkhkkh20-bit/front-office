@@ -21,6 +21,11 @@ function stadCap(tid,d){ const S=stadOf(tid); return Math.round((S.cap||STAD_CAP
 /* 관중 수요의 기준 좌석: 증설로 늘린 좌석은 넣지 않는다. 늘린 자리는 원래 구장이 넘칠 때만 찬다(사용자 11-15: 증축) */
 function stadDemCap(tid){ const S=stadOf(tid); return Math.round((S.cap||STAD_CAP[tid])-(stadPower(S.lv.prem)-2)*300-(S.mx||0)); } /* 초대형 신구장: 대형(2만5천 석)을 넘는 좌석 일부(mx)는 증설 좌석처럼 넘치는 수요만 채운다 */
 function stadBuilt(tid){ const S=stadOf(tid); return S.built||STAD_BUILT[tid]||2000; }
+/* 실제 개장 날짜. 이름 변경 이력은 개장으로 세지 않는다. 조회는 저장과 난수를 바꾸지 않는다. */
+function stadOpenDays(S,tid){ if(!S)return []; tid=tid??(G.teams||[]).find(t=>t.stad===S)?.id; const L=[...(S.opens||[]),...(S.names||[]).filter(x=>x.open).map(x=>x.until)];
+  for(const x of [...((G.clubHist||{})[tid]||[]),...(G.chron||[])])if(x.tid===tid&&x.k==='stad'&&String(x.source||'').startsWith('facility:stad:개장:')&&Number.isFinite(x.d))L.push(x.d);
+  if(!L.length&&S.built!=null&&S.built>=(G.startY??G.year)&&S.built<=dobj(G.day).y)L.push(dnum(S.built,1,1)); /* 정확한 날짜가 없으면 종전 호환 기준인 개장 연도 1월 1일 */
+  return [...new Set(L.filter(Number.isFinite))].sort((a,b)=>a-b); }
 /* 구장 연식 효과: 30년 넘으면 관람 환경이 낡아 수요 -4%, 새 구장은 개장 3년간 +12%에서 서서히 줄어든다, 공사 중 -2% */
 let _stY=null, _stOff=0; /* 다음 시즌 전망을 낼 때 그 해 기준, 지난 일정을 다음 시즌 날짜로 옮긴 만큼 */
 function stadAgeF(tid){ const S=stadOf(tid); const age=(_stY??G.year)-stadBuilt(tid); let f=age>=30?.96:1; if(age<3)f*=1+.12*(3-age)/3+.04; const N=S.proj; if(N&&N.stage==='build')f*=.98; return f; }
@@ -171,7 +176,7 @@ function newStadTeam(tid){ const S=stadOf(tid); const N=S.proj; if(!N)return; co
     if(!me){ if(R()<pr)N.stage='plan'; else { S.proj=null; S.retry=G.year+1; } return; }
     if(R()<pr){ N.stage='plan'; stop('구장',`${t.city}시가 신구장 건립에 합의했습니다. 시가 공사비 대부분을 내고 구단이 일부를 분담합니다. 구단·재정 → 시설 투자 → 신구장에서 규모를 고르세요.`); news('구단',`${t.city}시-${tfull(t)}, 신구장 건립 합의`,'새 야구장 시대가 열립니다.',2); }
     else { S.proj=null; S.retry=G.year+1; stop('구장',`${t.city}시와의 신구장 협상이 결렬됐습니다. 시 재정 여건이 이유입니다. 내년에 다시 시도할 수 있습니다.`); } }
-  if(N.stage==='build'&&G.day>=N.done){ S.cap=N.cap; S.built=G.year; S.opened=G.day; (S.names=S.names||[]).push({until:G.day,n:stadName(t.id)}); /* 옛 구장 이름: 지난 경기 장소 표시용 */ S.name=N.k==='dome'?`${t.city} 돔구장`:`${t.city} 새 야구장`; { const H=G.gmLeg&&G.gmLeg.stad; if(H&&H.n&&H.tid===t.id)S.name=H.n; } /* 단장 이름을 붙인 구장은 신구장도 그 이름을 잇는다 */ S.dome=N.k==='dome'; S.nk=N.k; S.ncap=N.cap; /* 지금 구장 규모(같은 규모 신구장 막기, 카페 11-17) */ newStadMegaSet(S,N.k); /* 돔이 아닌 신구장으로 바꾸면 돔 효과도 끝 */ for(const k of Object.keys(S.lv))S.lv[k]=Math.max(S.lv[k],4);
+  if(N.stage==='build'&&G.day>=N.done){ S.opens=[...new Set([...stadOpenDays(S,t.id),G.day])]; S.cap=N.cap; S.built=G.year; S.opened=G.day; (S.names=S.names||[]).push({until:G.day,n:stadName(t.id),open:1}); /* 옛 구장 이름: 지난 경기 장소 표시용. 실제 개장은 별도로 남긴다. */ S.name=N.k==='dome'?`${t.city} 돔구장`:`${t.city} 새 야구장`; { const H=G.gmLeg&&G.gmLeg.stad; if(H&&H.n&&H.tid===t.id)S.name=H.n; } /* 단장 이름을 붙인 구장은 신구장도 그 이름을 잇는다 */ S.dome=N.k==='dome'; S.nk=N.k; S.ncap=N.cap; /* 지금 구장 규모(같은 규모 신구장 막기, 카페 11-17) */ newStadMegaSet(S,N.k); /* 돔이 아닌 신구장으로 바꾸면 돔 효과도 끝 */ for(const k of Object.keys(S.lv))S.lv[k]=Math.max(S.lv[k],4);
     /* 옛 구장에서 진행 중이던 시설 공사: 새 구장 기본 단계(4) 이하가 목표면 취소하고 남은 공사 기간만큼 환급, 그보다 높으면 새 구장에서 이어서 진행 */
     { const can=[], go=[]; S.build=(S.build||[]).filter(b=>{ if(b.lv>S.lv[b.k]){ go.push(b); return true; } const c=b.c??STAD_COST[b.lv]; const r=Math.round(c*clamp((b.done-G.day)/Math.max(1,STAD_DAYS[b.lv]),0,1)); stadRefund(t,b,r); can.push([b,r]); return false; });
       if(me&&(can.length||go.length)){ const nm=b=>STAD_ITEMS.find(x=>x.k===b.k).l; mail('운영팀','신구장 개장: 옛 구장 공사 정리',`${can.length?`새 구장 시설(4단계 이상)에 포함돼 취소한 공사: ${can.map(([b,r])=>`${nm(b)} ${b.lv}단계(남은 공사분 ${money(r)} 환급)`).join(', ')}.`:''}${go.length?`${can.length?'\n':''}새 구장에서 이어서 진행하는 공사: ${go.map(b=>`${nm(b)} ${b.lv}단계(${dmd(b.done)} 완공)`).join(', ')}.`:''}`,{kind:'구장'}); } }

@@ -105,7 +105,7 @@ function relsMonth(){ try{ relNetMonth(); }catch(e){} try{ gmInvMonth(); }catch(
 /* ----- 다른 구단 단장이 우리 단장을 부른다: 사이가 좋거나 거래하고 싶을 때 더 자주. 리그 전체에서 한 시즌 몇 번 ----- */
 function gmInvOpen(){ return (G.evs||[]).some(e=>e.k==='gmInv'&&!e.done); }
 function gmInvMonth(){ if(G.unemp||G.gameOver||G.user==null||!G.teams||gmInvOpen())return null; if(G.gmInvD!=null&&G.day-G.gmInvD<25)return null; try{ if(personalAway())return null; }catch(e){}
-  const L=G.teams.filter(t=>t.id!==G.user&&t.gm&&!t.gm.interim).map(t=>{ const g=t.gm, c=(G.gmc||{})[t.id]||{}; const meal=!(c.meal!=null&&c.meal>G.day-30), call=!(c.call!=null&&c.call>G.day-14); if(!meal&&!call)return null;
+  const L=G.teams.filter(t=>t.id!==G.user&&t.gm&&!t.gm.interim).map(t=>{ const g=t.gm, c=gmContactView(t.id); const meal=!(c.meal!=null&&c.meal>G.day-30), call=!(c.call!=null&&c.call>G.day-14); if(!meal&&!call)return null;
       let want=false; try{ want=(t.rel??50)>=45&&aiInterest(t.id).length>0; }catch(e){}
       const p=(.03+((t.rel??50)>=65?.025:(t.rel??50)<35?-.02:0)+(want?.02:0))*(g.trait==='loyal'?1.5:g.trait==='hard'?.5:1); return {t,g,meal,want,p}; }).filter(Boolean);
   const P=L.filter(x=>relU('ginv'+G.day,x.t.id)<x.p); if(!P.length)return null; const x=P[Math.min(P.length-1,Math.floor(relU('ginvw'+G.day,P.length)*P.length))]; /* 문턱을 넘은 단장 중 고르게(구단 번호 순으로 앞 구단만 부르지 않게) */

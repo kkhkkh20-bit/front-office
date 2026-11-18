@@ -417,7 +417,18 @@ function compactPlayers(){ const y=G.year; let n=0; try{ futAggFix(); }catch(e){
     if(p.story&&p.story.length>45)p.story.splice(1,p.story.length-45);
   }
   return n; }
+/* 결산이 달력 새해로 밀렸으면 이전 시즌의 선수·회계·가을야구를 먼저 닫는다. */
+function seasonYearPending(){ return !!(G.ps&&G.sea&&G.sea.y===G.year&&!(G.last&&G.last.y>=G.year)); }
+function yearTurn(){ if(seasonYearPending())return false; newYear(); planSup(); ovrSnap(); try{ rhSnap(); rmSnap(); }catch(e){} try{ gmTenYear(); }catch(e){} try{ facAgeYear(); }catch(e){} try{ projSet(); G.projJan={y:G.year,L:G.proj.slice()}; }catch(e){} try{ myCNewYear(); }catch(e){} try{ freeYear(); }catch(e){} try{ stYear(); }catch(e){} try{ gmAgeYear(); }catch(e){} try{ awardsCompact(); }catch(e){} return true; }
+function lateYearTurn(){ if(dobj(G.day).y<=G.year||seasonYearPending())return;
+  if(G.last&&G.last.y===G.year){if(G.rolled!==G.year){offseason();offseasonMgr();try{stadAI();}catch(e){}}
+    if(G.fa&&!G.fa.open&&!G.fa.closed){G.faAnnY=G.year;faAnnounce();}
+    if(!G.contract||G.contract.y<G.year){contractStart();aiCapAll();try{aiDebtDump();}catch(e){}capWarnUser();}
+  }
+  yearTurn();try{personalMonthlyPay();}catch(e){} /* 미뤄진 1월 급여도 새 회계연도에서 한 번 지급한다. */
+}
 function newYear(){
+  if(seasonYearPending())return false;
   try{ compactPlayers(); }catch(e){}
   try{ gmRelYear(); }catch(e){} try{ relsYear(); }catch(e){} /* 인물 관계도 같은 비율로 되돌림(84b_person_rels) */
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */
