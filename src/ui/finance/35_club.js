@@ -170,7 +170,7 @@ function tradeMood(tid,give,get,cash,pk){
   const key=[...give].sort((a,b)=>a-b).join('-')+'|'+[...get].sort((a,b)=>a-b).join('-');
   const x=e.gain-e.need+hn('tm'+tid+'|'+key,G.year)*sd;
   /* 세 단계로만: 수락 가능 · 추가 대가 필요 · 거절 가능. 경계 근처(0~3)는 예측 오차 때문에 추가 대가 쪽으로 본다 */
-  const lv=x>=3?{k:'ok',l:'수락 가능',s:'이 조건이면 받아들일 것 같습니다',c:'var(--good)'}:x>=-12?{k:'more',l:'추가 대가 필요',s:x>=0?'조금만 더 얹으면 됩니다':x>=-4?'선수 한 명 정도 더 원할 것 같습니다':'차이가 커서 큰 대가가 필요합니다',c:x>=-4?'var(--warn)':'var(--r35)'}:{k:'no',l:'거절 가능',s:'불쾌하게 여길 수 있습니다',c:'var(--bad)'};
+  const lv=x>=3?{k:'ok',l:'수락 가능',s:'이 조건이면 받아들일 것 같습니다',c:'var(--good)'}:x>=-12?{k:'more',l:'추가 대가 필요',s:e.cashFull&&x>=-4?`현금은 ${money(Math.max(10,e.cashUse||0))}어치까지만 칩니다. 더 얹어도 그대로라 선수를 바꾸거나 더해야 합니다`:x>=0?'조금만 더 얹으면 됩니다':x>=-4?'선수 한 명 정도 더 원할 것 같습니다':'차이가 커서 큰 대가가 필요합니다',c:x>=-4?'var(--warn)':'var(--r35)'}:{k:'no',l:'거절 가능',s:'불쾌하게 여길 수 있습니다',c:'var(--bad)'};
   return {...lv,w:Math.round(clamp((x+14)/20,0.03,1)*100),sd};
 }
 function tContract(p){ if(!p.faC&&!p.extNext&&p.team==null&&G.fa&&(G.fa.pool||[]).includes(p.id))return 'FA 시장'; const t=ctText(p); return t==='올 시즌 뒤 FA'&&G.last&&G.last.y>=G.year?'FA 자격 취득':t; }
