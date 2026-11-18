@@ -10,7 +10,13 @@ const EV_NAME={lead:'기강 문제',pt:'출전 기회 면담',call:'콜업 여�
 /* 나중에 일상 결정에 넣은 종류(사용자 'ddddddd' 11-17: 일상 결정을 맡겼는데 응원가·기념 유니폼 제안이 시뮬을 멈춤).
    예전 저장에서 일상 결정을 모두 맡긴 단장은 따로 정하지 않아도 함께 맡긴 것으로 본다. 직접 가져오면 false로 남긴다 */
 const EV_LATE=new Set(['memo','song']); EV_NAME.memo='기념 유니폼 제작 제안'; EV_NAME.song='응원가 제작 제안';
-function evDelegOn(k){ if(!G||EV_KEY.has(k)||!EV_NAME[k])return false; const D=G.deleg; const v=D&&D[k]; if(v!=null)return !!v; return !!D&&EV_LATE.has(k)&&Object.keys(EV_NAME).every(x=>EV_LATE.has(x)||D[x]); }
+/* 종류별 비서 기준(국사왕 11-18: 일상 결정을 맡기면 멘토 제안을 늘 거절). G.evPol[k]: yes 자동 승낙 · judge 자동 판단 · no 자동 거절 · self 직접 결정(맡겨도 소식함 결정으로 남김).
+   정하지 않았으면 일상 결정 위임(G.deleg)을 따르고, 맡긴 경우 자동 판단으로 처리한다. 결과 계산은 손으로 고를 때와 같다 */
+const EV_POL={vet:[['yes','자동 승낙'],['judge','자동 판단'],['no','자동 거절'],['self','직접 결정']]};
+function evPolOf(k){ const v=G&&G.evPol&&G.evPol[k]; return EV_POL[k]&&EV_POL[k].some(o=>o[0]===v)?v:null; }
+/* 비서가 고르는 선택지: 종류마다 기준(autoPick)이 있으면 그 판단, 없으면 기본안 */
+function evAutoIdx(e){ const h=e&&EVH[e.k]; if(h&&h.autoPick){ let i=null; try{ i=h.autoPick(e,evPolOf(e.k)||'judge'); }catch(err){ i=null; } if(Number.isInteger(i)&&i>=0&&i<e.opts.length)return i; } return e.def; }
+function evDelegOn(k){ if(!G||EV_KEY.has(k)||!EV_NAME[k])return false; { const P=evPolOf(k); if(P)return P!=='self'; } const D=G.deleg; const v=D&&D[k]; if(v!=null)return !!v; return !!D&&EV_LATE.has(k)&&Object.keys(EV_NAME).every(x=>EV_LATE.has(x)||D[x]); }
 /* 일상 종류(EV_NAME)라도 이번 건은 단장이 직접 정하는 결정: 비서 위임·일괄 맡기기에서 빠진다. 레전드 급 은퇴 결정은 예전 저장의 미결 건도 같은 기준(피드백 11-18) */
 function evOwn(e){ return !!e&&(!!e.key||(e.k==='ret'&&!!e.data&&(!!e.data.leg||e.data.rn!=null))); }
 function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
@@ -19,7 +25,7 @@ function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   G.evs.push(e); for(let i=0;G.evs.length>40&&i<G.evs.length;)if(G.evs[i].done)G.evs.splice(i,1); else i++; /* 한도는 끝난 결정부터 지운다. 미결 결정은 남긴다(검수 11-09za) */ { const rid=e.ref!=null?e.ref:(e.data&&e.data.pid); if(rid!=null){ G.evRecent=G.evRecent||{}; G.evRecent[k+':'+rid]=G.day; G.evRecent['p:'+rid]=G.day; } }
   const lines=opts.map((x,i)=>`${i+1}. ${x.l}: ${x.fx}`).join('\n');
   const m=mail(e.from,title,`${sit}\n\n${lines}\n\n${dmd(e.exp)}까지 정하지 않으면 "${opts[e.def].l}"(으)로 처리됩니다.`,{imp:true,kind:'결정',cat:o.cat,ref:e.ref,face:o.face??null,acts:opts.map((x,i)=>({l:x.l,a:'evPick',v:e.id+':'+i}))});
-  e.mid=m.id; if(EV_GM.has(k))m.cat='must'; if((!evOwn(e)&&evDelegOn(k))||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,e.def,true); }
+  e.mid=m.id; if(EV_GM.has(k))m.cat='must'; if((!evOwn(e)&&evDelegOn(k))||((k==='mreq'||k==='mpick')&&typeof autoOn==='function'&&autoOn('mgr'))){ e.deleg=true; evPick(e.id,evAutoIdx(e),true); }
   else if(k==='gmInv'&&typeof autoOn==='function'&&autoOn('inv')){ e.deleg=true; evPick(e.id,G.auto&&G.auto.inv==='yes'?0:e.def,true); } /* 다른 단장의 식사·통화 초대: 업무 권한 '식사·모임 초대'(일상 결정을 맡겼으면 함께). 기본은 정중히 거절(난수 없음) */
   return e; }
 /* 답변 기한이 지난 미결 결정: 소식함·홈 결정 카드·직접 선택이 같은 판정을 쓴다(다음 날 처리 때 기본안으로, 검수 11-09zzc #26) */
@@ -31,7 +37,7 @@ function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.don
   if((!auto||EVH[e.k]?.canAuto)&&EVH[e.k]&&EVH[e.k].can){ const why=EVH[e.k].can(e,i); if(why){ if(auto&&EVH[e.k].canLate&&!e.done&&!e.waitLegal){ e.waitLegal={d:G.day,why}; const m=(G.mail||[]).find(m=>m.id===e.mid); if(m)m.body+=`\n\n[대기] ${why}. 대체 계약은 유지합니다. 선수 구성을 조정한 뒤 이 메일에서 다시 선택해 주세요.`; } return why; } } /* 지금 고를 수 없는 선택은 결정으로 남기지 않고 이유를 알린다. canAuto 종류는 자동 실행도 같은 사전 검사를 한다. */
   e.done=true; e.pick=i; if(auto)e.auto=true;
   let r=''; try{ r=(EVH[e.k]&&EVH[e.k].pick(e,i))||''; }catch(err){ r=''; } if(Number.isInteger(e.pick)&&e.pick!==i&&e.opts[e.pick])i=e.pick; /* 처리 중 실제로 바뀐 선택(정원이 차 복귀 불가 등)으로 기록(검수 11-07) */
-  e.res=r; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; try{ if(EVH[e.k]&&EVH[e.k].acts)m.acts=EVH[e.k].acts(e,i)||[]; }catch(err){} /* 결정 뒤에도 남는 버튼(창단 단장 수락 취소) */ m.read=true; m.imp=false; m.body+=`\n\n[결정] ${e.opts[i].l}${e.deleg?' (비서가 맡은 일)':auto?' (기한이 지나 자동 처리)':''}${r?`\n${r}`:''}`; }
+  e.res=r; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; try{ if(EVH[e.k]&&EVH[e.k].acts)m.acts=EVH[e.k].acts(e,i)||[]; }catch(err){} /* 결정 뒤에도 남는 버튼(창단 단장 수락 취소) */ m.read=true; m.imp=false; m.body+=`\n\n[결정] ${e.opts[i].l}${e.deleg?' (비서가 맡은 일)':auto?' (기한이 지나 자동 처리)':''}${e.deleg&&e.why?`\n${e.why}`:''}${r?`\n${r}`:''}`; }
   if(auto&&!G.unemp){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t:e.title,c:e.opts[i].l,r:r||'',k:e.k,why:e.deleg?'deleg':'exp'}); if(G.autoLog.length>20)G.autoLog.length=20; } /* 자동 처리 결과는 따로 메일을 보내지 않고 주간 요약에 한 줄로 모은다 */
   G.stops=(G.stops||[]).filter(x=>x.id!==e.mid);
   G.evlog.unshift({d:G.day,y:G.year,t:e.title,c:e.opts[i].l,r,k:e.k,id:e.id,auto:!!auto}); if(G.evlog.length>80)G.evlog.length=80;
@@ -159,6 +165,8 @@ const EVH={
     make(p){ G.vetAsk=G.year; evNew('vet',`${p.name}의 제안`,`베테랑 ${p.name}(${p.age}세)이(가) 젊은 선수들을 따로 챙기고 싶다고 합니다. 코치진도 반기는 분위기입니다.`,
       [{l:'멘토 역할 맡기기 (수당 5천만)',fx:'올 시즌 24세 이하 선수 성장이 조금 빨라지고, 본인 기분이 오릅니다.'},
        {l:'선수로 집중해 달라',fx:'변화가 없습니다. 본인은 조금 서운해합니다.'}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id},def:1}); },
+    /* 비서 기준: 자동 판단은 AI 구단 멘토 지정과 같은 함수(mentorWhy: 긴축·쓸 수 있는 돈·24세 이하 선수) */
+    autoPick(e,pol){ if(pol==='yes')return 0; if(pol==='no')return 1; const why=mentorWhy(G.user); e.why=why?`자동 판단: ${why}`:'자동 판단: 수당을 낼 여유가 있고 24세 이하 선수가 있음'; return why?1:0; },
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '';
       if(i===0){ G.mentor={id:p.id,y:G.year}; G.spend.etc=(G.spend.etc||0)+50; p.mor=clamp(p.mor+8,0,100); return `${p.name} 멘토 지정. 올 시즌 젊은 선수들 성장에 도움이 됩니다. 수당 5천만.`; }
       p.mor=clamp(p.mor-3,0,100); return `${p.name} 기분 하락.`; } },

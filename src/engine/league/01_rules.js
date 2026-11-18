@@ -184,12 +184,12 @@ const fUnproven=p=>!!p&&!!p.foreign&&(()=>{ const L=(p.hist||[]).filter(h=>h.lvl
 /* 성능(11-18): 세계를 바꾸지 않는 평가 구간(AI 트레이드 후보 계산 등)에서는 구단 명단을 한 번만 걸러 쓴다. 구간 밖에서는 늘 새로 거른다(결과 동일). 돌려줄 때는 사본이라 호출한 쪽이 정렬·수정해도 기억이 바뀌지 않는다 */
 let _rosM=null; function rosterMemoOn(){ _rosM=new Map(); } function rosterMemoOff(){ _rosM=null; }
 function rosterMemo(k,f){ if(!_rosM)return f(); let v=_rosM.get(k); if(v===undefined){ v=f(); _rosM.set(k,v); } return Array.isArray(v)?v.slice():v; }
-const playersOf=tid=>rosterMemo('p'+tid+':'+(PROJ_LENS?1:0)+(PROJ_FX?1:0),()=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); return Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p))); }); /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
+const playersOf=tid=>rosterMemo('p'+tid+':'+(PROJ_LENS?1:0)+(PROJ_FX?1:0),()=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); const P=G.players, L=[]; for(const k in P){ const p=P[k]; if(p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p)))L.push(p); } return L; }); /* 전체 배열을 만들지 않고 한 번에 거른다(순서는 Object.values와 같다) */ /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
 const awayOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&isAway(p));
 const domestic=tid=>playersOf(tid).filter(p=>!p.foreign);
 /* 구단이 돈을 주는 선수(계약 기준): 국가대표 차출로 잠시 빠진 선수도 소속 선수로 연봉·샐러리캡·선수 수에 넣는다. 군 복무 중인 선수만 지급에서 뺀다.
    playersOf·domestic은 '지금 경기에 뛸 수 있는 선수'라 계약·돈 계산에는 쓰지 않는다 */
-const ownedOf=(tid,d=G.day)=>rosterMemo('o'+tid+':'+d,()=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!milOn(p,d))); /* d: 그날 병역 처리(입대·전역)를 마친 뒤 기준 */
+const ownedOf=(tid,d=G.day)=>rosterMemo('o'+tid+':'+d,()=>{ const P=G.players, L=[]; for(const k in P){ const p=P[k]; if(p.team===tid&&!(p.joinY>G.year)&&!milOn(p,d))L.push(p); } return L; }); /* d: 그날 병역 처리(입대·전역)를 마친 뒤 기준 */
 const domPayOf=tid=>ownedOf(tid).filter(p=>!p.foreign);
 /* 다음 시즌(s) 상한 전망: 그 시즌 정규시즌에 연봉을 받는 선수만(시즌 전체 복무·시즌 뒤 전역은 빼고, 개막 전 전역은 넣는다, 검수 11-09zk) */
 const milCapOut=(p,s)=>payFrac(p,s)<=0;
@@ -239,7 +239,8 @@ function capPayWith(tid,pid,amt,s){ const y0=sponSeason(); s=s??y0; const nxt=s>
    AI 구단은 늘 가장 많이 받는 대상자를 지정한다(우리 구단의 기본값과 같은 규칙). 지정은 개막 전(결산 뒤 겨울 포함)에만 바꿀 수 있고 한 번 정하면 다음 시즌에도 이어진다 */
 const FRAN_Y=2026, FRAN_YRS=7;
 /* 그 구단 소속 1군 등록 시즌: 1군 기록이 있는 시즌 + 올해 그 구단 1군 등록일. 2군(퓨처스) 기록만 있는 시즌은 세지 않는다(검수 11-17 #188) */
-function franYrsSet(p,tid){ const S=new Set(); for(const h of p.hist||[])if(h.t===tid&&h.lvl==='1군'&&!h.y2)S.add(h.y); if(p.regD&&p.regD.y===G.year&&!S.has(G.year)&&regNT(p,tid)>0)S.add(G.year); return S; }
+function franYrsSet(p,tid){ return _rosM?rosterMemo('fy'+p.id+':'+tid,()=>franYrsSet0(p,tid)):franYrsSet0(p,tid); } /* 평가 구간에서는 선수 기록을 한 번만 훑는다 */
+function franYrsSet0(p,tid){ const S=new Set(); for(const h of p.hist||[])if(h.t===tid&&h.lvl==='1군'&&!h.y2)S.add(h.y); if(p.regD&&p.regD.y===G.year&&!S.has(G.year)&&regNT(p,tid)>0)S.add(G.year); return S; }
 const franYrs=(p,tid)=>franYrsSet(p,tid).size;
 const franOk=(p,tid)=>!!p&&!p.foreign&&franYrs(p,tid)>=FRAN_YRS;
 /* s시즌에 적용되는 구단 지정(없으면 null) */
