@@ -99,7 +99,8 @@ function faUpcoming(p0){ if(G.rolled===G.year||(G.fa&&G.fa.y0===G.year))return [
     if(why!=='svc'&&svcEnd<faSvc(p))continue; if(p.lastFA!=null&&G.year-p.lastFA<4&&!free)continue;
     L.push({p,why,sure,dp:free?1:faDeclP(p)}); }
   return L; }
-function faCapN(){ const F=G.fa; if(!F)return 2; if(F.cap===2||F.cap===3)return F.cap; const ids=new Set([...(F.pool||[]),...(F.results||[]).map(r=>r.id)]); return F.cap=ids.size>20?3:2; } /* 구버전 한도는 최초 시장 인원을 한 번 복구해 고정한다 */
+function faCapLimit(F=G.fa){ if(!F)return 2; if(F.cap===2||F.cap===3)return F.cap; return new Set([...(F.pool||[]),...(F.results||[]).map(r=>r.id)]).size>20?3:2; }
+function faCapN(){ const n=faCapLimit(); if(G.fa)G.fa.cap=n; return n; } /* 구버전 한도는 최초 시장 인원을 한 번 복구해 고정한다 */
 /* 합의한 다음 시즌 다년계약(extNext)을 지금 계약으로 바꾼다(결산·불러오기 수리 공통). sy: 계약 첫 시즌 */
 /* 계약 연차가 멈추면 같은 계약의 기한부 조항도 한 시즌씩 미룬다. */
 function ctMilShift(p,y){ if(!ctOn(p))return; if(p.ntc!=null&&p.ntc>=y)p.ntc++; for(const x of [p.capB,p.opt,p.roleProm])if(x&&x.until!=null&&x.until>=y)x.until++; if(p.cOpt&&!p.cOpt.used&&p.cOpt.at!=null&&p.cOpt.at>=y)p.cOpt.at++; if(p.pOut&&!p.pOut.used&&p.pOut.y!=null&&p.pOut.y>=y)p.pOut.y++; }
@@ -265,10 +266,13 @@ function aiFaBonus(p,best){ const y=Math.max(1,best.years||1), B=aiFaSplit(p,bes
 /* 지급할 수 있는 최대 현금보상액을 정산될 때까지 묶는다. 구버전 prev 누락은 선수에서 읽되 상태를 바꾸지 않는다. */
 function faCompReserve(tid){ return sum((G.comp||[]).filter(c=>c.to===tid&&c.stage!=='done').map(c=>{ const p=G.players[c.pid], prev=Number.isFinite(c.prev)?c.prev:p?(p.faPrevSal??p.sal??0):0; return Math.round(prev*((COMP[c.grade]||{}).cash||0)); })); }
 function faRosterFull(tid){ return rosterN(tid)>=ROSTER_MAX||rosterProj(tid)>=ROSTER_MAX; }
+/* 구단주 FA 자금은 지금 실제로 계약할 수 있는 선수에게만 요청한다. 후보·직접 보고·재설득이 같은 자격을 쓴다. */
+function faSupportTargetWhy(p,tid=G.user){ if(tid===G.user&&G.unemp)return '단장으로 재임 중일 때 요청할 수 있습니다.'; if(!(G.fa&&G.fa.open&&!G.fa.closed)||G.day>grantFaEnd())return 'FA 시장이 열려 있을 때만 요청할 수 있습니다.'; if(!p||p.team!=null||!p.ask||!(G.fa.pool||[]).includes(p.id))return '지금 계약할 수 있는 FA 선수가 아닙니다.'; if(tid!==p.faFrom&&faOutN(tid)>=faCapLimit())return '이번 겨울 외부 FA 영입 한도를 모두 썼습니다.'; if(faRosterFull(tid))return '정식 선수와 입단 예정 선수의 정원이 가득 찼습니다. 먼저 한 명을 정리하세요.'; return ''; }
+function faSupportCap(p,annual=p.ask.annual,tid=G.user){ const s=sponSeason(),c=capPayWith(tid,p.id,annual,s); return {s,cap:c.cap,pay:c.tot,room:c.room,ok:c.tot<=c.cap}; }
 function faFundsCheck(p,o,tid=G.user){ const t=team(tid); if(!t||!p||!o||tid!==ME()&&!t.indie)return null; const bonus=o.terms?(o.terms.bonus||0):tid!==ME()?aiFaSplit(p,o).bonus:0; const comp=tid!==p.faFrom?Math.round((p.faPrevSal??p.sal??0)*((COMP[p.faGrade]||{}).cash||0)):0; const need=bonus+comp; const ear=tid===ME()&&!t.indie?faGrantGap(p.id):0, cash=spendable(tid)+ear+(p.faFrom!==tid&&typeof champFundReserve==='function'?champFundReserve(tid):0); if(need<=0||cash>=need)return null; /* 구단주가 이 선수 몫으로 낸 영입 자금은 전액 이 선수에게 쓸 수 있다: 예산 여유가 마이너스면 지원 한도에 더한 돈이 그 구멍에 먼저 묻혀 가용자금이 반만 늘었다(피드백 11-18) */
   const gr=tid===ME()?faGrantOpen(p.id):0; return {ok:false,funds:true,need,cash,msg:`FA 계약 자금 부족 · 계약금 ${money(bonus)}과 보상금 ${money(comp)}(최대 현금 보상)에 ${money(need)}이 필요하지만 가용자금은 ${money(cash)}입니다${gr?`(구단주 영입 자금 ${money(gr)} 포함)`:''}. 계약금을 줄이고 연봉으로 돌리면 당장 필요한 돈이 줄어듭니다. 미결 보상금은 정산될 때까지 유보합니다.`}; }
 /* 이 선수 몫으로 받은 구단주 FA 영입 자금(주문·요청 승인, 아직 목적 미달성) */
-function faGrantOpen(pid,tid=G.user){ if(G.unemp||typeof grants!=='function')return 0; const sy=sponSeason(); return sum(grants().filter(g=>g.ok&&g.st==='open'&&g.pur&&g.pur.k==='fa'&&g.pur.pid===pid&&(g.tid??G.user)===tid&&g.y===sy).map(g=>g.amt||0)); }
+function faGrantOpen(pid,tid=G.user){ if(G.unemp)return 0; const sy=sponSeason(); return sum((G.grants||[]).filter(g=>g&&g.ok&&g.st==='open'&&g.pur&&g.pur.k==='fa'&&g.pur.pid===pid&&(g.tid??G.user)===tid&&faGrantSeason(g)===sy&&(g.until==null||G.day<=g.until)&&!(G.fa&&G.fa.closed)).map(g=>g.amt||0)); }
 /* 영입 자금 가운데 가용자금에 아직 안 잡힌 몫: 지원금은 지원 한도·목표에 더해지는데, 예산 여유가 마이너스면 그 구멍을 먼저 메워 spendable()이 덜 늘어난다 */
 function faGrantGap(pid){ const e=faGrantOpen(pid); if(!(e>0))return 0; const b=budget(), rg=b.roomGoal, rc=b.roomCap; const got=(Math.max(0,rg)-Math.max(0,rg-e))+(Math.min(0,rc)-Math.min(0,rc-e)); return Math.max(0,Math.round(e-got)); }
 /* 구단주 FA 영입 자금 액수: 연봉 기준(base)에 더해, 요구 조건(계약금 + 최대 현금 보상금)을 지금 가용자금으로 못 내는 만큼까지(연봉 기준의 두 배까지). 주문해 놓고 계약금을 못 내 결재가 막히던 문제(피드백 11-18) */

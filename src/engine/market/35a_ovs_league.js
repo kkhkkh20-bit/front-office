@@ -234,19 +234,26 @@ function ovsRenewYears(a,p){ const h=foResFor(p),fr=a&&a.fr; if(!h||h.tid!==a.fr
   const last=by.size?Math.max(...by.keys()):null; if(last==null||last<a.y-1)return 0; let n=0; for(let y=last;by.has(y);y--){const T=by.get(y);if(T.size!==1||!T.has(h.tid))break;n++;} return Math.max(0,n-1); }
 /* 이미 복귀 후보나 원구단 선수가 된 옛 저장도 유효한 원구단 권리와 실제 과거 기록으로 입증되는 연차만 보완한다. */
 function ovsRenewFix(){ let n=0; for(const a of G.abroad||[]){const p=G.players[a.id];if(!a.foreign||!a.back||a.from==null||!p?.foreign||(p.team!=null&&p.team!==a.from))continue;const v=ovsRenewYears(a,p);if(v>(p.rsy||0)){p.rsy=v;n++;}}return n; }
-function ovsRevive(a){ const fr=a.fr, L=a.lines, l=L[L.length-1], l2=L[L.length-2]; if(G.players[a.id])return null;
+/* 현재까지 관측된 해외 기록을 연도·수준·구단별로 한 번만 남긴다. 같은 해의 다른 리그는 본 줄/보조 줄(x)로 함께 보존한다. */
+function ovsArchiveCurrent(a,cur){ if(!cur)return 0; const y=cur.y, L=a.lines||[], old=L.filter(l=>l.y===y), parts=new Map(), key=q=>ovsCandLvlOf(q.lvl)+':'+(q.c??''), size=q=>(q.pa||0)+(q.outs||0)*1.3;
+  for(const l of old)for(const q of ovsParts(l)){const {x,...h}=q;h.y=y;parts.set(key(h),h);} let changed=0;
+  for(const q of ovsParts(cur)){const {x,...h}=q;h.y=y;const prev=parts.get(key(h));if(!prev||size(h)>size(prev)){parts.set(key(h),h);changed=1;}}
+  if(!changed)return 0; const P=[...parts.values()].sort((a,b)=>size(b)-size(a)), rows=[]; while(P.length){const h=P.shift();if(P.length){const {y:_,...x}=P.shift();h.x=x;}rows.push(h);}
+  const at=L.findIndex(l=>l.y===y), keep=L.filter(l=>l.y!==y); keep.splice(at<0?keep.length:at,0,...rows); a.lines=keep; return 1; }
+function ovsRevive(a,o){ const fr=a.fr, L=a.lines||[], l=L[L.length-1], l2=L[L.length-2], cur=o&&o.cur; if(!fr||!l&&!cur||G.players[a.id])return null;
   const p=newPlayer({age:fr.age,isP:fr.isP,base:50,pos:fr.pos,foreign:a.foreign,nat:fr.nat||null,name:a.name}); delete G.players[p.id]; p.id=a.id; G.players[p.id]=p;
   p.r=Object.assign({},fr.r); if(fr.role)p.role=fr.role; if(fr.velo!=null)p.velo=fr.velo; if(fr.addP)p.addP=fr.addP.slice(); for(const k of ['th','bt','inj'])if(fr[k]!=null)p[k]=fr[k]; if(p.isP){ delete p.delivery; p.delivery=pitchDelivery(p); }
   p.pot=Math.max(ovr(p),p.pot||0); p.orig=fr.orig||origOf(p); p.adapt=fr.adapt??Math.round(clamp(N(55,10),20,80)); p.sx=fr.sx||0;
   const A=G.arch&&G.arch[a.id]; if(A&&A.rows)p.hist=archP(A).hist.filter(h=>h.lvl==='1군').map(h=>{ const {war,wn,up,...o}=h; return o; }); /* KBO 1군 기록을 되살린다(보관 기록은 그대로: 선수가 있으면 보관 기록은 건너뛴다) */
   p.rsy=ovsRenewYears(a,p);
-  const pr=x=>{ const {y,c,o,live,x:_,aw,...h}=x; h.lvl=ovsCandLvlOf(x.lvl); h.g=ovsGamesPlayed(x,p.isP); return h; };
-  p.prevLvl=ovsCandLvlOf(l.lvl); p.prev=pr(l); if(l2&&ovsCandLvlOf(l2.lvl)===p.prevLvl)p.prev2=pr(l2);
+  const pr=x=>{ const {y,o,live,x:_,aw,...h}=x; h.lvl=ovsCandLvlOf(x.lvl); h.g=ovsGamesPlayed(x,p.isP); return h; };
+  p.prevLvl=ovsCandLvlOf((l||cur).lvl); if(l){p.prev=pr(l);p.ovpY=l.y;} if(l2&&ovsCandLvlOf(l2.lvl)===p.prevLvl)p.prev2=pr(l2);
   a.mlb0=a.mlb0??(fr.mlbG||0);p.mlbG=a.mlb0+ovsMlbGames(L,p.isP);
-  p.fkbo={from:a.from}; if(l.lvl==='트리플A'&&l.c!=null&&l.c>=0)p.fkbo.c=l.c; /* 트리플A 구단은 실제로 뛴 구단 */
+  p.fkbo={from:a.from}; if((l||cur).lvl==='트리플A'&&(l||cur).c!=null&&(l||cur).c>=0)p.fkbo.c=(l||cur).c; /* 트리플A 구단은 실제로 뛴 구단 */
   p.ask=fAsk(p,ovr(p)+N(0,2)); p.sal=p.ask; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day;
+  if(cur)ovsArchiveCurrent(a,cur); /* 한국행 문의 때까지 실제 공개된 현재 성적만 남긴다. 미리 만든 잔여 시즌 성적은 버린다. */
   a.back=true; a.backY=G.year; a.rv=G.year; delete a.fr; delete a.cur; /* 해외 기록 줄은 남긴다(선수 기록 표·다시 떠날 때 잇기) */
-  story(p,`${G.year} 겨울 KBO 복귀 추진(${ovsLvlL(l.lvl)})`,'move'); (G.fmarket=G.fmarket||[]).push(p.id); return p; }
+  story(p,`${G.year} 겨울 KBO 복귀 추진(${ovsLvlL((l||cur).lvl)})`,'move'); (G.fmarket=G.fmarket||[]).push(p.id); return p; }
 /* 비시즌 한 번(외국인 시장이 열린 첫 주): 대상마다 확률로 되살린다 */
 function ovsRetWinter(){ const o=dobj(G.day), wk=o.m>=10?G.year:G.year-1; if(G.ovsRetY===wk)return []; G.ovsRetY=wk; const out=[];
   for(const a of [...(G.abroad||[])]){ const c=ovsRetChance(a); if(c>0&&R()<c){ const p=ovsRevive(a); if(p)out.push(p); } } return out; }
