@@ -221,13 +221,13 @@ R2 바인딩 `SAVES`가 없으면 클라우드 저장 API만 `503 not_configured
 서버가 클라우드 요청을 처음 받을 때 표를 스스로 만들므로(같은 SQL, `IF NOT EXISTS`) 꼭 할 필요는 없습니다. 미리 만들어 두려면 둘 중 하나를 합니다(여러 번 해도 안전).
 
 - D1 콘솔(`fronttime-db` → **Console**)에 `migrations/0003_cloud_saves.sql` 전체를 붙여 넣고 **Execute**. `cloud_saves`, `cloud_codes`, `cloud_devices`, `cloud_usage` 4개 표가 생깁니다.
-- 또는 배포 뒤 게임 사이트의 개발자 도구 Console에서 관리자 마이그레이션(0001·0002·0003을 모두 실행합니다):
+- 또는 배포 뒤 게임 사이트의 개발자 도구 Console에서 관리자 마이그레이션(0001·0002·0003·0004를 모두 실행합니다. 0004는 래더 기록실 표 `ladder_lines`·`ladder_teams`이며, 이것도 서버가 처음 쓸 때 스스로 만듭니다):
 
   ```js
   fetch('/api/v1/admin/migrate',{method:'POST',headers:{Authorization:'Bearer 관리자키'}}).then(r=>r.json()).then(console.log)
   ```
 
-  `{ok: true, schema: 1, statements: 29}`처럼 나오면 됩니다.
+  `{ok: true, schema: 1, statements: 35}`처럼 나오면 됩니다.
 
 ### 7-3. 확인
 

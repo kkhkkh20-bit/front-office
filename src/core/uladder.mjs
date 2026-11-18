@@ -80,7 +80,7 @@ export function ulSlim(e) {
    → 단계별 리그 수·우승·승격·강등, 최고 단계, 마지막 덱이 그 단계에서 연달아 치른 리그 수(stay) */
 export function ulSummary(hist, cur, car) {
   hist = hist || []; const by = UL_TIERS.map(() => ({ n: 0, win: 0, up: 0, down: 0 })); let best = cur | 0;
-  for (const x of hist) { const b = by[x.tier | 0]; if (!b) continue; b.n++; if (x.rank === 1) b.win++; if (x.move === 'up') b.up++; if (x.move === 'down') b.down++; best = Math.max(best, x.tier | 0, x.to | 0); }
+  for (const x of hist) { const b = by[x.tier | 0]; if (!b) continue; b.n++; if (x.rank === 1) b.win++; if (x.move === 'up') b.up++; if (x.move === 'down') b.down++; if (x.ps === 'c') b.ch = (b.ch | 0) + 1; if (x.ps === 'r') b.ru = (b.ru | 0) + 1; best = Math.max(best, x.tier | 0, x.to | 0); }
   const last = hist[hist.length - 1]; let n = 0;
   if (last) for (let i = hist.length - 1; i >= 0 && hist[i].d === last.d && hist[i].tier === last.tier; i--) n++;
   const stay = last ? { tier: last.tier, n, name: last.name } : null;
@@ -89,7 +89,7 @@ export function ulSummary(hist, cur, car) {
 }
 /* 통산 칸(외부 검수 11-17: 기록 줄이 200리그로 잘리면 통산·최고 단계·배지가 줄어들던 것). 리그마다 한 줄씩 더하고, 예전 저장은 처음 한 번 남은 기록 줄로 만든다 */
 export function ulCareerAdd(car, x) { const c = car || { v: 1, n: 0, by: UL_TIERS.map(() => ({ n: 0, win: 0, up: 0, down: 0 })), best: 0, w: 0, l: 0, t: 0, rd: 0, bg: [] };
-  const b = c.by[x.tier | 0]; if (b) { b.n++; if (x.rank === 1) b.win++; if (x.move === 'up') b.up++; if (x.move === 'down') b.down++; }
+  const b = c.by[x.tier | 0]; if (b) { b.n++; if (x.rank === 1) b.win++; if (x.move === 'up') b.up++; if (x.move === 'down') b.down++; if (x.ps === 'c') b.ch = (b.ch | 0) + 1; if (x.ps === 'r') b.ru = (b.ru | 0) + 1; } /* 우승·준우승(포스트시즌, 사용자 11-18): 정규 1위(win)와 따로 */
   c.n++; c.best = Math.max(c.best | 0, x.tier | 0, x.to | 0); for (const f of ['w', 'l', 't', 'rd']) c[f] = (c[f] | 0) + (x[f] | 0); return c; }
 export function ulCareerInit(hist, best) { let c = null; for (const x of hist || []) c = ulCareerAdd(c, x); c = c || ulCareerAdd(null, { tier: -1 }); if (!(hist || []).length) c.n = 0; c.best = Math.max(c.best | 0, best | 0); c.bg = ulBadges(hist).filter(x => x.on).map(x => x.k); return c; }
 /* 리그 점수: 단계 × 100 + (10 − 순위) × 10. 루키 1위 90 · 마이너 10위 100 · 레전드 1위 490. 십의 자리 = 아래에 둔 팀 수라 단계를 넘어 한 줄로 비교된다 */
@@ -102,21 +102,24 @@ export function ulSeason(ms) { const n = Math.floor(((ms == null ? Date.now() : 
 export const UL_CAP_FROM = UL_SEASON_0 + 23 * UL_SEASON_MS; /* 연봉 상한 유예 끝(사용자 11-17): S23 시작 = 2026-11-30 0시 한국시간 */
 /* 시즌 기록에 리그 하나 더하기(새 객체). s: {id, label, n(리그 수), best(최고 단계: 승격 뒤 단계 포함), top(최고 리그 점수), sum(점수 합), win, up} */
 export function ulSeasonAdd(s, sid, label, x) { const o = s && s.id === sid ? Object.assign({}, s) : { id: sid, label, n: 0, best: 0, top: 0, sum: 0, win: 0, up: 0 };
-  const p = ulPts(x.tier, x.rank); o.n++; o.best = Math.max(o.best, x.tier | 0, x.to | 0); o.top = Math.max(o.top, p); o.sum += p; if (x.rank === 1) o.win++; if (x.move === 'up') o.up++; return o; }
+  const p = ulPts(x.tier, x.rank); o.n++; o.best = Math.max(o.best, x.tier | 0, x.to | 0); o.top = Math.max(o.top, p); o.sum += p; if (x.rank === 1) o.win++; if (x.move === 'up') o.up++; if (x.ps === 'c') o.ch = (o.ch | 0) + 1; if (x.ps === 'r') o.ru = (o.ru | 0) + 1; return o; }
 /* 배지(칭호): 기록(hist)만으로 정한다. 본게임에는 영향이 없다 */
 export const UL_BADGES = Object.freeze([
   ['up1', '첫 승격', '처음으로 승격했습니다.'],
-  ['win', '리그 우승', '리그를 1위로 마쳤습니다.'],
+  ['win', '정규 1위', '정규 시즌을 1위로 마쳤습니다.'],
   ['up3', '파죽지세', '세 리그 연달아 승격했습니다.'],
   ['keep5', '장기 집권', '같은 덱으로 같은 단계에서 5리그를 치렀습니다(1부 이상).'],
   ['back', '오뚝이', '강등된 바로 다음 리그에서 다시 승격했습니다.'],
   ['legend', '레전드', '레전드 단계에 올랐습니다.'],
-  ['king', '레전드 우승', '레전드 리그를 1위로 마쳤습니다.'],
+  ['king', '레전드 1위', '레전드 리그 정규 시즌을 1위로 마쳤습니다.'],
+  ['champ', '우승', '포스트시즌 결승에서 이겼습니다.'],
+  ['kingc', '레전드 우승', '레전드 리그 포스트시즌에서 우승했습니다.'],
 ]);
 export function ulBadges(hist, car) { hist = hist || []; const got = new Set((car && car.bg) || []); let run = 0, keep = 0; /* 통산 칸에 받아 둔 배지는 기록 줄이 잘려도 남는다 */
   hist.forEach((x, i) => { const pv = hist[i - 1];
     if (x.move === 'up') { got.add('up1'); run++; if (run >= 3) got.add('up3'); if (pv && pv.move === 'down') got.add('back'); } else run = 0;
     if (x.rank === 1) { got.add('win'); if ((x.tier | 0) === UL_TIERS.length - 1) got.add('king'); }
+    if (x.ps === 'c') { got.add('champ'); if ((x.tier | 0) === UL_TIERS.length - 1) got.add('kingc'); } /* 3연전 리그 포스트시즌(사용자 11-18) */
     if ((x.to | 0) === UL_TIERS.length - 1 || (x.tier | 0) === UL_TIERS.length - 1) got.add('legend');
     keep = pv && pv.d === x.d && pv.tier === x.tier ? keep + 1 : 1; if (keep >= 5 && (x.tier | 0) >= 2) got.add('keep5'); });
   return UL_BADGES.map(([k, n, d]) => ({ k, n, d, on: got.has(k) })); }
@@ -268,3 +271,29 @@ export function ulCosmetic(gl) {
   const g = Object.assign({ ds: 0, ws: 0 }, gl || {}), sc = g.ds + g.ws * 3; let f = 0; UL_FRAMES.forEach(([m], i) => { if (sc >= m) f = i; });
   const nx = UL_FRAMES[f + 1]; return { score: sc, frame: f, frameName: UL_FRAMES[f][1], next: nx ? { need: nx[0] - sc, name: nx[1] } : null, titles: UL_GTITLES.map(([k, n, t]) => ({ k, n, on: !!t(g) })) };
 }
+/* ===== 3연전 리그(사용자 11-18, docs/design/ladder-series-2026-11-18.md): 정규 9라운드(라운드마다 모든 덱이 다른 상대와 3연전, 팀당 27경기) → 상위 4팀 포스트시즌 =====
+   준결승 1위-4위·2위-3위 3전 2선승, 결승 5전 3선승. 승강은 정규 순위 그대로. 아래는 모두 G를 모르는 순수 함수(난수 없음) */
+export const UL_PS_SEEDS = 4, UL_PS_BEST = Object.freeze({ sf: 3, f: 5 });
+export const UL_PS_PTS = Object.freeze({ c: 30, r: 10 }); /* 리그 점수 보너스(화면·기록용, 승강과 무관): 우승 +30 · 준우승 +10 */
+export const UL_PS_NAME = Object.freeze({ c: '우승', r: '준우승', s: '4강' });
+/* 포스트시즌 대진: 정규 순위 키 4개 → [준결승1(1v4), 준결승2(2v3), 결승(승자끼리, 높은 시드가 a)] */
+export function ulPsBracket(seeds) { const S = (seeds || []).slice(0, UL_PS_SEEDS); if (S.length < UL_PS_SEEDS) return null;
+  return [{ id: 'SF1', k: 'sf', a: S[0], b: S[3], best: UL_PS_BEST.sf }, { id: 'SF2', k: 'sf', a: S[1], b: S[2], best: UL_PS_BEST.sf }, { id: 'F', k: 'f', a: null, b: null, best: UL_PS_BEST.f }]; }
+/* 결승 짝: 두 준결승 승자. 시드가 높은(정규 순위가 앞선) 팀이 a(1·3·5차전 홈) */
+export function ulPsFinal(seeds, w1, w2) { const i = k => seeds.indexOf(k); return i(w1) <= i(w2) ? [w1, w2] : [w2, w1]; }
+/* 시리즈 승자: games [[a점수, b점수], ...], best → 'a' | 'b' | null(아직) */
+export function ulPsWin(games, best) { const need = Math.floor(best / 2) + 1; let a = 0, b = 0; for (const g of games || []) { if (g[0] > g[1]) a++; else if (g[1] > g[0]) b++; } return a >= need ? 'a' : b >= need ? 'b' : null; }
+/* 피타고리안 기대 승률(지수 1.83) */
+export const ulPyth = (rs, ra) => rs + ra > 0 ? Math.pow(rs, 1.83) / (Math.pow(rs, 1.83) + Math.pow(ra, 1.83)) : 0.5;
+/* 예상 성적(A-3 "덱 전력 체감"): 두 덱 OVR(총) 차 d → 한 경기 승리 확률 1/(1+10^(−d/27)) (10 차이 ≈ 70%). 팀마다 상대 9팀과 3경기씩 더한 예상 승수, 그 순서가 예상 순위 */
+export const UL_EXP_K = 27;
+export const ulWinP = (a, b) => 1 / (1 + Math.pow(10, -((+a || 0) - (+b || 0)) / UL_EXP_K));
+export function ulExpect(ovrs, games) { const n = (ovrs || []).length, gp = games || 3, w = ovrs.map((o, i) => { let s = 0; for (let j = 0; j < n; j++) if (j !== i) s += gp * ulWinP(o, ovrs[j]); return Math.round(s * 10) / 10; });
+  const ord = w.map((x, i) => i).sort((a, b) => w[b] - w[a] || (+ovrs[b] || 0) - (+ovrs[a] || 0) || a - b), rank = w.map(() => 0); ord.forEach((i, k) => { rank[i] = k + 1; }); return { w, rank }; }
+/* 최근 흐름: 경기 결과 줄(1 승 · −1 패 · 0 무, 오래된 것부터) → 최근 5경기, 연속 기록 */
+export function ulForm(res) { const L = res || [], l5 = L.slice(-5); let n = 0; const last = L[L.length - 1];
+  if (last != null) for (let i = L.length - 1; i >= 0 && L[i] === last; i--) n++;
+  return { l5, strk: last == null ? '' : `${n}${last > 0 ? '연승' : last < 0 ? '연패' : '무'}`, run: last == null ? 0 : last > 0 ? n : last < 0 ? -n : 0 }; }
+/* 개인 순위 규정(27경기에 맞춤): 규정 타석 = 경기 × 3.1, 규정 이닝 = 경기 × 1.0 */
+export const ulQualPa = g => Math.round((g || 27) * 3.1), ulQualOuts = g => Math.round((g || 27) * 3);
+
