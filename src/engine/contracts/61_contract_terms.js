@@ -134,9 +134,15 @@ function cpromSeason(y){ for(const p of Object.values(G.players)){ const C=p.cpr
       else mail(who,`${p.name} 계약 약속 ${bad.length?'불이행':'이행'}`,`${y}시즌 약속을 확인했습니다.\n${L}\n\n${bad.length?`약속을 어겨 선수 기분이 떨어졌고${ag?', 에이전트와의 관계도 나빠졌습니다. 이 에이전트는 다음 협상에서 이 일을 기억합니다':''}.`:`약속을 지켜 선수 기분이 올랐습니다${ag?'. 에이전트도 다음 협상에서 이 일을 기억합니다':''}.`}`,{kind:'면담',imp:!!bad.length,ref:p.id,acts:[{l:'선수 보기',a:'player',v:p.id}]}); }
     else if(req&&p.team!=null){ try{ wire('구단 사정',`${tshort(p.team)} ${p.name}, 계약 약속 불이행에 불만 · 트레이드 요청`,{tid:p.team,ref:p.id}); }catch(e){} } } }
 function capBOf(p){ return ctOn(p)&&p.capB&&p.capB.until>=G.year?p.capB.a:0; }
-/* 예산 전망용 옵션 예상액: 시즌 중엔 지금 페이스로, 개막 전·비시즌엔 주전이면 달성한다고 본다 */
-function optProj(tid,y){ let s=y===G.year&&G.sea&&G.sea.optPd?G.sea.optPd[tid]||0:0; /* 시즌 중 이미 준 옵션 */ for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year)continue; { const xo=y>G.year&&p.extNext&&p.extNext.terms&&p.extNext.terms.opt; if(xo){ if(isRegular(p))s+=xo; continue; } } /* 합의한 다음 시즌 계약의 옵션(검수 11-09zzb) */ if(!ctOn(p)||!p.opt||p.opt.until<y||p.opt.paidY===y)continue; /* 전 구단이 이미 준 옵션은 다시 잡지 않는다(검수 11-09zzb) */ if(milServing(p)){ /* 며칠 뒤 돌아오는 대표팀 차출은 페이스대로 본다(검수 11-09zzb) */ if(y===G.year&&optEarned(p))s+=p.opt.a; continue; } const h=y===G.year?seasonTotal(p,G.year,'1군'):null; const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0;
-  const c=p.opt.c||optCrit(p), oc=OPT_CRIT[c]||OPT_CRIT[optCrit(p)]; const ok=oc[3]==='award'?(c==='as'?y===G.year&&optEarned(p):false):h&&g>=20?optMet(c,h,p,144/g):isRegular(p)&&oc[3]==='play'; if(ok)s+=p.opt.a; } return s; } /* 수상 옵션은 받기 전에는 잡지 않는다 */
+/* 예산 전망은 조회 시즌에 유효한 계약 한 건만 본다. 확정된 다음 계약은 옵션이 없어도 옛 조항을 대체한다. */
+function optForSeason(p,y){ if(y>G.year&&p.extNext){ const x=p.extNext,T=x.terms,from=G.year+1,until=from+Math.max(1,x.years||T&&T.years||1)-1; return y<=until&&T&&T.opt>0?{a:T.opt,from,until,c:T.optC||optCrit(p)}:null; }
+  const o=ctOn(p)&&p.opt; return o&&!(o.from>y)&&!(o.until<y)&&o.paidY!==y?o:null; }
+/* 현재·미래 계약의 종류별 전망은 같은 판정을 쓴다. 수상은 실제 선정 전에는 지출로 잡지 않는다. */
+function optProjMet(p,y,o){ if(milServing(p))return y===G.year&&optEarned(p); /* 짧은 대표팀 차출은 복무가 아니므로 평소 페이스를 쓴다 */
+  const c=o.c||optCrit(p),oc=OPT_CRIT[c]||OPT_CRIT[optCrit(p)]; if(oc[3]==='award')return c==='as'&&y===G.year&&optEarned(p);
+  const h=y===G.year?seasonTotal(p,G.year,'1군'):null,r=G.sea&&G.sea.rec&&G.sea.rec[p.team],g=r?r.w+r.l+(r.t||0):0;
+  return h&&g>=20?optMet(c,h,p,144/g):isRegular(p)&&oc[3]==='play'; }
+function optProj(tid,y){ let s=y===G.year&&G.sea&&G.sea.optPd?G.sea.optPd[tid]||0:0; /* 시즌 중 이미 준 옵션 */ for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year)continue; const o=optForSeason(p,y); if(o&&optProjMet(p,y,o))s+=o.a; } return s; }
 /* 옵션 달성 기준: 타자 400타석, 선발 120이닝, 불펜 50이닝(규정 달성형 옵션을 단순화) */
 /* 옵션 기준: 계약 때 보직(b 타자 400타석 · sp 선발 120이닝 · rp 불펜 50이닝). 저장된 기준이 없으면(예전 계약) 지금 보직 */
 function optCrit(p){ return p.isP?(isSPr(p)?'sp':'rp'):'b'; }
