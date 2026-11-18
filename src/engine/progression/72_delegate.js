@@ -22,15 +22,25 @@ const AUTO_SCOPE={schg:()=>[...new Set(Object.values(schList()).map(S=>S.area))]
 function autoScope(k){ const v=G&&G.auto&&G.auto[k]; return Array.isArray(v)?v.filter(x=>AUTO_SCOPE[k]().includes(x)):[]; }
 function autoScopeToggle(k,x){ if(!AUTO_SCOPE[k]||!AUTO_SCOPE[k]().includes(x))return ''; const L=autoScope(k), on=!L.includes(x); G.auto=G.auto||{}; G.auto[k]=on?L.concat([x]):L.filter(y=>y!==x); const nm=k==='schg'?`${x} 고교 후원`:k==='ovsb'?`${OVS[x].l} 일괄 신청`:`${OCN[x]} 교류 방문단`;
   if(!on)return `${nm} 자동 처리를 껐습니다.`; const r=autoRoutine([k],[x]); return `${nm}을(를) 매주 월요일 자동으로 합니다.${r?' 오늘 '+r+'.':' 오늘은 처리할 곳이 없습니다.'}`; }
-/* 매주 월요일(또는 켠 날 바로): 직접 할 때와 같은 일괄 함수로 처리하고 받은편지함 한 통·자동 처리 기록에 남긴다 */
-function autoRoutine(keys,only){ if(G.unemp)return ''; const L=[], D=[];
-  if(keys.includes('schg')&&autoOn('schg'))for(const a of only||autoScope('schg')){ const n=schGiftTargets(a).length; if(!n)continue; schGiftMany(a); L.push(`${a} 고교 ${n}곳 후원 ${money(10*n)}`); }
-  if(keys.includes('sisv')&&autoOn('sisv'))for(const c of only||autoScope('sisv')){ const T=sisVisitTargets(c); if(!T.length)continue; sisVisitMany(c); L.push(`${OCN[c]} 구단 ${T.length}곳 방문단 ${money(SIS_VIS*T.length)}`); D.push(...T.map(x=>x.n)); }
-  if(keys.includes('ovsb')&&autoOn('ovsb'))for(const k of only||autoScope('ovsb')){ const Y=G.ovsAutoY=G.ovsAutoY||{}; if(Y[k]===G.year)continue; const V=ovsBulkView(k); const ids=V.ok?V.rows.filter(r=>r.on).map(r=>r.id):[]; if(!ids.length)continue; const r=ovsBulk(k,ids); if(r.n){ Y[k]=G.year; L.push(`${OVS[k].l} ${r.n}명 신청 ${money(r.cost)}`); D.push(...r.names); } } /* 한 해 한 번: 단장이 뺀 선수 자리를 다시 채우지 않는다 */
+/* 자동 신청 완료는 구단·프로그램·연도에 귀속합니다. 옛 전역 표시는 예약으로 구단을 입증할 수 있을 때만 옮깁니다. */
+function trainingDelegationMigrate(){ if(!G||!G.ovsAutoY||typeof G.ovsAutoY!=='object')return;
+  for(const [k,y] of Object.entries(G.ovsAutoY)){ if(!OVS[k]||!Number.isInteger(y)||y<=0||y>G.year)continue; const clubs=new Set(), add=(tid,ids)=>{if((G.teams||[]).some(t=>t.id===+tid)&&(ids||[]).some(id=>G.players&&G.players[id]&&G.players[id].team===+tid))clubs.add(+tid);};
+    for(const x of G.ovs||[])if(x.prog===k){ const p=G.players&&G.players[x.pid],tid=x.tid??(p&&p.team); if(tid!=null&&p&&p.team===+tid&&(G.teams||[]).some(t=>t.id===+tid))clubs.add(+tid); }
+    for(const map of [G.ovsAi&&G.ovsAi.y===y?G.ovsAi[k]:null,G.ovsHold&&G.ovsHold.y===y?G.ovsHold[k]:null])for(const [tid,ids] of Object.entries(map||{}))add(tid,ids);
+    if(clubs.size===1){ const tid=[...clubs][0],B=G.ovsAutoClubY=G.ovsAutoClubY||{},C=B[tid]=B[tid]||{}; C[k]=Math.max(C[k]||0,y); }
+    else (G.ovsAutoUnknownY=G.ovsAutoUnknownY||{})[k]=y; /* 구단을 알 수 없는 옛 표시는 다른 구단의 신청을 막지 않습니다. */
+  } delete G.ovsAutoY; }
+function ovsAutoDone(k,tid=G.user){ return !!(G.ovsAutoClubY&&G.ovsAutoClubY[tid]&&G.ovsAutoClubY[tid][k]===G.year); }
+function ovsAutoMark(k){ const B=G.ovsAutoClubY=G.ovsAutoClubY||{},C=B[G.user]=B[G.user]||{}; C[k]=G.year; }
+/* 매주 월요일(또는 켠 날 바로): 실제 성공한 업무 종류와 범위를 기록합니다. */
+function autoRoutine(keys,only){ if(G.unemp)return ''; trainingDelegationMigrate(); const L=[], D=[], W=[];
+  if(keys.includes('schg')&&autoOn('schg'))for(const a of only||autoScope('schg')){ const n=schGiftTargets(a).length; if(!n)continue; schGiftMany(a); L.push(`${a} 고교 ${n}곳 후원 ${money(10*n)}`); W.push({k:'schg',x:a}); }
+  if(keys.includes('sisv')&&autoOn('sisv'))for(const c of only||autoScope('sisv')){ const T=sisVisitTargets(c); if(!T.length)continue; sisVisitMany(c); L.push(`${OCN[c]} 구단 ${T.length}곳 방문단 ${money(SIS_VIS*T.length)}`); D.push(...T.map(x=>x.n)); W.push({k:'sisv',x:c}); }
+  if(keys.includes('ovsb')&&autoOn('ovsb'))for(const k of only||autoScope('ovsb')){ if(ovsAutoDone(k))continue; const V=ovsBulkView(k); const ids=V.ok?V.rows.filter(r=>r.on).map(r=>r.id):[]; if(!ids.length)continue; const r=ovsBulk(k,ids); if(r.n){ ovsAutoMark(k); L.push(`${OVS[k].l} ${r.n}명 신청 ${money(r.cost)}`); D.push(...r.names); W.push({k:'ovsb',x:k}); } } /* 단장이 뺀 자리를 그 구단에서 같은 해 다시 채우지 않습니다. */
   if(keys.includes('stalk')&&autoOn('stalk')){ const T=[...Object.values(G.coach?.[G.user]||{}),...(G.coachX||[])].filter(Boolean).map(s=>({kind:'coach',id:s.id,s})).concat((G.scouts||[]).filter(Boolean).map(s=>({kind:'scout',id:s.id,s})),(G.analysts||[]).filter(Boolean).map(s=>({kind:'analyst',id:s.id,s}))).map(t=>({...t,topic:stalkTopicFor(t.s)})).filter(t=>t.id!=null&&!staffTalkCheck(t.kind,t.id,t.topic));
-    for(const tp of ['listen','coord']){ const U=T.filter(t=>t.topic===tp).map(({kind,id})=>({kind,id})); if(!U.length)continue; const r=staffTalkBulk(U,tp); if(r.success.length){ L.push(`직원 ${r.success.length}명 ${tp==='coord'?'감독과 업무 조율':'희망 보직 면담'}`); D.push(...r.success.map(x=>x.name)); } } }
-  if(keys.includes('fall')&&autoOn('fall')){ const r=fallAutoApply(); if(r){ L.push(r); D.push(...fallBest(G.user,8).map(p=>p.name)); } }
-  if(!L.length)return ''; const t=L.join(' · '); autoLogAdd('정기 업무(운영팀)',t);
+    for(const tp of ['listen','coord']){ const U=T.filter(t=>t.topic===tp).map(({kind,id})=>({kind,id})); if(!U.length)continue; const r=staffTalkBulk(U,tp); if(r.success.length){ L.push(`직원 ${r.success.length}명 ${tp==='coord'?'감독과 업무 조율':'희망 보직 면담'}`); D.push(...r.success.map(x=>x.name)); W.push({k:'stalk',x:tp}); } } }
+  if(keys.includes('fall')&&autoOn('fall')){ const r=fallAutoApply(); if(r){ L.push(r); D.push(...fallBest(G.user,8).map(p=>p.name)); W.push({k:'fall'}); } }
+  if(!L.length)return ''; const t=L.join(' · '); autoLogAdd('정기 업무(운영팀)',t,'',W);
   mail('운영팀',`자동 처리: ${L.length===1?L[0]:L.length+'건'}`,`맡기신 정기 업무를 처리했습니다.\n${L.join('\n')}${D.length?`\n\n대상: ${D.join(', ')}`:''}\n\n비용과 횟수 제한은 직접 할 때와 같습니다. 설정 > 권한에서 끌 수 있습니다.`,{kind:'운영',acts:[{l:'권한 설정',a:'go',v:'cfg:auth'}]});
   return t; }
 /* 희망 보직 면담 자동 처리의 면담 방식(국사왕 11-18): listen 단장과 대화 · coord 감독과 업무 조율 · auto 자동 판단. 효과는 직접 면담과 같다(staffTalk) */
@@ -44,7 +54,7 @@ function autoSet(k,v){ G.auto=G.auto||{}; if(AUTO_SCOPE[k]){ G.auto[k]=v===true?
   if(k==='scout'){ G.scoutAuto=!!v; G._scErr=null; if(v)try{ scoutPlanApply(true); }catch(e){ G._scErr=String(e&&e.message||e); }
     G.tripAuto=!!v; if(v)try{ const w0=tripPendNow()?G.tripPend.w0:tripWk0(G.day); tripApply(G.user,tripPlanWeek(G.user,w0),w0); delete G.tripPend; }catch(e){ console.error(e); } } } /* 출장도 함께: 맡기면 걸린 출장 안을 (바뀐 배치로 다시 짜서) 바로 보내고, 가져오면 출장 안 메일로 직접 정한다(사용자 11-17). 해시만 써서 난수 소비 없음 */
 function autoAll(v){ for(const [k] of AUTO_AREAS)if(!AUTO_OPTIN.has(k)||!v)autoSet(k,v); G.autoMode=v?'easy':'self'; }
-function autoLogAdd(t,c,r){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t,c,r:r||'',k:'auto'}); if(G.autoLog.length>20)G.autoLog.length=20; }
+function autoLogAdd(t,c,r,work){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t,c,r:r||'',k:'auto',tid:G.user,...(work&&work.length?{work}: {})}); if(G.autoLog.length>20)G.autoLog.length=20; }
 
 /* 국내 연봉: 12월 5일 1차 제시(중간값), 12월 19일 남은 선수에게 다시 제시, 1월 5일 확정 */
 function autoSalRound(first){ const C=G.contract; if(!C||C.done)return; salTalkInit(); let ok=0, left=0; if(first)C.salR1=G.day; else C.salR2=G.day; /* 차수별 처리일: 예약 처리와 수동 넘기기가 겹쳐 두 번 부르지 않게(검수 11-07) */
@@ -70,7 +80,12 @@ function autoConfirm(){ const C=G.contract; if(!C||C.done)return; if(!autoOn('sa
   if(pend.length&&!autoOn('fre')){ C.autoWait={d:G.day,f:1,why:`외국인 ${pend.length}명(${pend.map(id=>G.players[id].name).join(', ')}) 재계약 미결정으로 확정 대기 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`}; return; }
   const r=confirmContracts(); if(r){ C.autoWait={d:G.day,why:String(r)}; return; } delete C.autoWait; C.autoDone={d:G.day,n:C.ended.filter(id=>{ const p=G.players[id]; return p&&p.team===G.user&&!p.hold; }).length,h:C.ended.filter(id=>G.players[id]&&G.players[id].hold).length,f:C.foreignEnd.filter(id=>!C.foreignDrop.includes(id)).length}; /* 결별한 선수는 빼고 센다(검수 11-07) */ autoLogAdd('연봉 계약 확정(운영팀)','국내·외국인 계약을 확정했습니다.'); }
 /* 위임 업무 처리 상태(처리 예정·완료·대기와 이유). 지금은 연봉 계약 */
-function delegStatus(k){ if(AUTO_OPTIN.has(k)&&autoOn(k)){ const L=(G.autoLog||[]).find(x=>x.t==='정기 업무(운영팀)'); return (AUTO_SCOPE[k]?`처리 범위: ${autoScope(k).map(x=>k==='sisv'?OCN[x]:k==='ovsb'?OVS[x].l:x).join(', ')}`:'처리 범위: 면담할 수 있는 모든 직원')+(L?` · 최근 처리 ${dmd(L.d)}`:' · 다음 월요일에 처리합니다'); } if(k!=='sal'||!autoOn('sal'))return ''; const C=G.contract; if(!C)return '';
+function delegStatus(k){ if(AUTO_OPTIN.has(k)&&autoOn(k)){ if(G.unemp)return '일시 중지: 구단을 맡고 있을 때 처리합니다'; if(k==='fall')return fallAutoStatus();
+    const L=(G.autoLog||[]).find(x=>x.tid===G.user&&Array.isArray(x.work)&&x.work.some(w=>w.k===k&&(!AUTO_SCOPE[k]||autoScope(k).includes(w.x))));
+    const scope=AUTO_SCOPE[k]?autoScope(k).map(x=>k==='sisv'?OCN[x]:k==='ovsb'?OVS[x].l:x).join(', '):'면담할 수 있는 모든 직원';
+    if(k==='ovsb'){ const states=autoScope(k).map(x=>`${OVS[x].l}: ${ovsAutoDone(x)?'올해 자동 신청 완료':ovsOpen(x)?'다음 월요일에 남은 자리를 확인합니다':'신청 기간이 아닙니다'}`); return `처리 범위: ${scope} · ${states.join(' · ')}${L?` · 최근 처리 ${dmd(L.d)}`:''}`; }
+    return `처리 범위: ${scope}`+(L?` · 최근 처리 ${dmd(L.d)}`:' · 다음 월요일에 처리할 대상을 확인합니다'); }
+ if(k!=='sal'||!autoOn('sal'))return ''; const C=G.contract; if(!C)return '';
   if(C.done)return C.autoDone?`처리 완료: ${dmd(C.autoDone.d)} 국내 ${C.autoDone.n}명·외국인 ${C.autoDone.f}명 계약 확정${C.autoDone.h?` · 미계약 ${C.autoDone.h}명`:''}`:'처리 완료: 올해 연봉 계약 확정';
   if(C.autoWait){ if(C.autoWait.f){ const pend=fRePending(); if(!pend.length||autoOn('fre'))return `처리 예정: 외국인 결정이 끝나 ${G.day<dnum(C.y+1,1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; return `대기: 외국인 ${pend.length}명(${pend.map(id=>G.players[id]?G.players[id].name:'?').join(', ')}) 재계약 미결정 — 재계약 합의 또는 결별을 정하면 다음 날 확정합니다`; } return `대기: ${C.autoWait.why}`; } /* 지난 사유가 아니라 지금 남은 사유 */ return `처리 예정: ${G.day<dnum(C.y+1,1,5)?'1월 5일':'다음 날'} 운영팀이 확정`; } /* 12월에는 KD(1,5)가 지난 1월이라 '다음 날'로 나왔다(검수 11-06) */
 function autoDaily(day){ if(!G.auto||G.unemp)return; if(autoOn('cvac'))try{ coachVacUser('코치진 공백 보강(위임)'); }catch(e){} /* 빈자리가 생기면 다음 날까지(AI는 생기는 날 바로) */ if(dobj(day).w===1&&G.autoWk!==day){ G.autoWk=day; try{ autoRoutine(['schg','sisv','stalk','ovsb','fall']); }catch(e){} }
