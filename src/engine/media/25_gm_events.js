@@ -18,7 +18,8 @@ function evPolOf(k){ const v=G&&G.evPol&&G.evPol[k]; return EV_POL[k]&&EV_POL[k]
 function evAutoIdx(e){ const h=e&&EVH[e.k]; if(h&&h.autoPick){ let i=null; try{ i=h.autoPick(e,evPolOf(e.k)||'judge'); }catch(err){ i=null; } if(Number.isInteger(i)&&i>=0&&i<e.opts.length)return i; } return e.def; }
 function evDelegOn(k){ if(!G||EV_KEY.has(k)||!EV_NAME[k])return false; { const P=evPolOf(k); if(P)return P!=='self'; } const D=G.deleg; const v=D&&D[k]; if(v!=null)return !!v; return !!D&&EV_LATE.has(k)&&Object.keys(EV_NAME).every(x=>EV_LATE.has(x)||D[x]); }
 /* 일상 종류(EV_NAME)라도 이번 건은 단장이 직접 정하는 결정: 비서 위임·일괄 맡기기에서 빠진다. 레전드 급 은퇴 결정은 예전 저장의 미결 건도 같은 기준(피드백 11-18) */
-function evOwn(e){ return !!e&&(!!e.key||(e.k==='ret'&&!!e.data&&(!!e.data.leg||e.data.rn!=null))); }
+function evOwn(e){ return !!e&&(!!e.key||(e.k==='ret'&&!!e.data&&(!!e.data.leg||e.data.rn!=null||(G.ob||[]).some(o=>o.id===e.data.ob&&o.ys>=5)))); }
+function evChoiceLabel(e,i=e.pick??e.def){ return e.actualChoice&&e.actualChoice.i===i?e.actualChoice.l:e.opts[i]?.l||''; }
 function evNew(k,title,sit,opts,o){ evInit(); o=o||{};
   const e={id:'e'+(G.evSeq=(G.evSeq||0)+1),k,day:G.day,exp:G.day+(o.exp||5),title,sit,opts:opts.map(x=>({l:x.l,fx:x.fx})),def:o.def??opts.length-1,data:o.data||{},ref:o.ref??null,from:o.from||'운영팀',done:false}; if(o.key)e.key=true; /* 일상 종류라도 이번 건은 단장이 직접(레전드 은퇴 결정, 피드백 11-18) */
   { const pid=e.data&&e.data.pid!=null?e.data.pid:null; const q=pid!=null?G.players[pid]:null; if(q&&q.team===G.user)e.pt=G.user; } /* 우리 선수에 대한 결정: 결정할 때도 그 선수가 우리 소속인지 다시 본다(evPick) */
@@ -37,10 +38,10 @@ function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.don
   if((!auto||EVH[e.k]?.canAuto)&&EVH[e.k]&&EVH[e.k].can){ const why=EVH[e.k].can(e,i); if(why){ if(auto&&EVH[e.k].canLate&&!e.done&&!e.waitLegal){ e.waitLegal={d:G.day,why}; const m=(G.mail||[]).find(m=>m.id===e.mid); if(m)m.body+=`\n\n[대기] ${why}. 대체 계약은 유지합니다. 선수 구성을 조정한 뒤 이 메일에서 다시 선택해 주세요.`; } return why; } } /* 지금 고를 수 없는 선택은 결정으로 남기지 않고 이유를 알린다. canAuto 종류는 자동 실행도 같은 사전 검사를 한다. */
   e.done=true; e.pick=i; if(auto)e.auto=true;
   let r=''; try{ r=(EVH[e.k]&&EVH[e.k].pick(e,i))||''; }catch(err){ r=''; } if(Number.isInteger(e.pick)&&e.pick!==i&&e.opts[e.pick])i=e.pick; /* 처리 중 실제로 바뀐 선택(정원이 차 복귀 불가 등)으로 기록(검수 11-07) */
-  e.res=r; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; try{ if(EVH[e.k]&&EVH[e.k].acts)m.acts=EVH[e.k].acts(e,i)||[]; }catch(err){} /* 결정 뒤에도 남는 버튼(창단 단장 수락 취소) */ m.read=true; m.imp=false; m.body+=`\n\n[결정] ${e.opts[i].l}${e.deleg?' (비서가 맡은 일)':auto?' (기한이 지나 자동 처리)':''}${e.deleg&&e.why?`\n${e.why}`:''}${r?`\n${r}`:''}`; }
-  if(auto&&!G.unemp){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t:e.title,c:e.opts[i].l,r:r||'',k:e.k,why:e.deleg?'deleg':'exp'}); if(G.autoLog.length>20)G.autoLog.length=20; } /* 자동 처리 결과는 따로 메일을 보내지 않고 주간 요약에 한 줄로 모은다 */
+  e.res=r; const choice=evChoiceLabel(e,i); const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; try{ if(EVH[e.k]&&EVH[e.k].acts)m.acts=EVH[e.k].acts(e,i)||[]; }catch(err){} /* 결정 뒤에도 남는 버튼(창단 단장 수락 취소) */ m.read=true; m.imp=false; m.body+=`\n\n[결정] ${choice}${e.deleg?' (비서가 맡은 일)':auto?' (기한이 지나 자동 처리)':''}${e.deleg&&e.why?`\n${e.why}`:''}${r?`\n${r}`:''}`; }
+  if(auto&&!G.unemp){ (G.autoLog=G.autoLog||[]).unshift({d:G.day,t:e.title,c:choice,r:r||'',k:e.k,why:e.deleg?'deleg':'exp'}); if(G.autoLog.length>20)G.autoLog.length=20; } /* 자동 처리 결과는 따로 메일을 보내지 않고 주간 요약에 한 줄로 모은다 */
   G.stops=(G.stops||[]).filter(x=>x.id!==e.mid);
-  G.evlog.unshift({d:G.day,y:G.year,t:e.title,c:e.opts[i].l,r,k:e.k,id:e.id,auto:!!auto}); if(G.evlog.length>80)G.evlog.length=80;
+  G.evlog.unshift({d:G.day,y:G.year,t:e.title,c:choice,r,k:e.k,id:e.id,auto:!!auto}); if(G.evlog.length>80)G.evlog.length=80;
   return r; }
 function evFollow(days,k,data){ evInit(); G.evf.push({day:G.day+days,k,data,tid:G.user}); } /* tid: 결정한 구단(이직해도 구단 몫 후속은 그 구단에, 검수 11-09za) */
 function evResult(evId,txt){ const L=(G.evlog||[]).find(x=>x.id===evId); if(L)L.f=txt; }
@@ -161,14 +162,14 @@ const EVH={
       let t=`기자회견 뒤 10일: ${w}승 ${l}패.`; if(d.i===0&&!good){ news('언론',`연패 탈출 실패… 단장 책임론`,`단장이 감독을 공개적으로 신임했지만 반등은 없었습니다.`,-2); t+=' 반등이 없어 단장 책임론 기사가 나왔습니다.'; } else if(good)t+=' 분위기 반전에 성공했습니다.';
       evResult(d.ev,t); note('언론',t); } },
   /* 베테랑 멘토 */
-  vet:{ w:.6, check(){ if((G.mentor&&G.mentor.y===G.year)||G.vetAsk===G.year)return null; const L=playersOf(G.user).filter(p=>{ initPers(p); return p.age>=33&&p.pers.pro>=13&&!p.foreign; }).sort((a,b)=>b.age-a.age); return L[0]||null; },
-    make(p){ G.vetAsk=G.year; evNew('vet',`${p.name}의 제안`,`베테랑 ${p.name}(${p.age}세)이(가) 젊은 선수들을 따로 챙기고 싶다고 합니다. 코치진도 반기는 분위기입니다.`,
+  vet:{ w:.6, check(){ if(ME()<0||mentorWasPaid(ME())||vetProposalYear(ME())===G.year)return null; const L=playersOf(G.user).filter(p=>{ initPers(p); return p.age>=33&&p.pers.pro>=13&&!p.foreign; }).sort((a,b)=>b.age-a.age); return L[0]||null; },
+    make(p){ (G.vetAskByClub=G.vetAskByClub||{})[ME()]=G.year; evNew('vet',`${p.name}의 제안`,`베테랑 ${p.name}(${p.age}세)이(가) 젊은 선수들을 따로 챙기고 싶다고 합니다. 코치진도 반기는 분위기입니다.`,
       [{l:'멘토 역할 맡기기 (수당 5천만)',fx:'올 시즌 24세 이하 선수 성장이 조금 빨라지고, 본인 기분이 오릅니다.'},
        {l:'선수로 집중해 달라',fx:'변화가 없습니다. 본인은 조금 서운해합니다.'}],{ref:p.id,face:p.id,from:p.name,data:{pid:p.id},def:1}); },
     /* 비서 기준: 자동 판단은 AI 구단 멘토 지정과 같은 함수(mentorWhy: 긴축·쓸 수 있는 돈·24세 이하 선수) */
     autoPick(e,pol){ if(pol==='yes')return 0; if(pol==='no')return 1; const why=mentorWhy(G.user); e.why=why?`자동 판단: ${why}`:'자동 판단: 수당을 낼 여유가 있고 24세 이하 선수가 있음'; return why?1:0; },
     pick(e,i){ const p=evP(e.data.pid); if(!p||p.team!==G.user)return '';
-      if(i===0){ G.mentor={id:p.id,y:G.year}; G.spend.etc=(G.spend.etc||0)+50; p.mor=clamp(p.mor+8,0,100); return `${p.name} 멘토 지정. 올 시즌 젊은 선수들 성장에 도움이 됩니다. 수당 5천만.`; }
+      if(i===0){ mentorRemember(ME(),{id:p.id,y:G.year}); team(ME()).mentorDoneY=G.year; G.spend.etc=(G.spend.etc||0)+50; p.mor=clamp(p.mor+8,0,100); return `${p.name} 멘토 지정. 올 시즌 젊은 선수들 성장에 도움이 됩니다. 수당 5천만.`; }
       p.mor=clamp(p.mor-3,0,100); return `${p.name} 기분 하락.`; } },
   /* 마케팅 행사 */
   fan:{ w:.6, check(){ const n=(G.evlog||[]).filter(x=>x.k==='fan'&&x.y===G.year).length; return n<2&&G.pr.fan<56&&!team(G.user).indie?{fan:Math.round(G.pr.fan)}:null; },

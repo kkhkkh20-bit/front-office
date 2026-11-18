@@ -80,7 +80,7 @@ function coachDevMult(p){ // 성장 배율: 1군에서 많이 뛴 선수는 1군
   if(p.team==null)return 1; const C=coachesOf(p.team); const tid=p.team; const s=oneShare(p); /* 1군 출전 비율(playShare는 성장 가중치라 최소 0.8이어서 1·2군 구분에 쓸 수 없다) */
   const v1=(p.isP?(isSPr(p)?effC(C.pc,tid,'dv')*.55+effC(C.bp,tid,'dv')*.1:effC(C.pc,tid,'dv')*.4+effC(C.bp,tid,'dv')*.25)+effC(C.cc,tid,'dv')*.1:effC(C.bc,tid,'dv')*.55+effC(C.ab,tid,'dv')*.2)+effC(C.hc,tid,'dv')*.25, v2=(p.isP?effC(C.fp,tid,'dv')*.5+effC(C.rs,tid,'dv')*.1:effC(C.fb,tid,'dv')*.35+effC(p.pos==='C'?C.fc:C.fd,tid,'dv')*.15+effC(C.rb,tid,'dv')*.1)+effC(C.fm,tid,'dv')*.4;
   const v=v1*s+v2*(1-s);
-  return clamp(1+(v-55)/110,.7,1.35)*axBoost(p)*(p.age<=24&&(M=>M&&M.y===G.year)(p.team===G.user?G.mentor:((G.clubT||{})[p.team]||{}).mentor)?1.05:1); } /* 멘토 지정은 구단에 남는다: 떠난 구단 젊은 선수도 그해 보너스(검수 11-09zs) */
+  return clamp(1+(v-55)/110,.7,1.35)*axBoost(p)*(p.age<=24&&activeMentor(p.team)?1.05:1); } /* 단장만 떠나면 지정은 구단에 남고, 멘토 선수도 떠나면 성장 보너스는 끝난다(검수 11-09zs) */
 /* 계약 시작 시즌: 정규시즌이 끝난 뒤(9월 이후) 맺은 계약은 다음 시즌부터 센다. 그래서 이번 겨울 차감에서 빠진다(cs: 시작 시즌) */
 function ctStartS(){ return (dobj(G.day).m>=9&&G.cal&&G.day>G.cal.end)?G.year+1:G.year; }
 function staffCt(x,years,start){ x.yrs=years; x.cs=start??ctStartS(); x.ce=x.cs+years-1; x.jy=x.cs; return x; } /* jy: 합류 시즌. 새 계약은 시작 시즌부터 일한다. 지금 일하는 사람의 재계약은 staffRenew */

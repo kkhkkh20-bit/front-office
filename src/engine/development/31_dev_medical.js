@@ -18,7 +18,9 @@ const OVS={abl:{l:'호주리그 파견',c:30,fix:100,lim:6,P:['stf','sta'],B:['c
   kac:{l:'국내 피칭·타격 아카데미',c:12,fix:20,lim:6,P:['ctl','stf'],B:['con','eye'],big:.07,good:.38,inj:.02,form:.05,close:[12,10],go:[12,15],end:[1,20],d:'12월 중순부터 5주 국내 사설 아카데미에서 영상·트래킹 장비로 투구·스윙을 다듬습니다. 비용이 적고 가까워 부담이 없지만 크게 느는 경우는 드뭅니다.'}};
 const OVSK=Object.keys(OVS);
 function ovsOpen(k){ const d=dobj(G.day); if(d.m<9)return false; if(!k)return Object.keys(OVS).some(x=>ovsOpen(x)); const c=OVS[k].close; return d.m<c[0]||(d.m===c[0]&&d.d<=c[1]); }
-function fallOpen(){ const d=dobj(G.day); return d.m===9||(d.m===10&&d.d<=10); }
+/* 신청 기간·알림·달력은 같은 날짜를 쓴다. 과거/미래 연도 조회도 세계와 난수를 바꾸지 않는다. */
+function fallApplicationDates(y){ const close=dnum(y,10,10); return {open:dnum(y,9,1),warn:close-3,close}; }
+function fallOpen(){ const D=fallApplicationDates(dobj(G.day).y); return G.day>=D.open&&G.day<=D.close; }
 function ovsElig(p,k){ return !!p&&!p.foreign&&!p.prospect&&!(p.joinY>G.year)&&!p.hold&&p.age<=30&&!(p.injOut>0)&&!ovsBulkSkip(p)&&!(k&&ovsEnlBlock(p,k)); }
 /* 연수 기간 안에 입대가 잡힌 선수(커뮤니티 11-13 리아네트: 신청해 놓고 출발 날 취소됐다): 신청 단계에서 막고 화면에 이유를 보인다 */
 function ovsEnlBlock(p,k){ const m=p&&p.mil; return !!(m&&m.from!=null&&!m.done&&!m.exempt&&(m.until||0)>G.day&&OVS[k]&&m.from<=ovsEndD(k)); }
@@ -232,12 +234,12 @@ function vetSelfTrain(young){ const out=[]; const V=domestic(G.user).filter(p=>p
 /* 신청 알림(질수없뜸 11-12: 매번 신청 기간을 놓침): 가을 교육리그는 신청이 열린 날(9/1)과 마감 사흘 전, 해외 연수는 신청이 열린 날과 프로그램마다 마감 사흘 전에 아직 아무도 안 보냈으면 알린다 */
 /* 가을 교육리그 안내 본문: 효과가 큰 참가 예정 선수와 신청 기간 */
 function fallMailBody(lead){ const n=fallPool(G.user).length, B=fallBest(G.user,8); return `${lead}\n\n25세 이하 국내 선수 ${n}명(능력이 낮은 순 최대 22명)이 10월 11일부터 한 달 실전을 치르고 11월 15일 돌아옵니다.${B.length?`\n효과가 클 선수(더 클 여지가 큰 순): ${B.map(p=>`${p.name}(${p.age}세·${posLabel(p)})`).join(', ')}`:'\n지금은 참가할 25세 이하 선수가 없습니다.'}\n\n${Object.values(FALL).map(v=>`${v.l} ${money(v.c)}: ${v.d}`).join('\n')}\n\n신청 기간: 9월 1일~10월 10일. 정하지 않으면 불참합니다. 설정 > 권한의 '가을 교육리그 자동 신청'을 켜면 육성팀이 대신 신청합니다.`; }
-function devRemindDaily(){ if(G.unemp||G.user==null)return; const o=dobj(G.day), y=G.year, act=[{l:'해외 연수·교육리그 보기',a:'go',v:'staff:dev'}], fAct=[{l:'가을 교육리그 신청하기',a:'fallGo',v:''}];
-  if(o.m===9&&o.d===1){ const done=G.fall&&G.fall.y===y; let auto=''; if(!done&&autoOn('fall')){ auto=fallAutoApply(); if(auto)autoLogAdd('가을 교육리그(육성팀)',auto,'',[{k:'fall'}]); }
+function devRemindDaily(){ if(G.unemp||G.user==null)return; const o=dobj(G.day), y=G.year, fallD=fallApplicationDates(o.y), act=[{l:'해외 연수·교육리그 보기',a:'go',v:'staff:dev'}], fAct=[{l:'가을 교육리그 신청하기',a:'fallGo',v:''}];
+  if(G.day===fallD.open){ const done=G.fall&&G.fall.y===y; let auto=''; if(!done&&autoOn('fall')){ auto=fallAutoApply(); if(auto)autoLogAdd('가을 교육리그(육성팀)',auto,'',[{k:'fall'}]); }
     const cur=G.fall&&G.fall.y===y?(G.fall.k?FALL[G.fall.k].l+' 참가':'불참'):'';
     mail('육성팀',`${y} 가을 교육리그 신청`,fallMailBody(auto?`맡기신 대로 ${auto}을(를) 했습니다. 기간 안에는 직접 바꿀 수 있습니다.`:cur?`올해 가을 교육리그는 ${cur}으로 정해져 있습니다. 기간 안에는 바꿀 수 있습니다.`:`가을 교육리그 신청이 오늘 열렸습니다(10월 10일까지).${autoOn('fall')?' 쓸 수 있는 돈이 모자라거나 참가할 선수가 없어 자동 신청은 하지 않았습니다.':''}`),{kind:'육성',imp:!auto&&!cur,acts:fAct}); }
   if(o.m===9&&o.d===1){ mail('육성팀',`${y} 해외 연수·아카데미 신청 시작`,`해외 연수·아카데미 신청이 오늘 시작됐습니다(가을 교육리그는 따로 보낸 안내를 확인해 주세요). 프로그램마다 마감이 다릅니다: ${OVSK.map(k=>`${OVS[k].l} ${OVS[k].close[0]}/${OVS[k].close[1]}`).join(', ')}.`,{kind:'육성',acts:act}); return; }
-  if(o.m===10&&o.d===7&&!(G.fall&&G.fall.y===y)){ const auto=autoOn('fall')?fallAutoApply():''; if(auto){ autoLogAdd('가을 교육리그(육성팀)',auto,'',[{k:'fall'}]); note('육성',`맡기신 대로 ${auto}을(를) 했습니다(마감 10월 10일).`); }
+  if(G.day===fallD.warn&&!(G.fall&&G.fall.y===y)){ const auto=autoOn('fall')?fallAutoApply():''; if(auto){ autoLogAdd('가을 교육리그(육성팀)',auto,'',[{k:'fall'}]); note('육성',`맡기신 대로 ${auto}을(를) 했습니다(마감 10월 10일).`); }
     else mail('육성팀','가을 교육리그 신청 마감 사흘 전',fallMailBody('가을 교육리그 신청이 10월 10일에 닫힙니다. 아직 참가 여부를 정하지 않았습니다(정하지 않으면 불참).'),{kind:'육성',imp:true,acts:fAct}); }
   for(const k of OVSK){ const c=OVS[k].close; const dd=dnum(y,c[0],c[1])-G.day; if(dd!==3)continue; const n=(G.ovs||[]).filter(x=>x.prog===k).length; if(n>=ovsLim(OVS[k]))continue;
     mail('육성팀',`${OVS[k].l} 신청 마감 사흘 전`,`${OVS[k].l} 신청이 ${c[0]}월 ${c[1]}일에 닫힙니다. 지금 ${n}/${ovsLim(OVS[k])}명 신청했습니다.`,{kind:'육성',acts:act}); } }
