@@ -15,7 +15,7 @@ const lfOvr=p=>{ if(!p)return null; try{ const r=scoutReport(p); return r&&r.cur
 /* 카드 하나: 얼굴(타순 원·OVR 칩) + 이름표(이름·포지션). act면 눌러서 선수 화면 */
 function lfCard(x,act){ const [sx,sy]=LF_SPOT[x.pos]||LF_SPOT.DH, p=x.p, nm=p?p.name:x.name||'', ov=lfOvr(p), tag=x.pos==='P'?'선발':x.no||'', pk=x.pos==='P'?'선발투수':x.pos==='DH'?'지명타자':POSK[x.pos]||x.pos;
   const at=act&&p?`button type="button" data-a="player" data-v="${p.id}"`:'div';
-  return `<${at} class="lf-m${x.pos==='P'?' sp':''}${x.me?' me':''}" style="left:${(sx/LF_W*100).toFixed(2)}%;top:${(sy/LF_H*100).toFixed(2)}%" data-pos="${x.pos}" title="${esc(pk)} ${esc(nm)}${ov!=null?' · 현재 능력 '+dv(ov):''}"><span class="lf-ph">${p?avImg(p,true):`<span class="av ini big">${esc(nm.slice(0,1)||'?')}</span>`}<i class="lf-no">${tag}</i><span class="lf-ov">${rchip(ov)}</span></span><span class="lf-nb"><b>${esc(nm)}</b><em>${esc(x.pos==='P'?'선발':POSS[x.pos]||x.pos)}</em></span></${at.split(' ')[0]}>`; }
+  return `<${at} class="lf-m${x.pos==='P'?' sp':''}${x.me?' me':''}" style="left:${(sx/LF_W*100).toFixed(2)}%;top:${(sy/LF_H*100).toFixed(2)}%" data-pos="${x.pos}" title="${esc(pk)} ${esc(nm)}${ov!=null?' · 현재 능력 '+dv(ov):''}"><span class="lf-ph"${p?` data-fpid="${p.id}" data-fbig="1"`:''}>${p?avImg(p,true):`<span class="av ini big">${esc(nm.slice(0,1)||'?')}</span>`}<i class="lf-no">${tag}</i><span class="lf-ov">${rchip(ov)}</span></span><span class="lf-nb"><b>${esc(nm)}</b><em>${esc(x.pos==='P'?'선발':POSS[x.pos]||x.pos)}</em></span></${at.split(' ')[0]}>`; }
 /* o={tid, rows:[{p,name,pos,no}], sp:{p,name}, sub, act, note} → 경기장 보드 한 장 */
 function lineupField(o){ const tid=o.tid, col=typeof cTeamCol==='function'?cTeamCol(tid):'#c33';
   const cards=(o.rows||[]).map(r=>lfCard(r,o.act)).join('')+(o.sp?lfCard({...o.sp,pos:'P'},o.act):'');
@@ -35,6 +35,14 @@ function lineupFieldPanel(tid){ let op=null; if(tid===G.user){ try{ const x=next
   const cur=op!=null&&UI.lufTeam===op?op:tid;
   const tabs=op!=null?`<div class="chips optrow lf-tabs" role="group" aria-label="구단">${[tid,op].map(t=>`<button type="button" data-a="lufTeam" data-v="${t}" class="${t===cur?'on':''}" aria-pressed="${t===cur}">${badge(t,14)} ${esc(tshort(t))}${t===op?' <small>다음 상대</small>':''}</button>`).join('')}</div>`:'';
   return `<div class="lf-panel">${tabs}${lineupFieldTeam(cur,true)}${lineupFieldBench(cur)}</div>`; }
+/* 경기 전 화면은 3D 로딩 중이라 다시 그리지 않는다: 얼굴 사진이 늦게 도착하면 실루엣 자리만 제자리에서 바꾼다(사용자 11-18).
+   faceSVG는 사진을 받기 전엔 실루엣(F6WAIT), 받은 뒤엔 실제 주소를 돌려준다. 다를 때만 그 칸의 이미지를 교체 */
+function prepFaceSync(){ const root=document.querySelector('.cs-prep'); if(!root||typeof G==='undefined'||!G||!G.players)return;
+  for(const el of root.querySelectorAll('[data-fpid]')){ const p=G.players[el.dataset.fpid]; if(!p)continue; const big=el.dataset.fbig==='1';
+    let src=null; try{ src=p.img||(big?faceBust(faceSVG(p)):faceSVG(p)); }catch(e){} if(!src)continue;
+    const cur=el.querySelector(':scope>.av'); if(cur&&cur.tagName==='IMG'&&cur.getAttribute('src')===src)continue;
+    const t=document.createElement('span'); t.innerHTML=avImg(p,big); const n=t.firstElementChild; if(!n)continue; if(cur)cur.replaceWith(n); else el.prepend(n); } }
+setInterval(()=>{ try{ prepFaceSync(); }catch(e){} },600);
 Object.assign(A,{
   lufView(v){ UI.lufView=v==='field'?'field':'list'; render(); },
   lufTeam(v){ UI.lufTeam=+v; render(); },

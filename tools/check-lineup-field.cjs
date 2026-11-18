@@ -7,7 +7,7 @@ const POS=['C','1B','2B','3B','SS','LF','CF','RF','DH','P'];
  b=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await b.newPage({viewport:{width:1366,height:768}});p.on('pageerror',e=>errors.push(e.message));
  await p.goto(server.url);await p.waitForSelector('[data-a="tsGo"][data-v="mode"]');
  await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open+2;for(const t of G.teams)setEntry(t.id);const op=G.teams.find(t=>t.id!==G.user).id;G.games=[];const g=simGame(G.day,G.user,op,false);G.games.push(gameRecord(G.day,G.user,op,g,''));UI.title=false;UI.tab='home';render();
-  /* 경기 전 화면을 붙잡아 둔다: 3D 준비·늦은 3D 대체로 경기가 시작되지 않게(검사 전용) */ cPrepDone=function(){};castStart2D=function(){};A.castStart=function(){};});
+  /* 경기 전 화면을 붙잡아 둔다: 3D 준비·늦은 3D 대체로 경기가 시작되지 않게(검사 전용) */ cPrepDone=function(){};castStart2D=function(){};A.castStart=function(){};if(typeof Match3D!=="undefined")window.Match3D=Object.assign({},Match3D,{mount:()=>new Promise(()=>{})}); /* 3D 로딩 중 상태 유지 */});
  /* 보드 하나 검사: 10자리·이름·OVR(공개 범위)·카드가 보드 안 */
  const board=(sel,visible)=>p.evaluate(({sel,visible})=>{const out=[];for(const lf of document.querySelectorAll(sel)){const box=lf.querySelector('.lf-box').getBoundingClientRect();if(visible&&!box.width)continue;
    const cards=[...lf.querySelectorAll('.lf-m')].map(m=>{const r=m.getBoundingClientRect(),id=m.dataset.v||m.closest('[data-a="player"]')?.dataset.v;return {pos:m.dataset.pos,name:m.querySelector('.lf-nb b').textContent.trim(),ov:m.querySelector('.lf-ov .rc')?.textContent.trim(),q:!!m.querySelector('.lf-ov .rc.q'),face:!!m.querySelector('.lf-ph .av'),r:{l:r.left,t:r.top,rr:r.right,b:r.bottom}};});
@@ -23,7 +23,11 @@ const POS=['C','1B','2B','3B','SS','LF','CF','RF','DH','P'];
   all.forEach((B,i)=>{const q=B.cards.filter(c=>c.q).length;assert.equal(q,ovs[i].filter(Boolean).length,'OVR 공개 범위 = scoutReport '+w+' '+i);});
   const userSide=await p.evaluate(()=>G.games[0].home===G.user?1:0);assert.ok(all[userSide].cards.every(c=>!c.q),'우리 팀은 OVR 모두 표시');
   const vis=await board('.cs-prep .lf',true);assert.equal(vis.length,w>700?2:1,'보이는 보드 수(PC 나란히, 휴대폰 한 팀씩) '+w);vis.forEach(B=>inside(B,w+' 경기 전'));
-  if(w>700)for(const B of vis){const face=await p.evaluate(()=>document.querySelector('.cs-prep .lf-m .av').getBoundingClientRect().width);assert.ok(face>=44,'PC 얼굴 크기 '+face);}
+  /* 얼굴 사진: 경기 전 화면은 다시 그리지 않으므로, 사진이 도착하면 실루엣(F6WAIT)이 제자리에서 실제 얼굴로 바뀌어야 한다(경기장·목록 보기 모두) */
+  const faceState=()=>p.evaluate(()=>{const L=[...document.querySelectorAll('.cs-prep .lf-ph>.av,.cs-prep .cs-pc>.av')];return {n:L.length,wait:L.filter(e=>e.tagName!=='IMG'||e.getAttribute('src')===F6WAIT||!e.complete||!e.naturalWidth).length};});
+  const f0=await faceState();if(w===1366)console.log('경기 전 얼굴 처음 실루엣',f0.wait+'/'+f0.n);
+  await p.waitForFunction(()=>{const L=[...document.querySelectorAll('.cs-prep .lf-ph>.av,.cs-prep .cs-pc>.av')];return L.length>=40&&L.every(e=>e.tagName==='IMG'&&e.getAttribute('src')!==F6WAIT&&e.complete&&e.naturalWidth>0);},null,{timeout:60000}).catch(async()=>assert.fail('경기 전 얼굴이 실루엣으로 남음 '+JSON.stringify(await faceState())));
+  if(process.env.SHOTS)await p.screenshot({path:path.join(process.env.SHOTS,`prep-field-${w}.png`)});if(w>700)for(const B of vis){const face=await p.evaluate(()=>document.querySelector('.cs-prep .lf-m .av').getBoundingClientRect().width);assert.ok(face>=44,'PC 얼굴 크기 '+face);}
   await noOverflow(w+' 경기 전');
   if(process.env.SHOTS)await p.screenshot({path:path.join(process.env.SHOTS,`prep-field-${w}.png`)});
   await p.locator('.cs-prep-view button[data-v="list"]').click();assert.equal(await p.evaluate(()=>document.querySelector('.cs-prep').dataset.view),'list');assert.equal(await board('.cs-prep .lf',true).then(x=>x.length),0,'목록 보기에서는 경기장 보드 숨김');

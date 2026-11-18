@@ -7392,25 +7392,26 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 }
 /* 경기장 라인업(58_lineup_field.js): 골든글러브 보드(.ggf)와 같은 밤 경기장 + 카드. 금색 대신 구단색(--tc) */
 .lf{position:relative;width:100%;container-type:inline-size;margin:0 auto}
-.lf-box{position:relative;width:100%;aspect-ratio:16/10;border-radius:10px;overflow:hidden;border:1px solid color-mix(in srgb,var(--tc,#c33) 55%,#ffffff22);background:radial-gradient(70% 45% at 50% 30%,#2a3a5c66,transparent 70%),radial-gradient(120% 90% at 50% 100%,#14284a,#070d1c 75%)}
+.lf-box{position:relative;width:100%;aspect-ratio:16/10;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 2px 0 color-mix(in srgb,var(--tc,#c33) 45%,transparent);background:radial-gradient(70% 45% at 50% 30%,#2a3a5c66,transparent 70%),radial-gradient(120% 90% at 50% 100%,#14284a,#070d1c 75%)}
 .lf-bg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 14px #0009)}
-.lf-hd{position:absolute;left:2%;top:3%;z-index:2;display:flex;align-items:center;gap:7px;max-width:30%;padding:5px 9px 5px 6px;border-radius:8px;background:#0b1222d9;border-left:3px solid var(--tc,#c33);color:#fff;box-shadow:0 3px 10px #0008}
-.lf-hd>span{display:grid;min-width:0}.lf-hd b{font-size:clamp(11px,1.8cqw,15px);font-weight:800;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lf-hd small{font-size:clamp(9px,1.25cqw,11.5px);opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 카드(구단주 11-18: 빨강이 두껍고 진하다 → 반투명 유리): 어두운 반투명 바탕 + 1px 머리카락 선, 구단색은 위쪽 얇은 띠와 얼굴 테 은은하게 */
+.lf-hd{position:absolute;left:2%;top:3%;z-index:2;display:flex;align-items:center;gap:7px;max-width:30%;padding:5px 9px 5px 7px;border-radius:8px;background:rgba(10,14,22,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);box-shadow:inset 2px 0 0 color-mix(in srgb,var(--tc,#c33) 60%,transparent);color:#fff}
+.lf-hd>span{display:grid;min-width:0}.lf-hd b{font-size:clamp(11px,1.8cqw,15px);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lf-hd small{font-size:clamp(9px,1.25cqw,11.5px);opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lf-hd .badge,.lf-hd img,.lf-hd svg{width:clamp(18px,3.4cqw,30px);height:clamp(18px,3.4cqw,30px);flex:none}
-.lf-avg{position:absolute;right:2%;top:3%;z-index:2;display:flex;align-items:center;gap:6px;padding:4px 6px 4px 9px;border-radius:8px;background:#0b1222d9;color:#fff;font-size:clamp(9px,1.25cqw,12px);box-shadow:0 3px 10px #0008}
-.lf-note{position:absolute;right:2%;bottom:3%;z-index:2;max-width:32%;padding:4px 8px;border-radius:6px;background:#0b1222cc;color:#fff;font-size:clamp(9px,1.25cqw,12px);line-height:1.35}
-.lf-m{all:unset;box-sizing:border-box;position:absolute;z-index:1;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;width:clamp(54px,13.5cqw,118px);padding:0 0 3px;text-align:center;color:#fff;border-radius:50% 50% 8px 8px / 30% 30% 8px 8px;background:linear-gradient(180deg,#1d2a48,#0b1222 70%);border:2px solid var(--tc,#c33);box-shadow:0 4px 12px #000c}
-button.lf-m{cursor:pointer}button.lf-m:hover{filter:brightness(1.15)}button.lf-m:focus-visible{outline:2px solid #fff;outline-offset:2px}
-.lf-m.sp{border-color:#f0c64a}
-.lf-ph{position:relative;margin:3px 0 2px}
-.lf-m .av{display:grid;place-items:center;width:clamp(30px,9.4cqw,64px);height:clamp(30px,9.4cqw,64px);border-radius:50%;border:2px solid color-mix(in srgb,var(--tc,#c33) 70%,#fff);background:#1b2430;object-fit:cover;font-size:clamp(12px,3cqw,22px);box-shadow:0 2px 6px #000a}
-.lf-no{position:absolute;left:-12%;top:-6%;display:grid;place-items:center;min-width:clamp(15px,3cqw,22px);height:clamp(15px,3cqw,22px);padding:0 3px;border-radius:999px;background:var(--tc,#c33);color:#fff;font:800 clamp(9px,1.6cqw,12.5px)/1 var(--f-num);font-style:normal;border:1.5px solid #fff;box-shadow:0 1px 4px #0009;white-space:nowrap}
-.lf-m.sp .lf-no{background:#f0c64a;color:#211600;font-family:inherit;font-size:clamp(8px,1.35cqw,11px)}
-.lf-ov{position:absolute;right:-16%;bottom:-6%}.lf-ov .rc{min-width:clamp(20px,3.6cqw,28px);font-size:clamp(10px,1.75cqw,14px);line-height:clamp(14px,2.6cqw,20px);padding:0 3px;border-radius:4px;box-shadow:0 1px 4px #000a;border:1px solid #0b1222}
-.lf-nb{align-self:stretch;margin:0 3px;padding:1px 2px;border-radius:3px;background:linear-gradient(180deg,color-mix(in srgb,var(--tc,#c33) 85%,#fff),color-mix(in srgb,var(--tc,#c33) 80%,#000));color:#fff;display:flex;flex-direction:column;min-width:0}
-.lf-m.sp .lf-nb{background:linear-gradient(180deg,#f6d46a,#c8921c);color:#211600}
-.lf-m b{font-size:clamp(10px,1.9cqw,15px);font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lf-m em{font-style:normal;font-size:clamp(8.5px,1.35cqw,11.5px);font-weight:700;opacity:.88;line-height:1.15;white-space:nowrap}
+.lf-avg{position:absolute;right:2%;top:3%;z-index:2;display:flex;align-items:center;gap:6px;padding:4px 6px 4px 9px;border-radius:8px;background:rgba(10,14,22,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:clamp(9px,1.25cqw,12px)}
+.lf-note{position:absolute;right:2%;bottom:3%;z-index:2;max-width:32%;padding:4px 8px;border-radius:6px;background:rgba(10,14,22,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:clamp(9px,1.25cqw,12px);line-height:1.35}
+.lf-m{all:unset;box-sizing:border-box;position:absolute;z-index:1;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;width:clamp(54px,13.5cqw,118px);padding:0 0 3px;text-align:center;color:#fff;border-radius:12px;background:rgba(10,14,22,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 2px 0 color-mix(in srgb,var(--tc,#c33) 60%,transparent),0 4px 12px rgba(0,0,0,.35)}
+button.lf-m{cursor:pointer}button.lf-m:hover{background:rgba(18,24,36,.74);border-color:rgba(255,255,255,.26)}button.lf-m:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.lf-m.sp{box-shadow:inset 0 2px 0 rgba(240,198,74,.7),0 4px 12px rgba(0,0,0,.35)}
+.lf-ph{position:relative;margin:4px 0 2px}
+.lf-m .av{display:grid;place-items:center;width:clamp(30px,9.4cqw,64px);height:clamp(30px,9.4cqw,64px);border-radius:50%;border:1px solid rgba(255,255,255,.22);background:#1b2430;object-fit:cover;font-size:clamp(12px,3cqw,22px);box-shadow:0 0 0 2px color-mix(in srgb,var(--tc,#c33) 45%,transparent)}
+.lf-m.sp .av{box-shadow:0 0 0 2px rgba(240,198,74,.55)}
+.lf-no{position:absolute;left:-10%;top:-4%;display:grid;place-items:center;min-width:clamp(14px,2.6cqw,19px);height:clamp(14px,2.6cqw,19px);padding:0 3px;border-radius:999px;background:rgba(10,14,22,.82);color:#e8edf2;font:700 clamp(8.5px,1.45cqw,11px)/1 var(--f-num);font-style:normal;border:1px solid rgba(255,255,255,.3);white-space:nowrap}
+.lf-m.sp .lf-no{color:#f0c64a;border-color:rgba(240,198,74,.55);font-family:inherit;font-size:clamp(8px,1.3cqw,10.5px)}
+.lf-ov{position:absolute;right:-14%;bottom:-4%}.lf-ov .rc{min-width:clamp(18px,3.2cqw,25px);font-size:clamp(9.5px,1.55cqw,12.5px);line-height:clamp(13px,2.3cqw,17px);padding:0 3px;border-radius:3px;box-shadow:none;border:0}
+.lf-nb{align-self:stretch;margin:0 4px;padding:1px 2px;border-radius:4px;background:rgba(255,255,255,.06);color:#fff;display:flex;flex-direction:column;min-width:0}
+.lf-m b{font-size:clamp(10px,1.9cqw,15px);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.lf-m em{font-style:normal;font-size:clamp(8.5px,1.35cqw,11.5px);font-weight:500;opacity:.68;line-height:1.15;white-space:nowrap}
 @container (max-width:759px){.lf-m em{display:none}}
 @container (max-width:520px){.lf-note{display:none}.lf-hd small{display:none}.lf-avg>span{display:none}}
 /* 경기장 보기 아래 벤치·투수진 요약 */
@@ -41990,7 +41991,7 @@ function prepTeamFacts(g){if(g.broadcast?.pregame?.teams)return g.broadcast.preg
 const prepPitchText=st=>st?.unknown?'당시 시즌 기록 미보관':st?`${st.rec} · 평균자책점 ${st.era} · ${st.ip}이닝`:'시즌 첫 등판';
 function matchPrepLineups(g){UI.prepAt=Date.now();if(UI.prepSideG!==g.day){UI.prepManual=false;UI.prepSide=null;}const me=G.user,def=g.home===me?'h':'a',cur=UI.prepSide&&UI.prepSideG===g.day?UI.prepSide:def;
  const card=side=>{const tid=side==='a'?g.away:g.home,rows=castLineup(g,side,0).slice(0,9),pit=g.box[side].pit[0],col=cTeamCol(tid);
-  const chip=(p,label,pos,n)=>{const xy=PREP_XY[pos]||PREP_XY.DH;return `<div class="cs-pc" style="left:${xy[0]/1.2}%;top:${xy[1]}%">${p?avImg(p):'<span class="av ini">?</span>'}<b><em>${label}</em>${esc(p?.name||n||'')}</b></div>`;};
+  const chip=(p,label,pos,n)=>{const xy=PREP_XY[pos]||PREP_XY.DH;return `<div class="cs-pc" style="left:${xy[0]/1.2}%;top:${xy[1]}%"${p?` data-fpid="${p.id}"`:''}>${p?avImg(p):'<span class="av ini">?</span>'}<b><em>${label}</em>${esc(p?.name||n||'')}</b></div>`;};
   const bl=id=>g.box[side].bat.find(b=>b.id===id),ps=pit?prepSeason(g,pit.id,pit,true):null,pp=pit&&G.players[pit.id];
   const recT=(()=>{const r=prepTeamFacts(g)?.teams?.[tid]?.rec;return !r?'당시 전적 미보관':r.w+r.l+r.t?recStr(r):'시즌 첫 경기';})();
   const list=`<div class="cs-pl" style="--tc:${col}"><header>${badge(tid,40)}<div><b>${esc(tname(tid))}</b><small>${side==='a'?'원정':'홈'} · ${esc(recT)}</small></div></header><div class="cs-pl-h"><span>#</span><span>선수</span><span>포지션</span><span>타율</span><span>홈런</span><span>타점</span></div><ol>${rows.map((r,i)=>{const st=prepSeason(g,r.id,bl(r.id));const q=G.players[r.id];return `<li><i>${i+1}</i><b>${esc(q?.name||r.n||'')}<small>${q?esc(q.bt+'타'):''}</small></b><span>${esc(r.pos==='DH'?'지명':POSK[r.pos]||r.pos)}</span><em>${st&&!st.unknown?st.avg:'-'}</em><em>${st&&!st.unknown?st.hr:'-'}</em><em>${st&&!st.unknown?(st.rbi??'-'):'-'}</em></li>`;}).join('')}</ol>${pit?`<div class="cs-pl-sp"><span>선발투수</span><b>${esc(pp?.name||pit.n||'')}<small>${pp?esc(pp.th+'투'):''}</small></b><em>${prepPitchText(ps)}</em></div>`:''}</div>`;
@@ -48167,7 +48168,7 @@ const lfOvr=p=>{ if(!p)return null; try{ const r=scoutReport(p); return r&&r.cur
 /* 카드 하나: 얼굴(타순 원·OVR 칩) + 이름표(이름·포지션). act면 눌러서 선수 화면 */
 function lfCard(x,act){ const [sx,sy]=LF_SPOT[x.pos]||LF_SPOT.DH, p=x.p, nm=p?p.name:x.name||'', ov=lfOvr(p), tag=x.pos==='P'?'선발':x.no||'', pk=x.pos==='P'?'선발투수':x.pos==='DH'?'지명타자':POSK[x.pos]||x.pos;
   const at=act&&p?`button type="button" data-a="player" data-v="${p.id}"`:'div';
-  return `<${at} class="lf-m${x.pos==='P'?' sp':''}${x.me?' me':''}" style="left:${(sx/LF_W*100).toFixed(2)}%;top:${(sy/LF_H*100).toFixed(2)}%" data-pos="${x.pos}" title="${esc(pk)} ${esc(nm)}${ov!=null?' · 현재 능력 '+dv(ov):''}"><span class="lf-ph">${p?avImg(p,true):`<span class="av ini big">${esc(nm.slice(0,1)||'?')}</span>`}<i class="lf-no">${tag}</i><span class="lf-ov">${rchip(ov)}</span></span><span class="lf-nb"><b>${esc(nm)}</b><em>${esc(x.pos==='P'?'선발':POSS[x.pos]||x.pos)}</em></span></${at.split(' ')[0]}>`; }
+  return `<${at} class="lf-m${x.pos==='P'?' sp':''}${x.me?' me':''}" style="left:${(sx/LF_W*100).toFixed(2)}%;top:${(sy/LF_H*100).toFixed(2)}%" data-pos="${x.pos}" title="${esc(pk)} ${esc(nm)}${ov!=null?' · 현재 능력 '+dv(ov):''}"><span class="lf-ph"${p?` data-fpid="${p.id}" data-fbig="1"`:''}>${p?avImg(p,true):`<span class="av ini big">${esc(nm.slice(0,1)||'?')}</span>`}<i class="lf-no">${tag}</i><span class="lf-ov">${rchip(ov)}</span></span><span class="lf-nb"><b>${esc(nm)}</b><em>${esc(x.pos==='P'?'선발':POSS[x.pos]||x.pos)}</em></span></${at.split(' ')[0]}>`; }
 /* o={tid, rows:[{p,name,pos,no}], sp:{p,name}, sub, act, note} → 경기장 보드 한 장 */
 function lineupField(o){ const tid=o.tid, col=typeof cTeamCol==='function'?cTeamCol(tid):'#c33';
   const cards=(o.rows||[]).map(r=>lfCard(r,o.act)).join('')+(o.sp?lfCard({...o.sp,pos:'P'},o.act):'');
@@ -48187,6 +48188,14 @@ function lineupFieldPanel(tid){ let op=null; if(tid===G.user){ try{ const x=next
   const cur=op!=null&&UI.lufTeam===op?op:tid;
   const tabs=op!=null?`<div class="chips optrow lf-tabs" role="group" aria-label="구단">${[tid,op].map(t=>`<button type="button" data-a="lufTeam" data-v="${t}" class="${t===cur?'on':''}" aria-pressed="${t===cur}">${badge(t,14)} ${esc(tshort(t))}${t===op?' <small>다음 상대</small>':''}</button>`).join('')}</div>`:'';
   return `<div class="lf-panel">${tabs}${lineupFieldTeam(cur,true)}${lineupFieldBench(cur)}</div>`; }
+/* 경기 전 화면은 3D 로딩 중이라 다시 그리지 않는다: 얼굴 사진이 늦게 도착하면 실루엣 자리만 제자리에서 바꾼다(사용자 11-18).
+   faceSVG는 사진을 받기 전엔 실루엣(F6WAIT), 받은 뒤엔 실제 주소를 돌려준다. 다를 때만 그 칸의 이미지를 교체 */
+function prepFaceSync(){ const root=document.querySelector('.cs-prep'); if(!root||typeof G==='undefined'||!G||!G.players)return;
+  for(const el of root.querySelectorAll('[data-fpid]')){ const p=G.players[el.dataset.fpid]; if(!p)continue; const big=el.dataset.fbig==='1';
+    let src=null; try{ src=p.img||(big?faceBust(faceSVG(p)):faceSVG(p)); }catch(e){} if(!src)continue;
+    const cur=el.querySelector(':scope>.av'); if(cur&&cur.tagName==='IMG'&&cur.getAttribute('src')===src)continue;
+    const t=document.createElement('span'); t.innerHTML=avImg(p,big); const n=t.firstElementChild; if(!n)continue; if(cur)cur.replaceWith(n); else el.prepend(n); } }
+setInterval(()=>{ try{ prepFaceSync(); }catch(e){} },600);
 Object.assign(A,{
   lufView(v){ UI.lufView=v==='field'?'field':'list'; render(); },
   lufTeam(v){ UI.lufTeam=+v; render(); },
