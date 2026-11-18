@@ -1,0 +1,31 @@
+{
+  "id": "v22_orange_sf000925",
+  "index": 31,
+  "r": "ccap22",
+  "a": 26,
+  "f": 1,
+  "uc": "orange",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "v",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000925_identity_guide.jpg",
+  "source_guide_id": "sf3_000925",
+  "source_guide_dataset": "SFHQ part3, raw public synthetic parquet reference",
+  "source_guide_row_idx": 925,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "8fe23def5811ea9f5b3861f35e894bad4cc581e286a11899e3f39683fb1d0a5e",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "source_guide_parquet": "default/train/0000.parquet",
+  "costume_reference": "/dev/shm/v22_work/kits/orange.png",
+  "generation_attempt": 180,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photo canvas outpaint and tidy flyaway hair only",
+  "composition_reference": "/dev/shm/v22_work/v22_orange_sf000925_a177_wideborder_reference.png",
+  "prompt": "SINGLE high-fidelity photographic edit. Keep EXACT same existing fictional adult KOREAN stage cheerleader age26 in central photo: preserve her distinct individual real face, normal small eyes/darkbrown irises, cheeks/nose/lips, EXACT smile/teeth and hand gesture, same makeup, hair character and outfit collar/trim/colors. Only fill surrounding GRAY border with coherent continuation of her NIGHT baseball grandstand scene and naturally continue cropped crown/shoulders. Tidy stray flyaway hairs with natural grooming; keep normal full hairstyle without tall isolated wisps, do NOT change skull/face. Existing central whole photograph must stay SAME relative scale/placement as supplied, do NOT zoom or discard margins. Natural fine skin, authentic real Korean adult twenties stage professional, no CG beautytemplate/face shaping/oversizedeyes/plasticskin/artificialaging. No borders/graycanvas/text/logos/glasses/hats/cleavage, one coherent whole professional85mm photograph, new native square1254x1254orhigher.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-0a56119c-4043-46e1-a194-c714a86390e1.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_orange_sf000925_a177",
+  "source_photo_reference": "/workspace/generated_images/exec-e1058030-7a33-495e-a652-d8cce006e9a0.png"
+}

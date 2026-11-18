@@ -1,0 +1,18 @@
+{
+  "id": "v22_green_04",
+  "index": 33,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "green",
+  "hair": "wave",
+  "smile": "soft",
+  "pose": "front",
+  "brief": "DIAMOND-shaped face, distinctly high cheekbones and slim jaw, wide-set gently downturned almond eyes with subtle crease, high fine curved brows, medium low-bridge nose with wide natural nostrils, small mouth with soft full lips. Lightly sun-tanned warm Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/green.png",
+  "generation_attempt": 40,
+  "prompt": "Edit reference1 into ONE photorealistic portrait of the EXACT SAME fictional ADULT25-year-old woman. Preserve her EXACT identity precisely: same face outline, cheek/jaw geometry, brows, eye/eyelid shape and orientation, nose bridge/tip, lips and SAME subtle CLOSED-LIP soft smile. Only change rendering to real-camera photographic fine skin texture and real hair strands, tasteful stage eyeliner and rosy lips. Normal natural ADULT human proportions, fresh healthy25yo skin, no child/doll look. Do not substitute or reinterpret her face. Hair black shoulder-length waves. Reference2 is EXACT uniform design: same green garment, identical cut, fully opaque and covering chest/torso, no cleavage/midriff. Reference3 camera diagram ONLY: native square1254x1254 or larger, head+shoulders+covered upperchest, complete hair top16% of frame with GENEROUS DARK BACKGROUND ABOVE HEAD, eyes43%, faceheight33% of frame, shoulders low. Do not zoom in; camera pulled back85mm front perspective. Background NIGHT baseball cheer platform, blurred navy audience/unreadable faces and warm-white stadium light bokeh. Front-above keylight and subtle cool rimlight. Hands outside frame, no hats/glasses/logos/numbers/emblems/writing/borders, no illustration/CG/wax skin or collage.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-b4ed2ea1-a16b-4266-a4c9-20983296806d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_identity_guide": "/workspace/generated_images/v22_lcm_cast_218b6605-db98-48fc-91f8-74a86ee5643d.webp",
+  "status": "PENDING_VALIDATION"
+}

@@ -1,0 +1,3055 @@
+{
+  "version": 22,
+  "revision": 2,
+  "baseline_commit": "1fd20b3d1933e95b3d6ff7f46245b720506ff288",
+  "new_fictional_idol_style_cast_count": 3,
+  "changed_indices": [
+    8,
+    33,
+    44
+  ],
+  "preserved_photo_and_crop_count": 45,
+  "fixed_runtime_ids_and_indices": true,
+  "status": "STYLE_REVIEW_DRAFT_STRICT_SIMILARITY_GATE_FAILED",
+  "production_complete": false,
+  "requested_total": 48,
+  "count": 48,
+  "roles": {
+    "cheer22": 40,
+    "ccap22": 8
+  },
+  "default_resolution": 512,
+  "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+  "sheets": {
+    "512": {
+      "path": "sheets/cheer_stage_512.webp",
+      "repository_path": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage_512.webp",
+      "width": 4096,
+      "height": 3072,
+      "tile_size": 512,
+      "columns": 8,
+      "rows": 6,
+      "occupied": 48,
+      "empty_black": 0,
+      "padding": 0,
+      "mode": "RGB",
+      "has_alpha": false,
+      "format": "lossy WebP",
+      "quality": 80,
+      "encoder_method": 6,
+      "empty_tiles_source_RGB": [
+        0,
+        0,
+        0
+      ],
+      "empty_decoded_interior_inset16_exact_black": null,
+      "empty_boundary_note": "Unused source rectangles are exactly RGB0. Lossy VP8 prediction/chroma reconstruction can introduce visually dark codec bleed near occupied-to-empty boundaries; measured below without changing pixels.",
+      "bytes": 1216278,
+      "sha256": "99a042140909f36819e840955396a5b4bfbf6a3d79b35d5dad6a16fed8031fd2",
+      "decoded_pixel_sha256": "cc4e972cad8753eb8f357b1ef4f8dfb971127721b2f518314f2e804a1f284764"
+    },
+    "256": {
+      "path": "sheets/cheer_stage_256.webp",
+      "repository_path": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage_256.webp",
+      "width": 2560,
+      "height": 2560,
+      "tile_size": 256,
+      "columns": 10,
+      "rows": 10,
+      "occupied": 48,
+      "empty_black": 52,
+      "padding": 0,
+      "mode": "RGB",
+      "has_alpha": false,
+      "format": "lossy WebP",
+      "quality": 80,
+      "encoder_method": 6,
+      "empty_tiles_source_RGB": [
+        0,
+        0,
+        0
+      ],
+      "empty_decoded_interior_inset16_exact_black": false,
+      "empty_boundary_note": "Unused source rectangles are exactly RGB0. Lossy VP8 prediction/chroma reconstruction can introduce visually dark codec bleed near occupied-to-empty boundaries; measured below without changing pixels.",
+      "bytes": 446492,
+      "sha256": "7693b663cbae8af7fae5130e6e12e5401e7634c794be56cf46a227d1ca0ca6f6",
+      "decoded_pixel_sha256": "f867719a97b918fe2e213edecbefa9505f1d470e4b3f9cbc573a61d059dbdf5b",
+      "empty_decoded_RGB_max": 24,
+      "empty_decoded_RGB_mean": 0.007899651160606971,
+      "empty_decoded_exact_black_pixel_fraction": 0.9932608971228967
+    },
+    "128": {
+      "path": "sheets/cheer_stage_128.webp",
+      "repository_path": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage_128.webp",
+      "width": 1280,
+      "height": 1280,
+      "tile_size": 128,
+      "columns": 10,
+      "rows": 10,
+      "occupied": 48,
+      "empty_black": 52,
+      "padding": 0,
+      "mode": "RGB",
+      "has_alpha": false,
+      "format": "lossy WebP",
+      "quality": 80,
+      "encoder_method": 6,
+      "empty_tiles_source_RGB": [
+        0,
+        0,
+        0
+      ],
+      "empty_decoded_interior_inset16_exact_black": false,
+      "empty_boundary_note": "Unused source rectangles are exactly RGB0. Lossy VP8 prediction/chroma reconstruction can introduce visually dark codec bleed near occupied-to-empty boundaries; measured below without changing pixels.",
+      "bytes": 170892,
+      "sha256": "08bb42ffa6cbb779eb43288de56633290c5719732b2949cdecd3575bb51f1e9f",
+      "decoded_pixel_sha256": "addd67e6f74397f91461dd220c7085e90e81b8f5a60e38612fbf07e5d8931fbf",
+      "empty_decoded_RGB_max": 24,
+      "empty_decoded_RGB_mean": 0.014319395407652244,
+      "empty_decoded_exact_black_pixel_fraction": 0.9868574876051682
+    }
+  },
+  "uc_order": [
+    "red",
+    "navy",
+    "blue",
+    "black",
+    "orange",
+    "green",
+    "purple",
+    "sky"
+  ],
+  "identities": [
+    {
+      "a": 22,
+      "f": 1,
+      "uc": "red",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_red_01",
+      "r": "cheer22",
+      "index": 0,
+      "rect": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          0,
+          0,
+          512,
+          512
+        ],
+        "256": [
+          0,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          0,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_red_01_a11",
+      "source_planned_id": "v22_red_01",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-e3f79e79-d3b7-40a8-a143-44c3fc219adc.png",
+      "source_original_sha256": "c724a6529bfe3c6645fd7f4da9f42915a6d6e1c98e9ad5f1575c9f44c266cd04",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "c724a6529bfe3c6645fd7f4da9f42915a6d6e1c98e9ad5f1575c9f44c266cd04",
+      "native_crop_edge": 902,
+      "whole_photo_crop_xyxy": [
+        137,
+        75,
+        1039,
+        977
+      ],
+      "native_head_top_estimate": 134,
+      "source_identity_guide_id": null,
+      "revision": 0
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "red",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "natural black",
+      "id": "v22_cheer22_red_02",
+      "r": "cheer22",
+      "index": 1,
+      "rect": [
+        512,
+        0,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          512,
+          0,
+          512,
+          512
+        ],
+        "256": [
+          256,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          128,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_red_02_a801",
+      "source_planned_id": "v22_cheer22_red_02",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-9159254b-8020-4e4d-8329-ba2d974b76cd.png",
+      "source_original_sha256": "963beda0352a86adc24b6314650b24ed729bd15e34f59cb8ca9947045f6971f5",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "963beda0352a86adc24b6314650b24ed729bd15e34f59cb8ca9947045f6971f5",
+      "native_crop_edge": 1002,
+      "whole_photo_crop_xyxy": [
+        56,
+        184,
+        1058,
+        1186
+      ],
+      "native_head_top_estimate": 258,
+      "source_identity_guide_id": null,
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "red",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural black",
+      "id": "v22_cheer22_red_03",
+      "r": "cheer22",
+      "index": 2,
+      "rect": [
+        1024,
+        0,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1024,
+          0,
+          512,
+          512
+        ],
+        "256": [
+          512,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          256,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_red_03_a802",
+      "source_planned_id": "v22_cheer22_red_03",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-518dcf91-96d7-4d2f-afc7-7ab06a4126b2.png",
+      "source_original_sha256": "644a069ef9d2102bec1084de914466b8cafabd4cf25398ff943d2ebcfdb12585",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "644a069ef9d2102bec1084de914466b8cafabd4cf25398ff943d2ebcfdb12585",
+      "native_crop_edge": 1068,
+      "whole_photo_crop_xyxy": [
+        95,
+        129,
+        1163,
+        1197
+      ],
+      "native_head_top_estimate": 199,
+      "source_identity_guide_id": null,
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "red",
+      "hair": "half",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "ash brown",
+      "id": "v22_cheer22_red_04",
+      "r": "cheer22",
+      "index": 3,
+      "rect": [
+        1536,
+        0,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1536,
+          0,
+          512,
+          512
+        ],
+        "256": [
+          768,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          384,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_red_04_a910",
+      "source_planned_id": "v22_cheer22_red_04",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-0a26822f-eb5e-4db7-bbb5-75bba283e659.png",
+      "source_original_sha256": "c666fd61108faf3373f6890601b8c003a8ea01bc0a95de411e7524db1c69addd",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "c666fd61108faf3373f6890601b8c003a8ea01bc0a95de411e7524db1c69addd",
+      "native_crop_edge": 1075,
+      "whole_photo_crop_xyxy": [
+        93,
+        0,
+        1168,
+        1075
+      ],
+      "native_head_top_estimate": 95,
+      "source_identity_guide_id": "sf3_002172",
+      "revision": 1
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "red",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "natural dark brown",
+      "id": "v22_cheer22_red_05",
+      "r": "cheer22",
+      "index": 4,
+      "rect": [
+        2048,
+        0,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2048,
+          0,
+          512,
+          512
+        ],
+        "256": [
+          1024,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          512,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_red_05_a912",
+      "source_planned_id": "v22_cheer22_red_05",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-dec82bc7-4a54-4fa4-a124-1cf8d8e5f1b3.png",
+      "source_original_sha256": "f9e81dfe4773475b895e2ce14cd8f1fac5b0a6a6a8a9a3f2e01fbda489299407",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "f9e81dfe4773475b895e2ce14cd8f1fac5b0a6a6a8a9a3f2e01fbda489299407",
+      "native_crop_edge": 962,
+      "whole_photo_crop_xyxy": [
+        140,
+        0,
+        1102,
+        962
+      ],
+      "native_head_top_estimate": 77,
+      "source_identity_guide_id": "sf3_002323",
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "red",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "caramel brown",
+      "id": "v22_ccap22_red_06",
+      "r": "ccap22",
+      "index": 5,
+      "rect": [
+        2560,
+        0,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2560,
+          0,
+          512,
+          512
+        ],
+        "256": [
+          1280,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          640,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_ccap22_red_06_a333",
+      "source_planned_id": "v22_ccap22_red_06",
+      "source_planned_role": "ccap22",
+      "source_original": "/workspace/generated_images/exec-2e02855f-7cfe-4ae7-8cf1-e18737cb2d21.png",
+      "source_original_sha256": "7ef62bc9c563f3e8fe2806732f37f3f57297ad6e2e432f12d871b4720a82b325",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "7ef62bc9c563f3e8fe2806732f37f3f57297ad6e2e432f12d871b4720a82b325",
+      "native_crop_edge": 904,
+      "whole_photo_crop_xyxy": [
+        170,
+        83,
+        1074,
+        987
+      ],
+      "native_head_top_estimate": 150,
+      "source_identity_guide_id": "sf3_001999",
+      "revision": 1
+    },
+    {
+      "a": 26,
+      "f": 1,
+      "uc": "navy",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_navy_01",
+      "r": "cheer22",
+      "index": 6,
+      "rect": [
+        3072,
+        0,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3072,
+          0,
+          512,
+          512
+        ],
+        "256": [
+          1536,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          768,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_navy_02_a62",
+      "source_planned_id": "v22_navy_02",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-7b102aa8-4b8d-476d-915f-af3f3eee1916.png",
+      "source_original_sha256": "e5721b77c1f71d975e1a244eca92113678e67b91837832a1acf509111a0655fa",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "e5721b77c1f71d975e1a244eca92113678e67b91837832a1acf509111a0655fa",
+      "native_crop_edge": 963,
+      "whole_photo_crop_xyxy": [
+        198,
+        261,
+        1161,
+        1224
+      ],
+      "native_head_top_estimate": 352,
+      "source_identity_guide_id": null,
+      "revision": 0
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "navy",
+      "hair": "half",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "natural black",
+      "id": "v22_cheer22_navy_02",
+      "r": "cheer22",
+      "index": 7,
+      "rect": [
+        3584,
+        0,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3584,
+          0,
+          512,
+          512
+        ],
+        "256": [
+          1792,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          896,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_navy_02_a705",
+      "source_planned_id": "v22_cheer22_navy_02",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-76b48102-620b-4a10-95bd-bf473c1b9e57.png",
+      "source_original_sha256": "a0a4850a09a5b99e215daac48476d7cf86098e22dc5ebc5b8417522eec166997",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "a0a4850a09a5b99e215daac48476d7cf86098e22dc5ebc5b8417522eec166997",
+      "native_crop_edge": 1230,
+      "whole_photo_crop_xyxy": [
+        13,
+        24,
+        1243,
+        1254
+      ],
+      "native_head_top_estimate": 140,
+      "source_identity_guide_id": null,
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "navy",
+      "hair": "wave",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_navy_03",
+      "r": "cheer22",
+      "index": 8,
+      "rect": [
+        0,
+        512,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          0,
+          512,
+          512,
+          512
+        ],
+        "256": [
+          2048,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          1024,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_navy_03_a1401",
+      "source_planned_id": "v22_cheer22_navy_03",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-6e9a1e82-ed54-47d4-a777-78c9494cf124.png",
+      "source_original_sha256": "85a36edcdfbbf1696250478d8dd9044d671e501e833722affde78d4ee8a8acae",
+      "source_original_native_size": [
+        1133,
+        1388
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "85a36edcdfbbf1696250478d8dd9044d671e501e833722affde78d4ee8a8acae",
+      "native_crop_edge": 884,
+      "whole_photo_crop_xyxy": [
+        130,
+        61,
+        1014,
+        945
+      ],
+      "native_head_top_estimate": 125,
+      "source_identity_guide_id": null,
+      "revision": 2
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "navy",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_navy_04",
+      "r": "cheer22",
+      "index": 9,
+      "rect": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          512,
+          512,
+          512,
+          512
+        ],
+        "256": [
+          2304,
+          0,
+          256,
+          256
+        ],
+        "128": [
+          1152,
+          0,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_navy_05_a114",
+      "source_planned_id": "v22_navy_05",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-86a3648d-dc0e-4093-9a8c-f604e791b795.png",
+      "source_original_sha256": "4a66fe83c93a96d4e03debe7faa2936b78227a2a088a611ae6fe701f2c862b60",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        631,
+        631,
+        1250,
+        1250
+      ],
+      "native_tile_sha256": "e1aca953e1a6abebc6481de8c4620342157e401d725f8a0cede330a9710d802e",
+      "native_crop_edge": 619,
+      "whole_photo_crop_xyxy": [
+        0,
+        0,
+        619,
+        619
+      ],
+      "native_head_top_estimate": 43,
+      "source_identity_guide_id": "rv4_29",
+      "revision": 0
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "navy",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_navy_05",
+      "r": "cheer22",
+      "index": 10,
+      "rect": [
+        1024,
+        512,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1024,
+          512,
+          512,
+          512
+        ],
+        "256": [
+          0,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          0,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_navy_sf000820_a182",
+      "source_planned_id": "v22_navy_sf000820",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-ecc26511-a5a5-4a8d-b10c-755ae9ba60ee.png",
+      "source_original_sha256": "1f3ea9ae90b010c2b31cd4c191bf8d4e9ed6aa60c4b95d81df781995191924a1",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "1f3ea9ae90b010c2b31cd4c191bf8d4e9ed6aa60c4b95d81df781995191924a1",
+      "native_crop_edge": 978,
+      "whole_photo_crop_xyxy": [
+        147,
+        97,
+        1125,
+        1075
+      ],
+      "native_head_top_estimate": 175,
+      "source_identity_guide_id": "sf3_000820",
+      "revision": 0
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "navy",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "chestnut brown",
+      "id": "v22_ccap22_navy_06",
+      "r": "ccap22",
+      "index": 11,
+      "rect": [
+        1536,
+        512,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1536,
+          512,
+          512,
+          512
+        ],
+        "256": [
+          256,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          128,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_ccap22_navy_06_a334",
+      "source_planned_id": "v22_ccap22_navy_06",
+      "source_planned_role": "ccap22",
+      "source_original": "/workspace/generated_images/exec-b4055a50-0610-4e31-970e-a62dac49255b.png",
+      "source_original_sha256": "31708f53c20dd2fd7ea334edbe63a4da2854cd1eda1ebeee1cf58ab09a4a09a8",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "31708f53c20dd2fd7ea334edbe63a4da2854cd1eda1ebeee1cf58ab09a4a09a8",
+      "native_crop_edge": 836,
+      "whole_photo_crop_xyxy": [
+        209,
+        91,
+        1045,
+        927
+      ],
+      "native_head_top_estimate": 170,
+      "source_identity_guide_id": "sf3_003920",
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "blue",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_blue_01",
+      "r": "cheer22",
+      "index": 12,
+      "rect": [
+        2048,
+        512,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2048,
+          512,
+          512,
+          512
+        ],
+        "256": [
+          512,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          256,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_blue_01_a61",
+      "source_planned_id": "v22_blue_01",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-f704df41-1dfc-4f5e-9eb1-091ace0a04d6.png",
+      "source_original_sha256": "33323dd46ed56cfdd0915a1ad4e2fd68fb61b619b01449c5e16f8956d5b31236",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "33323dd46ed56cfdd0915a1ad4e2fd68fb61b619b01449c5e16f8956d5b31236",
+      "native_crop_edge": 1021,
+      "whole_photo_crop_xyxy": [
+        103,
+        164,
+        1124,
+        1185
+      ],
+      "native_head_top_estimate": 231,
+      "source_identity_guide_id": null,
+      "revision": 0
+    },
+    {
+      "a": 26,
+      "f": 1,
+      "uc": "blue",
+      "hair": "wave",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_blue_02",
+      "r": "cheer22",
+      "index": 13,
+      "rect": [
+        2560,
+        512,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2560,
+          512,
+          512,
+          512
+        ],
+        "256": [
+          768,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          384,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_blue_02_a106",
+      "source_planned_id": "v22_blue_02",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-e6a40fa3-e7dc-4fff-b837-559b4d78035e.png",
+      "source_original_sha256": "e0488dd71d60acbdb58f8eab6193fbfbf8152d9da774e8de070d12c1c5531c28",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        4,
+        4,
+        623,
+        623
+      ],
+      "native_tile_sha256": "6063859d3c570cf7f74a92ae91cb49f7f571fea71bbdf233556259007bf68612",
+      "native_crop_edge": 528,
+      "whole_photo_crop_xyxy": [
+        47,
+        66,
+        575,
+        594
+      ],
+      "native_head_top_estimate": 104,
+      "source_identity_guide_id": "rv2_14",
+      "revision": 0
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "blue",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "warm chocolate brown",
+      "id": "v22_cheer22_blue_03",
+      "r": "cheer22",
+      "index": 14,
+      "rect": [
+        3072,
+        512,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3072,
+          512,
+          512,
+          512
+        ],
+        "256": [
+          1024,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          512,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_blue_03_a335",
+      "source_planned_id": "v22_cheer22_blue_03",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-8a78e08c-39c8-4667-a436-8b05fbf6e1b7.png",
+      "source_original_sha256": "c9d3f5844e7a8b4fd91122859621aeb21879dd27be412a38042f083ae9be8fe5",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "c9d3f5844e7a8b4fd91122859621aeb21879dd27be412a38042f083ae9be8fe5",
+      "native_crop_edge": 828,
+      "whole_photo_crop_xyxy": [
+        231,
+        114,
+        1059,
+        942
+      ],
+      "native_head_top_estimate": 192,
+      "source_identity_guide_id": "sf3_001458",
+      "revision": 1
+    },
+    {
+      "a": 22,
+      "f": 1,
+      "uc": "blue",
+      "hair": "half",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "ash brown",
+      "id": "v22_cheer22_blue_04",
+      "r": "cheer22",
+      "index": 15,
+      "rect": [
+        3584,
+        512,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3584,
+          512,
+          512,
+          512
+        ],
+        "256": [
+          1280,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          640,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_blue_04_a336",
+      "source_planned_id": "v22_cheer22_blue_04",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-e61231c8-3ca6-4705-8173-1b45bcb86ef6.png",
+      "source_original_sha256": "37d18adbf1e0abaa42735cdbf422385dcb98a2c4483f7a21b761265e8927f965",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "37d18adbf1e0abaa42735cdbf422385dcb98a2c4483f7a21b761265e8927f965",
+      "native_crop_edge": 835,
+      "whole_photo_crop_xyxy": [
+        237,
+        88,
+        1072,
+        923
+      ],
+      "native_head_top_estimate": 167,
+      "source_identity_guide_id": "sf3_002391",
+      "revision": 1
+    },
+    {
+      "a": 23,
+      "f": 1,
+      "uc": "blue",
+      "hair": "wave",
+      "smile": "soft",
+      "pose": "v",
+      "hair_color": "natural dark brown",
+      "id": "v22_cheer22_blue_05",
+      "r": "cheer22",
+      "index": 16,
+      "rect": [
+        0,
+        1024,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          0,
+          1024,
+          512,
+          512
+        ],
+        "256": [
+          1536,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          768,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_blue_05_a553",
+      "source_planned_id": "v22_cheer22_blue_05",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-6b07cfd0-739e-4063-87d8-867b250b67f7.png",
+      "source_original_sha256": "47c25b13aea0ee5c0948c4c87f2a29c31d079339f393ab013d70bf0ea7f06665",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "47c25b13aea0ee5c0948c4c87f2a29c31d079339f393ab013d70bf0ea7f06665",
+      "native_crop_edge": 816,
+      "whole_photo_crop_xyxy": [
+        235,
+        105,
+        1051,
+        921
+      ],
+      "native_head_top_estimate": 182,
+      "source_identity_guide_id": "sf3_002022",
+      "revision": 1
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "blue",
+      "hair": "half",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_ccap22_blue_06",
+      "r": "ccap22",
+      "index": 17,
+      "rect": [
+        512,
+        1024,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          512,
+          1024,
+          512,
+          512
+        ],
+        "256": [
+          1792,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          896,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_blue_sf000606_a192",
+      "source_planned_id": "v22_blue_sf000606",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-f3bffb28-c7e3-48d7-b6ac-3adc180e3aa8.png",
+      "source_original_sha256": "8957c4f97a5b6846d7de7d21a5c4be0ff670d1d858dab4d609fed7091d54fd0a",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "8957c4f97a5b6846d7de7d21a5c4be0ff670d1d858dab4d609fed7091d54fd0a",
+      "native_crop_edge": 946,
+      "whole_photo_crop_xyxy": [
+        160,
+        105,
+        1106,
+        1051
+      ],
+      "native_head_top_estimate": 172,
+      "source_identity_guide_id": "sf3_000606",
+      "revision": 0
+    },
+    {
+      "a": 26,
+      "f": 1,
+      "uc": "black",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_black_01",
+      "r": "cheer22",
+      "index": 18,
+      "rect": [
+        1024,
+        1024,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1024,
+          1024,
+          512,
+          512
+        ],
+        "256": [
+          2048,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          1024,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_black_01_a65",
+      "source_planned_id": "v22_black_01",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-fce77149-033f-40e6-b0b6-0219e2582bff.png",
+      "source_original_sha256": "def38c5181c3bf17d95a7fc5672cc7cac4724248a60c88b85a71ea2ae69a0d53",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "def38c5181c3bf17d95a7fc5672cc7cac4724248a60c88b85a71ea2ae69a0d53",
+      "native_crop_edge": 1067,
+      "whole_photo_crop_xyxy": [
+        109,
+        187,
+        1176,
+        1254
+      ],
+      "native_head_top_estimate": 273,
+      "source_identity_guide_id": null,
+      "revision": 0
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "black",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "caramel brown",
+      "id": "v22_cheer22_black_02",
+      "r": "cheer22",
+      "index": 19,
+      "rect": [
+        1536,
+        1024,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1536,
+          1024,
+          512,
+          512
+        ],
+        "256": [
+          2304,
+          256,
+          256,
+          256
+        ],
+        "128": [
+          1152,
+          128,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_black_02_a338",
+      "source_planned_id": "v22_cheer22_black_02",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-4e2bbc31-ec46-4d2b-890e-c1cfc1dae6ef.png",
+      "source_original_sha256": "ac447f8efa760c481420eb0a49083211ff0e6cbb0a7eeb87135591646f45ce98",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "ac447f8efa760c481420eb0a49083211ff0e6cbb0a7eeb87135591646f45ce98",
+      "native_crop_edge": 863,
+      "whole_photo_crop_xyxy": [
+        195,
+        99,
+        1058,
+        962
+      ],
+      "native_head_top_estimate": 156,
+      "source_identity_guide_id": "sf3_002947",
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "black",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_black_03",
+      "r": "cheer22",
+      "index": 20,
+      "rect": [
+        2048,
+        1024,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2048,
+          1024,
+          512,
+          512
+        ],
+        "256": [
+          0,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          0,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_black_05_a94",
+      "source_planned_id": "v22_black_05",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-66affe65-c529-4560-8176-c807f84dca1c.png",
+      "source_original_sha256": "59d0663d5a56b0741b98086c35a2e89499a748a33c9a2072c56dfcbabd090134",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "native_tile_sha256": "e4acff3fb4a0e7858be69472a6368eb320a6a4afc43b34a07b3ccd29df16458a",
+      "native_crop_edge": 538,
+      "whole_photo_crop_xyxy": [
+        44,
+        28,
+        582,
+        566
+      ],
+      "native_head_top_estimate": 75,
+      "source_identity_guide_id": "rv3_15",
+      "revision": 0
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "black",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_black_04",
+      "r": "cheer22",
+      "index": 21,
+      "rect": [
+        2560,
+        1024,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2560,
+          1024,
+          512,
+          512
+        ],
+        "256": [
+          256,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          128,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_black_rv3_27_a159",
+      "source_planned_id": "v22_black_rv3_27",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-858db955-fe3a-456c-a9a2-734850a616e7.png",
+      "source_original_sha256": "b55b64168d8bda913831747037bed2009886457433f8e19bfefd0fac52746cee",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "b55b64168d8bda913831747037bed2009886457433f8e19bfefd0fac52746cee",
+      "native_crop_edge": 897,
+      "whole_photo_crop_xyxy": [
+        171,
+        121,
+        1068,
+        1018
+      ],
+      "native_head_top_estimate": 206,
+      "source_identity_guide_id": "rv3_27",
+      "revision": 0
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "black",
+      "hair": "half",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_black_05",
+      "r": "cheer22",
+      "index": 22,
+      "rect": [
+        3072,
+        1024,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3072,
+          1024,
+          512,
+          512
+        ],
+        "256": [
+          512,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          256,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_black_sf000892_a184",
+      "source_planned_id": "v22_black_sf000892",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-a3421607-1a9b-41a7-b804-fc0fc65d31b0.png",
+      "source_original_sha256": "64967665f6e1fc7fef11ad80638db47a79d96878cc7172153675a9ba6db291da",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "64967665f6e1fc7fef11ad80638db47a79d96878cc7172153675a9ba6db291da",
+      "native_crop_edge": 951,
+      "whole_photo_crop_xyxy": [
+        139,
+        70,
+        1090,
+        1021
+      ],
+      "native_head_top_estimate": 160,
+      "source_identity_guide_id": "sf3_000892",
+      "revision": 0
+    },
+    {
+      "a": 26,
+      "f": 1,
+      "uc": "black",
+      "hair": "wave",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_ccap22_black_06",
+      "r": "ccap22",
+      "index": 23,
+      "rect": [
+        3584,
+        1024,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3584,
+          1024,
+          512,
+          512
+        ],
+        "256": [
+          768,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          384,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_black_sf000128_a157",
+      "source_planned_id": "v22_black_sf000128",
+      "source_planned_role": "ccap22",
+      "source_original": "/workspace/generated_images/exec-1fd921a8-c79b-4368-987b-fede57437463.png",
+      "source_original_sha256": "d52813bc3a07247bf252215ff1e53910b2c921549146899cd941d750c055e215",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "d52813bc3a07247bf252215ff1e53910b2c921549146899cd941d750c055e215",
+      "native_crop_edge": 943,
+      "whole_photo_crop_xyxy": [
+        183,
+        90,
+        1126,
+        1033
+      ],
+      "native_head_top_estimate": 178,
+      "source_identity_guide_id": "sf3_000128",
+      "revision": 0
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "orange",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_orange_01",
+      "r": "cheer22",
+      "index": 24,
+      "rect": [
+        0,
+        1536,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          0,
+          1536,
+          512,
+          512
+        ],
+        "256": [
+          1024,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          512,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_orange_03_a111",
+      "source_planned_id": "v22_orange_03",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-81a5a27d-91c7-4f00-a366-30788bf6637f.png",
+      "source_original_sha256": "a12d9d3cdb34944c6bebae774af0aefb7d7cb576c00a108c6645b848cbe5dd30",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        631,
+        4,
+        1250,
+        623
+      ],
+      "native_tile_sha256": "b7af9ed3102ebb2722109c1d42d6400eadefc54cd857b69ad71b8da6c38ebebc",
+      "native_crop_edge": 545,
+      "whole_photo_crop_xyxy": [
+        40,
+        0,
+        585,
+        545
+      ],
+      "native_head_top_estimate": 44,
+      "source_identity_guide_id": "rv5_05",
+      "revision": 0
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "orange",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_orange_02",
+      "r": "cheer22",
+      "index": 25,
+      "rect": [
+        512,
+        1536,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          512,
+          1536,
+          512,
+          512
+        ],
+        "256": [
+          1280,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          640,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_orange_03_a86",
+      "source_planned_id": "v22_orange_03",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-6b336329-aede-489f-9214-b88cf8c15aeb.png",
+      "source_original_sha256": "577e4c1dc1495a6f5e043382c97c0c60e470dbf503292cc789cc5fb00727b3a3",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "native_tile_sha256": "fefc1c8d4f96082612eb0a6c0dab8036332e61b4cf69940c7a0e7d6fcdcaf276",
+      "native_crop_edge": 627,
+      "whole_photo_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "native_head_top_estimate": 52,
+      "source_identity_guide_id": "rv3_19",
+      "revision": 0
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "orange",
+      "hair": "pony",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_orange_03",
+      "r": "cheer22",
+      "index": 26,
+      "rect": [
+        1024,
+        1536,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1024,
+          1536,
+          512,
+          512
+        ],
+        "256": [
+          1536,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          768,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_orange_04_a86",
+      "source_planned_id": "v22_orange_04",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-6b336329-aede-489f-9214-b88cf8c15aeb.png",
+      "source_original_sha256": "577e4c1dc1495a6f5e043382c97c0c60e470dbf503292cc789cc5fb00727b3a3",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "native_tile_sha256": "fe14bde5028090ab74e512ab1ff28abb61836b85ff5f4dd80829f2839dd3da90",
+      "native_crop_edge": 627,
+      "whole_photo_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "native_head_top_estimate": 43,
+      "source_identity_guide_id": "rv3_05",
+      "revision": 0
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "orange",
+      "hair": "half",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural black",
+      "id": "v22_cheer22_orange_04",
+      "r": "cheer22",
+      "index": 27,
+      "rect": [
+        1536,
+        1536,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1536,
+          1536,
+          512,
+          512
+        ],
+        "256": [
+          1792,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          896,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_orange_04_a703",
+      "source_planned_id": "v22_cheer22_orange_04",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-4efe5baa-af40-4849-a42b-deaeda02396e.png",
+      "source_original_sha256": "9b7a8d41481dc14063bec37abcf83130e8d67a86d85860e8f3972aa0adbe2cf8",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "9b7a8d41481dc14063bec37abcf83130e8d67a86d85860e8f3972aa0adbe2cf8",
+      "native_crop_edge": 1070,
+      "whole_photo_crop_xyxy": [
+        93,
+        140,
+        1163,
+        1210
+      ],
+      "native_head_top_estimate": 241,
+      "source_identity_guide_id": null,
+      "revision": 1
+    },
+    {
+      "a": 26,
+      "f": 1,
+      "uc": "orange",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_orange_05",
+      "r": "cheer22",
+      "index": 28,
+      "rect": [
+        2048,
+        1536,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2048,
+          1536,
+          512,
+          512
+        ],
+        "256": [
+          2048,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          1024,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_orange_sf000925_a183",
+      "source_planned_id": "v22_orange_sf000925",
+      "source_planned_role": "ccap22",
+      "source_original": "/workspace/generated_images/exec-792d35c8-f8f3-4081-a754-0be5202f23c7.png",
+      "source_original_sha256": "aa6e74602b18f73a0b4f28992fdeb1cafd5a9a98d5faf619989be276592d6c2a",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "aa6e74602b18f73a0b4f28992fdeb1cafd5a9a98d5faf619989be276592d6c2a",
+      "native_crop_edge": 896,
+      "whole_photo_crop_xyxy": [
+        203,
+        61,
+        1099,
+        957
+      ],
+      "native_head_top_estimate": 149,
+      "source_identity_guide_id": "sf3_000925",
+      "revision": 1
+    },
+    {
+      "a": 26,
+      "f": 1,
+      "uc": "orange",
+      "hair": "half",
+      "smile": "soft",
+      "pose": "v",
+      "hair_color": "natural_dark",
+      "id": "v22_ccap22_orange_06",
+      "r": "ccap22",
+      "index": 29,
+      "rect": [
+        2560,
+        1536,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2560,
+          1536,
+          512,
+          512
+        ],
+        "256": [
+          2304,
+          512,
+          256,
+          256
+        ],
+        "128": [
+          1152,
+          256,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_orange_rv3_14_a137",
+      "source_planned_id": "v22_orange_rv3_14",
+      "source_planned_role": "ccap22",
+      "source_original": "/workspace/generated_images/exec-327239cc-1007-4133-bea8-2f69c4b99c9d.png",
+      "source_original_sha256": "711454f8382d3ce72c641d68a144620dc7d2a84a9ccfdc45abb3a05f8eded6ca",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        4,
+        631,
+        623,
+        1250
+      ],
+      "native_tile_sha256": "e5ecee293559f7e31fd321b5d116c687fcff91d5a95b370cba2f327d44dc99d4",
+      "native_crop_edge": 596,
+      "whole_photo_crop_xyxy": [
+        12,
+        16,
+        608,
+        612
+      ],
+      "native_head_top_estimate": 59,
+      "source_identity_guide_id": "rv3_14",
+      "revision": 0
+    },
+    {
+      "a": 22,
+      "f": 1,
+      "uc": "green",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "chestnut brown",
+      "id": "v22_cheer22_green_01",
+      "r": "cheer22",
+      "index": 30,
+      "rect": [
+        3072,
+        1536,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3072,
+          1536,
+          512,
+          512
+        ],
+        "256": [
+          0,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          0,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_green_01_a502",
+      "source_planned_id": "v22_cheer22_green_01",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-655371bd-5685-44d3-984e-3c5010b1c903.png",
+      "source_original_sha256": "368844ef237fba335b907b3027a27f7ed2a4f9c6860a3171d87b821244c708c0",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "368844ef237fba335b907b3027a27f7ed2a4f9c6860a3171d87b821244c708c0",
+      "native_crop_edge": 1254,
+      "whole_photo_crop_xyxy": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "native_head_top_estimate": 111,
+      "source_identity_guide_id": "sf3_002461",
+      "revision": 1
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "green",
+      "hair": "half",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_green_02",
+      "r": "cheer22",
+      "index": 31,
+      "rect": [
+        3584,
+        1536,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3584,
+          1536,
+          512,
+          512
+        ],
+        "256": [
+          256,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          128,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_green_sf000151_a163",
+      "source_planned_id": "v22_green_sf000151",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-0500047f-7425-4a9b-9d3d-24d44ae03e14.png",
+      "source_original_sha256": "4e314db743532020d29e09c0b95557b2d084f22a36f462b0b8b17d9d12a9db4b",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "4e314db743532020d29e09c0b95557b2d084f22a36f462b0b8b17d9d12a9db4b",
+      "native_crop_edge": 1036,
+      "whole_photo_crop_xyxy": [
+        132,
+        48,
+        1168,
+        1084
+      ],
+      "native_head_top_estimate": 151,
+      "source_identity_guide_id": "sf3_000151",
+      "revision": 0
+    },
+    {
+      "a": 23,
+      "f": 1,
+      "uc": "green",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "warm chocolate brown",
+      "id": "v22_cheer22_green_03",
+      "r": "cheer22",
+      "index": 32,
+      "rect": [
+        0,
+        2048,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          0,
+          2048,
+          512,
+          512
+        ],
+        "256": [
+          512,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          256,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_green_03_a340",
+      "source_planned_id": "v22_cheer22_green_03",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-829f9040-fd06-4917-abda-6ee24cb43c15.png",
+      "source_original_sha256": "31f4e41bb1b5045671fe8f2b73f04a38332815003fa02ace85531b992e0c3214",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "31f4e41bb1b5045671fe8f2b73f04a38332815003fa02ace85531b992e0c3214",
+      "native_crop_edge": 912,
+      "whole_photo_crop_xyxy": [
+        160,
+        91,
+        1072,
+        1003
+      ],
+      "native_head_top_estimate": 177,
+      "source_identity_guide_id": "sf3_003069",
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "green",
+      "hair": "half",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "ash brown",
+      "id": "v22_cheer22_green_04",
+      "r": "cheer22",
+      "index": 33,
+      "rect": [
+        512,
+        2048,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          512,
+          2048,
+          512,
+          512
+        ],
+        "256": [
+          768,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          384,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_green_04_a1902",
+      "source_planned_id": "v22_cheer22_green_04",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-812e18aa-56bc-4746-ae2d-8dc74112fce1.png",
+      "source_original_sha256": "4f5d7e2439f14cd50d77183cd05efa18ff7fef7202acf101bec95ba68f031fbf",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "4f5d7e2439f14cd50d77183cd05efa18ff7fef7202acf101bec95ba68f031fbf",
+      "native_crop_edge": 1076,
+      "whole_photo_crop_xyxy": [
+        166,
+        155,
+        1242,
+        1231
+      ],
+      "native_head_top_estimate": 257,
+      "source_identity_guide_id": null,
+      "revision": 2
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "green",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural dark brown",
+      "id": "v22_cheer22_green_05",
+      "r": "cheer22",
+      "index": 34,
+      "rect": [
+        1024,
+        2048,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1024,
+          2048,
+          512,
+          512
+        ],
+        "256": [
+          1024,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          512,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_green_05_a909",
+      "source_planned_id": "v22_cheer22_green_05",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-360960c0-51b5-40df-9bdb-55e0e216003a.png",
+      "source_original_sha256": "1cd51f95348a15f4dc96352e4f6030390c39061dc26d0e3713b09e3866366d4d",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "1cd51f95348a15f4dc96352e4f6030390c39061dc26d0e3713b09e3866366d4d",
+      "native_crop_edge": 996,
+      "whole_photo_crop_xyxy": [
+        149,
+        0,
+        1145,
+        996
+      ],
+      "native_head_top_estimate": 73,
+      "source_identity_guide_id": "sf3_002308",
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "green",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "caramel brown",
+      "id": "v22_ccap22_green_06",
+      "r": "ccap22",
+      "index": 35,
+      "rect": [
+        1536,
+        2048,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1536,
+          2048,
+          512,
+          512
+        ],
+        "256": [
+          1280,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          640,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_ccap22_green_06_a343",
+      "source_planned_id": "v22_ccap22_green_06",
+      "source_planned_role": "ccap22",
+      "source_original": "/workspace/generated_images/exec-091ecc59-c8b4-477d-b23f-75d098210a01.png",
+      "source_original_sha256": "eb401d2be28cca6efa013c51541596b85dd8c4356cd037c6f9801bd60749badb",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "eb401d2be28cca6efa013c51541596b85dd8c4356cd037c6f9801bd60749badb",
+      "native_crop_edge": 873,
+      "whole_photo_crop_xyxy": [
+        177,
+        103,
+        1050,
+        976
+      ],
+      "native_head_top_estimate": 160,
+      "source_identity_guide_id": "sf3_004181",
+      "revision": 1
+    },
+    {
+      "a": 23,
+      "f": 1,
+      "uc": "purple",
+      "hair": "half",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "reddish chocolate brown",
+      "id": "v22_cheer22_purple_01",
+      "r": "cheer22",
+      "index": 36,
+      "rect": [
+        2048,
+        2048,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2048,
+          2048,
+          512,
+          512
+        ],
+        "256": [
+          1536,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          768,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_purple_01_a344",
+      "source_planned_id": "v22_cheer22_purple_01",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-608b4e0f-94b7-47db-981c-efc2ee6af732.png",
+      "source_original_sha256": "6ddd98a2b70eb37162d004ce905fe37ae30dcf9813b465086048b005ed77c70e",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "6ddd98a2b70eb37162d004ce905fe37ae30dcf9813b465086048b005ed77c70e",
+      "native_crop_edge": 816,
+      "whole_photo_crop_xyxy": [
+        234,
+        86,
+        1050,
+        902
+      ],
+      "native_head_top_estimate": 163,
+      "source_identity_guide_id": "sf3_004276",
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "purple",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "chestnut brown",
+      "id": "v22_cheer22_purple_02",
+      "r": "cheer22",
+      "index": 37,
+      "rect": [
+        2560,
+        2048,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2560,
+          2048,
+          512,
+          512
+        ],
+        "256": [
+          1792,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          896,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_purple_02_a345",
+      "source_planned_id": "v22_cheer22_purple_02",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-1961e75a-0a17-4ec6-9bf3-f34040ec6939.png",
+      "source_original_sha256": "a45e815c0fcb28213d2b878a6098dfacaea0a3eb0c6aa8a179143f4587ee9f32",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "a45e815c0fcb28213d2b878a6098dfacaea0a3eb0c6aa8a179143f4587ee9f32",
+      "native_crop_edge": 761,
+      "whole_photo_crop_xyxy": [
+        228,
+        88,
+        989,
+        849
+      ],
+      "native_head_top_estimate": 164,
+      "source_identity_guide_id": "sf3_003921",
+      "revision": 1
+    },
+    {
+      "a": 26,
+      "f": 1,
+      "uc": "purple",
+      "hair": "half",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_purple_03",
+      "r": "cheer22",
+      "index": 38,
+      "rect": [
+        3072,
+        2048,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3072,
+          2048,
+          512,
+          512
+        ],
+        "256": [
+          2048,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          1024,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_purple_03_a98",
+      "source_planned_id": "v22_purple_03",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-95e9b8a7-f53e-4f60-b3e7-b05583e44c81.png",
+      "source_original_sha256": "fa66bf28de70011bb1667c47698cd45014d114fab3bd8ebc2921be412b6d6b3b",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "native_tile_sha256": "e640720282af6fe49852419d869a5026727ff83d5207688f9b14d5757277acd4",
+      "native_crop_edge": 513,
+      "whole_photo_crop_xyxy": [
+        52,
+        20,
+        565,
+        533
+      ],
+      "native_head_top_estimate": 57,
+      "source_identity_guide_id": "rv2_11",
+      "revision": 0
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "purple",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "warm chocolate brown",
+      "id": "v22_cheer22_purple_04",
+      "r": "cheer22",
+      "index": 39,
+      "rect": [
+        3584,
+        2048,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3584,
+          2048,
+          512,
+          512
+        ],
+        "256": [
+          2304,
+          768,
+          256,
+          256
+        ],
+        "128": [
+          1152,
+          384,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_purple_04_a346",
+      "source_planned_id": "v22_cheer22_purple_04",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-af4cc32c-9cff-454e-be2e-aebc84e7281a.png",
+      "source_original_sha256": "09aaa8df93a887a642a6f9da19036d2f85b07609516f517b0b9e6325fed882d8",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "09aaa8df93a887a642a6f9da19036d2f85b07609516f517b0b9e6325fed882d8",
+      "native_crop_edge": 811,
+      "whole_photo_crop_xyxy": [
+        238,
+        91,
+        1049,
+        902
+      ],
+      "native_head_top_estimate": 168,
+      "source_identity_guide_id": "sf3_004392",
+      "revision": 1
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "purple",
+      "hair": "half",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_purple_05",
+      "r": "cheer22",
+      "index": 40,
+      "rect": [
+        0,
+        2560,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          0,
+          2560,
+          512,
+          512
+        ],
+        "256": [
+          0,
+          1024,
+          256,
+          256
+        ],
+        "128": [
+          0,
+          512,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_purple_sf000224_a145",
+      "source_planned_id": "v22_purple_sf000224",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-64d309a2-ed41-4739-b1fc-756964891c9a.png",
+      "source_original_sha256": "f1b208ae9c8284564d531628008a3e1f42557909692e67e8b6a25634b420c572",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        4,
+        631,
+        623,
+        1250
+      ],
+      "native_tile_sha256": "0517c18008562fdbf7c62b29ddf69b2277ddd837714f3e354f145e47e3ba8dad",
+      "native_crop_edge": 600,
+      "whole_photo_crop_xyxy": [
+        9,
+        2,
+        609,
+        602
+      ],
+      "native_head_top_estimate": 38,
+      "source_identity_guide_id": "sf3_000224",
+      "revision": 0
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "purple",
+      "hair": "half",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "ash brown",
+      "id": "v22_ccap22_purple_06",
+      "r": "ccap22",
+      "index": 41,
+      "rect": [
+        512,
+        2560,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          512,
+          2560,
+          512,
+          512
+        ],
+        "256": [
+          256,
+          1024,
+          256,
+          256
+        ],
+        "128": [
+          128,
+          512,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_ccap22_purple_06_a347",
+      "source_planned_id": "v22_ccap22_purple_06",
+      "source_planned_role": "ccap22",
+      "source_original": "/workspace/generated_images/exec-424c88d9-f9d8-4fdc-ab9e-c82e9c396670.png",
+      "source_original_sha256": "845d31b4eeb2c1f3331a25b0f6353d5f90e6daf71b124407ed59272e5b4e72fe",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "845d31b4eeb2c1f3331a25b0f6353d5f90e6daf71b124407ed59272e5b4e72fe",
+      "native_crop_edge": 828,
+      "whole_photo_crop_xyxy": [
+        202,
+        110,
+        1030,
+        938
+      ],
+      "native_head_top_estimate": 188,
+      "source_identity_guide_id": "sf3_003048",
+      "revision": 1
+    },
+    {
+      "a": 23,
+      "f": 1,
+      "uc": "sky",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "v",
+      "hair_color": "natural dark brown",
+      "id": "v22_cheer22_sky_01",
+      "r": "cheer22",
+      "index": 42,
+      "rect": [
+        1024,
+        2560,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1024,
+          2560,
+          512,
+          512
+        ],
+        "256": [
+          512,
+          1024,
+          256,
+          256
+        ],
+        "128": [
+          256,
+          512,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_sky_01_a348",
+      "source_planned_id": "v22_cheer22_sky_01",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-a684cc27-06ce-4ba0-b042-f01d8af9a136.png",
+      "source_original_sha256": "e5033b2a964cab36f0c5eaa2a4afdc52c6a947fc691c5c5bdb3a44da81aa5b96",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "e5033b2a964cab36f0c5eaa2a4afdc52c6a947fc691c5c5bdb3a44da81aa5b96",
+      "native_crop_edge": 765,
+      "whole_photo_crop_xyxy": [
+        259,
+        104,
+        1024,
+        869
+      ],
+      "native_head_top_estimate": 171,
+      "source_identity_guide_id": "sf3_003184",
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "sky",
+      "hair": "pony",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "natural_dark",
+      "id": "v22_cheer22_sky_02",
+      "r": "cheer22",
+      "index": 43,
+      "rect": [
+        1536,
+        2560,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          1536,
+          2560,
+          512,
+          512
+        ],
+        "256": [
+          768,
+          1024,
+          256,
+          256
+        ],
+        "128": [
+          384,
+          512,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_sky_02_a82",
+      "source_planned_id": "v22_sky_02",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-4e8acd04-e10b-4d38-a343-04c07790d584.png",
+      "source_original_sha256": "75108da7abb93ba0677a85350b54f2ae54df2ea9ad453a0c6a8163a5dd1bcf4c",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "75108da7abb93ba0677a85350b54f2ae54df2ea9ad453a0c6a8163a5dd1bcf4c",
+      "native_crop_edge": 914,
+      "whole_photo_crop_xyxy": [
+        143,
+        229,
+        1057,
+        1143
+      ],
+      "native_head_top_estimate": 300,
+      "source_identity_guide_id": null,
+      "revision": 0
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "sky",
+      "hair": "pony",
+      "smile": "soft",
+      "pose": "front",
+      "hair_color": "caramel brown",
+      "id": "v22_cheer22_sky_03",
+      "r": "cheer22",
+      "index": 44,
+      "rect": [
+        2048,
+        2560,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2048,
+          2560,
+          512,
+          512
+        ],
+        "256": [
+          1024,
+          1024,
+          256,
+          256
+        ],
+        "128": [
+          512,
+          512,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_sky_03_a1903",
+      "source_planned_id": "v22_cheer22_sky_03",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-8ded4b08-c85e-4619-a5f9-b4716f34198b.png",
+      "source_original_sha256": "69ad23810af3207bb02d635423543ea02c967a4bac131a9c795e253a7d22e230",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "69ad23810af3207bb02d635423543ea02c967a4bac131a9c795e253a7d22e230",
+      "native_crop_edge": 946,
+      "whole_photo_crop_xyxy": [
+        113,
+        237,
+        1059,
+        1183
+      ],
+      "native_head_top_estimate": 294,
+      "source_identity_guide_id": null,
+      "revision": 2
+    },
+    {
+      "a": 25,
+      "f": 1,
+      "uc": "sky",
+      "hair": "half",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "reddish chocolate brown",
+      "id": "v22_cheer22_sky_04",
+      "r": "cheer22",
+      "index": 45,
+      "rect": [
+        2560,
+        2560,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          2560,
+          2560,
+          512,
+          512
+        ],
+        "256": [
+          1280,
+          1024,
+          256,
+          256
+        ],
+        "128": [
+          640,
+          512,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_sky_04_a349",
+      "source_planned_id": "v22_cheer22_sky_04",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-9fb4b750-f773-4acb-a1d8-3c41d3296195.png",
+      "source_original_sha256": "06a300e20aeb8def9365e303c7453a767c6712a2e3219ab0475d75b87825710c",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "06a300e20aeb8def9365e303c7453a767c6712a2e3219ab0475d75b87825710c",
+      "native_crop_edge": 880,
+      "whole_photo_crop_xyxy": [
+        160,
+        84,
+        1040,
+        964
+      ],
+      "native_head_top_estimate": 167,
+      "source_identity_guide_id": "sf3_003250",
+      "revision": 1
+    },
+    {
+      "a": 22,
+      "f": 1,
+      "uc": "sky",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "chestnut brown",
+      "id": "v22_cheer22_sky_05",
+      "r": "cheer22",
+      "index": 46,
+      "rect": [
+        3072,
+        2560,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3072,
+          2560,
+          512,
+          512
+        ],
+        "256": [
+          1536,
+          1024,
+          256,
+          256
+        ],
+        "128": [
+          768,
+          512,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_cheer22_sky_05_a350",
+      "source_planned_id": "v22_cheer22_sky_05",
+      "source_planned_role": "cheer22",
+      "source_original": "/workspace/generated_images/exec-e7ff064b-5121-4a29-abcc-e8da39384439.png",
+      "source_original_sha256": "c9dd6ffbbaadd20cf380e10bc6917048ffd891d3073ba8c2879cc20682e4b30b",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "c9dd6ffbbaadd20cf380e10bc6917048ffd891d3073ba8c2879cc20682e4b30b",
+      "native_crop_edge": 803,
+      "whole_photo_crop_xyxy": [
+        206,
+        107,
+        1009,
+        910
+      ],
+      "native_head_top_estimate": 183,
+      "source_identity_guide_id": "sf3_003236",
+      "revision": 1
+    },
+    {
+      "a": 24,
+      "f": 1,
+      "uc": "sky",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "hair_color": "warm chocolate brown",
+      "id": "v22_ccap22_sky_06",
+      "r": "ccap22",
+      "index": 47,
+      "rect": [
+        3584,
+        2560,
+        512,
+        512
+      ],
+      "rects": {
+        "512": [
+          3584,
+          2560,
+          512,
+          512
+        ],
+        "256": [
+          1792,
+          1024,
+          256,
+          256
+        ],
+        "128": [
+          896,
+          512,
+          128,
+          128
+        ]
+      },
+      "path_base": "assets/v22/cheer_stage/drafts/revision02_idol_cast/sheets/cheer_stage",
+      "source_candidate_id": "v22_ccap22_sky_06_a351",
+      "source_planned_id": "v22_ccap22_sky_06",
+      "source_planned_role": "ccap22",
+      "source_original": "/workspace/generated_images/exec-383e5c98-72b2-4019-b654-9341746f20f0.png",
+      "source_original_sha256": "64a54009ddba2e361eb089ac8592c41498fa9629707c62c4da519f40cf7dc945",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "64a54009ddba2e361eb089ac8592c41498fa9629707c62c4da519f40cf7dc945",
+      "native_crop_edge": 818,
+      "whole_photo_crop_xyxy": [
+        239,
+        109,
+        1057,
+        927
+      ],
+      "native_head_top_estimate": 186,
+      "source_identity_guide_id": "sf3_003581",
+      "revision": 1
+    }
+  ],
+  "historical_checkpoints_are_not_runtime_assets": true,
+  "asset_validation_passed": false,
+  "not_for_runtime": true,
+  "strict_threshold_unchanged": 0.4,
+  "approval_needed": "User decision whether to preserve strict0.40 similarity gate or prioritize idol-profile beauty and explicitly revise that criterion",
+  "intended_runtime_path_base": "assets/v22/cheer_stage/sheets/cheer_stage"
+}

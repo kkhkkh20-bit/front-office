@@ -1,0 +1,32 @@
+{
+  "id": "v22_orange_sf000925",
+  "index": 31,
+  "r": "ccap22",
+  "a": 26,
+  "f": 1,
+  "uc": "orange",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "v",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000925_identity_guide.jpg",
+  "source_guide_id": "sf3_000925",
+  "source_guide_dataset": "SFHQ part3, raw public synthetic parquet reference",
+  "source_guide_row_idx": 925,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "8fe23def5811ea9f5b3861f35e894bad4cc581e286a11899e3f39683fb1d0a5e",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "source_guide_parquet": "default/train/0000.parquet",
+  "costume_reference": "/dev/shm/v22_work/kits/orange.png",
+  "generation_attempt": 183,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photograph natural stage hairstyle grooming only",
+  "composition_reference": "/workspace/generated_images/exec-0a56119c-4043-46e1-a194-c714a86390e1.png",
+  "prompt": "A SMALL natural stage HAIRSTYLE grooming edit to this whole real photograph. Preserve EXACT same fictional ADULT KOREAN woman age26, her distinct individual face/skull/forehead/eyes/nose/lips/skin/makeup, EXACT smile/teeth and hand pose, outfit/collar/trim, camera/framing/scene. Make ONLY the HAIR CROWN naturally a little fuller/higher, about40pixels higher on the1254canvas, by normal professionally styled hair volume. Use a dense coherent groomed crown, no tall thin wisps. Do not enlarge or reshape skull/forehead/face, do not move eyes or change anatomy. Keep same polished real adult twenties professional KBO cheerleader, realistic fine skin, no plastic CG/template. No crop or zoom, same NIGHT stadium lighting/85mm camera, new native1254squareorhigher photograph.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-792d35c8-f8f3-4081-a754-0be5202f23c7.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_orange_sf000925_a180",
+  "source_photo_reference": "/workspace/generated_images/exec-0a56119c-4043-46e1-a194-c714a86390e1.png",
+  "rise": 40
+}

@@ -1,0 +1,20 @@
+{
+  "id": "v22_blue_03",
+  "index": 14,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "blue",
+  "hair": "pony",
+  "smile": "soft",
+  "pose": "front",
+  "brief": "softly rounded BROAD OVAL face with full natural cheeks and rounded chin, gently upturned MONOLID eyes, low straight brows, short softly broad nose with rounded tip, broad smile and asymmetric dimple on one cheek. Warm light-medium natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/blue.png",
+  "generation_attempt": 22,
+  "prompt": "OUTPAINT this single photograph only: replace ALL the gray outer canvas with a seamless continuation of the same night baseball stadium background and the lower blue uniform/arms. Keep the entire existing photograph INSIDE exactly as it is, especially the adult woman's exact face/identity/expression, hair, collar, light and the present camera scale/location. Do not zoom back into the woman: preserve the reference canvas framing with generous extra stadium space ABOVE her complete hairstyle. One seamless wide-framed SQUARE natural real photograph; NO visible gray border, rectangle seam, writing or new people. Preserve her soft closed-lip smile and mature adult25 appearance. Finalphoto is head+shoulders+upperchest with visible background margin above head.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-d13b6b44-fbc5-4a71-9061-5d65042f935f.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_identity_guide": "/workspace/generated_images/exec-5ca1cce7-c492-4c21-b9fb-276985473251.png",
+  "status": "PENDING_VALIDATION",
+  "exclude_from_casting": true,
+  "visual_hold_reason": "Eye/iris and skin rendering remain too doll-like for user realism criterion"
+}

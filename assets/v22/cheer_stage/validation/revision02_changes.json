@@ -1,0 +1,464 @@
+{
+  "revision": 2,
+  "baseline_commit": "1fd20b3d1933e95b3d6ff7f46245b720506ff288",
+  "changed_indices": [
+    8,
+    33,
+    44
+  ],
+  "new_fictional_idol_style_cast_count": 3,
+  "retained_original_photo_and_crop_count": 45,
+  "runtime_id_index_role_color_unchanged": true,
+  "comparison_preview": "previews/revision02_idol_cast_before_after.png",
+  "actual_final_sheet_sha256": {
+    "512": "99a042140909f36819e840955396a5b4bfbf6a3d79b35d5dad6a16fed8031fd2",
+    "256": "7693b663cbae8af7fae5130e6e12e5401e7634c794be56cf46a227d1ca0ca6f6",
+    "128": "08bb42ffa6cbb779eb43288de56633290c5719732b2949cdecd3575bb51f1e9f"
+  },
+  "identities": [
+    {
+      "id": "v22_cheer22_red_01",
+      "index": 0,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_red_01_a11",
+      "after_source_candidate_id": "v22_red_01_a11"
+    },
+    {
+      "id": "v22_cheer22_red_02",
+      "index": 1,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_red_02_a801",
+      "after_source_candidate_id": "v22_cheer22_red_02_a801"
+    },
+    {
+      "id": "v22_cheer22_red_03",
+      "index": 2,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_red_03_a802",
+      "after_source_candidate_id": "v22_cheer22_red_03_a802"
+    },
+    {
+      "id": "v22_cheer22_red_04",
+      "index": 3,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_red_04_a910",
+      "after_source_candidate_id": "v22_cheer22_red_04_a910"
+    },
+    {
+      "id": "v22_cheer22_red_05",
+      "index": 4,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_red_05_a912",
+      "after_source_candidate_id": "v22_cheer22_red_05_a912"
+    },
+    {
+      "id": "v22_ccap22_red_06",
+      "index": 5,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_ccap22_red_06_a333",
+      "after_source_candidate_id": "v22_ccap22_red_06_a333"
+    },
+    {
+      "id": "v22_cheer22_navy_01",
+      "index": 6,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_navy_02_a62",
+      "after_source_candidate_id": "v22_navy_02_a62"
+    },
+    {
+      "id": "v22_cheer22_navy_02",
+      "index": 7,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_navy_02_a705",
+      "after_source_candidate_id": "v22_cheer22_navy_02_a705"
+    },
+    {
+      "id": "v22_cheer22_navy_03",
+      "index": 8,
+      "action": "new_fictional_idol_style_cast",
+      "native_photo_unchanged": false,
+      "whole_photo_crop_unchanged": false,
+      "before_source_candidate_id": "v22_navy_04_a95",
+      "after_source_candidate_id": "v22_cheer22_navy_03_a1401",
+      "previous_actor_reference_raw512_cosine": 0.041750431060791016,
+      "identity_note": "Descriptive change from previous casting. These are deliberately NEW fictional adult faces, not an identity-preservation edit."
+    },
+    {
+      "id": "v22_cheer22_navy_04",
+      "index": 9,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_navy_05_a114",
+      "after_source_candidate_id": "v22_navy_05_a114"
+    },
+    {
+      "id": "v22_cheer22_navy_05",
+      "index": 10,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_navy_sf000820_a182",
+      "after_source_candidate_id": "v22_navy_sf000820_a182"
+    },
+    {
+      "id": "v22_ccap22_navy_06",
+      "index": 11,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_ccap22_navy_06_a334",
+      "after_source_candidate_id": "v22_ccap22_navy_06_a334"
+    },
+    {
+      "id": "v22_cheer22_blue_01",
+      "index": 12,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_blue_01_a61",
+      "after_source_candidate_id": "v22_blue_01_a61"
+    },
+    {
+      "id": "v22_cheer22_blue_02",
+      "index": 13,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_blue_02_a106",
+      "after_source_candidate_id": "v22_blue_02_a106"
+    },
+    {
+      "id": "v22_cheer22_blue_03",
+      "index": 14,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_blue_03_a335",
+      "after_source_candidate_id": "v22_cheer22_blue_03_a335"
+    },
+    {
+      "id": "v22_cheer22_blue_04",
+      "index": 15,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_blue_04_a336",
+      "after_source_candidate_id": "v22_cheer22_blue_04_a336"
+    },
+    {
+      "id": "v22_cheer22_blue_05",
+      "index": 16,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_blue_05_a553",
+      "after_source_candidate_id": "v22_cheer22_blue_05_a553"
+    },
+    {
+      "id": "v22_ccap22_blue_06",
+      "index": 17,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_blue_sf000606_a192",
+      "after_source_candidate_id": "v22_blue_sf000606_a192"
+    },
+    {
+      "id": "v22_cheer22_black_01",
+      "index": 18,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_black_01_a65",
+      "after_source_candidate_id": "v22_black_01_a65"
+    },
+    {
+      "id": "v22_cheer22_black_02",
+      "index": 19,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_black_02_a338",
+      "after_source_candidate_id": "v22_cheer22_black_02_a338"
+    },
+    {
+      "id": "v22_cheer22_black_03",
+      "index": 20,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_black_05_a94",
+      "after_source_candidate_id": "v22_black_05_a94"
+    },
+    {
+      "id": "v22_cheer22_black_04",
+      "index": 21,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_black_rv3_27_a159",
+      "after_source_candidate_id": "v22_black_rv3_27_a159"
+    },
+    {
+      "id": "v22_cheer22_black_05",
+      "index": 22,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_black_sf000892_a184",
+      "after_source_candidate_id": "v22_black_sf000892_a184"
+    },
+    {
+      "id": "v22_ccap22_black_06",
+      "index": 23,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_black_sf000128_a157",
+      "after_source_candidate_id": "v22_black_sf000128_a157"
+    },
+    {
+      "id": "v22_cheer22_orange_01",
+      "index": 24,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_orange_03_a111",
+      "after_source_candidate_id": "v22_orange_03_a111"
+    },
+    {
+      "id": "v22_cheer22_orange_02",
+      "index": 25,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_orange_03_a86",
+      "after_source_candidate_id": "v22_orange_03_a86"
+    },
+    {
+      "id": "v22_cheer22_orange_03",
+      "index": 26,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_orange_04_a86",
+      "after_source_candidate_id": "v22_orange_04_a86"
+    },
+    {
+      "id": "v22_cheer22_orange_04",
+      "index": 27,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_orange_04_a703",
+      "after_source_candidate_id": "v22_cheer22_orange_04_a703"
+    },
+    {
+      "id": "v22_cheer22_orange_05",
+      "index": 28,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_orange_sf000925_a183",
+      "after_source_candidate_id": "v22_orange_sf000925_a183"
+    },
+    {
+      "id": "v22_ccap22_orange_06",
+      "index": 29,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_orange_rv3_14_a137",
+      "after_source_candidate_id": "v22_orange_rv3_14_a137"
+    },
+    {
+      "id": "v22_cheer22_green_01",
+      "index": 30,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_green_01_a502",
+      "after_source_candidate_id": "v22_cheer22_green_01_a502"
+    },
+    {
+      "id": "v22_cheer22_green_02",
+      "index": 31,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_green_sf000151_a163",
+      "after_source_candidate_id": "v22_green_sf000151_a163"
+    },
+    {
+      "id": "v22_cheer22_green_03",
+      "index": 32,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_green_03_a340",
+      "after_source_candidate_id": "v22_cheer22_green_03_a340"
+    },
+    {
+      "id": "v22_cheer22_green_04",
+      "index": 33,
+      "action": "new_fictional_idol_style_cast",
+      "native_photo_unchanged": false,
+      "whole_photo_crop_unchanged": false,
+      "before_source_candidate_id": "v22_cheer22_green_04_a901",
+      "after_source_candidate_id": "v22_cheer22_green_04_a1902",
+      "previous_actor_reference_raw512_cosine": 0.1936759352684021,
+      "identity_note": "Descriptive change from previous casting. These are deliberately NEW fictional adult faces, not an identity-preservation edit."
+    },
+    {
+      "id": "v22_cheer22_green_05",
+      "index": 34,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_green_05_a909",
+      "after_source_candidate_id": "v22_cheer22_green_05_a909"
+    },
+    {
+      "id": "v22_ccap22_green_06",
+      "index": 35,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_ccap22_green_06_a343",
+      "after_source_candidate_id": "v22_ccap22_green_06_a343"
+    },
+    {
+      "id": "v22_cheer22_purple_01",
+      "index": 36,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_purple_01_a344",
+      "after_source_candidate_id": "v22_cheer22_purple_01_a344"
+    },
+    {
+      "id": "v22_cheer22_purple_02",
+      "index": 37,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_purple_02_a345",
+      "after_source_candidate_id": "v22_cheer22_purple_02_a345"
+    },
+    {
+      "id": "v22_cheer22_purple_03",
+      "index": 38,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_purple_03_a98",
+      "after_source_candidate_id": "v22_purple_03_a98"
+    },
+    {
+      "id": "v22_cheer22_purple_04",
+      "index": 39,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_purple_04_a346",
+      "after_source_candidate_id": "v22_cheer22_purple_04_a346"
+    },
+    {
+      "id": "v22_cheer22_purple_05",
+      "index": 40,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_purple_sf000224_a145",
+      "after_source_candidate_id": "v22_purple_sf000224_a145"
+    },
+    {
+      "id": "v22_ccap22_purple_06",
+      "index": 41,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_ccap22_purple_06_a347",
+      "after_source_candidate_id": "v22_ccap22_purple_06_a347"
+    },
+    {
+      "id": "v22_cheer22_sky_01",
+      "index": 42,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_sky_01_a348",
+      "after_source_candidate_id": "v22_cheer22_sky_01_a348"
+    },
+    {
+      "id": "v22_cheer22_sky_02",
+      "index": 43,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_sky_02_a82",
+      "after_source_candidate_id": "v22_sky_02_a82"
+    },
+    {
+      "id": "v22_cheer22_sky_03",
+      "index": 44,
+      "action": "new_fictional_idol_style_cast",
+      "native_photo_unchanged": false,
+      "whole_photo_crop_unchanged": false,
+      "before_source_candidate_id": "v22_cheer22_sky_03_a505",
+      "after_source_candidate_id": "v22_cheer22_sky_03_a1903",
+      "previous_actor_reference_raw512_cosine": 0.3380909562110901,
+      "identity_note": "Descriptive change from previous casting. These are deliberately NEW fictional adult faces, not an identity-preservation edit."
+    },
+    {
+      "id": "v22_cheer22_sky_04",
+      "index": 45,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_sky_04_a349",
+      "after_source_candidate_id": "v22_cheer22_sky_04_a349"
+    },
+    {
+      "id": "v22_cheer22_sky_05",
+      "index": 46,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_cheer22_sky_05_a350",
+      "after_source_candidate_id": "v22_cheer22_sky_05_a350"
+    },
+    {
+      "id": "v22_ccap22_sky_06",
+      "index": 47,
+      "action": "retained_original_photo_and_crop",
+      "native_photo_unchanged": true,
+      "whole_photo_crop_unchanged": true,
+      "before_source_candidate_id": "v22_ccap22_sky_06_a351",
+      "after_source_candidate_id": "v22_ccap22_sky_06_a351"
+    }
+  ],
+  "style_reference_policy": "Actual LG official cheer squad photos used solely for cosmetics/hair finish, not as fictional character identity. Three NEW fictional adult casts; actual real-face references were used for style only and are not runtime assets. No real photos are runtime assets.",
+  "reference_sources": [
+    "https://www.lgtwins.com/fan/cheers",
+    "https://sports.news.nate.com/view/20250531n08138",
+    "https://www.xportsnews.com/article/2004704"
+  ]
+}

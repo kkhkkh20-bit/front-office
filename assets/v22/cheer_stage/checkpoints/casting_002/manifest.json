@@ -1,0 +1,4624 @@
+{
+  "status": "CHECKPOINT_NOT_RUNTIME_ASSETS",
+  "asset_validation_passed": false,
+  "production_complete": false,
+  "requested_total": 48,
+  "numeric_compatible_candidates": 23,
+  "runtime_ready": 0,
+  "generated_at_kst": "2026-11-18T02:01:12.358142+09:00",
+  "identity_check": {
+    "threshold": 0.4,
+    "strict_less_than": true,
+    "reference_count": 116,
+    "reference_groups": {
+      "v15_cheer15": 40,
+      "v12_ccap": 16,
+      "v10_women": 40,
+      "v19_secretary": 20
+    },
+    "protocol": "SCRFD640/threshold.55, LMEDS5point112, w600k_r50, raw normalized cosine; all actual128/256/512 decoded individual WebPs; legacy highest native256 or128 for512 without enlargement",
+    "resolutions": {
+      "128": {
+        "within_max": 0.3997451663017273,
+        "within_nearest": [
+          "v22_purple_04_a88",
+          "v22_navy_03_a95"
+        ],
+        "legacy_max": 0.3481866121292114,
+        "legacy_nearest": [
+          "v22_navy_02_a62",
+          "v15_cheer_young_018"
+        ],
+        "within_pair_count": 253,
+        "legacy_pair_count": 2668
+      },
+      "256": {
+        "within_max": 0.382339209318161,
+        "within_nearest": [
+          "v22_purple_04_a88",
+          "v22_navy_03_a95"
+        ],
+        "legacy_max": 0.38706254959106445,
+        "legacy_nearest": [
+          "v22_black_06_a71",
+          "v15_cheer_young_016"
+        ],
+        "within_pair_count": 253,
+        "legacy_pair_count": 2668
+      },
+      "512": {
+        "within_max": 0.3930729031562805,
+        "within_nearest": [
+          "v22_blue_01_a61",
+          "v22_orange_01_a64"
+        ],
+        "legacy_max": 0.39498409628868103,
+        "legacy_nearest": [
+          "v22_black_06_a71",
+          "v15_cheer_young_016"
+        ],
+        "within_pair_count": 253,
+        "legacy_pair_count": 2668
+      }
+    }
+  },
+  "composition_check": "actual decoded RGB512 face36–42%, eyes38–42%; native silhouette headroom6–10% projected through same whole-photo crop; final atlas checks still pending",
+  "final_atlases_created": false,
+  "identities": [
+    {
+      "id": "v22_red_01_a11",
+      "r": "cheer22",
+      "a": 22,
+      "f": 1,
+      "uc": "red",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "index": 0,
+      "source_planned_id": "v22_red_01",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 0,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_red_01_a11",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_red_01_a11_128.webp",
+        "256": "checkpoints/casting_002/v22_red_01_a11_256.webp",
+        "512": "checkpoints/casting_002/v22_red_01_a11_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-e3f79e79-d3b7-40a8-a143-44c3fc219adc.png",
+      "source_original_sha256": "c724a6529bfe3c6645fd7f4da9f42915a6d6e1c98e9ad5f1575c9f44c266cd04",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "c724a6529bfe3c6645fd7f4da9f42915a6d6e1c98e9ad5f1575c9f44c266cd04",
+      "whole_photo_crop_xyxy": [
+        137,
+        75,
+        1039,
+        977
+      ],
+      "native_crop_edge": 902,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.3940426707267761,
+        "eye_y_ratio": 0.40952417254447937,
+        "headroom_ratio_projected_from_native_silhouette": 0.06541019955654102,
+        "pixel_sha256": "88f41362ea8ffb7cc50c5e06a421b173a4a37b89a75177b3a6fdcf9399ab9c81",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.2677508294582367,
+          "within_nearest": "v22_sky_06_a84",
+          "legacy_max": 0.3170432150363922,
+          "legacy_nearest": "v15_cheer_young_002"
+        },
+        "256": {
+          "within_max": 0.33380913734436035,
+          "within_nearest": "v22_navy_02_a62",
+          "legacy_max": 0.3216860294342041,
+          "legacy_nearest": "v15_cheer_young_002"
+        },
+        "512": {
+          "within_max": 0.32320988178253174,
+          "within_nearest": "v22_navy_02_a62",
+          "legacy_max": 0.3145573139190674,
+          "legacy_nearest": "v15_cheer_young_002"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            47.04396438598633,
+            32.67631912231445,
+            85.55143737792969,
+            81.26487731933594,
+            0.8559895753860474
+          ],
+          "landmarks": [
+            [
+              54.866607666015625,
+              52.90160369873047
+            ],
+            [
+              72.78520202636719,
+              51.35345458984375
+            ],
+            [
+              63.25499725341797,
+              62.5738639831543
+            ],
+            [
+              57.452880859375,
+              69.1038818359375
+            ],
+            [
+              73.95480346679688,
+              67.78497314453125
+            ]
+          ],
+          "pixel_sha256": "2d3a519e761b419014c6e87d1015ba505169f89ce49ae1597967c6eb1d0cc9f2",
+          "face_vertical_ratio": 0.37959811091423035,
+          "eye_y_ratio": 0.40724632143974304
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            94.18994140625,
+            64.28021240234375,
+            171.7055206298828,
+            163.00149536132812,
+            0.8836418986320496
+          ],
+          "landmarks": [
+            [
+              110.20540618896484,
+              105.86949157714844
+            ],
+            [
+              145.90792846679688,
+              102.98160552978516
+            ],
+            [
+              126.7368392944336,
+              125.39897155761719
+            ],
+            [
+              114.7479019165039,
+              137.83937072753906
+            ],
+            [
+              148.4075164794922,
+              135.46200561523438
+            ]
+          ],
+          "pixel_sha256": "0b182504a8763c7c22bfc34eca54527fc4ad9b2d333695a92b6a1479abde76f0",
+          "face_vertical_ratio": 0.3856300115585327,
+          "eye_y_ratio": 0.40791231393814087
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            189.98336791992188,
+            125.5169448852539,
+            343.1387023925781,
+            327.26678466796875,
+            0.9096335172653198
+          ],
+          "landmarks": [
+            [
+              221.2299346923828,
+              212.9006805419922
+            ],
+            [
+              291.41754150390625,
+              206.4520721435547
+            ],
+            [
+              253.424072265625,
+              250.35781860351562
+            ],
+            [
+              229.27633666992188,
+              275.93048095703125
+            ],
+            [
+              296.95062255859375,
+              270.796630859375
+            ]
+          ],
+          "pixel_sha256": "88f41362ea8ffb7cc50c5e06a421b173a4a37b89a75177b3a6fdcf9399ab9c81",
+          "face_vertical_ratio": 0.3940426707267761,
+          "eye_y_ratio": 0.40952417254447937
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_blue_03_a22",
+      "r": "cheer22",
+      "a": 25,
+      "f": 1,
+      "uc": "blue",
+      "hair": "pony",
+      "smile": "soft",
+      "pose": "front",
+      "index": 14,
+      "source_planned_id": "v22_blue_03",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 14,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_blue_03_a22",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_blue_03_a22_128.webp",
+        "256": "checkpoints/casting_002/v22_blue_03_a22_256.webp",
+        "512": "checkpoints/casting_002/v22_blue_03_a22_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-d13b6b44-fbc5-4a71-9061-5d65042f935f.png",
+      "source_original_sha256": "e0521b014fb60d1324854f4aa1dd02832da7b96dabc25a14c45544cf6c0c3a4b",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "e0521b014fb60d1324854f4aa1dd02832da7b96dabc25a14c45544cf6c0c3a4b",
+      "whole_photo_crop_xyxy": [
+        277,
+        175,
+        1123,
+        1021
+      ],
+      "native_crop_edge": 846,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.39056000113487244,
+        "eye_y_ratio": 0.4138363003730774,
+        "headroom_ratio_projected_from_native_silhouette": 0.06501182033096926,
+        "pixel_sha256": "8220e7d82c5c89a05bac6ecd3a35f78820852b46d9a85880a0775a301af4ac63",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.3697013854980469,
+          "within_nearest": "v22_green_03_a66",
+          "legacy_max": 0.2658025622367859,
+          "legacy_nearest": "v15_cheer_young_033"
+        },
+        "256": {
+          "within_max": 0.379790723323822,
+          "within_nearest": "v22_blue_01_a61",
+          "legacy_max": 0.3056212067604065,
+          "legacy_nearest": "v15_cheer_young_002"
+        },
+        "512": {
+          "within_max": 0.38918524980545044,
+          "within_nearest": "v22_blue_01_a61",
+          "legacy_max": 0.31155911087989807,
+          "legacy_nearest": "v15_cheer_young_002"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            38.40401077270508,
+            31.040719985961914,
+            79.15532684326172,
+            81.81696319580078,
+            0.841679573059082
+          ],
+          "landmarks": [
+            [
+              54.943687438964844,
+              52.437278747558594
+            ],
+            [
+              72.71968841552734,
+              53.83941650390625
+            ],
+            [
+              66.17161560058594,
+              63.119354248046875
+            ],
+            [
+              55.8951416015625,
+              70.63960266113281
+            ],
+            [
+              68.9358901977539,
+              71.60045623779297
+            ]
+          ],
+          "pixel_sha256": "2942464946887e963f3d49791331dba99d988257ed1501fa691174088608e323",
+          "face_vertical_ratio": 0.39668941497802734,
+          "eye_y_ratio": 0.41514334082603455
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            75.7979965209961,
+            62.85405349731445,
+            159.83035278320312,
+            163.5249786376953,
+            0.8615333437919617
+          ],
+          "landmarks": [
+            [
+              109.99543762207031,
+              104.60638427734375
+            ],
+            [
+              145.6947021484375,
+              107.443115234375
+            ],
+            [
+              132.43405151367188,
+              126.4146957397461
+            ],
+            [
+              111.8403549194336,
+              141.36004638671875
+            ],
+            [
+              138.08106994628906,
+              143.29678344726562
+            ]
+          ],
+          "pixel_sha256": "6f4d4e6a0dadfa3a5750ee523c0f655e1c85c02ce10ced21a21346224a3cf9e5",
+          "face_vertical_ratio": 0.3932458162307739,
+          "eye_y_ratio": 0.4141591787338257
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            152.24627685546875,
+            127.42213439941406,
+            318.68243408203125,
+            327.38885498046875,
+            0.8780821561813354
+          ],
+          "landmarks": [
+            [
+              220.84878540039062,
+              209.08609008789062
+            ],
+            [
+              290.77374267578125,
+              214.6822967529297
+            ],
+            [
+              265.45635986328125,
+              253.0495147705078
+            ],
+            [
+              224.0343780517578,
+              282.000732421875
+            ],
+            [
+              276.7775573730469,
+              285.9390869140625
+            ]
+          ],
+          "pixel_sha256": "8220e7d82c5c89a05bac6ecd3a35f78820852b46d9a85880a0775a301af4ac63",
+          "face_vertical_ratio": 0.39056000113487244,
+          "eye_y_ratio": 0.4138363003730774
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_green_01_a60",
+      "r": "cheer22",
+      "a": 24,
+      "f": 1,
+      "uc": "green",
+      "hair": "bob",
+      "smile": "big",
+      "pose": "v",
+      "index": 30,
+      "source_planned_id": "v22_green_01",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 30,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_green_01_a60",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_green_01_a60_128.webp",
+        "256": "checkpoints/casting_002/v22_green_01_a60_256.webp",
+        "512": "checkpoints/casting_002/v22_green_01_a60_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-ce2fe53b-c9d0-45d4-bc0d-ee267f5cbe79.png",
+      "source_original_sha256": "a200a2ba54f1f2d641ddd442bf2a76ccf8cdfe9d9d99b3cefbd9393a447ae16b",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "a200a2ba54f1f2d641ddd442bf2a76ccf8cdfe9d9d99b3cefbd9393a447ae16b",
+      "whole_photo_crop_xyxy": [
+        15,
+        8,
+        1195,
+        1188
+      ],
+      "native_crop_edge": 1180,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.3971237242221832,
+        "eye_y_ratio": 0.3871106803417206,
+        "headroom_ratio_projected_from_native_silhouette": 0.09491525423728814,
+        "pixel_sha256": "ef9a7dd4069f5ce344dcadcb377a1bccd59dabfdd8b95147dc4ce7d0d0c9e230",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.31139081716537476,
+          "within_nearest": "v22_blue_03_a22",
+          "legacy_max": 0.23082539439201355,
+          "legacy_nearest": "v15_cheer_young_007"
+        },
+        "256": {
+          "within_max": 0.3731277287006378,
+          "within_nearest": "v22_red_06_a70",
+          "legacy_max": 0.26050037145614624,
+          "legacy_nearest": "v10_women01_front_008"
+        },
+        "512": {
+          "within_max": 0.36639657616615295,
+          "within_nearest": "v22_red_06_a70",
+          "legacy_max": 0.276329904794693,
+          "legacy_nearest": "v10_women01_front_008"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            49.70087432861328,
+            28.28385353088379,
+            86.03683471679688,
+            80.13787841796875,
+            0.8512789011001587
+          ],
+          "landmarks": [
+            [
+              55.56510543823242,
+              50.63751983642578
+            ],
+            [
+              72.05690002441406,
+              48.563270568847656
+            ],
+            [
+              62.129005432128906,
+              58.875396728515625
+            ],
+            [
+              58.27124786376953,
+              66.93097686767578
+            ],
+            [
+              73.82664489746094,
+              65.12913513183594
+            ]
+          ],
+          "pixel_sha256": "814aa48379afed4f9167c281415550b5a2024415a966c6d3eb1c794ba58ace73",
+          "face_vertical_ratio": 0.40510958433151245,
+          "eye_y_ratio": 0.38750308752059937
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            99.57540130615234,
+            57.55656051635742,
+            172.6836395263672,
+            160.31021118164062,
+            0.8712269067764282
+          ],
+          "landmarks": [
+            [
+              111.5780258178711,
+              101.63856506347656
+            ],
+            [
+              144.16909790039062,
+              97.6198959350586
+            ],
+            [
+              124.1816177368164,
+              117.99238586425781
+            ],
+            [
+              116.6485824584961,
+              133.69224548339844
+            ],
+            [
+              147.9161376953125,
+              130.2101593017578
+            ]
+          ],
+          "pixel_sha256": "891fb798af284221e40c78ee947b2adae721d569ae4b004b4d684598f18fa852",
+          "face_vertical_ratio": 0.4013814330101013,
+          "eye_y_ratio": 0.3891766667366028
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            200.43685913085938,
+            116.56736755371094,
+            346.3121643066406,
+            319.89471435546875,
+            0.8862664699554443
+          ],
+          "landmarks": [
+            [
+              223.78695678710938,
+              201.7135009765625
+            ],
+            [
+              288.91607666015625,
+              194.68783569335938
+            ],
+            [
+              247.90567016601562,
+              236.2879180908203
+            ],
+            [
+              232.78311157226562,
+              266.1975402832031
+            ],
+            [
+              295.8768615722656,
+              260.1978759765625
+            ]
+          ],
+          "pixel_sha256": "ef9a7dd4069f5ce344dcadcb377a1bccd59dabfdd8b95147dc4ce7d0d0c9e230",
+          "face_vertical_ratio": 0.3971237242221832,
+          "eye_y_ratio": 0.3871106803417206
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_blue_01_a61",
+      "r": "cheer22",
+      "a": 24,
+      "f": 1,
+      "uc": "blue",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "v",
+      "index": 12,
+      "source_planned_id": "v22_blue_01",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 12,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_blue_01_a61",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_blue_01_a61_128.webp",
+        "256": "checkpoints/casting_002/v22_blue_01_a61_256.webp",
+        "512": "checkpoints/casting_002/v22_blue_01_a61_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-f704df41-1dfc-4f5e-9eb1-091ace0a04d6.png",
+      "source_original_sha256": "33323dd46ed56cfdd0915a1ad4e2fd68fb61b619b01449c5e16f8956d5b31236",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "33323dd46ed56cfdd0915a1ad4e2fd68fb61b619b01449c5e16f8956d5b31236",
+      "whole_photo_crop_xyxy": [
+        103,
+        164,
+        1124,
+        1185
+      ],
+      "native_crop_edge": 1021,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.36727452278137207,
+        "eye_y_ratio": 0.4124559462070465,
+        "headroom_ratio_projected_from_native_silhouette": 0.06562193927522038,
+        "pixel_sha256": "b2c86a69f241a6c006269f95ab23b6c8adedbfc94f3ab4b740e2c5c11e9b319f",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.2800552546977997,
+          "within_nearest": "v22_sky_01_a61",
+          "legacy_max": 0.2634962797164917,
+          "legacy_nearest": "v15_cheer_young_009"
+        },
+        "256": {
+          "within_max": 0.379790723323822,
+          "within_nearest": "v22_blue_03_a22",
+          "legacy_max": 0.30161625146865845,
+          "legacy_nearest": "v15_cheer_young_001"
+        },
+        "512": {
+          "within_max": 0.3930729031562805,
+          "within_nearest": "v22_orange_01_a64",
+          "legacy_max": 0.2761033773422241,
+          "legacy_nearest": "v15_cheer_young_017"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            48.080665588378906,
+            34.177452087402344,
+            83.2296142578125,
+            81.67277526855469,
+            0.8170245289802551
+          ],
+          "landmarks": [
+            [
+              55.9249382019043,
+              53.53459548950195
+            ],
+            [
+              72.4012451171875,
+              51.74921417236328
+            ],
+            [
+              64.21932983398438,
+              62.768157958984375
+            ],
+            [
+              57.84403610229492,
+              68.63072204589844
+            ],
+            [
+              73.73226165771484,
+              67.04682922363281
+            ]
+          ],
+          "pixel_sha256": "ad77a8ccdcb642ec209f25ff5044d157b6571b98dedae76732a3ed32f0f27f97",
+          "face_vertical_ratio": 0.3710572123527527,
+          "eye_y_ratio": 0.41126489639282227
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            96.4805679321289,
+            69.1821060180664,
+            166.22677612304688,
+            163.78701782226562,
+            0.8407196402549744
+          ],
+          "landmarks": [
+            [
+              112.20762634277344,
+              107.44566345214844
+            ],
+            [
+              145.16038513183594,
+              103.63673400878906
+            ],
+            [
+              129.0619354248047,
+              126.08934020996094
+            ],
+            [
+              115.7386245727539,
+              137.74270629882812
+            ],
+            [
+              147.924072265625,
+              134.3826141357422
+            ]
+          ],
+          "pixel_sha256": "b370eedccba547c94c7203a75bfb036e24476f084cb73c429317993ec3d1d395",
+          "face_vertical_ratio": 0.3695504367351532,
+          "eye_y_ratio": 0.41227030754089355
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            193.69931030273438,
+            139.71694946289062,
+            332.850341796875,
+            327.7615051269531,
+            0.852695882320404
+          ],
+          "landmarks": [
+            [
+              224.6581268310547,
+              215.3000030517578
+            ],
+            [
+              289.5294494628906,
+              207.0548858642578
+            ],
+            [
+              257.6393737792969,
+              252.548583984375
+            ],
+            [
+              231.92886352539062,
+              275.56146240234375
+            ],
+            [
+              296.1458435058594,
+              268.37115478515625
+            ]
+          ],
+          "pixel_sha256": "b2c86a69f241a6c006269f95ab23b6c8adedbfc94f3ab4b740e2c5c11e9b319f",
+          "face_vertical_ratio": 0.36727452278137207,
+          "eye_y_ratio": 0.4124559462070465
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_sky_01_a61",
+      "r": "cheer22",
+      "a": 25,
+      "f": 1,
+      "uc": "sky",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "v",
+      "index": 42,
+      "source_planned_id": "v22_sky_01",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 42,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_sky_01_a61",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_sky_01_a61_128.webp",
+        "256": "checkpoints/casting_002/v22_sky_01_a61_256.webp",
+        "512": "checkpoints/casting_002/v22_sky_01_a61_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-b0141220-9e8e-4d94-8c2a-8257c6e66318.png",
+      "source_original_sha256": "2c04b6a898a7c96067234542f46ef9cafaccdbf59e080e41691cbb0b73430737",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "2c04b6a898a7c96067234542f46ef9cafaccdbf59e080e41691cbb0b73430737",
+      "whole_photo_crop_xyxy": [
+        131,
+        94,
+        1082,
+        1045
+      ],
+      "native_crop_edge": 951,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.378447949886322,
+        "eye_y_ratio": 0.41201281547546387,
+        "headroom_ratio_projected_from_native_silhouette": 0.06519453207150368,
+        "pixel_sha256": "443f9a064d7515d31df3bee56f7eb28716015d2961c50950483dfc97718ffac4",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.31982824206352234,
+          "within_nearest": "v22_blue_03_a22",
+          "legacy_max": 0.3298013210296631,
+          "legacy_nearest": "v15_cheer_young_002"
+        },
+        "256": {
+          "within_max": 0.34903183579444885,
+          "within_nearest": "v22_blue_03_a22",
+          "legacy_max": 0.3244492709636688,
+          "legacy_nearest": "v15_cheer_young_002"
+        },
+        "512": {
+          "within_max": 0.3567112684249878,
+          "within_nearest": "v22_green_03_a66",
+          "legacy_max": 0.30277860164642334,
+          "legacy_nearest": "v15_cheer_young_002"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            47.090171813964844,
+            33.86409378051758,
+            85.5096664428711,
+            82.93193054199219,
+            0.8522524833679199
+          ],
+          "landmarks": [
+            [
+              55.23217010498047,
+              54.838958740234375
+            ],
+            [
+              72.65554809570312,
+              50.69078826904297
+            ],
+            [
+              65.21717071533203,
+              64.0024185180664
+            ],
+            [
+              60.00850296020508,
+              71.17355346679688
+            ],
+            [
+              75.87176513671875,
+              67.42375946044922
+            ]
+          ],
+          "pixel_sha256": "214c77e8d75af1b1fd35e0910fec5a479b7c04ac24da2631d5d2a3faeb62ceba",
+          "face_vertical_ratio": 0.3833424746990204,
+          "eye_y_ratio": 0.4122255742549896
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            95.40543365478516,
+            68.0200424194336,
+            171.3932647705078,
+            166.6244354248047,
+            0.8720903992652893
+          ],
+          "landmarks": [
+            [
+              110.7832260131836,
+              109.5705795288086
+            ],
+            [
+              145.10911560058594,
+              101.56514739990234
+            ],
+            [
+              129.9998016357422,
+              128.06581115722656
+            ],
+            [
+              119.54377746582031,
+              141.939697265625
+            ],
+            [
+              152.20314025878906,
+              134.61949157714844
+            ]
+          ],
+          "pixel_sha256": "674224815c2f5437a42216e5a5f230bb86120e647e3ef40d4a42434d43b20917",
+          "face_vertical_ratio": 0.38517341017723083,
+          "eye_y_ratio": 0.41237446665763855
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            191.97616577148438,
+            138.52401733398438,
+            343.3793029785156,
+            332.28936767578125,
+            0.8747118711471558
+          ],
+          "landmarks": [
+            [
+              222.6646270751953,
+              218.6537322998047
+            ],
+            [
+              290.94317626953125,
+              203.2473907470703
+            ],
+            [
+              260.7514953613281,
+              257.33074951171875
+            ],
+            [
+              239.25326538085938,
+              282.7598571777344
+            ],
+            [
+              305.7105407714844,
+              268.61358642578125
+            ]
+          ],
+          "pixel_sha256": "443f9a064d7515d31df3bee56f7eb28716015d2961c50950483dfc97718ffac4",
+          "face_vertical_ratio": 0.378447949886322,
+          "eye_y_ratio": 0.41201281547546387
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_navy_02_a62",
+      "r": "cheer22",
+      "a": 26,
+      "f": 1,
+      "uc": "navy",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "v",
+      "index": 7,
+      "source_planned_id": "v22_navy_02",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 7,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_navy_02_a62",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_navy_02_a62_128.webp",
+        "256": "checkpoints/casting_002/v22_navy_02_a62_256.webp",
+        "512": "checkpoints/casting_002/v22_navy_02_a62_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-7b102aa8-4b8d-476d-915f-af3f3eee1916.png",
+      "source_original_sha256": "e5721b77c1f71d975e1a244eca92113678e67b91837832a1acf509111a0655fa",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "e5721b77c1f71d975e1a244eca92113678e67b91837832a1acf509111a0655fa",
+      "whole_photo_crop_xyxy": [
+        198,
+        261,
+        1161,
+        1224
+      ],
+      "native_crop_edge": 963,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.39141738414764404,
+        "eye_y_ratio": 0.3898427486419678,
+        "headroom_ratio_projected_from_native_silhouette": 0.09449636552440291,
+        "pixel_sha256": "803886e85388271c1e00006a101962662c84c7b856ca9f975041083dc5a24865",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.38395994901657104,
+          "within_nearest": "v22_green_03_a66",
+          "legacy_max": 0.3481866121292114,
+          "legacy_nearest": "v15_cheer_young_018"
+        },
+        "256": {
+          "within_max": 0.3569846749305725,
+          "within_nearest": "v22_sky_02_a82",
+          "legacy_max": 0.3038739860057831,
+          "legacy_nearest": "v15_cheer_young_018"
+        },
+        "512": {
+          "within_max": 0.35481882095336914,
+          "within_nearest": "v22_green_03_a66",
+          "legacy_max": 0.365780770778656,
+          "legacy_nearest": "v15_cheer_young_018"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            40.68140411376953,
+            30.499408721923828,
+            80.2142562866211,
+            80.65513610839844,
+            0.8420047163963318
+          ],
+          "landmarks": [
+            [
+              55.01314163208008,
+              50.106224060058594
+            ],
+            [
+              73.23054504394531,
+              49.50827407836914
+            ],
+            [
+              67.0935287475586,
+              59.4964714050293
+            ],
+            [
+              56.07936477661133,
+              67.37312316894531
+            ],
+            [
+              72.67689514160156,
+              66.63232421875
+            ]
+          ],
+          "pixel_sha256": "25eb90231d286ee4ff90ab3c70e93920dfd495ba16f2a1d480d6a763b4558ab0",
+          "face_vertical_ratio": 0.3918416202068329,
+          "eye_y_ratio": 0.38911914825439453
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            81.0389175415039,
+            61.212738037109375,
+            160.2062225341797,
+            161.64599609375,
+            0.8547326922416687
+          ],
+          "landmarks": [
+            [
+              110.62251281738281,
+              100.3610610961914
+            ],
+            [
+              146.562744140625,
+              99.49162292480469
+            ],
+            [
+              134.75881958007812,
+              119.20135498046875
+            ],
+            [
+              112.00303649902344,
+              134.47518920898438
+            ],
+            [
+              145.19851684570312,
+              133.29286193847656
+            ]
+          ],
+          "pixel_sha256": "c4686486d81f56cc4e9e3dc6f42ab88f7620ed289fa4d0dd50742d97710f0fb9",
+          "face_vertical_ratio": 0.39231741428375244,
+          "eye_y_ratio": 0.3903372883796692
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            162.49537658691406,
+            123.56363677978516,
+            319.5087890625,
+            323.9693298339844,
+            0.8728889226913452
+          ],
+          "landmarks": [
+            [
+              221.45034790039062,
+              200.4755096435547
+            ],
+            [
+              292.3463134765625,
+              198.7234649658203
+            ],
+            [
+              269.36517333984375,
+              238.87063598632812
+            ],
+            [
+              223.42825317382812,
+              268.55731201171875
+            ],
+            [
+              289.8450622558594,
+              266.2456359863281
+            ]
+          ],
+          "pixel_sha256": "803886e85388271c1e00006a101962662c84c7b856ca9f975041083dc5a24865",
+          "face_vertical_ratio": 0.39141738414764404,
+          "eye_y_ratio": 0.3898427486419678
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_orange_01_a64",
+      "r": "cheer22",
+      "a": 26,
+      "f": 1,
+      "uc": "orange",
+      "hair": "wave",
+      "smile": "big",
+      "pose": "front",
+      "index": 24,
+      "source_planned_id": "v22_orange_01",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 24,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_orange_01_a64",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_orange_01_a64_128.webp",
+        "256": "checkpoints/casting_002/v22_orange_01_a64_256.webp",
+        "512": "checkpoints/casting_002/v22_orange_01_a64_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-20740a9f-9436-4295-ab94-da25f2a52551.png",
+      "source_original_sha256": "53686367f1e6a7f29b59eab1e93d00de8b2190238ff6948304d4ed99e549794a",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "53686367f1e6a7f29b59eab1e93d00de8b2190238ff6948304d4ed99e549794a",
+      "whole_photo_crop_xyxy": [
+        102,
+        78,
+        1038,
+        1014
+      ],
+      "native_crop_edge": 936,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.38850581645965576,
+        "eye_y_ratio": 0.40110254287719727,
+        "headroom_ratio_projected_from_native_silhouette": 0.07158119658119658,
+        "pixel_sha256": "f8df00d617e3d6acda92d71dff2e74d9f9a2f33906be0e8f7a08973b19e490b8",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.3716623783111572,
+          "within_nearest": "v22_purple_04_a88",
+          "legacy_max": 0.24727676808834076,
+          "legacy_nearest": "v19_sec_18"
+        },
+        "256": {
+          "within_max": 0.3783312737941742,
+          "within_nearest": "v22_blue_01_a61",
+          "legacy_max": 0.2572088837623596,
+          "legacy_nearest": "v10_women01_staff_002"
+        },
+        "512": {
+          "within_max": 0.3930729031562805,
+          "within_nearest": "v22_blue_01_a61",
+          "legacy_max": 0.2520184814929962,
+          "legacy_nearest": "v15_cheer_young_002"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            48.685211181640625,
+            31.370004653930664,
+            85.76851654052734,
+            80.1561508178711,
+            0.8609215021133423
+          ],
+          "landmarks": [
+            [
+              55.835838317871094,
+              53.1799430847168
+            ],
+            [
+              71.75836944580078,
+              48.91742706298828
+            ],
+            [
+              64.32112121582031,
+              61.3744010925293
+            ],
+            [
+              60.4476203918457,
+              68.33079528808594
+            ],
+            [
+              76.05952453613281,
+              64.49714660644531
+            ]
+          ],
+          "pixel_sha256": "cdee3d54d04a5a6fc7dfa84820645a24ca63b2c1bba9030149e2b822c24cd5a3",
+          "face_vertical_ratio": 0.3811417818069458,
+          "eye_y_ratio": 0.39881783723831177
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            97.34312438964844,
+            61.89594268798828,
+            171.7069091796875,
+            160.4764862060547,
+            0.8782839775085449
+          ],
+          "landmarks": [
+            [
+              112.21293640136719,
+              107.1418228149414
+            ],
+            [
+              143.85784912109375,
+              98.14720916748047
+            ],
+            [
+              128.85031127929688,
+              123.61863708496094
+            ],
+            [
+              121.50679779052734,
+              137.12277221679688
+            ],
+            [
+              152.74374389648438,
+              128.98094177246094
+            ]
+          ],
+          "pixel_sha256": "e7339e9df07f28b2b541b88a06b2afadd82f675b497aefeae2059ea6e4887afd",
+          "face_vertical_ratio": 0.3850802481174469,
+          "eye_y_ratio": 0.4009551405906677
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            194.2098846435547,
+            123.1115493774414,
+            343.36248779296875,
+            322.0265197753906,
+            0.8914988040924072
+          ],
+          "landmarks": [
+            [
+              224.921142578125,
+              214.35818481445312
+            ],
+            [
+              288.09930419921875,
+              196.37081909179688
+            ],
+            [
+              258.62255859375,
+              247.5342254638672
+            ],
+            [
+              242.9495849609375,
+              274.335205078125
+            ],
+            [
+              306.30133056640625,
+              257.9474182128906
+            ]
+          ],
+          "pixel_sha256": "f8df00d617e3d6acda92d71dff2e74d9f9a2f33906be0e8f7a08973b19e490b8",
+          "face_vertical_ratio": 0.38850581645965576,
+          "eye_y_ratio": 0.40110254287719727
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_green_03_a66",
+      "r": "cheer22",
+      "a": 25,
+      "f": 1,
+      "uc": "green",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "index": 32,
+      "source_planned_id": "v22_green_03",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 32,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_green_03_a66",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_green_03_a66_128.webp",
+        "256": "checkpoints/casting_002/v22_green_03_a66_256.webp",
+        "512": "checkpoints/casting_002/v22_green_03_a66_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-597af592-418f-4016-a114-f77ac3785136.png",
+      "source_original_sha256": "dee4b723a21b2f25338c74160d018776924b0fa390c8aa9ca8c91d6d1536d3eb",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "dee4b723a21b2f25338c74160d018776924b0fa390c8aa9ca8c91d6d1536d3eb",
+      "whole_photo_crop_xyxy": [
+        29,
+        238,
+        1018,
+        1227
+      ],
+      "native_crop_edge": 989,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.37845367193222046,
+        "eye_y_ratio": 0.3963228464126587,
+        "headroom_ratio_projected_from_native_silhouette": 0.09403437815975733,
+        "pixel_sha256": "701243ea6fc9091aa5ddf86de91077147841fe5554f243b83405f6491f08fee0",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.38395994901657104,
+          "within_nearest": "v22_navy_02_a62",
+          "legacy_max": 0.20782651007175446,
+          "legacy_nearest": "v19_sec_20"
+        },
+        "256": {
+          "within_max": 0.3678848147392273,
+          "within_nearest": "v22_sky_02_a82",
+          "legacy_max": 0.22063127160072327,
+          "legacy_nearest": "v15_cheer_young_033"
+        },
+        "512": {
+          "within_max": 0.3774681091308594,
+          "within_nearest": "v22_blue_03_a22",
+          "legacy_max": 0.24395541846752167,
+          "legacy_nearest": "v15_cheer_young_033"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            50.55811309814453,
+            31.404348373413086,
+            88.46427917480469,
+            79.28472900390625,
+            0.8528367280960083
+          ],
+          "landmarks": [
+            [
+              56.268890380859375,
+              52.45410919189453
+            ],
+            [
+              71.34781646728516,
+              49.03383255004883
+            ],
+            [
+              62.309906005859375,
+              61.22498321533203
+            ],
+            [
+              61.50585174560547,
+              68.14994812011719
+            ],
+            [
+              75.29694366455078,
+              65.15574645996094
+            ]
+          ],
+          "pixel_sha256": "23e606df50596706df57a7abdc17fdd312b15f3d0879f987e6e5dda6b192b836",
+          "face_vertical_ratio": 0.37406545877456665,
+          "eye_y_ratio": 0.39643728733062744
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            101.3992919921875,
+            62.542015075683594,
+            177.50003051757812,
+            159.0231475830078,
+            0.8643097281455994
+          ],
+          "landmarks": [
+            [
+              112.7233657836914,
+              105.20772552490234
+            ],
+            [
+              143.1983184814453,
+              97.98826599121094
+            ],
+            [
+              124.77608489990234,
+              121.73966979980469
+            ],
+            [
+              122.6677017211914,
+              136.44601440429688
+            ],
+            [
+              151.0684814453125,
+              130.15380859375
+            ]
+          ],
+          "pixel_sha256": "754678d8ede250f0f21dcd08b28a9af363ba96073f9a6ddc86648c805d9ebb4a",
+          "face_vertical_ratio": 0.37687942385673523,
+          "eye_y_ratio": 0.39686715602874756
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            203.92391967773438,
+            123.82357025146484,
+            355.5120849609375,
+            317.59185791015625,
+            0.8718823194503784
+          ],
+          "landmarks": [
+            [
+              225.58474731445312,
+              209.8322296142578
+            ],
+            [
+              285.59234619140625,
+              196.00234985351562
+            ],
+            [
+              248.949951171875,
+              244.8877410888672
+            ],
+            [
+              246.4997100830078,
+              272.6919250488281
+            ],
+            [
+              302.5318603515625,
+              260.6097106933594
+            ]
+          ],
+          "pixel_sha256": "701243ea6fc9091aa5ddf86de91077147841fe5554f243b83405f6491f08fee0",
+          "face_vertical_ratio": 0.37845367193222046,
+          "eye_y_ratio": 0.3963228464126587
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_purple_01_a66",
+      "r": "cheer22",
+      "a": 25,
+      "f": 1,
+      "uc": "purple",
+      "hair": "half",
+      "smile": "big",
+      "pose": "v",
+      "index": 36,
+      "source_planned_id": "v22_purple_01",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 36,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_purple_01_a66",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_purple_01_a66_128.webp",
+        "256": "checkpoints/casting_002/v22_purple_01_a66_256.webp",
+        "512": "checkpoints/casting_002/v22_purple_01_a66_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-bb975778-9b18-4f97-8c86-a9ad5c1ae0f9.png",
+      "source_original_sha256": "514cf3de1ebb9a5d053d7412163d00f55e32861f300149d55209e363c3bbe72d",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "514cf3de1ebb9a5d053d7412163d00f55e32861f300149d55209e363c3bbe72d",
+      "whole_photo_crop_xyxy": [
+        148,
+        200,
+        1148,
+        1200
+      ],
+      "native_crop_edge": 1000,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.38400182127952576,
+        "eye_y_ratio": 0.38461005687713623,
+        "headroom_ratio_projected_from_native_silhouette": 0.095,
+        "pixel_sha256": "e7183460265ffafe8cd4341d21eeb5739d51b7ed699cbc92a027ebc1fe5ec67a",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.16570912301540375,
+          "within_nearest": "v22_black_01_a80",
+          "legacy_max": 0.3092232346534729,
+          "legacy_nearest": "v10_women01_front_012"
+        },
+        "256": {
+          "within_max": 0.20469710230827332,
+          "within_nearest": "v22_black_05_a94",
+          "legacy_max": 0.3775457739830017,
+          "legacy_nearest": "v10_women01_front_012"
+        },
+        "512": {
+          "within_max": 0.24003534018993378,
+          "within_nearest": "v22_blue_02_a84",
+          "legacy_max": 0.37095195055007935,
+          "legacy_nearest": "v10_women01_front_012"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            47.239036560058594,
+            30.14861488342285,
+            83.13578796386719,
+            78.30472564697266,
+            0.8360084295272827
+          ],
+          "landmarks": [
+            [
+              55.82695770263672,
+              50.30261993408203
+            ],
+            [
+              72.74361419677734,
+              47.94746780395508
+            ],
+            [
+              65.25335693359375,
+              58.83155059814453
+            ],
+            [
+              58.147132873535156,
+              65.5294189453125
+            ],
+            [
+              74.66202545166016,
+              63.262542724609375
+            ]
+          ],
+          "pixel_sha256": "813827d6d156ebe341d7f74de7ecb50a58f9f5dfa51ba48c961544bdd783d9ea",
+          "face_vertical_ratio": 0.37621963024139404,
+          "eye_y_ratio": 0.38378942012786865
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            94.9549560546875,
+            58.876365661621094,
+            166.32858276367188,
+            157.33465576171875,
+            0.8536877036094666
+          ],
+          "landmarks": [
+            [
+              111.70914459228516,
+              101.28608703613281
+            ],
+            [
+              145.5619354248047,
+              95.91453552246094
+            ],
+            [
+              130.8795623779297,
+              117.86474609375
+            ],
+            [
+              116.38587951660156,
+              131.3297576904297
+            ],
+            [
+              150.38241577148438,
+              126.2905502319336
+            ]
+          ],
+          "pixel_sha256": "5a61b460677e128e838bfe4e328ec89bec748644879a10855b866b4cd7848ae3",
+          "face_vertical_ratio": 0.38460269570350647,
+          "eye_y_ratio": 0.3851574659347534
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            189.84066772460938,
+            118.10963439941406,
+            333.5826721191406,
+            314.71856689453125,
+            0.8763343095779419
+          ],
+          "landmarks": [
+            [
+              223.5563507080078,
+              202.18399047851562
+            ],
+            [
+              291.67572021484375,
+              191.65670776367188
+            ],
+            [
+              262.037353515625,
+              236.1690216064453
+            ],
+            [
+              232.37020874023438,
+              262.0885009765625
+            ],
+            [
+              301.73394775390625,
+              252.2660369873047
+            ]
+          ],
+          "pixel_sha256": "e7183460265ffafe8cd4341d21eeb5739d51b7ed699cbc92a027ebc1fe5ec67a",
+          "face_vertical_ratio": 0.38400182127952576,
+          "eye_y_ratio": 0.38461005687713623
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_black_06_a71",
+      "r": "ccap22",
+      "a": 29,
+      "f": 1,
+      "uc": "black",
+      "hair": "bob",
+      "smile": "soft",
+      "pose": "front",
+      "index": 23,
+      "source_planned_id": "v22_black_06",
+      "source_planned_role": "ccap22",
+      "source_planned_index": 23,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_black_06_a71",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_black_06_a71_128.webp",
+        "256": "checkpoints/casting_002/v22_black_06_a71_256.webp",
+        "512": "checkpoints/casting_002/v22_black_06_a71_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-61ee6a58-1bb3-457d-aa27-e16826921f7f.png",
+      "source_original_sha256": "93e9e7b72844a7c16a5a6fbe11e478c570735f845b8613f96815807e2599d369",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "93e9e7b72844a7c16a5a6fbe11e478c570735f845b8613f96815807e2599d369",
+      "whole_photo_crop_xyxy": [
+        165,
+        87,
+        1103,
+        1025
+      ],
+      "native_crop_edge": 938,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.39596235752105713,
+        "eye_y_ratio": 0.40089207887649536,
+        "headroom_ratio_projected_from_native_silhouette": 0.08208955223880597,
+        "pixel_sha256": "b8956f996bab93abf76dcabdeee2b81730cb0ac46b48eafecf30b51246131d8b",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.21488305926322937,
+          "within_nearest": "v22_orange_04_a86",
+          "legacy_max": 0.3354566991329193,
+          "legacy_nearest": "v15_cheer_young_016"
+        },
+        "256": {
+          "within_max": 0.2722207009792328,
+          "within_nearest": "v22_navy_02_a62",
+          "legacy_max": 0.38706254959106445,
+          "legacy_nearest": "v15_cheer_young_016"
+        },
+        "512": {
+          "within_max": 0.28978848457336426,
+          "within_nearest": "v22_navy_02_a62",
+          "legacy_max": 0.39498409628868103,
+          "legacy_nearest": "v15_cheer_young_016"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            45.900001525878906,
+            31.284465789794922,
+            84.7598648071289,
+            81.18562316894531,
+            0.8818309307098389
+          ],
+          "landmarks": [
+            [
+              54.99015426635742,
+              52.22852325439453
+            ],
+            [
+              73.06788635253906,
+              50.33948516845703
+            ],
+            [
+              64.10194396972656,
+              61.714820861816406
+            ],
+            [
+              56.488487243652344,
+              67.75907897949219
+            ],
+            [
+              74.41523742675781,
+              66.0987777709961
+            ]
+          ],
+          "pixel_sha256": "e7cbefefe452560c6f355215aab41a12081d05f7f8b70681b6cbe74faf3e7d93",
+          "face_vertical_ratio": 0.3898527920246124,
+          "eye_y_ratio": 0.4006562829017639
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            91.93739318847656,
+            61.85395431518555,
+            169.96957397460938,
+            162.93771362304688,
+            0.8998585343360901
+          ],
+          "landmarks": [
+            [
+              109.93727111816406,
+              104.50882720947266
+            ],
+            [
+              145.9684600830078,
+              100.5833969116211
+            ],
+            [
+              128.04641723632812,
+              123.9090576171875
+            ],
+            [
+              113.24998474121094,
+              135.83193969726562
+            ],
+            [
+              149.17628479003906,
+              132.3372802734375
+            ]
+          ],
+          "pixel_sha256": "eb058c5d71182c4bfb48c0fd5f2bd69c449c8097d6d39cb7e3c6731f01ce6689",
+          "face_vertical_ratio": 0.3948584198951721,
+          "eye_y_ratio": 0.40057075023651123
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            183.98675537109375,
+            123.1136474609375,
+            340.4360046386719,
+            325.84637451171875,
+            0.9090145826339722
+          ],
+          "landmarks": [
+            [
+              220.68624877929688,
+              209.357421875
+            ],
+            [
+              292.18560791015625,
+              201.15606689453125
+            ],
+            [
+              256.89697265625,
+              248.05618286132812
+            ],
+            [
+              226.644775390625,
+              271.37445068359375
+            ],
+            [
+              299.17913818359375,
+              264.1798095703125
+            ]
+          ],
+          "pixel_sha256": "b8956f996bab93abf76dcabdeee2b81730cb0ac46b48eafecf30b51246131d8b",
+          "face_vertical_ratio": 0.39596235752105713,
+          "eye_y_ratio": 0.40089207887649536
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_red_06_a70",
+      "r": "ccap22",
+      "a": 29,
+      "f": 1,
+      "uc": "red",
+      "hair": "bob",
+      "smile": "big",
+      "pose": "front",
+      "index": 5,
+      "source_planned_id": "v22_red_06",
+      "source_planned_role": "ccap22",
+      "source_planned_index": 5,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_red_06_a70",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_red_06_a70_128.webp",
+        "256": "checkpoints/casting_002/v22_red_06_a70_256.webp",
+        "512": "checkpoints/casting_002/v22_red_06_a70_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-a7c6d28b-73d7-4816-95a7-ea634eba5ed0.png",
+      "source_original_sha256": "4827e9ae79be73f8a7708fcb46301bfbe72b9e9cfca86c4ab7559f185a8e1c77",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "4827e9ae79be73f8a7708fcb46301bfbe72b9e9cfca86c4ab7559f185a8e1c77",
+      "whole_photo_crop_xyxy": [
+        95,
+        173,
+        1116,
+        1194
+      ],
+      "native_crop_edge": 1021,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.40110236406326294,
+        "eye_y_ratio": 0.3803201913833618,
+        "headroom_ratio_projected_from_native_silhouette": 0.09990205680705191,
+        "pixel_sha256": "5772aec12c515445877981f02145bc1de295d2eef102eacbe64a405f43e3b98f",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.31029415130615234,
+          "within_nearest": "v22_green_01_a60",
+          "legacy_max": 0.15612363815307617,
+          "legacy_nearest": "v15_cheer_young_028"
+        },
+        "256": {
+          "within_max": 0.3731277287006378,
+          "within_nearest": "v22_green_01_a60",
+          "legacy_max": 0.1828848421573639,
+          "legacy_nearest": "v15_cheer_young_017"
+        },
+        "512": {
+          "within_max": 0.36639657616615295,
+          "within_nearest": "v22_green_01_a60",
+          "legacy_max": 0.1722053587436676,
+          "legacy_nearest": "v10_women01_staff_009"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            47.718353271484375,
+            28.01447105407715,
+            82.6709213256836,
+            79.42149353027344,
+            0.8606613278388977
+          ],
+          "landmarks": [
+            [
+              55.275550842285156,
+              49.063446044921875
+            ],
+            [
+              72.79557037353516,
+              48.53229522705078
+            ],
+            [
+              63.553794860839844,
+              56.763031005859375
+            ],
+            [
+              55.98967361450195,
+              64.65729522705078
+            ],
+            [
+              73.17285919189453,
+              64.16920471191406
+            ]
+          ],
+          "pixel_sha256": "3b2e24f101d893d3e6983f2d21a819cb3e5eb01ccfb4899cd902a1089b762d72",
+          "face_vertical_ratio": 0.4016173481941223,
+          "eye_y_ratio": 0.3812333643436432
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            95.85845947265625,
+            56.03837966918945,
+            165.3206329345703,
+            158.81658935546875,
+            0.8717939257621765
+          ],
+          "landmarks": [
+            [
+              110.43626403808594,
+              98.03825378417969
+            ],
+            [
+              145.5004119873047,
+              96.86219787597656
+            ],
+            [
+              126.64669036865234,
+              112.80716705322266
+            ],
+            [
+              111.6488037109375,
+              129.4427490234375
+            ],
+            [
+              146.1419219970703,
+              128.48562622070312
+            ]
+          ],
+          "pixel_sha256": "6dc3a3153fbee3443bfc2f0edf70f6afcf5a8c58011a314c013726d7cad73bf4",
+          "face_vertical_ratio": 0.4014773964881897,
+          "eye_y_ratio": 0.3806649446487427
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            192.0699920654297,
+            112.78141021728516,
+            330.54022216796875,
+            318.14581298828125,
+            0.8814841508865356
+          ],
+          "landmarks": [
+            [
+              221.1995391845703,
+              196.3515167236328
+            ],
+            [
+              290.66351318359375,
+              193.09634399414062
+            ],
+            [
+              253.6101837158203,
+              225.4464569091797
+            ],
+            [
+              223.7091522216797,
+              259.18634033203125
+            ],
+            [
+              292.6831970214844,
+              256.6263122558594
+            ]
+          ],
+          "pixel_sha256": "5772aec12c515445877981f02145bc1de295d2eef102eacbe64a405f43e3b98f",
+          "face_vertical_ratio": 0.40110236406326294,
+          "eye_y_ratio": 0.3803201913833618
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_black_01_a80",
+      "r": "cheer22",
+      "a": 25,
+      "f": 1,
+      "uc": "black",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "v",
+      "index": 18,
+      "source_planned_id": "v22_black_01",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 18,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_black_01_a80",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_black_01_a80_128.webp",
+        "256": "checkpoints/casting_002/v22_black_01_a80_256.webp",
+        "512": "checkpoints/casting_002/v22_black_01_a80_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-f68c0309-9e5a-4e8f-b81d-7acbe447027f.png",
+      "source_original_sha256": "e59ea923568889381d5d9ee65ba8f86aaaf45c55c4dd98e59eef2892f135b9c4",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "e59ea923568889381d5d9ee65ba8f86aaaf45c55c4dd98e59eef2892f135b9c4",
+      "whole_photo_crop_xyxy": [
+        102,
+        152,
+        1169,
+        1219
+      ],
+      "native_crop_edge": 1067,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.39925774931907654,
+        "eye_y_ratio": 0.4017658829689026,
+        "headroom_ratio_projected_from_native_silhouette": 0.09278350515463918,
+        "pixel_sha256": "186c8e51149c886d222a60e9af7b1091342e14c64922d8b376ef7f84d749a940",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.34421682357788086,
+          "within_nearest": "v22_orange_04_a86",
+          "legacy_max": 0.34701189398765564,
+          "legacy_nearest": "v10_women01_staff_012"
+        },
+        "256": {
+          "within_max": 0.34707874059677124,
+          "within_nearest": "v22_orange_04_a86",
+          "legacy_max": 0.30558550357818604,
+          "legacy_nearest": "v10_women01_staff_006"
+        },
+        "512": {
+          "within_max": 0.36868786811828613,
+          "within_nearest": "v22_orange_04_a86",
+          "legacy_max": 0.28869980573654175,
+          "legacy_nearest": "v10_women01_staff_012"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            46.44322204589844,
+            30.166061401367188,
+            84.95008850097656,
+            81.55924987792969,
+            0.8662698864936829
+          ],
+          "landmarks": [
+            [
+              54.854820251464844,
+              51.26268768310547
+            ],
+            [
+              73.23582458496094,
+              51.39336013793945
+            ],
+            [
+              62.972259521484375,
+              62.1784553527832
+            ],
+            [
+              55.997169494628906,
+              67.84352111816406
+            ],
+            [
+              72.76769256591797,
+              67.94290924072266
+            ]
+          ],
+          "pixel_sha256": "3ebbb5dd53d928baf7fc2e4d390bcfec917a95c2325b55c04881901c57a02d87",
+          "face_vertical_ratio": 0.40150928497314453,
+          "eye_y_ratio": 0.4010002017021179
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            92.80216217041016,
+            59.86763381958008,
+            170.4002685546875,
+            162.6130828857422,
+            0.8823050856590271
+          ],
+          "landmarks": [
+            [
+              109.8506088256836,
+              102.80934143066406
+            ],
+            [
+              146.40695190429688,
+              103.1612548828125
+            ],
+            [
+              125.9158935546875,
+              125.19566345214844
+            ],
+            [
+              112.21561431884766,
+              135.49781799316406
+            ],
+            [
+              146.16860961914062,
+              135.8495330810547
+            ]
+          ],
+          "pixel_sha256": "c99cbb54b69dc054791a06e2d5580396c9c2fecff2a52c3117b843a2cf8c05a2",
+          "face_vertical_ratio": 0.40134942531585693,
+          "eye_y_ratio": 0.4022863209247589
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            186.36978149414062,
+            120.88798522949219,
+            339.7840881347656,
+            325.3079528808594,
+            0.8950746059417725
+          ],
+          "landmarks": [
+            [
+              220.56814575195312,
+              205.3568115234375
+            ],
+            [
+              293.0447082519531,
+              206.0514373779297
+            ],
+            [
+              252.67410278320312,
+              249.84719848632812
+            ],
+            [
+              224.2471466064453,
+              270.53668212890625
+            ],
+            [
+              292.4404296875,
+              271.26348876953125
+            ]
+          ],
+          "pixel_sha256": "186c8e51149c886d222a60e9af7b1091342e14c64922d8b376ef7f84d749a940",
+          "face_vertical_ratio": 0.39925774931907654,
+          "eye_y_ratio": 0.4017658829689026
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_red_04_a81",
+      "r": "cheer22",
+      "a": 26,
+      "f": 1,
+      "uc": "red",
+      "hair": "wave",
+      "smile": "soft",
+      "pose": "front",
+      "index": 3,
+      "source_planned_id": "v22_red_04",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 3,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_red_04_a81",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_red_04_a81_128.webp",
+        "256": "checkpoints/casting_002/v22_red_04_a81_256.webp",
+        "512": "checkpoints/casting_002/v22_red_04_a81_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-a32be5d5-acdf-4672-9144-c6732b51c2d3.png",
+      "source_original_sha256": "60334e3adb39fb404c20590cf11e9d28554f4aaac4e6929d0a3d25b79a565929",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "60334e3adb39fb404c20590cf11e9d28554f4aaac4e6929d0a3d25b79a565929",
+      "whole_photo_crop_xyxy": [
+        186,
+        71,
+        1117,
+        1002
+      ],
+      "native_crop_edge": 931,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.3896133005619049,
+        "eye_y_ratio": 0.41312021017074585,
+        "headroom_ratio_projected_from_native_silhouette": 0.06552094522019335,
+        "pixel_sha256": "c3af05f8b531b5394213d6b347456b39349313718499c8da7651af6eedac35f0",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.3213464021682739,
+          "within_nearest": "v22_navy_04_a95",
+          "legacy_max": 0.2612677812576294,
+          "legacy_nearest": "v15_cheer_young_022"
+        },
+        "256": {
+          "within_max": 0.32204949855804443,
+          "within_nearest": "v22_navy_03_a95",
+          "legacy_max": 0.28503555059432983,
+          "legacy_nearest": "v10_women01_staff_005"
+        },
+        "512": {
+          "within_max": 0.3159179389476776,
+          "within_nearest": "v22_orange_01_a64",
+          "legacy_max": 0.2553160786628723,
+          "legacy_nearest": "v10_women01_staff_005"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            43.941551208496094,
+            33.73387908935547,
+            80.90211486816406,
+            82.5678482055664,
+            0.8741391897201538
+          ],
+          "landmarks": [
+            [
+              55.45908737182617,
+              51.4953727722168
+            ],
+            [
+              72.74740600585938,
+              54.43375778198242
+            ],
+            [
+              63.14128875732422,
+              64.49394226074219
+            ],
+            [
+              53.629310607910156,
+              68.84870910644531
+            ],
+            [
+              68.62785339355469,
+              71.48136138916016
+            ]
+          ],
+          "pixel_sha256": "4af393ed8fb1ebf0ad4a4965784435cd68af5296083dea0d901abc83bc080ddd",
+          "face_vertical_ratio": 0.38151538372039795,
+          "eye_y_ratio": 0.4137856662273407
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            88.04975128173828,
+            64.69657135009766,
+            161.59735107421875,
+            165.46612548828125,
+            0.89238041639328
+          ],
+          "landmarks": [
+            [
+              111.09599304199219,
+              103.54075622558594
+            ],
+            [
+              144.94802856445312,
+              108.64811706542969
+            ],
+            [
+              126.30143737792969,
+              128.56930541992188
+            ],
+            [
+              107.51192474365234,
+              137.56288146972656
+            ],
+            [
+              137.65028381347656,
+              142.18191528320312
+            ]
+          ],
+          "pixel_sha256": "d6580168cd67f5744fe07f219abbc59e422fed561e465e6b0b25a204b52f9581",
+          "face_vertical_ratio": 0.39363107085227966,
+          "eye_y_ratio": 0.4144313931465149
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            175.5174560546875,
+            132.1260528564453,
+            322.92095947265625,
+            331.6080627441406,
+            0.8972275257110596
+          ],
+          "landmarks": [
+            [
+              222.06289672851562,
+              206.5054931640625
+            ],
+            [
+              290.014892578125,
+              216.5296173095703
+            ],
+            [
+              252.6982879638672,
+              258.6507568359375
+            ],
+            [
+              214.4456329345703,
+              275.971435546875
+            ],
+            [
+              274.5497741699219,
+              285.2239685058594
+            ]
+          ],
+          "pixel_sha256": "c3af05f8b531b5394213d6b347456b39349313718499c8da7651af6eedac35f0",
+          "face_vertical_ratio": 0.3896133005619049,
+          "eye_y_ratio": 0.41312021017074585
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_sky_02_a82",
+      "r": "cheer22",
+      "a": 24,
+      "f": 1,
+      "uc": "sky",
+      "hair": "pony",
+      "smile": "soft",
+      "pose": "front",
+      "index": 43,
+      "source_planned_id": "v22_sky_02",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 43,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_sky_02_a82",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_sky_02_a82_128.webp",
+        "256": "checkpoints/casting_002/v22_sky_02_a82_256.webp",
+        "512": "checkpoints/casting_002/v22_sky_02_a82_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-4e8acd04-e10b-4d38-a343-04c07790d584.png",
+      "source_original_sha256": "75108da7abb93ba0677a85350b54f2ae54df2ea9ad453a0c6a8163a5dd1bcf4c",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": null,
+      "native_tile_sha256": "75108da7abb93ba0677a85350b54f2ae54df2ea9ad453a0c6a8163a5dd1bcf4c",
+      "whole_photo_crop_xyxy": [
+        143,
+        229,
+        1057,
+        1143
+      ],
+      "native_crop_edge": 914,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.3924601674079895,
+        "eye_y_ratio": 0.4015912711620331,
+        "headroom_ratio_projected_from_native_silhouette": 0.07768052516411379,
+        "pixel_sha256": "873c382292222ef3279c03318ede0c3f92c50da214ad75895487b57fb5de0f9b",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.3833090662956238,
+          "within_nearest": "v22_black_05_a94",
+          "legacy_max": 0.26401233673095703,
+          "legacy_nearest": "v15_cheer_young_020"
+        },
+        "256": {
+          "within_max": 0.3678848147392273,
+          "within_nearest": "v22_green_03_a66",
+          "legacy_max": 0.304354190826416,
+          "legacy_nearest": "v15_cheer_young_002"
+        },
+        "512": {
+          "within_max": 0.39177942276000977,
+          "within_nearest": "v22_navy_03_a95",
+          "legacy_max": 0.3339330852031708,
+          "legacy_nearest": "v15_cheer_young_002"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            45.24606704711914,
+            30.249431610107422,
+            84.18377685546875,
+            80.96956634521484,
+            0.8568863868713379
+          ],
+          "landmarks": [
+            [
+              54.86894607543945,
+              50.53697967529297
+            ],
+            [
+              73.29371643066406,
+              52.336341857910156
+            ],
+            [
+              62.57110595703125,
+              61.96970748901367
+            ],
+            [
+              55.02885055541992,
+              68.83037567138672
+            ],
+            [
+              69.57282257080078,
+              70.36824035644531
+            ]
+          ],
+          "pixel_sha256": "c0ca522d8d9f5cd24f87a23986d4d9470c505ecff4442b2499a5234586646c7c",
+          "face_vertical_ratio": 0.39625105261802673,
+          "eye_y_ratio": 0.4018489122390747
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            90.87982177734375,
+            59.6010856628418,
+            168.21600341796875,
+            161.70668029785156,
+            0.8717923760414124
+          ],
+          "landmarks": [
+            [
+              109.81990051269531,
+              101.21556091308594
+            ],
+            [
+              146.1267852783203,
+              104.8576889038086
+            ],
+            [
+              124.7618637084961,
+              123.5491714477539
+            ],
+            [
+              109.89752197265625,
+              137.29737854003906
+            ],
+            [
+              139.0585174560547,
+              140.47299194335938
+            ]
+          ],
+          "pixel_sha256": "a9589dd8f97f2ab9565ea259f5fa30211c7a27835473c4efe70fab287edd23fc",
+          "face_vertical_ratio": 0.3988499641418457,
+          "eye_y_ratio": 0.40248680114746094
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            181.1513671875,
+            122.3695068359375,
+            336.76287841796875,
+            323.3091125488281,
+            0.8837499022483826
+          ],
+          "landmarks": [
+            [
+              219.8217315673828,
+              201.77392578125
+            ],
+            [
+              292.66656494140625,
+              209.45553588867188
+            ],
+            [
+              250.06173706054688,
+              248.1234130859375
+            ],
+            [
+              220.16769409179688,
+              274.9202575683594
+            ],
+            [
+              278.33258056640625,
+              281.5781555175781
+            ]
+          ],
+          "pixel_sha256": "873c382292222ef3279c03318ede0c3f92c50da214ad75895487b57fb5de0f9b",
+          "face_vertical_ratio": 0.3924601674079895,
+          "eye_y_ratio": 0.4015912711620331
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_blue_02_a84",
+      "r": "cheer22",
+      "a": 25,
+      "f": 1,
+      "uc": "blue",
+      "hair": "bob",
+      "smile": "big",
+      "pose": "front",
+      "index": 13,
+      "source_planned_id": "v22_blue_02",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 13,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_blue_02_a84",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_blue_02_a84_128.webp",
+        "256": "checkpoints/casting_002/v22_blue_02_a84_256.webp",
+        "512": "checkpoints/casting_002/v22_blue_02_a84_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-e878e1ad-feeb-4018-b09d-98caee07b917.png",
+      "source_original_sha256": "ae9116b03102cbfd400df13590133fd54e147fb48daba78c4d216dccb05ae445",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "native_tile_sha256": "c120ba7c7ebc299cefa85de8d69bc64b12eb2691b077e2ba225f3376edf4a1d1",
+      "whole_photo_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "native_crop_edge": 627,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.4107798933982849,
+        "eye_y_ratio": 0.3961443305015564,
+        "headroom_ratio_projected_from_native_silhouette": 0.08133971291866028,
+        "pixel_sha256": "f9573944c148aea8585cfcff6f165a50eae8e4d63bdcb6a5cfb405518f8e4e31",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.31309109926223755,
+          "within_nearest": "v22_navy_06_a84",
+          "legacy_max": 0.3289088010787964,
+          "legacy_nearest": "v10_women01_staff_010"
+        },
+        "256": {
+          "within_max": 0.3499181866645813,
+          "within_nearest": "v22_purple_04_a88",
+          "legacy_max": 0.30961865186691284,
+          "legacy_nearest": "v10_women01_staff_010"
+        },
+        "512": {
+          "within_max": 0.3676553964614868,
+          "within_nearest": "v22_purple_04_a88",
+          "legacy_max": 0.3144015073776245,
+          "legacy_nearest": "v15_cheer_young_012"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            42.211997985839844,
+            29.183269500732422,
+            84.12730407714844,
+            83.2546157836914,
+            0.8753810524940491
+          ],
+          "landmarks": [
+            [
+              53.80070877075195,
+              49.4625244140625
+            ],
+            [
+              73.7551040649414,
+              52.40117645263672
+            ],
+            [
+              62.280364990234375,
+              62.1405143737793
+            ],
+            [
+              51.98529815673828,
+              66.79544830322266
+            ],
+            [
+              70.93197631835938,
+              69.51531219482422
+            ]
+          ],
+          "pixel_sha256": "2870aa43cecefb6570d55c98cc57e25f02a820b3f21a3d0d935a90b79ae4ddde",
+          "face_vertical_ratio": 0.42243239283561707,
+          "eye_y_ratio": 0.3979050815105438
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            84.46601867675781,
+            58.62309646606445,
+            168.49020385742188,
+            167.49044799804688,
+            0.8873454928398132
+          ],
+          "landmarks": [
+            [
+              108.7205581665039,
+              98.57189178466797
+            ],
+            [
+              147.2028350830078,
+              104.71723937988281
+            ],
+            [
+              125.01397705078125,
+              125.61775970458984
+            ],
+            [
+              104.4615249633789,
+              133.19334411621094
+            ],
+            [
+              141.87765502929688,
+              138.870361328125
+            ]
+          ],
+          "pixel_sha256": "172589725c4b7a61e2b61b1964c4af0badfd9b7db7f25a3bf16a46f4fc7dfd41",
+          "face_vertical_ratio": 0.42526310682296753,
+          "eye_y_ratio": 0.39704906940460205
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            168.69003295898438,
+            124.7122802734375,
+            336.52874755859375,
+            335.0315856933594,
+            0.9081448316574097
+          ],
+          "landmarks": [
+            [
+              216.9955291748047,
+              196.75564575195312
+            ],
+            [
+              294.5208435058594,
+              208.8961639404297
+            ],
+            [
+              249.75955200195312,
+              251.0525360107422
+            ],
+            [
+              207.6571502685547,
+              266.6601257324219
+            ],
+            [
+              284.2193298339844,
+              278.0544738769531
+            ]
+          ],
+          "pixel_sha256": "f9573944c148aea8585cfcff6f165a50eae8e4d63bdcb6a5cfb405518f8e4e31",
+          "face_vertical_ratio": 0.4107798933982849,
+          "eye_y_ratio": 0.3961443305015564
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_navy_06_a84",
+      "r": "ccap22",
+      "a": 28,
+      "f": 1,
+      "uc": "navy",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "index": 11,
+      "source_planned_id": "v22_navy_06",
+      "source_planned_role": "ccap22",
+      "source_planned_index": 11,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_navy_06_a84",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_navy_06_a84_128.webp",
+        "256": "checkpoints/casting_002/v22_navy_06_a84_256.webp",
+        "512": "checkpoints/casting_002/v22_navy_06_a84_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-e878e1ad-feeb-4018-b09d-98caee07b917.png",
+      "source_original_sha256": "ae9116b03102cbfd400df13590133fd54e147fb48daba78c4d216dccb05ae445",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "native_tile_sha256": "eff48014fa33269534ad891f84e5c4ae4d89993c6a88d6a5152cb6290afeba90",
+      "whole_photo_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "native_crop_edge": 627,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.4101789593696594,
+        "eye_y_ratio": 0.39228516817092896,
+        "headroom_ratio_projected_from_native_silhouette": 0.08133971291866028,
+        "pixel_sha256": "fd4b1d864eec541f82a4e4b3b9ce062b21329d299b6569cddca4a87cb7502b09",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.3626946210861206,
+          "within_nearest": "v22_sky_02_a82",
+          "legacy_max": 0.2920835316181183,
+          "legacy_nearest": "v10_women01_front_015"
+        },
+        "256": {
+          "within_max": 0.34811896085739136,
+          "within_nearest": "v22_blue_02_a84",
+          "legacy_max": 0.3540935516357422,
+          "legacy_nearest": "v10_women01_front_014"
+        },
+        "512": {
+          "within_max": 0.3402886390686035,
+          "within_nearest": "v22_blue_02_a84",
+          "legacy_max": 0.3278493285179138,
+          "legacy_nearest": "v10_women01_front_014"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            48.38683319091797,
+            28.928274154663086,
+            86.19921875,
+            80.20145416259766,
+            0.8448987007141113
+          ],
+          "landmarks": [
+            [
+              55.36656951904297,
+              50.00144577026367
+            ],
+            [
+              72.42860412597656,
+              50.73863220214844
+            ],
+            [
+              61.518592834472656,
+              62.17811965942383
+            ],
+            [
+              56.58190155029297,
+              66.0761947631836
+            ],
+            [
+              73.0861587524414,
+              66.73435974121094
+            ]
+          ],
+          "pixel_sha256": "f1c71794fffdd941a857bb449dddf175460cac521302334eb58d1109dfdeb3b9",
+          "face_vertical_ratio": 0.40057170391082764,
+          "eye_y_ratio": 0.393515944480896
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            96.8809814453125,
+            56.229393005371094,
+            172.36526489257812,
+            160.9522247314453,
+            0.8471398949623108
+          ],
+          "landmarks": [
+            [
+              110.9198989868164,
+              99.95386505126953
+            ],
+            [
+              145.0162811279297,
+              101.36552429199219
+            ],
+            [
+              123.34928894042969,
+              124.45423889160156
+            ],
+            [
+              113.1941146850586,
+              132.10714721679688
+            ],
+            [
+              146.66554260253906,
+              133.36764526367188
+            ]
+          ],
+          "pixel_sha256": "877bfbc5ab9df135a45f60a29c7dc305659c4a4b4b8a9e93089e7496013d2227",
+          "face_vertical_ratio": 0.4090735614299774,
+          "eye_y_ratio": 0.39320194721221924
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            194.31442260742188,
+            111.70145416259766,
+            344.9650573730469,
+            321.71307373046875,
+            0.8512654900550842
+          ],
+          "landmarks": [
+            [
+              222.30111694335938,
+              199.0099334716797
+            ],
+            [
+              290.0707092285156,
+              202.69009399414062
+            ],
+            [
+              246.27285766601562,
+              249.57254028320312
+            ],
+            [
+              225.70358276367188,
+              263.0940246582031
+            ],
+            [
+              293.1903991699219,
+              266.47760009765625
+            ]
+          ],
+          "pixel_sha256": "fd4b1d864eec541f82a4e4b3b9ce062b21329d299b6569cddca4a87cb7502b09",
+          "face_vertical_ratio": 0.4101789593696594,
+          "eye_y_ratio": 0.39228516817092896
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_sky_06_a84",
+      "r": "ccap22",
+      "a": 28,
+      "f": 1,
+      "uc": "sky",
+      "hair": "bob",
+      "smile": "big",
+      "pose": "front",
+      "index": 47,
+      "source_planned_id": "v22_sky_06",
+      "source_planned_role": "ccap22",
+      "source_planned_index": 47,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_sky_06_a84",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_sky_06_a84_128.webp",
+        "256": "checkpoints/casting_002/v22_sky_06_a84_256.webp",
+        "512": "checkpoints/casting_002/v22_sky_06_a84_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-e878e1ad-feeb-4018-b09d-98caee07b917.png",
+      "source_original_sha256": "ae9116b03102cbfd400df13590133fd54e147fb48daba78c4d216dccb05ae445",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "native_tile_sha256": "2a6b2050fd7ef318b1a6184c7e695dbea68ac2d974befd057599c546313a3ad3",
+      "whole_photo_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "native_crop_edge": 627,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.4046853184700012,
+        "eye_y_ratio": 0.3901471197605133,
+        "headroom_ratio_projected_from_native_silhouette": 0.0861244019138756,
+        "pixel_sha256": "6a6d55ee07d0453aeed0f346b7d14b100fd1e0efe09c8f6f84b62e9e44ac0ca4",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.35915014147758484,
+          "within_nearest": "v22_navy_04_a95",
+          "legacy_max": 0.3168242275714874,
+          "legacy_nearest": "v10_women01_front_005"
+        },
+        "256": {
+          "within_max": 0.3088519871234894,
+          "within_nearest": "v22_black_01_a80",
+          "legacy_max": 0.29277563095092773,
+          "legacy_nearest": "v10_women01_staff_006"
+        },
+        "512": {
+          "within_max": 0.3034169375896454,
+          "within_nearest": "v22_black_05_a94",
+          "legacy_max": 0.31640976667404175,
+          "legacy_nearest": "v15_cheer_young_010"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            45.4052734375,
+            29.4451904296875,
+            81.79144287109375,
+            80.17636108398438,
+            0.8759962320327759
+          ],
+          "landmarks": [
+            [
+              55.1173210144043,
+              48.812164306640625
+            ],
+            [
+              72.54624938964844,
+              50.82188415527344
+            ],
+            [
+              62.55377960205078,
+              59.980796813964844
+            ],
+            [
+              53.882225036621094,
+              65.02299499511719
+            ],
+            [
+              70.35655212402344,
+              66.89972686767578
+            ]
+          ],
+          "pixel_sha256": "af6a42e7374503f0bcd0b15d411a73a044e55a0609a7b422cfa2b0a9fe4d484f",
+          "face_vertical_ratio": 0.39633727073669434,
+          "eye_y_ratio": 0.3891955018043518
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            90.4326400756836,
+            57.247230529785156,
+            163.33450317382812,
+            160.4721221923828,
+            0.8844379186630249
+          ],
+          "landmarks": [
+            [
+              110.8545913696289,
+              97.84098815917969
+            ],
+            [
+              144.83255004882812,
+              101.75798034667969
+            ],
+            [
+              125.51834869384766,
+              120.8337173461914
+            ],
+            [
+              107.8281478881836,
+              129.88449096679688
+            ],
+            [
+              140.6194610595703,
+              133.62789916992188
+            ]
+          ],
+          "pixel_sha256": "5cb31792beaf3748718de688ea75b85bff2d5ee4c28d3c316c8e7f125dcc48e0",
+          "face_vertical_ratio": 0.4032222330570221,
+          "eye_y_ratio": 0.3898417353630066
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            181.1041259765625,
+            113.33780670166016,
+            326.99224853515625,
+            320.53668212890625,
+            0.8925085067749023
+          ],
+          "landmarks": [
+            [
+              221.8196258544922,
+              195.4615020751953
+            ],
+            [
+              289.825927734375,
+              204.0491485595703
+            ],
+            [
+              250.52023315429688,
+              241.09347534179688
+            ],
+            [
+              214.61080932617188,
+              259.09710693359375
+            ],
+            [
+              281.0653076171875,
+              267.44049072265625
+            ]
+          ],
+          "pixel_sha256": "6a6d55ee07d0453aeed0f346b7d14b100fd1e0efe09c8f6f84b62e9e44ac0ca4",
+          "face_vertical_ratio": 0.4046853184700012,
+          "eye_y_ratio": 0.3901471197605133
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_orange_04_a86",
+      "r": "cheer22",
+      "a": 24,
+      "f": 1,
+      "uc": "orange",
+      "hair": "pony",
+      "smile": "soft",
+      "pose": "front",
+      "index": 27,
+      "source_planned_id": "v22_orange_04",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 27,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_orange_04_a86",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_orange_04_a86_128.webp",
+        "256": "checkpoints/casting_002/v22_orange_04_a86_256.webp",
+        "512": "checkpoints/casting_002/v22_orange_04_a86_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-6b336329-aede-489f-9214-b88cf8c15aeb.png",
+      "source_original_sha256": "577e4c1dc1495a6f5e043382c97c0c60e470dbf503292cc789cc5fb00727b3a3",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "native_tile_sha256": "fe14bde5028090ab74e512ab1ff28abb61836b85ff5f4dd80829f2839dd3da90",
+      "whole_photo_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "native_crop_edge": 627,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.39346808195114136,
+        "eye_y_ratio": 0.4071965515613556,
+        "headroom_ratio_projected_from_native_silhouette": 0.0685805422647528,
+        "pixel_sha256": "8e93f01e9fee124968c8b5aec7991141084b7a49150c744c4d3ff85e9fde4c1e",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.39851588010787964,
+          "within_nearest": "v22_navy_03_a95",
+          "legacy_max": 0.25384634733200073,
+          "legacy_nearest": "v15_cheer_young_022"
+        },
+        "256": {
+          "within_max": 0.3787573575973511,
+          "within_nearest": "v22_purple_04_a88",
+          "legacy_max": 0.30386340618133545,
+          "legacy_nearest": "v15_cheer_young_028"
+        },
+        "512": {
+          "within_max": 0.380266010761261,
+          "within_nearest": "v22_purple_04_a88",
+          "legacy_max": 0.28305062651634216,
+          "legacy_nearest": "v10_women01_staff_005"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            39.41484832763672,
+            29.949825286865234,
+            79.23355102539062,
+            80.10149383544922,
+            0.8297731876373291
+          ],
+          "landmarks": [
+            [
+              55.51007080078125,
+              50.38941955566406
+            ],
+            [
+              72.61864471435547,
+              54.2215690612793
+            ],
+            [
+              65.08081817626953,
+              61.89589309692383
+            ],
+            [
+              53.7068977355957,
+              67.94893646240234
+            ],
+            [
+              67.14820861816406,
+              70.97946166992188
+            ]
+          ],
+          "pixel_sha256": "4c2cb16cfdaac0cddfb1d06a5bbe242c09133436abb29509b8c881f9a9a682b0",
+          "face_vertical_ratio": 0.3918099105358124,
+          "eye_y_ratio": 0.4086366891860962
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            78.98597717285156,
+            60.87976837158203,
+            158.32180786132812,
+            161.4296112060547,
+            0.8580247163772583
+          ],
+          "landmarks": [
+            [
+              111.70555114746094,
+              100.48338317871094
+            ],
+            [
+              145.1634979248047,
+              108.6022720336914
+            ],
+            [
+              130.782958984375,
+              123.88642883300781
+            ],
+            [
+              107.64156341552734,
+              135.77203369140625
+            ],
+            [
+              134.6324920654297,
+              142.2732391357422
+            ]
+          ],
+          "pixel_sha256": "f84e959b7b0fe9cc3a0350b0b3e649424fcac63add0a1ab81eb29ee40325e3be",
+          "face_vertical_ratio": 0.3927728235721588,
+          "eye_y_ratio": 0.4083704352378845
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            158.0319061279297,
+            121.501220703125,
+            316.22698974609375,
+            322.9568786621094,
+            0.8783373236656189
+          ],
+          "landmarks": [
+            [
+              223.36666870117188,
+              200.68528747558594
+            ],
+            [
+              289.97528076171875,
+              216.2839813232422
+            ],
+            [
+              261.62371826171875,
+              248.9397430419922
+            ],
+            [
+              215.2178955078125,
+              271.7451171875
+            ],
+            [
+              269.46868896484375,
+              284.3145446777344
+            ]
+          ],
+          "pixel_sha256": "8e93f01e9fee124968c8b5aec7991141084b7a49150c744c4d3ff85e9fde4c1e",
+          "face_vertical_ratio": 0.39346808195114136,
+          "eye_y_ratio": 0.4071965515613556
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_purple_04_a88",
+      "r": "cheer22",
+      "a": 24,
+      "f": 1,
+      "uc": "purple",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "index": 39,
+      "source_planned_id": "v22_purple_04",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 39,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_purple_04_a88",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_purple_04_a88_128.webp",
+        "256": "checkpoints/casting_002/v22_purple_04_a88_256.webp",
+        "512": "checkpoints/casting_002/v22_purple_04_a88_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-8eb3ce10-db58-4935-8f90-0534fd56d2ba.png",
+      "source_original_sha256": "3b2e2d14097b9c2337244952acd302531ff75d05ef8b07cfc1b78bab0077938e",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "native_tile_sha256": "440206c48d488e8d0a26af1690bc79ac5d5879e6bea2116420c5d38fb8e1df7e",
+      "whole_photo_crop_xyxy": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "native_crop_edge": 627,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.41401082277297974,
+        "eye_y_ratio": 0.39453694224357605,
+        "headroom_ratio_projected_from_native_silhouette": 0.08452950558213716,
+        "pixel_sha256": "3f01a1873d4f91b4c89bc3f91d6d87675b12235457dabdef0f4e727d56e0c681",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.3997451663017273,
+          "within_nearest": "v22_navy_03_a95",
+          "legacy_max": 0.3138212561607361,
+          "legacy_nearest": "v10_women01_front_007"
+        },
+        "256": {
+          "within_max": 0.382339209318161,
+          "within_nearest": "v22_navy_03_a95",
+          "legacy_max": 0.3050228953361511,
+          "legacy_nearest": "v10_women01_front_007"
+        },
+        "512": {
+          "within_max": 0.380266010761261,
+          "within_nearest": "v22_orange_04_a86",
+          "legacy_max": 0.30143851041793823,
+          "legacy_nearest": "v10_women01_front_007"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            44.94209671020508,
+            28.985107421875,
+            84.66449737548828,
+            81.01390075683594,
+            0.8410419225692749
+          ],
+          "landmarks": [
+            [
+              53.99223709106445,
+              49.818878173828125
+            ],
+            [
+              73.7900390625,
+              51.019996643066406
+            ],
+            [
+              62.4781608581543,
+              61.67145919799805
+            ],
+            [
+              53.70924758911133,
+              66.32841491699219
+            ],
+            [
+              72.74745178222656,
+              67.52503204345703
+            ]
+          ],
+          "pixel_sha256": "008197909ecfacb3d446b4abf18342b25e084cf32953861d778b331b9bce6d5f",
+          "face_vertical_ratio": 0.4064749479293823,
+          "eye_y_ratio": 0.39390185475349426
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            89.89352416992188,
+            57.0207633972168,
+            169.3788604736328,
+            162.77120971679688,
+            0.8589273691177368
+          ],
+          "landmarks": [
+            [
+              108.23262786865234,
+              99.49059295654297
+            ],
+            [
+              147.3402557373047,
+              102.4317398071289
+            ],
+            [
+              124.7701644897461,
+              124.46635437011719
+            ],
+            [
+              107.24530029296875,
+              132.31150817871094
+            ],
+            [
+              145.68092346191406,
+              135.2030029296875
+            ]
+          ],
+          "pixel_sha256": "0b93ffa08961a96a92ffdc0b1abbf0d6a4ee718fb4e9f20378dc5dbe6c04fee5",
+          "face_vertical_ratio": 0.4130876660346985,
+          "eye_y_ratio": 0.39437955617904663
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            181.0088653564453,
+            113.81005859375,
+            338.376708984375,
+            325.7835998535156,
+            0.8847255706787109
+          ],
+          "landmarks": [
+            [
+              217.165283203125,
+              199.37953186035156
+            ],
+            [
+              294.09820556640625,
+              204.6262969970703
+            ],
+            [
+              249.7904052734375,
+              248.5543975830078
+            ],
+            [
+              215.15957641601562,
+              264.63470458984375
+            ],
+            [
+              291.609130859375,
+              269.87701416015625
+            ]
+          ],
+          "pixel_sha256": "3f01a1873d4f91b4c89bc3f91d6d87675b12235457dabdef0f4e727d56e0c681",
+          "face_vertical_ratio": 0.41401082277297974,
+          "eye_y_ratio": 0.39453694224357605
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_black_03_a94",
+      "r": "cheer22",
+      "a": 26,
+      "f": 1,
+      "uc": "black",
+      "hair": "bob",
+      "smile": "big",
+      "pose": "v",
+      "index": 20,
+      "source_planned_id": "v22_black_03",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 20,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_black_03_a94",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_black_03_a94_128.webp",
+        "256": "checkpoints/casting_002/v22_black_03_a94_256.webp",
+        "512": "checkpoints/casting_002/v22_black_03_a94_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-66affe65-c529-4560-8176-c807f84dca1c.png",
+      "source_original_sha256": "59d0663d5a56b0741b98086c35a2e89499a748a33c9a2072c56dfcbabd090134",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "native_tile_sha256": "9311d46aca3817efc940caa7b8f11446acd9d50223aa5659da083bc9870a5009",
+      "whole_photo_crop_xyxy": [
+        36,
+        52,
+        588,
+        604
+      ],
+      "native_crop_edge": 552,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.37225550413131714,
+        "eye_y_ratio": 0.4143747091293335,
+        "headroom_ratio_projected_from_native_silhouette": 0.06521739130434782,
+        "pixel_sha256": "4af50dfb9c0918bb554aa312fde55ef62031ffa52839f1e3d7fb01d4ff85cf40",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.26650282740592957,
+          "within_nearest": "v22_navy_03_a95",
+          "legacy_max": 0.17750197649002075,
+          "legacy_nearest": "v15_cheer_young_012"
+        },
+        "256": {
+          "within_max": 0.33957529067993164,
+          "within_nearest": "v22_purple_04_a88",
+          "legacy_max": 0.19593293964862823,
+          "legacy_nearest": "v19_sec_14"
+        },
+        "512": {
+          "within_max": 0.37412911653518677,
+          "within_nearest": "v22_purple_04_a88",
+          "legacy_max": 0.19083482027053833,
+          "legacy_nearest": "v19_sec_14"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            47.50327682495117,
+            33.25178909301758,
+            81.378173828125,
+            81.17195892333984,
+            0.863982617855072
+          ],
+          "landmarks": [
+            [
+              55.618247985839844,
+              53.209327697753906
+            ],
+            [
+              72.51200866699219,
+              53.127296447753906
+            ],
+            [
+              63.877403259277344,
+              63.928245544433594
+            ],
+            [
+              56.142799377441406,
+              68.05769348144531
+            ],
+            [
+              72.68509674072266,
+              67.97110748291016
+            ]
+          ],
+          "pixel_sha256": "8a2d030e9100084e2e819a6345ec7025b655e6b3ecfa8de7fc766aa224627ce5",
+          "face_vertical_ratio": 0.3743763267993927,
+          "eye_y_ratio": 0.4153774380683899
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            94.26019287109375,
+            65.64680480957031,
+            162.921875,
+            162.87863159179688,
+            0.883988082408905
+          ],
+          "landmarks": [
+            [
+              111.53007507324219,
+              106.4157485961914
+            ],
+            [
+              145.30029296875,
+              106.28041076660156
+            ],
+            [
+              128.21473693847656,
+              128.27842712402344
+            ],
+            [
+              112.1785888671875,
+              136.15159606933594
+            ],
+            [
+              145.54275512695312,
+              136.0787811279297
+            ]
+          ],
+          "pixel_sha256": "d7cddd954cd4e50a6c46a8ba0f74c3b5bb8983fb94c07047737c3d4dcda54395",
+          "face_vertical_ratio": 0.3798118233680725,
+          "eye_y_ratio": 0.4154222011566162
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            188.6265869140625,
+            135.00021362304688,
+            326.3570251464844,
+            325.59503173828125,
+            0.8933819532394409
+          ],
+          "landmarks": [
+            [
+              223.46029663085938,
+              212.5330047607422
+            ],
+            [
+              290.1818542480469,
+              211.7866973876953
+            ],
+            [
+              256.3421325683594,
+              257.0274658203125
+            ],
+            [
+              224.61758422851562,
+              272.33642578125
+            ],
+            [
+              291.0169372558594,
+              271.9237060546875
+            ]
+          ],
+          "pixel_sha256": "4af50dfb9c0918bb554aa312fde55ef62031ffa52839f1e3d7fb01d4ff85cf40",
+          "face_vertical_ratio": 0.37225550413131714,
+          "eye_y_ratio": 0.4143747091293335
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_black_05_a94",
+      "r": "cheer22",
+      "a": 24,
+      "f": 1,
+      "uc": "black",
+      "hair": "pony",
+      "smile": "big",
+      "pose": "front",
+      "index": 22,
+      "source_planned_id": "v22_black_05",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 22,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_black_05_a94",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_black_05_a94_128.webp",
+        "256": "checkpoints/casting_002/v22_black_05_a94_256.webp",
+        "512": "checkpoints/casting_002/v22_black_05_a94_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-66affe65-c529-4560-8176-c807f84dca1c.png",
+      "source_original_sha256": "59d0663d5a56b0741b98086c35a2e89499a748a33c9a2072c56dfcbabd090134",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "native_tile_sha256": "e4acff3fb4a0e7858be69472a6368eb320a6a4afc43b34a07b3ccd29df16458a",
+      "whole_photo_crop_xyxy": [
+        44,
+        28,
+        582,
+        566
+      ],
+      "native_crop_edge": 538,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.39224323630332947,
+        "eye_y_ratio": 0.399807870388031,
+        "headroom_ratio_projected_from_native_silhouette": 0.08736059479553904,
+        "pixel_sha256": "517b403b63cf9cdb094edcbdbeee4456368683f27439535f1527594753ea9cd9",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.3833090662956238,
+          "within_nearest": "v22_sky_02_a82",
+          "legacy_max": 0.2761818766593933,
+          "legacy_nearest": "v15_cheer_young_030"
+        },
+        "256": {
+          "within_max": 0.3748350143432617,
+          "within_nearest": "v22_navy_03_a95",
+          "legacy_max": 0.3713141977787018,
+          "legacy_nearest": "v15_cheer_young_022"
+        },
+        "512": {
+          "within_max": 0.35598552227020264,
+          "within_nearest": "v22_sky_02_a82",
+          "legacy_max": 0.3659186363220215,
+          "legacy_nearest": "v15_cheer_young_022"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            43.57493591308594,
+            30.544652938842773,
+            81.20243072509766,
+            79.82948303222656,
+            0.8643940687179565
+          ],
+          "landmarks": [
+            [
+              55.686546325683594,
+              48.4397087097168
+            ],
+            [
+              72.00331115722656,
+              54.4396858215332
+            ],
+            [
+              61.05208206176758,
+              61.93253707885742
+            ],
+            [
+              50.84648895263672,
+              62.9720344543457
+            ],
+            [
+              66.95045471191406,
+              68.53449249267578
+            ]
+          ],
+          "pixel_sha256": "af8d536623dc62759bb1099a3cf1a46f4a3cca3a63e7adfc5e73e44fdb42676a",
+          "face_vertical_ratio": 0.38503772020339966,
+          "eye_y_ratio": 0.4018726348876953
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            87.23487854003906,
+            59.74039840698242,
+            162.10153198242188,
+            158.96621704101562,
+            0.8694044351577759
+          ],
+          "landmarks": [
+            [
+              111.24641418457031,
+              96.2071762084961
+            ],
+            [
+              143.7761993408203,
+              108.26127624511719
+            ],
+            [
+              121.77349853515625,
+              123.45112609863281
+            ],
+            [
+              101.08692932128906,
+              125.03167724609375
+            ],
+            [
+              134.26702880859375,
+              136.36117553710938
+            ]
+          ],
+          "pixel_sha256": "b00f03190b31897e433a394478f7cb9771d2b65240a5ecaf12e7ae58845ec62d",
+          "face_vertical_ratio": 0.387600839138031,
+          "eye_y_ratio": 0.39935243129730225
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            174.67495727539062,
+            116.30982971191406,
+            324.03997802734375,
+            317.13836669921875,
+            0.8775891661643982
+          ],
+          "landmarks": [
+            [
+              222.50222778320312,
+              192.56019592285156
+            ],
+            [
+              287.0447082519531,
+              216.84304809570312
+            ],
+            [
+              243.39596557617188,
+              246.9020538330078
+            ],
+            [
+              201.9291229248047,
+              249.5010986328125
+            ],
+            [
+              269.2882080078125,
+              272.3695983886719
+            ]
+          ],
+          "pixel_sha256": "517b403b63cf9cdb094edcbdbeee4456368683f27439535f1527594753ea9cd9",
+          "face_vertical_ratio": 0.39224323630332947,
+          "eye_y_ratio": 0.399807870388031
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_navy_03_a95",
+      "r": "cheer22",
+      "a": 24,
+      "f": 1,
+      "uc": "navy",
+      "hair": "bob",
+      "smile": "soft",
+      "pose": "v",
+      "index": 0,
+      "source_planned_id": "v22_navy_03",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 0,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_navy_03_a95",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_navy_03_a95_128.webp",
+        "256": "checkpoints/casting_002/v22_navy_03_a95_256.webp",
+        "512": "checkpoints/casting_002/v22_navy_03_a95_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-ecff1295-48ca-47f9-8316-03cb98b7a72b.png",
+      "source_original_sha256": "cccceefc4ba29b6fc26855ccbb40d169c6caa88a11512cfaa7e1ebc12b6cf09e",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "native_tile_sha256": "5388bfc9c003eaeada0c7cc934a6270b701c75d5a8ba130f201762132b805be2",
+      "whole_photo_crop_xyxy": [
+        46,
+        67,
+        583,
+        604
+      ],
+      "native_crop_edge": 537,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.3932887017726898,
+        "eye_y_ratio": 0.3997049629688263,
+        "headroom_ratio_projected_from_native_silhouette": 0.08007448789571694,
+        "pixel_sha256": "ff23483f751a288bddeac0c19756d100070051b890b4463563b000af34fff3a0",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.3997451663017273,
+          "within_nearest": "v22_purple_04_a88",
+          "legacy_max": 0.313662052154541,
+          "legacy_nearest": "v19_sec_05"
+        },
+        "256": {
+          "within_max": 0.382339209318161,
+          "within_nearest": "v22_purple_04_a88",
+          "legacy_max": 0.33139124512672424,
+          "legacy_nearest": "v19_sec_05"
+        },
+        "512": {
+          "within_max": 0.39177942276000977,
+          "within_nearest": "v22_sky_02_a82",
+          "legacy_max": 0.29487550258636475,
+          "legacy_nearest": "v19_sec_05"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            49.046531677246094,
+            30.74618911743164,
+            86.69596862792969,
+            81.11204528808594,
+            0.8734023571014404
+          ],
+          "landmarks": [
+            [
+              55.3151741027832,
+              51.371246337890625
+            ],
+            [
+              72.207763671875,
+              51.014652252197266
+            ],
+            [
+              61.43153762817383,
+              61.95268630981445
+            ],
+            [
+              57.768035888671875,
+              69.03417205810547
+            ],
+            [
+              72.10741424560547,
+              68.80464172363281
+            ]
+          ],
+          "pixel_sha256": "711adcc04f5d42d68664911e1de1e3a36e4788a0448e89fa911c1a735d7c5562",
+          "face_vertical_ratio": 0.3934832513332367,
+          "eye_y_ratio": 0.39994490146636963
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            98.3904037475586,
+            60.25043487548828,
+            173.94773864746094,
+            162.18856811523438,
+            0.8826695680618286
+          ],
+          "landmarks": [
+            [
+              110.48008728027344,
+              103.06037902832031
+            ],
+            [
+              144.51602172851562,
+              101.90947723388672
+            ],
+            [
+              122.74723815917969,
+              124.17106628417969
+            ],
+            [
+              115.8312759399414,
+              138.63333129882812
+            ],
+            [
+              144.7281036376953,
+              137.83615112304688
+            ]
+          ],
+          "pixel_sha256": "3197ab53bea1a485d72a8c64cf9b92bf17ee34052037dbd15d6e21d3d9f7ede2",
+          "face_vertical_ratio": 0.3981958329677582,
+          "eye_y_ratio": 0.4003317356109619
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            196.4208221435547,
+            122.74092102050781,
+            347.894775390625,
+            324.104736328125,
+            0.9000428318977356
+          ],
+          "landmarks": [
+            [
+              221.2725372314453,
+              205.87332153320312
+            ],
+            [
+              288.43951416015625,
+              203.424560546875
+            ],
+            [
+              245.17739868164062,
+              249.664794921875
+            ],
+            [
+              231.529052734375,
+              277.1585998535156
+            ],
+            [
+              289.24835205078125,
+              275.59649658203125
+            ]
+          ],
+          "pixel_sha256": "ff23483f751a288bddeac0c19756d100070051b890b4463563b000af34fff3a0",
+          "face_vertical_ratio": 0.3932887017726898,
+          "eye_y_ratio": 0.3997049629688263
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    },
+    {
+      "id": "v22_navy_04_a95",
+      "r": "cheer22",
+      "a": 24,
+      "f": 1,
+      "uc": "navy",
+      "hair": "wave",
+      "smile": "soft",
+      "pose": "front",
+      "index": 0,
+      "source_planned_id": "v22_navy_04",
+      "source_planned_role": "cheer22",
+      "source_planned_index": 0,
+      "runtime_index_unassigned": true,
+      "candidate_id": "v22_navy_04_a95",
+      "paths": {
+        "128": "checkpoints/casting_002/v22_navy_04_a95_128.webp",
+        "256": "checkpoints/casting_002/v22_navy_04_a95_256.webp",
+        "512": "checkpoints/casting_002/v22_navy_04_a95_512.webp"
+      },
+      "source_original": "/workspace/generated_images/exec-ecff1295-48ca-47f9-8316-03cb98b7a72b.png",
+      "source_original_sha256": "cccceefc4ba29b6fc26855ccbb40d169c6caa88a11512cfaa7e1ebc12b6cf09e",
+      "source_original_native_size": [
+        1254,
+        1254
+      ],
+      "source_original_tile_rect_xyxy": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "native_tile_sha256": "832643039003d6567b71ffb8b77cf5b983402c9a4695462a9b55f45f74561a91",
+      "whole_photo_crop_xyxy": [
+        53,
+        81,
+        575,
+        603
+      ],
+      "native_crop_edge": 522,
+      "final512_geometry": {
+        "passed": true,
+        "face_vertical_ratio": 0.3982187509536743,
+        "eye_y_ratio": 0.38443905115127563,
+        "headroom_ratio_projected_from_native_silhouette": 0.09386973180076628,
+        "pixel_sha256": "efe13ee47a53600ab5baa67e69da88b044ff4defc7d8df01ffdea5891165db9f",
+        "policy": "actual decoded q80 RGB512 SCRFD face/eyes; native silhouette projected through same whole-photo crop"
+      },
+      "identity_validation": {
+        "128": {
+          "within_max": 0.35915014147758484,
+          "within_nearest": "v22_sky_06_a84",
+          "legacy_max": 0.32025235891342163,
+          "legacy_nearest": "v15_cheer_young_037"
+        },
+        "256": {
+          "within_max": 0.3747444152832031,
+          "within_nearest": "v22_navy_03_a95",
+          "legacy_max": 0.31347113847732544,
+          "legacy_nearest": "v15_cheer_young_040"
+        },
+        "512": {
+          "within_max": 0.34243065118789673,
+          "within_nearest": "v22_navy_03_a95",
+          "legacy_max": 0.33902716636657715,
+          "legacy_nearest": "v15_cheer_young_037"
+        }
+      },
+      "pixel_measurements": {
+        "128": {
+          "native_input_size": 128,
+          "bbox": [
+            42.43439865112305,
+            28.493749618530273,
+            79.27333068847656,
+            79.3288345336914,
+            0.8207701444625854
+          ],
+          "landmarks": [
+            [
+              55.39899444580078,
+              49.246238708496094
+            ],
+            [
+              72.98588562011719,
+              49.06770324707031
+            ],
+            [
+              66.67963409423828,
+              58.71683883666992
+            ],
+            [
+              57.06843185424805,
+              67.28827667236328
+            ],
+            [
+              71.64395904541016,
+              66.9271240234375
+            ]
+          ],
+          "pixel_sha256": "ffcf619e7f8e395f0101e224a709637d95e1b347675746b959bfd8339bbf3f7e",
+          "face_vertical_ratio": 0.39714908599853516,
+          "eye_y_ratio": 0.3840388357639313
+        },
+        "256": {
+          "native_input_size": 256,
+          "bbox": [
+            84.82084655761719,
+            57.142539978027344,
+            158.70912170410156,
+            159.17691040039062,
+            0.8338220119476318
+          ],
+          "landmarks": [
+            [
+              110.77732849121094,
+              98.65663146972656
+            ],
+            [
+              145.57070922851562,
+              98.09088134765625
+            ],
+            [
+              133.11764526367188,
+              118.03923034667969
+            ],
+            [
+              114.25566101074219,
+              134.50990295410156
+            ],
+            [
+              143.56613159179688,
+              133.5588836669922
+            ]
+          ],
+          "pixel_sha256": "1ca1eb2afa4157b53bb2062c6a7f687c9441fa88e7c9876d91fb35ea29edd051",
+          "face_vertical_ratio": 0.39857175946235657,
+          "eye_y_ratio": 0.3842724859714508
+        },
+        "512": {
+          "native_input_size": 512,
+          "bbox": [
+            169.26931762695312,
+            114.691162109375,
+            316.8163146972656,
+            318.57916259765625,
+            0.8418967723846436
+          ],
+          "landmarks": [
+            [
+              221.8045196533203,
+              197.86099243164062
+            ],
+            [
+              290.5079650878906,
+              195.80458068847656
+            ],
+            [
+              266.594482421875,
+              237.00180053710938
+            ],
+            [
+              228.5928192138672,
+              269.16900634765625
+            ],
+            [
+              287.606201171875,
+              266.50787353515625
+            ]
+          ],
+          "pixel_sha256": "efe13ee47a53600ab5baa67e69da88b044ff4defc7d8df01ffdea5891165db9f",
+          "face_vertical_ratio": 0.3982187509536743,
+          "eye_y_ratio": 0.38443905115127563
+        }
+      },
+      "visual_review_status": "PENDING_FINAL_COHESIVE_REVIEW_NOT_GAME_READY"
+    }
+  ],
+  "files": [
+    {
+      "path": "checkpoints/casting_002/v22_red_01_a11_128.webp",
+      "bytes": 5074,
+      "sha256": "001c285b53618cec504a1750bf379991cab8e0fe5a94f5e8ec36cffe749c669c",
+      "pixel_sha256": "2d3a519e761b419014c6e87d1015ba505169f89ce49ae1597967c6eb1d0cc9f2",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_red_01_a11_256.webp",
+      "bytes": 14020,
+      "sha256": "3ad3670a5e999a9eac930453fee6674efc2e862d47c40ac1b018d07d0729a645",
+      "pixel_sha256": "0b182504a8763c7c22bfc34eca54527fc4ad9b2d333695a92b6a1479abde76f0",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_red_01_a11_512.webp",
+      "bytes": 40446,
+      "sha256": "b42b4a9338083454d1d95fcb693bc0f9b49ac21915cfa47ab032e3a4d84fc4e6",
+      "pixel_sha256": "88f41362ea8ffb7cc50c5e06a421b173a4a37b89a75177b3a6fdcf9399ab9c81",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_blue_03_a22_128.webp",
+      "bytes": 4722,
+      "sha256": "4094fa4472991d792e871703ad4f92881539bb81af751a39ff4b81134b73bbb3",
+      "pixel_sha256": "2942464946887e963f3d49791331dba99d988257ed1501fa691174088608e323",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_blue_03_a22_256.webp",
+      "bytes": 12796,
+      "sha256": "d708140ecbe108c970d203a3b7fb0f18b50a65c67bbf51acac72c5be7161677c",
+      "pixel_sha256": "6f4d4e6a0dadfa3a5750ee523c0f655e1c85c02ce10ced21a21346224a3cf9e5",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_blue_03_a22_512.webp",
+      "bytes": 35402,
+      "sha256": "5b695b172ff6b9e878be9e61429f1efef5867d136db6817747f2e2bffd596218",
+      "pixel_sha256": "8220e7d82c5c89a05bac6ecd3a35f78820852b46d9a85880a0775a301af4ac63",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_green_01_a60_128.webp",
+      "bytes": 4246,
+      "sha256": "e2a6e2536bcaa06b349c65cc6f97bc37750432e19848dcf50785da6b8189731e",
+      "pixel_sha256": "814aa48379afed4f9167c281415550b5a2024415a966c6d3eb1c794ba58ace73",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_green_01_a60_256.webp",
+      "bytes": 11414,
+      "sha256": "57a04f51d520cbfee0ed85e619bac9ff9eb07ba6a76740f68ea0176e769c5a46",
+      "pixel_sha256": "891fb798af284221e40c78ee947b2adae721d569ae4b004b4d684598f18fa852",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_green_01_a60_512.webp",
+      "bytes": 30260,
+      "sha256": "f0ed772ede199e7195188a945bb041621e1640f7303e6cd088786855caad8535",
+      "pixel_sha256": "ef9a7dd4069f5ce344dcadcb377a1bccd59dabfdd8b95147dc4ce7d0d0c9e230",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_blue_01_a61_128.webp",
+      "bytes": 4744,
+      "sha256": "3ac7e776919d05bb7800889d51801aaf0b8e9fa2dadf4b8974c7f48fa00ffa02",
+      "pixel_sha256": "ad77a8ccdcb642ec209f25ff5044d157b6571b98dedae76732a3ed32f0f27f97",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_blue_01_a61_256.webp",
+      "bytes": 12432,
+      "sha256": "0d78c44ee1311cdc8544e5aa2a223ce5d073b9044da7f0fb3910a09edeefc0d1",
+      "pixel_sha256": "b370eedccba547c94c7203a75bfb036e24476f084cb73c429317993ec3d1d395",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_blue_01_a61_512.webp",
+      "bytes": 34734,
+      "sha256": "1656d41595202825ed3686210c97962e22a5013a05ecf1a50ea0719cb0c80c85",
+      "pixel_sha256": "b2c86a69f241a6c006269f95ab23b6c8adedbfc94f3ab4b740e2c5c11e9b319f",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_sky_01_a61_128.webp",
+      "bytes": 4364,
+      "sha256": "70de55520568c94577c16bb33c8473ec030afc486ddf8fb310cfb5d709a8db58",
+      "pixel_sha256": "214c77e8d75af1b1fd35e0910fec5a479b7c04ac24da2631d5d2a3faeb62ceba",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_sky_01_a61_256.webp",
+      "bytes": 12316,
+      "sha256": "547c5e367a4484b3de07258278b7d9e0d3f3689a8e15ecd4ad6a20d3116a92b6",
+      "pixel_sha256": "674224815c2f5437a42216e5a5f230bb86120e647e3ef40d4a42434d43b20917",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_sky_01_a61_512.webp",
+      "bytes": 37824,
+      "sha256": "530f28e34ea388762b052e95eb06265bb3a9968cca79eb4024f13809f3103fb9",
+      "pixel_sha256": "443f9a064d7515d31df3bee56f7eb28716015d2961c50950483dfc97718ffac4",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_02_a62_128.webp",
+      "bytes": 4260,
+      "sha256": "f3f004d429b8d7c297a14b3e8eb9bcc17b95e37e00e97a958bbce39bafa4dbcd",
+      "pixel_sha256": "25eb90231d286ee4ff90ab3c70e93920dfd495ba16f2a1d480d6a763b4558ab0",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_02_a62_256.webp",
+      "bytes": 11816,
+      "sha256": "9a97e37749a56052d8e3c7a4d85938c082626f121c03c14a73d260bb971d3af3",
+      "pixel_sha256": "c4686486d81f56cc4e9e3dc6f42ab88f7620ed289fa4d0dd50742d97710f0fb9",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_02_a62_512.webp",
+      "bytes": 33370,
+      "sha256": "9e8617ff6269a93b26a59409001ce40f01a3e28f090ec27ac6e9ce104333772e",
+      "pixel_sha256": "803886e85388271c1e00006a101962662c84c7b856ca9f975041083dc5a24865",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_orange_01_a64_128.webp",
+      "bytes": 5298,
+      "sha256": "056f752dd43e972e2312e276a2c16089747f3dbd7cc2ac4cef76f2d72a12bfd7",
+      "pixel_sha256": "cdee3d54d04a5a6fc7dfa84820645a24ca63b2c1bba9030149e2b822c24cd5a3",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_orange_01_a64_256.webp",
+      "bytes": 14862,
+      "sha256": "588f0620462b0b7016c3d8869f95f2ba3b053d6487bd3d43e00032d0981937a9",
+      "pixel_sha256": "e7339e9df07f28b2b541b88a06b2afadd82f675b497aefeae2059ea6e4887afd",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_orange_01_a64_512.webp",
+      "bytes": 44552,
+      "sha256": "a45b91f2315a8eb77f092a4d94852997f61ad2188145bb630106ead48ce38e98",
+      "pixel_sha256": "f8df00d617e3d6acda92d71dff2e74d9f9a2f33906be0e8f7a08973b19e490b8",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_green_03_a66_128.webp",
+      "bytes": 4014,
+      "sha256": "8d3e8f65f3f15742f035facffe67b3ba463c67e4b5cbde0697f3d2dae8081445",
+      "pixel_sha256": "23e606df50596706df57a7abdc17fdd312b15f3d0879f987e6e5dda6b192b836",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_green_03_a66_256.webp",
+      "bytes": 10604,
+      "sha256": "f3b7de32247b2a7c635da0c5f5278592e69253a36808da357e8e8fd0d1cf0a8b",
+      "pixel_sha256": "754678d8ede250f0f21dcd08b28a9af363ba96073f9a6ddc86648c805d9ebb4a",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_green_03_a66_512.webp",
+      "bytes": 30296,
+      "sha256": "1f7d2add0dc403ce776104bb8715eae31092e2c65b8c619dcb4bbf020299fcea",
+      "pixel_sha256": "701243ea6fc9091aa5ddf86de91077147841fe5554f243b83405f6491f08fee0",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_purple_01_a66_128.webp",
+      "bytes": 4990,
+      "sha256": "04c100ffb76f9cc72ee5f1a14373b3f6cbd3ded2fb81c414b27e6f944b56a4f4",
+      "pixel_sha256": "813827d6d156ebe341d7f74de7ecb50a58f9f5dfa51ba48c961544bdd783d9ea",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_purple_01_a66_256.webp",
+      "bytes": 13952,
+      "sha256": "613065056f75313cd857a06ba29a0e9a863def405eccc1b333e21fb1512ea6df",
+      "pixel_sha256": "5a61b460677e128e838bfe4e328ec89bec748644879a10855b866b4cd7848ae3",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_purple_01_a66_512.webp",
+      "bytes": 42954,
+      "sha256": "8e5a619fb1b0d32f6dcda58b96d1ae63bad36b3807348c149976cfdd2d97e374",
+      "pixel_sha256": "e7183460265ffafe8cd4341d21eeb5739d51b7ed699cbc92a027ebc1fe5ec67a",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_06_a71_128.webp",
+      "bytes": 3600,
+      "sha256": "ebbcfff8afe324174a71643a127f43a98cb1463928223ef086851ee59b9ff019",
+      "pixel_sha256": "e7cbefefe452560c6f355215aab41a12081d05f7f8b70681b6cbe74faf3e7d93",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_06_a71_256.webp",
+      "bytes": 9606,
+      "sha256": "61947ab61e4a91129488df59d0fdf5805d84285b7c6598739407b19c32a6552f",
+      "pixel_sha256": "eb058c5d71182c4bfb48c0fd5f2bd69c449c8097d6d39cb7e3c6731f01ce6689",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_06_a71_512.webp",
+      "bytes": 25806,
+      "sha256": "7ebf2a886dae8632958fc1a21d9b534b52e6a630c6f52b322909746fbc11a3a9",
+      "pixel_sha256": "b8956f996bab93abf76dcabdeee2b81730cb0ac46b48eafecf30b51246131d8b",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_red_06_a70_128.webp",
+      "bytes": 4322,
+      "sha256": "0318f61602cc29fe32110162a0fb59f2248e7de04148c07d9169d31819d2ee5e",
+      "pixel_sha256": "3b2e24f101d893d3e6983f2d21a819cb3e5eb01ccfb4899cd902a1089b762d72",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_red_06_a70_256.webp",
+      "bytes": 11078,
+      "sha256": "a3ef4ef3e3fd093fc9eb2f5419c1d24a0acfd9f86dfc2650ab9190cc562e2333",
+      "pixel_sha256": "6dc3a3153fbee3443bfc2f0edf70f6afcf5a8c58011a314c013726d7cad73bf4",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_red_06_a70_512.webp",
+      "bytes": 29874,
+      "sha256": "fe368a93c4c7ce59253559d5411cee360233d3e31781cadf77fdcf16ae19834c",
+      "pixel_sha256": "5772aec12c515445877981f02145bc1de295d2eef102eacbe64a405f43e3b98f",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_01_a80_128.webp",
+      "bytes": 4492,
+      "sha256": "3fe53718393523eb1fcd14631a4ef0eb69c543a347c6b94a3dc49a4dc5b30271",
+      "pixel_sha256": "3ebbb5dd53d928baf7fc2e4d390bcfec917a95c2325b55c04881901c57a02d87",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_01_a80_256.webp",
+      "bytes": 12096,
+      "sha256": "e76571b44cd65aa8fd166e1f410cbe5c29cf29af2d2525b389fbe67afc6ec660",
+      "pixel_sha256": "c99cbb54b69dc054791a06e2d5580396c9c2fecff2a52c3117b843a2cf8c05a2",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_01_a80_512.webp",
+      "bytes": 32102,
+      "sha256": "4afea0ded515c3d25b18cbe7ffac10f393312b9599ee69d5ae9b606c1ce41245",
+      "pixel_sha256": "186c8e51149c886d222a60e9af7b1091342e14c64922d8b376ef7f84d749a940",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_red_04_a81_128.webp",
+      "bytes": 4128,
+      "sha256": "74d5ed5d81504646a3fda44238745da894dd36e445449702bc06ea26c6cb5271",
+      "pixel_sha256": "4af393ed8fb1ebf0ad4a4965784435cd68af5296083dea0d901abc83bc080ddd",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_red_04_a81_256.webp",
+      "bytes": 11134,
+      "sha256": "642650ec1ea68e6165fcbe4ce3e10bb277dd020d9edd6111569912d8778e2606",
+      "pixel_sha256": "d6580168cd67f5744fe07f219abbc59e422fed561e465e6b0b25a204b52f9581",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_red_04_a81_512.webp",
+      "bytes": 30462,
+      "sha256": "873f2f1b7938ddea4dceef6740747c95b237104cdb7e56007605983827ec56e7",
+      "pixel_sha256": "c3af05f8b531b5394213d6b347456b39349313718499c8da7651af6eedac35f0",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_sky_02_a82_128.webp",
+      "bytes": 3858,
+      "sha256": "7fe972e887ee403d3af4a336f6e8acb9add3bd26b48cfaf447de55dcd435d56b",
+      "pixel_sha256": "c0ca522d8d9f5cd24f87a23986d4d9470c505ecff4442b2499a5234586646c7c",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_sky_02_a82_256.webp",
+      "bytes": 9222,
+      "sha256": "d45aee0ea0c7780457cfaa71a5d516886eddd82d96424d72e32a400ed3b8abc7",
+      "pixel_sha256": "a9589dd8f97f2ab9565ea259f5fa30211c7a27835473c4efe70fab287edd23fc",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_sky_02_a82_512.webp",
+      "bytes": 25496,
+      "sha256": "966f5734ef5f3ed5667b3f4f26d4dc56fb172bc711cad4286a452c5d67608f87",
+      "pixel_sha256": "873c382292222ef3279c03318ede0c3f92c50da214ad75895487b57fb5de0f9b",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_blue_02_a84_128.webp",
+      "bytes": 4670,
+      "sha256": "6a2518ece1fc13e0822edefe00708dfdc4607b941705d708ee610f5801f9f1ff",
+      "pixel_sha256": "2870aa43cecefb6570d55c98cc57e25f02a820b3f21a3d0d935a90b79ae4ddde",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_blue_02_a84_256.webp",
+      "bytes": 12208,
+      "sha256": "6600745a07220484f68770ff00611b4af00f12276d4fc718fc4ef860c7a512fa",
+      "pixel_sha256": "172589725c4b7a61e2b61b1964c4af0badfd9b7db7f25a3bf16a46f4fc7dfd41",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_blue_02_a84_512.webp",
+      "bytes": 32868,
+      "sha256": "38565ef105c551007f1bda0c0d3386dc7049c350b1fbf004af24d7c1168b54ee",
+      "pixel_sha256": "f9573944c148aea8585cfcff6f165a50eae8e4d63bdcb6a5cfb405518f8e4e31",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_06_a84_128.webp",
+      "bytes": 4756,
+      "sha256": "196401edebadab6ce277e9ee08404c2bb246c4b807b77c5fe352a150d45aad9e",
+      "pixel_sha256": "f1c71794fffdd941a857bb449dddf175460cac521302334eb58d1109dfdeb3b9",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_06_a84_256.webp",
+      "bytes": 12256,
+      "sha256": "f95b0f329e5f4592f16e524cae7dc1d69a252a263f850526431ab5430a4e99ce",
+      "pixel_sha256": "877bfbc5ab9df135a45f60a29c7dc305659c4a4b4b8a9e93089e7496013d2227",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_06_a84_512.webp",
+      "bytes": 30238,
+      "sha256": "62290b527c450d9175f995ad249755321b150651695d76074ede5c5587ae79e3",
+      "pixel_sha256": "fd4b1d864eec541f82a4e4b3b9ce062b21329d299b6569cddca4a87cb7502b09",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_sky_06_a84_128.webp",
+      "bytes": 4856,
+      "sha256": "2849c9a1aee4c345db890dfd89770a8be2d13db4e2f33f0edfd4f3ca34f10132",
+      "pixel_sha256": "af6a42e7374503f0bcd0b15d411a73a044e55a0609a7b422cfa2b0a9fe4d484f",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_sky_06_a84_256.webp",
+      "bytes": 12196,
+      "sha256": "2b68b41475dcbfc856b748380de5aaa8977d6bb4c1d361076858b7f4e6226c95",
+      "pixel_sha256": "5cb31792beaf3748718de688ea75b85bff2d5ee4c28d3c316c8e7f125dcc48e0",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_sky_06_a84_512.webp",
+      "bytes": 29660,
+      "sha256": "549f6075dae76ebb77fdb6d5735b93a822a3e8846692030ff9bf5b8f77c35400",
+      "pixel_sha256": "6a6d55ee07d0453aeed0f346b7d14b100fd1e0efe09c8f6f84b62e9e44ac0ca4",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_orange_04_a86_128.webp",
+      "bytes": 6148,
+      "sha256": "88f01b07bfc8602862e8309bf7180c0fe40da19ce062ef785356bd0eaa061210",
+      "pixel_sha256": "4c2cb16cfdaac0cddfb1d06a5bbe242c09133436abb29509b8c881f9a9a682b0",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_orange_04_a86_256.webp",
+      "bytes": 15396,
+      "sha256": "23e8fb5bce1d356ecad9da1e25e8d346ebeacaa92a35eb598a8f7244d080f93e",
+      "pixel_sha256": "f84e959b7b0fe9cc3a0350b0b3e649424fcac63add0a1ab81eb29ee40325e3be",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_orange_04_a86_512.webp",
+      "bytes": 38760,
+      "sha256": "dfe4e99790aeca251907705f395dd72eb000ccf89d3dd9ef458a7b6421448973",
+      "pixel_sha256": "8e93f01e9fee124968c8b5aec7991141084b7a49150c744c4d3ff85e9fde4c1e",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_purple_04_a88_128.webp",
+      "bytes": 5954,
+      "sha256": "33987428eecc8241cc352578cd0dbc913c8e3481717c56cd4114492651aabc23",
+      "pixel_sha256": "008197909ecfacb3d446b4abf18342b25e084cf32953861d778b331b9bce6d5f",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_purple_04_a88_256.webp",
+      "bytes": 15018,
+      "sha256": "9e739cdf305635a745755b47a8fb8c62ac6f872b00eb858cae659abb4d781a4a",
+      "pixel_sha256": "0b93ffa08961a96a92ffdc0b1abbf0d6a4ee718fb4e9f20378dc5dbe6c04fee5",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_purple_04_a88_512.webp",
+      "bytes": 40892,
+      "sha256": "2b593e2dddbeb4d8ce27d7f31eed8f1a183f396c3a5baf8a26b816324b16466e",
+      "pixel_sha256": "3f01a1873d4f91b4c89bc3f91d6d87675b12235457dabdef0f4e727d56e0c681",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_03_a94_128.webp",
+      "bytes": 5108,
+      "sha256": "65f907892a53ae5e4895e903340dd95350d83304c592f72f071c16a2665353a7",
+      "pixel_sha256": "8a2d030e9100084e2e819a6345ec7025b655e6b3ecfa8de7fc766aa224627ce5",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_03_a94_256.webp",
+      "bytes": 12468,
+      "sha256": "89d4be5cc17dd05ba090dfa96ce5d9fa67f6a9767a422647497043a33405b14a",
+      "pixel_sha256": "d7cddd954cd4e50a6c46a8ba0f74c3b5bb8983fb94c07047737c3d4dcda54395",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_03_a94_512.webp",
+      "bytes": 30718,
+      "sha256": "e01a334487b0e728fe21dc63d0728afd5ab267e360841dce8534741c2574d10b",
+      "pixel_sha256": "4af50dfb9c0918bb554aa312fde55ef62031ffa52839f1e3d7fb01d4ff85cf40",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_05_a94_128.webp",
+      "bytes": 4818,
+      "sha256": "7fe7f630f26c410efb3a97d563a5d7621a1d394afdabcc5e9283a6107f169399",
+      "pixel_sha256": "af8d536623dc62759bb1099a3cf1a46f4a3cca3a63e7adfc5e73e44fdb42676a",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_05_a94_256.webp",
+      "bytes": 12274,
+      "sha256": "026950fd139edc413662189e2021ced835f95e3fc025c404e4eee304734d50c7",
+      "pixel_sha256": "b00f03190b31897e433a394478f7cb9771d2b65240a5ecaf12e7ae58845ec62d",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_black_05_a94_512.webp",
+      "bytes": 32176,
+      "sha256": "8757bb1e022be0f7952bddcbdfde2e498becba78b7dcc4ae16f51f18b3a91ffc",
+      "pixel_sha256": "517b403b63cf9cdb094edcbdbeee4456368683f27439535f1527594753ea9cd9",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_03_a95_128.webp",
+      "bytes": 4596,
+      "sha256": "0e17e520246839143db3eca92ec9807854a26840e3de7b78c8564f2e267a2bd8",
+      "pixel_sha256": "711adcc04f5d42d68664911e1de1e3a36e4788a0448e89fa911c1a735d7c5562",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_03_a95_256.webp",
+      "bytes": 11926,
+      "sha256": "7e5c6432ae6b0002059fa0e39341bb8b9219c0f169e6a4580dd0221cbc15a751",
+      "pixel_sha256": "3197ab53bea1a485d72a8c64cf9b92bf17ee34052037dbd15d6e21d3d9f7ede2",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_03_a95_512.webp",
+      "bytes": 31272,
+      "sha256": "e349c6b5cf312a388a7d97cce6f8dbb586a76bf78b52204f3ecead943f266ca4",
+      "pixel_sha256": "ff23483f751a288bddeac0c19756d100070051b890b4463563b000af34fff3a0",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_04_a95_128.webp",
+      "bytes": 4298,
+      "sha256": "a172ee5cb6eddffb0efd78428377800e9848f2713a39d654954025ad1ae61c02",
+      "pixel_sha256": "ffcf619e7f8e395f0101e224a709637d95e1b347675746b959bfd8339bbf3f7e",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_04_a95_256.webp",
+      "bytes": 11440,
+      "sha256": "a60e3e6210a5ac1c314f59df0f3d0794a1e0ea6ebf3d4f1341f3741c9106a3b6",
+      "pixel_sha256": "1ca1eb2afa4157b53bb2062c6a7f687c9441fa88e7c9876d91fb35ea29edd051",
+      "mode": "RGB",
+      "q": 80
+    },
+    {
+      "path": "checkpoints/casting_002/v22_navy_04_a95_512.webp",
+      "bytes": 31296,
+      "sha256": "7bfb5967eeb88d0cb81a7f032a5fc46eb2fec4cb7a63fe8c243440f8c7d7a78c",
+      "pixel_sha256": "efe13ee47a53600ab5baa67e69da88b044ff4defc7d8df01ffdea5891165db9f",
+      "mode": "RGB",
+      "q": 80
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "policy": "Preselection only, stricter margin chooses more distinct candidates to withstand finalcodec differences. Actual final pass remains raw<.40 with unchanged model/aligner/codec; no score modifications.",
+  "trials": [
+    {
+      "preselection_pair_limit": 0.4,
+      "official_final_threshold": 0.4,
+      "count": 48,
+      "optimal": true
+    },
+    {
+      "preselection_pair_limit": 0.395,
+      "official_final_threshold": 0.4,
+      "count": 48,
+      "optimal": true
+    },
+    {
+      "preselection_pair_limit": 0.39,
+      "official_final_threshold": 0.4,
+      "count": 48,
+      "optimal": true
+    }
+  ],
+  "selected_limit": 0.39
+}

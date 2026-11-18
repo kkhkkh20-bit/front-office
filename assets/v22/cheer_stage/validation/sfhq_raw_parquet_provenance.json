@@ -1,0 +1,8 @@
+{
+  "source_file": "default/train/0000.parquet",
+  "size": 226930157,
+  "sha256": "522a444fab14abc3340e1e2e29e28c92e79163ec7e40cbe8d8072173cc3d934c",
+  "raw_bytes_reencoded_by_preview_server": true,
+  "source_dataset": "juhi-neeved/sfhq-part3-labeled",
+  "original": "SelfishGene/SFHQ part3 synthetic faces CC0"
+}

@@ -1,0 +1,14 @@
+{
+  "revision": 1,
+  "baseline_commit": "40b258b4ee03e87006c809ecdca6cd8721b2f816",
+  "runtime_scope": "40members+8captains, fixed runtime identities/index/role/uc;21face recasts+5hair edits+22native photos/crops retained",
+  "criterion": "Actual decoded final runtime atlas rectangles, raw normalized ArcFace cosine strictly below0.40 at128/256/512; no epsilon or score adjustment",
+  "preliminary_exports": "Individual q80 image screens are provisional and not delivered. Atlas encoding changes pixels/landmarks. Preliminary failures do not constitute final acceptance; only exact final atlas SHA/pixel measurements are accepted. Historical provisional reports retained.",
+  "encoder_frozen": "libwebp1.6 q80 method6 segments1 sns0 filter0 sharp_yuv, same policy chosen before final-atlas measurement in initial v22",
+  "alignment_frozen": "InsightFace official norm_crop112 all5-point SimilarityTransform, buffalo_l w600k_r50; analysis only, no delivered photo warp",
+  "references": "116existing synthetic women:40v15cheer+16v12captains+40v10women+20v19secretaries. Native128/256;512compared to max-native256 without enlarging legacy sources.",
+  "geometry": "Actual decoded512SCRFD face vertical36-42%, eyes38-42%; native connected head silhouette projected through whole-photo crop6-10% headroom",
+  "source_policy": "Native generated original whole-photo crop edge>=512, RGB512master then lower downs; no runtime upscale, face/body paste or local facial warping. Imagegen handles semantic edits, originals preserved.",
+  "style_direction": "Believable youthful fictional Korean adult baseball stage cheerleaders; long wave/high long pony/long half-up, no bob, varied natural black and brown dye. Recast captains age24 without artificial senior aging.",
+  "sources_and_changes": "REVISION_NOTES.md and validation/revision01_changes.json"
+}

@@ -1,0 +1,11 @@
+{
+  "canonical_order": true,
+  "description": "Incremental measurement cache reused only exact decoded RGB pixel SHA256 matches; all vectors reordered by canonical runtime identity before validation. Per-ID feature bytes were asserted unchanged by permutation. No score, pixel, threshold, aligner or model modification. Non-cached photos measured anew.",
+  "final_sheet_sha256": {
+    "512": "1a8f07b7f80effef14867d25a05c72ea369257b2e9844f69137a38c5e7301240",
+    "256": "64380bb9b65f07d176a67809c596d9b03fa977ae1d73f6385d1a34508ecb1641",
+    "128": "67e493e54e68e49925b13b338fbe92440f2fc39a66f01341f100b17fc4a9a588"
+  },
+  "reference_count": 116,
+  "final_numeric_validation_passed": true
+}

@@ -1,0 +1,44 @@
+{
+  "id": "v22_orange_rv3_14",
+  "index": 0,
+  "r": "ccap22",
+  "a": 26,
+  "f": 1,
+  "uc": "orange",
+  "hair": "half",
+  "smile": "soft",
+  "pose": "v",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_223f4eb2-e79e-41ab-89d9-17a5c0f57599.webp",
+  "source_guide_id": "rv3_14",
+  "source_guide_dataset": "Locally generated RealisticVision synthetic identity guide",
+  "source_guide_license": "CreativeML Open RAIL-M model output",
+  "source_guide_sha256": "c7a9fd21cd29a5e4c8d1a4fa76b5d907b22358afd231ccea7fc83dfefdfdc4d9",
+  "source_guide_native_size": [
+    384,
+    384
+  ],
+  "costume_reference": "/dev/shm/v22_work/kits/orange.png",
+  "generation_attempt": 137,
+  "status": "PENDING_VALIDATION",
+  "purpose": "new native stage portrait from public synthetic identity reference",
+  "composition_reference": "/dev/shm/v22_work/v22_orange_rv3_14_reference.png",
+  "source_guide_model_manifest": "/dev/shm/v22_realistic_model/model_manifest.json",
+  "prompt": "Four independent authentic photographic portraits in the EXACT 2x2 geometry of ref1. Preserve the thin white separator CROSS precisely at 50% vertical and 50% horizontal, do NOT move panel boundary. Each quadrant is one different fictional adult Korean KBO stage cheerleader, keep each EXACT corresponding woman and SAME identity, bone structure, normal eyes, makeup, hairstyle, smile/hand gesture and fully covered corresponding uniform from her own panel. This is high-fidelity WHOLE-PHOTO outpainting/reframing: retain original photographic face and body coherent together, fill gray missing canvas with matching nighttime blurred baseball grandstand/floodlights, naturally continue hair where needed. Keep face/eyes positioned EXACTLY as reference, eyes about41% tile height, detected facial length37%, hair top at6-10%. Do not zoom face, do not place head near upper edge. Polished flattering professional KBO stage makeup and neat styled hair with natural fine skin, grown adult20s, beautiful candid real human photograph, no doll/CG plastic face or oversized irises, no artificial blemishes/aging. Keep hand normal and away from face. No logos/text/numbers, no hats/glasses, opaque neck/chest/abdomen covered. Camera85mm, front upper key and rear stage rim light. Each whole photograph sharp native square, no extra borders except the thin central white cross. Output native1254x1254 or larger.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-327239cc-1007-4133-bea8-2f69c4b99c9d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_orange_rv3_14_a135",
+  "source_photo_reference": "/workspace/generated_images/exec-b1cb6a79-cb63-4cee-9336-812fd1dbd5c6.png",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_orange_rv3_14_a137.png",
+  "original_sheet": "/workspace/generated_images/exec-327239cc-1007-4133-bea8-2f69c4b99c9d.png",
+  "original_sheet_sha256": "711454f8382d3ce72c641d68a144620dc7d2a84a9ccfdc45abb3a05f8eded6ca",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    4,
+    631,
+    623,
+    1250
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

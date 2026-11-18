@@ -1,0 +1,32 @@
+{
+  "id": "v22_orange_02",
+  "index": 0,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "orange",
+  "hair": "half",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_ee47a2be-07d8-47f2-8b32-8ca10dfa1203.webp",
+  "source_guide_id": "rv5_03",
+  "costume_reference": "/dev/shm/v22_work/kits/orange.png",
+  "generation_attempt": 112,
+  "prompt": "Produce a faithful high-resolution real photographic reproduction of these exact FOUR portrait photographs, filling only gray missing strips with the same own garment/nightstadium background. Four distinct fictional ADULT KOREAN women midtwenties. Preserve each exact individual face, normal anatomy, expression, individual teeth, hairstyle, skin, ORANGEuniform and corresponding own handpose (ONLY bottom-leftV). No faceaveraging or beautytemplate substitution. Keep exact face scale and exact eye position within each square quadrant, NO camera zoom/reframing/moving faces. Retain healthy lightlymade-up skin with fine authentic texture; do NOT add new acne/freckles/skinmarks/wrinkles or exaggerate pores; no waxy airbrush either. Real professional stage photography, plausible natural Korean adult appearance.\nNative full square1254x1254orhigher. WHITE CROSS at EXACT CENTER defines four EQUAL SQUARE quadrants, retain thinwhitecross and never shift row boundary or mix photos. Keep framing/headroom precisely asreference. No gray blank areas remain. Matching night baseballstadium bokeh/frontkey/rearrim preserved. No new people/hats/glasses/logos/text/numbers/cleavage/crop/body emphasis/children. Each independent coherent real photo with own body.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-b541394e-90f1-4c94-b6fe-24a36295d2e7.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_orange_02_a112.png",
+  "original_sheet": "/workspace/generated_images/exec-b541394e-90f1-4c94-b6fe-24a36295d2e7.png",
+  "original_sheet_sha256": "40f08d16af88781c85bfab445379222b3084f62b0a64586d3d29a4b4dd11afe3",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    4,
+    4,
+    623,
+    623
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

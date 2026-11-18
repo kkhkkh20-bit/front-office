@@ -1,0 +1,6 @@
+{
+  "current_protocol": "InsightFace official face_align.norm_crop(image_size=112); SimilarityTransform fitted to all five detected landmarks; buffalo_l w600k_r50 normalized raw cosine",
+  "previous_checkpoint_protocol": "cv2.estimateAffinePartial2D LMEDS with same five landmarks and112template; historical checkpoints unchanged",
+  "reason": "Use the recognizer library default trained preprocessing consistently; no robust landmark subset selection",
+  "policy": "Current official default selected before remeasurement; retain this method regardless of resulting pass count. Threshold remains strict raw cosine<0.40 on all actual128/256/512 delivery pixels. All references and candidates remeasured together. No face-pixel edits, embedding centering, score scaling or threshold relaxation."
+}

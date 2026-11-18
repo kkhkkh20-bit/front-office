@@ -1,0 +1,20 @@
+{
+  "id": "v22_blue_03",
+  "index": 14,
+  "r": "cheer22",
+  "a": 26,
+  "f": 1,
+  "uc": "blue",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "front",
+  "brief": "softly rounded BROAD OVAL face with full natural cheeks and rounded chin, gently upturned MONOLID eyes, low straight brows, short softly broad nose with rounded tip, broad smile and asymmetric dimple on one cheek. Warm light-medium natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/blue.png",
+  "generation_attempt": 20,
+  "source_identity_guide": "/workspace/generated_images/v22_lcm_prototype_20261117.webp",
+  "source_guide_old_max": 0.2171,
+  "provider": "builtin image_gen from locally generated fictional adult identity concept",
+  "prompt": "Create ONE highly realistic REAL CAMERA photograph of a clearly ADULT26-year-old Korean female baseball cheerleader. Image1 is a rough fictional adult identity concept only, not a final photograph: carry across its distinctive cheek/jaw shape, eye orientation, nose shape, lips and individual expression, rendered with normal REAL ADULT human anatomy, normal-sized eyes and natural head/neck/shoulder proportions. Beautiful youthful adult woman with mature adult facial bone structure; not a doll or childlike face. Photographic fine skin pores, fresh healthy26yo skin, subtle asymmetry and genuine hair strands, tasteful flattering stage eyeliner and rosy lipstick. Bright warm natural tooth-showing BIG smile, realistic teeth. Hair long black soft waves. Image2 is EXACT GARMENT DESIGN ONLY: same royal BLUE modest short-sleeve stand-collar fully zipped cheer performance top, white side panels and silver shoulder piping, exactly same colors/cut/sleeves/collar/zip. No words, logos, numbers, hats or glasses, cleavage or exposed abdomen; relaxed natural shoulders, no body emphasis, hands outside frame. Image3 is ONLY the square camera-framing measurement guide: complete hairstyle top16%, eye line43%, face32–33% of the wide native square frame, head+shoulders+covered upperchest. Match the diagram's placement/scale but DO NOT copy illustrated shapes, flat color/background, lines or labels. ONE complete coherent photo, native square1254x1254 or larger, camera pulled BACK,85mm perspective, front-above soft flattering key light and subtle cool hair rim light. NIGHT baseball cheer platform, blurred navy audience with unreadable faces and warm-white floodlight bokeh. No captions, borders, drawing style, waxy CG face or body/face collage.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-9317c8f6-cac9-40ae-a2e3-09d39d4f076c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "GENERATED_FRAMING_AND_IDENTITY_CHECK_PENDING"
+}

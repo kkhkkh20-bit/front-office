@@ -1,0 +1,30 @@
+{
+  "id": "v22_green_sf000151",
+  "index": 19,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "green",
+  "hair": "half",
+  "smile": "big",
+  "pose": "v",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000151_identity_guide.jpg",
+  "source_guide_id": "sf3_000151",
+  "source_guide_dataset": "SFHQ part3, public synthetic reference",
+  "source_guide_row_idx": 151,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "b53b9002cbc7a70c6492c495f6039d88b573c7785bb58bf68b6068d7aa110bf2",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "costume_reference": "/dev/shm/v22_work/kits/green.png",
+  "generation_attempt": 163,
+  "status": "PENDING_VALIDATION",
+  "purpose": "whole photographic hair grooming",
+  "composition_reference": "/dev/shm/v22_work/v22_green_sf000151_a158_followup_reference.png",
+  "prompt": "SINGLE VERY SMALL HAIRSTYLE EDIT to existing real photograph. Preserve EXACT same fictional ADULT KOREAN woman age25, absolutely identical face/eyes/nose/mouth/teeth/smile/asymmetry/skin/makeup, same pose, Vhand, body/outfit/camera/scene. Give the existing half-up hairstyle a subtle NATURAL fuller crown at the very top, only about1.5% of canvas height higher than current hair surface (about20px on1254photo). It must be a groomed coherent full crown, no tall wispy hairs. Do NOT change skull or forehead/face shape, ONLY hair volume subtly. Preserve everything else in this WHOLE coherent85mm NIGHT baseball stage photograph, no CGI look, no artificial aging/skin smoothing. Native1254square or higher.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-0500047f-7425-4a9b-9d3d-24d44ae03e14.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_parent_candidate": "v22_green_sf000151_a158",
+  "source_photo_reference": "/workspace/generated_images/exec-bbd4e63a-4354-4e4e-9c00-7c91b2095712.png"
+}

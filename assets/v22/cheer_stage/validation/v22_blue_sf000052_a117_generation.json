@@ -1,0 +1,34 @@
+{
+  "id": "v22_blue_sf000052",
+  "index": 0,
+  "r": "cheer22",
+  "a": 25,
+  "f": 1,
+  "uc": "blue",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row000052_identity_guide.jpg",
+  "source_guide_id": "sf3_000052",
+  "source_guide_dataset": "SFHQ part3, public synthetic reference",
+  "source_guide_row_idx": 52,
+  "source_guide_license": "CC0-1.0",
+  "source_guide_sha256": "66446452a960289aa21f90f10deee5031b86cffab28daefc2cdbc4d8fa9fdfb2",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "costume_reference": "/dev/shm/v22_work/kits/blue.png",
+  "generation_attempt": 117,
+  "status": "PENDING_VALIDATION",
+  "purpose": "new native stage portrait from public synthetic identity reference",
+  "composition_reference": "/dev/shm/v22_work/v22_blue_sf000052_reference.png",
+  "technical_reference_only_crop_xyxy": [
+    -129,
+    -99,
+    383,
+    413
+  ],
+  "prompt": "ONE real photographic portrait of the EXACT SAME fictional ADULT KOREAN woman from reference1, age25. Preserve her DISTINCT individual facial identity, own cheek/jaw/eyes/nose/lips and natural asymmetry. Her face is already photographic: do NOT replace with a common beautytemplate or reshape facial proportions. Keep a bright natural tooth-showing smile with individual real teeth. Healthy fine lightlymade-up skin, flattering professional stage eye/lip makeup without skinagefilters/plasticairbrush; no adding acne/freckles/wrinkles/exaggeratedpores. Normal natural DARK BROWN irises, both eyes visible, no coloredcontacts. Remove glasses entirely if present, preserving her own eyes. natural black/dark-brown loose waves, complete full natural hairstyle/crown, keep fringe off pupils. No hats/glasses/hairaccessories. Reference1 is a whole-photo camera-placement guide with missing GRAY canvas: fill missing regions with her OWN complete head/hair/shoulders and own scene, keep face SIZE/POSITION, nozoom/cropping gray. One coherent new professional photograph with harmonized lighting/native detail, no face pasted on sharedbody. Wear EXACT ref2 garment: BLUE short-sleeve fullyzipped high standcollar top, WHITE sidepanels and thin SILVER shoulderpiping, identical cut/collar/trim, covered chest, no logos/text/numbers. NIGHT baseballcheer-platform background, blurred unrecognizable spectators/floodlightbokeh, same85mm softfront-abovekey plusrearstage rim. Head/upperchest, shouldersloweredge. Hands outside frame. Full haircrown visible with6-10%topmargin, eyes38-42%down, faceheight36-42%ofcanvas. Plausible actual Korean adult mid/late twenties, naturally appealing, normal real adult anatomy, no doll/CGface/oversizedeyes/tinyVchin/childlook/cleavage/crop/bodyemphasis. ONE full square native1254x1254orhigher photo, zero grids/borders/text/gray regions.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-2640a327-25b2-4f3d-bde6-cac1ec5fba59.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+}

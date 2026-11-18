@@ -1,0 +1,23 @@
+{
+  "id": "v22_red_06",
+  "index": 5,
+  "r": "ccap22",
+  "a": 29,
+  "f": 1,
+  "uc": "red",
+  "hair": "bob",
+  "smile": "big",
+  "pose": "front",
+  "brief": "moderately LONG HEART-OVAL face with prominent natural cheekbones, slightly asymmetric almond eyes with small eyelid crease, fine straight brows, long slender straight nose with defined tip, medium lips with soft cupid bow, subtle dimple. Fair neutral natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/red.png",
+  "generation_attempt": 70,
+  "prompt": "Retouch ONLY the unrealistic tooth rendering in this ONE fictional ADULT29yo KOREAN cheer captain photograph. Preserve her exact face identity, cheeks/jaw, nose, eyes, lip corners and smile width, hair, red uniform, lighting, background and the entire square composition. Give her a natural joyful tooth-showing smile with a NORMAL realistic upper row of teeth: anatomically plausible incisors/canines, slight natural tooth variation, naturally ivory-white rather than glowing-white, normal spacing and no repeated/ghost/doubled teeth. Relax lower lip/jaw opening slightly so most lower teeth are naturally covered by lower lip; retain a genuine BIG warm adult smile. No exaggerated gums or teeth, no changing her distinctive face. Authentic youthful mature adult29 Korean woman with real skin pores, normal human anatomy. One coherent real camera portrait, same full hairstyle position and shoulder framing, no added words/logo/hat/glasses/borders.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-a7c6d28b-73d7-4816-95a7-ea634eba5ed0.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_identity_guide": "/workspace/generated_images/v22_lcm_cast_936f1c15-7e4e-440e-9377-84f45f138268.webp",
+  "source_photo": "/workspace/generated_images/exec-770f3ef6-e4c6-48ae-950e-01b60f8a011d.png",
+  "status": "SUPERSEDED_BY_USER_REVIEW_REVISION01",
+  "exclude_from_casting": true,
+  "user_review_runtime_id": "v22_ccap22_red_06",
+  "user_review_index": 5,
+  "revision01_action": "new_fictional_cast"
+}

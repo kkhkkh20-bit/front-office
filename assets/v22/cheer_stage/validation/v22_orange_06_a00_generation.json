@@ -1,0 +1,19 @@
+{
+  "id": "v22_orange_06",
+  "index": 29,
+  "r": "ccap22",
+  "a": 28,
+  "f": 1,
+  "uc": "orange",
+  "hair": "pony",
+  "smile": "soft",
+  "pose": "v",
+  "brief": "short HEART-SHAPED face, wider forehead and narrower chin, wide-set gently downturned almond eyes with subtle crease, high fine curved brows, straight broad nose with slightly longer tip, defined cupid-bow upper lip and medium lower lip. Fair neutral natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/orange.png",
+  "generation_attempt": 0,
+  "casting_origin": "previously unreleased fictional identity prototype s07",
+  "identity_reference": "/dev/shm/v22_work/unreleased_identity_guides/s07.png",
+  "prompt": "Image1 is an EXISTING completely fictional adult woman, an unreleased synthetic character prototype, age28. Preserve her EXACT DISTINCT FACE and apparent adult age, normal facial proportions, all facial structure, eyes/nose/lips/cheeks and natural skin. Keep her own pretty warm soft closed-mouth smile and stage charisma; do not replace with a generic face or make her younger/older. Image2 is GARMENT ONLY: dress her in that exact orange modest professional cheer performance costume, same collar/sleeves/panels/cut/colors/white and silver trim, fully opaque chest/abdomen coverage. No logos, letters, numbers, hats or glasses. Style her hair into a high dark ponytail with small matching orange ribbon. Add tasteful flattering stage eye makeup and natural rosy lips, fresh healthy skin with subtle fine pores, no waxy face filtering. One anatomically correct V-sign beside cheek, fingers fully outside face silhouette. Render ONE entire coherent brand-new REALISTIC photograph, square native1254x1254 or larger, same85mm front/very slightthree-quarter shoulders, same front-above soft keylight and subtle cool stage rimlight, NIGHT baseball cheer platform with blurred navy audience and warm-white floodlight bokeh, no readable crowd faces. WIDER NATIVE FRAMING for later whole-photo crop: complete hairstyle top at16% down, eyes at43%, face forehead-to-chin about32–33% of image height, shoulders/covered upper chest visible, no waist/full body. Exact original woman's face remains unchanged; only clothes, hair styling, makeup, lighting, background and camera framing change. No pasted face/body parts.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-0794ee9f-6caa-41d2-8d32-eead2a82d109.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "GENERATED_FRAMING_AND_IDENTITY_CHECK_PENDING"
+}

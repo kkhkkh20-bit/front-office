@@ -1,0 +1,32 @@
+{
+  "id": "v22_black_02",
+  "index": 0,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "black",
+  "hair": "bob",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_5703f85e-7146-461f-99ce-cc2d5755e97d.webp",
+  "source_guide_id": "rv4_32",
+  "costume_reference": "/dev/shm/v22_work/kits/black.png",
+  "generation_attempt": 108,
+  "prompt": "Photographic wardrobe/background edit of FOUR DISTINCT fictional ADULT KOREAN women from exact corresponding ref1 quadrants. Preserve exact individual faces, bones, features and normal natural proportions; no common beautytemplate, no faceaveraging, no changing eyes/chin/nose. Render authentic RAW85mm photography with real healthy skin pores/asymmetry and natural professional stage eye/lip makeup, clean sourceblur/noise/colorcasts and bluegray/purple cheekpaint, no plastic airbrush/CG/dollskin. They must look like plausible real Korean adults midtwenties.\nEXACT2x2 EQUAL SQUARE photos, full square native1254x1254orhigher. WHITE CROSS marks exact CENTERboundaries, keep thinwhitecross and never extend one photo into another quadrant. Each own independent body/photo. IMPORTANT CAMERA: wider medium upperbody portraits; leave a LARGE EMPTY NIGHT-STADIUM BACKGROUND ABOVE EACH HEAD, about TOP18-20%ofeach tile empty background. Eyes near the vertical CENTER (45-48%down), FACEheightabout33-35%of eachtile. Head centered lower, SHOULDERS/TORSO atbottom. NO close-up/zoom. Fill gray missing own scene canvas, do NOT crop gray or enlarge faces. Full face and complete hairstyle clearly within own quadrant.\nAllfour EXACTsame stage garment from ref2, samecut/collar/trim, no logos/text/numbers, opaquecovered chest. All NIGHT baseballcheer-platform with blurredunrecognizablegrandstands/floodlightbokeh, same front-abovekey andrearrim. No hats/glasses/hoods/cleavage/croptops/bodyemphasis/childfaces/facebodypaste. TLage24bob big natural toothysmile,nohands;TRage24normalneatponytail big natural toothysmile,remove highbun,nohands;BLage24longwaves warm soft CLOSEDLIPsmile,nohands;BRage25darkwaves warm soft CLOSEDLIPsmile,nohands. Normalrealteeth. Allfour BLACK sleeveless highmockneck, WHITEarmholetrim, SILVERsingle diagonalcheststripe exactlyref2.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-53f13635-8031-4690-bc0d-c1f208bf3cb6.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_black_02_a108.png",
+  "original_sheet": "/workspace/generated_images/exec-53f13635-8031-4690-bc0d-c1f208bf3cb6.png",
+  "original_sheet_sha256": "fe90d60f77e503ff37aa59b1ebd6d48eb252b3d9a3ea35a275af98fc9b531929",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    4,
+    4,
+    623,
+    623
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

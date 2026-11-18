@@ -1,0 +1,32 @@
+{
+  "id": "v22_black_02",
+  "index": 19,
+  "r": "cheer22",
+  "a": 26,
+  "f": 1,
+  "uc": "black",
+  "hair": "bob",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_48bb2cff-be90-432b-b8f0-f4c0a4f8ab92.webp",
+  "source_guide_id": "rv2_12",
+  "costume_reference": "/dev/shm/v22_work/kits/black.png",
+  "generation_attempt": 90,
+  "prompt": "OUTPAINT GRAY MISSING AREAS ONLY in exact FOUR-PHOTO2x2 sheet. Each quadrant ONE independent photograph different fictional ADULT KOREAN woman. Keep ALL existing photo content, four exact identities/faces/expressions/skin texture/hair/identical black uniforms and exact SCALE/POSITION within quadrant unchanged. Gray is missing canvas to FILL, not border to crop. Extend night baseball bokeh and matching garment into gray. No zoom/recrop/move/enlarge people. Full square native1254x1254orhigher, four equal square tiles zero gaps/lines/labels. Keep full hairstyle margin~8%,eyes39-40%,faceheight40%,shoulderslower. All four distinct exact people, no averagefaces/swaps. Natural healthy real-camera Korean adultwomen, no plastic filters/facepaint, new people/text/logos/hats/glasses. NO gray blank areas remain.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-412ddd38-e60d-44e4-9a19-0e7960f6d064.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_black_02_a90.png",
+  "original_sheet": "/workspace/generated_images/exec-412ddd38-e60d-44e4-9a19-0e7960f6d064.png",
+  "original_sheet_sha256": "17b5014a75058a591cc4b2a744cebf0b38b92db3a5be871d561624ba9ea63ccd",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    0,
+    0,
+    627,
+    627
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

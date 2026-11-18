@@ -1,0 +1,33 @@
+{
+  "id": "v22_orange_04",
+  "index": 27,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "orange",
+  "hair": "pony",
+  "smile": "soft",
+  "pose": "front",
+  "brief": "short BROAD ROUND face, low cheekbones and soft jawline, slightly asymmetric almond eyes with small eyelid crease, fine straight brows, long slender straight nose with defined tip, wide friendly mouth with thinner lips. Medium honey Korean complexion with a few faint freckles.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/orange.png",
+  "generation_attempt": 86,
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_07df923f-eafa-49f8-96dd-dca24e6268f4.webp",
+  "source_guide_id": "rv3_05",
+  "prompt": "OUTPAINT THE GRAY MISSING AREAS ONLY in this FOUR-PHOTO 2x2 contact sheet. Each quadrant is ONE SEPARATE photograph of a different fictional ADULT KOREAN woman. Keep ALL existing photograph content, exact four identities/faces/expressions/skin texture/hair/uniforms and their exact SCALE and POSITION within EACH quadrant unchanged. Gray is missing scene canvas to FILL, not a border to crop away. Extend the corresponding night baseball stadium bokeh and matching garment/background seamlessly into every gray strip. Do NOT zoom, recrop, move or enlarge the people. Keep the full exact square canvas, four equal square tiles without gutters/lines/labels. Within each tile keep existing complete hairstyle margin about8%, eye level39-40%, face height40% and shoulders at lower edge. All four must remain distinct exact people from their own corresponding quadrant, no averaging or face swapping. One coherent natural real-camera photo per tile; adult Korean women's normal proportions and authentic healthy skin; no CG/beauty-filter/painted face. No new people/text/logos/hats/glasses. Native square1254x1254 or larger. Finish with NO gray blank regions anywhere.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-6b336329-aede-489f-9214-b88cf8c15aeb.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_orange_04_a86.png",
+  "original_sheet": "/workspace/generated_images/exec-6b336329-aede-489f-9214-b88cf8c15aeb.png",
+  "original_sheet_sha256": "577e4c1dc1495a6f5e043382c97c0c60e470dbf503292cc789cc5fb00727b3a3",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    627,
+    0,
+    1254,
+    627
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "v22_black_04",
+  "index": 21,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "black",
+  "hair": "half",
+  "smile": "big",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_b9b37761-f04b-435f-a7a3-4881c4e2585f.webp",
+  "source_guide_id": "rv3_07",
+  "costume_reference": "/dev/shm/v22_work/kits/black.png",
+  "generation_attempt": 89,
+  "prompt": "Edit reference1 into FOUR separate real photographic portraits in exact2x2 grid with four equal square tiles, native1254x1254orhigher, no gaps/text/borders. Each corresponding woman remains her exact unique fictional ADULT KOREAN identity and natural facial features; top two age26, bottom two age24. No common beautification template. Attractive real Korean adults, normal eye/head proportions, subtle real skin pores/asymmetry, realistic toothy smiles and individual teeth, real85mm camera. Maintain exact head/face SCALE and POSITION from each reference quadrant, fill gray empty areas rather than zooming. Target EACHtile faceheight36-42%,eyelevel38-42%, full hair crown6-10% belowtop; shoulders reachbottom. TL same short dark bob woman, bigsmile no hands. TR same dark bob woman, big natural smile with anatomicallycorrect Vhand beside cheek notcoveringface. BL same half-up blackhairwoman,bigsmile handsout. BR same ponytailwoman,bigsmile handsout. Clean all guide rendering artifacts, harsh color casts, abnormal tooth outlines, bluegray/purple cheek blotches without changing identity; healthy natural skin, stage eye makeup/lip without airbrush dollskin. Allfour EXACTsame black stage top from ref2: sleeveless opaque highmockneck, white armhole trim, single silver diagonal chest stripe, no logos/text/numbers, covered chest. Matching NIGHT baseballcheer-platform backgrounds, blurred unrecognizable grandstand crowds/floodlightbokeh, front-abovekey+rearrim light consistent. No glasses/hats/hoods/cleavage/crop/bodyemphasis. Four independently coherent complete photographs, no sharedbody facepaste, no children. Fill all gray canvas coherently while respecting measured placement.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-192c4b47-7689-4f1d-8060-f9381bdd3a9b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_black_04_a89.png",
+  "original_sheet": "/workspace/generated_images/exec-192c4b47-7689-4f1d-8060-f9381bdd3a9b.png",
+  "original_sheet_sha256": "13826a980370ea2845b68a8b1f177d39e4e2cfb5428692c54b525003329c8184",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    0,
+    627,
+    627,
+    1254
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

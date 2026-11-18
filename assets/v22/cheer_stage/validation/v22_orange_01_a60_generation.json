@@ -1,0 +1,18 @@
+{
+  "id": "v22_orange_01",
+  "index": 24,
+  "r": "cheer22",
+  "a": 26,
+  "f": 1,
+  "uc": "orange",
+  "hair": "wave",
+  "smile": "big",
+  "pose": "front",
+  "brief": "elongated RECTANGULAR face, gentle angular jaw and long chin, narrow expressive hooded eyes, thick relaxed straight brows, short gently upturned nose and soft bridge, broad smile and asymmetric dimple on one cheek. Warm light-medium natural Korean complexion.",
+  "costume_reference": "/workspace/front-office-v22/assets/v22/cheer_stage/work/kits/orange.png",
+  "generation_attempt": 60,
+  "prompt": "Make ONE genuine-camera-looking portrait photograph of the EXACT SAME fictional ADULT26-year-old KOREAN woman from reference1. Exact identity and expression preservation: SAME distinctive face outline, cheeks/jaw, eye/eyelid shapes and orientation, brows, nose bridge/tip, lips and SAME joyful tooth-showing BIG SMILE. Photorealize her face precisely, no generic beauty-face substitution. Fresh healthy26yo adult Korean, normal real adult anatomy, normal human eye size and head/neck/shoulders; attractive and youthful but clearly over20. Photographic fine natural skin texture/pores, authentic slightly asymmetric face and fine hair strands, tasteful stage eyeliner/rosy lips, realistic teeth. Hair dark soft waves. Reference2 EXACTorange cheer uniform design, same collar/sleeves/colors/white-silver panels/cut, fully opaque covered upperchest and abdomen, no body emphasis. Hands outside frame. Reference3 camera placement ONLY: square1254x1254 or larger, wide head+shoulders+covered upperchest portrait, full hair top16%, eyes43%, faceheight33%, generous night sky/stadium space above complete hair.85mm camera, front-above soft keylight+cool rear rimlight, NIGHT baseball cheer platform with blurred navy audience/unreadable backgroundfaces, warm-white floodlight bokeh. ONE coherent real photograph. No illustration, CG/plastic face, doll/child look, warps, collage, labels/borders/logos/emblems/numbers, hat or glasses. Korean adult cheerleader appearance, believable real person.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-7cafc97b-bf4c-4050-87ce-c40c606357e4.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_identity_guide": "/workspace/generated_images/v22_lcm_cast_c4089cca-c7ae-404e-ae05-16c23dca5392.webp",
+  "status": "PENDING_VALIDATION"
+}

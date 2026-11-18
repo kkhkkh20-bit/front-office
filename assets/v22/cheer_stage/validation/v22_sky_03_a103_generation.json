@@ -1,0 +1,33 @@
+{
+  "id": "v22_sky_03",
+  "index": 0,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "sky",
+  "hair": "bob",
+  "smile": "big",
+  "pose": "v",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_2a5d4046-c57d-42f2-87a6-a34d999fc906.webp",
+  "source_guide_id": "rv4_04",
+  "costume_reference": "/dev/shm/v22_work/kits/sky.png",
+  "hair_accessory": "thin matching sky headband",
+  "generation_attempt": 103,
+  "prompt": "OUTPAINT ONLY GRAY MISSING CANVAS of this exact2x2 sheet. Keep ALL existing photo content completely unchanged at exact position and scale. DO NOT zoom/enlarge people or crop away gray. Intentionally medium-distance portraits with generous headroom; KEEP that distance/headroom. Gray is missing content to FILL with corresponding person's garment/shoulders and NIGHT baseballstadium bokeh, NOTborder. Preserve all four distinct exact fictional adult Korean women, faces/expressions/hair/skin/identical sky uniforms and handposes. Do not move Vhands between people. No face/body swaps/beautification/facepaint. Full square native1254x1254orhigher four equal square quadrants no gutters/lines/text/gray regions. Natural photographic Korean adult midtwenties appearance normal proportions/realhealthy skin; no dollskin/filter/CG. Extend ONLY missing regions coherently and retain full original layout with same facial positions/sizes.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-fd462ef1-bc67-476a-9594-3c05faaa81c6.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_sky_03_a103.png",
+  "original_sheet": "/workspace/generated_images/exec-fd462ef1-bc67-476a-9594-3c05faaa81c6.png",
+  "original_sheet_sha256": "43794673680f06f91b0f23710f4635a3a01100f00f453f9245b9519b7ac12378",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    627,
+    0,
+    1254,
+    627
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+}

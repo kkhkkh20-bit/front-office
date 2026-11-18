@@ -1,0 +1,12 @@
+{
+  "purpose": "optional public SYNTHETIC identity references only; final stage photos are newly generated and separately validated",
+  "original_dataset": "Synthetic Faces High Quality (SFHQ) part3 by David Beniaguev",
+  "original_source": "https://github.com/SelfishGene/SFHQ-dataset",
+  "original_license_name_verified": "CC0: Public Domain",
+  "license_verification_url": "https://www.kaggle.com/api/v1/datasets/view/selfishgene/synthetic-faces-high-quality-sfhq-part-3",
+  "mirror": "https://huggingface.co/datasets/juhi-neeved/sfhq-part3-labeled",
+  "mirror_revision": "04239361ccbd0b7fcfb70fc93d54e0898b19c50d",
+  "mirror_source_resolution": 256,
+  "synthetic_origin": "Official part3 uses random StyleGAN2 latent samples with e4e correction; no real-person photograph references selected",
+  "policy": "Downloaded references are not delivered as512 originals; only fresh native>=512 stage photos generated with the image tool can be delivered. Source images retained unchanged and identified by byteSHA/rowindex."
+}

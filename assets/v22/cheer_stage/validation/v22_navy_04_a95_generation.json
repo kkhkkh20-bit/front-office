@@ -1,0 +1,36 @@
+{
+  "id": "v22_navy_04",
+  "index": 0,
+  "r": "cheer22",
+  "a": 24,
+  "f": 1,
+  "uc": "navy",
+  "hair": "wave",
+  "smile": "soft",
+  "pose": "front",
+  "source_identity_guide": "/workspace/generated_images/v22_realistic_cfg_cast_77c02cbf-fe43-4593-9511-5e1e02fb4409.webp",
+  "source_guide_id": "rv3_26",
+  "costume_reference": "/dev/shm/v22_work/kits/navy.png",
+  "generation_attempt": 95,
+  "prompt": "OUTPAINT ONLY THE GRAY MISSING CANVAS of this exact2x2 sheet. Keep ALL existing photographic content completely unchanged in its exact position and exact scale. DO NOT zoom or enlarge the people or crop off gray. This is intentionally a wider medium portrait with generous space above each person's head; keep that generous headroom and medium distance. Gray is missing content to FILL with the matching own person's garment, shoulders and NIGHT baseball stadium bokeh, not a border. Preserve four separate independent adult Korean women and their exact distinct faces/expressions/hair/skin/identical navy uniforms; no face/body swapping, no beautification. Complete full square native1254x1254orhigher with four equal square quadrants and no gaps/borders/text/gray regions. Maintain the full original layout with heads at exactly the same scale/positions as reference. Natural photographic healthy Korean midtwenties adult appearance, no dollskin/filter/CG. Do NOT move facial features. Extend ONLY missing areas coherently.",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-ecff1295-48ca-47f9-8316-03cb98b7a72b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "status": "PENDING_VALIDATION",
+  "native_file": "/dev/shm/v22_work/native_tiles/v22_navy_04_a95.png",
+  "original_sheet": "/workspace/generated_images/exec-ecff1295-48ca-47f9-8316-03cb98b7a72b.png",
+  "original_sheet_sha256": "cccceefc4ba29b6fc26855ccbb40d169c6caa88a11512cfaa7e1ebc12b6cf09e",
+  "original_sheet_native_size": [
+    1254,
+    1254
+  ],
+  "original_sheet_rect": [
+    0,
+    627,
+    627,
+    1254
+  ],
+  "operation": "independent four-portrait whole-photo stage edit/outpaint",
+  "exclude_from_casting": true,
+  "final_selection_status": "SUPERSEDED_BY_USER_APPROVED_REVISION02",
+  "superseded_runtime_id": "v22_cheer22_navy_03",
+  "superseded_by_candidate": "v22_cheer22_navy_03_a1401"
+}
