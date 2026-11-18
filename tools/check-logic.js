@@ -9443,6 +9443,48 @@ T('[올스타] 시상·올스타 역대는 해마다 MVP·신인왕·골든글�
   const s=JSON.stringify(G), r=__rngState(); const R=awardHistoryRows(); ok(JSON.stringify(G)===s&&__rngState()===r,'역대 조회가 상태·난수를 바꿈');
   const a=R.find(o=>o.y===y), b=R.find(o=>o.y===y-1); ok(R[0].y===y&&a&&b,'연도별 줄 없음'); ok(a.as&&a.as.st['나눔'].length>=10&&a.as.game&&a.as.hrd,'올해 올스타 줄 '+JSON.stringify(a.as&&{n:a.as.n,g:!!a.as.game}));
   ok(b.mvp.id===p.id&&b.roy.id===q.id&&b.gg.length===2&&b.gg[0].k==='C','지난해 시상 줄'); ok(b.ps&&b.ps.po.id===p.id,'시리즈 MVP 줄'); ok(!a.mvp&&!a.gg,'발표 전 시상이 보임'); });
+/* [국사왕 11-18] 멘토 제안 비서 기준·희망 보직 면담 방식·가을 교육리그 안내와 자동 신청 */
+const gsw4Vet=()=>{ const p=domestic(G.user).find(q=>!q.foreign&&!q.prospect&&!q.isP)||domestic(G.user).find(q=>!q.foreign); initPers(p); p.age=34; p.pers.pro=16; G.mentor=null; G.vetAsk=null; G.evs=(G.evs||[]).filter(e=>e.k!=='vet'); return p; };
+const gsw4Ev=p=>G.evs.filter(e=>e.k==='vet'&&e.data.pid===p.id).pop();
+T('[국사왕 11-18 멘토] 일상 결정을 맡기면 돈과 24세 이하 선수가 있을 때 비서가 멘토 제안을 받아들인다(결과는 직접 고를 때와 같음)',()=>{ fresh(); G.auto={}; G.deleg={}; autoSet('ev',true); ok(autoOn('ev'),'준비 실패: 일상 결정 위임');
+  ok(domestic(G.user).some(q=>q.age<=24)&&spendable(G.user)>=50,'준비 실패: 돈·어린 선수'); ok(mentorWhy(G.user)==='','판단 함수가 거절 '+mentorWhy(G.user));
+  const p=gsw4Vet(), m0=p.mor, e0=G.spend.etc||0, r=__rngState(); EVH.vet.make(p); const e=gsw4Ev(p);
+  ok(e&&e.done&&e.deleg,'비서가 처리하지 않음'); ok(e.pick===0,'돈과 어린 선수가 있는데 거절함: '+(e&&e.opts[e.pick].l)); ok(G.mentor&&G.mentor.id===p.id&&(G.spend.etc||0)-e0===50&&p.mor===Math.min(100,m0+8),'승낙 결과가 직접 고를 때와 다름'); ok(__rngState()===r,'자동 판단이 주 난수를 씀');
+  const m=G.mail.find(x=>x.id===e.mid); ok(m&&m.body.includes('자동 판단'),'판단 이유가 소식에 없음'); });
+T('[국사왕 11-18 멘토] 자동 판단은 24세 이하 선수가 없거나 돈이 모자라면 거절하고, 자동 승낙·자동 거절·직접 결정 기준을 따른다',()=>{ fresh(); G.auto={}; G.deleg={}; autoSet('ev',true);
+  const Y=domestic(G.user).filter(q=>q.age<=24); for(const q of Y)q.age=25; ok(mentorWhy(G.user).includes('24세 이하'),'어린 선수 없음 판단 '+mentorWhy(G.user));
+  let p=gsw4Vet(); EVH.vet.make(p); let e=gsw4Ev(p); ok(e.done&&e.pick===1&&!G.mentor,'어린 선수가 없는데 수당을 냄');
+  G.evPol={vet:'yes'}; p=gsw4Vet(); EVH.vet.make(p); e=gsw4Ev(p); ok(e.done&&e.pick===0,'자동 승낙인데 거절');
+  for(const q of Y)q.age=22; G.evPol={vet:'no'}; p=gsw4Vet(); EVH.vet.make(p); e=gsw4Ev(p); ok(e.done&&e.pick===1&&!G.mentor,'자동 거절인데 승낙');
+  G.evPol={vet:'self'}; p=gsw4Vet(); EVH.vet.make(p); e=gsw4Ev(p); ok(e&&!e.done,'직접 결정인데 비서가 처리함'); ok(autoOn('ev'),'멘토만 직접 결정으로 돌렸는데 일상 결정 위임이 꺼짐'); ok(!evDelegOn('vet'),'직접 결정인데 위임 상태');
+  autoNow('ev'); ok(!e.done,'일상 결정 일괄 처리가 직접 결정 종류를 처리함'); const r=handOffEv(e.id); ok(e.done&&e.pick===0,'이번 건만 맡기면 자동 판단으로 처리해야 함: '+r);
+  G.evPol={}; G.deleg={}; ok(!evDelegOn('vet'),'맡기지 않았는데 위임'); const t=G.teams.find(x=>x.id!==G.user); const c0=t.cash; t.cash=10; ok(/돈/.test(mentorWhy(t.id)),'AI 구단 돈 판단'); t.cash=c0;
+  G.day=dnum(G.year,6,1); ok(period()==='season','준비 실패: 시즌 '+period()); const f=mentorWhy, seen=[]; try{ mentorWhy=tid=>{ seen.push(tid); return 'x'; }; for(const x of G.teams)delete x.mentorY; aiMentorPick(); } finally { mentorWhy=f; }
+  ok(seen.length===G.teams.length-1&&!seen.includes(G.user),'AI 구단 멘토 지정이 같은 판단 함수를 쓰지 않음 '+seen.length); ok(!Object.values(G.clubT||{}).some(k=>k&&k.mentor&&k.mentor.y===G.year),'판단이 거절인데 AI가 멘토를 지정함'); });
+T('[국사왕 11-18 면담 방식] 희망 보직 면담 자동 처리는 고른 방식(감독과 업무 조율·자동 판단)으로 직접 면담과 같은 효과를 낸다',()=>{ fresh(); G.auto={}; const mon=d=>{ while(dobj(d).w!==1)d++; return d; }; G.day=mon(G.day+1); ok(G.mgr[G.user],'준비 실패: 감독');
+  const C=Object.values(coachesOf(G.user)).filter(Boolean); const [c,c2,c3]=C; const gm=s=>staffRel(s,G.user,'gm'), mg=s=>staffRel(s,G.user,'mgr');
+  const g2=gm(c2), m2=mg(c2); staffTalk('coach',c2.id,'coord'); const dG=gm(c2)-g2, dM=mg(c2)-m2; ok(dM>0,'준비 실패: 직접 조율 효과');
+  G.auto.stalkT='coord'; const g1=gm(c), m1=mg(c); handOff('stalk'); ok(mg(c)-m1===dM&&gm(c)-g1===dG,'감독과 업무 조율을 골랐는데 효과가 다름 gm '+(gm(c)-g1)+' mgr '+(mg(c)-m1)); ok(c.staff.talk.topic==='coord','조율로 기록되지 않음'); ok(/감독과 업무 조율/.test(G.mail[0].body+G.mail[0].subj),'받은편지함에 방식이 없음');
+  takeBack('stalk'); G.day+=14; G.auto.stalkT='auto'; staffRelAdd(c,'coach',G.user,'mgr',-30); staffRelAdd(c3,'coach',G.user,'mgr',40); ok(stalkTopicFor(c)==='coord'&&stalkTopicFor(c3)==='listen','자동 판단 기준(감독 관계가 낮으면 조율)이 다름');
+  handOff('stalk'); ok(c.staff.talk.topic==='coord'&&c3.staff.talk.topic==='listen','자동 판단대로 면담하지 않음');
+  const M=G.mgr[G.user]; G.mgr[G.user]=null; ok(stalkTopicFor(c)==='listen','감독이 없는데 조율'); G.mgr[G.user]=M; });
+T('[국사왕 11-18 교육리그] 9월 1일 가을 교육리그 신청 안내(효과가 클 선수·신청 화면 바로가기)와 10월 7일 마감 알림, 주 난수 없음',()=>{ fresh(); G.auto={}; const y=G.year; G.fall=null; G.day=dnum(y,9,1); const r=__rngState();
+  devRemindDaily(); ok(__rngState()===r,'안내가 주 난수를 씀'); const m=G.mail.find(x=>x.subj===y+' 가을 교육리그 신청'); ok(m,'9월 1일 교육리그 신청 안내 없음: '+G.mail.slice(0,3).map(x=>x.subj).join(' / '));
+  ok((m.acts||[]).some(a=>a.a==='fallGo'),'신청 화면 바로가기 없음'); const B=fallBest(G.user,8); ok(B.length>0&&B.every(p=>p.age<=25)&&m.body.includes(B[0].name),'효과가 클 25세 이하 선수 목록 없음'); ok(m.body.includes('10월 10일'),'신청 기간 없음');
+  ok(G.mail.some(x=>/해외 연수/.test(x.subj)),'해외 연수 안내가 사라짐');
+  G.day=dnum(y,10,7); devRemindDaily(); const d=G.mail.find(x=>x.subj==='가을 교육리그 신청 마감 사흘 전'); ok(d&&(d.acts||[]).some(a=>a.a==='fallGo')&&d.body.includes(B[0].name),'마감 알림에 선수·바로가기 없음');
+  ok(dnum(y,10,10)-dnum(y,10,7)===3&&fallOpen()&&(G.day=dnum(y,10,11),!fallOpen()),'마감일이 게임 기준(10월 10일)과 다름');
+  G.day=dnum(y,10,7); setFall('ul'); const n=G.mail.length; devRemindDaily(); ok(G.mail.length===n,'이미 신청했는데 마감 알림'); });
+T('[국사왕 11-18 교육리그] 가을 교육리그 자동 신청: 직접 켜야 돌고 신청과 같은 비용, 직접 정한 참가·불참은 바꾸지 않으며 AI 구단과 같은 돈 기준(fallFit)',()=>{ fresh(); G.auto={}; const y=G.year; G.fall=null;
+  autoAll(true); ok(!autoOn('fall'),'모두 맡기기가 유료 자동 신청을 켬'); autoAll(false);
+  G.day=dnum(y,8,20); handOff('fall'); ok(autoOn('fall')&&!G.fall,'신청 기간 전에 신청함');
+  G.day=dnum(y,9,1); const s0=G.spend.dev||0; const want=fallFit(G.user,'jp'); ok(want,'준비 실패: 돈'); devRemindDaily(); ok(G.fall&&G.fall.y===y&&G.fall.k===want,'9월 1일 자동 신청이 안 됨'); ok((G.spend.dev||0)-s0===FALL[want].c,'자동 신청 비용이 직접 신청과 다름');
+  const m=G.mail.find(x=>x.subj===y+' 가을 교육리그 신청'); ok(m&&m.body.includes('맡기신 대로'),'안내에 자동 신청 결과 없음'); ok((G.autoLog||[]).some(x=>/교육리그/.test(x.t)),'자동 처리 기록 없음');
+  const s1=G.spend.dev; G.day+=7; autoDaily(G.day); devRemindDaily(); ok(G.spend.dev===s1,'두 번 신청함');
+  setFall(''); ok(G.fall.k===null,'불참 준비 실패'); ok(fallAutoApply()===''&&G.fall.k===null,'직접 정한 불참을 자동 신청이 바꿈');
+  const t=G.teams.find(x=>x.id!==G.user), c0=t.cash; t.cash=100; ok(fallFit(t.id,'jp')==='ul','미야자키 비용이 모자라면 울산'); t.cash=10; ok(fallFit(t.id,'ul')===null&&fallFit(t.id,'jp')===null,'돈이 모자라도 신청'); t.cash=5000; ok(fallFit(t.id,'jp')==='jp','돈이 넉넉하면 원하는 쪽'); t.cash=c0;
+  ok(String(ovsAiPlan).includes('fallFit('),'AI 교육리그 신청이 같은 함수를 쓰지 않음'); ok(String(fallRoll).includes('fallPool('),'결과 계산과 안내 명단이 다름');
+  takeBack('fall'); ok(!autoOn('fall'),'끄기 실패'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
