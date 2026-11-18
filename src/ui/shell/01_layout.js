@@ -113,7 +113,7 @@ function exportCard(noXf){ /* noXf: 설정 › 저장·기기는 기기 옮기�
   ${UI.expCode?`<textarea class="code" id="expCodeBox" readonly>${UI.expCode}</textarea><div class="row"><button class="btn" data-a="expCopy">코드 복사하기</button><span class="small muted">길이 ${Math.round(UI.expCode.length/1024)}KB · 복사해서 메모장·메신저 '나에게 보내기' 등에 보관하세요.</span></div>`:''}
   <textarea class="code" id="impCode" placeholder="내보낸 코드를 여기에 붙여 넣으세요"></textarea>
   <div class="row"><button class="btn" data-a="impPaste">붙여넣기</button><button class="btn" data-a="impCode">코드로 불러오기 (현재 슬롯에 덮어씀)</button></div>
-  ${UI.impMsg?`<div class="note">${esc(UI.impMsg)}</div>`:''}${SAVE_ERR?`<div class="note bad">${esc(SAVE_ERR)}</div>`:''}</section>`+(!noXf&&typeof transferCard==='function'?transferCard():''); } /* 기기 옮기기(01c_transfer.js): 내보내기 카드 바로 아래, 설정 저장·처음 화면 불러오기 모두 */
+  ${UI.impMsg?`<div class="note">${esc(UI.impMsg)}</div>`:''}${SAVE_ERR?`<div class="note bad">${esc(SAVE_ERR)}</div>`:''}</section>`+(!noXf&&typeof cloudCard==='function'?cloudCard():'')+(!noXf&&typeof transferCard==='function'?transferCard():''); } /* 기기 옮기기(01c_transfer.js): 내보내기 카드 바로 아래, 설정 저장·처음 화면 불러오기 모두 */
 /* 가져올 세이브 검사: 게임이 바로 읽는 필수 항목이 없으면 아무것도 바꾸기 전에 거절한다(검수 11-09: 시즌 기록·사용자 구단이 빠진 백업이 정상 세이브를 덮어씀) */
 function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
   if(!o(g)||g.ver!==4)return '저장 형식';
