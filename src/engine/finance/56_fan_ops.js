@@ -37,7 +37,7 @@ function fanInRows(S){ S=S||{}; const fi=S.fanIn||0, gd=Math.min(fi,S.goods||0),
 /* 떠난 구단(야인이면 전 구단) 팬 운영: 그 구단 상태로 잠깐 바꿔 같은 계산을 돌린다. book이면 지출·수입은 그 구단 현금·장부로, 팬 여론은 그 구단에 남긴 여론으로. 메일·기사·결정은 내지 않는다(검수 11-09zs) */
 function fanAway(tid,fn,book){ const F=(G.fanYrT||{})[tid]; if(!F||!F.log||(tid===G.user&&!G.unemp))return null; const P=(G.clubT||{})[tid], pr0=fanAwayPr(tid,P), s=[G.user,G.unemp,G.fanOps,G.spend,G.pr,G._away];
   G.user=tid; G.unemp=null; G.fanOps=F; G.spend={}; G.pr=pr0; G._away=1;
-  try{ return fn(); }catch(e){ return null; } finally{ const S=G.spend; [G.user,G.unemp,G.fanOps,G.spend,G.pr]=s; if(s[5])G._away=s[5]; else delete G._away; if(book&&((S.fan||0)!==0||(S.fanIn||0)!==0)){ team(tid).cash+=Math.round((S.fanIn||0)-(S.fan||0)); hoBook(tid,fanInRows(S),[['팬 마케팅·구단 이벤트',S.fan]]); /* 환불도 같은 signed 장부에 남긴다. */ } } }
+  try{ return fn(); }catch(e){ return null; } finally{ const S=G.spend; [G.user,G.unemp,G.fanOps,G.spend,G.pr]=s; if(s[5])G._away=s[5]; else delete G._away; if(book&&((S.fan||0)!==0||(S.fanIn||0)!==0)){ ledger(tid,'fan',-Math.round((S.fanIn||0)-(S.fan||0)),{me:false,ho:[fanInRows(S),[['팬 마케팅·구단 이벤트',S.fan]]]}); /* 임시 장부를 그 구단 현금으로 */ /* 환불도 같은 signed 장부에 남긴다. */ } } }
 /* 떠난 구단 여론: 야인 기간 전 구단은 G.pr, 이직한 구단은 남긴 여론. 없으면 처음 계산한 여론을 그 구단에 남긴다(검수 11-09zza: 매번 55에서 시작) */
 function fanAwayPr(tid,P){ let p=tid===G.user?G.pr:P&&P.pr; if(p)return p; p={fan:55,press:50,hist:[]}; if(tid===G.user)G.pr=p; else (G.clubT=G.clubT||{})[tid]=Object.assign(P||{fy:sponSeason()},{pr:p}); return p; }
 function fanAwayMonthly(){ for(const k of Object.keys(G.fanYrT||{}))fanAway(+k,fanMonthly,true); } /* 떠난 구단도 매달 유튜브 성장·응원단 청구, 1월엔 응원단장 나이·계약이 흐른다 */
@@ -59,7 +59,7 @@ function fanPlanSet(k,on){ const E=FAN_EV[k];if(G.unemp)return '지금은 구단
    테마 데이 자동 운영은 그날 경기를 포함해 7일 안에 홈경기가 2경기 이상일 때만(홈 연전 마지막 날 비용만 나가지 않게, 검수 11-17 #289) */
 /* 팬 예약도 직관·프로모션과 같은 편성 키를 쓴다. 구형 예약은 유일한 대진·순번일 때만 보완한다. */
 function fanBookingBind(b,h){ if(b.gk)return 0; const rows=[...gmGameRows(b.d).filter(x=>!x.overflow),...((G.cal?.rain||{})[b.d]||[])].filter(x=>x.h===h&&(b.a==null||x.a===b.a)), keys=new Map(); for(const x of rows)keys.set(x.a+':'+(x.ordinal||1),x); if(keys.size!==1)return keys.size>1?-1:0; const x=[...keys.values()][0]; if(x.sourcePairN>1)return -1; b.a=x.a;b.gk=gmGameKey(b.d,h,x.a,x.ordinal||1);return 1; }
-function fanBookingDrop(b,why){ const F=G.fanOps;if(!F||(F.bk||[]).indexOf(b)<0)return false;F.bk=F.bk.filter(x=>x!==b);if(!F.bk.length)delete F.bk;G.spend.fan=(G.spend.fan||0)-(b.c||0);if(b.k==='retro'&&F.yr.retro===b.y)delete F.yr.retro;const E=FAN_EV[b.k]||{l:'행사'},msg=`${E.l}: ${dmd(b.d)} ${why} 비용 ${money(b.c||0)}을 돌려받았습니다.`;fanLog(msg);if(!G._away)mail('마케팅팀',`${E.l} 취소·환불`,msg+(b.k==='retro'?' 이번 시즌 안에 다른 홈경기로 다시 잡을 수 있습니다.':''),{kind:'구단'});return true; }
+function fanBookingDrop(b,why){ const F=G.fanOps;if(!F||(F.bk||[]).indexOf(b)<0)return false;F.bk=F.bk.filter(x=>x!==b);if(!F.bk.length)delete F.bk;ledgerMe('fan',-(b.c||0));if(b.k==='retro'&&F.yr.retro===b.y)delete F.yr.retro;const E=FAN_EV[b.k]||{l:'행사'},msg=`${E.l}: ${dmd(b.d)} ${why} 비용 ${money(b.c||0)}을 돌려받았습니다.`;fanLog(msg);if(!G._away)mail('마케팅팀',`${E.l} 취소·환불`,msg+(b.k==='retro'?' 이번 시즌 안에 다른 홈경기로 다시 잡을 수 있습니다.':''),{kind:'구단'});return true; }
 /* 옛 팬 환불의 0 절삭으로만 생긴 미결 장부 차액을 복원한다. 이미 현금에 들어온 환불은 다시 지급하지 않는다. */
 function fanLedgerFix(){const fy=fyNow(),label='팬 마케팅·구단 이벤트';let n=0;for(const [k,H]of Object.entries(G.hoL||{})){if(+k.split(':')[0]!==fy||!H||!Number.isFinite(H.net)||!H.inc||!H.exp||!Object.prototype.hasOwnProperty.call(H.exp,label)||H.exp[label]!==0||![...Object.values(H.inc),...Object.values(H.exp)].every(Number.isFinite))continue;const gap=H.net-(sum(Object.values(H.inc))-sum(Object.values(H.exp)));if(gap>0){H.exp[label]=-gap;n++;}}return n;}
 function fanBookingFix(){let n=fanLedgerFix();const run=()=>{for(const b of [...(G.fanOps?.bk||[])]){const x=fanBookingBind(b,G.user);if(x>0)n++;else if(x<0&&fanBookingDrop(b,'예약한 경기 순번을 확인할 수 없어 행사를 취소하고'))n++;}};if(G.fanOps&&!G.unemp)run();for(const tid of Object.keys(G.fanYrT||{}))if(+tid!==G.user||G.unemp)fanAway(+tid,run,true);return n;}
@@ -77,7 +77,7 @@ function fanPlansGame(tid,day,a){ const run=()=>{ const F=G.fanOps; if(G.unemp||
 /* 잡아 둔 행사가 그 경기에서 열린다. 비용은 잡을 때 냈다 */
 function fanHold(b){ const F=G.fanOps; F.bk=(F.bk||[]).filter(x=>x!==b); if(!F.bk.length)delete F.bk; const t=team(G.user), pop=clamp(t.pop,.4,1.6); prInit(); let msg='';
   if(b.k==='pitch'){ F.last.pitch=G.day; msg=fanPitchFx(pop); }
-  if(b.k==='retro'){ const inc=Math.round(rnd(200,480)*pop*ecoIdx()); G.spend.fanIn=(G.spend.fanIn||0)+inc; G.spend.merch=(G.spend.merch||0)+inc; G.pr.fan=clamp(G.pr.fan+2,0,100); fanNews(`${tshort(G.user)}, 창단 기념 레트로 유니폼 입고 홈경기`,`선수단이 옛 유니폼을 복각한 기념 유니폼을 입고 ${b.a!=null?tshort(b.a)+'전에 ':''}나섰습니다. 구장 매장의 복각 유니폼도 오랜 팬들에게 인기였습니다.`,1,1); msg=`레트로 유니폼 경기를 치렀습니다. 상품 판매 ${money(inc)}, 팬 여론 조금 호전.`; }
+  if(b.k==='retro'){ const inc=Math.round(rnd(200,480)*pop*ecoIdx()); ledgerMe('fanIn',inc); ledgerMe('merch',inc); G.pr.fan=clamp(G.pr.fan+2,0,100); fanNews(`${tshort(G.user)}, 창단 기념 레트로 유니폼 입고 홈경기`,`선수단이 옛 유니폼을 복각한 기념 유니폼을 입고 ${b.a!=null?tshort(b.a)+'전에 ':''}나섰습니다. 구장 매장의 복각 유니폼도 오랜 팬들에게 인기였습니다.`,1,1); msg=`레트로 유니폼 경기를 치렀습니다. 상품 판매 ${money(inc)}, 팬 여론 조금 호전.`; }
   fanLog(`${FAN_EV[b.k].l}: ${msg}`); return msg; }
 function fanPitchFx(pop){ const up=R()<.25*pop?3:R()<.6?2:1; G.pr.fan=clamp(G.pr.fan+up,0,100); fanNews(`${tshort(G.user)} 홈경기 시구, 화제의 스타 등장`,`초청 스타의 시구 영상이 온라인에서 화제가 됐습니다.`,1,1); return `시구 행사를 열었습니다. 팬 여론 호전.`; }
 /* 매일(그날 경기를 다 치른 뒤): 잡아 둔 날 경기가 열리지 않았으면 우천 순연 새 날짜로 따라가고, 새 날짜가 없으면 비용을 돌려준다(프로모션 데이와 같은 규칙, 검수 11-17 #292) */
@@ -92,14 +92,14 @@ function fanEvent(k,scheduled,day){ if(G.unemp)return '지금은 구단 단장�
   const guests=k==='meet'?playersOf(G.user).filter(p=>!p.foreign&&healthy(p)&&!isAway(p)&&!ovsAbroad(p)&&!(p.joinY>G.year)):null;
   if(guests&&!guests.length)return '팬 사인회에 참가할 수 있는 선수가 없습니다(부상·파견·복무·합류 전 제외).';
   { const why=fanCashWhy(E.c); if(why)return `${E.l}: ${why}`; }
-  const F=fanOps(), t=team(G.user); prInit(); G.spend.fan=(G.spend.fan||0)+E.c; const pop=clamp(t.pop,.4,1.6); let msg='';
+  const F=fanOps(), t=team(G.user); prInit(); ledgerMe('fan',E.c); const pop=clamp(t.pop,.4,1.6); let msg='';
   if(k==='pitch'&&!scheduled){ const [d,a]=homeGames(G.user,G.day+1,G.day+1)[0]; (F.bk=F.bk||[]).push({k,d,a,c:E.c,gk:gmGameKey(d,G.user,a,gmGamePick(d,G.user,true,a)?.ordinal||1)}); msg=`${dmd(d)} ${tshort(a)}전 홈경기 시구 행사를 잡았습니다(비용 ${money(E.c)}). 그 경기가 열릴 때 효과가 나고, 우천 취소되면 새 날짜로 따라가며 새 날짜가 없으면 비용을 돌려받습니다.`; fanLog(`${E.l}: ${msg}`); return msg; } /* 우천 취소 경기의 시구가 열린 것으로 잡히지 않게(검수 11-17 #292) */
   if(k==='retro'){ F.yr[k]=sponSeason(); (F.bk=F.bk||[]).push({k,d:rg[0],a:rg[1],c:E.c,y:F.yr[k],gk:gmGameKey(rg[0],G.user,rg[1],gmGamePick(rg[0],G.user,true,rg[1])?.ordinal||1)}); msg=`${dmd(rg[0])} ${tshort(rg[1])}전에 창단 기념 레트로 유니폼을 입기로 했습니다(제작비 ${money(E.c)}). 그날 경기에서 입고 구장 매장에서 팝니다. 우천 취소되면 새 날짜로 따라가고, 새 날짜가 없으면 비용을 돌려받습니다.`; fanLog(`${E.l}: ${msg}`); return msg; }
   if(E.yr)F.yr[k]=sponSeason(); else F.last[k]=G.day;
   if(k==='pitch')msg=fanPitchFx(pop);
   if(k==='theme'){ F.boost={from:G.day,until:G.day+7}; G.pr.fan=clamp(G.pr.fan+1,0,100); msg=`테마 데이를 열었습니다. ${dmd(G.day+7)}까지 홈 관중이 늘어납니다. 팬 여론 조금 호전.`; }
   if(k==='meet'){ G.pr.fan=clamp(G.pr.fan+2,0,100); const L=guests.sort(()=>R()-.5).slice(0,3); L.forEach(p=>{ p.mor=clamp((p.mor??60)+2,0,100); }); msg=`팬 사인회를 열었습니다(${L.map(p=>p.name).join(', ')} 참가). 팬 여론 조금 호전, 참가 선수 기분 상승.`; }
-  if(k==='collab'){ const ok=R()<clamp(.3+.3*(pop-.8)+(G.pr.fan-55)/200,.15,.8); const inc=Math.round((ok?rnd(600,1200):rnd(100,220))*ecoIdx()); G.spend.fanIn=(G.spend.fanIn||0)+inc; G.spend.merch=(G.spend.merch||0)+inc; /* 결산 '상품 판매'(검수 11-17 #294) */ if(ok)G.pr.fan=clamp(G.pr.fan+3,0,100);
+  if(k==='collab'){ const ok=R()<clamp(.3+.3*(pop-.8)+(G.pr.fan-55)/200,.15,.8); const inc=Math.round((ok?rnd(600,1200):rnd(100,220))*ecoIdx()); ledgerMe('fanIn',inc); ledgerMe('merch',inc); /* 결산 '상품 판매'(검수 11-17 #294) */ if(ok)G.pr.fan=clamp(G.pr.fan+3,0,100);
     fanNews(ok?`${tshort(G.user)} 콜라보 유니폼 하루 만에 완판`:`${tshort(G.user)} 콜라보 굿즈, 반응 미지근`,ok?'한정판 유니폼과 굿즈가 출시 첫날 다 팔렸습니다. 추가 생산 요청이 이어집니다.':'출시 초반 관심에 비해 판매가 더딥니다. 재고가 남았습니다.',ok?2:0,1); msg=ok?`완판입니다. 상품 판매 ${money(inc)}, 팬 여론 호전.`:`판매가 부진했습니다. 상품 판매 ${money(inc)}(비용 ${money(E.c)}).`; }
   if(k==='sup'){ const y=sponSeason(); F.sup=y; G.pr.fan=clamp(G.pr.fan+2,0,100); msg=`${y} 서포터즈를 모집했습니다. ${y===G.year?'올':y+'년'} 시즌 홈 관중이 늘고 팬 여론 조금 호전.`; } /* 결산 뒤 모집은 다음 시즌 회원(검수 11-08) */
   fanLog(`${E.l}: ${msg}`); return msg; }
@@ -111,12 +111,12 @@ function fanMonthly(){ if(G.unemp||!G.fanOps)return; const F=G.fanOps, t=team(G.
   /* 채널: 지난달 단계별 운영 날수만큼 비용·구독자·광고 수입(검수 11-17 #299·#300: 월초 단계로 한 달 치를 매기지 않는다). 날수 기록이 없는 옛 저장은 지난달 내내 가장 높았던 단계로 */
   const mx=F.mx||{}; if(F.ytT==null){ const o=dobj(G.day-1); F.ytT=dnum(o.y,o.m,1); F.ytD=[0,0,0]; F.ytD[Math.max(F.yt||0,mx.yt||0)]+=G.day-F.ytT; F.ytT=G.day; } else fanYtTally(F);
   const D=F.ytD, L=Math.max(1,sum(D)), ytLv=sum(D.map((n,i)=>i*n))/L, ytOn=(L-D[0])/L; F.ytD=[0,0,0];
-  const cost=FAN_OPS.cheer.m[Math.max(F.cheer||0,mx.cheer||0)]+Math.round(sum(D.map((n,i)=>FAN_OPS.yt.m[i]*n))/L); F.mx={}; /* 응원단은 지난 한 달 중 가장 높았던 단계로 청구: 월초에 잠깐 꺼서 비용을 피하지 못하게(검수 11-08) */ if(cost)G.spend.fan=(G.spend.fan||0)+cost;
+  const cost=FAN_OPS.cheer.m[Math.max(F.cheer||0,mx.cheer||0)]+Math.round(sum(D.map((n,i)=>FAN_OPS.yt.m[i]*n))/L); F.mx={}; /* 응원단은 지난 한 달 중 가장 높았던 단계로 청구: 월초에 잠깐 꺼서 비용을 피하지 못하게(검수 11-08) */ if(cost)ledgerMe('fan',cost);
   if(F.cheer)G.pr.fan=clamp(G.pr.fan+FAN_OPS.cheer.fan[F.cheer],0,100);
   try{ crewMonthly(); }catch(e){}
   try{ cheerMonthly(); }catch(e){} /* 치어리더 단원(56b) */
   if(ytLv>0){ const r=G.sea&&G.sea.rec&&G.sea.rec[G.user], wp=r&&r.w+r.l>=10?r.w/(r.w+r.l):.5, on=period()==='season'||period()==='post'; const base=F.yt?(on?rnd(3000,7000):rnd(800,2000)):(on?5000:1400); /* 지금 꺼져 있으면 난수 없이 가운데 값(난수 소비는 예전과 같게) */ const add=Math.round(ytLv*clamp(t.pop,.4,1.6)*base*(wp>=.55?1.4:wp<.45?.7:1)); F.sub=(F.sub||0)+add;
-    const ad=Math.round(F.sub/10000*1.6*ytOn); if(ad>0)G.spend.fanIn=(G.spend.fanIn||0)+ad; if(F.sub>=100000)G.pr.fan=clamp(G.pr.fan+.3*ytLv,0,100); } }
+    const ad=Math.round(F.sub/10000*1.6*ytOn); if(ad>0)ledgerMe('fanIn',ad); if(F.sub>=100000)G.pr.fan=clamp(G.pr.fan+.3*ytLv,0,100); } }
 
 /* ===== 응원단장·치어리더 팀장(커뮤니티 제안 11-08): 스태프처럼 인물을 영입한다 =====
    능력치(1~20, 에펨처럼): 호응 유도(홈 관중), 영향력(팬 여론), 구단 충성도(재계약·이적 제의 버티기), 스타성(화제성·상품 수입·관중 조금).
@@ -132,19 +132,19 @@ function crewHire(id,yrs){ if(G.unemp)return '지금은 구단 단장이 아닙�
   C[c.job]={...c,y1:sponSeason()+yrs-1,d0:G.day};
   fanLog(`${CREW_JOB[c.job].l} ${c.name} 영입(${yrs}년, 월 ${money(c.sal)})`); return `${CREW_JOB[c.job].l}으로 ${c.name}을(를) 영입했습니다. ${yrs}년 계약, 월 ${money(c.sal)}.${old?` ${fire} 전임은 시장으로 나갔습니다.`:''}`; }
 function crewSettle(c){ const mo=clamp((dnum(c.y1+1,1,1)-G.day)/30.4,0,12); return Math.round(c.sal*mo*.3); } /* 남은 달 수만큼(계약은 마지막 해 12월 말까지, 1월에 재계약 판단). 만료가 가까우면 줄어든다(검수 11-09zza) */
-function crewFire(job){ const C=crewOf(); const c=C[job]; if(!c)return '그 자리는 비어 있습니다.'; const pay=crewSettle(c); G.spend.fan=(G.spend.fan||0)+pay; { const F=fanOps(); F.cpAcc=(F.cpAcc||0)+crewWorked(c); } /* 이달 일한 날수만큼 월급은 다음 달 1일에(검수 11-17 #301) */ delete C[job]; crewMkt().push({...c,sal:crewSal(c)}); /* 해고해도 즉시 교체처럼 시장으로(검수 11-09zza) */ fanLog(`${CREW_JOB[job].l} ${c.name} 계약 해지(정산 ${money(pay)})`); return `${c.name}과(와) 계약을 해지했습니다. 남은 기간 정산금 ${money(pay)}.`; } /* 남은 계약의 30%(최대 1년 치 기준) */
+function crewFire(job){ const C=crewOf(); const c=C[job]; if(!c)return '그 자리는 비어 있습니다.'; const pay=crewSettle(c); ledgerMe('fan',pay); { const F=fanOps(); F.cpAcc=(F.cpAcc||0)+crewWorked(c); } /* 이달 일한 날수만큼 월급은 다음 달 1일에(검수 11-17 #301) */ delete C[job]; crewMkt().push({...c,sal:crewSal(c)}); /* 해고해도 즉시 교체처럼 시장으로(검수 11-09zza) */ fanLog(`${CREW_JOB[job].l} ${c.name} 계약 해지(정산 ${money(pay)})`); return `${c.name}과(와) 계약을 해지했습니다. 남은 기간 정산금 ${money(pay)}.`; } /* 남은 계약의 30%(최대 1년 치 기준) */
 function crewPay(){ if(G.unemp||!G.fanOps)return 0; return sum(Object.values(G.fanOps.crew||{}).map(c=>c.sal)); }
 function crewAtt(){ if(G.unemp||!G.fanOps)return 0; return sum(Object.values(G.fanOps.crew||{}).map(c=>(c.hype-10)*.003+(c.star-10)*.001)); } /* 응원단장 20/20이면 홈 관중 +4% 안팎 */
 /* 월급은 일한 날수만큼(검수 11-17 #301): 지난달 중간에 영입하면 영입일부터, 해지하면 해지일 전날까지(해지한 사람 몫은 F.cpAcc에 쌓아 두었다가 1일에 함께) */
 function crewWorked(c){ const o=dobj(G.day), S=dnum(o.y,o.m,1), E=dnum(o.y,o.m+1,1); return Math.round(c.sal*Math.max(0,G.day-Math.max(S,c.d0??S))/(E-S)*10)/10; }
 function crewMonthPay(){ const C=crewOf(), F=fanOps(), o=dobj(G.day-1), S=dnum(o.y,o.m,1), n=Math.max(1,G.day-S); return Math.round((sum(Object.values(C).map(c=>c.sal*Math.max(0,G.day-Math.max(S,c.d0??S))/n))+(F.cpAcc||0))*10)/10; }
-function crewMonthly(){ const C=crewOf(), t=team(G.user), F=fanOps(); const L=Object.values(C); const pay=crewMonthPay(); F.cpAcc=0; if(pay>0)G.spend.fan=(G.spend.fan||0)+pay; if(!L.length)return;
-  for(const c of L){ G.pr.fan=clamp(G.pr.fan+(c.infl-10)*.04,0,100); t.pop=clamp(t.pop+(c.star-11)*.0004,.4,1.6); const g=Math.max(0,Math.round((c.star-8)*.6)); if(g)G.spend.fanIn=(G.spend.fanIn||0)+g; }
+function crewMonthly(){ const C=crewOf(), t=team(G.user), F=fanOps(); const L=Object.values(C); const pay=crewMonthPay(); F.cpAcc=0; if(pay>0)ledgerMe('fan',pay); if(!L.length)return;
+  for(const c of L){ G.pr.fan=clamp(G.pr.fan+(c.infl-10)*.04,0,100); t.pop=clamp(t.pop+(c.star-11)*.0004,.4,1.6); const g=Math.max(0,Math.round((c.star-8)*.6)); if(g)ledgerMe('fanIn',g); }
   try{ crewSongAsk(); }catch(e){}
   if(dobj(G.day).m!==1)return; const y=sponSeason();
   for(const j of Object.keys(C)){ const c=C[j]; c.age++; const end=c.y1<y; const poach=!end&&c.star>=15&&c.loy<=8&&R()<.25;
     if(end){ if(R()<.35+c.loy*.03){ const n=ri(1,2); c.y1=y+n-1; c.sal=Math.round(c.sal*1.06); mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 재계약`,`${c.name}이(가) ${n}년 더 남기로 했습니다. 월급은 ${money(c.sal)}입니다.`,{kind:'구단'}); } else { delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name} 계약 만료`,`${c.name}이(가) 재계약하지 않고 떠났습니다. 팬 마케팅에서 새 ${CREW_JOB[j].l}을(를) 영입할 수 있습니다.`,{kind:'구단',imp:true,acts:[{l:'팬 마케팅',a:'go',v:'club:ops'}]}); } }
-    else if(poach){ const buy=crewSettle(c); G.spend.fanIn=(G.spend.fanIn||0)+buy; /* 영입 구단이 내는 위약금(해지 정산금과 같은 기준, 검수 11-09j) */ delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name}, 다른 구단으로`,`스타성이 높은 ${c.name}에게 다른 구단이 더 좋은 조건을 냈고, 구단 애착이 약해 옮겼습니다. 위약금 ${money(buy)}은 그 구단이 냈고 구단 이벤트 수입으로 잡힙니다.`,{kind:'구단',imp:true}); } } }
+    else if(poach){ const buy=crewSettle(c); ledgerMe('fanIn',buy); /* 영입 구단이 내는 위약금(해지 정산금과 같은 기준, 검수 11-09j) */ delete C[j]; mail('마케팅팀',`${CREW_JOB[j].l} ${c.name}, 다른 구단으로`,`스타성이 높은 ${c.name}에게 다른 구단이 더 좋은 조건을 냈고, 구단 애착이 약해 옮겼습니다. 위약금 ${money(buy)}은 그 구단이 냈고 구단 이벤트 수입으로 잡힙니다.`,{kind:'구단',imp:true}); } } }
 
 /* 선수 응원가(사용자 11-08): 응원단장이 있으면 시즌 중 매달 한 번쯤 응원가가 없는 주축 선수의 응원가를 만들자고 한다.
    만들면 비용이 들고, 응원단장 호응 유도·스타성이 높을수록 잘 만들어져 팬 여론·선수 기분·화제성이 오른다. 이적하면 응원가는 그 구단에 남는다 */
@@ -154,7 +154,7 @@ function crewSongAsk(){ const c=crewOf().lead; if(!c||G.unemp||G._away)return; c
   evNew('song',`${p.name} 응원가 만들까요?`,`응원단장 ${c.name}: "${p.name} 선수 응원가가 아직 없습니다. ${p.fr&&p.fr.tid===G.user?'프랜차이즈 스타에게 어울리는 노래를 붙이고 싶습니다.':'팬들이 따라 부를 수 있는 노래를 만들어 보겠습니다.'}" (호응 유도 ${c.hype} · 스타성 ${c.star})`,
     [{l:'만든다',fx:`제작비 ${money(cost)}(팬 마케팅 비용). 응원단장 능력만큼 반응이 갈립니다. 선수 기분이 오르고 팬 여론·화제성이 오를 수 있습니다.`},{l:'다음에',fx:'만들지 않습니다.'}],{ref:p.id,face:p.id,from:'마케팅팀',data:{pid:p.id,cost,q,cid:c.id,by:c.name},def:1,exp:10}); }
 EVH.song={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; if(i!==0)return '다음에 만들기로 했습니다.'; const {cost,q}=e.data; const c=crewOf().lead, by=e.data.by??(c?c.name:''); /* 제안한 단장이 만든다: 수락 전에 바뀌어도(검수 11-09j) */
-  G.spend.fan=(G.spend.fan||0)+cost; (p.songs=p.songs||{})[G.user]={y:G.year,q,by}; const F=fanOps(); F.songs=(F.songs||0)+1;
+  ledgerMe('fan',cost); (p.songs=p.songs||{})[G.user]={y:G.year,q,by}; const F=fanOps(); F.songs=(F.songs||0)+1;
   p.mor=clamp((p.mor??60)+3+Math.round(q/5),0,100); const hit=q>=15, flop=q<=7; G.pr.fan=clamp(G.pr.fan+(hit?2:flop?0:1),0,100); if(hit)team(G.user).pop=clamp(team(G.user).pop+.004,.4,1.6);
   story(p,`${tshort(G.user)} 응원가 생김${hit?' · 화제':''}`,'mile');
   if(hit)news('구단',`${p.name} 새 응원가, 구장 떼창에 SNS 화제`,`응원단장 ${by}이(가) 만든 ${p.name} 응원가가 첫날부터 관중석 떼창을 불렀습니다. 영상 조회수가 빠르게 오르고 있습니다.`,2,{ref:p.id});
