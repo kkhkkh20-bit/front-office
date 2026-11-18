@@ -173,8 +173,8 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
   .tf-r>.card>.agdir,.tf-r>.card>.tf-scroll{flex:1;min-height:0;overflow:auto;scrollbar-width:thin}
   .tf-r h2.sec{margin:0 0 6px!important;font-size:13px!important;color:var(--team-hi,#4fa3ff)}
   .tf-t td.wrap{white-space:normal}.tf-t td.wrap .pill{white-space:normal;display:inline-block;line-height:1.35}
-  @media(min-width:1600px){.foreign-candidates .tf-t td:nth-child(3){white-space:normal;min-width:270px;max-width:340px}.foreign-candidates .tf-t td:nth-child(5){white-space:normal;width:220px;min-width:200px}}.foreign-candidates .tf-t .scn-s .pill{font-size:var(--ui-micro)}
-  .foreign-candidates .tf-t td:last-child{width:66px}.foreign-candidates .tf-t td:last-child .tc-i{display:block;width:100%;margin:2px 0!important}
+  @media(min-width:1600px){.foreign-candidates .tf-t td:nth-child(3){white-space:normal;min-width:220px;max-width:290px}.foreign-candidates .tf-t td:nth-child(4){max-width:150px}.foreign-candidates .tf-t td:nth-child(5){white-space:normal;width:180px;min-width:160px}} /* 기록·연봉·영입 경쟁 칸을 조금 줄여 '관찰' 단추 자리(카페 11-17) */.foreign-candidates .tf-t .scn-s .pill{font-size:var(--ui-micro)}
+  .foreign-candidates .tf-t td:last-child{width:1%}.foreign-candidates .fo-watch.on{color:var(--team-hi,#4fa3ff);border-color:currentColor}.foreign-candidates .tf-t td:last-child .tc-i{display:block;width:100%;margin:2px 0!important}
   .tf-pay .tf-t td{padding-block:3px}
   /* 신인 드래프트 */
   .drf-main{gap:6px}.drf-main>.seg{margin:0;flex:none}
@@ -185,7 +185,7 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
   .drf-c .dfilt>p{margin:0}.drf-c .dfilt .row{gap:4px 10px}
   .drf-c>.candidate-list{flex:1 1 auto;min-height:200px;display:flex;flex-direction:column;padding:0;border:0;overflow:hidden}.drf-c>.candidate-list>.tw{flex:1;min-height:0;overflow:auto;margin:0;width:auto;max-width:100%}
   .drf-c>.candidate-list .candidate-table td{padding-block:4px}
-  .drf .tf-r>.dhead{overflow:auto;scrollbar-width:thin}.drf .dhead .dnow{font-size:20px}.drf .dhead .row{flex-wrap:wrap;gap:6px}.drf .dhead .cap-line{display:block;font-size:12px}
+  .drf .tf-r>.drf-hd{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:auto;scrollbar-width:thin}.drf .drf-hd>*{flex:none;margin:0} /* 드래프트 오른쪽 첫 칸: 머리 카드와 안내 줄을 한 칸에(줄 배치 밀림으로 버튼이 가려지던 문제) */.drf .tf-r>.dhead,.drf .drf-hd>.dhead{overflow:auto;scrollbar-width:thin}.drf .dhead .dnow{font-size:20px}.drf .dhead .row{flex-wrap:wrap;gap:6px}.drf .dhead .cap-line{display:block;font-size:12px}
 }
 /* 좁은 PC(1100~1599px): 외국인 후보 표는 칸 안에서 줄바꿈해 버튼 열까지 한 화면에 */
 @media(min-width:1100px) and (max-width:1599px){ .foreign-candidates .tf-t td:nth-child(n+2):not(:last-child){white-space:normal;min-width:110px}.foreign-candidates .tf-t td:nth-child(3){max-width:230px}.foreign-candidates .tf-t td:nth-child(4){max-width:160px}.foreign-candidates .tf-t td:nth-child(5){max-width:170px} }
@@ -299,7 +299,10 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 .ng-tot{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}.ng-tot>span{display:grid;gap:1px}.ng-tot i{font-style:normal;font-size:var(--ui-caption);color:var(--muted)}
 .ng-chat{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;gap:8px;min-height:0;border:1px solid var(--line);border-radius:6px;padding:10px;background:var(--panel2,var(--panel))}
 .ng-agc{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center}.ng-agc>.av{width:44px;height:44px}.ng-agc>div{display:grid;gap:2px;min-width:0}.ng-fee{line-height:1.45}
-.ng-rdw{display:grid;gap:4px}.ng-rd{display:flex;flex-wrap:wrap;gap:4px 10px;color:var(--muted)}.ng-rd .warn{color:var(--warn)}.ng-rd .bad{color:var(--bad)}
+.ng-rdw{display:grid;gap:4px}
+.ng-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:4px 0}.ng-kp{display:grid;gap:2px;padding:7px 9px;border:1px solid var(--line);border-left:3px solid var(--line);border-radius:6px;background:var(--panel);min-width:0}
+.ng-kp i{font-style:normal;font-size:var(--ui-caption);color:var(--muted)}.ng-kp b{font-size:20px;line-height:1.25} /* 공통 글꼴 단계(12·13·16·20·24) */.ng-kp em{font-style:normal;font-size:var(--ui-caption);color:var(--muted);line-height:1.35}.ng-kp .gauge{margin-top:2px}
+.ng-kp.good{border-left-color:var(--good)}.ng-kp.good b{color:var(--good)}.ng-kp.warn{border-left-color:var(--warn)}.ng-kp.warn b{color:var(--warn)}.ng-kp.bad{border-left-color:var(--bad)}.ng-kp.bad b{color:var(--bad)}.ng-rd{display:flex;flex-wrap:wrap;gap:4px 10px;color:var(--muted)}.ng-rd .warn{color:var(--warn)}.ng-rd .bad{color:var(--bad)}
 .ng-msgs{display:grid;gap:6px;align-content:start;overflow:auto;min-height:0;scrollbar-width:thin}
 .ngm{font-size:var(--ui-body);line-height:1.5;padding:6px 10px;border-radius:8px;background:#ffffff08;color:var(--ink)}.ngm i{display:block;font-style:normal;font-weight:600;font-size:var(--ui-caption);color:var(--muted)}.ngm s{text-decoration:none;font-weight:400;margin-left:4px}
 .ngm.me{background:#4c8de31a;margin-left:18px}.ngm.ag{margin-right:18px}.ngm.bad{border-left:3px solid var(--bad)}.ngm.sys{background:transparent;border:1px dashed var(--line)}
@@ -339,3 +342,6 @@ a.pl,a.tl{color:inherit;text-decoration:underline;text-decoration-color:rgba(143
 .ng-cash li em{font-style:normal;font-size:var(--ui-caption);color:var(--muted);grid-column:1/-1}
 .ng-cash p{margin:6px 0 0}
 .ng-cash summary::-webkit-details-marker{display:none}.ng-cash summary::after{content:'▸';margin-left:auto;color:var(--muted)}.ng-cash[open] summary::after{content:'▾'}
+@media(min-width:1441px){#app .foreign-candidates .tf-t td.fo-act .tc-i{display:inline-block;width:auto;margin:0 0 0 4px!important}#app .foreign-candidates .tf-t td.fo-act .tc-i:first-child{margin-left:0!important}} /* 넓은 PC: '관찰'을 협상 왼쪽에 나란히(카페 11-17) */
+.ag-cl{white-space:nowrap} /* 고객 이름·(구단)이 줄바꿈으로 갈라지면 구단 링크가 두 줄에 걸쳐 눌리는 자리가 겹친다(화면 비율 점검) */
+#app .ag-tw .sf-tw{overflow-x:auto;max-width:100%} /* 휴대폰 에이전트 표: 넓은 표를 칸 안에서 옆으로 밀어 본다(잘림 방지) */

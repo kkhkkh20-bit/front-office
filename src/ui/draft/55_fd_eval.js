@@ -47,5 +47,5 @@ function fdEvalView(){ const F=G.fd; if(!F||!F.done)return csec('창단 지명 �
   return csec('창단 지명 평가',`<p class="small sdesc">${head}</p>${sum}${st}<div class="fde-l">${L.map(row).join('')}</div>`); }
 
 Object.assign(A,{
-  fdEvalGo(){ UI.it=UI.it||{}; UI.it.dr='fd'; A.go('transfer:draft'); }
+  fdEvalGo(){ UI.drv='fd'; A.go('transfer:draft'); } /* 드래프트 보기 메뉴(UI.drv, 11-16 '보기 ▾')로 연다: 예전 UI.it.dr은 더 이상 읽지 않아 성적표 대신 후보 목록이 열렸다 */
 });

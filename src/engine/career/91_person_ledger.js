@@ -41,13 +41,21 @@ EVH.retTour={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)r
   G.spend.etc=(G.spend.etc||0)+e.data.c; if(G.pr)G.pr.fan=clamp(G.pr.fan+3,0,100); p.mor=clamp((p.mor??60)+10,0,100); p.retTour=G.year; story(p,`${G.year} 은퇴 투어`,'award'); news('구단',`${tshort(G.user)} ${p.name}, 은퇴 투어 시작`,`마지막 시즌 원정 경기마다 상대 구단 팬들과 작별 인사를 나눕니다.`,1,{tid:G.user,ref:p.id}); return '은퇴 투어를 시작했습니다.'; } };
 
 /* 관심 선수 소식(커뮤니티 건의 11-11): 날마다 관심 명단 선수의 상태를 비교해, FA 시장·포스팅·트레이드 매물·이적·은퇴로 바뀌면 알린다 */
+/* 포스팅 신청이 지금도 유효한가: 무효 처리됐거나 신청한 구단을 떠났으면 아니다(검수 11-17 #200) */
+function pwPostOn(p){ return !!p&&(G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.void&&x.tid===p.team); }
 function pwatchDaily(){ if(G.unemp||!G.pwatch||!G.pwatch.length)return; const S=G.pwSt=G.pwSt||{}; const msgs=[];
-  for(const id of G.pwatch){ const p=G.players[id]; const prev=S[id]||{}; if(!p){ if(!prev.gone){ S[id]={gone:1}; } continue; }
-    const cur={t:p.team,fa:!!(p.team==null&&G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(id)),post:(G.posting||[]).some(x=>x.pid===id&&x.y===G.year),blk:!!p.aiListed};
-    if(S[id]){ if(cur.fa&&!prev.fa)msgs.push(`${p.name}: FA 시장에 나왔습니다.`); if(cur.post&&!prev.post)msgs.push(`${p.name}: 해외 포스팅을 신청했습니다.`); if(cur.blk&&!prev.blk)msgs.push(`${p.name}: ${tshort(p.team)}이(가) ${p.aiUrg?'급매':'트레이드 매물'}로 내놓았습니다.`);
-      if(cur.t!=null&&prev.t!=null&&cur.t!==prev.t&&cur.t!==G.user)msgs.push(`${p.name}: ${tshort(prev.t)}에서 ${tshort(cur.t)}(으)로 옮겼습니다.`); }
+  for(const id of G.pwatch){ const p=G.players[id]; const prev=S[id]||{};
+    /* 은퇴(검수 11-17 #198): 은퇴 기록(retireRecord)이 남긴 표시나 외국인 은퇴(retY)로 알고, 한 번만 알린다 */
+    const ret=prev.ret!=null||(p&&p.retY!=null&&p.team==null);
+    if(!p||ret){ if(ret&&!prev.retN&&(prev.t!==undefined||prev.ret!=null))msgs.push(`${prev.n||(p&&p.name)||'관심 선수'}: 현역에서 은퇴했습니다.`); S[id]={gone:1,...(ret?{ret:prev.ret??G.year,retN:1}:{}),...(prev.n?{n:prev.n}:{})}; continue; }
+    const cur={t:p.team,n:p.name,fa:!!(p.team==null&&G.fa&&!G.fa.closed&&(G.fa.pool||[]).includes(id)),post:pwPostOn(p),blk:!!p.aiListed};
+    if(S[id]&&!prev.gone){ if(cur.fa&&!prev.fa)msgs.push(`${p.name}: FA 시장에 나왔습니다.`); if(cur.post&&!prev.post)msgs.push(`${p.name}: 해외 포스팅을 신청했습니다.`); if(cur.blk&&!prev.blk)msgs.push(`${p.name}: ${tshort(p.team)}이(가) ${p.aiUrg?'급매':'트레이드 매물'}로 내놓았습니다.`);
+      if(cur.t!=null&&prev.t!=null&&cur.t!==prev.t&&cur.t!==G.user)msgs.push(`${p.name}: ${tshort(prev.t)}에서 ${tshort(cur.t)}(으)로 옮겼습니다.`);
+      else if(cur.t!=null&&prev.t==null&&'t' in prev&&cur.t!==G.user)msgs.push(`${p.name}: ${tshort(cur.t)}와(과) 계약했습니다.`); } /* FA·무적 → 구단(검수 11-17 #199) */
     S[id]=cur; }
   if(msgs.length)mail('스카우트팀',`관심 선수 소식 ${msgs.length}건`,msgs.join('\n'),{kind:'선수',imp:true}); }
+/* 관심 선수가 은퇴하면 표시해 둔다(국내 선수는 은퇴와 함께 명단에서 빠져 다음 날 비교로는 은퇴인지 알 수 없다) */
+(function(){ try{ const f=retireRecord; retireRecord=function(p){ try{ if(p&&!G.unemp&&(G.pwatch||[]).includes(p.id)){ const S=G.pwSt=G.pwSt||{}; if(S[p.id]&&S[p.id].ret==null)S[p.id]=Object.assign({},S[p.id],{ret:G.year,n:p.name}); } }catch(e){} return f.apply(this,arguments); }; }catch(e){} })();
 
 /* 은퇴 면담 결정 */
 EVH.retTalk={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; (G.evlog=G.evlog||[]).push({k:'retTalk',y:G.year});

@@ -13,7 +13,7 @@ const ICO3={list:SV('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"
 const FM_SIDE=[[['tab:home','홈','home'],['tab:inbox','소식함','mail'],['tab:roster','선수단','users']],
   [['tab:trade','트레이드','swap'],['tab:transfer','영입·계약','brief'],['go:staff:scouts','스카우트','target']],
   [['go:staff:coach','스태프','clip',1],['go:staff:train','훈련·육성','act'],['go:staff:med','의료','med'],['go:staff:data','데이터 분석','chart']],
-  [['tab:cal','일정','clock'],['tab:league','리그','trophy'],['tab:uld','래더','ladder']], /* 래더 주 메뉴(사용자 11-17) */
+  [['tab:cal','일정','clock'],['tab:league','리그','trophy']], /* 래더는 위 오른쪽 아이콘 줄(설정 옆)로 옮김(카페 11-17) */
   [['go:club:owner','구단주·목표','flag'],['go:club:fin','재정','coin'],['go:club:info','구단 정보','club'],['go:club:inv','시설','grid']]];
 const fmPlanOn=()=>UI.tab==='roster'&&UI.it&&UI.it.roster==='depth'&&UI.it.rdepth==='glance';
 function fmSideOn(k){ const [a,t,s]=k.split(':'); if(a==='x')return fmPlanOn(); if(a==='tab')return UI.tab===t;
@@ -52,19 +52,19 @@ function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||
     <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.meet||UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
     <button class="fm-club" ${G.unemp?'':'data-a="tab" data-v="home" title="홈으로" aria-label="홈으로"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,36)}</button>
     <div class="fm-context" data-club="${esc(G.unemp?'자유 계약 단장':tshort(G.user))}" data-loc="${esc(location)}"><small>${esc(G.unemp?'자유 계약 단장':tshort(G.user))}${G.gmP&&meAge()?`<span class="fm-age"> · ${esc(G.gmP.name)} 단장 ${meAge()}세</span>`:''}</small><strong>${esc(location)}</strong></div>
-    <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` · 확인할 중요 소식 ${unread}건`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필'+(G.gmP&&!G.unemp?` · ${G.gmP.name} ${meAge()}세`:''),UI.tab==='me')}${ico('go','cfg:set','cog','설정 · 권한 (Shift+P)',UI.tab==='cfg')}${fullOk()?ico('fullTg','','full','전체 화면 켜기·끄기',fullOn()):''}<button class="fm-i fm-k" data-a="fmKeysOpen" aria-label="단축키 (F1)" title="단축키 (F1)">F1</button>
+    <div class="fm-r">${G.unemp?'':ico('calOpen','','cal','캘린더 · 마감과 일정')}${ico('tab','inbox','mail','소식함'+(unread?` · 확인할 중요 소식 ${unread}건`:''),UI.tab==='inbox',unread)}${ico('tab','me','users','단장 프로필'+(G.gmP&&!G.unemp?` · ${G.gmP.name} ${meAge()}세`:''),UI.tab==='me')}${G.unemp?'':ico('tab','uld','ladder','래더',UI.tab==='uld')}${ico('go','cfg:set','cog','설정 · 권한 (Shift+P)',UI.tab==='cfg')}${fullOk()?ico('fullTg','','full','전체 화면 켜기·끄기',fullOn()):''}<button class="fm-i fm-k" data-a="fmKeysOpen" aria-label="단축키 (F1)" title="단축키 (F1)">F1</button>
       <div class="fm-date"><b>${WD[d.w]} ${d.m}월 ${d.d}일</b><span>${d.y} · ${esc(G.unemp?`야인 · 명성 ${G.rep}`:PERIOD[per])}</span></div>${goSet(per,b)}</div>
   </div><div class="fm2"><div class="fm-sub">${fmSubRow()}</div><div class="fm-meta">${UI.tab==='club'&&UI.clubInspect!=null?'<span class="small muted">공개 구단 자료</span>':metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div></header>
   <div class="fmbody">${fmSide(unread)}<div class="fmmain">${UI.meet?'':topBlocks(b)}
   <div class="gut"><div class="wrap fmwrap"><main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()}</div></div></div></div>
   </div>`; }
 /* ---------- PC 단축키(FM 기본 단축키를 우리 화면에 맞춤) ----------
-   FM24 기본: F1 도움말 · F2 홈 · F3 선수단 · F4 받은 편지함 · F5 선수 검색 · F6 관심 명단 · F7 스카우트 · F8 스태프 · F9 이적 · F10 일정, Space 계속, Backspace·←/→ 뒤로/앞으로,
+   FM24 기본: F1 도움말 · F2 홈 · F3 선수단 · F4 받은 편지함 · F5 선수 검색 · F6 관심 명단 · F7 스카우트 · F8 스태프 · F9 이적 · F10 일정(우리는 캘린더), Space 계속, Backspace·←/→ 뒤로/앞으로,
    Ctrl+S 저장 · Ctrl+T 전술 · Ctrl+R 훈련 · Ctrl+J 스태프 업무 · Ctrl+M 구단 정보 · Ctrl+L 팀 분위기, Shift+C 달력 · Shift+O 재정 · Shift+V 의료 · Shift+D 육성 · Shift+P 설정 · Shift+G 상태.
    브라우저가 막는 키(F11 전체 화면·F12 개발 도구·Ctrl+W/N/T/Q 등)는 쓰지 않는다 */
 const FM_KEYS=[
   ['F1','단축키 목록','keys'],['F2','홈','tab:home'],['F3','선수단','tab:roster'],['F4','소식함','tab:inbox'],['Shift+F4','리그 소식','go:league:wire'],['F5','선수 찾기','go:trade:market'],['F6','트레이드 매물','go:trade:block'],
-  ['F7','스카우트','go:staff:scouts'],['F8','스태프(코치진)','go:staff:coach'],['F9','이적 현황','go:transfer:moves'],['Ctrl+F9','FA 시장','go:transfer:fa'],['F10','일정·결과','go:league:score'],
+  ['F7','스카우트','go:staff:scouts'],['F8','스태프(코치진)','go:staff:coach'],['F9','이적 현황','go:transfer:moves'],['Ctrl+F9','FA 시장','go:transfer:fa'],['F10','캘린더(일정)','cal'],
   ['Space','계속(안 읽은 소식이 있으면 먼저 열기)',''],['Backspace · Alt+←','뒤로','back'],['Alt+→','앞으로','fwd'],['Esc','창 닫기',''],
   ['Ctrl+S','저장','save'],['Ctrl+T','전력 구성(라인업·배치)','x:depth'],['Ctrl+R','훈련·육성','go:staff:train'],['Ctrl+J','업무 권한(위임)','go:cfg:auth'],['Ctrl+M','구단 정보(구단주·목표)','go:club:owner'],['Ctrl+L','관계도','go:club:rel'],
   ['Shift+C','달력','cal'],['Shift+O','재정','go:club:fin'],['Shift+W','계약(연봉)','go:transfer:contract'],['Shift+V','의료(부상 관리)','go:staff:med'],['Shift+D','육성','go:staff:train'],['Shift+P','설정','go:cfg:set'],['Shift+G','단장 프로필','tab:me'],
@@ -91,8 +91,9 @@ if(typeof document!=='undefined')document.addEventListener('mouseup',e=>{ try{ i
 
 /* FM처럼 선수 정보를 열면 상단 제목이 '등번호. 이름', 작은 줄이 '포지션 - 소속'이 된다(상세는 renderSheet만 다시 그리므로 여기서 맞춘다) */
 function fmTitleSync(){ const ctx=typeof document!=='undefined'&&document.querySelector('#app .fm-context'); if(!ctx)return; const st=ctx.querySelector('strong'),sm=ctx.querySelector('small'),p=UI.sheet!=null&&!UI.cast?G.players[UI.sheet]:null;
-  if(p){ st.textContent=(p.team!=null?jno(p)+'. ':'')+p.name; sm.textContent=posLabel(p)+' - '+(p.team!=null?tshort(p.team):p.prospect?'드래프트 대상':'소속 없음'); }
-  else { st.textContent=ctx.dataset.loc||''; sm.textContent=ctx.dataset.club||''; }
+  const put=(e,t)=>{ if(e&&(e.textContent!==t||e.firstElementChild))e.textContent=t; }; /* 같은 글이면 건드리지 않는다: 매번 다시 쓰면 화면 전체 스타일 계산이 한 번 더 돈다(카페 11-17 코치 채용 렉) */
+  if(p){ put(st,(p.team!=null?jno(p)+'. ':'')+p.name); put(sm,posLabel(p)+' - '+(p.team!=null?tshort(p.team):p.prospect?'드래프트 대상':'소속 없음')); }
+  else { put(st,ctx.dataset.loc||''); put(sm,ctx.dataset.club||''); }
   /* 상단 하위 탭 줄도 선수 탭(능력·육성·요약…)으로 바꾼다. 원래 줄은 보관했다가 닫으면 되돌린다 */
   const sub=document.querySelector('#app .fm-sub'),tabs=p&&fmOn()?document.querySelector('#sheet .pf-topnav .ptabs'):null; if(!sub)return;
   if(sub.dataset.orig==null)sub.dataset.orig=sub.innerHTML;

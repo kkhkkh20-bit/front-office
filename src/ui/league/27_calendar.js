@@ -17,7 +17,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   const F=G.fa&&G.fa.y0===o.y&&(G.fa.annDay!=null||!G.fa.closed)?G.fa:null; /* 그해 FA 일정은 실제 날짜로: 결산이 늦어 공시·개장이 밀릴 수 있다(검수 11-08) */
   for(const [m,dd,l,k] of CAL_FIX)if(o.m===m&&o.d===dd&&!(F&&m===11&&(dd===2||dd===6)))out.push({k,t:l});
   if(F){ const ann=F.annDay??Math.max(dnum(o.y,11,2),G.day+1), op=F.open?F.openDay:Math.max(F.openDay,ann+1); if(d===ann)out.push({k:'lg',t:'FA 공시'}); if(d===op)out.push({k:'lg',t:'FA 협상 시작'}); }
-  for(const [m,dd,ck,l] of CAL_CER){ const A=G.awards&&G.awards[o.y], cd=(A&&A.cd&&A.cd[ck])??(G.cerNew&&G.cerNew.y===o.y&&G.cerNew.k===ck?G.cerNew.d:null); if(cd!=null?d===cd:o.m===m&&o.d===dd)out.push({k:'lg',t:l(),cer:o.y+':'+ck}); } /* 시상식이 밀리면 실제로 연 날에(검수 11-09l) */
+  for(const [m,dd,ck,l] of CAL_CER)for(const y of new Set([o.y,...Object.keys(G.awards||{}).map(Number)])){const A=G.awards?.[y],cd=A?.cd?.[ck]??A?.days?.[ck]??(G.cerNew&&G.cerNew.y===y&&G.cerNew.k===ck?G.cerNew.d:null);if(cd!=null?d===cd:y===o.y&&o.m===m&&o.d===dd)out.push({k:'lg',t:(y!==o.y?y+'시즌 ':'')+l(),cer:y+':'+ck});} /* 예정·실제 시상일은 다음 해 달력에서도 원래 시즌에 연결한다. */
   if(c&&c.y===o.y){ const L=[[c.camp,'스프링캠프 시작','lg'],[c.campEnd,'캠프 종료','lg'],[c.exh,'시범경기 시작','lg'],[c.open,'정규시즌 개막','lg'],[c.asg,'올스타전','lg'],[c.draft,'신인 드래프트','dl'],[c.end,'정규시즌 종료','lg']]; for(const [n,t,k] of L)if(n===d)out.push({k,t}); }
   /* 국가대표 소집: 최종 명단 전에는 '소집 예정', 발표 뒤에는 우리 선수 이탈 수 */
   try{ for(const x of ntUpcoming(4)){ const e=NT_EV[x.k], D=a=>dnum(x.y,a[0],a[1]); const N=G.nt&&G.nt.k===x.k&&G.nt.y===x.y?G.nt:null; const n=N?N.ids.filter(id=>G.players[id]&&G.players[id].team===G.user).length:null;
@@ -25,6 +25,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
       if(d<x.from||d>=x.to)continue; /* 복귀일은 소집 기간이 아니다(엔진과 같게, 검수 11-06) */
       out.push({k:'lg',span:d!==x.from,t:d===x.from?`${x.n} 소집${N?` · 우리 선수 ${n}명 이탈`:' 예정'}`:`${x.n} 대표 소집 중${N&&n?` · 우리 ${n}명 이탈`:''}`}); } }catch(e){}
   try{ out.push(...rainCalEv(d)); }catch(e){} /* 우천 취소·순연·더블헤더(93_rain) */
+  if(typeof psRainAt==='function')for(const r of psRainAt(d))out.push({k:'lg',t:`${ROUNDK[r.round]||'포스트시즌'} ${r.n}차전 우천 취소 → ${rainWhere(r.rd)}`});
   { const y=o.m<=1?o.y-1:o.y; if(d===tryAnnD(y))out.push({k:'lg',t:'공개 트라이아웃 명단 공개'}); if(d===tryDayD(y))out.push({k:'lg',t:'KBO 공개 트라이아웃'}); if(d===tryCloseD(y))out.push({k:'dl',t:'트라이아웃·육성 계약 마감'}); } /* 94_tryout */
   /* 우리 일: 결정 기한, 트레이드 제안 기한, 우선 제안·라스트 룩 기한 */
   for(const e of (G.evs||[]))if(!e.done&&e.exp===d)out.push({k:'me',t:`결정 기한: ${e.title}`});
@@ -37,20 +38,16 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   /* 코치 구단 지원 연수: 원지원 구단의 실제 파견 기간과 귀국일을 표시한다. */
   { const S=G.sis||{},seen=new Set(); for(const T of [S.ct,...(S.ctq||[])]){ if(!T||T.tid!==G.user||seen.has(T.key||T.id+':'+T.to))continue; seen.add(T.key||T.id+':'+T.to); const n=T.name||'코치'; if(Number.isFinite(T.from)&&d===T.from)out.push({k:'me',t:`${n} 코치 연수 출발`}); if(d===T.to)out.push({k:'me',t:`${n} 코치 연수 복귀${T.done?'':' 예정'}`}); else if(Number.isFinite(T.from)&&d>T.from&&d<T.to)out.push({k:'me',span:true,t:`${n} 코치 연수 중`}); } }
   /* 우리 선수: 부상 복귀 예정, 전역 */
-  if(d>G.day&&d-G.day<=120)for(const p of ownedOf(G.user)){ /* 대표팀 차출 중 재활 선수도(검수 11-09t) */ if(p.injOut>0&&G.day+p.injOut===d)out.push({k:'pl',t:`${p.name} 복귀 예정(${injNow(p)})`}); }
+  if(d>G.day)for(const p of ownedOf(G.user)){ /* 확정된 복귀일은 장기 재활도 처음부터 표시(검수 11-18 #447). */ if(p.injOut>0&&G.day+p.injOut===d)out.push({k:'pl',t:`${p.name} 복귀 예정(${injNow(p)})`}); }
   for(const p of Object.values(G.players)){ if(p.team!==G.user&&!(p.mil&&p.mil.tid===G.user))continue; const m=p.mil; if(!m)continue; if(m.until&&m.from===d||m.pf===d)out.push({k:'pl',t:`${p.name} ${m.unit||'군'} 입대`}); if(m.until===d||m.pu===d)out.push({k:'pl',t:`${p.name} 전역${m.exempt?'(병역 특례 조기 전역)':''}`}); } /* 예약 입대와 지난 전역(특례 조기 전역 포함)도(검수 11-09zk) */
   try{ out.push(...promoCalEv(d)); }catch(e){} /* 프로모션 데이(44c_promotions) */
   return [...calPhases(d),...out]; }
 /* 그날 우리 경기 */
-function calGame(d){ const c=G.cal; let m=null, kind='';
-  if(c&&c.sched)m=dayGames(d).find(x=>x.includes(G.user))||null; /* 내일 미룬 경기도(엔진과 같은 목록, 검수 11-09zo) */
-  let log=(G.sea&&G.sea.ulog||[]).filter(x=>x.d===d).pop(); /* 같은 날 두 경기면 마지막 경기 하나로 상대·점수·박스스코어를 맞춘다(검수 11-09k) */
-  if(!log&&!m){ const r=G.games.find(g=>g.day===d&&(g.home===G.user||g.away===G.user)); if(r)log={gid:r.gid,d,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||''}; } /* 경기 로그와 같게 그날 마지막 경기(G.games는 최신부터), 박스스코어도 같은 경기 id로(검수 11-09zzc #18) */ /* 새해에 경기 로그가 비어도 박스스코어가 남은 지난 경기는 그 기록으로(검수 11-09l) */
-  if(log){ kind=log.k||''; m=[log.h,log.a]; } /* 정규시즌 일정이 있어도 경기 기록의 표시(노히트 도전 등)는 살린다(검수 11-06) */
-  if(!m){ const q=typeof psOursAt==='function'?psOursAt(d):null; if(q){ m=q.home?[G.user,q.op]:[q.op,G.user]; kind=`${ROUNDK[q.round]||'포스트시즌'} ${q.n}차전`; } } /* 앞으로 열릴 포스트시즌 경기 */
-  if(!m)return null; const home=m[0]===G.user; const op=home?m[1]:m[0];
-  const sg=spoilG(); /* 중계로 볼 경기 점수는 중계를 마칠 때까지 감춘다 */
-  return {home,op,kind,res:log&&!(sg&&sg.day===d)?{r:log.res,my:home?log.hs:log.as,op:home?log.as:log.hs}:null,gi:sg&&sg.day===d?-1:G.games.findIndex(g=>log&&log.gid!=null?g.gid===log.gid:g.day===d&&(g.home===G.user||g.away===G.user))}; } /* 중계 중인 경기는 박스스코어 번호도 넘기지 않는다 */
+function calGames(d){const log=(G.sea?.ulog||[]).filter(x=>x.d===d&&(x.h===G.user||x.a===G.user)).map(x=>({...x})),matched=new Set();
+  for(const g of [...(G.games||[])].reverse().filter(x=>x.day===d&&(x.home===G.user||x.away===G.user))){const i=log.findIndex((x,j)=>!matched.has(j)&&(x.gid!=null&&g.gid!=null?x.gid===g.gid:x.h===g.home&&x.a===g.away&&x.hs===g.hs&&x.as===g.as));const x={gid:g.gid,d,h:g.home,a:g.away,hs:g.hs,as:g.as,res:g.res,k:g.kind||'',dh:g.dh,rmk:g.rmk,_gi:G.games.indexOf(g)};if(i>=0){log[i]={...log[i],...x};matched.add(i);}else log.push(x);}
+  log.sort((a,b)=>(a.gid??0)-(b.gid??0));const sg=spoilG(),view=(m,x,i,kind='')=>{const home=m[0]===G.user,op=home?m[1]:m[0],hidden=!!(x&&sg&&sg.day===d&&(x.gid==null||sg.gid==null||x.gid>=sg.gid)),gi=x?(Number.isInteger(x._gi)?x._gi:G.games.findIndex(g=>x.gid!=null?g.gid===x.gid:g.day===d&&g.home===m[0]&&g.away===m[1]&&g.hs===x.hs&&g.as===x.as)):-1;let info={};if(!x)try{info=rainGameInfo(d,m[0],m[1],i);}catch(e){}const dh=x?.dh||info.dh||0;return {home,op,kind:x?.k||kind,dh,ordinal:i,played:!!x,hidden,tag:rainTag({dh,rmk:x?.rmk??info.mk}),res:x&&!hidden?{r:x.res,my:home?x.hs:x.as,op:home?x.as:x.hs}:null,gi:hidden?-1:gi};};
+  if(log.length)return log.map((x,i)=>view([x.h,x.a],x,i+1));const L=dayGames(d).filter(x=>x.includes(G.user));if(L.length)return L.map((m,i)=>view(m,null,i+1));const q=typeof psOursAt==='function'?psOursAt(d):null;return q?[view(q.home?[G.user,q.op]:[q.op,G.user],null,1,`${ROUNDK[q.round]||'포스트시즌'} ${q.n}차전`)]:[];}
+function calGame(d){const L=calGames(d);return L.filter(g=>g.res&&!g.hidden).at(-1)||(L.some(g=>g.played)?L.at(-1):L[0])||null;} /* 월 요약은 마지막 공개 결과(없으면 마지막 경기), 날짜 상세는 모든 경기를 각자의 공개 상태로 표시한다(검수 11-18 #730). */
 function calView(){ if(fmOn())return calFM(); /* PC: FM식 주요 일정 */ const now=dobj(G.day); const ym=UI.calYM||{y:now.y,m:now.m}; UI.calYM=ym;
   const first=dnum(ym.y,ym.m,1); const w0=(dobj(first).w+6)%7; /* 월요일 시작 */ const last=dnum(ym.m===12?ym.y+1:ym.y,ym.m===12?1:ym.m+1,1)-1;
   const sel=UI.calSel!=null&&dobj(UI.calSel).m===ym.m&&dobj(UI.calSel).y===ym.y?UI.calSel:(now.y===ym.y&&now.m===ym.m?G.day:first);
@@ -68,13 +65,13 @@ function calView(){ if(fmOn())return calFM(); /* PC: FM식 주요 일정 */ cons
   const leg=`<div class="cal-leg">${Object.values(CAL_K).map(x=>`<span><i style="background:${x.c}"></i>${x.l}</span>`).join('')}<span><i class="g"></i>우리 경기</span></div>`;
   const ug=upcomingGames(10).replace('<button class="btn small" data-a="calOpen">캘린더</button>','');
   return `<section class="card">${nav}<div class="cal-w">${['월','화','수','목','금','토','일'].map(x=>`<span>${x}</span>`).join('')}</div><div class="cal-grid">${cells}${PL.bars}</div>${leg}</section>${calDetail(sel)}${gplMonth(ym.y,ym.m)}${ug}${calUpcoming()}`; }
-function calDetail(d){ const o=dobj(d); const ev=calEvents(d); const g=calGame(d); const dd=d-G.day;
-  let gh=''; if(g){ const sp=d>G.day&&d-G.day<=6?(()=>{ try{ const L=projStarters(G.user,6); const k=nextGames(8).findIndex(x=>x.d===d); const s=k>=0&&L[k]?L[k].sp:null; return s?` · 예상 선발 ${esc(s.name)}`:''; }catch(e){ return ''; } })():'';
-    gh=`<div class="cal-dg">${badge(g.op,28)}<div><b>${g.kind?esc(g.kind)+' · ':''}${g.home?'홈':'원정'} ${g.home?'vs':'@'} ${esc(tname(g.op))}</b><span class="small muted">${g.res?`${g.res.r} ${g.res.my}:${g.res.op}`:d<G.day?'결과 기록 없음':`예정${sp}`}</span></div>${g.gi>=0&&G.games[g.gi]?`<button class="btn small" data-a="openGame" data-v="${g.gi}">박스스코어</button>`:''}</div>`; }
+function calDetail(d,fm){ const o=dobj(d); const ev=calEvents(d); const games=calGames(d),g=calGame(d); const dd=d-G.day;
+  const gh=games.map(g=>{const sp=d>G.day&&d-G.day<=6?(()=>{try{const L=projStarters(G.user,8).filter(x=>x.d===d&&x.op===g.op&&x.home===g.home),s=L[g.ordinal-1]?.sp||L[0]?.sp;return s?` · 예상 선발 ${esc(s.name)}`:'';}catch(e){return '';}})():'';
+    return `<div class="cal-dg">${badge(g.op,28)}<div><b>${g.kind?esc(g.kind)+' · ':''}${g.tag?esc(g.tag)+' · ':''}${g.home?'홈':'원정'} ${g.home?'vs':'@'} ${esc(tname(g.op))}</b><span class="small muted">${g.res?`${g.res.r} ${g.res.my}:${g.res.op}`:g.hidden?'중계 확인 전':d<G.day?'결과 기록 없음':`예정${sp}`}</span></div>${g.gi>=0&&G.games[g.gi]?`<button class="btn small" data-a="openGame" data-v="${g.gi}" aria-label="${esc(g.tag?g.tag+' 박스스코어':'박스스코어')}">박스스코어</button>`:''}</div>`;}).join('');
   return `<section class="card cal-detail"><div class="row between"><h2 class="sec">${o.m}월 ${o.d}일 ${WD[o.w]}요일</h2><span class="small muted">${dd===0?'오늘':dd>0?`D-${dd}`:`${-dd}일 전`}</span></div>
     ${gh}${ev.length?`<ul class="cal-dl">${ev.map(e=>`<li><i style="background:${CAL_K[e.k].c}"></i>${esc(e.t)}${e.cer&&(()=>{ const [y,k]=e.cer.split(':'); return G.awards&&awShown(G.awards[+y],k); })()?` <button class="btn small primary" data-a="cerOpen" data-v="${e.cer}">시상식 보기</button>`:''}</li>`).join('')}</ul>`:(g?'':'<p class="small muted">일정이 없습니다.</p>')}
-    ${g&&g.home?promoBox(d):''}${d>G.day?gmPlanBox(d,g):''}
-    ${d>G.day?`<div class="row"><button class="btn primary" data-a="advTo" data-v="${d}" ${blockNow()?'disabled':''}>이 날까지 진행</button><span class="small muted">중요한 소식이나 결정할 일이 생기면 그 전에 멈춥니다.</span></div>`:''}</section>`; }
+    ${d>G.day?`<div class="row cal-adv"><button class="btn primary" data-a="advTo" data-v="${d}" ${blockNow()?'disabled':''}>이 날까지 진행</button><span class="small muted">중요한 소식이나 결정할 일이 생기면 그 전에 멈춥니다.</span></div>`:''}
+    ${d>G.day?gmPlanBox(d,g):''}${g&&g.home&&!fm?promoBox(d):''}</section>`; } /* 진행 버튼을 위로(카페 11-17: 프로모션 데이 칸이 버튼을 아래로 밀었다). PC(fm)는 프로모션을 오른쪽 맨 아래 카드로 */
 /* 다가오는 주요 일정 30일: 마감은 빨간 D-day */
 function calUpcomingList(n,days){ const L=[]; for(let d=G.day+1;d<=G.day+(days||60)&&L.length<(n||10);d++){ for(const e of calEvents(d))if(!e.span&&(e.k==='dl'||e.k==='lg'||e.k==='me')&&L.length<(n||10))L.push({d,...e}); } return L; }
 function calUpRows(L){ return L.length?`<div class="cal-up">${L.map(x=>`<button class="cal-ur" data-a="calJump" data-v="${x.d}"><span class="ticker" style="${x.k==='dl'?'color:#ff6b6b':''}">D-${x.d-G.day}</span><span>${dmd(x.d)}</span><b>${esc(x.t)}</b></button>`).join('')}</div>`:''; }
@@ -236,5 +233,5 @@ function calFM(){ const c=G.cal; const sel=UI.calSel??G.day; const so=dobj(sel),
   let lastM=null; const rows=[...showP,...fut].map(x=>{ const o=dobj(x.d), g=x.g, mh=o.m!==lastM?`<tr class="sch-mh"><td colspan="8">${o.y}년 ${o.m}월</td></tr>`:''; lastM=o.m; const dd=x.d-G.day, rk=(()=>{ const S=standOrder(), L=S.order||[]; const i=L.findIndex(y=>(y.tid??y)===g.op); return i<0?'':S.live?tieRank(L,g.op):i+1; })();
     return mh+`<tr class="${x.d===sel?'sel':''}${x.d===G.day?' today':''}" data-a="calDay" data-v="${x.d}"><td>${o.m}/${o.d} ${WD[o.w]}</td><td class="muted">${dd===0?'오늘':dd>0?dd+'일 뒤':-dd+'일 전'}</td><td class="muted">${g.kind?esc(g.kind):'정규시즌'}</td><td>${g.home?'홈':'원정'}</td><td class="muted">${rk?rk+'위':''}</td><td>${g.res?`<span class="sch-r ${({승:'w',패:'l'}[g.res.r]||'t')}">${g.res.r}</span> <b>${g.res.my}-${g.res.op}</b>`:''}</td><td>${badge(g.op,18)} ${esc(tshort(g.op))}</td><td class="sch-sp">${st(x)}</td></tr>`; }).join('');
   const list=`<section class="card sch-list"><div class="row between"><h3>경기 일정·결과 <em>${past.length}경기 치름 · ${fut.length}경기 남음</em></h3>${past.length>nP?`<button class="btn small" data-a="calAll">${UI.calAll?`최근 ${nP}경기만`:'지난 경기 모두 보기'}</button>`:''}</div><div class="sf-tw"><table class="sf-t sch-t"><thead><tr><th>날짜</th><th></th><th>대회</th><th>장소</th><th>상대 순위</th><th>결과</th><th>상대</th><th>선발 맞대결</th></tr></thead><tbody>${rows||'<tr><td colspan="8" class="muted">경기 일정이 없습니다.</td></tr>'}</tbody></table></div></section>`;
-  return `<div class="sch ws-own">${strip}${list}<div class="sch-side">${calDetail(sel)}${gplMonth(so.y,so.m)}${(()=>{ const g=calGame(sel); return g?`<section class="card sch-op">${ibdOpp(g.op,'상대 전력')}</section><section class="card sch-op">${ibdForm(g.op,'상대 수비 배치')}</section>`:''; })()}${calUpcoming(120)}</div></div>`; }
+  return `<div class="sch ws-own">${strip}${list}<div class="sch-side">${calDetail(sel,1)}${gplMonth(so.y,so.m)}${calUpcoming(120)}${(()=>{ const g=calGame(sel); if(!g)return ''; const pr=g.home?promoBox(sel):''; return `<section class="card sch-op">${ibdOpp(g.op,'상대 전력')}</section><section class="card sch-op">${ibdForm(g.op,'상대 수비 배치')}</section>${pr?`<section class="card sch-promo">${pr}</section>`:''}`; })()}</div></div>`; } /* 오른쪽 순서(카페 11-17): 날짜·진행 · 단장 일정 · 다가오는 일정 · 상대 전력 · 상대 수비 배치 · 프로모션 데이 */
 

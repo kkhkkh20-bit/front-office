@@ -54,8 +54,8 @@ const ZP={g:0,gs:0,outs:0,h:0,hr:0,bb:0,hbp:0,so:0,er:0,w:0,l:0,sv:0,hld:0,bf:0}
 function splAdd(b,p,o,f,rsp,home){ const y=G.year; const tb={'1B':1,'2B':2,'3B':3,HR:4}[o]||0; const noAB=o==='BB'||o==='HBP'||o==='SAC'||f==='SF'; /* 볼넷·희생번트·희생플라이는 타수가 아니다(박스스코어와 같게) */ const row=(x,k)=>{ if(!x.spl||x.spl.y!==y){ if(x.spl&&x.spl.y===y-1)x.splP=x.spl; x.spl={y}; } const a=x.spl[k]||(x.spl[k]=[0,0,0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb){ a[2]++; a[3]+=tb; } if(o==='HBP')a[7]=(a[7]||0)+1; if(o==='SAC')a[8]=(a[8]||0)+1; /* 희생번트는 출루율 분모에서 뺀다 */ if(o==='BB')a[4]++; if(o==='K')a[5]++; if(o==='HR')a[6]++; };
   row(b,p.th==='좌'?'L':'R'); const side=b.bt==='양'?(p.th==='좌'?'R':'L'):(b.bt==='좌'?'L':'R'); row(p,side);
   if(rsp){ row(b,'RS'); row(p,'RS'); } /* 득점권(타석 시작 때 2·3루 주자) */ if(home!=null){ row(b,home?'H':'A'); row(p,home?'A':'H'); } /* 홈·원정(OOTP Splits 참고): 타자는 자기 구장 여부, 투수는 그 반대 */ try{ vsAdd(b,p,o,noAB,tb); }catch(e){} }
-/* 투수별 맞대결(이번 시즌, 타자 쪽에 저장): [타석, 타수, 안타, 홈런, 볼넷·사구, 삼진]. 많아지면 타석 적은 상대부터 지운다 */
-function vsAdd(b,p,o,noAB,tb){ const y=G.year; if(!b.vs||b.vs.y!==y)b.vs={y,m:{}}; const M=b.vs.m; const a=M[p.id]||(M[p.id]=[0,0,0,0,0,0]); a[0]++; if(!noAB)a[1]++; if(tb)a[2]++; if(o==='HR')a[3]++; if(o==='BB'||o==='HBP')a[4]++; if(o==='K')a[5]++;
+/* 투수별 맞대결: 옛 앞6칸은 유지, 뒤에 볼넷·사구·구분 불명인 옛 합산을 따로 저장한다. */
+function vsAdd(b,p,o,noAB,tb){ const y=G.year; if(!b.vs||b.vs.y!==y)b.vs={y,m:{}}; const M=b.vs.m; const a=M[p.id]||(M[p.id]=[0,0,0,0,0,0,0,0,0]); if(a.length<9){a[6]=0;a[7]=0;a[8]=a[4]||0;} a[0]++; if(!noAB)a[1]++; if(tb)a[2]++; if(o==='HR')a[3]++; if(o==='BB'||o==='HBP')a[4]++; if(o==='BB')a[6]++; if(o==='HBP')a[7]++; if(o==='K')a[5]++;
   const ks=Object.keys(M); if(ks.length>80){ ks.sort((x,z)=>M[x][0]-M[z][0]); for(const k of ks.slice(0,ks.length-70))delete M[k]; } }
 /* 선수 경기별 기록(모든 구단, 이동 구간 추세·중계 연속 기록용, 이번 시즌만): 타자 [날짜, 타석, 타수, 안타, 루타, 볼넷, 삼진, 홈런], 투수 [날짜, 상대 타자, 아웃, 삼진, 볼넷, 피안타, 피홈런, 자책] */
 function glAdd(p,day,x){ const y=G.year; if(!p.gl||p.gl.y!==y)p.gl={y,g:[]}; p.gl.g.push(p.isP?[day,x.bf||0,x.outs||0,x.so||0,x.bb||0,x.h||0,x.hr||0,x.er||0,x.r??null]:[day,x.pa||0,x.ab||0,x.h||0,(x.h||0)+(x.d||0)+2*(x.tr||0)+3*(x.hr||0),x.bb||0,x.so||0,x.hr||0,x.hbp||0,x.sf||0,x.sh||0]); } /* 타자 끝 칸: 사구 */
@@ -77,7 +77,7 @@ function warKey(h){ return h.y+':'+(h.lvl||'')+':'+(h.t??'')+':'+(h.pa||0); }
 /* 포지션별 타석(pp)에서 가장 많이 뛴 자리 */
 function ppTop(pp){ let k=null,v=-1; for(const x in pp||{})if(pp[x]>v){ v=pp[x]; k=x; } return k; }
 function ppMerge(a,b){ if(!a&&!b)return undefined; const o=Object.assign({},a||{}); for(const k in b||{})o[k]=(o[k]||0)+b[k]; return o; }
-function warOf(h,p){ if(!h||!p)return 0; if(p.arch&&h.war!=null)return h.war; /* 보관 선수는 보관할 때 저장한 WAR(기본 능력으로 다시 계산하지 않는다, 검수 11-07) */ if(h.parts)return sum(h.parts.map(x=>warOf(x,p))); if(p.isP||!h.pa||h.y==null||h.y2)return warRaw(h,p);
+function warOf(h,p){ if(!h||!p)return 0; if(p.arch&&h.war!=null)return h.war; /* 보관 선수는 보관할 때 저장한 WAR(기본 능력으로 다시 계산하지 않는다, 검수 11-07) */ if(h.y2&&h.agg&&h.agg.war!=null)return h.agg.war; /* 여러 해 합산한 2군 줄은 합칠 때 더해 둔 연도별 WAR(검수 11-17 #209) */ if(h.parts)return sum(h.parts.map(x=>warOf(x,p))); if(p.isP||!h.pa||h.y==null||h.y2)return warRaw(h,p);
   const pre=h.y<(G.startY??-1); if(!pre&&h.y>=G.year&&G.warFz!==h.y)return warRaw(h,p); /* 정규시즌이 끝나 고정한 해는 고정값(마무리캠프로 바뀌지 않게, 검수 11-08) */
   p.pw=p.pw||{}; const k=warKey(h); if(p.pw[k]==null){ const old=pre?p.pw[h.y+':'+(h.lvl||'')]:null; /* 이전 저장 형식 */ p.pw[k]=old!=null?old:Math.round((pre?fdWar(p,h):warRaw(h,p))*100)/100; } return p.pw[k]; }
 function warFreeze(y){ G.warFz=y; for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; const L=p.hist.filter(h=>h.y===y&&!h.y2&&h.pa); if(!L.length)continue; p.pw=p.pw||{};
@@ -103,12 +103,28 @@ function wobaOf(h){ const ab=h.ab||0, bb=h.bb||0, sf=h.sf||0,hbp=h.hbp||0, den=a
 const FUT_LEAGUE_K=['ab','bb','hbp','sf','h','d','tr','hr','r'];
 function futLeagueCarry(p,rows){if(!p||p.isP)return;for(const x of rows||[]){if(x.lvl!=='퓨처스'||x.y2||!Number.isInteger(x.y))continue;const F=G.futGone=G.futGone||{},o=F[x.y]=F[x.y]||{};for(const k of FUT_LEAGUE_K)o[k]=(o[k]||0)+(x[k]||0);}_lgbC={k:'',m:{}};}
 let _lgbC={k:'',m:{}};
+/* 2군 기록 압축(compactPlayers)의 여러 해 합산 줄(y2): 한 해 리그 기준으로 다시 계산하면 통산 WAR·wRC+가 압축만으로 바뀐다(검수 11-17 #209·#210).
+   합칠 때 연도별 WAR 합과 wRC+×타석 합을 h.agg={war,ws,wn}에 남긴다. 객체라 addTo(숫자만 더함) 합계에 섞이지 않는다.
+   futAggRow: 한 줄의 몫(연도 줄은 그해 기준으로 계산, 합산 줄은 남긴 값). futAgg: 합산 줄의 남긴 값(옛 저장은 futAggFix가 채운다) */
+function futAgg(h){ return h&&h.y2&&h.agg?h.agg:null; }
+function futAggRow(p,h){ if(h.y2&&h.agg)return h.agg; const w=warOf(h,p); const c=!p.isP&&h.pa&&!h.y2?wrcPlus(h,h.y):null; return {war:w,ws:c!=null?c*h.pa:0,wn:c!=null?h.pa:0}; }
+function futAggAdd(o,g){ o.war=(o.war||0)+(g.war||0); o.ws=(o.ws||0)+(g.ws||0); o.wn=(o.wn||0)+(g.wn||0); return o; }
+/* 옛 저장의 합산 줄(agg 없음) 수리: 불러올 때 한 번. 난수 없음, 두 번 불러도 같다.
+   WAR: 타자는 연도별 고정값(p.pw '연도:퓨처스:구단:타석')이 그 구단 그 기간에 한 해 한 개씩 남아 있고 타석 합이 맞으면 그 합, 아니면 지금 보이는 값을 그대로 고정(더 바뀌지 않게).
+   wRC+: 연도별 기록이 없어 기간 리그 기준의 평균으로 한 번 추정해 고정한다(한 해 기준으로 여러 해를 재던 값보다 가깝다) */
+function futAggFix(){ if(!G||!G.players)return 0; let n=0;
+  for(const p of Object.values(G.players)){ for(const h of p.hist||[]){ if(h.lvl!=='퓨처스'||!h.y2||h.agg)continue;
+      let war=null; if(!p.isP&&p.pw){ const by={}; let ok=true, pa=0, w=0; for(const k in p.pw){ const m=/^(-?\d+):퓨처스:([^:]*):(\d+)$/.exec(k); if(!m)continue; const y=+m[1]; if(y<h.y||y>h.y2||m[2]!==String(h.t??''))continue; if(by[y]){ ok=false; break; } by[y]=1; pa+=+m[3]; w+=p.pw[k]; } if(ok&&Object.keys(by).length&&pa===(h.pa||0))war=w; }
+      if(war==null)war=warRaw(h,p);
+      let ws=0, wn=0; if(!p.isP&&h.pa){ const w=wobaOf(h); let a=0,b=0,c=0,k=0; for(let y=h.y;y<=h.y2;y++){ const L=lgBat(y,'퓨처스'); if(!(L.rpa>0))continue; a+=L.woba; b+=L.scale; c+=L.rpa; k++; } if(w!=null&&k){ const v=Math.round(100*((w-a/k)/(b/k)+c/k)/(c/k)); ws=v*h.pa; wn=h.pa; } }
+      h.agg={war,ws,wn,est:1}; n++; } }
+  return n; }
 function lgBat(y,lvl){ lvl=lvl||'1군'; const L0=G.lg&&G.lg[y]; if(lvl==='1군'&&L0&&L0.woba&&y<G.year)return L0; const k=G.year+':'+G.day+':'+(G.games?G.games.length:0); if(_lgbC.k!==k||_lgbC.g!==G)_lgbC={k,m:{},g:G}; /* 세이브가 바뀌면 다시 계산(검수 11-07) */ const ck=y+':'+lvl; if(_lgbC.m[ck])return _lgbC.m[ck];
   let ab=0,bb=0,hbp=0,sf=0,h=0,d=0,tr=0,hr=0,r=0; const add=x=>{ ab+=x.ab||0; bb+=x.bb||0;hbp+=x.hbp||0; sf+=x.sf||0; h+=x.h||0; d+=x.d||0; tr+=x.tr||0; hr+=x.hr||0; r+=x.r||0; }; if(lvl==='1군'){ for(const z of y1Rows(y))if(!z.isP)add(z.h); } else { for(const p of Object.values(G.players)){ if(p.isP||!p.hist)continue; for(const x of p.hist){ if(x.y!==y||x.lvl!==lvl||x.y2)continue; add(x); } } const g=lvl==='퓨처스'&&G.futGone&&G.futGone[y]; if(g)add(g); } /* 떠난 선수와 개인 기록 압축으로 빠진 연도 행도 리그 합계에 남긴다. */
   const T={ab,bb,hbp,sf,h,d,tr,hr}; const pa=ab+bb+hbp+sf; const woba=pa?wobaOf(T):.32, obp=pa?(h+bb+hbp)/pa:.33; const o={woba,scale:Math.max(.8,woba/Math.max(.2,obp)),rpa:pa?r/pa:.12}; /* 표본이 없을 때만 기본값, 실제 0은 0(검수 11-07) */ _lgbC.m[ck]=o; return o; }
 function wrcPlus(h,y){ if(!h||!h.pa)return null; const yy=y??h.y; if(typeof yy!=='number')return null; const w=wobaOf(h); if(w==null)return null; const L=lgBat(yy,h.lvl==='퓨처스'?'퓨처스':'1군'); if(!(L.rpa>0))return null; return Math.round(100*((w-L.woba)/L.scale+L.rpa)/L.rpa); } /* 퓨처스 기록은 퓨처스 리그 기준 */
 /* 여러 시즌 wRC+: 시즌별 값을 타석으로 가중 평균(통산·최근 3년 합계용) */
-function wrcMulti(L){ let a=0,n=0; for(const h of L){ const w=wrcPlus(h,h.y); if(w==null)continue; a+=w*h.pa; n+=h.pa; } return n?Math.round(a/n):null; }
+function wrcMulti(L){ let a=0,n=0; for(const h of L){ if(h.y2){ const g=futAgg(h); if(g&&g.wn){ a+=g.ws; n+=g.wn; } continue; } /* 여러 해 합산 줄: 연도별 wRC+×타석 합(검수 11-17 #210) */ const w=wrcPlus(h,h.y); if(w==null)continue; a+=w*h.pa; n+=h.pa; } return n?Math.round(a/n):null; }
 /* 한 시즌 1군 기록 줄 전부: 지금 선수 목록 + 리그를 떠난 선수의 보관 기록(시즌 중 교체된 외국인 등). 팀·리그 합계는 이걸로 센다(이미 치른 경기 기록은 선수가 떠나도 그대로) */
 function y1Rows(y){ const L=[]; for(const p of Object.values(G.players)) for(const h of p.hist) if(h.y===y&&h.lvl==='1군'&&!h.y2)L.push({isP:!!p.isP,h}); const A=G.arch||{}; for(const id in A){ if(G.players[id])continue; const a=A[id]; for(const r of a.rows||[])if(r.y===y)L.push({isP:!!a.isP,h:archFull(r)}); } for(const k in (G.archRest||{})){ const r=G.archRest[k]; if(r.y===y)L.push({isP:!!r.isP,h:archFull(r)}); } /* 보관 한도로 이름이 지워진 선수의 몫(검수 11-09zz) */ return L; }
 function updateLg(y){
@@ -126,18 +142,25 @@ function updateLg(y){
 function pwrWeek(){ if(period()!=='season'||!G.sea||!G.sea.rec)return; const TL=(G.sea.tl)||[]; const P=G.pwr&&G.pwr.y===G.year?G.pwr:null; const prev={}; if(P)for(const r of P.rows)prev[r.tid]=r.rk;
   const rat=G.teams.map(t=>{ try{ return teamRating(t.id); }catch(e){ return 0; } }), lo=Math.min(...rat), hi=Math.max(...rat);
   const rows=G.teams.map((t,i)=>{ const r=G.sea.rec[t.id]||{w:0,l:0}, gp=(r.w||0)+(r.l||0), L=TL[t.id]||[]; const rs=sum(L.map(x=>x[1]||0)), ra=sum(L.map(x=>x[2]||0));
-    const pct=gp?r.w/gp:.5, py=rs+ra>0?Math.pow(rs,1.83)/(Math.pow(rs,1.83)+Math.pow(ra,1.83)):.5, l10=L.slice(-10), r10=l10.length?l10.filter(x=>x[0]>0).length/Math.max(1,l10.filter(x=>x[0]!==0).length||1):.5, rn=hi>lo?(rat[i]-lo)/(hi-lo):.5;
+    const pct=gp?r.w/gp:.5, py=rs+ra>0?Math.pow(rs,1.83)/(Math.pow(rs,1.83)+Math.pow(ra,1.83)):.5, l10=L.slice(-10), decided=l10.filter(x=>x[0]!==0).length, r10=decided?l10.filter(x=>x[0]>0).length/decided:.5, rn=hi>lo?(rat[i]-lo)/(hi-lo):.5;
     const wr=gp<10?.55:gp<40?.25:.12; const s=(pct*.42+py*.28+r10*.18)*(1-wr)/.88+rn*wr;
     return {tid:t.id,s:Math.round(s*1000)/10,w:r.w||0,l:r.l||0,t:r.t||0,rd:rs-ra,r10:l10.length?`${l10.filter(x=>x[0]>0).length}-${l10.filter(x=>x[0]<0).length}`:'-',py:Math.round(py*1000)/1000}; });
   rows.sort((a,b)=>b.s-a.s).forEach((r,i)=>{ r.rk=i+1; r.prev=prev[r.tid]??null; });
   G.pwr={y:G.year,d:G.day,rows}; }
 /* ===== 포스트시즌 기록(모든 구단): 정규시즌 시즌 기록(hist)과 섞지 않고 따로 남긴다.
    G.psSer[y][라운드][선수] = 시리즈 합계(한국시리즈 최우수선수·포스트시즌 기록 화면), p.psY[y] = 그해 포스트시즌 합계(선수 카드). 25년치만 */
-const PS_BK=['pa','ab','h','d','tr','hr','bb','hbp','so','r','rbi','sb'], PS_PK=['outs','h','hr','bb','so','er'];
+const PS_BK=['pa','ab','h','d','tr','hr','bb','hbp','sf','sh','so','r','rbi','sb','cs','e'], /* 희생플라이·번트도 쌓는다: 출루율 분모(검수 11-17 #208) */ PS_PK=['outs','h','hr','r','bb','hbp','so','er','bf','e'];
 function psRec(round,g){ const y=G.year; G.psSer=G.psSer||{}; const Y=G.psSer[y]=G.psSer[y]||{}; const S=Y[round]=Y[round]||{};
   for(const k of ['h','a']){ const s=g.S[k]; for(const [id,x] of s.box){ const p=G.players[id]; if(!p)continue; const isP=s.pitchers.includes(id); const K=isP?PS_PK:PS_BK;
       const o=S[id]=S[id]||{t:s.tid,n:p.name,isP,g:0}; o.g++; for(const f of K)o[f]=(o[f]||0)+(x[f]||0);
-      if(isP){ if(g.dec.w===id)o.w=(o.w||0)+1; if(g.dec.l===id)o.l=(o.l||0)+1; if(g.dec.sv===id)o.sv=(o.sv||0)+1; if((g.dec.hld||[]).includes(id))o.hld=(o.hld||0)+1; }
-      const P=p.psY=p.psY||{}; const t=P[y]=P[y]||{t:s.tid,g:0,isP}; t.g++; for(const f of K)t[f]=(t[f]||0)+(x[f]||0); if(isP){ if(g.dec.w===id)t.w=(t.w||0)+1; if(g.dec.l===id)t.l=(t.l||0)+1; if(g.dec.sv===id)t.sv=(t.sv||0)+1; }
+      if(isP){if(id===(s.sp?.id??s.pitchers[0]))o.gs=(o.gs||0)+1; if(g.dec.w===id)o.w=(o.w||0)+1; if(g.dec.l===id)o.l=(o.l||0)+1; if(g.dec.sv===id)o.sv=(o.sv||0)+1; if((g.dec.hld||[]).includes(id))o.hld=(o.hld||0)+1; }
+      const P=p.psY=p.psY||{}; const t=P[y]=P[y]||{t:s.tid,g:0,isP}; t.g++; for(const f of K)t[f]=(t[f]||0)+(x[f]||0); if(isP){if(id===(s.sp?.id??s.pitchers[0]))t.gs=(t.gs||0)+1; if(g.dec.w===id)t.w=(t.w||0)+1; if(g.dec.l===id)t.l=(t.l||0)+1; if(g.dec.sv===id)t.sv=(t.sv||0)+1;if((g.dec.hld||[]).includes(id))t.hld=(t.hld||0)+1; }
       const ys=Object.keys(P); if(ys.length>25)delete P[Math.min(...ys.map(Number))]; } }
   const ys=Object.keys(G.psSer); if(ys.length>25)delete G.psSer[Math.min(...ys.map(Number))]; }
+/* 기존 라운드 합계와 보관 박스가 온전히 남은 경우에만 개인 PS 합계의 누락 항목을 복원한다. */
+function psRecordMigrate(){ if(!G.psSer)return;const boxes=new Map(),seen=new Set(),round=k=>k.includes('한국시리즈')?'ks':k.includes('준플레이오프')?'spo':k.includes('플레이오프')?'po':k.includes('와일드카드')?'wc':k.includes('결정전')?'tb':null;
+  for(const g of [...(G.games||[]),...(G.gamesOff||[])]){const rd=round(g.kind||'');if(!rd||!g.box||g.day==null)continue;const key=g.gid??[g.day,g.home,g.away,g.kind].join(':');if(seen.has(key))continue;seen.add(key);const y=dobj(g.day).y-(dobj(g.day).m<3?1:0);
+    for(const side of ['h','a'])for(const p of g.box[side]?.pit||[]){const k=[y,rd,p.id].join(':'),a=boxes.get(k)||{g:0,hbp:0,bf:0,hbpOK:true,bfOK:true};a.g++;for(const f of ['hbp','bf']){if(!Number.isFinite(p[f]))a[f+'OK']=false;else a[f]+=p[f];}boxes.set(k,a);}}
+  for(const [y,R] of Object.entries(G.psSer)){const totals={};for(const [rd,S] of Object.entries(R||{}))for(const [id,o] of Object.entries(S||{})){if(!o.isP)continue;const b=boxes.get([y,rd,id].join(':'));if(b&&b.g===o.g)for(const f of ['hbp','bf'])if(b[f+'OK'])o[f]=b[f];const a=totals[id]=totals[id]||{g:0,hld:0,hbp:0,bf:0,hbpOK:true,bfOK:true};a.g+=o.g||0;a.hld+=o.hld||0;for(const f of ['hbp','bf']){if(!Number.isFinite(o[f]))a[f+'OK']=false;else a[f]+=o[f];}}
+    for(const [id,a] of Object.entries(totals)){const p=G.players[id]||G.arch?.[id],t=p?.psY?.[y];if(!t||t.g!==a.g)continue;t.hld=a.hld;for(const f of ['hbp','bf'])if(a[f+'OK'])t[f]=a[f];}}
+}

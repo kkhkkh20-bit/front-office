@@ -12,6 +12,22 @@
 /* --- 지역(시) 관계: 0~100, 기본 50. 지자체 보조·인허가 속도에 쓴다 --- */
 function cityRel(tid){ const t=team(tid); if(!t)return 50; if(t.cityRel==null)t.cityRel=50; return t.cityRel; }
 function cityRelAdd(tid,d){ const t=team(tid); if(!t||!d)return; t.cityRel=clamp(Math.round((cityRel(tid)+d)*10)/10,0,100); }
+/* 보조금·신청 대기는 지급 지자체 몫이다. 옛 저장은 계약 시즌·신청일의 이름 이력으로 복구한다(#476·#477). 난수 없음 */
+function c476CityAt(t,d,y){ const H=(G.tnames&&G.tnames[t.id])||[], S=t.stad&&t.stad.reloc; let city=H.length?H[0].city:t.city, C=null;
+  if(!H.length&&S&&(d!=null?d<S.d:y<S.y))city=S.from;
+  for(const h of H){ let start=h.d0; if(d!=null&&start==null&&Number.isFinite(h.y0)){ if(!C){ C=[]; try{ C=clubChron(t.id); }catch(e){} } const c=C.find(c=>c.k==='rebrand'&&c.source==='rebrand:'+t.id+':'+h.y0); if(c&&Number.isFinite(c.d))start=c.d; }
+    /* 이름 이력 d0를 채우기 전 호출되어도 실제 이전 연대기를 우선한다. 추정일로 먼저 도시를 확정하지 않는다. */
+    if(d!=null?(start??(S&&S.to===h.city?S.d:null)??(Number.isFinite(h.y0)?dnum(h.y0-1,11,1):-Infinity))<=d:h.y0<=y)city=h.city; } return city||t.city; }
+function c476GrantCity(t,o){ if(!o.city){ const y=o.y0??o.y1-FAC_CITY.yrs+1, F=t.id===G.user?G.fac:t.fi;
+  /* 계약일이 없는 저장은 시설·보조액·시즌이 일치하는 유일한 착공일을 먼저 쓴다. 이력도 없으면 계약 시작 시즌까지로만 추정한다. */
+  if(o.d==null){ const H=((F&&F.hist)||[]).filter(h=>h.src==='city'&&h.k===o.k&&Number.isFinite(h.d)&&Math.round(h.c*FAC_CITY.share)===o.help&&(h.y===y||h.y===y-1)); if(H.length===1)o.d=H[0].d; }
+  o.city=c476CityAt(t,o.d,y); } return o.city; }
+function c476CityAsk(t){ const A=t.facAsk; if(!A||A.city==null)return; const city=t.facAskCity||c476CityAt(t,A.city), M=t.facAskCities=t.facAskCities||{}; M[city]=A.city; t.facAskCity=city;
+  if(city!==t.city){ delete A.city; if(M[t.city]!=null)A.city=M[t.city]; t.facAskCity=t.city; } }
+function civicMigrate(){ for(const t of G.teams||[]){ for(const o of t.cityOb||[])c476GrantCity(t,o); c476CityAsk(t); } }
+function ciCityRelocate(tid,from,city,d,fix){ const t=team(tid); if(!t)return; for(const o of t.cityOb||[])if(!o.city)o.city=fix?c476GrantCity(t,o):from;
+  if(fix){ c476CityAsk(t); return; } if(t.facAsk&&t.facAsk.city!=null)t.facAskCity=t.facAskCity||from; c476CityAsk(t);
+  const A=t.facAsk=t.facAsk||{}, M=t.facAskCities=t.facAskCities||{}; delete A.city; if(M[city]!=null)A.city=M[city]; t.facAskCity=city; }
 
 /* --- 공사 기간: 4단계부터 1.4배(여러 시즌에 걸친 공사) --- */
 const FAC_DAYS_X=1.4;
@@ -62,7 +78,7 @@ const facSponCo=()=>{ const L=Object.values(SPON_CO).flat(); return L.length?L:[
 function facLastRank(tid){ const o=G.last&&G.last.order; if(!o)return 5.5; const i=o.findIndex(x=>(x.tid??x)===tid); return i<0?5.5:i+1; }
 function facSponOdds(tid){ const t=team(tid), fan=prOf(tid)?prOf(tid).fan:55; return clamp(.2+((t.pop||1)-1)*.9+(5.5-facLastRank(tid))*.05+(fan-55)/200,.05,.7); }
 function facCityOdds(tid){ const t=team(tid); return clamp(.15+(cityRel(tid)-50)/80+((t.pop||1)-1)*.3,.05,.75); }
-function facRouteWait(tid,r){ const t=team(tid), d=t&&t.facAsk&&t.facAsk[r]; return d!=null&&G.day-d<CAPEX_CD?d+CAPEX_CD:0; }
+function facRouteWait(tid,r){ const t=team(tid); if(t&&r==='city')c476CityAsk(t); const d=t&&t.facAsk&&t.facAsk[r]; return d!=null&&G.day-d<CAPEX_CD?d+CAPEX_CD:0; }
 /* 고를 수 있는 길과 막힌 까닭: 화면 버튼과 AI 결정이 함께 쓴다 */
 function facRouteInfo(tid,k){ const t=team(tid), S=facSt(tid), lv=(S.it[k]||0), c=FACI[k].c[lv+1]; const R0={};
   R0.cash={ok:spendable(tid)>=c,why:spendable(tid)>=c?'':'자금이 부족합니다.'};
@@ -91,7 +107,7 @@ function facFund(k,route){ if(G.unemp)return '맡은 구단이 없습니다.'; f
 function facFundGo(tid,k,route,c){ const t=team(tid), me=tid===G.user&&!G.unemp, share=route==='spon'?FAC_SPON.share:FAC_CITY.share, help=Math.round(c*share), own=facOwnPart(route,c), up=c-own; /* 명명권은 첫해 몫(up)만 먼저 받는다 */
   let k0=own; if(me){ k0=spendPay(own); G.spend.facB=(G.spend.facB||0)+k0; } else t.cash-=own;
   const o={src:route,help}; if(route==='spon'){ { const L=facSponCo(); o.sponN=L[Math.floor(facU('spn'+G.year,tid+k)*L.length)]; } t.facSpon={k,n:o.sponN,y0:sponSeason(),y1:sponSeason()+FAC_SPON.yrs-1,help,paid:up,miss:0}; }
-  else (t.cityOb=t.cityOb||[]).push({k,y1:sponSeason()+FAC_CITY.yrs-1,prog:Math.round(c*FAC_CITY.prog),help,miss:0});
+  else (t.cityOb=t.cityOb||[]).push({k,city:t.city,y0:sponSeason(),d:G.day,y1:sponSeason()+FAC_CITY.yrs-1,prog:Math.round(c*FAC_CITY.prog),help,miss:0});
   const S=facSt(tid), b=facStartBuild(tid,k,o); S.inv=(S.inv||0)+c; (S.hist=S.hist||[]).push({y:G.year,d:G.day,k,lv:b.lv,c,src:route}); if(S.hist.length>40)S.hist.shift();
   clubFacilityHistory('fac',tid,FACI[k].l,'착공',{...b,src:`${facSrcTxt(route)} ${money(help)} · 구단 ${money(own)}`}); facStartNews(tid,k,b);
   if(me){ addLog(`${FACI[k].l} ${FACI[k].lv[b.lv]} 공사: ${facSrcTxt(route)}로 공사비 일부를 덜었습니다(구단 부담 ${money(own)}).`);
@@ -106,25 +122,28 @@ function facDealsYear(t){ const me=t.id===G.user&&!G.unemp, y=G.last&&G.last.y; 
     if(!ok)D.miss++; if(D.miss>=2){ const back=Math.round((D.paid??D.help)*FAC_SPON.back); if(me){ if(t.indie)spendPay(back); else G.spend.etc=(G.spend.etc||0)+back; } else t.cash-=back; /* 우리 구단은 결산 장부로(검수 11-14) */ t.facSpon=null; if(me){ prInit(); G.pr.fan=clamp(G.pr.fan-1,0,100); news('구단',`${D.n}, ${FACI[D.k].l} 명명권 조기 해지`,`성적과 관중이 약속에 못 미쳤다며 ${D.n}이(가) 후원을 거뒀습니다. 구단은 후원금 일부(${money(back)})를 돌려줍니다.`,-1); } else wire('구단',`${tfull(t)}, ${D.n} 명명권 해지`,{tid:t.id}); }
     else { if(ok&&y>D.y0&&D.paid!=null&&D.paid<D.help){ const a=Math.min(D.help-D.paid,Math.round(D.help/FAC_SPON.yrs)); D.paid+=a; t.cash=(t.cash||0)+a; if(me)note('시설',`${D.n} 명명권 후원금 ${money(a)}이 들어왔습니다.`); } } /* 해마다 조건을 지켰을 때만 다음 몫 */
     if(!t.facSpon){}
-    else if(y>=D.y1){ t.facSpon=null; t.pop=clamp((t.pop||1)+.01,.7,1.45); if(me)news('구단',`${D.n} 명명권 계약 만료`,`${D.n}과 함께한 ${FACI[D.k].l} 후원이 약속대로 끝났습니다. 다른 기업들도 구단을 다시 보고 있습니다.`,1); }
+    else if(y>=D.y1){ t.facSpon=null; const lost=Math.max(0,D.help-(D.paid??D.help)), full=ok&&!D.miss&&!lost; /* 조건을 모두 지켜 후원금을 다 받았을 때만 '약속대로'·인기 상승. 못 지킨 해가 있으면 그해 몫은 못 받은 채 끝난다(검수 11-17 #175) */
+      if(full)t.pop=clamp((t.pop||1)+.01,.7,1.45);
+      if(me){ if(full)news('구단',`${D.n} 명명권 계약 만료`,`${D.n}과 함께한 ${FACI[D.k].l} 후원이 약속대로 끝났습니다. 다른 기업들도 구단을 다시 보고 있습니다.`,1);
+        else news('구단',`${D.n} 명명권 계약 종료`,`${D.n}과의 ${FACI[D.k].l} 명명권 계약이 기간을 채우고 끝났습니다. ${ok?'마지막 해에는 조건을 지켰지만, ':'마지막 해에도 성적·관중 조건(${FAC_SPON.rk}위 안, 관중 ${Math.round(FAC_SPON.occ*100)}%)을 지키지 못해 '}조건을 못 지킨 해의 후원금${lost?` ${money(lost)}`:''}은 받지 못했습니다. 후원사와는 아쉽게 헤어졌습니다.`,0); } }
     else if(me&&!ok)mail('마케팅팀',`${D.n}: "이대로면 곤란합니다"`,`명명권 후원사가 올해 성적과 관중에 실망했습니다. 한 번 더 기대에 못 미치면 후원을 거두고 일부를 돌려받으려 합니다.`,{kind:'시설'}); }
-  const L=t.cityOb||[]; for(const o of [...L]){ if(y>o.y1){ t.cityOb=(t.cityOb||[]).filter(x=>x!==o); cityRelAdd(t.id,3); continue; }
-    if((t.cash||0)-o.prog<-2000){ o.miss++; cityRelAdd(t.id,-8); if(o.miss>=2&&o.help){ const back=Math.round(o.help*FAC_SPON.back); t.cash-=back; t.cityOb=(t.cityOb||[]).filter(x=>x!==o); if(me)mail('운영팀',`${t.city}시, 시설 보조금 회수`,`약속한 지역 야구 교실을 두 해 열지 못해 ${t.city}시가 보조금 대부분(${money(back)})을 돌려받았습니다.`,{kind:'시설',imp:true}); continue; } /* 약속을 두 번 어기면 지자체도 돌려받는다(공략 방지) */ if(me)mail('운영팀','지역 야구 교실을 열지 못했습니다',`돈이 모자라 ${t.city}시와 약속한 지역 야구 교실을 올해 열지 못했습니다. 시와의 관계가 나빠졌습니다.`,{kind:'시설'}); continue; }
-    if(me){ const k0=spendPay(o.prog); G.spend.fac=(G.spend.fac||0)+k0; } else t.cash-=o.prog; cityRelAdd(t.id,2); } }
+  const L=t.cityOb||[]; for(const o of [...L]){ const city=c476GrantCity(t,o), here=city===t.city; if(y>o.y1){ t.cityOb=(t.cityOb||[]).filter(x=>x!==o); if(here)cityRelAdd(t.id,3); continue; }
+    if((t.cash||0)-o.prog<-2000){ o.miss++; if(here)cityRelAdd(t.id,-8); if(o.miss>=2&&o.help){ const back=Math.round(o.help*FAC_SPON.back); t.cash-=back; t.cityOb=(t.cityOb||[]).filter(x=>x!==o); if(me)mail('운영팀',`${city}시, 시설 보조금 회수`,`약속한 지역 야구 교실을 두 해 열지 못해 ${city}시가 보조금 대부분(${money(back)})을 돌려받았습니다.`,{kind:'시설',imp:true}); continue; } /* 약속을 두 번 어기면 지급 지자체가 돌려받는다 */ if(me)mail('운영팀','지역 야구 교실을 열지 못했습니다',`돈이 모자라 ${city}시와 약속한 지역 야구 교실을 올해 열지 못했습니다. 시와의 관계가 나빠졌습니다.`,{kind:'시설'}); continue; }
+    if(me){ const k0=spendPay(o.prog); G.spend.fac=(G.spend.fac||0)+k0; } else t.cash-=o.prog; if(here)cityRelAdd(t.id,2); } }
 
 /* ===== AI 구단 구단주(모기업): 신뢰·우승 포상·운영비 절감·단장 경질 압박 =====
    우리 구단의 결산 평가를 줄인 식: 계획에 맞는 기대 순위 대비 성적, 수지, 모기업 지원을 얼마나 썼는지. 신뢰는 지원 한도(supportCap)·모기업 투자 승인에 그대로 쓰인다 */
 const AI_OWN_EXP={win:3,next:5,star:5,build:8,tight:8};
-function aiOwnerYear(h){ const ord=h.order||[]; const EI=ecoIdx(sponSeason());
+function aiOwnerYear(h){ const ord=h.order||[]; const EI=ecoIdx(h.y);
   for(const t of G.teams){ if(t.id===ME()||t.indie)continue; const f=h.fins&&h.fins[t.id]; const i=ord.findIndex(o=>(o.tid??o)===t.id), rk=i<0?5.5:i+1;
-    const exp=AI_OWN_EXP[planOf(t)]||5, w=t.owner==='win'?1.3:t.owner==='profit'?.7:1; let d=clamp((exp-rk)*1.1*w,-6,6);
+    const basis=financeHistoryOwner(t.id,h),owner=basis.owner,exp=AI_OWN_EXP[basis.plan||planOf(t)]||5, w=owner==='win'?1.3:owner==='profit'?.7:1; let d=clamp((exp-rk)*1.1*w,-6,6);
     if(h.champ===t.id)d+=5; else if(h.runner===t.id)d+=2;
-    if(f){ d+=clamp((f.net+(f.back||0))/2500,-3,3)*(t.owner==='profit'?1.5:1); if(f.supCap)d-=(f.support/f.supCap-.5)*3; }
+    if(f){ d+=clamp((f.net+(f.back||0)-(f.capital||0))/2500,-3,3)*(owner==='profit'?1.5:1); if(f.supCap)d-=(f.support/f.supCap-.5)*3; }
     if((t.cash||0)<0)d-=3;
     try{ d+=opPromSettle(t.id,h.y,rk); }catch(e){} /* 다시 설득하며 한 성적 약속(우리와 같은 +2/-8, 94_owner_push) */
     t.trust=clamp(Math.round((t.trust??55)+d+(55-(t.trust??55))*.1),5,95);
     /* 우승 포상: 우승을 바라거나 홍보를 중시하는 구단주는 FA 특별 자금을 낸다 */
-    if(h.champ===t.id&&(t.owner==='win'||t.owner==='pr')){ const g=Math.round(2000*EI); t.cash+=g; wire('구단',`${tfull(t)} 구단주, 우승 포상으로 FA 영입 자금 ${money(g)} 지원`,{tid:t.id}); }
+    if(h.champ===t.id&&(owner==='win'||owner==='pr')){ const g=Math.round(2000*EI); t.cash+=g; wire('구단',`${tfull(t)} 구단주, ${h.y}시즌 우승 포상으로 FA 영입 자금 ${money(g)} 지원`,{tid:t.id}); }
     /* 적자가 나고 지원을 많이 쓴 구단에 신뢰가 낮으면 운영비 절감 지시(다음 시즌 지원 한도 축소) */
     if(f&&f.net<0&&f.supCap&&f.support>=f.supCap*.8&&t.trust<45){ const amt=Math.round(800*EI/10)*10; t.ownCut={y:sponSeason(),amt}; wire('구단',`${tfull(t)} 모기업, 운영비 절감 지시`,{tid:t.id}); }
     /* 신뢰가 바닥이면 구단주가 단장을 바꾼다(성적 경질과 별개, 재임 2년 이상) */

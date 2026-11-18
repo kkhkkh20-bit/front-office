@@ -95,6 +95,18 @@ body #sheet .sheet.detail-page{position:relative;inset:auto;width:100%;max-width
   .roster-heading{min-height:32px;margin-bottom:0;padding-right:190px}
   .roster-heading select{max-width:260px;min-height:30px;padding:4px 10px;font-size:13px}
   .roster-heading .chipn{font-size:var(--ui-caption);padding:3px 6px}
+  /* 사용자 11-18: 1군·정식·육성 수와 등번호 정리·정리 모드는 하위 탭 줄 빈자리로(rosterHeadFit), 묶음 버튼은 본문 첫 줄 왼쪽, 야수/투수는 명단 제목 줄로 올린다 */
+  .fm2>.rh-tools{display:flex;align-items:center;gap:4px;flex:0 0 auto;margin:0;padding-right:8px;border-right:1px solid #ffffff1f;white-space:nowrap}
+  .fm2>.rh-tools .chipn{background:#00000030;border-color:#ffffff1f;color:#e3eaf0;font-size:var(--ui-caption);padding:2px 5px}
+  .fm2>.rh-tools .btn.small{min-height:24px;height:26px;padding:2px 8px;font-size:var(--ui-caption);background:#ffffff0f;border-color:#ffffff2e;color:#e3eaf0}
+  .fm2>.rh-tools .btn.small:hover{background:#ffffff1f;color:#fff}
+  .fm2>.rh-tools .btn.small[aria-pressed=true]{border-color:var(--team-hi);color:#fff}
+  html.fm-ptabs .fm2>.rh-tools{display:none}
+  .fmsh .roster-heading.rh-up:not(:has(>div:first-child>*)){display:none}
+  .fmsh .roster-heading .ws-pages{margin:0}
+  .fmsh .roster-caption .rseg-cap{display:flex;flex:none;margin:0 auto 0 4px}
+  .fmsh .roster-caption .rseg-cap button{padding:3px 10px;min-height:27px;font-size:var(--ui-caption);white-space:nowrap}
+  .fmsh .roster-caption>h2.sec{order:-1}
   .roster-navigation .seg button{font-size:12px;padding:6px 13px;min-height:30px}
   .roster-navigation .seg.itabs{margin:0}
   .roster-list.card{padding:10px 12px;margin:0}
@@ -294,3 +306,5 @@ body .fx-g b{white-space:normal!important;word-break:break-all;overflow:visible!
 @media(min-width:1001px) and (max-width:1399px){.trc-room{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}}
 /* 검수 11-12: 높이가 아주 낮은 화면(가로 휴대폰 320 등)에서는 여러 줄로 접히는 안쪽 탭을 한 줄 가로 넘김으로(역사 탭 10개가 130px을 차지해 내용이 잘림) */
 @media (max-height:420px){#app main .seg.itabs.wrapt{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;grid-template-columns:none}#app main .seg.itabs.wrapt>button{flex:0 0 auto;white-space:nowrap}#app main .seg.itabs.wrapt::-webkit-scrollbar{display:none}}
+/* 정리 모드 육성선수 칸(카페 11-18): 몇 명이어도 위 추천 후보 카드와 같은 폭 */
+.trimc .trim-ys+.tgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}.trimc .trim-ys{margin-top:12px}

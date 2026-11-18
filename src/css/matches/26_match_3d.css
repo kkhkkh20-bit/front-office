@@ -8,13 +8,20 @@
 .match-dashboard .cs-stage.has-3d>.cs-sit{top:14px}
 .match-dashboard .cs-stage.has-3d>.cs-cap{top:auto;bottom:15px;transform:translateX(-50%);background:#0a1724d9;backdrop-filter:blur(6px)}
 .match-dashboard .cs-stage.has-3d>.cs-fx{z-index:8;text-shadow:0 3px 15px #000}
-.cs-3d-retry{display:none}
+.cs-3d-acts,.cs-3d-reload{display:none}
 .match-dashboard .cs-3d[data-state="fallback"]{display:block;background:transparent;z-index:12}
 .match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status{top:12px;bottom:auto;left:12px;right:12px;padding-right:110px;min-height:35px;border:1px solid #8e7740;line-height:1.5}
-.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-retry{display:block;position:absolute;top:19px;right:20px;pointer-events:auto;background:#263d4b;border:1px solid #829cad;border-radius:4px;color:#eff6fb;padding:6px 9px;font-size:11px}
+.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-acts{display:flex;gap:6px;position:absolute;top:19px;right:20px;z-index:2;pointer-events:auto}
+.match-dashboard .cs-3d-acts>button{background:#263d4b;border:1px solid #829cad;border-radius:4px;color:#eff6fb;padding:6px 9px;font-size:11px;cursor:pointer}
+.match-dashboard .cs-3d-acts>.cs-3d-reload{background:#6a5524;border-color:#c9a85a}
+/* 업데이트 직후(해시 파일 404·새 배포 감지)면 새로고침도 보인다. 뒤에서 다시 받는 중(data-bg)엔 버튼을 숨긴다 */
+.match-dashboard .cs-3d[data-reload] .cs-3d-reload{display:block}
+.match-dashboard .cs-3d[data-state="fallback"][data-reload] .cs-3d-status{padding-right:180px}
+.match-dashboard .cs-3d[data-state="fallback"][data-bg] .cs-3d-acts{display:none}
+.match-dashboard .cs-3d[data-state="fallback"][data-bg] .cs-3d-status{padding-right:14px}
 @media(max-width:1000px){.match-dashboard .md-field-body{position:relative;min-height:0}.match-dashboard .cs-stage.has-3d{position:absolute;inset:0}.match-dashboard .cs-stage.has-3d>.cs-fx{font-size:32px}}
 /* The 2D fallback stage crops 8% off its top on PC. Keep the notice inside its visible part. */
-@media(min-width:1001px){.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status{top:calc(8% + 12px)}.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-retry{top:calc(8% + 19px)}}
+@media(min-width:1001px){.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-status{top:calc(8% + 12px)}.match-dashboard .cs-3d[data-state="fallback"] .cs-3d-acts{top:calc(8% + 19px)}}
 /* The first paint belongs to the 3D loading view; 2D is shown only after an actual failure. */
 .match-dashboard .cs-stage[data-renderer="pending"],.match-dashboard .cs-stage[data-renderer="loading"]{inset:0;width:100%;height:100%;aspect-ratio:auto;margin:0}
 .match-dashboard .cs-stage[data-renderer="pending"]>.cs-bg,.match-dashboard .cs-stage[data-renderer="loading"]>.cs-bg,.match-dashboard .cs-stage[data-renderer="pending"]>.cc,.match-dashboard .cs-stage[data-renderer="loading"]>.cc{visibility:hidden}
@@ -335,7 +342,7 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
 @media(max-width:600px){
  .match-dashboard:not([data-more]) .cs-top>.cs-mode,.match-dashboard:not([data-more]) .cs-top>#cs-snd{display:none}
  .match-dashboard .cs-top>.md-control{white-space:nowrap}
- .match-dashboard .cs-stage .md-bug{display:none!important}
+ /* 경기장 안 점수판에서 위 점수 막대와 겹치는 점수·이닝만 뺀다. 주자 다이아몬드·투구 수는 28_cast_portrait.css(사용자 ddddddd 11-17) */
  .match-dashboard .cs-bn{place-items:end center}.match-dashboard .cs-bn>div{margin-bottom:22%}
  .match-dashboard .cs-nameplate b,.match-dashboard .cs-nameplate span,.match-dashboard .cs-stage[data-renderer="ready"]>.cs-board-view,.match-dashboard .cs-cam-view{font-size:10px}
  .match-dashboard .cs-cap .cs-voice>b{font-size:var(--ui-caption)}

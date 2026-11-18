@@ -8,7 +8,14 @@
    - 감독 언론 플레이: 강요·거절당한 기억, 지키지 않은 보강, 연패, 구단주 지원 거절이 쌓이면 기자 앞에서 말한다. 단장의 대응이 관계·여론·구단주 신뢰에 남는다.
    - 감독 해임은 구단주 동의가 있어야 한다(조건부 승인 포함).
    - 구단주: 성적이 나쁘고 신뢰가 낮으면 비용 절감을 요구하고, 홍보형 구단주는 아끼는 선수 기용을 요구한다. 자주·크게 요청하면 더 자주 거절한다(36_relations ownerAsk) */
-function mcf(){ const m=G.mgr&&G.mgr[G.user]; const mid=m&&!m.interim?m.id:null; let S=G.mcf; if(!S||S.mid!==mid)S=G.mcf={mid,fav:{},ag:{},plan:null,media:{},fire:null}; S.fav=S.fav||{}; S.ag=S.ag||{}; S.media=S.media||{}; return S; }
+const mcfMid=()=>{ const m=G.mgr&&G.mgr[G.user]; return m&&!m.interim?m.id:null; };
+function mcf(){ const mid=mcfMid(); let S=G.mcf; if(!S||S.mid!==mid)S=G.mcf={mid,fav:{},ag:{},plan:null,media:{},fire:null}; S.fav=S.fav||{}; S.ag=S.ag||{}; S.media=S.media||{}; return S; }
+/* 지금 감독의 상태만(검수 11-17 #245·#246): 감독이 바뀌었거나 대행이면 전임 감독의 경질 동의·기용 합의는 읽지 않는다 */
+function mcfLive(){ const S=G.mcf; return S&&S.mid!=null&&S.mid===mcfMid()?S:null; }
+/* 불러오기 정리(멱등): 감독이 이미 바뀐 상태는 비우고, 구단주 간섭 기록은 구단에 남긴다(#253) */
+function mcfMigrate(){ const S=G.mcf; if(!S)return; if(S.own&&S.own.y!=null&&!G.unemp){ /* 옛 저장은 감독별 상태에만 적었다: 그해 지금 구단 기록으로 옮긴다 */ const t=team(G.user); if(t&&!(t.ownMed&&t.ownMed.y>=S.own.y))t.ownMed={y:S.own.y,k:S.own.k}; }
+  const F=S.fire; if(F&&F.k==='cond'&&!F.done&&!F.gt){ const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{}; F.g0=(F.g0||0)+(r.t||0); F.gt=1; } /* 옛 조건부 승인은 무승부를 세지 않았다: 지금까지의 무승부를 시작점에 더해 경기 수 기준으로 옮긴다 */
+  if(S.mid!==mcfMid())G.mcf=null; }
 function mmem(m){ return m.mem=m.mem||{forced:0,slight:0,kept:0,broke:0,ign:0,warn:0}; }
 const mcfOn=()=>!G.unemp&&!G.gameOver&&G.mgr&&G.mgr[G.user]&&!G.mgr[G.user].interim;
 /* 감독의 고집: 단장 요구를 받아들이는 정도. 고집(ego)·관계·쌓인 강요·영입 면담 약속(경청)으로 정해진다 */
@@ -19,7 +26,7 @@ function mcfStake(){ const S=mcf(); if(S.stk&&S.stk.d===G.day)return S.stk.v; co
   if(m&&!m.interim){ mgrAttr(m); const youthT=(m.youth||50)>=62; let out=false, ct=false; try{ const r=uRank(), g=teamGP(G.user); out=g>=60&&r>=8; ct=teamCtx(team(G.user)).contend; }catch(e){} if(!youthT&&!out)v=(m.yrs<=1?1:0)+(ct?1:0)+(team(G.user).trust<35?.5:0); }
   S.stk={d:G.day,v}; return v; }
 /* 기용 가산(우리 구단만): 단장과 합의한 기용(fav, 마지못해 받았으면 절반) + 감독의 '검증된 선수' 선호 */
-function mcfB(tid,p){ if(tid!==G.user||!p||G.unemp||!G.mcf)return 0; const S=G.mcf; let v=0; const f=S.fav&&S.fav[p.id]; if(f&&f.until>=G.day)v+=f.v*(f.half?.5:1);
+function mcfB(tid,p){ if(tid!==G.user||!p||G.unemp||!G.mcf)return 0; const S=mcfLive(); if(!S)return 0; /* 전임 감독과 한 기용 합의는 대행·후임에게 넘어가지 않는다(#246) */ let v=0; const f=S.fav&&S.fav[p.id]; if(f&&f.until>=G.day)v+=f.v*(f.half?.5:1);
   if(p.age<=23&&(p.svc||0)<=2&&!p.foreign){ const st=mcfStake(); if(st>0)v-=.6*st; } return v; }
 
 /* ---------- 1. 시즌 구상 ---------- */
@@ -44,8 +51,8 @@ function mcfPlan(){ if(!mcfOn())return; const m=G.mgr[G.user], S=mcf(); if(S.pla
   if(yng&&!youthT)opts.push({l:`${yng.name}에게 기회를 주십시오`,fx:'감독 성향·관계에 따라 받거나 마지못해 받거나 거절합니다'});
   if(vet)opts.push({l:`${vet.name} 의존도를 줄이십시오`,fx:'베테랑 기용을 줄여 달라는 요구. 고집 센 감독은 반발합니다'});
   opts.push({l:'감독님께 맡기겠습니다',fx:'간섭하지 않습니다. 관계 소폭 상승'});
-  evNew('mplan',`${nm} 시즌 구상`,`${nm}: "${lines.join(' ')}"`,opts,{from:'감독실',def:opts.length-1,exp:6,data:{y:G.year}});}
-function mcfPlanPick(e,i){ const m=G.mgr[G.user]; const S=mcf(), P=S.plan; if(!m||m.interim||!P||P.y!==e.data.y)return '감독이 바뀌어 구상이 무효가 됐습니다.'; const l=e.opts[i].l, M=mmem(m);
+  evNew('mplan',`${nm} 시즌 구상`,`${nm}: "${lines.join(' ')}"`,opts,{from:'감독실',def:opts.length-1,exp:6,data:{y:G.year,mid:S.mid}});}
+function mcfPlanPick(e,i){ const m=G.mgr[G.user]; const S=mcf(), P=S.plan; if(!m||m.interim||!P||P.y!==e.data.y||(e.data.mid!==undefined?e.data.mid!==S.mid:e.day!==P.day))return '감독이 바뀌어 구상이 무효가 됐습니다.'; /* 구상은 그 감독의 것: 같은 해 후임의 구상을 대신 받지 않는다(#247, 옛 결정은 구상을 낸 날로 맞춘다) */ const l=e.opts[i].l, M=mmem(m);
   if(/구상대로/.test(l)){ m.rel=clamp(m.rel+2,0,100); P.st='agree'; return `${m.name} 감독: "든든합니다. 보강 얘기는 잊지 말아 주십시오." 감독 관계 조금 개선`; }
   if(/맡기겠/.test(l)){ m.rel=clamp(m.rel+1,0,100); P.st='deleg'; return `${m.name} 감독: "믿어 주신 만큼 하겠습니다." 감독 관계 조금 개선`; }
   const yng=/기회를/.test(l), pid=yng?P.yng:P.vet, p=G.players[pid]; if(!p)return '';
@@ -123,29 +130,38 @@ function mcfMediaPick(e,i){ const m=G.mgr[G.user]; const S=mcf(); if(!m||m.inter
 function mgrFireAsk(){ const m=G.mgr[G.user]; if(!m||m.interim)return {k:'no',msg:'경질할 감독이 없습니다.'}; const S=mcf(); const t=team(G.user); const per=period();
   if(S.fire&&S.fire.k==='ok'&&G.day<=S.fire.until)return S.fire; if(S.fire&&S.fire.k==='cond'&&!S.fire.done&&S.fire.y===G.year&&period()==='season')return S.fire; if(S.fire&&S.fire.k==='cond'&&!S.fire.done){ S.fire.done=true; } /* 시즌이 끝나면 조건부 승인은 만료(코드 리뷰 11-13: 해를 넘겨 영구히 걸림) */
   const tries=(S.fireN&&S.fireN.y===G.year)?S.fireN.n:0; S.fireN={y:G.year,n:tries+1};
-  const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{w:0,l:0}; const g=r.w+r.l, wp=g?r.w/g:.5; const rk=uRank(); const hd=m.hD!=null?G.day-m.hD:999; const ow=t.owner;
+  const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{w:0,l:0}; const g=r.w+r.l, wp=g?r.w/g:.5; const gAll=g+(r.t||0), rem=Math.max(0,seasonG()-gAll); const rk=uRank(); const hd=m.hD!=null?G.day-m.hD:999; const ow=t.owner;
   let s=(t.trust-50)/100+(per!=='season'?.25:0)+(g>=20&&wp<.45?.3:0)+(g>=20&&rk>=8?.2:0)-(g>=20&&rk<=3?.45:0)-((m.fame||0)>=70?.2:0)-(hd<150?.3:0)-tries*.15-((m.yrs||0)*(m.sal||0)>=3000&&ow==='profit'?.2:0)+(ow==='win'&&wp<.45?.1:0)+((mmem(m).slight+mmem(m).forced)>=4?.1:0);
   if(t.indie)s+=.1; const B=bossOf(G.user);
   if(s>=.35){ S.fire={k:'ok',day:G.day,until:G.day+14,msg:`${B.own.name} 회장이 경질에 동의했습니다. 14일 안에 결정하세요.`}; return S.fire; }
-  if(s>=.05&&per==='season'&&(G.cal?(144-g)>=10:true)){ S.fire={k:'cond',y:G.year,day:G.day,g0:g,w0:r.w,n:10,maxW:4,msg:`${B.own.name} 회장: "앞으로 10경기를 보겠어요. 그 사이 4승 이하면 동의할게요." 조건부 승인입니다.`}; return S.fire; }
+  if(s>=.05&&per==='season'&&rem>=5){ const n=Math.min(10,rem), mw=Math.floor(n*.4); /* 남은 경기보다 긴 조건은 걸지 않는다(#250: 132경기 리그). 무승부도 경기로 센다(#249) */
+    S.fire={k:'cond',y:G.year,day:G.day,g0:gAll,gt:1,w0:r.w,n,maxW:mw,msg:`${B.own.name} 회장: "앞으로 ${n}경기를 보겠어요. 그 사이 ${mw}승 이하면 동의할게요." 조건부 승인입니다.`}; return S.fire; }
   t.trust=clamp(t.trust-(tries?2:1),0,100); S.fire={k:'no',day:G.day,done:true,msg:`${B.own.name} 회장이 반대했습니다. "${hd<150?'데려온 지 얼마나 됐다고 또 바꾸자는 거예요.':(m.fame||0)>=70?'팬들이 좋아하는 감독이에요. 명분이 없어요.':rk<=3?'이기고 있는 감독을 왜 잘라요.':'지금 바꾼다고 달라질 게 없어요.'}" 구단주 신뢰 하락.`}; return S.fire; }
-function mgrFireOk(){ const S=G.mcf; return !!(S&&S.fire&&S.fire.k==='ok'&&G.day<=S.fire.until); }
-function mcfDaily(){ const S=G.mcf; if(!S||!S.fire||S.fire.k!=='cond'||S.fire.done)return; const F=S.fire; if(F.y!=null&&F.y!==G.year||period()!=='season'){ F.done=true; return; } const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{w:0,l:0}; const g=r.w+r.l; if(g-F.g0<F.n)return; F.done=true; const w=r.w-F.w0; const B=bossOf(G.user);
-  if(w<=F.maxW){ S.fire={k:'ok',day:G.day,until:G.day+14,msg:`조건(10경기 4승 이하)이 채워져 ${B.own.name} 회장이 경질에 동의했습니다. 14일 안에 결정하세요.`}; mail('구단주실','감독 경질 동의',S.fire.msg,{imp:true,kind:'구단주',acts:[{l:'감독 화면',a:'go',v:'staff:mgr'}]}); }
-  else mail('구단주실','감독 경질 보류',`10경기 ${w}승. ${B.own.name} 회장: "그 정도면 감독을 바꿀 이유가 없어요." 경질 요청이 보류됐습니다.`,{kind:'구단주'}); }
+function mgrFireOk(){ const S=mcfLive(); return !!(S&&S.fire&&S.fire.k==='ok'&&G.day<=S.fire.until); } /* 동의는 그 감독 경질에 대한 것: 후임에게 넘어가지 않는다(#245) */
+/* 조건부 승인 판정: 그날 경기를 치른 뒤 본다(07_daily, #248: 마지막 경기로 채운 조건도 시즌 안에 판정). 무승부도 한 경기(#249) */
+function mcfDaily(){ const S=mcfLive(); if(!S||!S.fire||S.fire.k!=='cond'||S.fire.done)return; const F=S.fire; const B=bossOf(G.user); if(F.y!=null&&F.y!==G.year){ F.done=true; return; }
+  const r=(G.sea&&G.sea.rec&&G.sea.rec[G.user])||{w:0,l:0}; const g=r.w+r.l+(F.gt?(r.t||0):0); const n=F.n||10, mw=F.maxW??4;
+  if(g-F.g0<n){ if(period()!=='season'){ F.done=true; mail('구단주실','감독 경질 조건부 승인 만료',`정규시즌이 끝나 ${n}경기 조건을 채우지 못했습니다(${g-F.g0}경기). 경질하려면 다시 요청하세요.`,{kind:'구단주'}); } return; }
+  F.done=true; const w=r.w-F.w0;
+  if(w<=mw){ S.fire={k:'ok',day:G.day,until:G.day+14,msg:`조건(${n}경기 ${mw}승 이하)이 채워져 ${B.own.name} 회장이 경질에 동의했습니다. 14일 안에 결정하세요.`}; mail('구단주실','감독 경질 동의',S.fire.msg,{imp:true,kind:'구단주',acts:[{l:'감독 화면',a:'go',v:'staff:mgr'}]}); }
+  else mail('구단주실','감독 경질 보류',`${n}경기 ${w}승. ${B.own.name} 회장: "그 정도면 감독을 바꿀 이유가 없어요." 경질 요청이 보류됐습니다.`,{kind:'구단주'}); }
+/* 새 감독 선임 = 현 감독 경질: 구단주 동의(또는 빈자리·대행)가 있어야 결재로 넘어간다(#244) */
+function mgrHireBlk(){ if(G.unemp)return ''; const cur=G.mgr&&G.mgr[G.user]; if(!cur||cur.interim||mgrFireOk())return ''; const S=mcfLive(), F=S&&S.fire;
+  return F&&F.k==='no'&&G.day-F.day<=30?`구단주가 ${cur.name} 감독 경질에 반대했습니다. 새 감독을 앉히면 현 감독을 경질하게 되므로 지금은 선임할 수 없습니다.`:F&&F.k==='cond'&&!F.done?`${cur.name} 감독 경질은 조건부 승인 중입니다(${F.n||10}경기 ${F.maxW??4}승 이하). 조건이 채워지기 전에는 새 감독을 선임할 수 없습니다.`:`새 감독을 앉히면 ${cur.name} 감독을 경질하게 됩니다. 먼저 감독 화면에서 경질 요청을 해 구단주 동의를 받으세요.`; }
 
 /* ---------- 구단주의 간섭 ---------- */
-function ownMeddle(){ const t=team(G.user); if(t.indie||!G.cal||G.day<G.cal.open+40)return; const S=mcf(); const B=bossOf(G.user); if(S.own&&S.own.y===G.year)return; const rk=uRank();
+function ownMeddle(){ const t=team(G.user); if(t.indie||!G.cal||G.day<G.cal.open+40)return; const B=bossOf(G.user); if(t.ownMed&&t.ownMed.y===G.year)return; /* 간섭은 구단 기록: 감독이 바뀌어도 같은 시즌에 다시 내리지 않는다(#253) */ if((G.evf||[]).some(f=>f.k==='owncut'&&(f.tid??G.user)===G.user))return; const rk=uRank();
   /* 비용 절감 요구: 성적 나쁘고 신뢰 낮을 때. 수익형·긴축 구단주가 더 잘한다 */
-  if(rk>=7&&t.trust<48&&!expYr(G.user)&&R()<(t.owner==='profit'?.35:.15)){ S.own={y:G.year,k:'cut'}; evNew('owncut',`${B.own.name} 회장의 비용 절감 지시`,`${B.own.name} 회장: "성적도 안 나는데 돈은 돈대로 나가고 있어요. 비용을 줄이세요."`,[{l:'고액 선수를 정리하겠습니다',fx:'30일 안에 상위 연봉 합계를 5% 이상 줄이면 신뢰가 오르고, 못 하면 크게 떨어집니다'},{l:'지원 삭감을 받아들이겠습니다',fx:'올해 모기업 지원 한도가 줄어듭니다'},{l:'지금 줄이면 시즌을 포기하는 겁니다',fx:'구단주 신뢰 하락. 회장이 물러설 수도 있습니다'}],{from:'구단주실',def:1,exp:5,data:{pay0:capPay(G.user)}}); return; }
+  if(rk>=7&&t.trust<48&&!expYr(G.user)&&R()<(t.owner==='profit'?.35:.15)){ t.ownMed={y:G.year,k:'cut'}; evNew('owncut',`${B.own.name} 회장의 비용 절감 지시`,`${B.own.name} 회장: "성적도 안 나는데 돈은 돈대로 나가고 있어요. 비용을 줄이세요."`,[{l:'고액 선수를 정리하겠습니다',fx:'30일 안에 상위 연봉 합계를 5% 이상 줄이면 신뢰가 오르고, 못 하면 크게 떨어집니다'},{l:'지원 삭감을 받아들이겠습니다',fx:'올해 모기업 지원 한도가 줄어듭니다'},{l:'지금 줄이면 시즌을 포기하는 겁니다',fx:'구단주 신뢰 하락. 회장이 물러설 수도 있습니다'}],{from:'구단주실',def:1,exp:5,data:{pay0:capPay(G.user)}}); return; }
   /* 아끼는 선수 기용 요구: 홍보형 구단주가 인기 선수·연고 선수를 밀어 달라고 한다 */
-  if(t.owner==='pr'&&R()<.2){ const d=depth(G.user); const st=new Set(d.start.map(p=>p.id)); const p=domestic(G.user).filter(q=>!q.isP&&!st.has(q.id)&&healthy(q)&&(q.region===t.region||(q.pop||0)>=60)).sort((a,b)=>(b.pop||0)-(a.pop||0))[0]; if(!p)return; S.own={y:G.year,k:'fav'};
+  if(t.owner==='pr'&&R()<.2){ const d=depth(G.user); const st=new Set(d.start.map(p=>p.id)); const p=domestic(G.user).filter(q=>!q.isP&&!st.has(q.id)&&healthy(q)&&(q.region===t.region||(q.pop||0)>=60)).sort((a,b)=>(b.pop||0)-(a.pop||0))[0]; if(!p)return; t.ownMed={y:G.year,k:'fav'};
     evNew('ownfav',`${B.own.name} 회장의 기용 요구`,`${B.own.name} 회장: "${p.name} 선수, 팬들이 좋아하는 선수 아니에요? 경기에 좀 나오게 하세요."`,[{l:'감독에게 전하겠습니다',fx:'감독에게 기용을 지시합니다. 감독이 반발할 수 있습니다'},{l:'기용은 감독 몫입니다',fx:'구단주 신뢰 조금 하락'}],{from:'구단주실',def:0,exp:5,data:{pid:p.id}}); } }
 function ownCutPick(e,i){ const t=team(G.user); const B=bossOf(G.user);
   if(i===0){ evFollow(30,'owncut',{pay0:e.data.pay0}); return '30일 뒤 회장이 연봉 합계를 다시 봅니다.'; }
   if(i===1){ const amt=round5(800*ecoIdx(sponSeason())); t.ownCut={y:sponSeason(),amt}; return `올해 모기업 지원 한도 ${money(amt)} 삭감.`; }
   t.trust=clamp(t.trust-4,0,100); if(R()<.4)return `${B.own.name} 회장: "...그럼 결과로 보여 주세요." 회장이 물러섰습니다. 구단주 신뢰 하락.`; const amt=round5(500*ecoIdx(sponSeason())); t.ownCut={y:sponSeason(),amt}; return `회장이 물러서지 않았습니다. 지원 한도 ${money(amt)} 삭감, 구단주 신뢰 하락.`; }
-function ownCutFollow(d,tid){ if(tid!==G.user||G.unemp)return; const t=team(G.user); const B=bossOf(G.user); const now=capPay(G.user); if(now<=d.pay0*.95){ t.trust=clamp(t.trust+3,0,100); mail('구단주실','비용 절감 확인',`${B.own.name} 회장: "약속을 지켰군요." 구단주 신뢰 상승.`,{kind:'구단주'}); } else { t.trust=clamp(t.trust-6,0,100); mail('구단주실','비용 절감 약속 불이행',`${B.own.name} 회장: "말만 하고 줄인 게 없어요." 구단주 신뢰 크게 하락.`,{imp:true,kind:'구단주'}); } }
+function ownCutFollow(d,tid){ tid=tid??G.user; const t=team(tid); if(!t)return; const kept=capPay(tid)<=d.pay0*.95;
+  if(tid!==G.user||G.unemp){ t.trust=clamp(t.trust+(kept?3:-6),0,100); return; } /* 단장이 떠난 구단도 회장은 같은 기준으로 본다(#254): 소식은 지금 구단에만 */ const B=bossOf(G.user); if(kept){ t.trust=clamp(t.trust+3,0,100); mail('구단주실','비용 절감 확인',`${B.own.name} 회장: "약속을 지켰군요." 구단주 신뢰 상승.`,{kind:'구단주'}); } else { t.trust=clamp(t.trust-6,0,100); mail('구단주실','비용 절감 약속 불이행',`${B.own.name} 회장: "말만 하고 줄인 게 없어요." 구단주 신뢰 크게 하락.`,{imp:true,kind:'구단주'}); } }
 function ownFavPick(e,i){ const t=team(G.user); const p=G.players[e.data.pid]; const m=G.mgr[G.user];
   if(i===1){ t.trust=clamp(t.trust-2,0,100); return '구단주 신뢰 조금 하락.'; }
   t.trust=clamp(t.trust+1,0,100); if(!p||!m||m.interim)return '구단주 신뢰 조금 상승.'; const S=mcf(); const r=mcfOrder(m,1); if(r==='no')return `구단주 신뢰 조금 상승. 하지만 ${m.name} 감독이 "위에서 선수를 정해 주는 건 받아들일 수 없다"며 거절했습니다. 감독 관계 악화.`;

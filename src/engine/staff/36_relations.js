@@ -203,7 +203,7 @@ const BOOST_SAL=.5, FAC_GRANT_DAYS=60;
 function grantFacSpent(d,until){ const F=(G.fac&&G.fac.hist||[]).filter(h=>h.d>=d&&h.d<=until&&h.k!=='acad'); const S=(stadOf(G.user).build||[]).filter(b=>b.st!=null&&b.st>=d&&b.st<=until); return sum(F.map(h=>h.c||0))+sum(S.map(b=>b.totalC??b.c??0)); }
 /* 목적대로 쓰지 않은 지원금 반납: 아직 그 시즌이면 지원 한도에서, 결산이 끝났으면 구단 현금에서 */
 function grantReturn(g){ const t=team(g.tid??G.user); if(g.y===sponSeason()&&t.grant&&t.grant.y===g.y)grantApply(-Math.min(g.amt,t.grant.amt)); else t.cash=(t.cash||0)-g.amt; }
-function grantApply(amt){ const t=team(G.user); const sy=sponSeason(); const cap0=supportCap(t); t.grant=(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt; t.grant={y:sy,amt:t.grant}; const g=G.goals; if(g&&g.y===sy){ const cap1=supportCap(t); g.sup=clamp((g.sup*cap0+amt)/Math.max(1,cap1),0,1.5); } } /* 지원 목표(비율×한도)가 정확히 받은 금액만큼 늘게: 한도도 함께 늘어나므로 비율은 새 한도로 다시 계산한다 */
+function grantApply(amt){ const t=team(G.user),sy=sponSeason(),g=G.goals,base=g&&g.y===sy?goalSupportBase(t,g,sy):null;t.grant={y:sy,amt:(t.grant&&t.grant.y===sy?t.grant.amt:0)+amt};if(base!=null){const cap=supportCap(t);g.sup=clamp((base*(cap-t.grant.amt)+t.grant.amt)/Math.max(1,cap),0,1.5);} } /* 기본 지원 목표율과 추가 승인 금액을 따로 보관한다. 평가에는 총 한도 대비 목표율을 쓴다. */
 /* 목적이 있는 지원금: 지켰는지 */
 function grantCheck(){ const t=team(G.user); for(const g of grants()){ if(g.st!=='open'||!g.pur)continue; let ok=false, fail=false;
     if(g.pur.k==='fa'){ const tid=g.tid??G.user; const M=(G.moves||[]).filter(m=>m.t==='FA'&&m.pid===g.pur.pid&&m.d>=g.d); ok=M.some(m=>m.to===tid&&m.d<=g.until); fail=!ok&&(M.some(m=>m.to!==tid)||G.fa&&G.fa.closed||G.day>g.until); } /* FA 계약 기록으로 판정: 점검 날 소속(뒤이은 트레이드)이 아니라 실제 FA 계약 상대(검수 11-09zzd) */
@@ -265,7 +265,7 @@ function mgrRelWeek(){ const m=G.mgr[G.user]; if(!m||m.interim||period()!=='seas
   /* 도움말은 관계 단계 말(relLabel)로 안내한다(11-14): 예전 78 이상·25 이하를 가장 가까운 단계 경계(막역한 사이 80 이상·껄끄러운 사이 30 미만)로 맞췄다 */
   if(m.rel>=80&&R()<.08){ news('언론',`${m.name} 감독 "단장님과 호흡 최고"`,'프런트와 현장이 한 방향을 보고 있다는 평가입니다.',2); G.pr.press=clamp(G.pr.press+1,0,100); }
   if(m.rel<30&&R()<.15){ news('언론',`${tshort(G.user)} 감독-단장 불화설`,`${m.name} 감독이 프런트 결정에 불만을 드러냈습니다.`,-2); G.pr.fan=clamp(G.pr.fan-1,0,100); G.pr.press=clamp(G.pr.press-2,0,100);
-    if(m.ego>=65&&m.rel<=15&&R()<.3){ const nm=m.name; resignMgr(); mail('감독실',`${nm} 감독 자진 사퇴`,`${nm} 감독이 "더는 함께하기 어렵다"며 물러났습니다. 수석코치가 감독대행을 맡습니다. 새 감독을 선임하세요.`,{imp:true,kind:'감독',acts:[{l:'감독 후보',a:'go',v:'staff:mgr'}]}); } } }
+    if(m.ego>=65&&m.rel<=15&&R()<.3){ const nm=m.name; resignMgr(); mail('감독실',`${nm} 감독 자진 사퇴`,`${nm} 감독이 "더는 함께하기 어렵다"며 물러났습니다. ${interimWho(G.mgr[G.user])}이(가) 감독대행을 맡습니다. 새 감독을 선임하세요.`,{imp:true,kind:'감독',acts:[{l:'감독 후보',a:'go',v:'staff:mgr'}]}); } } }
 /* ===== 스타 파워: 수상·기록·활약이 마케팅 수입이 된다 ===== */
 function starPower(p){ let s=0; for(const a of (p.aw||[])){ const y=+String(a).slice(0,4); const age=G.year-y; if(age>2||isNaN(y))continue; const w=age===0?1:age===1?.7:.4;
     s+=(a.includes('대표팀 영웅')?22:a.includes('MVP')?40:a.includes('신인왕')?20:a.includes('골든')?15:5)*w; }

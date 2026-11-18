@@ -16,7 +16,7 @@ function tradeInsight(tid,give,get){
 }
 
 /* 드래프트 센터(스카우트 1단계): 정답 같은 모의 지명 대신 '우리 차례에 남을 확률'과 소문. AI의 실제 지명 함수는 쓰지 않는다(65_draft_odds) */
-function doChip(o){ if(!o)return ''; const v=o.av; return `<span class="do-chip ${v>=.7?'good':v>=.35?'':'warn'}" title="${esc(o.top?`가장 먼저 데려갈 듯한 구단: ${tshort(o.top.tid)} (${doPct(o.top.s)})`:'')}">남을 확률 ${doPct(v)}</span>`; }
+function doChip(o){ if(!o)return ''; if(o.av==null)return '<span class="do-chip muted">'+(o.noPick==='pass'?'남은 지명 건너뛰기':'지명권 없음')+'</span>'; const v=o.av; return `<span class="do-chip ${v>=.7?'good':v>=.35?'':'warn'}" title="${esc(o.top?`가장 먼저 데려갈 듯한 구단: ${tshort(o.top.tid)} (${doPct(o.top.s)})`:'')}">남을 확률 ${doPct(v)}</span>`; }
 function draftCenter(all,mine){ const O=draftOdds(G.user), live=G.draft&&!G.draft.done; const pk=O.pick;
   const L=all.slice(0,40).map(x=>Object.assign({o:O.P[x.p.id]},x)).filter(x=>x.o);
   const hi=L.filter(x=>x.o.av>=.7).slice(0,3), mid=L.filter(x=>x.o.av>=.3&&x.o.av<.7).slice(0,3), lo=L.filter(x=>x.o.av<.3).slice(0,3);
@@ -70,7 +70,7 @@ function amYearTable(p){ const Y=p.amY; if(!Y||!Y.length)return `<p class="small
   return `<div class="tw"><table class="amy"><thead><tr><th>학년</th><th>경기</th><th>타석</th><th>타율</th><th class="key">OPS</th><th>홈런</th><th>볼넷</th><th>삼진</th><th class="key">볼삼비</th><th>도루</th></tr></thead><tbody>${rows.map(x=>{ const r=bRate(x); return `<tr class="${x.tot?'tot':''}"><td>${x.tot?'합계':(x.y?x.y+' ':'')+sch+x.gr+(x.inj?' (부상)':'')}</td><td>${x.g}</td><td>${x.pa}</td><td>${fmt3(r.avg)}</td><td>${fmt3(r.ops)}</td><td>${x.hr}</td><td>${x.bb}</td><td>${x.so}</td><td>${x.so?(x.bb/x.so).toFixed(2):'-'}</td><td>${x.sb}</td></tr>`; }).join('')}</tbody></table></div>`; }
 function amLine(p){ const h=p.am; if(!h)return '기록 없음';
   if(p.isP){ const r=pRate(h); return `ERA ${h.outs?r.era.toFixed(2):'-'} · ${ipStr(h.outs)}이닝 · K/9 ${h.outs?(h.so*27/h.outs).toFixed(1):'-'} · BB/9 ${h.outs?(h.bb*27/h.outs).toFixed(1):'-'} · 최고 ${amVmax(p)}km/h`; }
-  const r=bRate(h); return `타율 ${fmt3(r.avg)} · OPS ${fmt3(r.ops)} · 홈런 ${h.hr} · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'} · 1루 ${p.amRun||runOf(p)}초`; }
+  const r=bRate(h); return `타율 ${fmt3(r.avg)} · OPS ${fmt3(r.ops)} · 홈런 ${h.hr} · 볼삼비 ${h.so?(h.bb/h.so).toFixed(2):'-'} ${(()=>{ const r=p.amRun||(p.r&&p.r.spd!=null?runOf(p):null); return r!=null?` · 1루 ${r}초`:''; })()}`; } /* 능력 칸이 없는 표시용 선수(아마추어 부원 등)는 1루 시간을 뺀다(외부 검수 11-17: runOf가 p.r.spd를 읽다 멈춤) */
 
 /* ---------- 선수 이야기 ---------- */
 const STK={draft:'지명',debut:'데뷔',first:'첫 기록',mile:'기록',high:'커리어 하이',award:'수상',move:'이적·계약',inj:'부상',mil:'병역'};

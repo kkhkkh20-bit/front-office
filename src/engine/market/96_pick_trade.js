@@ -11,7 +11,7 @@ const PK_V=[15,3,1.6,.05,.05,.05,.05,.05,.05,.05,.05]; /* 4라운드부터는 �
 const PK_R1S=[1.25,1.15,1.05,.85,.8,.75,.7,.45,.4,.35]; /* 1라운드 순번별 배율: 상위 세 순번과 하위 세 순번의 차이가 크다 */
 const PK_KEEP=1.2; /* 지명권은 내줄 때 더 아낀다(사용자 11-13: 지명권을 소중히). 올인·벼랑 끝 구단만 그대로 내준다 */
 const pkKeep=t=>t&&t.id!==ME()&&(t.allIn===sponSeason()||despOf(t)>=.5)?1:PK_KEEP; /* 1라운드는 순번이 앞설수록 훨씬 비싸다(커뮤니티 피드백 11-07: 상위 지명권을 너무 싸게 모음) */ /* 라운드별 가치(트레이드 가치 단위, 현금 1억 ≈ 0.9) */
-const pkHoard=(buyer,k,gv)=>{ if(+k.split(':')[0]!==1)return 1; const out=new Set(gv||[]); const n=pkHeld(buyer).filter(x=>+x.split(':')[0]===1&&!out.has(x)).length; return 1+.4*Math.max(0,n-1); }; /* gv: 같은 거래에서 내주는 지명권은 빼고 센다(국사왕 11-16: 1라 9·10번을 들고 10번을 4번과 바꾸면 거래 뒤에도 두 장인데 세 장째 값을 불렀다) */ /* 1라운드 지명권 보유 한도는 없다(KBO도 받는 장수 제한 없음, 사용자 11-15). 대신 이미 1라운드를 여러 장 쥔 구단에는 파는 단장이 더 비싸게 부른다: 두 장째부터 한 장마다 40%씩. 우리·AI 같음 */
+const pkHoard=(buyer,k,gv,incoming)=>{ if(+k.split(':')[0]!==1)return 1; const out=new Set(gv||[]); const n=pkHeld(buyer).filter(x=>+x.split(':')[0]===1&&!out.has(x)).length; const add=[...new Set(incoming||[k])].filter(x=>+x.split(':')[0]===1).sort((a,b)=>+a.split(':')[1]- +b.split(':')[1]).indexOf(k); return 1+.4*Math.max(0,n+Math.max(0,add)); }; /* gv: 같은 거래에서 내주는 지명권은 빼고 센다(국사왕 11-16: 1라 9·10번을 들고 10번을 4번과 바꾸면 거래 뒤에도 두 장인데 세 장째 값을 불렀다) */ /* 1라운드 지명권 보유 한도는 없다(KBO도 받는 장수 제한 없음, 사용자 11-15). 대신 이미 1라운드를 여러 장 쥔 구단에는 파는 단장이 더 비싸게 부른다: 두 장째부터 한 장마다 40%씩. 우리·AI 같음 */
 const pkYear=()=>G.draft&&G.draft.y===G.year?G.year+1:G.year;
 function pkOwner(y,rd,orig){ const o=G.pkOwn&&G.pkOwn[y+':'+rd+':'+orig]; return o??orig; }
 /* 그 구단이 가진 다음 드래프트 지명권: 'rd:원래 구단' 목록 */
@@ -19,7 +19,9 @@ function pkHeld(tid){ const y=pkYear(), L=[]; for(let rd=1;rd<=DRAFT_ROUNDS;rd++
 function pkName(k){ const [rd,o]=k.split(':').map(Number); return `${pkYear()} 드래프트 ${rd}라운드(${tshort(o)} 순번)`; }
 /* 예상 순번(0이 첫 순번): 올해 드래프트 전이면 정해진 순서, 끝났으면 지금 순위의 역순 */
 function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; let o=D?(rd===1?D.r1:D.r2):standingsNow().map(x=>x.tid).reverse(); if(!D&&rd===1)o=penOrder(o,G.teams.filter(t=>t.pickPen===pkYear()).map(t=>t.id)); /* 이미 확정된 다음 드래프트 순번 하락 제재: 실제 순번과 같은 식(검수 11-07, 11-08d: 두 구단이 같은 순번으로 잡힘) */ let i=o.indexOf(orig); if(i<0)i=5; return i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
-function pkVal(t,k){ const [rd,o]=k.split(':').map(Number); const m=planPickMul(t)||(t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1); /* 운영 전략: 유망주 수집 1.5배·긴축 1.3배·우승 도전 0.7배(우리 구단은 예전 기준) */ const sl=pkSlot(o,rd); const own=rd===1&&o===t.id?pkTopMul(t,sl):1; /* 상위 3순번 자기 1라운드 지명권: 안 파는 게 아니라 아주 비싸게 판다(유저 피드백 11-07) */ return (PK_V[rd-1]||.05)*(rd===1?PK_R1S[Math.min(sl,PK_R1S.length-1)]*m:1.3-.06*sl)*own; } /* 운영 전략 배율은 1라운드에만 */
+/* 10구단 배율은 유지하고, 확장 리그는 4순번 이후 곡선을 늘린다. */
+function pkR1Mul(sl){ const n=G.teams.length, x=n>10&&sl>=3?3+(sl-3)*6/(n-4):sl, lo=Math.min(PK_R1S.length-1,Math.max(0,Math.floor(x))), hi=Math.min(lo+1,PK_R1S.length-1); return PK_R1S[lo]+(PK_R1S[hi]-PK_R1S[lo])*(x-lo); }
+function pkVal(t,k){ const [rd,o]=k.split(':').map(Number); const m=planPickMul(t)||(t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1); /* 운영 전략: 유망주 수집 1.5배·긴축 1.3배·우승 도전 0.7배(우리 구단은 예전 기준) */ const sl=pkSlot(o,rd); const own=rd===1&&o===t.id?pkTopMul(t,sl):1; /* 상위 3순번 자기 1라운드 지명권: 안 파는 게 아니라 아주 비싸게 판다(유저 피드백 11-07) */ return (PK_V[rd-1]||.05)*(rd===1?pkR1Mul(sl)*m:1.3-.06*sl)*own*TR_TUNE.pk; } /* 11-18 4차: 지명권은 AI 눈에 ×1.15(16_trade TR_TUNE) */ /* 운영 전략 배율은 1라운드에만 */
 const PK_TOP3=2;
 /* 자기 상위 1라운드 지명권(1~5순번): 아주 비싸게 판다. 유망주 수집·내년 도전·긴축 구단은 더(공략 방지 11-14: 애매한 선수+현금으로 상위 지명권을 해마다 사 가던 것). AI끼리도 같은 값 */
 const pkTopMul=(t,sl)=>{ const keen=['build','next','tight'].includes(planOf(t)); return sl<3?(keen?2.6:PK_TOP3):sl<5?(keen?1.7:1.4):1; };

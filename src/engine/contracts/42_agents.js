@@ -198,7 +198,10 @@ function agTell(ag,b){ const r=agRel(ag); if(!b)return '아직 다른 구단 제
   if(r>=60)return `${tname(b.tid)}이(가) ${b.years}년 총 ${money(b.annual*b.years)}(연 ${money(b.annual)})을 제시했습니다.`;
   if(r>=40)return `다른 구단 한 곳이 ${b.years}년 연 ${money(round5(b.annual*rnd(.97,1.03)))} 안팎을 제시했습니다.`;
   return '다른 구단에서 더 나은 조건이 들어왔다고만 말씀드리겠습니다.'; }
-function agShopTick(p,mk,ai,day){ const F=G.fa; const id=p.id; if(mk.next==null){ mk.next=day+ri(3,5); return; } if(day<mk.next)return;
+function agShopTick(p,mk,ai,day){ const F=G.fa; const id=p.id;
+  if(mk.round>=mk.need){ mk.round=mk.need; if(!mk.ll||day>mk.ll.until)mk.done=true; return; } /* 라스트 룩은 완료한 시장 보고의 답변 기한이며 추가 라운드가 아니다. 옛 저장의 초과 횟수도 정리한다. */
+  if(mk.next==null){ mk.next=day+ri(3,5); return; } if(day<mk.next)return;
+  faPruneAi(id);
   const offs=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})); const uo=faOfferLive(id)?F.offers[id]:null; /* 선수가 거절한 조건·한도에 걸린 제안은 비교 대상이 아니다 */
   if(!offs.length&&!uo){ mk.next=day+3; return; } /* 제안이 하나도 없으면 라운드를 세지 않는다 */
   const ag=agentOf(p); mk.round++; mk.next=day+ri(4,6);
@@ -216,7 +219,7 @@ function agShopTick(p,mk,ai,day){ const F=G.fa; const id=p.id; if(mk.next==null)
   if(!last)return;
   /* 라스트 룩: 친한 에이전트는 마지막에 우리에게 같은 조건을 맞출 기회를 준다(대형은 친분 60, 그 외 55 이상) */
   if(myO&&best&&!mk.ll&&!ahead&&faScore(p,myO)>=faScore(p,best)*.9&&agRel(ag)>=(ag.size==='big'?56:48)&&!G.unemp){
-    mk.ll={tid:G.user,until:Math.min(day+2,(day<=KD(1,24)?KD(1,24):dnum(G.year+1,1,24))-1), /* FA 마감(1/24) 전날까지만: 안내한 기한 전에 시장이 닫히지 않게(검수 11-08) */annual:round5(best.annual*faScore(p,best)/Math.max(1,faScore(p,{tid:G.user,annual:best.annual,years:best.years}))*1.01),years:best.years}; mk.next=day+3; /* 안내한 마감일 하루 내내 수락할 수 있게 그다음 날 결정(검수 11-08) */
+    mk.ll={tid:G.user,until:Math.min(day+2,faDL()),annual:round5(best.annual*faScore(p,best)/Math.max(1,faScore(p,{tid:G.user,annual:best.annual,years:best.years}))*1.01),years:best.years}; mk.next=mk.ll.until+1; /* 마감 당일에도 안내한 조건을 수락할 수 있다. */
     mail(`${ag.name} 에이전트`,`[라스트 룩] ${p.name} 건`,`${ag.firm} ${ag.name}입니다. 그동안의 관계를 생각해 마지막 기회를 드립니다.\n${dsh(mk.ll.until)}까지 ${mk.ll.years}년 연 ${money(mk.ll.annual)}(총 ${money(mk.ll.annual*mk.ll.years)})을 맞춰 주시면 단장님 구단과 사인하겠습니다.`,{imp:true,kind:'FA',ref:id,acts:[{l:'이 조건으로 맞추기',a:'faLL',v:id},{l:'협상실 열기',a:'faOpen',v:id}]}); return; }
   mk.done=true; }
 /* 라스트 룩 수락 */
@@ -224,7 +227,7 @@ function agLastLook(id){ const F=G.fa; const p=G.players[id]; const mk=F&&F.mk&&
   if(faOutBlocked(G.user,p))return `다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다.`;
   const o={annual:mk.ll.annual,years:mk.ll.years}, o0=F.offers[id]; F.offers[id]=o; faSign(p,[{tid:G.user,...o}]); if(p.team!==G.user){ if(o0)F.offers[id]=o0; else delete F.offers[id]; return `${p.name}과(와) 계약이 성사되지 않았습니다. 라스트 룩 조건은 그대로 남아 있습니다.`; } delete mk.ll; mk.done=true; agRelAdd(agentOf(p),2,'라스트 룩 수용'); return `${p.name}과(와) ${o.years}년 연 ${money(o.annual)}에 계약했습니다.`; }
 /* 지금 최고 조건에 맞추기: 다른 구단 최고 제안보다 조금 높게(같은 기간) 다시 제시한다 */
-function agMatchOffer(id){ const p=G.players[id]; { const n0=G.fa&&G.fa.neg&&G.fa.neg[id]; if(n0&&n0.closed)return null; } /* 결렬된 협상은 맞출 수 없다(점수 음수로 터무니없는 금액, 검수 11-08) */ const L=p?Object.entries(G.fa.ai[id]||{}).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).filter(o=>faAiOk(o.tid,p)):[]; const rv=faBestOf(p,L); /* 정원·한도로 더 계약할 수 없는 구단 제안은 맞출 대상이 아니다(검수 11-09r) */ if(!p||!rv)return null;
+function agMatchOffer(id){ const p=G.players[id]; { const n0=G.fa&&G.fa.neg&&G.fa.neg[id]; if(n0&&n0.closed)return null; } /* 결렬된 협상은 맞출 수 없다(점수 음수로 터무니없는 금액, 검수 11-08) */ const L=p?Object.entries(G.fa.ai[id]||{}).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).filter(o=>faAiOk(o.tid,p,o)):[]; const rv=faBestOf(p,L); /* 정원·한도로 더 계약할 수 없는 구단 제안은 맞출 대상이 아니다(검수 11-09r) */ if(!p||!rv)return null;
   /* 같은 기간으로 점수가 앞서는 최소 연봉(원소속 정까지 감안), 에이전트 역제안이 있으면 그 이상 */
   const unit=faScore(p,{tid:G.user,annual:100,years:rv.years})/100; const need=round5(faScore(p,rv)*1.02/Math.max(.01,unit)+2); const n=G.fa.neg&&G.fa.neg[id];
   if(!(unit>0)||!isFinite(need))return null; return {annual:Math.max(need,n&&n.counter&&n.counter.years===rv.years?n.counter.annual:0),years:rv.years}; }

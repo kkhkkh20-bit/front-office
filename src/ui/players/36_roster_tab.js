@@ -67,9 +67,10 @@ function rosterView(){
     <p class="small">${cv.sc?`<b>${esc(cv.sc.name)} 스카우트</b>(${cv.reg} · 능력 ${'★'.repeat(cv.sc.skill)})가 담당합니다. ${cv.sc.skill>=3?'1군과 2군 선수까지 현재 능력을 평가합니다.':'1군 선수만 평가합니다. 2군까지 보려면 능력 3 이상 스카우트가 필요합니다.'}`:`<b>${cv.reg}</b> 지역을 맡은 스카우트가 없습니다. 1군 기록만 볼 수 있고 능력 평가는 없습니다.`} 다른 구단 선수의 잠재력은 알 수 없습니다.${hidden?` 파악하지 못한 2군 선수 ${hidden}명은 명단에서 빠졌습니다.`:''}</p></section>`;
   const eN=playersOf(tid).filter(p=>p.e1).length;
   const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
-  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}${fm&&it.cur==='list'?segT:''}</div><div class="row small"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
+  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small rh-tools"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span><span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover;
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small tipme fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
-  if(it.cur==='depth')return head+bar+fmCols(fieldC+csec(`1군 야수 · 투수진 · 벤치 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,glancePitch(tid)))+futSquadView(tid);
+  if(it.cur==='depth'){ const FS=futSquadView(tid); /* PC 세 칸 묶음: [배치도 | 1군 | 부상·재활] [2군 야수 | 2군 투수 | 육성선수](카페 국사왕 11-17) */
+    return head+bar+fmCols(fieldC.replace('<section class="card">','<section class="card" data-wsl="포지션 배치도">')+csec(`1군 야수 · 벤치 · 투수진 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,glancePitch(tid)).replace('<section class="card">','<section class="card" data-wsl="1군 야수·투수진">'))+FS.injC+FS.farm; }
   if(it.cur==='plan'&&own)return head+bar+(fmOn()?planFM():plannerCard()); /* PC: FM식 선수단 계획표(25_squad_glance.js) */
   if(it.cur==='ent'&&own)return head+bar+entView();
   if(it.cur==='st'&&own)return head+bar+teamStatusView();
@@ -105,6 +106,19 @@ function rosterView(){
     <div class="roster-tools">${filterBar({id:'roster',inline:true,cls:'roster-fbar',q:{k:'rq',v:rq,ph:'이름 검색',label:'선수 이름 검색'},groups:[{l:'범위',a:'rscope',cur:sc,def:'one',opts:[['one','1군'],['two','2군'],['all','전체']]},{l:'시즌',a:'rsea',cur:UI.rsea||'cur',def:'cur',opts:[['cur',`${statY()} 시즌`],['prev',`${statY()-1} 시즌`],['car','통산']]},{l:seg==='bat'?'포지션':'유형',a:'rpos',cur:pf,def:'all',opts:posOpts},{l:'보기',html:`<div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div>`}],extra:`<div class="roster-filter-body">${sel?`<div class="roster-short-controls">${sel}</div>`:''}</div>`})}</div>${body}${futLink}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section></div>`;
 }
+/* PC: 1군·정식·육성 수와 등번호 정리·정리 모드를 위 하위 탭 줄(fm2)의 빈 자리로 올린다(사용자 11-18: 위 빈 공간에 하나씩 올리기).
+   하위 탭이 잘리거나 줄이 넘치면(좁은 PC) 본문 첫 줄(roster-heading)에 그대로 둔다. 본문만 다시 그려져 집을 잃은 옛 묶음은 지운다 */
+function rosterHeadFit(){ if(typeof document==='undefined')return; const fm2=document.querySelector('#app .fm2');
+  document.querySelectorAll('#app .fm2>.rh-tools').forEach(x=>{ if(!x._home||!x._home.isConnected)x.remove(); });
+  const tools=document.querySelector('#app .rh-tools'); if(!tools)return;
+  const head=tools._home||tools.parentElement; tools._home=head;
+  const back=()=>{ if(tools.parentElement!==head)head.append(tools); head.classList.remove('rh-up'); };
+  const meta=fm2&&fm2.querySelector(':scope>.fm-meta');
+  if(!fmOn()||!meta||fm2.classList.contains('fm2-compact')||UI.tab!=='roster'||document.documentElement.classList.contains('fm-ptabs')){ back(); return; }
+  if(tools.parentElement!==fm2)fm2.insertBefore(tools,meta); head.classList.add('rh-up');
+  const sub=fm2.querySelector(':scope>.fm-sub'), nav=sub&&sub.querySelector('nav.subtabs');
+  if(!nav||nav.scrollWidth>nav.clientWidth+1||sub.scrollWidth>sub.clientWidth+1||fm2.scrollWidth>fm2.clientWidth+1)back(); }
+if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ rosterHeadFit(); }catch(e){} },160); }); }
 /* 엔트리 관리(카페 피드백 11-09v): 1군 말소·2군 콜업을 한곳에서. 엔트리는 감독 권한이라 단장은 건의(reqEntry)만, 불가 사유는 엔진 문구(upWhy) 그대로.
    2군은 올해 퓨처스 성적과 성적순 정렬 */
 const ENT_SORT={bat:[['cur','능력'],['ops','OPS'],['avg','타율'],['hr','홈런'],['pa','타석']],pit:[['cur','능력'],['era','ERA'],['ip','이닝'],['k9','K/9'],['whip','WHIP']]};
@@ -147,7 +161,7 @@ const RCOL_X_B=[['h','안타'],['d','2루타'],['r','득점'],['cs','도루자']
 /* '1개월 변화' 열은 뺐다(구단주 11-17: 따로 보여 줄 필요 없음). 저장된 열 설정에 남아 있어도 rcolKeys가 없는 열로 걸러 낸다 */
 const RBASE=[['cur','현재'],['sal','연봉'],['pos','포지션'],['age','나이'],['fut','잠재력'],['mor','기분'],['fat','피로']];
 /* 능력 열: 선수 화면 스카우트 리포트와 같은 평가(우리 코치진·스카우트가 본 값). 다른 구단 선수는 담당 스카우트가 본 범위만, 못 본 선수는 '-' */
-const RCOL_AB_P=[['t_stf','구위'],['t_ctl','제구'],['t_sta','체력'],['velo','구속'],['conf','평가 확신도']], RCOL_AB_B=[['t_con','컨택'],['t_pow','파워'],['t_eye','선구'],['t_spd','주력'],['t_def','수비'],['conf','평가 확신도']];
+const RCOL_AB_P=[['t_stf','구위'],['t_ctl','제구'],['t_sta','체력'],['velo','구속'],['conf','평가 확신도']], RCOL_AB_B=[['t_con','컨택'],['t_pow','파워'],['t_eye','선구'],['t_spd','주력'],['t_def','수비'],['t_vit','체력'],['conf','평가 확신도']];
 function rcolAll(pit){ return RBASE.map(([k,l])=>[k,k==='pos'&&pit?'역할':l]).concat(pit?RCOL_AB_P:RCOL_AB_B,pit?RCOL_P:RCOL_B,pit?RCOL_X_P:RCOL_X_B,[['ct','계약'],['org','입단'],['inj','부상']]); }
 const rTool=(rp,k)=>{ const t=(rp.tools||[]).find(x=>x.k===k); return t?t.cur:null; };
 /* 휴대폰: 넘기기 전 첫 묶음에 종합·포지션·나이·잠재력이 함께 보이게 변화는 뒤로(카페 11-09b) */
@@ -172,7 +186,7 @@ function rosterTable(groups,pit,tail){
   const row=(p,pos,grp)=>{ const rp=scoutReport(p); const m=p.mor??60; const h=rline(p); const fut=h&&h.lvl==='퓨처스'; const mine=p.team===G.user;
     const tags=[p.injOut>0||p.susp>G.day?`<span class="pill bad">${outTxt(p)}</span>`:'',p.foreign?'<span class="pill">외국인</span>':'',isRookie(p)?'<span class="pill acc">신인</span>':'',...lifeTags(p).map(x=>`<span class="pill ${x.c}" title="${esc(x.d)}">${x.l}</span>`)].join('');
     const td=k=>td0(k).replace(/^<td(?: class="([^"]*)")?/,(m,c)=>`<td class="${al(k)} rtc-${k}${c?' '+c:''}"`);
-    const td0=k=>{ switch(k){ case 'cur':return `<td class="ovc"><span class="ovw">${rchip(rp.cur)}${condChip(p)}</span></td>`; case 'sal':return `<td class="num">${money(p.sal)}</td>`;
+    const td0=k=>{ switch(k){ case 'cur':return `<td class="ovc"><span class="ovw">${rchip(rp.cur)}${condChip(p)}</span>${yrDTag(p)}</td>`; /* 1년 전 대비 증감(카페 11-18) */ case 'sal':return `<td class="num">${money(p.sal)}</td>`;
       case 'pos':return `<td class="rtpos">${grp?`<span class="muted">${grp}</span> `:''}${pos||posLabel(p)}${!p.isP&&subsOf(p).length?` <i class="f">${subsOf(p).map(k=>POSS[k]).join('·')}</i>`:''}</td>`; case 'age':return `<td>${p.age}</td>`; case 'fut':return `<td>${potChip(rp,p)}</td>`;
       case 'mor':return `<td>${mine?`<span class="mood" style="--c:${m>=65?'var(--good)':m>=45?'var(--r50)':m>=30?'var(--warn)':'var(--bad)'}" title="${moodLabel(m)}"></span>`:'-'}</td>`; case 'fat':return `<td>${mine?fatBar(p):'-'}</td>`; case 'arm':{ const r=armRatio(p), cd=consecDays(p,G.day+1); return `<td class="num ${r>=1.3?'bad':r>=1.1?'warn':''}" title="${esc(loadText(p))}">${Math.round(r*100)}%${cd>=2?` <i class="f">${cd}연투</i>`:''}</td>`; }
       case 'velo':return `<td class="num">${p.isP?veloOf(p):'-'}</td>`; case 'conf':return `<td class="small">${esc(rp.conf||'-')}</td>`;

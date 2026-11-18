@@ -44,11 +44,17 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
   </div>`;
   { const mc=app.querySelector('main.content'); if(mc)mc.dataset.tab=UI.tab; } /* workspaceFit이 다른 탭 화면을 감싸지 않게 */
   document.body.classList.toggle('help',helpOn()); markHints(app);
+  metaFit();
   renderSheet(); try{ autoLink($('#app')); }catch(e){}
   if(UI.tab==='inbox')inboxWire();
   /* 도장(거래 성사·지명)은 4초 뒤 저절로 닫혀 아래 버튼을 가리지 않는다 */
   if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); }
 }
+/* 휴대폰·좁은 화면: 탭 줄 오른쪽 위에 떠 있는 [여유 ○억][?] 폭만큼 탭 줄을 비워 둔다(카페 11-18: 예산 여유가 늘 보이게) */
+function metaFit(){ if(typeof document==='undefined')return; const app=document.getElementById('app'); if(!app)return; const m=app.querySelector('.subhead.notitle>.meta'); const w=m&&m.offsetWidth; if(w)app.style.setProperty('--metaw',(w+8)+'px'); else app.style.removeProperty('--metaw'); }
+if(typeof addEventListener!=='undefined'){ let t=0; addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(()=>{ try{ metaFit(); }catch(e){} },160); }); }
+/* 위 예산 여유 칩을 그 자리에서 다시 쓴다: 코치 연수·인물 카드 영입처럼 창(시트)만 다시 그리는 지출에도 바로 바뀌게(카페 11-18). 첫 호출은 방금 그린 값을 기억만 한다 */
+function metaSync(){ if(typeof document==='undefined'||!G||UI.title||G.gameOver)return; const m=document.querySelector('#app .fm-meta,#app .subhead>.meta'); if(!m||(UI.tab==='club'&&UI.clubInspect!=null))return; const h=metaChips(); if(m._mh===undefined){ m._mh=h; return; } if(m._mh===h)return; m._mh=h; [...m.children].filter(e=>!e.classList.contains('helpbtn')).forEach(e=>e.remove()); const hb=m.querySelector('.helpbtn'); if(hb)hb.insertAdjacentHTML('beforebegin',h); else m.insertAdjacentHTML('beforeend',h); metaFit(); }
 /* 화면에 보이는 시즌 단계: 경기는 중계보다 먼저 계산돼 한국시리즈 마지막 경기 중계 중에도 엔진은 이미 시리즈 종료(스토브리그)다.
    그 중계를 보는 동안에는 결과를 먼저 알리지 않게 '포스트시즌'으로 둔다 */
 function perShown(){ const P=G.ps, g=UI.cast&&G.games[UI.cast.g]; return P&&P.done&&g&&P.resD&&g.day===P.resD.ks&&G.day<(P.finDay??G.day+1)?'post':period(); }
@@ -59,7 +65,8 @@ function goSet(per,b){ if(UI.advRun)return `<div class="goset"><button class="co
   const hint=G.unemp?'제의가 오거나 1주일이 지날 때까지':!G.unemp&&(per==='season'||nextGames(1).some(x=>x.d<=G.day+7))?'한 시리즈씩 · 예약한 경기만 관전':'최대 7일 · 중요한 소식까지';
   const sub=b?nextLabel():contSub(advNextStop(per)||hint);
   const tip=G.unemp?hint:per==='season'?'같은 팀과 치르는 한 시리즈(보통 3연전)를 이어서 진행합니다. 예약한 관전 경기와 설정한 멈춤 조건에서 멈추고, 확인할 소식이 있으면 먼저 엽니다':`${hint}. 확인할 소식이 있으면 먼저 엽니다`;
-  return `<div class="goset"><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="${esc(tip)}"><b>진행하기</b><i title="${esc(sub)}">${esc(goSub(sub))}</i></span>${ICO.ff}</button>${advMenu(per,b)}</div>`; }
+  const d1=G.day+1, day=G.unemp?'':`<button class="step advday" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="${esc(dmd(d1))}(${WD[dobj(d1).w]})까지 하루만 진행합니다"><span class="st-l">하루</span><span class="st-x"> 진행</span></button>`; /* 하루 진행은 한 번에 누르게 진행하기 왼쪽에 둔다(카페 11-18). 휴대폰은 자리가 없어 ▾ 메뉴에만 */
+  return `<div class="goset">${day}<button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="${esc(tip)}"><b>진행하기</b><i title="${esc(sub)}">${esc(goSub(sub))}</i></span>${ICO.ff}</button>${advMenu(per,b)}</div>`; }
 /* 기본 진행이 멈출 다음 지점: 경기가 있으면 다음 경기, 없으면 7일 안의 일정이나 7일 뒤 날짜 */
 function advNextStop(per){ if(G.unemp)return ''; const g=nextGames(1)[0]; if(g&&(per==='season'||per==='post'||g.d<=G.day+7))return `${dsh(g.d)} ${g.home?'vs':'@'} ${tshort(g.op)}`;
   const u=(upcoming()||[])[0]; return u&&u[0]<=G.day+7?`${dsh(u[0])} ${u[1]}`:`${dmd(G.day+7)}까지`; }
@@ -103,17 +110,36 @@ function anySave(){ try{ return contSlot()!=null; }catch(e){ return false; } }
 function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+slotSize(n),0); const has={}; for(const n of SLOT_IDS)has[n]=slotHas(n); const sv=n=>has[n]?(m.slots[n]||{name:'(목록 정보 없음)',y:''}):m.slots[n]?Object.assign({},m.slots[n],{nobody:1}):null; /* 목록과 본문이 어긋나도 칸은 사용 중으로 센다: 새 게임·복사가 쓰는 slotUsed와 같은 기준(검수 11-07, 11-09 #13) */
   const rows=SLOT_IDS.filter(n=>sv(n)||n===SLOT_IDS.find(k=>!sv(k))||UI.slotAll).map(n=>{ const s=sv(n); const cur=G&&curSlot()===n; /* 이 탭이 연 슬롯만 진행 중(검수 11-07: 다른 탭이 바꾼 활성 기록을 따르면 진행 중 슬롯에 삭제 버튼) */
     return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s&&s.nobody?`${esc(s.name||'')} · 저장 본문 없음(불러올 수 없음)`:s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.lock?' · <b>보관</b>':''}${s.over?' · 경질됨':''}${s.fail?' · <b class="bad">마지막 저장 실패(내보내기로 백업하세요)</b>':''} · ${slotSize(n)}KB${s.at?` · 저장 ${new Date(s.at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}`:''}`:'비어 있음'}</div>${s?`<input class="slot-memo" data-a="slotMemo" data-v="${n}" maxlength="30" placeholder="메모(예: 외국인 교체 전)" value="${esc(s.memo||'')}" aria-label="슬롯 ${n} 메모">`:''}</div>
-      <div class="row">${s&&cur?`<button class="btn small" data-a="slotCopy" title="지금 진행 상황을 빈 슬롯에 따로 저장해 둡니다. 계속 진행하는 곳은 이 슬롯입니다">빈 슬롯에 따로 저장</button>`:''}${s&&cur&&SAVE_CONFL&&has[n]?`<button class="btn small" data-a="slotLoad" data-v="${n}" title="다른 탭이 저장한 최신 진행을 엽니다">최신 저장 다시 열기</button>`:''}${s&&!cur&&has[n]&&!s.lock?`<button class="btn small primary" data-a="slotLoad" data-v="${n}" title="이 슬롯을 열고 앞으로의 자동 저장도 이 슬롯에 합니다">이 슬롯에 이어서 저장</button>`:''}${s&&!cur&&has[n]?`<button class="btn small${s.lock?' primary':''}" data-a="slotLoadNew" data-v="${n}" title="이 슬롯은 그대로 두고, 빈 슬롯에 사본을 만들어 그 사본으로 이어 합니다">새 슬롯에 이어하기</button>`:''}${s&&!cur&&has[n]?`<button class="btn small" data-a="slotLock" data-v="${n}" title="보관한 슬롯은 자동 저장·덮어쓰기·삭제로 바뀌지 않습니다">${s.lock?'보관 풀기':'보관'}</button>`:''}${s&&!cur&&!start&&G&&curSlot()!=null&&!s.lock?`<button class="btn small${UI.overAsk===n?' danger':''}" data-a="slotOver" data-v="${n}" title="지금 진행을 이 슬롯에 덮어 저장합니다. 계속 진행하는 곳은 지금 슬롯입니다">${UI.overAsk===n?'한 번 더 눌러 덮어쓰기':'여기에 덮어 저장'}</button>`:''}${start?`<button class="btn small" data-a="slotNew" data-v="${n}">${s?'덮어쓰고 새 게임':'새 게임'}</button>`:''}${s&&!cur&&!s.lock?`<button class="btn small danger" data-a="slotDel" data-v="${n}">삭제</button>`:''}</div></div>`; }).join('');
+      <div class="row">${s&&cur?`<button class="btn small" data-a="slotCopy" title="지금 진행 상황을 빈 슬롯에 따로 저장해 둡니다. 계속 진행하는 곳은 이 슬롯입니다">빈 슬롯에 따로 저장</button>`:''}${s&&cur&&SAVE_CONFL&&has[n]?`<button class="btn small" data-a="slotLoad" data-v="${n}" title="다른 탭이 저장한 최신 진행을 엽니다">최신 저장 다시 열기</button>`:''}${s&&!cur&&has[n]&&!s.lock?`<button class="btn small primary" data-a="slotLoad" data-v="${n}" title="이 슬롯을 열고 앞으로의 자동 저장도 이 슬롯에 합니다">이 슬롯에 이어서 저장</button>`:''}${s&&!cur&&has[n]?`<button class="btn small${s.lock?' primary':''}" data-a="slotLoadNew" data-v="${n}" title="이 슬롯은 그대로 두고, 빈 슬롯에 사본을 만들어 그 사본으로 이어 합니다">새 슬롯에 이어하기</button>`:''}${s&&!cur&&has[n]?`<button class="btn small" data-a="slotLock" data-v="${n}" title="보관한 슬롯은 자동 저장·덮어쓰기·삭제로 바뀌지 않습니다">${s.lock?'보관 풀기':'보관'}</button>`:''}${s&&!cur&&!start&&G&&curSlot()!=null&&!s.lock?`<button class="btn small${UI.overAsk?.n===n?' danger':''}" data-a="slotOver" data-v="${n}" title="지금 진행을 이 슬롯에 덮어 저장합니다. 계속 진행하는 곳은 지금 슬롯입니다">${UI.overAsk?.n===n?'한 번 더 눌러 덮어쓰기':'여기에 덮어 저장'}</button>`:''}${start?`<button class="btn small" data-a="slotNew" data-v="${n}">${s?'덮어쓰고 새 게임':'새 게임'}</button>`:''}${s&&!cur&&!s.lock?`<button class="btn small danger" data-a="slotDel" data-v="${n}">삭제</button>`:''}</div></div>`; }).join('');
   const filled=SLOT_IDS.filter(n=>sv(n)).length;
-  return `<section class="card"><div class="row between"><h2 class="sec">저장 슬롯</h2><span class="small muted">${filled}/${SLOTS} 사용 · 약 ${(used/1024).toFixed(1)}MB</span></div><div class="slots">${rows}</div>${filled+1<SLOTS?`<button class="btn small" data-a="slotAll">${UI.slotAll?'빈 슬롯 숨기기':'빈 슬롯 모두 보기'}</button>`:''}<p class="small muted">브라우저 데이터를 지우면 저장도 사라집니다. 중요한 세이브는 "파일로 내보내기"로도 보관하세요. ${hiI(`슬롯은 ${SLOTS}개까지입니다. 기본 저장 공간(보통 5MB 안팎)이 차면 진행 중이 아닌 슬롯부터 브라우저의 보조 저장소(IndexedDB, 훨씬 큼)로 자동으로 옮겨 계속 저장합니다. 브라우저 데이터를 지우면 둘 다 사라집니다.`)}</p>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}</section>`; }
+  return `<section class="card"><div class="row between"><h2 class="sec">저장 슬롯</h2><span class="small muted">${filled}/${SLOTS} 사용 · 약 ${(used/1024).toFixed(1)}MB</span></div><div class="slots">${rows}</div>${filled+1<SLOTS?`<button class="btn small" data-a="slotAll">${UI.slotAll?'빈 슬롯 숨기기':'빈 슬롯 모두 보기'}</button>`:''}<p class="small muted sv-dev"><b>저장은 이 기기·이 브라우저에만 남습니다.</b> 계정(itch.io 계정 포함)과 연결되지 않아 다른 기기에서 자동으로 이어지지 않습니다. 다른 기기에서 이어 하려면 마지막으로 플레이한 기기에서 <b>기기 옮기기</b> 코드를 만들어 옮겨 오세요. 원래 기기로 돌아갈 때도 같습니다.</p><p class="small muted">브라우저 데이터를 지우면 저장도 사라집니다. 중요한 세이브는 "파일로 내보내기"로도 보관하세요. ${hiI(`슬롯은 ${SLOTS}개까지입니다. 기본 저장 공간(보통 5MB 안팎)이 차면 진행 중이 아닌 슬롯부터 브라우저의 보조 저장소(IndexedDB, 훨씬 큼)로 자동으로 옮겨 계속 저장합니다. 브라우저 데이터를 지우면 둘 다 사라집니다.`)}</p>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}</section>`; }
 function exportCard(noXf){ /* noXf: 설정 › 저장·기기는 기기 옮기기를 옆 칸에 따로 둔다(사용자 11-17) */ return `<section class="card"><h2 class="sec">내보내기 · 불러오기</h2>
-  <p class="small muted">진행 상황은 이 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니, 가끔 내보내 두세요. 다른 기기에서는 내보낸 코드를 붙여 넣어 이어 할 수 있습니다.</p>
+  <p class="small muted">진행 상황은 이 기기·이 브라우저에만 저장되고 계정과 연결되지 않습니다. 브라우저 데이터를 지우면 사라지니, 가끔 내보내 두세요. 다른 기기에서 이어 하려면 기기 옮기기(코드 8자리)나 내보낸 파일을 쓰세요.</p>
   <div class="row"><button class="btn" data-a="expFile">파일로 내보내기</button><button class="btn" data-a="expCode">코드 만들기</button><label class="btn">파일 불러오기<input type="file" accept=".txt,.json" data-a="impFile" style="display:none"></label></div>
   ${UI.expCode?`<textarea class="code" id="expCodeBox" readonly>${UI.expCode}</textarea><div class="row"><button class="btn" data-a="expCopy">코드 복사하기</button><span class="small muted">길이 ${Math.round(UI.expCode.length/1024)}KB · 복사해서 메모장·메신저 '나에게 보내기' 등에 보관하세요.</span></div>`:''}
   <textarea class="code" id="impCode" placeholder="내보낸 코드를 여기에 붙여 넣으세요"></textarea>
   <div class="row"><button class="btn" data-a="impPaste">붙여넣기</button><button class="btn" data-a="impCode">코드로 불러오기 (현재 슬롯에 덮어씀)</button></div>
-  ${UI.impMsg?`<div class="note">${esc(UI.impMsg)}</div>`:''}${SAVE_ERR?`<div class="note bad">${esc(SAVE_ERR)}</div>`:''}</section>`+(!noXf&&typeof transferCard==='function'?transferCard():''); } /* 기기 옮기기(01c_transfer.js): 내보내기 카드 바로 아래, 설정 저장·처음 화면 불러오기 모두 */
+  ${UI.impMsg?`<div class="note">${esc(UI.impMsg)}</div>`:''}${SAVE_ERR?`<div class="note bad">${esc(SAVE_ERR)}</div>`:''}</section>`+(!noXf&&typeof cloudCard==='function'?cloudCard():'')+(!noXf&&typeof transferCard==='function'?transferCard():''); } /* 기기 옮기기(01c_transfer.js): 내보내기 카드 바로 아래, 설정 저장·처음 화면 불러오기 모두 */
 /* 가져올 세이브 검사: 게임이 바로 읽는 필수 항목이 없으면 아무것도 바꾸기 전에 거절한다(검수 11-09: 시즌 기록·사용자 구단이 빠진 백업이 정상 세이브를 덮어씀) */
+function saveCalendarCheck(g){
+  const y=g.year, year=d=>Number.isSafeInteger(d)?dobj(d).y:NaN, date=d=>year(d)===y;
+  const extended=year(g.cal.end)===y+1&&(date(g.cal.end0)||date(g.cal.rE0));
+  const pending=!!g.ps&&typeof g.ps==='object'&&!Array.isArray(g.ps)&&!(g.last&&g.last.y>=y)||extended&&((Array.isArray(g.makeup)?g.makeup:[]).some(x=>x&&x.y===y)||Object.entries(g.cal.sched).some(([d,L])=>+d>=g.day&&L.length));
+  if(!Number.isInteger(y)||!(date(g.day)||year(g.day)===y+1&&pending)||g.cal.y!=null&&g.cal.y!==y||g.sea.y!=null&&g.sea.y!==y)return '날짜·시즌 연도';
+  for(const k of ['open','asg','end0','rE0','draft','camp','campEnd','exh'])if(g.cal[k]!=null&&!date(g.cal[k]))return '날짜·일정';
+  if(g.cal.end!=null&&!date(g.cal.end)&&!extended)return '날짜·일정';
+  if(g.cal.open!=null&&g.cal.end!=null&&g.cal.open>g.cal.end)return '일정 기간';
+  for(const [key,L] of Object.entries(g.cal.sched)){
+    const d=Number(key); if(!/^-?\d+$/.test(key)||String(d)!==key||!(date(d)||extended&&year(d)===y+1)||g.cal.open!=null&&d<g.cal.open||g.cal.end!=null&&d>g.cal.end)return '일정 날짜';
+    const clubs=new Map(), pairs=new Map();
+    for(const [h,a] of L){
+      if(h===a)return '자기 구단 대진';
+      const p=h+':'+a, n=(pairs.get(p)||0)+1; if(n>2)return '하루 경기 수'; pairs.set(p,n);
+      for(const t of [h,a]){if(clubs.has(t)&&clubs.get(t)!==p)return '같은 날 중복 대진';clubs.set(t,p);}
+    }
+  }
+  return '';
+}
 function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
   if(!o(g)||g.ver!==4)return '저장 형식';
   if(!Array.isArray(g.teams)||!g.teams.length||!g.teams.every((t,i)=>o(t)&&t.id===i))return '구단 정보'; /* 구단은 번호 순서로 찾는다(G.teams[id]): 순서가 바뀌면 다른 구단을 고른다(검수 11-09zr #12) */
@@ -122,6 +148,7 @@ function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
   { const T=g.teams.length, S=g.cal.sched; if(!o(S)||!Object.keys(S).length||!Object.values(S).every(d=>Array.isArray(d)&&d.every(x=>Array.isArray(x)&&x.length===2&&x.every(t=>Number.isInteger(t)&&t>=0&&t<T))))return '일정표'; }
   if(!g.teams.some(t=>t.id===g.user))return '사용자 구단';
   if(!o(g.sea)||!Array.isArray(g.sea.rec)||g.sea.rec.length!==g.teams.length||!g.sea.rec.every(r=>o(r)&&Number.isFinite(r.w)&&Number.isFinite(r.l)))return '시즌 기록'; /* 상대 구단 전적이 빠져도 경기·순위 계산에서 오류(검수 11-09zr #12) */
+  { const bad=saveCalendarCheck(g); if(bad)return bad; }
   if(g.games!=null&&!Array.isArray(g.games))return '경기 기록';
   return ''; }
 /* 세이브가 바뀌면(G 객체가 달라지면) 이전 게임에서 하던 화면 상태를 비운다(검수 11-09: 백업 코드·훈련 대기·드래프트 타이머·비교 목록이 다른 세이브에 남음) */
@@ -129,31 +156,46 @@ function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
 let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; if(typeof ulGameSwitch==='function')ulGameSwitch(); /* 래더·대회 화면 상태도 게임마다(외부 검수 11-17 P1) */ UI.peopleBrowse=null;UI.expCode=null; UI.trnPend={}; UI.trnApplyMsg=''; UI.trnMsg=null; UI.pcmp=[]; if(UI.dl&&UI.dl.t)clearTimeout(UI.dl.t); UI.dl=null; UI.dlAuto=0;
   if(UI.cast||UI.castRet){ try{ CT.tok++; CT.run=false; }catch(e){} } UI.cast=null; UI.castRet=null; UI._castHold=0; UI.cwAfter=null; UI.cwAuto=null; UI.cw=null; UI.game=null; UI.sheet=null; UI.posSheet=null; UI.fromMail=null; UI._ibJumpSig=null; UI._spoilD=null; try{ SPOIL_SNAP=null; }catch(e){}
   UI.trade={tid:null,give:[],get:[],msg:'',seg:'bat',side:'get',sort:'cur'}; UI.findM=null; UI.findT=null; UI._mkt=null; UI._tsug=null; UI._tsugK=null; UI._find=null; UI._rec=null; UI.gmRes=null; UI.deskMsg=null; UI.deskOk=null; /* 트레이드 작업안은 그 게임 것: 새 게임·다른 슬롯에서 옛 상대 구단(이제 우리 구단일 수 있음)·선수 번호가 남아 트레이드 화면이 그려지지 않았다(제보 11-15: 새로 시작 뒤 트레이드 버튼 무반응) */
+  for(const k of ['obsSel','tripSel','clubInspect','leagueTeam','rosterTeam','faSel','scSel','amP','amSch','person','personMsg','teamSh','offer','ext','talkMsg','confirmRel','personalTarget','personalGmTarget','personalAt','coachStudy','mgrCandidate','entMsg','actRes','actFail','_msgDay','overAsk','delAsk','confLoad','confDrop'])UI[k]=null;
+  for(const k of Object.keys(UI))if(/Msg2?$/.test(k)&&k!=='impMsg'&&k!=='slotMsg')UI[k]=null;
+  UI.fmsg='';UI.fmsg2='';UI.staffMsgs={};UI.readingOpen={};UI.readingScroll={};UI.readingScrollX={};UI._detailStack=[];UI._detailReturn=null;UI._detailKey=null;
   UI.wkres=G&&G.wkHold?Object.assign({},G.wkHold):null; /* 확인 전의 경기 요약 창은 그 세이브 것으로 다시 연다(검수 11-09zzc #20) */
   if(G&&Array.isArray(G.stops)&&Array.isArray(G.mail)){ const M=[...G.mail,...(G._mh||[])]; G.stops=G.stops.filter(x=>!(x&&/^m\d+$/.test(x.id||''))||M.some(m=>m.id===x.id)).map(x=>x&&x.id&&M.find(m=>m.id===x.id)||x); } } /* 저장하면 정지 알림이 원본 소식의 복사본이 된다: 원본으로 다시 잇고, 지워진 소식은 뺀다(검수 11-09zzc #25·#27) */
 /* to: 파일을 고른 시점의 대상({title,slot,g}). 읽는 사이 슬롯이 바뀌면 가져오지 않는다(검수 11-09: 다른 슬롯에 덮어씀) */
-function importText(t,to,opt){ /* opt.empty: 게임 중에도 지금 슬롯 대신 빈 슬롯으로(기기 옮기기) */
+/* 가져오기·슬롯 확인은 게임 객체와 진행 내용 모두에 귀속한다. 조회는 상태를 바꾸지 않는다. */
+function saveActionSource(){ return {g:G,slot:curSlot(),rev:SLOT_REV,title:!!UI.title,j:G?prepG():null}; }
+function saveActionSame(s,withRev=true){ return !!s&&s.g===G&&s.slot===curSlot()&&s.title===!!UI.title&&(!withRev||s.rev===SLOT_REV)&&s.j===(G?prepG():null); }
+/* 복원은 동기 구간에서만 임시 G로 검증한다. 저장을 기다리는 동안 화면과 G는 원래 게임이다. */
+function savePrepareGame(g){ const old=G,stage=_saveGStage; try{_saveGStage=true;G=g;migrateDraft();return {g,data:packJ(JSON.stringify(g)),info:slotInfo()};}finally{G=old;_saveGStage=stage;try{worldReset();syncMinSal();}catch(e){}} }
+function saveOpenGame(g,n,m){ const old=G;try{G=old;closeSheets();}finally{G=g;}CUR_SLOT=n;slotRevSync(n,m);delete SLOT_BAD[n];delete SLOT_BAD_AT[n];try{worldReset();syncMinSal();}catch(e){}uiSaveSync();svMark();UI.overAsk=null;UI.confLoad=null;UI.title=false;UI.sstep='main';UI.tab='inbox';UI._ibFirst=true; }
+async function saveCanLeave(source,key){
+ if(G&&!meta().slots[source.slot]?.lock&&!(source.j===_svJ&&_svN===source.slot&&!SAVE_CONFL)){const ok=await saveCurrentConfirmed();if(!saveActionSame(source,false)){UI.slotMsg='저장을 기다리는 사이 게임이 바뀌어 옮기지 않았습니다.';render();return false;}if(!ok&&!SAVE_CONFL){UI.slotMsg=`지금 게임을 저장하지 못해 옮기지 않았습니다. ${SAVE_ERR||''}`.trim();render();return false;}}
+ if(G&&SAVE_CONFL){const ask=UI.confLoad;if(!ask||ask.key!==key||!saveActionSame(ask.source)){UI.confLoad={key,source:saveActionSource()};UI.slotMsg=`이 탭의 진행(${dstr(G.day)})은 다른 탭과 겹쳐 저장되지 않았습니다. 열면 이 진행은 사라집니다. 남기려면 먼저 "빈 슬롯에 따로 저장"을 누르세요. 그래도 열려면 한 번 더 누르세요.`;render();return false;}}
+ UI.confLoad=null;return true;
+}
+async function importText(t,to,opt={}){
  let g=null;t=String(t||'').trim().replace(/^\uFEFF/,'');
- /* 메신저·메모 앱이 긴 코드에 줄바꿈·띄어쓰기를 넣거나 '+'를 띄어쓰기로 바꾸는 경우가 있다: 차례로 고쳐 본다 */
  if(t[0]==='{'){try{g=JSON.parse(t);}catch(e){}}
- else for(const v of [t,t.replace(/[\r\n\t]/g,''),t.replace(/\s+/g,''),t.replace(/[\r\n\t]/g,'').replace(/ /g,'+')]){ try{ const j=LZString.decompressFromBase64(v); if(j){ g=JSON.parse(j); break; } }catch(e){} }
- if(!g||g.ver!==4||!Array.isArray(g.teams)||!g.players){UI.impMsg=t&&t[0]!=='{'&&t.length>100?`코드를 읽지 못했습니다(붙여 넣은 길이 ${t.length.toLocaleString()}자). 코드가 끝까지 복사되지 않았을 가능성이 큽니다. 저장 코드는 수십만 자라 메신저로 보내면 잘리기 쉽습니다. 기기를 옮길 때는 '파일로 내보내기'로 받은 .txt 파일을 불러오기에 넣어 주세요.`:'저장 파일을 읽지 못했습니다. 게임에서 내보낸 .txt 또는 .json 파일인지 확인해 주세요.';render();return;}
- { const bad=saveCheck(g); if(bad){ UI.impMsg=`백업의 ${bad}이(가) 없거나 손상돼 가져오지 않았습니다. 기존 세이브와 진행 중인 게임은 그대로입니다.`; render(); return; } }
- if(to&&(to.title!==!!UI.title||to.g!==G||(!to.title&&to.slot!==curSlot()))){ UI.impMsg='파일을 읽는 사이 슬롯(게임)이 바뀌어 가져오지 않았습니다. 가져올 곳에서 파일을 다시 골라 주세요.'; render(); return; }
- const m=meta(),fromTitle=!!UI.title||!!(opt&&opt.empty),slot=fromTitle?SLOT_IDS.find(n=>!slotUsed(n,m)):curSlot();
- if(fromTitle&&!slot){UI.impMsg='빈 저장 슬롯이 없습니다. 보관할 저장을 내보내고 슬롯을 비운 뒤 불러와 주세요.';render();return;}
- if(G){ try{ saveFlush(); }catch(e){} } /* 기다리던 저장을 먼저 끝낸다: 가져오기를 되돌릴 때 그 진행이 사라지지 않게 */
- const old=G, cur0=CUR_SLOT, rev0=SLOT_REV, cf0=SAVE_CONFL, nw0=SLOT_NEW, err0=SAVE_ERR, stage0=_saveGStage; /* 저장을 끝낸 뒤의 판번호를 기억한다(검수 11-09zr #3: 먼저 기억하면 되돌릴 때 이 탭 저장을 다른 탭 충돌로 오인) */
- const back=()=>{ _saveGStage=stage0; G=old; CUR_SLOT=cur0; SLOT_REV=rev0; SAVE_CONFL=cf0; SLOT_NEW=nw0; if(!fromTitle)SAVE_ERR=err0; try{ worldReset(); syncMinSal(); }catch(e){} }; /* 기존 게임은 다시 고치지 않고 그대로 돌려놓고, 연도별 기준(최저 연봉)·캐시만 다시 맞춘다(검수 11-09) */
- try{ _saveGStage=true; G=g; migrateDraft(); slotInfo(); }catch(e){ back(); UI.impMsg='저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.'; render(); return; } /* 복원과 저장 정보 생성까지 확인한 뒤에만 저장한다 */
- CUR_SLOT=slot; if(fromTitle)slotRevSync(slot,m); SLOT_NEW=true; /* 가져온 게임은 새 슬롯에만 쓴다. 활성 슬롯은 저장이 성공한 뒤에만 바꾼다(검수 11-07: 실패하면 빈 슬롯이 활성으로 남아 이어하기가 사라짐) */
- let ok=false; try{ ok=saveNow(); }catch(e){ ok=false; }
- const confl=!ok&&SAVE_CONFL, body=!ok&&!confl&&(()=>{ try{ const h=unpack(sbGet(slot)); return !!h&&JSON.stringify(h)===prepG(); }catch(e){ return false; } })(); /* 본문은 쓰이고 목록만 실패한 경우: 다시 읽은 내용 전체가 같을 때만(검수 11-09: 같은 구단·날짜의 기존 본문을 새 본문으로 착각) */
- let act=true;
- if(fromTitle){ if(ok||body){ const m2=meta(); m2.active=slot; act=setMeta(m2); } else { back(); UI.impMsg=`슬롯 ${slot}에 저장하지 못해 가져오지 않았습니다. 기존 세이브는 그대로입니다. ${SAVE_ERR||''}`.trim(); try{ toast(UI.impMsg); }catch(e){} render(); return; } }
- else if(!ok&&!body){ const why=SAVE_ERR; back(); UI.impMsg=`${confl?'다른 탭(창)이 이 슬롯을 더 최근에 저장해':'저장 공간이 부족해'} 슬롯 ${slot}에 쓰지 못해 가져오지 않았습니다. 진행 중이던 게임은 그대로입니다. ${G&&SAVE_CONFL?'이 탭의 진행을 남기려면 저장 슬롯의 "빈 슬롯에 따로 저장"을 누르세요. ':''}백업은 처음 화면의 불러오기에서 빈 슬롯으로 가져올 수 있습니다.`; if(!SAVE_ERR)SAVE_ERR=why; try{ toast(UI.impMsg); }catch(e){} render(); return; } /* 슬롯에 쓰지 못하면 메모리의 게임도 바꾸지 않는다(검수 11-09zr #4·#7: 미저장 진행이 사라지고, 경고는 설정 화면에만) */ /* 가져온 게임은 새 슬롯에만 쓴다(검수 11-06: 활성 기록 실패 때 기존 슬롯을 덮어씀) */ _saveGStage=stage0; try{ G=old; closeSheets(); }finally{ G=g; } UI.title=false; uiSaveSync(); UI.sstep='main';UI.tab='home';UI.readingOpen={};UI.readingScroll={};
- const actMsg=act?'':` 다만 다음에 열 슬롯 기록을 바꾸지 못했습니다. 다시 열면 처음 화면의 불러오기에서 슬롯 ${slot}을(를) 고르세요.`; /* 활성 슬롯 변경도 확인해 알린다(검수 11-09) */
- UI.impMsg=(ok?'불러왔습니다.':'불러와 슬롯에 저장했지만 저장 목록을 갱신하지 못했습니다. 다시 열어도 가져온 백업이 열립니다.')+actMsg; if(!ok||actMsg){ try{ toast(UI.impMsg); }catch(e){} } /* 홈으로 옮기므로 경고는 알림으로도(검수 11-09zr #7) */ /* 충돌로 막히면 본문은 그대로다: 같은 구단·날짜라도 복원됐다고 하지 않는다(검수 11-08) */ /* 본문이 실제로 바뀌었는지 보고 안내(검수 11-07) */render(); /* 저장까지 확인한 뒤 성공 안내(검수 11-06) */
+ else for(const v of [t,t.replace(/[\r\n\t]/g,''),t.replace(/\s+/g,''),t.replace(/[\r\n\t]/g,'').replace(/ /g,'+')]){try{const j=LZString.decompressFromBase64(v);if(j){g=JSON.parse(j);break;}}catch(e){}}
+ const fail=msg=>{UI.impMsg=msg;try{toast(msg);}catch(e){}render();return false;};
+ if(!g||g.ver!==4||!Array.isArray(g.teams)||!g.players)return fail('저장 파일을 읽지 못했습니다. 게임에서 내보낸 .txt 또는 .json 파일인지 확인해 주세요.');
+ const bad=saveCheck(g);if(bad)return fail(`백업의 ${bad}이(가) 없거나 손상돼 가져오지 않았습니다. 기존 세이브와 진행 중인 게임은 그대로입니다.`);
+ if(to&&(to.title!==!!UI.title||to.g!==G||(!to.title&&to.slot!==curSlot())||to.rev!=null&&to.rev!==SLOT_REV||to.j!=null&&to.j!==prepG()))return fail('파일을 읽는 사이 슬롯(게임)이 바뀌어 가져오지 않았습니다. 가져올 곳에서 파일을 다시 골라 주세요.');
+ const source=saveActionSource(),m0=meta(),pick=SLOT_IDS.includes(opt.slot)?opt.slot:null,empty=!!UI.title||!!(opt.empty||pick),slot=pick||(empty?SLOT_IDS.find(n=>!slotUsed(n,m0)):curSlot());
+ if(!slot)return fail('빈 저장 슬롯이 없습니다. 보관할 저장을 내보내고 슬롯을 비운 뒤 불러와 주세요.');
+ if(m0.slots[slot]?.lock)return fail(`슬롯 ${slot}은(는) 보관 슬롯이라 바꾸지 않았습니다.`);
+ let exp=opt.rev??(empty?revOf(m0,slot):SLOT_REV),expected=Object.prototype.hasOwnProperty.call(opt,'body')?opt.body:sbGet(slot);
+ if(revOf(m0,slot)!==exp||Object.prototype.hasOwnProperty.call(opt,'body')&&sbGet(slot)!==expected)return fail(`슬롯 ${slot}이(가) 그사이 다시 저장돼 바꾸지 않았습니다. 다시 비교해 고르세요.`);
+ /* 앞서 예약된 저장은 확정까지 기다린다. 그 저장이 올린 판번호만 같은 게임의 대상으로 이어받는다. */
+ if(G&&!UI.title&&!m0.slots[source.slot]?.lock){const saved=await saveCurrentConfirmed();if(!saved&&!SAVE_CONFL)return fail(`지금 게임을 저장하지 못해 가져오지 않았습니다. ${SAVE_ERR||''}`.trim());if(!saveActionSame(source,false))return fail('저장을 기다리는 사이 슬롯(게임)이 바뀌어 가져오지 않았습니다. 다시 골라 주세요.');if(slot===source.slot&&saved){exp=SLOT_REV;expected=sbGet(slot);}}
+ if(sbFlag(meta(),slot)&&!await sbRefresh([slot]))return fail(`슬롯 ${slot}의 최신 저장을 읽지 못해 가져오지 않았습니다.`);
+ if(!saveActionSame(source,false))return fail('슬롯(게임)이 바뀌어 가져오지 않았습니다. 다시 골라 주세요.');
+ let prepared;try{prepared=savePrepareGame(g);}catch(e){return fail('저장 데이터를 복원하지 못했습니다. 기존 게임은 유지했습니다.');}
+ UI.impMsg='저장소에 기록하는 중입니다. 완료될 때까지 기다려 주세요.';render();const liveBeforeWrite=JSON.stringify(G);
+ const ok=await writeSlotConfirmed(slot,prepared.data,prepared.info,exp,{replace:true,body:expected,activate:true});
+ if(!ok)return fail(`슬롯 ${slot}에 저장하지 못해 가져오지 않았습니다. 기존 세이브와 진행 중인 게임은 그대로입니다. ${SAVE_ERR||''}`.trim());
+ if(source.g!==G||source.slot!==curSlot()||source.title!==!!UI.title||JSON.stringify(G)!==liveBeforeWrite){if(meta().active===slot&&curSlot()!==slot&&slotHas(curSlot()))setActive(curSlot());return fail(`슬롯 ${slot}에는 백업을 저장했지만 진행 중인 게임이 바뀌어 자동으로 열지 않았습니다. 저장 슬롯에서 직접 열어 주세요.`);}
+ saveOpenGame(g,slot,meta());UI.tab='home';UI.readingOpen={};UI.readingScroll={};UI.impMsg='불러왔습니다.';render();return true;
 }
 
 function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; setTimeout(()=>{ const G0=G; try{ buildWorld(); UI.world=G; try{ G.fdOrd=fdOrder(); }catch(e){} /* 창단 드래프트 순서는 구단을 고르기 전에 한 번 정해 두고(구단 카드와 실제가 같고 겹치지 않게) 시작 때 그대로 쓴다 */
@@ -217,7 +259,7 @@ function creditsLine(noNote){ /* noNote: 바로 위에 비제휴 고지가 이�
   <p>그 밖의 그림과 게임 코드는 이 게임을 위해 만들었습니다. 선수·스태프·팬 얼굴, 유니폼, 관중석 등 인물 그림은 이미지 생성 도구로 만든 가상 인물입니다.</p>
   ${TELE.ga||TELE.ph?`<p><b>개인정보</b> · ${telePrivacyTxt()}</p>`:''}
   <button class="lnk" data-a="licShow">${UI.licOpen?'라이선스 전문 닫기':'라이선스 전문 보기'}</button>${UI.licOpen?licBody():''}</div></details>`; }
-function startScreen(){ const h=startScreen0(); return (UI.sstep||'main')==='main'?saveEmbedBanner()+h:h; }
+function startScreen(){ const h=startScreen0(); return (UI.sstep||'main')==='main'?saveEmbedBanner()+inappBanner()+h:h; }
 function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G&&!SAVE_CONFL&&slotHas(curSlot())&&revOf(m,curSlot())===SLOT_REV, cs=live?null:G&&slotHas(curSlot())?curSlot():contSlot(m); /* 다른 탭이 그사이 저장하거나 지운 슬롯은 저장소 기준으로 표시(검수 11-09zr #6) */ /* 이어하기가 실제로 여는 것과 같은 대상을 표시한다(검수 11-09 #8): 이 탭 게임, 충돌 뒤엔 이 탭 슬롯의 최신 저장, 없으면 본문이 남은 슬롯 */
   const act=live?{tid:G.user,date:dstr(G.day)}:cs!=null?(m.slots[cs]||{name:`슬롯 ${cs}`}):null; const canCont=!!act;
   const foot=`<p class="small muted" style="margin-top:14px">${NOT_AFFIL} 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
@@ -228,7 +270,7 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
       <nav class="fb-menu" aria-label="시작 메뉴">
         ${canCont?`<button class="fb-button primary" data-a="tsCont"><b>이어하기</b><span>${tn?esc(tn):`슬롯 ${cs}`}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
         <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="mode"><b>새 게임</b>${canCont?'':'<span>단장 취임 또는 창단 드래프트로 시작합니다</span>'}</button>
-        <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b></button>${LADDER_ON?`<button class="fb-button" data-a="ladOpen"><b>단장 대전</b><span>같은 선수 풀로 구단을 만들어 다른 단장과 겨룹니다</span></button>`:''}
+        <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b><span>저장은 이 기기에만 · 다른 기기는 기기 옮기기</span></button>${LADDER_ON?`<button class="fb-button" data-a="ladOpen"><b>단장 대전</b><span>같은 선수 풀로 구단을 만들어 다른 단장과 겨룹니다</span></button>`:''}
         <button class="fb-button" data-a="tsGo" data-v="cuphof"><b>프런트컵 명예의 전당</b><span>유저 대회 역대 우승 팀과 로스터</span></button>
         <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
       </nav>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}
@@ -243,7 +285,7 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
   if(st==='mode'){ ensureWorld();
     return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
     <h2 class="ts-h">${UI.newSlot?`슬롯 ${UI.newSlot} · `:''}어떻게 시작할까요</h2><div class="mbg">
-      <div class="card" style="margin:0 0 10px"><h3 class="sec">난이도</h3><div class="chips">${[['norm','보통'],['hard','하드']].map(([k,l])=>`<button data-a="sdiff" data-v="${k}" class="${(UI.diff||'norm')===k?'on':''}">${l}</button>`).join('')}</div><p class="small muted">${(UI.diff||'norm')==='hard'?'하드: 다른 구단 단장이 트레이드에서 더 많이 요구하고, FA는 우리 제안에 덜 끌립니다. 스폰서·광고 수입이 줄고 시즌 '+gl('흑자 조정')+'이 커집니다. 구단주 신뢰는 더 쉽게 떨어지고 지원 승인은 어려워집니다. 다른 구단은 그대로이고 우리 구단만 까다로워집니다. 게임 중에는 보통으로만 낮출 수 있습니다.':'보통: 기본 규칙입니다.'}</p></div><div class="card" style="margin:0 0 10px"><h3 class="sec">진행 방식</h3><div class="chips">${[['0','직접 하기'],['1','쉬운 진행']].map(([k,l])=>`<button data-a="seasy" data-v="${k}" class="${(UI.easy?'1':'0')===k?'on':''}">${l}</button>`).join('')}</div><div class="chips" style="margin-top:6px">${[['1','첫 시즌 안내 보기'],['0','안내 없이']].map(([k,l])=>`<button data-a="sguide" data-v="${k}" class="${(UI.guideNo?'0':'1')===k?'on':''}">${l}</button>`).join('')}</div><p class="small muted">${UI.easy?'쉬운 진행: 연봉 협상·외국인 재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안을 비서와 팀장이 맡습니다. 드래프트·FA·외국인 영입·트레이드 협상은 단장이 합니다. 게임 중 설정 › 권한에서 바꿀 수 있습니다.':'직접 하기: 모든 업무를 단장이 정합니다. 어려우면 게임 중 홈 카드나 소식함에서 비서에게 맡길 수 있습니다.'}${UI.guideNo?' 첫 시즌 안내(홈 할 일 카드·비서 안내 소식)는 끕니다.':''}</p></div>
+      <div class="card" style="margin:0 0 10px"><h3 class="sec">난이도</h3><div class="chips">${[['norm','보통'],['hard','하드']].map(([k,l])=>`<button data-a="sdiff" data-v="${k}" class="${(UI.diff||'norm')===k?'on':''}">${l}</button>`).join('')}</div><p class="small muted">${(UI.diff||'norm')==='hard'?'하드: 다른 구단 단장이 트레이드에서 더 많이 요구하고, FA는 우리 제안에 덜 끌립니다. 스폰서·광고 수입이 줄고 시즌 '+gl('흑자 조정')+'이 커집니다. 구단주 신뢰는 더 쉽게 떨어지고 지원 승인은 어려워집니다. 다른 구단은 그대로이고 우리 구단만 까다로워집니다. 게임 중에는 보통으로만 낮출 수 있습니다.':'보통: 기본 규칙입니다.'}</p></div><div class="card" style="margin:0 0 10px"><h3 class="sec">진행 방식</h3><div class="chips">${[['0','직접 하기'],['1','쉬운 진행']].map(([k,l])=>`<button data-a="seasy" data-v="${k}" class="${(UI.easy?'1':'0')===k?'on':''}">${l}</button>`).join('')}</div><div class="chips" style="margin-top:6px">${[['1','첫 시즌 안내 보기'],['0','안내 없이']].map(([k,l])=>`<button data-a="sguide" data-v="${k}" class="${(UI.guideNo?'0':'1')===k?'on':''}">${l}</button>`).join('')}</div><p class="small muted">${UI.easy?'쉬운 진행: 연봉 협상·외국인 재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강을 비서와 팀장이 맡습니다. 드래프트·FA·외국인 영입·트레이드 협상은 단장이 합니다. 게임 중 설정 › 권한에서 바꿀 수 있습니다.':'직접 하기: 모든 업무를 단장이 정합니다. 어려우면 게임 중 홈 카드나 소식함에서 비서에게 맡길 수 있습니다.'}${UI.guideNo?' 첫 시즌 안내(홈 할 일 카드·비서 안내 소식)는 끕니다.':''}</p></div>
       <button class="mbig" data-a="smode" data-v="take"><em>바로 시작 · 난이도 선택</em><b>단장 취임</b><span>10개 구단 중 하나의 단장으로 부임합니다. 지금 선수단과 계약, 재정을 그대로 이어받아 고쳐 나갑니다. 구단마다 전력이 달라 강팀은 쉽고 약팀은 어렵습니다. 드래프트 없이 바로 시즌 준비에 들어갑니다.</span></button>
       <button class="mbig mfd" data-a="smode" data-v="fd"><em>드래프트 게임</em><b>창단 드래프트</b><span>리그 국내 선수 전원을 한데 모아 10개 구단이 25라운드에 걸쳐 새로 뽑습니다. 단장은 주전급을 뽑는 앞 10라운드를 직접 지명하고, 나머지는 스카우트에게 맡기거나 더 뽑을 수 있습니다. 능력치는 숨겨져 있고 기록으로 고릅니다. 빈 포지션을 채워 가며 처음부터 내 팀을 만듭니다.</span></button>
     </div>${foot}</div></div>`; }

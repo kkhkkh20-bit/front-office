@@ -31,13 +31,19 @@ function mailActionStatus(m,a){
   }
   if(a.a==='fcampSet')return !G.fcamp||G.fcamp.done||G.fcamp.y!==dobj(d).y?mailEnd('이 마무리캠프는 끝났습니다.',true):null;
   if(a.a==='stKeep'||a.a==='stLet'){const r=(G.stRaid||[]).find(x=>x.id===id&&(c.raid!=null?x.exp===c.raid:x.exp===d+7));return !r?mailEnd('이미 직원 잔류·이적을 결정한 제안입니다.'):G.day>r.exp?mailEnd('직원 영입 제안의 답변 기한이 지났습니다.',true):null;} /* 마감일 당일까지 답할 수 있다(자동 처리는 다음 날, 검수 11-07) */
-  if(a.a==='cmKeep'||a.a==='cmLet'){const ex=+String(a.v).split(':')[2],r=(G.cmRaid||[]).find(x=>x.id===id&&x.exp===ex);return !r?mailEnd('이미 코치 잔류·이적을 결정한 제안입니다.'):G.day>r.exp?mailEnd('코치 영입 제안의 답변 기한이 지났습니다.',true):null;}
-  if(a.a==='jobYes'||a.a==='jobNo'){const j=(G.jobs||[]).find(x=>x.tid===+a.v&&(c.job!=null?x.exp===c.job:x.exp>d&&x.exp<=d+20));return !j||j.done?mailEnd('이미 답했거나 끝난 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
+  if(a.a==='cmKeep'||a.a==='cmLet'){const r=cmRaidFind(String(a.v));return !r?mailEnd('이미 코치 잔류·이적을 결정한 제안입니다.'):G.day>r.exp?mailEnd('코치 영입 제안의 답변 기한이 지났습니다.',true):null;}
+  if(a.a==='jobYes'||a.a==='jobNo'){const j=jobMailOffer(m,a);return !j||j.done?mailEnd('이미 답했거나 끝난 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='goalTalk'){const g=G.goals;return !g||g.y!==G.year||!g.pre||g.talk?mailEnd(g&&g.talk?'올해 목표는 구단주와 상의를 마쳤습니다.':'목표 상의 기간이 끝났습니다.'):null;} /* 플레이 테스트 11-13: 수락한 뒤에도 버튼이 살아 있었다 */
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 끝났습니다.'):null;}
   if(a.a==='easyMode'&&typeof guideEasy==='function'&&guideEasy())return mailEnd('쉬운 진행을 켰습니다. 설정 · 권한에서 하나씩 다시 가져올 수 있습니다.'); /* 첫 시즌 안내(55_guide_bar.js) */
   if(a.a==='handOff'&&typeof autoOn==='function'&&autoOn(a.v))return mailEnd(`${AUTO_WHO[a.v]||'비서'}에게 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`); /* 사용자 11-17 */
-  if(a.a==='tripPlanGo'){ if(tripAutoOn())return mailEnd('스카우트팀장에게 출장을 맡겼습니다. 따로 승인하지 않아도 됩니다.'); const T=G.tripPend; if(a.v&&(!T||String(T.w0)!==String(a.v)))return T&&T.w0>+a.v?mailEnd('새 출장 안이 왔습니다.',true):mailEnd('이 주 출장 안은 처리했거나 지났습니다.'); if(!a.v&&!T)return mailEnd('이미 처리한 출장 안입니다.'); return null; }
+  { const tg=(m.acts||[]).find(x=>x.a==='tripPlanGo'); if(tg&&(a===tg||a.a==='handOff'&&a.v==='scout'||a.a==='go')){ /* 출장 안 메일: 세 버튼 모두 이 안(구단·주·번호)이 지금 걸린 안일 때만(리뷰② 11-17) */
+    if(m.closed)return m.closed; const why=tripGoWhy(tg.v), k=String(tg.v||''), kt=k.includes(':')?k.split(':')[0]:'';
+    if(kt!==''&&+kt!==G.user)return mailEnd(MAIL_CLUB_TXT,true);
+    if(a.a==='handOff'&&autoOn('scout'))return mailEnd(`${AUTO_WHO.scout||'스카우트팀장'}에게 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`);
+    if(tripAutoOn())return mailEnd(why&&why.startsWith('지난')?why:'스카우트팀장에게 출장을 맡겼습니다. 따로 승인하지 않아도 됩니다.',!!why&&why.startsWith('지난'));
+    if(why)return mailEnd(why,!why.startsWith('이 출장 안은 이미'));
+    return null; } }
   if(a.a==='scoutPlanGo'){
     if(scoutWorkStatus().delegated)return mailEnd('스카우트팀장에게 배치를 맡겼습니다. 따로 승인하지 않아도 됩니다.');
     if(old)return mailEnd('새 배치 제안이 있습니다. 스카우트팀에서 확인하세요.',true); /* 같은 제안은 다시 보내지 않으므로 달이 바뀌어도 내용이 그대로면 그대로 적용할 수 있다(아래에서 지금 배치안과 대조) */

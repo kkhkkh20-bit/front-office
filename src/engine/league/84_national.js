@@ -29,7 +29,7 @@ const ntU25=(p,y)=>p.age+(y||G.year)-G.year<=25||ntProY(p,y)<=4; /* 아시안게
 function ntMgr(){ if(!G.ntMgr)G.ntMgr={name:genName(),since:G.year}; return G.ntMgr; }
 /* 다음 대회들(올해부터 몇 년 안) */
 function ntUpcoming(n){ const L=[]; for(let y=G.year;y<=G.year+4&&L.length<(n||4);y++)for(const k of ['wbc','oly','ag','p12']){ const e=NT_EV[k]; if(!e.yr(y))continue; const end=dnum(y,e.to[0],e.to[1]); if(y===G.year&&end<G.day)continue; L.push({k,y,n:e.n,from:dnum(y,e.from[0],e.from[1]),to:end}); } return L.slice(0,n||4); }
-function ntPool(d1){ return Object.values(G.players).filter(p=>p.team!=null&&!p.foreign&&!p.prospect&&!(p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day)&&(healthy(p)||d1&&p.injOut===1&&!(p.susp>G.day)&&!p.frehab&&!p.hold)&&!(p.joinY>G.year)&&!(milServing(p)&&p.mil.unit!=='상무')); } /* 실제처럼 상무 복무·입대 예정 선수는 뽑을 수 있고, 현역 복무 중인 선수는 뽑지 않는다. 특례를 받으면 복무가 면제된다 */
+function ntPool(d1){ return Object.values(G.players).filter(p=>p.team!=null&&!p.foreign&&!p.prospect&&!(p.ntAway&&p.ntAway>G.day&&p.ntFrom<=G.day)&&(healthy(p)||d1&&p.injOut===1&&!(p.susp>G.day)&&!p.frehab&&!p.hold)&&!(p.joinY>G.year)&&!(milServing(p)&&p.mil.unit!=='상무')&&!ntDisp(p)); } /* 실제처럼 상무 복무·입대 예정 선수는 뽑을 수 있고, 현역 복무 중인 선수는 뽑지 않는다. 특례를 받으면 복무가 면제된다 */
 /* 대표 명단: 감독 눈(능력 + 감독마다 다른 선호 약간). 아시안게임은 나이 제한·와일드카드·구단당 3명 */
 /* 병역 특례가 걸린 대회(올림픽·아시안게임)는 같은 실력이면 미필 선수를 먼저 뽑는다: 미필 중심에 군필 몇 명이 섞이는 실제 구성 */
 function ntMilB(k){ const e=NT_EV[k]; return e&&e.ex?(k==='ag'?8:7):0; }
@@ -68,28 +68,30 @@ function ntDaily(d){ ntState(); for(const k of Object.keys(NT_EV)){ const e=NT_E
     if(e.pre&&d===D(e.pre))ntPreAnnounce(k);
     if(d===D(e.ann))ntAnnounce(k);
     const N=G.nt; if(!N||N.k!==k||N.y!==G.year)continue;
-    if(d===D(e.from)){ let mo=[]; try{ mo=ntMedCheck(N); }catch(err){} try{ const dp=depth(G.user); N.role={}; N.rpos={}; for(const id of N.ids){ const p=G.players[id]; if(p&&p.team===G.user)N.rpos[id]=posLabel(p); if(p&&p.team===G.user)N.role[id]=dp.sp.some(x=>x.id===id)?'sp':p.isP?'pen':dp.start.some(x=>x.id===id)?'start':'bench'; } }catch(err){} /* 소집 직전 역할(대표팀 화면 영향 표시용) */ for(const id of N.ids){ const p=G.players[id]; if(p){ p.ntFrom=d; p.ntAway=D(e.to); p.e1=false; } } const mine=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
+    if(d===D(e.from)){ let mo=[]; if(k==='wbc')try{ ntOvsRecheck(N); }catch(err){} /* 해외파도 소집일에 다시 본다(검수 11-17 #224) */ try{ mo=ntMedCheck(N); }catch(err){} try{ const dp=depth(G.user); N.role={}; N.rpos={}; for(const id of N.ids){ const p=G.players[id]; if(p&&p.team===G.user)N.rpos[id]=posLabel(p); if(p&&p.team===G.user)N.role[id]=dp.sp.some(x=>x.id===id)?'sp':p.isP?'pen':dp.start.some(x=>x.id===id)?'start':'bench'; } }catch(err){} /* 소집 직전 역할(대표팀 화면 영향 표시용) */ for(const id of N.ids){ const p=G.players[id]; if(p){ p.ntFrom=d; p.ntAway=D(e.to); p.e1=false; } } const mine=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user);
       if(mo.some(x=>x.r&&x.r.team===G.user))try{ ntShortGuard(d); }catch(err){}
       if(mine.length)addLog(`${e.n} 대표 소집: ${mine.map(p=>p.name).join(', ')} (${dmd(D(e.to))} 복귀)`); }
     /* 실제 대회(84b_nt_tour): 소집일에 대진·상대국 명단을 만들고, 대회 기간 하루씩 경기. 예전 저장에서 대회 중이던 대회는 대진 없이 예전 방식(전력 확률)으로 끝난다 */
     if(d===D(e.from)&&!N.tour&&!N.res)try{ ntTourInit(N); }catch(err){ (G.flErr=(G.flErr||[]).slice(-9)).push('ntInit:'+String(err&&err.message).slice(0,80)); }
+    if(d>D(e.from)&&d<D(e.to)&&!(N.tour&&N.tour.done))try{ ntDayCheck(N,d); }catch(err){ (G.flErr=(G.flErr||[]).slice(-9)).push('ntChk:'+String(err&&err.message).slice(0,80)); } /* 소집 기간 매일(경기 전): 현역 입대·방출·교육리그 파견 선수는 빼고 대체(검수 11-17 #225~227) */
     if(N.tour&&!N.tour.done)try{ ntTourDay(N,d); }catch(err){ (G.flErr=(G.flErr||[]).slice(-9)).push('ntDay:'+String(err&&err.message).slice(0,80)); }
     if(d===D(e.res)&&!N.res)ntResult(k);
-    if(d===D(e.to)){ const back=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user); for(const t of G.teams){ try{ entryUpgrade(t.id,N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===t.id),'대표팀 복귀'); }catch(err){} }
+    if(d===D(e.to)){ const sv=p=>milServing(p); const back=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user&&!sv(p)), inMil=N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===G.user&&sv(p)); for(const t of G.teams){ try{ entryUpgrade(t.id,N.ids.map(id=>G.players[id]).filter(p=>p&&p.team===t.id&&!sv(p)),'대표팀 복귀'); }catch(err){} }
+      if(inMil.length&&!G.unemp)mail('운영팀',`${e.n} 대표 소집 해제 · 군 복무 ${inMil.length}명`,`${inMil.map(p=>`${p.name}(${p.mil.unit}, ${dmdY(p.mil.until)} 전역 예정)`).join(', ')}은(는) 대표팀 소집이 끝났지만 군 복무 중이라 구단에 돌아오지 않습니다. 전역할 때까지 우리 경기에 쓸 수 없고, 엔트리 등록도 전역 뒤에 합니다.`,{kind:'병역'}); /* 소집 중 입대한 선수에게 '돌아왔다'·엔트리 안내를 보내지 않는다(검수 11-17 #242) */
       if(back.length){ const off=back.filter(p=>!p.e1); mail('운영팀',`${e.n} 대표 선수 복귀`,`${back.map(p=>p.name).join(', ')}이(가) 돌아왔습니다.${back.some(p=>p.e1)?` 감독이 ${back.filter(p=>p.e1).map(p=>p.name).join(', ')}을(를) 1군에 다시 등록했습니다.`:''}${off.length?(entryOn()?`\n${off.map(p=>p.name).join(', ')}은(는) 아직 2군입니다(부상·기용 순위). 필요하면 선수 화면에서 감독에게 콜업을 요청하세요.`:`\n${off.map(p=>p.name).join(', ')}은(는) 개막 엔트리 결정 때 감독이 함께 판단합니다(개막 전에는 엔트리를 바꿀 수 없습니다).`):''}`,{kind:'선수',imp:off.length>0}); } } } }
 function ntAnnounce(k){ const e=NT_EV[k]; const M=ntMgr(); const pre=G.ntPre&&G.ntPre.k===k&&G.ntPre.y===G.year?G.ntPre.ids:null; const S=ntSquad(k,null,{only:pre}); G.nt={k,y:G.year,ids:S.map(x=>x.id),wild:S.filter(x=>x.wild).map(x=>x.id),ref:[],res:null,ovs:k==='wbc'?ntAbroad():[], /* 해외파는 실제처럼 WBC만(아시안게임·올림픽·프리미어12는 메이저리그 구단이 보내지 않는다) */bk:Object.fromEntries(S.map(x=>[x.id,ntBucket(G.players[x.id])]))}; /* bk: 발표 뒤 은퇴·해외로 기록이 지워져도 대체 자리를 알 수 있게 */
   const mine=S.map(x=>G.players[x.id]).filter(p=>p.team===G.user); const D=a=>KD(a[0],a[1]);
   for(const p of mine)p.mor=clamp((p.mor??60)+6,0,100);
   const exTxt=e.ex==='gold'?'금메달이면 미필 선수는 병역 특례(체육요원)를 받습니다.':e.ex==='top3'?'3위 이상이면 미필 선수는 병역 특례(체육요원)를 받습니다.':k==='ag'&&G.agExOff?`${G.agExOff}년 병역법 개정으로 아시안게임 금메달 병역 특례는 없어졌습니다(올림픽 3위 이내 특례는 그대로).`:'병역 특례는 없습니다.';
-  mail('운영팀',`${G.year} ${e.n} 대표팀 명단 발표`,`${M.name} 대표팀 감독이 ${G.nt.ids.length}명을 뽑았습니다.${G.nt.ids.length<24?` (24명을 다 채우지 못했습니다)`:''}${G.nt.ovs.length?` 해외파 합류: ${G.nt.ovs.map(x=>`${x.name}(${x.lg} ${x.club})`).join(', ')}.`:''}${e.u25?' (만 25세 이하 또는 입단 4년 차 이하 + 와일드카드 3명, 구단당 1~3명)':''}\n\n우리 구단: ${mine.map(p=>`${p.name}(${posLabel(p)}${milFree(p)?', 미필':''}${G.nt.wild.includes(p.id)?', 와일드카드':''})`).join(', ')||'없음'}\n\n소집 ${dmd(D(e.from))} ~ ${dmd(D(e.to))}. 이 기간에는 우리 경기에 쓸 수 없습니다. ${exTxt}${mine.length?'\n\n차출을 거부할 수 있지만(리그 > 국가대표) 팬·언론 여론이 나빠지고, 미필 선수는 특례 기회를 잃어 크게 반발합니다.':''}`,{imp:mine.length>0,kind:e.ex?'병역':'선수',acts:[{l:'국가대표',a:'go',v:'league:nt'}]});
+  mail('운영팀',`${G.year} ${e.n} 대표팀 명단 발표`,`${M.name} 대표팀 감독이 ${G.nt.ids.length}명을 뽑았습니다.${G.nt.ids.length<24?` (24명을 다 채우지 못했습니다)`:''}${G.nt.ovs.length?` 해외파 합류: ${G.nt.ovs.map(x=>`${x.name}(${x.lg} ${x.club})`).join(', ')}.`:''}${e.u25?' (만 25세 이하 또는 입단 4년 차 이하 + 와일드카드 3명, 구단당 1~3명)':''}\n\n우리 구단: ${mine.map(p=>`${p.name}(${posLabel(p)}${milFree(p)?', 미필':''}${G.nt.wild.includes(p.id)?', 와일드카드':''})`).join(', ')||'없음'}\n\n소집 ${dmd(D(e.from))} ~ ${dmd(D(e.to))}. 이 기간에는 우리 경기에 쓸 수 없습니다. ${exTxt}${mine.length?`\n\n차출을 거부할 수 있지만(리그 > 국가대표) 팬·언론 여론이 나빠지고, ${e.ex&&mine.some(p=>!p.foreign&&!(p.mil&&(p.mil.done||p.mil.exempt)))?'미필 선수는 특례 기회를 잃어 크게 반발합니다.':'선수 사기도 떨어집니다.'}`:''}`,{imp:mine.length>0,kind:e.ex?'병역':'선수',acts:[{l:'국가대표',a:'go',v:'league:nt'}]});
   if(mine.length)news('선수',`${tshort(G.user)} ${mine.map(p=>p.name).join('·')}, ${e.n} 대표 발탁`,`${M.name} 감독의 부름을 받았습니다.`,1); }
 /* 소집일 재검사: 발탁 뒤 다쳤거나(재활·출장 정지) 리그를 떠난(해외·입대·은퇴) 선수는 의료·사유 제외로 빼고 같은 자리 대체 선수를 뽑는다.
    구단의 차출 거부(ntRefuse)와 달리 여론·선수 사기 불이익은 없다. 대회 성과·특례는 최종 명단(N.ids)만 받는다 */
 /* 기록이 지워진 선수의 자리: 발표 때 저장한 묶음, 없으면(예전 저장) 정원보다 가장 모자란 묶음 */
 function ntGoneB(N,id){ if(N.bk&&N.bk[id])return N.bk[id]; const c={P:0,C:0,IF:0,OF:0}; for(const x of N.ids){ const q=G.players[x]; if(q)c[ntBucket(q)]++; } return Object.keys(c).sort((a,b)=>(c[a]-NT_SLOTS[a])-(c[b]-NT_SLOTS[b]))[0]; }
 function ntMedCheck(N,quiet){ const e=NT_EV[N.k]; const out=[]; const st=quiet?()=>{}:story; /* 예측(ntCallIds)은 이력을 남기지 않는다 */
-  for(const id of N.ids.slice()){ const p=G.players[id]; const gone=!p||p.team==null||(milServing(p)&&p.mil.unit!=='상무'); const hurt=!gone&&!healthy(p)&&!(p.injOut===1&&!(p.susp>G.day)&&!p.frehab&&!p.hold); /* 재활이 하루 남은 선수는 오늘 회복하므로 남긴다(검수 11-07) */ const shifted=!gone&&N.bk&&N.bk[id]&&N.bk[id]!==ntBucket(p); if(!gone&&!hurt&&!shifted)continue;
-    N.ids=N.ids.filter(x=>x!==id); N.wild=(N.wild||[]).filter(x=>x!==id); (N.ref=N.ref||[]).push(id); const why=shifted?'포지션 변경':hurt?(p.injOut>0?`부상(재활 ${p.injOut}일)`:p.hold?'연봉 미계약':p.frehab?'재활 명단':'출장 정지'):'리그 이탈';
+  for(const id of N.ids.slice()){ const p=G.players[id]; const ow=ntOutWhy(p), gone=!!ow; const hurt=!gone&&!healthy(p)&&!(p.injOut===1&&!(p.susp>G.day)&&!p.frehab&&!p.hold); /* 재활이 하루 남은 선수는 오늘 회복하므로 남긴다(검수 11-07) */ const shifted=!gone&&N.bk&&N.bk[id]&&N.bk[id]!==ntBucket(p); if(!gone&&!hurt&&!shifted)continue;
+    N.ids=N.ids.filter(x=>x!==id); N.wild=(N.wild||[]).filter(x=>x!==id); (N.ref=N.ref||[]).push(id); const why=shifted?'포지션 변경':hurt?(p.injOut>0?`부상(재활 ${p.injOut}일)`:p.hold?'연봉 미계약':p.frehab?'재활 명단':'출장 정지'):ow;
     (N.med=N.med||[]).push({id,why,d:G.day}); const r=ntFill(N,(N.bk&&N.bk[id])||(p?ntBucket(p):ntGoneB(N,id)),p?p.team:null); /* 뽑힌 때의 자리로 대체(포지션이 바뀌었어도) */ if(r){ N.ids.push(r.id); if(N.bk)N.bk[r.id]=ntBucket(r); if(e.u25&&!ntU25(r))N.wild.push(r.id); N.med[N.med.length-1].rep=r.id; }
     if(p)st(p,`${N.y} ${e.n} 대표 제외(${hurt&&p.injOut>0?'의료 사유':'사유'}: ${why})`,'mil'); out.push({p,id,why,r}); }
   /* 구단당 인원 제한 재검사: 발표 뒤 트레이드로 한 구단에 몰리면 능력 낮은 선수부터 빼고 다른 구단에서 채운다(검수 11-07) */
@@ -100,6 +102,7 @@ function ntMedCheck(N,quiet){ const e=NT_EV[N.k]; const out=[]; const st=quiet?(
   if(e.min){ const cntT=tid=>N.ids.filter(id=>G.players[id]&&G.players[id].team===tid).length; const have=new Set(N.ids.concat(N.ref||[]));
     for(const t of G.teams){ if(cntT(t.id)>=e.min)continue; const c=ntPool(true).filter(p=>p.team===t.id&&!have.has(p.id)&&(!e.u25||ntU25(p)||(N.wild||[]).length<NT_WILD&&p.age<=NT_WILD_AGE)).sort((a,b)=>ovr(b)-ovr(a)).find(c=>N.ids.some(id=>{ const q=G.players[id]; return q&&ntBucket(q)===ntBucket(c)&&cntT(q.team)>e.min&&!(N.wild||[]).includes(id); })); if(!c)continue;
       const o=N.ids.map(id=>G.players[id]).filter(q=>q&&ntBucket(q)===ntBucket(c)&&cntT(q.team)>e.min&&!(N.wild||[]).includes(q.id)).sort((a,b)=>ovr(a)-ovr(b))[0]; N.ids=N.ids.filter(x=>x!==o.id); (N.ref=N.ref||[]).push(o.id); N.ids.push(c.id); have.add(c.id); if(e.u25&&!ntU25(c))(N.wild=N.wild||[]).push(c.id); if(N.bk)N.bk[c.id]=ntBucket(c); (N.med=N.med||[]).push({id:o.id,why:'구단당 최소 인원 조정',d:G.day,rep:c.id}); st(o,`${N.y} ${e.n} 대표 제외(사유: 구단당 최소 인원 조정)`,'mil'); out.push({p:o,why:'구단당 최소 인원 조정',r:c}); } }
+  if(e.min)try{ ntMinChain(N,st,out); }catch(err){} /* 한 자리씩으로 못 채운 0명 구단은 두 자리를 함께 바꿔 채운다(84b, 검수 11-17 #240) */
   if(quiet)return out; const mine=out.filter(x=>x.p&&x.p.team===G.user), rIn=out.filter(x=>x.r&&x.r.team===G.user);
   for(const p of new Set(rIn.map(x=>x.r).filter(p=>N.ids.includes(p.id))))p.mor=clamp((p.mor??60)+6,0,100);
   if(mine.length||rIn.length)mail('운영팀',`${e.n} 대표 명단 변경(소집일 검사)`,`${mine.length?`소집일 검사에서 우리 선수 ${mine.map(x=>`${x.p.name}(${x.why})`).join(', ')}이(가) 대표팀에서 빠졌습니다. 구단의 차출 거부가 아니라서 여론·선수 사기 불이익은 없고, 대회 성적·병역 특례도 받지 않습니다.`:''}${rIn.length?`${mine.length?'\n\n':''}대체 발탁: ${rIn.map(x=>x.r.name).join(', ')}(${dmd(KD(e.to[0],e.to[1]))}까지 차출).`:''}`,{kind:'선수'});
@@ -126,7 +129,7 @@ function ntOdds(k,str){ const z=str-58;
   if(k==='ag'){ const za=str-(ntKRef()-4.8); const g=clamp(.78+za*.08,.35,.93); return {g,s:Math.min(.97,g+.14),b:Math.min(.99,g+.17)}; } /* 실제 대회(84b, NT_EPEN.ag)와 맞춘다: 아시안게임 대표(나이 제한)는 보통 리그 상위 24명 평균보다 4.8쯤 낮고, 그 전력이면 대회에서 금 78%쯤(시드 64회 측정 77%), 1점마다 8%p. 실제: 1998~2026 여덟 대회 중 금 일곱 */
   if(k==='oly'){ const pm=clamp(.32+z*.05,.12,.75); return {g:pm*.3,s:pm*.62,b:pm}; }
   const g=clamp(.12+z*.03,.04,.4); return {g,s:Math.max(g+.08,clamp(.28+z*.04,.1,.6)),b:Math.max(g+.2,clamp(.5+z*.05,.25,.8))}; } /* WBC·프리미어12: 우승/결승/4강 */
-function ntResult(k,force){ const N=G.nt; const e=NT_EV[k]; const sq=N.ids.map(id=>G.players[id]).filter(Boolean); const ov=N.ovs||[]; const top=[...sq.map(ovr),...ov.map(x=>x.o)].sort((a,b)=>b-a).slice(0,20); /* 해외파도 전력에 넣는다 */
+function ntResult(k,force){ const N=G.nt; (N.ovs||[]).forEach(ntOvsFix); const e=NT_EV[k]; const sq=N.ids.map(id=>G.players[id]).filter(Boolean); const ov=N.ovs||[]; const top=[...sq.map(ovr),...ov.map(x=>x.o)].sort((a,b)=>b-a).slice(0,20); /* 해외파도 전력에 넣는다 */
   const cnt={P:0,C:0,IF:0,OF:0}; [...sq,...ov].forEach(p=>cnt[ntBucket(p)]++); const holes=Object.keys(NT_SLOTS).reduce((s,b)=>s+Math.max(0,NT_SLOTS[b]-cnt[b]),0), thin=cnt.P<5||cnt.C+cnt.IF+cnt.OF<9;
   const str=sq.length?(top.reduce((s,v)=>s+v,0)+30*(20-top.length))/20-holes*.5:30; /* 명단 규모·빈 포지션 반영: 모자란 자리는 30, 빈 자리마다 -0.5, 경기를 꾸릴 수 없으면 입상 없음(검수 11-09zj) */ /* 빈 명단도 결과·이력을 남긴다(검수 11-06) */
   const TR=force==null&&N.tour&&N.tour.done?N.tour:null; /* 실제 대회를 치렀으면 대진 결과로 */ const O=ntOdds(k,str); const x=force!=null?force:R(); const lv=TR?TR.lv:!sq.length||thin?4:x<O.g?1:x<O.s?2:x<O.b?3:4; /* 빈 명단은 입상 없음(검수 11-07) */ /* 1 금·우승 2 은·준우승 3 동·4강 4 그 밖 */
@@ -162,4 +165,60 @@ function ntRecBlock(k,p){ const e=NT_EV[k], ann=KD(e.ann[0],e.ann[1]);
   if(p.susp>ann)return `${p.name}은(는) 최종 발표(${dmd(ann)}) 뒤까지 출장 정지입니다.`;
   return ''; }
 /* 해외파 차출(커뮤니티 요청 11-07): 해외에서 뛰는 국내 선수 중 능력 상위 최대 3명이 대표팀에 합류해 전력에 더해진다(소속 구단 허락을 받은 것으로 본다). 국내 명단 24명과 별도 */
-function ntAbroad(){ const out=[]; for(const a of G.abroad||[]){ if(a.back||a.foreign||!a.pj||!(G.year>=(a.y1??a.y+1)))continue; let o=null; try{ const q=JSON.parse(a.pj); q.age=(a.age||q.age)+(G.year-a.y); o=Math.max(0,(q.injOut||0)-(a.d!=null&&!(a.lines||[]).length?G.day-a.d:0))>0?null:ovr(q); /* 재활 중인 해외파는 뽑지 않는다(검수 11-08) */ }catch(e){} if(o!=null&&o>=55)out.push({id:a.id,name:a.name,club:a.club,lg:a.lg,pos:a.pos,isP:!!a.isP,o}); } return out.sort((x,y)=>y.o-x.o).slice(0,3); }
+const ntOvsAge=(a,q)=>Number.isFinite(q?.age)?q.age:a.age;
+function ntAbroad(){ const out=[]; for(const a of G.abroad||[]){ if(a.back||a.foreign||!a.pj||!(G.year>=(a.y1??a.y+1)))continue; let o=null, q=null; try{ q=JSON.parse(a.pj); q.age=ntOvsAge(a,q); o=Math.max(0,(q.injOut||0)-(a.d!=null&&!(a.lines||[]).length?G.day-a.d:0))>0?null:ovr(q); /* 해외 보관본도 매년 성장했으므로 대표 선발 때 체류 연수를 다시 더하지 않는다. */ }catch(e){} if(o!=null&&o>=55)out.push(ntOvsFix({id:a.id,name:a.name,club:a.club,lg:a.lg,pos:a.pos,isP:!!a.isP,o,sn:ntOvsSnap(q)})); } return out.sort((x,y)=>y.o-x.o).slice(0,3); }
+/* ===== 해외파 선수(검수 11-17 #221·#222) =====
+   해외파 기록(G.abroad)의 pos는 화면용 한글('포수','중견수','선발')이라 그대로 쓰면 포수가 내야로 세어지고 경기에서 포수 수비가 0이었다.
+   pos는 코드('C','CF','P')로, 화면용 한글은 pl에 둔다. 경기용 임시 선수는 발표 때 저장한 모습(sn: 능력·투타·구속·투구폼·세부 수비)으로 만든다.
+   예전에는 경기마다 새로 뽑아 같은 선수의 투타·컨택·파워가 경기마다 달랐다. 저장한 모습이 없는(예전 저장) 선수는 id로 정해지는 값(rngHash)으로 만든다: 경기 난수를 쓰지 않는다 */
+const NT_POSK=(()=>{ const M={'투수':'P','선발':'P','불펜':'P','지명':'DH'}; for(const k in POSK)M[POSK[k]]=k; for(const k in POSS)M[POSS[k]]=k; return M; })();
+function ntPosCode(pos,isP){ if(isP)return 'P'; if(pos&&POSK[pos])return pos; return NT_POSK[pos]||'1B'; }
+function ntOvsSnap(q){ if(!q||!q.r)return null; return {pos:q.isP?'P':q.pos,th:q.th,bt:q.bt,age:q.age,r:Object.assign({},q.r),v:q.velo,dl:q.delivery||null,dsb:q.dsb||null,role:q.role||null}; }
+/* 예전 저장·옛 발표 명단의 해외파 한 줄을 고친다(두 번 불러도 같다) */
+function ntOvsFix(x){ if(!x)return x; if(!x.pl&&x.pos&&!POSK[x.pos]&&x.pos!=='P')x.pl=x.pos; const c=ntPosCode(x.pos,x.isP); if(x.pos!==c){ if(!x.pl)x.pl=x.isP?'투수':POSK[c]; x.pos=c; }
+  if(!x.sn){ const a=(G.abroad||[]).find(r=>r&&r.id===x.id&&r.pj&&!r.back); if(a)try{ const q=JSON.parse(a.pj); q.age=ntOvsAge(a,q); x.sn=ntOvsSnap(q); }catch(e){} } return x; }
+const ntOvsU=(x,k)=>rngHash('ntovs',x.id,x.name||'',k)/4294967296;
+/* 경기용 해외파 임시 선수(84b ntRosterObjs가 부른다). 임시 선수 번호는 매번 새로 나오므로, 해외파 원래 번호가 비어 있으면 그 번호를 쓴다(번호로 정해지는 세부 성향도 경기마다 같게) */
+function ntOvsTmp(x){ ntOvsFix(x); const sn=x.sn; const pos=x.isP?'P':(sn&&sn.pos&&sn.pos!=='P'?sn.pos:x.pos);
+  const p=ntTmpP('o'+x.id,{isP:x.isP,pos,base:x.o,name:x.name,age:sn&&sn.age||28});
+  if(sn){ p.r=Object.assign({},p.r,sn.r); if(sn.th)p.th=sn.th; if(sn.bt)p.bt=sn.bt; if(sn.v!=null)p.velo=sn.v; if(sn.dl)p.delivery=sn.dl; if(sn.dsb)p.dsb=Object.assign({},sn.dsb); if(sn.role)p.role=sn.role; }
+  else { for(const k in p.r)if(typeof p.r[k]==='number')p.r[k]=clamp(Math.round(x.o+(ntOvsU(x,k)-.5)*8),20,80); setOvr(p,x.o);
+    p.th=x.isP?(ntOvsU(x,'th')<.28?'좌':'우'):(['C','2B','3B','SS'].includes(pos)?'우':ntOvsU(x,'th')<.24?'좌':'우'); p.bt=x.isP?p.th:(p.th==='좌'?'좌':ntOvsU(x,'bt')<.3?'좌':'우'); p.velo=Math.round((ntOvsU(x,'v')-.5)*26)/10; }
+  if(Number.isFinite(x.id)&&!G.players[x.id]){ const i=NT_TMP.indexOf(p.id); delete G.players[p.id]; p.id=x.id; G.players[p.id]=p; if(i>=0)NT_TMP[i]=p.id; else NT_TMP.push(p.id); }
+  p.injOut=0; p.fat=0; return p; }
+/* 대회 기록실 명단: 국내 선수 + WBC 해외파(검수 11-17 #223). 해외파 칸: ['o'+id, 이름, null(국내 구단 없음), 포지션, 소속] */
+function ntArcRos(N){ const L=N.ids.map(id=>{ const p=G.players[id]; return p?[id,p.name,p.team,posLabel(p)]:null; }).filter(Boolean);
+  for(const x of N.ovs||[]){ ntOvsFix(x); L.push(['o'+x.id,x.name,null,x.pl||(x.isP?'투수':POSK[x.pos]||''),`${x.lg||''} ${x.club||''}`.trim()]); } return L; }
+/* WBC 해외파 소집일 재검사(검수 11-17 #224): 발표(1월 20일) 때 재활 중이라 빠졌다가 소집일(2월 24일)까지 나은 해외파도 합류한다.
+   발표 때 뽑힌 해외파는 그대로 두고(국내 복귀·재활이면 뺀다), 빈자리(최대 3명)를 지금 뽑을 수 있는 해외파로 채운다 */
+function ntOvsRecheck(N){ if(!N||N.k!=='wbc')return []; const now=ntAbroad(), ok=new Map(now.map(x=>[x.id,x])); const prev=(N.ovs||[]).map(ntOvsFix);
+  const keep=prev.filter(x=>ok.has(x.id)).map(x=>ok.get(x.id)), out=prev.filter(x=>!ok.has(x.id)); const add=now.filter(x=>!keep.some(k=>k.id===x.id)).slice(0,Math.max(0,3-keep.length));
+  N.ovs=keep.concat(add); if(out.length||add.length){ const e=NT_EV[N.k]; addLog(`${e.n} 해외파 소집일 검사: ${out.length?`${out.map(x=>x.name).join(', ')} 제외(재활·국내 복귀)`:''}${out.length&&add.length?' · ':''}${add.length?`${add.map(x=>`${x.name}(${x.lg} ${x.club})`).join(', ')} 합류`:''}`);
+    if(add.length)news('리그',`${e.n} 대표팀 해외파 ${add.map(x=>x.name).join('·')} 합류`,`소집일 검사에서 ${add.map(x=>`${x.name}(${x.lg} ${x.club})`).join(', ')}이(가) 대표팀에 합류했습니다.${out.length?` ${out.map(x=>x.name).join(', ')}은(는) 빠집니다.`:''}`,0,{}); }
+  return add; }
+/* 대표팀 자격(소집일 검사·소집 기간 매일 검사가 같이 쓴다, 검수 11-17 #225~227). 사람·AI 구단 같은 규칙:
+   소속이 없으면(방출·은퇴·해외) '리그 이탈', 현역 복무 중이면 '현역 입대'(상무는 뽑을 수 있다), 자매 구단 교육리그 파견 중이면 '교육리그 파견'(파견 중에는 대표팀에 갈 수 없다) */
+function ntDisp(p){ return typeof sisFlAwayOn==='function'&&!!p&&sisFlAwayOn(p); }
+function ntOutWhy(p){ if(!p||p.team==null)return '리그 이탈'; if(milServing(p)&&p.mil.unit!=='상무')return '현역 입대'; if(ntDisp(p))return '교육리그 파견'; return ''; }
+/* 소집 기간 매일 검사(경기 전): 자격을 잃은 선수는 최종 명단에서 빼고 같은 자리 대체 선수를 그날 소집한다. 부상은 규정대로 명단에 남고 경기에만 나오지 않는다(ntRosterObjs).
+   84b(대회 경기)가 경기 직전에 다시 불러도 된다: 두 번 불러도 같다 */
+function ntDayCheck(N,d){ N=N||G.nt; d=d==null?G.day:d; if(!N||!N.ids)return []; const e=NT_EV[N.k]; if(!e||N.y!==G.year)return []; const from=KD(e.from[0],e.from[1]), to=KD(e.to[0],e.to[1]); if(d<from||d>=to||N.tour&&N.tour.done)return [];
+  const out=[];
+  for(const id of N.ids.slice()){ const p=G.players[id]; const why=ntOutWhy(p); if(!why)continue;
+    N.ids=N.ids.filter(x=>x!==id); N.wild=(N.wild||[]).filter(x=>x!==id); (N.ref=N.ref||[]).push(id); if(p&&p.ntAway>d)p.ntAway=d; /* 대표팀 이탈이 끝난다 */
+    (N.med=N.med||[]).push({id,why,d}); const r=ntFill(N,(N.bk&&N.bk[id])||(p?ntBucket(p):ntGoneB(N,id)),p&&p.team!=null?p.team:null);
+    if(r){ N.ids.push(r.id); if(N.bk)N.bk[r.id]=ntBucket(r); if(e.u25&&!ntU25(r))(N.wild=N.wild||[]).push(r.id); N.med[N.med.length-1].rep=r.id; r.ntFrom=d; r.ntAway=to; r.e1=false; }
+    if(p)story(p,`${N.y} ${e.n} 대표 제외(사유: ${why})`,'mil'); out.push({p,id,why,r}); }
+  if(!out.length)return out;
+  addLog(`${e.n} 대표 명단 변경(${dmd(d)}): ${out.map(x=>`${x.p?x.p.name:((G.arch||{})[x.id]||{}).name||'?'} 제외(${x.why})${x.r?` → ${x.r.name}`:''}`).join(', ')}`);
+  if(!G.unemp){ const mine=out.filter(x=>x.p&&x.p.team===G.user), rIn=out.filter(x=>x.r&&x.r.team===G.user);
+    for(const x of mine.filter(x=>x.why==='현역 입대'))mail('운영팀',`${x.p.name} 현역 입대 · ${e.n} 대표팀 제외`,`${x.p.name}이(가) ${dmd(x.p.mil.from)} 현역으로 입대해 ${e.n} 대표팀에서 빠졌습니다. 전역 예정은 ${dmdY(x.p.mil.until)}이고, 그때까지 우리 경기에 쓸 수 없습니다. 대회 성적·병역 특례 대상도 아닙니다.`,{kind:'병역',ref:x.p.id}); /* 검수 11-17 #242 */
+    const oth=mine.filter(x=>x.why!=='현역 입대');
+    if(oth.length||rIn.length)mail('운영팀',`${e.n} 대표 명단 변경(소집 중)`,`${oth.length?`우리 선수 ${oth.map(x=>`${x.p.name}(${x.why})`).join(', ')}이(가) 대표팀에서 빠졌습니다. 대회 성적·병역 특례는 받지 않습니다.`:''}${rIn.length?`${oth.length?'\n\n':''}대체 발탁: ${rIn.map(x=>x.r.name).join(', ')}(${dmd(to)}까지 차출).`:''}`,{kind:'선수'});
+    if(rIn.length)try{ ntShortGuard(d); }catch(err){} }
+  return out; }
+/* 불러오기 수리(두 번 불러도 같다): 해외파 포지션 코드·저장 모습, 지난 대회 기록실 명단의 해외파, 상무 안내 표시(구단·기수별 목록) */
+function ntLoadFix(){ if(!G)return; const N=G.nt; if(N&&N.ovs)N.ovs.forEach(ntOvsFix);
+  if(N?.y===G.year&&!N.tour?.done)for(const x of N.ovs||[]){const a=(G.abroad||[]).find(a=>a.id===x.id&&a.pj&&!a.back);if(a&&x.sn)try{x.sn.age=ntOvsAge(a,JSON.parse(a.pj));}catch(e){}}
+  if(N&&N.ovs&&N.ovs.length&&N.tour&&N.tour.done)for(const A of G.ntArc||[]){ if(A.k!==N.k||A.y!==N.y||!A.ros)continue; for(const r of ntArcRos(N))if(String(r[0]).startsWith('o')&&!A.ros.some(x=>x[0]===r[0]))A.ros.push(r); }
+  try{ smMailFix(); }catch(e){} }

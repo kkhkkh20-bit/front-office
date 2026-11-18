@@ -1,0 +1,11 @@
+/* Source-level UI regression checks using the real engine and compensation view. */
+const fs=require('fs'),path=require('path');
+const root=path.resolve(__dirname,'..'),engine=process.argv[2]||path.join(root,'dist','engine.js');
+globalThis.__compReviewUI=fs.readFileSync(process.argv[3]||path.join(root,'src/ui/contracts/10_requests.js'),'utf8');
+const tests="\nconst cpUI=()=>{const UI={};const esc=x=>String(x??'');const dsh=x=>String(x);return eval(globalThis.__compReviewUI+';({compView,protOf,UI})');};\n"+
+"T('[검수 11-17 #398] 보상 기록 화면에 저장된 사용자 완료 기록 20건을 모두 표시한다 [보상UI검수]',()=>{fresh();const V=cpUI();G.comp=Array.from({length:20},(_,i)=>({id:'cp'+i,name:'UI검수선수'+i,from:G.user,to:otherT(),grade:'A',stage:'done',cash:100,done:G.day}));const h=V.compView();ok(h.includes('20건')&&h.includes('UI검수선수19'),'완료 보상 기록이 화면에서 잘림');});\n"+
+"T('[검수 11-17 #399] 직전 연봉 없는 구버전 보상 화면과 정산 금액이 같다 [보상UI검수]',()=>{fresh();const V=cpUI(),p=domestic(otherT())[0];p.faPrevSal=400;p.faGrade='A';const c={id:'oldComp',pid:p.id,name:p.name,from:G.user,to:otherT(),grade:'A',stage:'pick',prot:compPool(otherT()).map(q=>q.id),exp:G.day+3};G.comp=[c];const h=V.compView();ok(!h.includes('NaN')&&h.includes(money(1200)),'화면이 직전 연봉을 복구하지 않음');compResolve(c,null);ok(c.cash===1200&&h.includes(money(c.cash)),'화면과 실제 정산 불일치');});\n";
+let src=fs.readFileSync(path.join(root,'tools/check-logic.js'),'utf8').replace("const ENGINE=path.join(__dirname,'..','dist','engine.js');",'const ENGINE='+JSON.stringify(path.resolve(engine))+';');
+const protectTest="\nT('[검수 11-17 #396 UI] 이직 복귀 때 실제 보호명단 화면이 전에 선택한 선수를 먼저 채운다 [보상UI검수]',()=>{fresh();G.day=KD(12,10);const a=G.user,b=otherT(),pool=compPool(a),p=aiProtect(a,pool.length).slice(-1)[0],q=compPool(b)[0];const c={id:'cpUIA',pid:-999,name:'검수A',grade:'A',from:b,to:a,prev:100,stage:'protect'};G.comp=[c];compSubmit(c.id,[p]);switchTeam(b);const d={...c,id:'cpUIB',from:a,to:b,stage:'protect'};G.comp.push(d);compSubmit(d.id,[q.id]);switchTeam(a);const V=cpUI(),e={...c,id:'cpUIAgain',stage:'protect'};ok(compPool(a).some(q=>q.id===p),'선택선수 소속 준비');ok(V.protOf(e).includes(p),'이전 구단 선택선수가 실제 화면에서 빠짐');});\n";
+const at=src.indexOf("T('[사구]");src=src.slice(0,at)+tests+protectTest+src.slice(at);
+process.env.ONLY='보상UI검수';new Function('require','__dirname','process',src)(require,__dirname,process);

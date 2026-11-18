@@ -8,15 +8,17 @@
  - 수비 집중 훈련(수비 능력 자체)과는 별개다. */
 const POS_F=['C','1B','2B','3B','SS','LF','CF','RF'];
 const POS_NEED={C:50,SS:45,CF:45,'2B':45,'3B':35,LF:35,RF:35,'1B':0};
-function versOf(p){ if(p.vers==null)p.vers=Math.round(clamp(50+hn('vers',p.id)*13+(((p.r&&p.r.spd)||50)-50)*.25+(['SS','2B','CF'].includes(p.pos)?6:p.pos==='1B'||p.pos==='DH'?-7:p.pos==='C'?-3:0),20,80)); return p.vers; }
-function pexpOf(p){ if(!p.pexp){ p.pexp={}; if(SUBMAP[p.pos]){ let n=0; for(const [k,pr] of SUBMAP[p.pos]){ if(n<2&&u01('sub'+k,p.id)<pr){ p.pexp[k]=50; n++; } } } } return p.pexp; }
+function versOf(p){ return p.vers??Math.round(clamp(50+hn('vers',p.id)*13+(((p.r&&p.r.spd)||50)-50)*.25+(['SS','2B','CF'].includes(p.pos)?6:p.pos==='1B'||p.pos==='DH'?-7:p.pos==='C'?-3:0),20,80)); }
+function pexpOf(p){ if(p.pexp)return p.pexp; const E={}; if(SUBMAP[p.pos]){ let n=0; for(const [k,pr] of SUBMAP[p.pos])if(n<2&&u01('sub'+k,p.id)<pr){ E[k]=50; n++; } } return E; }
+/* 파생 기본값은 화면·거래 조회에서 저장하지 않는다. 실제 숙련 변화 때만 장부를 만든다. */
+function pexpEnsure(p){ if(p.vers==null)p.vers=versOf(p); return p.pexp||(p.pexp=pexpOf(p)); }
 function posRaw(from,pos){ const IF=['2B','SS','3B'], OF=['LF','CF','RF'];
   if(pos==='C')return 25; if(pos==='1B')return 4; if(IF.includes(pos)&&IF.includes(from))return pos==='SS'?7:5; if(OF.includes(pos)&&OF.includes(from))return pos==='CF'?8:4;
   if(OF.includes(pos))return pos==='CF'?13:(from==='3B'||from==='1B'?8:10); return 14; } /* 3루·1루 → 코너 외야는 조금 덜 어렵다 */
 const versF=p=>clamp(2-versOf(p)/50,.55,1.4);
 function posExp(p,pos){ return p.pos===pos?100:(pexpOf(p)[pos]||0); }
 function posLearnRate(p){ return Math.pow(versOf(p)/50,1.5)*(p.age<=22?1.3:p.age<=25?1.1:p.age<=29?.9:.6); }
-function posGain(p,pos,x){ if(pos===p.pos||!POS_F.includes(pos))return; const E=pexpOf(p); const e=E[pos]||0; E[pos]=Math.min(100,+(e+x*(1-e/120)).toFixed(1)); }
+function posGain(p,pos,x){ if(pos===p.pos||!POS_F.includes(pos))return; const E=pexpEnsure(p); const e=E[pos]||0; E[pos]=Math.min(100,+(e+x*(1-e/120)).toFixed(1)); }
 /* 매주: 1군에서 다른 자리로 뛴 경기만큼 배우고, 전환 훈련 중이면 훈련(2군이면 그 자리로 경기도)으로 배운다 */
 function posWeek(){ const per=period(); const y=G.year; const done=[];
   for(const p of Object.values(G.players)){ if(p.isP||p.team==null)continue; const u=p.use;
@@ -25,7 +27,7 @@ function posWeek(){ const per=period(); const y=G.year; const done=[];
     const C=p.pconv; if(!C)continue; if(p.joinY>G.year){ delete p.pconv; continue; } /* 합류 전 신인은 구단 훈련으로 포지션이 바뀌지 않는다(검수 11-06) */
     if((per==='pre'||per==='season')&&!(p.injOut>0||milServing(p)||isAway(p)||p.hold||ovsAbroad(p))) /* 해외 연수 중에도 구단 전환 훈련은 없다(검수 11-09o) */ /* 군 복무·대표팀·미계약 중에는 구단 훈련을 받지 못한다 */
     posGain(p,C.pos,1.5*posLearnRate(p)*(p.e1?1:posCoachF(p.team))); /* 전환 완료 검사는 비시즌에도 한다: 마무리캠프에서 기준을 넘길 수 있다(검수 11-06) */ /* 훈련(2군에서는 2군 코치진 육성력만큼 빠르거나 느리다). 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
-    if(posExp(p,C.pos)>=90){ const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[C.pos]; p.pos=C.pos; delete p.pconv; story(p,`${y} ${POSK[old]}에서 ${POSK[C.pos]}로 포지션 전환`); if(p.team===G.user&&!G.unemp)done.push(`${p.name}: ${POSK[old]} → ${POSK[C.pos]}`); } }
+    if(posExp(p,C.pos)>=90){ const old=p.pos; pexpEnsure(p)[old]=100; delete p.pexp[C.pos]; p.pos=C.pos; delete p.pconv; story(p,`${y} ${POSK[old]}에서 ${POSK[C.pos]}로 포지션 전환`); if(p.team===G.user&&!G.unemp)done.push(`${p.name}: ${POSK[old]} → ${POSK[C.pos]}`); } }
   if(done.length){ const m=G.mgr[G.user]; mail('감독실',`포지션 전환 완료 (${done.length}명)`,`${m?m.name+' 감독':'코치진'}: 전환 훈련을 마쳐 주 포지션을 바꿉니다.\n\n${done.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
 /* 단장 요청: 전환 훈련 시작·중단 */
 function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP)return '우리 야수만 정할 수 있습니다.'; if(p.joinY>G.year)return `${p.name}은(는) ${p.joinY}년에 합류하는 신인이라 아직 구단 훈련을 지시할 수 없습니다.`; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'코치진';
@@ -48,7 +50,7 @@ function dvGrade(v){ return v>=70?'A':v>=60?'B':v>=50?'C':v>=40?'D':'E'; }
    유격↔2루, 3루→1루, 코너 외야 거포→1루, 우익→중견처럼 성적을 내려고 옮긴 자리가 그대로 굳는다. 포수는 바뀌지 않는다 */
 function posSettle(y){ const out=[]; for(const p of Object.values(G.players)){ if(p.isP||p.team==null||p.pos==='C'||p.pconv)continue; const u=p.use; if(!u||u.y!==y||!u.pos)continue;
     const tot=Object.values(u.pos).reduce((a,b)=>a+b,0); let k=null,n=0; for(const q in u.pos)if(q!=='DH'&&q!==p.pos&&u.pos[q]>n){ n=u.pos[q]; k=q; }
-    if(!k||n<50||n<tot*.6||posExp(p,k)<75)continue; const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[k]; p.pos=k; story(p,`${y} ${POSK[old]}에서 ${POSK[k]}로 자리를 옮겨 정착`); if(p.team===G.user&&!G.unemp)out.push(`${p.name}: ${POSK[old]} → ${POSK[k]} (지난 시즌 ${k==='1B'?'1루':POSK[k]} 선발 ${n}경기)`); }
+    if(!k||n<50||n<tot*.6||posExp(p,k)<75)continue; const old=p.pos; pexpEnsure(p)[old]=100; delete p.pexp[k]; p.pos=k; story(p,`${y} ${POSK[old]}에서 ${POSK[k]}로 자리를 옮겨 정착`); if(p.team===G.user&&!G.unemp)out.push(`${p.name}: ${POSK[old]} → ${POSK[k]} (지난 시즌 ${k==='1B'?'1루':POSK[k]} 선발 ${n}경기)`); }
   if(out.length){ const m=G.mgr[G.user]; mail('감독실',`주 포지션 정착 (${out.length}명)`,`${m&&!m.interim?m.name+' 감독':'코치진'}: 지난 시즌 주로 뛴 자리를 주 포지션으로 굳힙니다.\n\n${out.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
 /* 감독의 자리 돌리기: 캠프 시작(2월 1일)과 6월 1일에 감독이 이기는 라인업을 짜 보고, 다른 자리에 넣은 주전은 그 자리 전환 훈련을 시킨다.
    수비가 약한 유격수라도 방망이가 좋으면 3루·2루로, 거기서도 밀리면 1루·코너 외야로 옮겨 다니다 수비 부담이 적은 자리에 자리 잡는다.

@@ -34,10 +34,11 @@
 .obs-warn{margin:0}
 .obs-scroll{max-height:60vh;overflow:auto;margin:0}
 .obs-scroll thead th{position:sticky;top:0;background:var(--panel);z-index:2}
-.obs-tbl td,.obs-tbl th{font-size:12px;padding:5px 7px;vertical-align:middle;text-align:left}
+.obs-tbl td,.obs-tbl th{font-size:12px;padding:5px 5px;vertical-align:middle;text-align:left}
 .obs-tbl td.num,.obs-tbl th.num{text-align:right}
 .obs-tbl tr.on td{background:#3d7cc71f}
 .obs-tbl td.warn{color:var(--warn)}
+.obs-tbl td.obs-cur,.obs-tbl td.obs-pot{white-space:nowrap}.obs-tbl .obs-drop{white-space:nowrap}.obs-m .obs-mr{display:flex;flex-wrap:wrap;align-items:center;gap:4px}.obs-m .obs-mact{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}.obs-m .obs-mact .obs-drop{margin-left:auto}
 .obs-pri{margin:0;flex-wrap:nowrap}
 .obs-pri button{min-height:28px;padding:2px 8px;font-size:12px}
 .obs-pri button.f.on{background:var(--acc);color:#fff;border-color:var(--acc)}
@@ -49,7 +50,7 @@
 .obs-log p{margin:4px 0;padding-left:8px;border-left:2px solid var(--line)}
 @media(min-width:980px){
   .obs-host{overflow:hidden!important}
-  .obsw{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr);align-items:stretch;height:calc(100dvh - 196px);min-height:420px}
+  .obsw{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(300px,1fr);align-items:stretch;height:calc(100dvh - 196px);min-height:420px}
   .obs-list{min-height:0;overflow:hidden}
   .obs-scroll{flex:1 1 auto;min-height:0;max-height:none}
   .obs-det{min-height:0;overflow:auto}
@@ -63,7 +64,7 @@
 .dtier-h{font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);margin:8px 0 2px;padding-bottom:2px}
 .dbr .chips button.done{color:var(--good)}
 .dbr-a{margin:2px 0;color:var(--muted)}
-.dunseen{margin:6px 0 0}
+.dunseen{margin:6px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-height:max-content;flex:none} /* 안에 든 버튼(32px)이 한 줄 높이 글줄 밖으로 넘쳐 아래 칸 제목에 가리던 문제(화면 비율 1280×600) */
 .dc-bet{display:grid;gap:6px;margin-top:10px}
 .do-chip{align-self:flex-start;width:fit-content;max-width:100%}
 .fx-wr .av.ini{white-space:nowrap;overflow:hidden;font-size:8px;letter-spacing:-.5px} /* 소속 없는 소식의 협회 표시가 세로로 쪼개지지 않게 */

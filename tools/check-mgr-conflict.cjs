@@ -13,6 +13,12 @@ const r3=await p.evaluate(()=>{ G.day=G.cal.open+30; const d=depth(G.user); cons
 ok(r3.e&&r3.txt,w+' 주간 회의 안건 표시 '+JSON.stringify(r3));
 const r4=await p.evaluate(()=>{ G.mgr[G.user].hD=G.day-5; A.go('staff:mgr'); render(); A.fireAsk(); render(); const t=document.body.innerText; return {msg:G.mcf&&G.mcf.fire&&G.mcf.fire.k, req:t.includes('구단주 동의'), cf:!!UI.confirmFire}; });
 ok(r4.msg==='no'&&r4.req&&!r4.cf,w+' 경질 요청: 구단주 반대가 화면에 보이고 확인 단계로 가지 않음 '+JSON.stringify(r4));
+/* 검수 11-17 #244: 구단주가 반대한 뒤 새 감독 선임(= 현 감독 경질)은 결재로 넘어가지 않고 막힌다. #251: 동의 뒤 결재 문서 연봉은 영입 약속 할증을 포함한다 */
+const r5=await p.evaluate(()=>{ const cur=G.mgr[G.user].id, s0=G.spend.mgr||0; const c=G.mmarket.find(x=>x.id!==cur); UI.cfm=null; UI.mplSel=[]; A.go('staff:mgr'); A.hireMgr(c.id+':2:0'); const blocked={cfm:!!UI.cfm,same:G.mgr[G.user].id===cur,spend:(G.spend.mgr||0)===s0,msg:String(UI.mgrMsg||'')};
+  mcf().fire={k:'ok',day:G.day,until:G.day+14,msg:'동의'}; c.ego=65; UI.mplSel=['listen']; A.hireMgr(c.id+':3:0'); const d=UI.cfm&&UI.cfm.doc; const want=mplSal(c,['listen']); const line=d?d.lines[0]:''; const btn=!!document.querySelector('.cfm [data-a="cfmOk"]');
+  if(UI.cfm)A.cfmOk(); const hired=G.mgr[G.user]; return {blocked,line,want:money(want),btn,sal:hired.id===c.id?hired.sal:null,wantN:want}; });
+ok(!r5.blocked.cfm&&r5.blocked.same&&r5.blocked.spend&&/반대/.test(r5.blocked.msg),w+' 구단주 반대 뒤 감독 선임 결재가 막힘 '+JSON.stringify(r5.blocked));
+ok(r5.btn&&r5.line.includes(r5.want)&&/할증/.test(r5.line)&&r5.sal===r5.wantN,w+' 결재 문서 연봉이 약속 할증 포함 실제 계약과 같음 '+JSON.stringify(r5));
 ok(errs.length===0,w+' 페이지 오류 없음 '+errs.join('|'));
 await ctx.close(); }
 await b.close();await server.close();})().catch(e=>{console.error(e);process.exit(1);});

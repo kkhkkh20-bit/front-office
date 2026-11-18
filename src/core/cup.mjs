@@ -241,7 +241,7 @@ export function cupTitles(bat, pit, q) {
   if (q.no && q.no.length) { const skip = new Set(q.no), ok = x => !skip.has(String(x.key).split(':')[0]); bat = bat.filter(ok); pit = pit.filter(ok); } /* AI 구단 선수는 타이틀 없음 */
   const top = (L, f, okf, low) => { const C = L.filter(okf || (() => true)).map(x => [f(x), x]).filter(x => isFinite(x[0])); if (!C.length) return null; C.sort((a, b) => low ? a[0] - b[0] : b[0] - a[0]); return { v: C[0][0], x: C[0][1] }; };
   const avg = x => x.ab ? x.h / x.ab : 0, obp = x => { const d = x.ab + x.bb + (x.hbp || 0) + (x.sf || 0); return d ? (x.h + x.bb + (x.hbp || 0)) / d : 0; };
-  const era = x => x.outs ? x.er * 27 / x.outs : 99, whip = x => x.outs ? (x.h + x.bb) * 3 / x.outs : 99, k9 = x => x.outs ? x.so * 27 / x.outs : 0;
+  const era = x => x.outs ? x.er * 27 / x.outs : 99, whip = x => x.bbMixed ? NaN : x.outs ? (x.h + x.bb) * 3 / x.outs : 99, k9 = x => x.outs ? x.so * 27 / x.outs : 0;
   const L = [
     ['타율', top(bat, avg, x => x.pa >= q.pa), v => v.toFixed(3).replace(/^0/, '')],
     ['출루율', top(bat, obp, x => x.pa >= q.pa), v => v.toFixed(3).replace(/^0/, '')],

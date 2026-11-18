@@ -35,11 +35,15 @@ function despOf(t){ if(!t||t.id===ME()||t.indie)return 0; const H=(G.history||[]
 function domArms(t,rk){ const L=domLead(); if(!L||L.tid===t.id||rk>5.5)return 0; return Math.min(1.5,L.s)*.9; }
 /* 견제 기록(측정·소식용): ref 거절, over 웃돈, outbid FA 가로채기, allin 올인, arms 군비 경쟁 전환 */
 let _domSeen={d:-1,s:new Set()};
-function domLog(kind,key){ if(key!=null){ if(_domSeen.d!==G.day)_domSeen={d:G.day,s:new Set()}; const k=kind+':'+key; if(_domSeen.s.has(k))return; _domSeen.s.add(k); }
+function domLog(kind,key){ if(key!=null){ if(_domSeen.d!==G.day||_domSeen.g!==G)_domSeen={d:G.day,g:G,s:new Set()}; const k=kind+':'+key; if(_domSeen.s.has(k))return; _domSeen.s.add(k); }
   const y=G.year; G.domLog=G.domLog||{}; const o=G.domLog[y]=G.domLog[y]||{}; o[kind]=(o[kind]||0)+1; for(const k in G.domLog)if(+k<y-12)delete G.domLog[k]; }
-/* 트레이드 견제: 상대(독주 구단)에게 붙일 웃돈 비율과 거절 여부. t: 파는 구단, dtid: 사는 구단, starter: 주전을 내주는 거래인지 */
-function domTradeTax(t,dtid,starter){ const s=domOf(dtid); if(s<DOM_TH*.6)return {k:0,refuse:false}; const rk=rivalK(t,dtid); const m=Math.min(2,s);
-  return {k:(.04+.16*rk)*m,refuse:!!starter&&rk>=.8&&s>=1.3,s,rk}; }
+/* 트레이드 견제: 상대(독주 구단)에게 붙일 웃돈 비율과 거절 여부. t: 파는 구단, dtid: 사는 구단, starter: 주전을 내주는 거래인지
+   bench: 파는 구단이 비주전(주전·상위 6명 아님)만 내주는 거래(16_trade trBenchOnly). 백업 한 명은 독주 구단 전력을 거의 키우지 않으니 웃돈은 1/4만(피드백 11-18: 상위 팀은 백업 맞교환도 안 됐다). 우리·AI 같은 식 */
+const DOM_BENCH=.25;
+/* 피드백 11-18 3차(소유자 승인): 비주전 감면이 없는 거래(주전·상위 6명)의 웃돈 비율은 20%까지(예전 최대 46%). 견제 강도가 센 구단(0.8 이상)이 주전을 아예 안 내주는 건 독주 점수 2.0(3연패 수준)부터(예전 1.3: 우승 한 번에 선두만 해도 막혔다). 우리·AI 같은 식 */
+const DOM_KMAX=.2, DOM_REFUSE=2;
+function domTradeTax(t,dtid,starter,bench){ const s=domOf(dtid); if(s<DOM_TH*.6)return {k:0,k0:0,refuse:false}; const rk=rivalK(t,dtid); const m=Math.min(2,s); const k0=(.04+.16*rk)*m;
+  return {k:bench&&!starter?k0*DOM_BENCH:Math.min(DOM_KMAX,k0),k0,refuse:!!starter&&rk>=.8&&s>=DOM_REFUSE,s,rk}; }
 /* FA 견제: 독주 구단의 FA이거나 독주 구단이 노리는(제안했거나 구단주가 찍은) FA면 경쟁 구단의 지불 의사가 오른다 */
 function domFaMul(t,p){ if(!t||!p||t.id===ME())return 1; const L=domLead(); if(!L||L.tid===t.id)return 1; const D=team(L.tid); const F=G.fa;
   const hit=p.faFrom===L.tid||(F&&F.tgt&&F.tgt[L.tid]===p.id)||(F&&L.tid===G.user&&!G.unemp&&F.offers&&F.offers[p.id])||(F&&F.ai&&F.ai[p.id]&&F.ai[p.id][L.tid]); if(!hit||!D)return 1;

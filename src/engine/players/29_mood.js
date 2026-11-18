@@ -18,12 +18,17 @@ const moodLabel=m=>m>=80?'매우 좋음':m>=65?'좋음':m>=45?'보통':m>=30?'�
 const moodClass=m=>m>=65?'good':m>=45?'':m>=30?'warn':'bad';
 function persText(p){ const s=p.pers; const t=[]; if(s.pro>=15)t.push('프로의식이 강함'); if(s.pro<=7)t.push('훈련 태도가 들쭉날쭉'); if(s.amb>=15)t.push('야망이 큼'); if(s.loy>=15)t.push('구단 충성심이 높음'); if(s.loy<=6)t.push('시장 평가를 중시'); if(s.temp>=15)t.push('예민한 편'); if(s.temp<=6)t.push('무던한 편'); return t.length?t.join(' · '):'평범한 성향'; }
 /* 출전 약속: 약속한 날의 출전량(타석·아웃·경기)을 기준으로 저장하고, 그 뒤 늘어난 만큼으로 판정한다(약속 전 기록은 세지 않는다) */
-function playPromNow(p){ const h=seasonTotal(p,G.year,'1군')||{}; return {y:G.year,pa:h.pa||0,outs:h.outs||0,g:h.g||0}; }
-function mkPromise(p,days){ return {until:G.day+(days||30),b:playPromNow(p),tid:p.team}; } /* tid: 약속한 구단(다른 구단 약속도 같은 판정·같은 기용 몫, 95_audit leaveSweep) */
-function playPromKept(p,P=p.promise){ if(!P)return false; if(!P.b)return isRegular(p); const n=playPromNow(p); const b=P.b.y===G.year?P.b:{pa:0,outs:0,g:0};
-  return p.isP?((n.outs-b.outs)>=15||(n.g-b.g)>=4):(n.pa-b.pa)>=25; } /* 약속 뒤 타자 25타석, 투수 5이닝 또는 4경기 이상 */
+function playPromNow(p,y=G.year,tid=p.team){ const h=seasonTotalT(p,y,'1군',tid)||{}; return {y,tid,pa:h.pa||0,outs:h.outs||0,g:h.g||0}; }
+function mkPromise(p,days){if(p.promise&&(p.promise.tid??p.team)===p.team)return p.promise;const n=p.playPromN=(p.playPromN||0)+1;return {until:G.day+(days||30),b:playPromNow(p),tid:p.team,d:G.day,n};}
+/* 옛 기준은 시즌 전체 합계였다. 약속 구단 밖의 확정 기록만 빼 같은 구단 기준으로 복원한다. */
+function playPromBase(p,P){const b={...P.b},tid=P.tid??p.team,y=Number.isInteger(b.y)?b.y:G.year;if(b.tid==null){const all=seasonTotal(p,y,'1군')||{},here=playPromNow(p,y,tid);for(const k of ['pa','outs','g'])b[k]=Math.max(0,(b[k]||0)-Math.max(0,(all[k]||0)-here[k]));b.tid=tid;}b.y=y;return b;}
+function playPromKept(p,P=p.promise){if(!P||(P.tid??p.team)!==p.team)return false;if(!P.b)return isRegular(p);const b=playPromBase(p,P),n={pa:0,outs:0,g:0};for(const h of p.hist||[])if(h.y>=b.y&&h.y<=G.year&&!h.y2&&h.lvl==='1군'&&h.t===b.tid)for(const k of ['pa','outs','g'])n[k]+=h[k]||0;return p.isP?((n.outs-b.outs)>=15||(n.g-b.g)>=4):(n.pa-b.pa)>=25;}
+function playPromiseFix(p0){for(const p of p0?[p0]:Object.values(G.players||{})){const P=p.promise;if(!P)continue;if(P.tid==null)P.tid=p.team;if(p.team==null||P.tid!==p.team){delete p.promise;delete p.pdProm;continue;}if(P.b&&P.b.tid==null)P.b=playPromBase(p,P);if(P.n==null)P.n=(p.playPromN||0)+1;p.playPromN=Math.max(p.playPromN||0,P.n);}}
+function playPromFinish(p,kept){const P=p.promise;if(!P)return 0;const tid=P.tid??p.team,d=kept?5:-12;p.playPromLast={d:G.day,tid,kept,until:P.until,n:P.n};try{morLog(p,'prom',d,'club:'+tid);if(kept)pdPromKept(p);else pdPromBroken(p);}catch(e){}delete p.promise;if(tid===G.user&&!G.unemp){if(kept)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id);else stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id);}return d;}
+/* 실제 출전이 늘어난 날 이행한다. 조회에서는 기분·약속·난수를 바꾸지 않는다. */
+function playPromiseTick(){playPromiseFix();for(const p of Object.values(G.players||{}))if(p.promise&&playPromKept(p))p.mor=clamp((p.mor??60)+playPromFinish(p,true),0,100);}
 function isRegular(p){ if(p.team==null)return false; const d=depth(p.team); return [...d.start,...d.sp,...d.pen.slice(0,4)].some(x=>x.id===p.id); }
-function playedReg(p){ if(p.team==null)return false; const r=G.sea&&G.sea.rec[p.team]; const g=r?r.w+r.l+(r.t||0):0; if(g<10)return false; const h=seasonTotal(p,G.year,'1군'); if(!h)return false;
+function playedReg(p){ if(p.team==null)return false; const r=G.sea&&G.sea.rec[p.team]; const g=r?r.w+r.l+(r.t||0):0; if(g<10)return false; const h=seasonTotalT(p,G.year,'1군',p.team); if(!h)return false;
   return p.isP?((h.gs||0)>=g/7||(h.g||0)>=g/3):(h.pa||0)>=g*2.5; }
 /* 팀 안에서의 역할 한 줄: 감독 배치(depth)와 능력 성향으로 */
 function squadRole(p){ if(!p||p.team==null||p.prospect)return ''; if(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)return '군 복무 중'; if(p.injOut>0)return `부상 회복 중(${p.injOut}일)`; if(isAway(p))return '국가대표 차출 중';
@@ -43,12 +48,12 @@ function keepWhy(p){ if(!p||p.team==null||p.prospect)return ''; const per=period
   return '1군 자리가 막혀 있습니다. 부상 대비 자원이지만, 트레이드·방출 후보로 검토할 수 있습니다.'; }
 /* 기분과 출전 기회 만족은 다르다: 기회 만족은 기대(주전급·나이)와 실제 기용으로만 본다 */
 function oppSat(p){ if(!p||p.team==null||p.prospect)return null; const per=period(); if(!(per==='season'||per==='post'))return null; const reg=isRegular(p)||playedReg(p); const star=ovr(p)>=55||p.sal>=500; const m=p.mor??60; let lv,why;
-  if(p.promise){ lv='기다리는 중'; why='약속한 출전 기회를 기다립니다'; } else if(!healthy(p)||isAway(p)){ lv='보류'; why=isAway(p)?'국가대표 차출로 빠져 있어 기회를 따지지 않습니다':'부상·징계로 빠져 있어 기회를 따지지 않습니다'; } else if(star&&!reg){ lv='불만'; why='주전을 기대하는데 주전이 아닙니다'; } else if(!reg&&p.age>=27){ lv='아쉬움'; why='나이가 있어 1군 기회를 더 원합니다'; } else { lv='만족'; why=reg?'원하는 만큼 뛰고 있습니다':'지금 위치를 받아들이고 있습니다'; }
+  if(p.promise&&playPromKept(p)){lv='만족';why='약속한 출전 기회를 받았습니다';}else if(p.promise){ lv='기다리는 중'; why='약속한 출전 기회를 기다립니다'; } else if(!healthy(p)||isAway(p)){ lv='보류'; why=isAway(p)?'국가대표 차출로 빠져 있어 기회를 따지지 않습니다':'부상·징계로 빠져 있어 기회를 따지지 않습니다'; } else if(star&&!reg){ lv='불만'; why='주전을 기대하는데 주전이 아닙니다'; } else if(!reg&&p.age>=27){ lv='아쉬움'; why='나이가 있어 1군 기회를 더 원합니다'; } else { lv='만족'; why=reg?'원하는 만큼 뛰고 있습니다':'지금 위치를 받아들이고 있습니다'; }
   const gap=lv==='만족'&&m<45?'기분이 나쁜 이유는 출전 기회가 아닙니다(위 이유 참고).':(lv==='불만'||lv==='아쉬움')&&m>=65?'지금 기분은 좋지만 기회가 계속 없으면 떨어집니다.':''; return {lv,why,gap}; }
 function moraleWhy(p){
   const per=period(); const live=per==='season'||per==='post';
   const reg=!live||isRegular(p)||playedReg(p); const star=ovr(p)>=55||p.sal>=500;
-  if(p.promise)return '건의해 주신 출전 기회를 기다리고 있습니다.';
+  if(p.promise)return playPromKept(p)?'약속한 출전 기회를 받았습니다.':'건의해 주신 출전 기회를 기다리고 있습니다.';
   const ok=healthy(p)&&!isAway(p);
   if(star&&!reg&&ok)return '주전으로 뛰지 못해 답답합니다.';
   if(!reg&&p.age>=27&&ok)return '나이가 있어서 더 많은 기회가 필요합니다.';
@@ -67,21 +72,20 @@ function roleWeek(){ if(period()!=='season')return; const y=G.year;
     if(up.length||down.length){ const ln=[...up.map(p=>`${p.name}: 불펜 → 선발`),...down.map(p=>`${p.name}: 선발 → 불펜`)];
       mail('감독실',`투수 보직 변경 (${ln.length}명)`,`${m.name} 감독: 이번 주부터 선발진을 바꿉니다.\n\n${ln.join('\n')}\n\n체력과 최근 투구 내용을 보고 정했습니다. 내용이 바뀌면 다시 조정합니다.`,{kind:'감독'}); } } }
 function moraleWeek(){
+  try{captainReconcileAll(false,true);}catch(e){}
   const per=period();
   for(const t of G.teams){
     const d=depth(t.id); const reg=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(p=>p.id));
     const st=G.sea.rec[t.id]; const wp=(st.w+st.l)?st.w/(st.w+st.l):.5; const m=G.mgr[t.id]; const disc=m?m.disc:45;
     const cap=captainOf(t.id); /* 주장 효과는 모든 구단(사용자 11-13) */ const capB=cap&&healthy(cap)?((cap.pers&&cap.pers.pro)||10)>=14?.4:.2:0;
     const hcC=G.coach&&coachesOf(t.id).hc; const comB=hcC?(cAb(hcC).com-50)/80:-.1; /* 수석코치 소통: 주에 ±0.3 안팎 */
-    for(const p of playersOf(t.id)){ initPers(p); let dd=capB+comB; const star=ovr(p)>=55||p.sal>=500; const r=reg.has(p.id)||(per==='season'&&playedReg(p)); const MP={}; if(capB)MP.cap=capB; if(comB)MP.hc=Math.round(comB*100)/100; /* 이번 주에 실제로 더한 몫(기분 이유 목록, 30_chemistry) */
+    for(const p of playersOf(t.id)){ initPers(p); const cb=captainAvailable(p,t.id)?capB:0;let dd=cb+comB; const star=ovr(p)>=55||p.sal>=500; const r=reg.has(p.id)||(per==='season'&&playedReg(p)); const MP={}; if(cb){MP.cap=cb;MP.capSrc={id:cap.id,n:cap.name,t:t.id,d:G.day,acting:team(t.id).cap!==cap.id};} if(comB)MP.hc=Math.round(comB*100)/100; /* 이번 주에 실제로 더한 몫(기분 이유 목록, 30_chemistry) */
       if(per==='season'){ let a=0; if(star&&!r&&healthy(p))a=-3*(p.pers.temp>=14?1.3:1); else if(!r&&healthy(p)&&p.age>=27&&ovr(p)>=46)a=-1; else if(r)a=1; const b=wp>.56?1:wp<.44?-1:0; dd+=a+b; if(a)MP.pt=a; if(b)MP.res=b; }
       if(Object.keys(MP).length)p.morP=MP; else delete p.morP;
-      if(p.promise&&G.day>=p.promise.until&&!healthy(p)&&per==='season'){ p.promise.until=G.day+Math.min(30,Math.max(7,p.injOut||7)); p.promise.inj=(p.promise.inj||0)+1; } /* 부상으로 뛸 수 없으면 평가를 미룬다(복귀 뒤 출전 가능 기간으로 본다) */
+      if(p.promise&&playPromKept(p))dd+=playPromFinish(p,true);
+      if(p.promise&&G.day>=p.promise.until&&!healthy(p)&&per==='season'){ p.promise.until=G.day+Math.min(30,Math.max(7,p.injOut||7)); p.promise.inj=(p.promise.inj||0)+1; } /* 아직 채우지 못한 약속만 부상으로 평가를 미룬다 */
       if(p.promise&&G.day>=p.promise.until&&per!=='season'){ p.promise.until=G.day+30; p.promise.off=1; } /* 경기가 없는 기간은 약속 기한에서 빼고 시즌 경기로 평가한다 */
-      if(p.promise&&G.day>=p.promise.until){ const r=playPromKept(p);
-        if(r){ dd+=5; try{ morLog(p,'prom',5); pdPromKept(p); }catch(e){} if(t.id===G.user)note('면담',`${p.name}: 감독님께 말씀해 주셔서 기회를 얻었습니다. 감사합니다.`,p.id); }
-        else { dd-=12; try{ morLog(p,'prom',-12); pdPromBroken(p); }catch(e){} if(t.id===G.user)stop('면담',`${p.name}이(가) 한 달이 지나도 기회를 얻지 못해 실망했습니다. 감독은 다른 선수를 기용하고 있습니다.`,p.id); }
-        delete p.promise; }
+      if(p.promise&&G.day>=p.promise.until)dd+=playPromFinish(p,false);
       const tgt=60+(disc-50)/8; p.mor=clamp(p.mor+dd+(tgt-p.mor)*(per==='season'?.08:.03),0,100); /* 비시즌에는 기분이 천천히 평소로 돌아온다(카페 11-09: 시즌 끝 100이 개막 때 60이 되던 문제). 시즌 중에는 그대로 */
       if(t.id===G.user)requestCheck(p);
     }
@@ -94,7 +98,7 @@ const teamGP=tid=>{ const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; return r?r.w+r.l+(
 function requestCheck(p){
   if(p.mor>=34||(p.reqDay!=null&&p.reqDay>G.day-45))return;
   /* 출전 시간 불만은 시즌 100경기가 지나야 말이 나오고, 단장이 아니라 감독에게 먼저 간다(25_gm_events의 pt: 감독과 갈등 기사 → 단장 후속 조치) */
-  if(ptWhyP(p)){ if(G.unemp||teamGP(p.team)<100||(p.ptDay>G.day-60)||(G.ptLast!=null&&G.day-G.ptLast<30))return; p.reqDay=G.day; G.ptLast=G.day; if(!evOpen().some(e=>e.k==='pt'))try{ EVH.pt.make(p); }catch(e){} return; } /* 팀 전체로도 한 달에 한 번까지 */
+  if(ptWhyP(p)){if(G.unemp||teamGP(p.team)<100||(p.ptDay>G.day-60)||(G.ptLast!=null&&G.day-G.ptLast<30)||evOpen().some(e=>e.k==='pt'))return;try{if(EVH.pt.make(p)){p.reqDay=G.day;G.ptLast=G.day;}}catch(e){}return;} /* 실제 면담·결정이 생긴 뒤에만 재발 방지 기간을 시작한다. */
   p.reqDay=G.day; const why=moraleWhy(p);
   if(p.mor<22&&p.pers.amb>=13&&!p.listed&&!p.foreign&&p.pers.temp>=13&&R()<.5)prLeak('p',p);
   if(p.mor<22&&p.pers.amb>=13&&!p.listed&&!p.foreign){ p.treq={day:G.day}; } if(p.mor<22&&p.pers.amb>=13&&!p.listed&&!p.foreign) mail(p.name,'트레이드 요청',`${why} 이대로라면 다른 팀에서 뛰고 싶습니다. 트레이드를 요청드립니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'트레이드 명단에 올리기',a:'listP',v:p.id},{l:'남아 달라고 설득',a:'keepP',v:p.id},{l:'선수 보기',a:'player',v:p.id}]});
@@ -153,9 +157,9 @@ const TALK_GRP={praise:'pp',push:'pp',promise:'promise',futreq:'futreq',contract
 const TALK_GRPL={pp:'칭찬·분발 촉구',promise:'출전 기회 건의',futreq:'2군 주전 기용 요청',contract:'계약 이야기'};
 function talkUsed(p,kind){ const g=TALK_GRP[kind]; return !!(g&&p&&p.tk&&p.tk[g]===Math.floor(G.day/7)); }
 /* 최근 사건: 이 선수가 나온 우리 팀 마지막 경기(2일 안)에서 눈에 띈 일 */
-function talkEvent(p){ const L=G.games||[]; for(let i=0;i<L.length;i++){ const g=L[i]; /* G.games는 최근 경기가 앞 */ if(g.home!==p.team&&g.away!==p.team)continue; if(G.day-g.day>2||!g.box)return null; const B=g.box[g.home===p.team?'h':'a']; if(!B)return null;
-    if(p.isP){ const x=(B.pit||[]).find(q=>q.id===p.id); if(!x)return null; const ip=ipStr(x.outs); if(x.er>=4||(x.d==='패'&&x!==B.pit[0]))return {d:g.day,k:'bad',t:`지난 경기 ${ip}이닝 ${x.er}실점${x.d==='패'?' 패전':''}`}; if(x.d==='세')return {d:g.day,k:'good',t:'지난 경기 세이브'}; if(x.outs>=18&&x.er<=1)return {d:g.day,k:'good',t:`지난 경기 ${ip}이닝 ${x.er}실점`}; return null; }
-    const x=(B.bat||[]).find(q=>q.id===p.id); if(!x)return null; if(x.hr>=1||x.h>=3)return {d:g.day,k:'good',t:`지난 경기 ${x.ab}타수 ${x.h}안타${x.hr?` ${x.hr}홈런`:''}`}; if(x.ab>=4&&x.h===0)return {d:g.day,k:'bad',t:`지난 경기 ${x.ab}타수 무안타`}; return null; }
+function talkEvent(p){ const L=G.games||[]; for(let i=0;i<L.length;i++){ const g=L[i]; /* 최근 2일 안에서 이 선수의 마지막 출전을 찾는다. 팀의 직전 경기 결장은 건너뛴다. */ if(g.home!==p.team&&g.away!==p.team)continue; if(G.day-g.day>2)return null;if(g.day>G.day||!g.box)continue; const B=g.box[g.home===p.team?'h':'a']; if(!B)continue;
+    if(p.isP){ const x=(B.pit||[]).find(q=>q.id===p.id); if(!x)continue; const ip=ipStr(x.outs); if(x.er>=4||(x.d==='패'&&x!==B.pit[0]))return {d:g.day,k:'bad',t:`지난 경기 ${ip}이닝 ${x.er}실점${x.d==='패'?' 패전':''}`}; if(x.d==='세')return {d:g.day,k:'good',t:'지난 경기 세이브'}; if(x.outs>=18&&x.er<=1)return {d:g.day,k:'good',t:`지난 경기 ${ip}이닝 ${x.er}실점`}; return null; }
+    const x=(B.bat||[]).find(q=>q.id===p.id); if(!x)continue; if(x.hr>=1||x.h>=3)return {d:g.day,k:'good',t:`지난 경기 ${x.ab}타수 ${x.h}안타${x.hr?` ${x.hr}홈런`:''}`}; if(x.ab>=4&&x.h===0)return {d:g.day,k:'bad',t:`지난 경기 ${x.ab}타수 무안타`}; return null; }
   return null; }
 /* 같은 사건도 성격대로 받아들인다: 무던함(temp 낮음)·예민함(temp 높음)·자신감(amb 높음) */
 function eventLine(p,ev){ const s=p.pers||{}; const nx=p.isP?'등판':'경기';
@@ -178,7 +182,7 @@ function talk(id,kind){
   if(kind==='ask'){ try{ const t=pvAsk(p,ev,contactRecord('pl:'+p.id).bond??30); if(t)line=t; }catch(e){} }
   if(out)line=pvTalk(p,kind,out,rep,line,ex); /* 같은 결과도 선수 말투·지금 상황에 맞춰 다른 문장(효과는 그대로) */
   line=personalTalkReply(p,kind,line);{const C=contactRecord('pl:'+p.id);C.seen=G.day;/* 대화도 교류: 친분이 식는 시계를 멈춘다(83_personal_life) */if(d)C.bond=clamp(C.bond+(d>0?1:-2),0,100);}p.mor=clamp(p.mor+d,0,100); talkLogPush(p,kind,line);
-  return {msg:`${p.name}: "${line}"`,d};
+  return {msg:`${p.name}: "${line}"`,d,ext:kind==='contract'&&out==='ct_fa_loy'}; /* ext: 다년계약 제안이면 듣겠다고 함 → 화면이 연장 협상 버튼(또는 열 수 없는 이유)을 보인다(피드백 11-17 연장) */
 }
 /* 면담 결과(효과)만 정한다: 기분 변화 d(아직 적용 전)·출전 약속·분발(form)·2군 기용 요청·칭찬 체감 감소 기록(tkH).
    문장(out·rep·ex는 말투 문장 고르기용 결과 이름, line은 기본 문장)은 talk()가 고른다. AI 구단 면담도 같은 결과 계산을 쓸 수 있게 나눠 둔다.
@@ -191,12 +195,13 @@ function talkOutcome(p,kind,o){ o=o||{}; initPers(p); const askAgain=!!o.askAgai
   if(kind==='promise'){ if(isRegular(p)){d=0;line='이미 주전으로 뛰고 있습니다. 마음만 받겠습니다.';out='pm_reg';} else if(p.promise){d=-2;line='지난번 약속부터 지켜 주세요.';out='pm_dup';} else {d=8;p.promise=mkPromise(p,30);line='감독님께 말씀해 주신다니 감사합니다. 기회가 오면 보여 드리겠습니다.';out='pm_new';} }
   if(kind==='futreq'){ const n=futReqList(tid).filter(q=>q.id!==p.id).length;
     ex.fmax=FUTREQ_MAX; if(p.e1){ d=0; line='지금은 1군에 있습니다. 2군 감독님께 따로 말씀하실 필요는 없을 것 같습니다.'; out='fr_e1'; }
+    else if(!futReqAvailable(p)){d=0;line=period()!=='season'||G.flOn===false?'지금은 퓨처스리그를 치르는 기간이 아닙니다. 시즌에 다시 말씀해 주십시오.':p.boy>G.day?'훈련에 복귀한 뒤 기용을 이야기하겠습니다.':p.injOut>0||!healthy(p)?'지금은 경기에 나갈 수 없습니다. 회복한 뒤 기용을 이야기하겠습니다.':'지금은 2군 경기에 나갈 수 없는 상태입니다. 복귀한 뒤 다시 이야기하겠습니다.';}
     else if(n>=FUTREQ_MAX){ d=0; line=`2군 감독님이 이미 ${FUTREQ_MAX}명을 챙기고 계신다고 들었습니다. 자리가 나면 다시 말씀해 주십시오.`; out='fr_full'; }
-    else { p.futReq={until:G.day+42}; d=3; line=`2군에서 꾸준히 ${p.isP?'선발로 던지면서':'주전으로 나가면서'} 보여 드리겠습니다.`; out='fr_ok'; } }
+    else { const seq=Math.max(0,...playersOf(tid).filter(q=>q.id!==p.id).map(q=>q.futReq?.seq||0))+1;p.futReq={until:G.day+42,d:G.day,tid,up:p.upDay??null,seq};if(G.futLn)delete G.futLn[tid];d=3; line=`2군에서 꾸준히 ${p.isP?'선발로 던지면서':'주전으로 나가면서'} 보여 드리겠습니다.`; out='fr_ok'; } }
   if(kind==='contract'){ d=1;
     if(p.foreign){line='재계약은 성적으로 말씀드리겠습니다.';out='ct_for';}
     else if(p.faC&&p.yrs>1){line='계약 기간이 남았으니 야구에만 집중하겠습니다.';out='ct_multi';ex.yrs=p.yrs;}
-    else if(p.svc>=faSvc(p)-2){ ex.faTxt=Math.max(0,faSvc(p)-p.svc)<=1?'이번 시즌이 끝나면 FA입니다':`${Math.max(0,faSvc(p)-p.svc)}시즌 뒤에 FA입니다`; line=`${ex.faTxt}. ${p.pers.loy>=13?'가능하면 이 팀에서 오래 뛰고 싶습니다. 다년계약 제안이면 진지하게 듣겠습니다.':'솔직히 시장 평가도 받아 보고 싶습니다.'}`; out=p.pers.loy>=13?'ct_fa_loy':'ct_fa_mkt'; }
+    else if(p.svc>=faSvc(p)-2){const next=faUpcoming(p)[0],need=Math.max(0,faSvc(p)-(p.svc||0)),re=p.lastFA!=null?Math.max(0,p.lastFA+4-G.year):0;ex.faTxt=next?.sure?'이번 시즌이 끝나면 FA입니다':next?.why==='svc'?'올해 1군 등록 연차를 채우면 시즌 뒤 FA입니다':re?`FA 재자격까지 ${re}시즌이 더 필요합니다`:need?`FA 자격까지 1군 등록 연차 ${need}시즌이 더 필요합니다`:'FA 자격을 갖췄습니다'; line=`${ex.faTxt}. ${p.pers.loy>=13?'가능하면 이 팀에서 오래 뛰고 싶습니다. 다년계약 제안이면 진지하게 듣겠습니다.':'솔직히 시장 평가도 받아 보고 싶습니다.'}`; out=p.pers.loy>=13?'ct_fa_loy':'ct_fa_mkt'; }
     else {line=p.age<=24?'아직은 1군에서 자리 잡는 게 먼저입니다.':'좋은 대우를 받으려면 성적부터 내야죠.';out=p.age<=24?'ct_young':'ct_other';} }
   let ev=null; if(kind==='ask'){ d=askAgain?0:2; ev=talkEvent(p); const why=moraleWhy(p); const plain=/즐겁습니다|특별한 고민은 없습니다/.test(why);
     if(ev){ line=eventLine(p,ev)+(plain?'':` 그리고 ${why}`); if(ev.k==='bad'&&p.pers.temp>=15&&d)d=1; } else line=why;
@@ -216,11 +221,13 @@ function keepPlayer(id){ const p=G.players[id]; if(!p||p.team!==G.user||G.unemp)
    시즌 중에는 evWeek가 check()로 고르고, 시즌 밖(스토브리그·캠프)에는 treqWeek가 따로 본다 */
 /* 그 시즌을 우리 구단에서 보내지 않은 선수(시즌 중간 이후·시즌 뒤 합류)는 그 시즌 출전으로 불만을 말하지 않는다 */
 function treqNewHere(p,y){ const C=G.cal; const end=y<G.year?dnum(y,10,1):(C?C.end:dnum(y,10,1)), open=y<G.year?dnum(y,3,25):(C?C.open:dnum(y,3,25)); let j=null; for(const m of p.tLog||[])if(m.t===G.user&&m.d!=null)j=Math.max(j??-1e9,m.d); if(j==null&&p.mvD!=null&&p.team===G.user)j=p.mvD; return j!=null&&j>open+Math.round((end-open)/2); }
+/* 그 시즌에 아직 프로가 아니었던 선수(그해 가을 지명·다음 해 입단)는 그 시즌 출전으로 불만을 말하지 않는다(카페 11-17: 1월 1일 입단한 신인이 바로 트레이드 요청). 우리·AI 구단 같은 규칙 */
+function treqRookie(p,y){ const d=p.draft&&+p.draft.y; return (p.joinY!=null&&+p.joinY>y)||(d&&d>=y); }
 function treqLowPT(p,y,gp){ const h=(p.team===G.user?seasonTotalT(p,y,'1군',G.user):seasonTotal(p,y,'1군'))||{}; /* 우리 구단에서 뛴 몫만(커뮤니티 11-13 질수없뜸: 12월에 데려온 선수가 전 구단 시절 0타석을 이유로 트레이드 요청) */ return p.isP?(h.outs||0)<gp*.6:(h.pa||0)<gp*1.1; }
 function treqCands(){ if(G.unemp||!G.mgr[G.user])return []; const per=period(), live=per==='season', y=per==='off'||live?G.year:G.year-1; const gp=live?teamGP(G.user):144; if(live&&gp<20)return [];
   const d=depth(G.user); const rv=p=>(p.isP?[d.sp[4],d.pen[3]]:[d.ln[p.pos]]).filter(Boolean);
   return playersOf(G.user).filter(p=>{ initPers(p); if(p.foreign||p.ys||!healthy(p)||isAway(p)||p.listed||p.promise||(p.treq&&(!p.treq.done||G.day-p.treq.day<120))||p.joinY>G.year||p.age<23||p.age>33||p.pers.amb<10||(p.mor??60)>=70)return false;
-    if((p.mvD!=null&&G.day-p.mvD<60)||treqNewHere(p,y)||(p.tLog||[]).some(x=>x.t===G.user&&G.day-x.d<60)||isRegular(p)||(live&&playedReg(p))||!treqLowPT(p,y,gp))return false;
+    if(treqRookie(p,y)||(p.mvD!=null&&G.day-p.mvD<60)||treqNewHere(p,y)||(p.tLog||[]).some(x=>x.t===G.user&&G.day-x.d<60)||isRegular(p)||(live&&playedReg(p))||!treqLowPT(p,y,gp))return false;
     const f=seasonTotal(p,y,'퓨처스'); const farm=f&&(p.isP?f.outs>=60&&f.er*27/f.outs<=3.6:f.pa>=60&&bRate(f).ops>=.8);
     return farm||rv(p).some(q=>q.id!==p.id&&ovr(p)>=ovr(q)-3); }); }
 function treqWeek(){ const per=period(), L=(G.treqLog||{}).last; if(per==='season'||per==='post'||G.gameOver||(L!=null&&G.day-L<90)||evOpen().some(e=>e.k==='treq')||R()>.3)return; /* 시즌 밖은 석 달에 한 번까지(같은 해 시즌 몫을 캠프 때 다 쓰지 않게) */ const p=EVH.treq.check(); if(p)EVH.treq.make(p); }
@@ -255,5 +262,10 @@ EVH.treq={ w:.7, check(){ const T=G.treqLog||{}; if(T.last!=null&&G.day-T.last<3
 /* 2군 주전 기용 요청(카페 11-11 고양스톰 20년차): 단장이 2군 감독에게 6주 동안 이 선수를 꾸준히 써 달라고 한다.
    타자는 2군 라인업에 먼저 넣고(제 포지션, 이미 찬 자리면 다음으로 잘 맞는 자리), 투수는 2군 선발 로테이션에 먼저 넣는다. 한 번에 4명까지 */
 const FUTREQ_MAX=4;
-function futReqOn(p){ return !!(p&&p.futReq&&p.futReq.until>=G.day&&!p.e1); }
-function futReqList(tid){ return playersOf(tid).filter(futReqOn); }
+function futReqAvailable(p){return !!(p&&p.team!=null&&!p.e1&&!p.prospect&&!(p.joinY>G.year)&&period()==='season'&&G.flOn!==false&&!(p.injOut>0)&&healthy(p)&&!isAway(p)&&!(p.boy>G.day));}
+function futReqCandidate(p){const r=p?.futReq;if(!r||!Number.isFinite(r.until)||r.until<G.day||!futReqAvailable(p)||r.tid!=null&&r.tid!==p.team)return false;
+  if(Object.prototype.hasOwnProperty.call(r,'up'))return r.up===(p.upDay??null);
+  return p.upDay==null||p.upDay<(r.d??r.until-42); /* 옛 6주 요청도 그 뒤 콜업된 이력이 있으면 되살리지 않는다. */
+}
+function futReqList(tid){return playersOf(tid).filter(futReqCandidate).sort((a,b)=>(b.futReq.seq||0)-(a.futReq.seq||0)||(b.futReq.d??b.futReq.until-42)-(a.futReq.d??a.futReq.until-42)||a.id-b.id).slice(0,FUTREQ_MAX);}
+function futReqOn(p){return !!(futReqCandidate(p)&&futReqList(p.team).some(q=>q.id===p.id));}

@@ -31,7 +31,7 @@ function platB(b,p){ const vsL=p.th==='좌'; const L=b.bt==='좌'?-4:b.bt==='양
 function platP(p,b){ const side=b.bt==='양'?(p.th==='좌'?'우':'좌'):b.bt; const Lp=p.th==='좌'?3:-2; return side==='좌'?Lp+trt(p,'vl',3):-Lp/2+trt(p,'vr',3); }
 /* 수비 쪽 세부 값 */
 const holdOf=p=>50+trt(p,'hold',8);
-function catArm(c){ return c?c.r.def+trt(c,'arm'):50; } /* 도루 저지는 포수 송구(어깨). 11-15 전에는 블로킹 값(cat)을 썼는데 화면의 '송구(어깨)'는 경기에 안 쓰였다. 블로킹은 포수 리드(catLead)에 15% */
+function catArm(c){ return c?c.r.def+(DEF_SPLIT?dsubRel(c,'C','arm'):trt(c,'arm')):50; } /* 도루 저지는 포수 송구(어깨). 11-15 전에는 블로킹 값(cat)을 썼는데 화면의 '송구(어깨)'는 경기에 안 쓰였다. 블로킹은 포수 리드(catLead)에 15% */
 const OF0=50, CA0=55, IF0=52;
 /* ===== 멘탈·기복·포수 리드 (2026-11-02) — 모두 리그 평균이 0이라 리그 전체 성적은 그대로 두고 선수 사이 차이만 만든다 =====
    멘탈(승부처 집중): 득점권·경기 후반 접전·포스트시즌에서만 능력에 더해진다. 해결사 타자·위기에 강한 투수. 프로의식이 높고 기질이 안정될수록 조금 높다.
@@ -47,21 +47,24 @@ const CL0=57, CLW=.14; /* 주전 포수 평균 리드(리그 평균 성적을 �
    11-15 수비 감사(세계 16개): 예전 무게 .28에서 포수 리드만으로 팀 실점 표준편차 12점(포수 수비 1점당 리드로 약 1.5점 + 도루 저지 0.5점, 유격수 수비 1점은 약 1.35점). ABS(자동 볼 판정)로 프레이밍이 없는 리그라 절반으로 */
 function chemOf(p,cid){ if(!p||cid==null||!p.chem)return 0; const n=p.chem[cid]||0; if(!n)return 0; return (Math.min(1,n/40)-.5)*1.2; } /* 배터리 호흡: 같이 몇 경기 안 맞췄으면 -0.6 쪽, 40경기 넘게 맞추면 +0.6(처음 만나는 짝은 0). 한 시즌 평균은 0 안팎 */
 let CLUTCH=0, SIMDAY=null; /* 지금 타석의 승부처 정도(0~1.1), 지금 시뮬 중인 경기 날짜 */
-function sideTraits(fs){ let c=null, of=[], inf=[]; for(const q of fs.order){ const k=fs.posOf[q.id]; if(k==='C')c=q; else if(k==='LF'||k==='CF'||k==='RF')of.push(defAt(q,k)+(k==='RF'?3:0)+trt(q,'arm')); else if(k==='SS'||k==='2B')inf.push(defAt(q,k)+trt(q,'dp')); }
+function sideTraits(fs){ let c=null, of=[], inf=[]; for(const q of fs.order){ const k=fs.posOf[q.id]; if(k==='C')c=q; else if(k==='LF'||k==='CF'||k==='RF')of.push(defBase(q,k)+(k==='RF'?3:0)+(DEF_SPLIT?dsubRel(q,k,'arm')+DSUB_OFARM:trt(q,'arm'))); else if(k==='SS'||k==='2B')inf.push(dpV(q,k)); }
   fs.cArm=catArm(c); fs.cLead=catLead(c); fs.cId=c?c.id:null; fs.ofArm=of.length?sum(of)/of.length:OF0; fs.ifD=inf.length?sum(inf)/inf.length:IF0; }
 function stealTry(fs){ return clamp(1-((fs.cArm??CA0)-CA0)*.012,.6,1.4); }
 function stealAdj(r,fs){ return trt(r,'sb')*.004-((fs.cArm??CA0)-CA0)*.006-(holdOf(fs.cur)-50)*.003; }
 function runAdj(r,fs){ return trt(r,'br')*.004-((fs.ofArm??OF0)-OF0)*.005; }
 function dpF(b,p,fs){ return clamp(1+(50-b.r.spd)*.012+gbT(p)*.18+((fs.ifD??IF0)-IF0)*.008,.35,2); }
 /* 수비 범위·포구까지 넣은 개인 수비 값 */
-function fieldV(p,pos){ return defAt(p,pos)+(trt(p,'rng')+trt(p,'fld'))*.5; }
+function fieldV(p,pos){ return DEF_SPLIT?defBase(p,pos)+(dsubRel(p,pos,'rng')+dsubRel(p,pos,'fld'))*.5:defAt(p,pos)+(trt(p,'rng')+trt(p,'fld'))*.5; }
+/* 병살·중계(유격·2루): 고정 성향(dp)에 송구(어깨) 절반. dpShow는 화면용(종합 수비 자리에 스카우트 추정을 넣을 수 있다) */
+function dpShow(p,def){ return (def??p.r.def)+(DEF_SPLIT?trt(p,'dp')*.7+dsubRel(p,p.pos,'arm')*.5:trt(p,'dp')); }
+function dpV(p,pos){ return DEF_SPLIT?defBase(p,pos)+trt(p,'dp')*.7+dsubRel(p,pos,'arm')*.5:defAt(p,pos)+trt(p,'dp'); }
 /* 세부 수비 능력이 이름대로 쓰인다(11-15 수비 감사: 수비 범위와 포구가 똑같이 섞여 안타·실책 모두에 반씩 들어가고, 내야 송구는 어디에도 안 쓰였다)
    - 수비 범위(rng): 인플레이 타구를 아웃으로 만드는 확률(46b_bip). 투수 앞 땅볼은 투수의 '견제·수비'
    - 포구(fld): 실책. 내야 땅볼 실책은 절반 가까이가 송구 실책이라 포구 60% · 송구(어깨) 40%
    - 송구(어깨): 내야 땅볼 송구 실책, 외야 주자 진루 억제(runAdj), 포수 도루 저지(catArm)
    - 병살·중계(dp): 유격·2루 병살(dpF). 리그 평균은 세부 값 평균이 0이라 그대로다 */
-function rngV(p,pos){ return pos==='P'?DEF0+(holdOf(p)-50)*.5:defAt(p,pos)+trt(p,'rng'); }
-function errV(p,pos,gb){ if(pos==='P')return DEF0+(holdOf(p)-50)*.5; const ifl=gb&&(pos==='SS'||pos==='3B'||pos==='2B'||pos==='1B'); return defAt(p,pos)+(ifl?trt(p,'fld')*.6+trt(p,'arm')*.4:trt(p,'fld')); }
+function rngV(p,pos){ return pos==='P'?DEF0+(holdOf(p)-50)*.5:DEF_SPLIT?defBase(p,pos)+dsubRel(p,pos,'rng'):defAt(p,pos)+trt(p,'rng'); }
+function errV(p,pos,gb){ if(pos==='P')return DEF0+(holdOf(p)-50)*.5; const ifl=gb&&(pos==='SS'||pos==='3B'||pos==='2B'||pos==='1B'); if(DEF_SPLIT)return defBase(p,pos)+(ifl?dsubRel(p,pos,'fld')*.6+dsubRel(p,pos,'arm')*.4:dsubRel(p,pos,'fld')); return defAt(p,pos)+(ifl?trt(p,'fld')*.6+trt(p,'arm')*.4:trt(p,'fld')); }
 /* ===== 퓨처스(2군) 주간 경기: 같은 확률식에 부상·투구 부하·후유증 회복까지 적용 ===== */
 function futBoost(p){ try{ return boostOf(p)*.6; }catch(e){ return 0; } }
 const futUpToday=p=>p.downDay===G.day||!!(p.gl&&p.gl.y===G.year&&p.gl.g.some(x=>x[0]===G.day));
@@ -80,7 +83,7 @@ function futEligibleDay(p,t,d){if(!p||p.team!==t||p.prospect||p.joinY>G.year||!h
 function futBat(p,t,pos,games){ games=games||3; if(futUpToday(p))return;const days=Array.from({length:games},(_,i)=>G.day-games+1+i).filter(d=>futEligibleDay(p,t,d));if(!days.length)return;games=days.length;const pa=games>=3?ri(9,14):games===2?ri(6,10):ri(3,6);
   const o=simBat(p,pa,7+futBoost(p)); const h=lineFor(p,G.year,t,'퓨처스'); addTo(h,Object.assign({g:games},o)); futUse(p,pos||null,games,{mil:milServing(p)&&milPeriod(p).unit==='상무',days}); /* 지명타자 출장도 포지션별로 센다(검수 11-06) */ { const u=p.fuse; const top=Object.entries(u.pos).sort((a,b)=>b[1]-a[1])[0]; h.pos=top?top[0]:(pos||p.pos); }
   if(p.injFx)injRecover(p,pa);
-  if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1}); }
+  if(R()<1-Math.pow(1-p.inj*.026*injMult(p),games))injure(p,G.day,{farm:1,hbp:o.hbp||0}); }
 function futPit(p,t){ const sp=isSPr(p);
   const had=d=>(p.ld||[]).some(x=>x[0]===d); /* 그날 이미(1군 등) 던졌으면 퓨처스 등판을 겹쳐 넣지 않는다(검수 11-07) */
   const days=sp?[G.day]:(p.downDay!=null&&p.downDay>G.day-2)?[G.day]:[G.day-2,G.day]; /* 이틀 전에 아직 1군이었으면 그날 퓨처스 등판은 넣지 않는다 */

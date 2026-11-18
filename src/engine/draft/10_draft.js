@@ -119,6 +119,7 @@ function makeDraftClass(){
     if(!(p.ovsWait&&G.year>=p.ovsWait&&p.team==null&&!p.prospect&&!p.retired))continue; delete p.ovsWait; if(milFree(p)&&!p.foreign){ p.mil={done:true,wait:G.year}; story(p,'유예 기간 2년 동안 병역 이행(군필로 드래프트 참가)','mil'); } /* 실제 해외 유턴파는 2년 유예 기간에 병역을 마치고 나온다(카페 11-15: 지명 뒤 현역 입대로 능력 하락) */ p.prospect=true; p.ovsRet=true; p.school=`해외파(${p.school||'고교 직행'})`; /* 학력·아마 기록은 출국 전 것 그대로: 고교 직행을 대졸 4년으로 새로 만들지 않는다(검수 11-09ze) */ if(!cls.includes(p.id))cls.push(p.id);
     try{ wire('드래프트',`해외파 ${p.name}(${p.age}세), ${G.year} 신인 드래프트 참가`,{ref:p.id}); }catch(e){} }
   try{ for(const p of amDepSeniors(G.year))if(!cls.includes(p.id))cls.push(p.id); }catch(e){ console.error(e); } /* 프로 지원한 부원 졸업반(13b_am_depth, 사용자 11-17): 시드 난수만 쓴다 */
+  for(let i=cls.length-1;i>=0;i--){ const p=G.players[cls[i]]; if(!p||p.team!=null)cls.splice(i,1); } /* 어느 구단과든 계약한 선수는 드래프트 명단에 넣지 않는다(카페 11-17). 정상 세계에선 아무도 빠지지 않아 난수 순서 그대로 */
   amClass(cls); /* 해외 복귀자는 출국 전 아마 기록이 없을 때만 새로 만든다(검수 11-09ze) */
   pressRank(cls);
   G.draftClass=cls;
@@ -132,46 +133,90 @@ function nameMigrate(){ if(G.nmFix>=1)return; G.nmFix=1; const M=new Map(); cons
   const fix=s=>{ if(typeof s!=='string')return s; for(const [a,b] of M)if(s.includes(a))s=s.split(a).join(b); return s; };
   for(const m of (G.mail||[])){ m.subj=fix(m.subj); m.body=fix(m.body); if(m.from)m.from=fix(m.from); }
   for(const L of [G.news,G.wire,G.log])if(Array.isArray(L))for(const x of L){ if(!x||typeof x!=='object')continue; for(const k of ['t','h','b','title','body','txt'])if(typeof x[k]==='string')x[k]=fix(x[k]); } }
+/* 누락된 옛 선수 필드만 인물·필드별로 복원한다. 불러오기 횟수와 본게임 난수에 영향을 주지 않는다. */
+function playerLoadValue(p,k,f){return withRng(rngHash('playerLoad',G.startY??G.year,p.id,p.name||'',k),f);}
+function playerLoadDefaults(p){if(!p.dt)p.dt=playerLoadValue(p,'dt',()=>rollDT());if(!p.isP&&p.r.vit==null)p.r.vit=playerLoadValue(p,'vit',()=>Math.round(clamp(N(55-((p.inj??.14)-.14)*90,8),25,80)));if(p.fat==null)p.fat=0;if(p.foreign){if(!p.orig)p.orig=origOf(p);if(p.adapt==null)p.adapt=playerLoadValue(p,'adapt',()=>Math.round(clamp(N(50,13),20,80)));}}
+/* 캠프를 다시 여는 것이 아니라 그해 누락된 컨디션만 채운다. 이미 쌓인 피로·소모·경기 기록은 손대지 않는다. */
+function formLoadFix(){for(const p of Object.values(G.players)){if(p.team==null)continue;const old=p.sf;if(old&&(old.y==null||old.y===G.year)){if(old.y==null)old.y=G.year;if(old.v!=null&&old.lk!=null&&old.m!=null)continue;}const sf=playerLoadValue(p,'form:'+G.year,()=>{const sd=p.foreign?3:p.age>=33?2.4:2,x=R(),v=x<.09?N(-4.2,1.1):x<.15?N(3.4,1):N(0,sd);return {y:G.year,v:clamp(v*FORM_K,-6.5,6),m:0,lk:clamp(N(0,.012)*FORM_K,-.03,.03)};});if(old&&old.y===G.year){for(const k of ['v','m','lk'])if(old[k]==null)old[k]=sf[k];}else p.sf=sf;}G.formY=G.year;}
 function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* 불러온 저장의 지난 포스트시즌 차전은 다음 진행일로(검수 11-09zo) */ try{ syncMinSal(); }catch(e){} /* 불러온 해의 최저 연봉(검수 11-06: 2027년 세이브를 열자마자 2026년 기준으로 계약됨) */ /* 불러오기·가져오기 뒤 항상 부르는 자리 */
-  if(!G)return; champEventsInit(); try{ mailMigrate(); }catch(e){} try{ persMigrate(); }catch(e){} try{ nameMigrate(); }catch(e){} try{ amMigrate(); }catch(e){ console.error(e); } try{ amLeagueMigrate(); }catch(e){ console.error(e); } try{ gmInit(); }catch(e){} try{ agInit(); }catch(e){ console.error(e); } /* 옛 저장(에이전시 8곳)을 에이전시 12곳·담당자 27명으로 옮긴다(결정적) */ if(!G.coach){ try{ coachInit(); }catch(e){} } else { try{ coachFill(); }catch(e){} } try{ stFill(); }catch(e){} if(G.goals&&!G.goals.v&&G.goals.y===G.year){ try{ const t=team(G.user); const base=projSupport(); const mm=t.owner==='profit'?.85:t.owner==='pr'?1:1.15; G.goals.sup=Math.max(G.goals.sup,Math.round(clamp(base*mm+.05,.2,1)*100)/100); }catch(e){} G.goals.v=2; } if(G.spend&&G.spend.coach==null)G.spend.coach=0; G.shortlist=G.shortlist||[]; for(const t of G.teams||[]){ const d=TEAM_DEF.find(x=>x.code===t.code); if(d)t.hue=d.hue; }
+  if(!G)return; champEventsInit(); try{ psArchiveMetaMigrate(); }catch(e){} try{ awardListFix(); }catch(e){} try{ retirementMigrate(); }catch(e){} try{ awardHistoryMigrate(); }catch(e){} try{ storyCountersMigrate(); }catch(e){} /* 우승·시상·은퇴·이정표의 결정적 옛 저장 정리(검수 11-18 #614~643) */ try{ postFix(); }catch(e){} try{ ovsMigrate(); }catch(e){} /* 해외 신청·이력·수상 누락의 결정적 옛 저장 정리(검수 11-18 #584~613) */ try{ mailMigrate(); }catch(e){} try{ persMigrate(); }catch(e){} try{ nameMigrate(); }catch(e){} try{ amMigrate(); }catch(e){ console.error(e); } try{ amLeagueMigrate(); }catch(e){ console.error(e); } try{ franSelFix(); }catch(e){} /* 이직·야인 뒤 남은 전 구단 프랜차이즈 직접 지정(검수 11-17 #189) */ try{ amProLeakFix(); }catch(e){ console.error(e); } /* 카페 11-17: 프로 선수에 붙은 지명 뒤 아마 기록 줄 정리 */ try{ ntSaveFix(); }catch(e){ console.error(e); } try{ psRecordMigrate(); }catch(e){} /* 대표 통산 기록을 거부권 칸(p.ntc)에서 p.ntcr로(검수 11-17 #213) */ /* 카페 11-17: 프로 선수에 붙은 지명 뒤 아마 기록 줄 정리 */ try{ ciMigrate(); }catch(e){ console.error(e); } /* 이름 변경 대기·이름 이력 날짜·연고 이전 구장 수리(87_club_identity) */ try{ gmInit(); }catch(e){} try{ legMigrate(); }catch(e){} try{ legStadMigrate(); }catch(e){} try{ gmClubMigrate(); }catch(e){} try{ jobMigrate(); }catch(e){} try{ personalMigrate(); }catch(e){} try{ userLogMigrate(); }catch(e){} /* 경력·제안·개인 기록의 결정적 옛 저장 정리(검수 11-18 #554~583) */ try{ agInit(); }catch(e){ console.error(e); } /* 옛 저장(에이전시 8곳)을 에이전시 12곳·담당자 27명으로 옮긴다(결정적) */ if(!G.coach){ try{ coachInit(); }catch(e){} } else { try{ coachFill(); }catch(e){} } try{ fTmpStaleFix(); }catch(e){ console.error(e); } /* 옛 저장 수리: 이미 정리된 부상 대체 선수의 결정 버튼·다시 다친 원 선수 복귀 결정을 닫는다(검수 11-17 #233·#235) */ try{ futAggFix(); }catch(e){ console.error(e); } /* 옛 2군 합산 줄 WAR·wRC+ 고정(검수 11-17 #209·#210) */ try{ mcfMigrate(); }catch(e){} /* 감독이 바뀐 뒤 남은 전임 감독 상태 정리(검수 11-17) */ try{ rainMigrate(); }catch(e){ console.error(e); } try{ promoMigrate(); }catch(e){ console.error(e); } try{ ownershipIndieFix(); }catch(e){ console.error(e); } /* 검수 11-17: 우천 순연 표시·행사 예약·투자사 구단 매각 문구 수리(여러 번 불러도 같다) */ try{ coachRulesMigrate(); }catch(e){} /* 코치 영입 공통 규칙(89d): 떠난 코치를 가리키는 대행·옛 제안 정리 */ try{ trStintFix(); }catch(e){ console.error(e); } if(G.goals&&!G.goals.v&&G.goals.y===G.year){ /* 검수 11-17 #197: 트레이드 성과는 그 거래로 시작한 소속 기간만 */ /* 카페 11-17: 프로 선수에 붙은 지명 뒤 아마 기록 줄 정리 */ try{ const t=team(G.user); const base=projSupport(); const mm=t.owner==='profit'?.85:t.owner==='pr'?1:1.15; G.goals.sup=Math.max(G.goals.sup,Math.round(clamp(base*mm+.05,.2,1)*100)/100); }catch(e){} G.goals.v=2; } if(G.spend&&G.spend.coach==null)G.spend.coach=0; G.shortlist=G.shortlist||[]; for(const t of G.teams||[]){ const d=TEAM_DEF.find(x=>x.code===t.code); if(d)t.hue=d.hue; }
   for(const k in G.mgr)mgrFix(G.mgr[k]); (G.mmarket||[]).forEach(mgrFix);
   if(!G.r68){ G.r68=true; for(const t of G.teams){ if(t.id===G.user)continue; const add=fillRoster(t.id,54); for(const p of add)delete p.dev; }
     const ua=fillRoster(G.user,ROSTER_MIN); if(ua.length)mail('운영팀','소속선수 한도 확대',`협회 규정의 소속선수 한도에 맞춰 정식 등록 한도가 ${ROSTER_MAX}명으로 늘었습니다. 최소 인원(${ROSTER_MIN}명)을 맞추려고 2군 선수 ${ua.length}명을 등록했습니다.`,{kind:'운영'}); }
   for(const p of Object.values(G.players))milInit(p);
+  try{ dsubMigrate(); }catch(e){ console.error(e); } /* 세부 수비 능력(03b_def_sub): 옛 저장 선수도 같은 값으로 */
   for(const s of G.scouts.concat(G.scoutMarket||[])){ if(!s.role){ s.role='am'; s.since=-999; } }
+  /* 검수 11-18 #644~672: 직원 복원 뒤 구단별 관찰·출장·의견·정원을 결정적으로 정리한다. */
+  obsLogMigrate(); tripMigrate(); obsViewMigrate(); obsWatchFix(); domesticScoutMigrate();
+  /* 채용은 날짜 진행에서 한다. 저장에는 남아 있는 직원의 평가 효과만 다시 연결한다. */
+  for(const tid in G.lgStaff||{})if(team(+tid)&&Array.isArray(G.lgStaff[tid]?.sc))try{stSync(+tid);}catch(e){}
   prInit(); if(!G.goals&&period()==='season')setGoals();
   if((period()==='season'||period()==='post')&&G.entryY!==G.year){ G.entryY=G.year; for(const t of G.teams)setEntry(t.id); }
   if(!G.intl)G.intl={us:1,la:0,jp:0,tw:0,au:0}; if(!G.data)G.data={lv:1}; if(G.spend&&G.spend.intl==null)G.spend.intl=0; if(!G.fac)G.fac={lv:2,build:null}; try{ facInit(); }catch(e){} if(G.spend.fac==null)G.spend.fac=0;
-  for(const t of G.teams)if(t.fac==null)t.fac=ri(2,4); try{ aiFacAll(); }catch(e){} try{ facOverdueFix(); }catch(e){} try{ extStaleFix(); }catch(e){} try{ ovsPostFix(); }catch(e){} /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */
-  for(const p of Object.values(G.players)){ if(!p.dt)p.dt=rollDT(); if(!p.isP&&p.r.vit==null)p.r.vit=Math.round(clamp(N(55-(p.inj-.14)*90,8),25,80)); if(p.fat==null)p.fat=0; }
-  if(G.formY!==G.year&&G.day>=G.cal.camp)rollForm();
-  for(const p of Object.values(G.players)) if(p.foreign){ if(!p.orig)p.orig=origOf(p); if(p.adapt==null)p.adapt=Math.round(clamp(N(50,13),20,80)); }
+  for(const t of G.teams)if(t.fac==null)t.fac=ri(2,4); try{ aiFacAll(); }catch(e){} try{ facOverdueFix(); }catch(e){} try{ extStaleFix(); }catch(e){} try{ ovsPostFix(); }catch(e){} try{ ntLoadFix(); }catch(e){} /* 검수 11-17: WBC 해외파 포지션·모습, 상무 안내 표시 */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */try{ fanOpsFix(); }catch(e){} /* 팬 운영 구단 상태·응원단 단원 사진 키(검수 11-17) */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */try{ sponMigrate(); }catch(e){} /* 스폰서 옛 저장 수리(검수 11-17 #284·#287) */ try{ expMigrate(); }catch(e){ console.error(e); } /* 창단 단계·모기업·남은 제의(검수 11-17 #158·159·164) */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */
+  for(const p of Object.values(G.players))playerLoadDefaults(p);
+  if(G.formY!==G.year&&G.day>=G.cal.camp)formLoadFix();
   /* 외국인 후보 채우기는 다음 날짜 진행(07_daily)에 맡긴다: 같은 저장을 두 번 열면 후보가 달라졌다(검수 11-09zr #13) */
   migrateDraftPool(); /* 학교 정보 하나가 없거나 풀이 작다는 이유로 저장한 후보를 다시 뽑지 않는다 */
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
-  recoverDraftLogs();
+  recoverDraftLogs(); draftClubInit(); rchkInit(); sdObFix(); ctMilClauseFix(); sdContractFix(); salMilFix(); migrateMoveContracts(); faClosedFix(); aiBlockDates();
+  /* 검수 11-18 #731~750: 실제 구단·복무 상태를 복원한 뒤 소속별 기록을 조용히 정리한다. */
+  captainMigrate(); leadAdjMigrate(); playPromiseFix(); goalSupportFix();
 }
+/* 드래프트 명단 정리(카페 11-17 ddddddd): 어느 구단과든 계약한 선수(트라이아웃·무적·해외 복귀 등)는 신인 드래프트 명단·진행 중 지명 명단에서 뺀다.
+   계약했는데 신인 후보(prospect) 표시가 남은 선수는 표시를 푼다(1월 1일 명단 정리 때 지워지지 않게). 난수를 쓰지 않는다. 사람·AI 구단 공통 */
+function draftClassPrune(){ if(!G)return 0; let n=0; const out=new Set();
+  const drafted=p=>!!(p.draft&&p.draft.y===G.year); /* 이번 드래프트에서 지명된 선수는 진행 중 명단에 남긴다(지명 결과 표시) */
+  const prune=L=>{ if(!Array.isArray(L))return; for(let i=L.length-1;i>=0;i--){ const p=G.players[L[i]]; if(!p||(!p.prospect&&!drafted(p))||(p.team!=null&&!drafted(p))){ if(p)out.add(p.id); L.splice(i,1); n++; } } }; /* 제자리에서 지운다: G.draft.cls와 G.draftClass가 같은 배열일 수 있다 */
+  prune(G.draftClass); const d=G.draft; if(d&&!d.done&&d.cls!==G.draftClass)prune(d.cls);
+  for(const id of out){ const p=G.players[id]; if(p&&p.prospect){ p.prospect=false; if(G.dmemo)delete G.dmemo[id]; } }
+  n+=proStaleFix(); return n; }
+/* 계약한 선수의 아마추어 표시 정리(카페 11-17 "트라이아웃에서 영입했는데 선수 화면이 드래프트 대상으로 나와요"):
+   명단(G.draftClass)에 없더라도 어느 구단과든 계약한 선수에 남은 신인 후보(prospect)·창단 드래프트 후보(fdPool)·해외 복귀 유예(ovsWait) 표시를 지운다.
+   선수 화면은 prospect를 보고 '드래프트 대상'·아마추어 프로필로 그렸다. 지명된 선수는 doPick에서 이미 prospect가 꺼져 있어 건드리지 않는다.
+   계약 직후(trySign 등)·드래프트 시작·불러오기·매일 진행에서 부른다. 난수를 쓰지 않고, 두 번 불러도 같다. 사람·AI 구단 공통 */
+function proStaleFix(){ if(!G||!G.players)return 0; let n=0; const fdLive=!!(G.fd&&!G.fd.done);
+  for(const p of Object.values(G.players)){ if(!p||p.team==null)continue; let f=false;
+    if(p.prospect){ p.prospect=false; f=true; if(G.dmemo)delete G.dmemo[p.id]; }
+    if(p.fdPool&&!fdLive){ p.fdPool=false; f=true; }
+    if(p.ovsWait){ delete p.ovsWait; f=true; }
+    if(f)n++; }
+  return n; }
 /* 예전 후보는 인물·능력·관찰·메모를 그대로 두고 학교/권역 표시만 보완한다. */
 function migrateDraftPool(){
-  const d=G.draft, live=!!(d&&!d.done), done=!!(d&&d.done&&d.y===G.year);
+  const d=G.draft, live=!!(d&&!d.done), done=!!(d&&d.done&&(d.y==null||d.y===G.year));
   const valid=L=>[...new Set((Array.isArray(L)?L:[]).filter(id=>G.players[id]&&typeof G.players[id]==='object').map(id=>G.players[id].id??id))];
+  try{ proStaleFix(); }catch(e){ console.error(e); } /* 계약한 선수를 후보로 세지 않는다: 명단이 비었을 때 prospect로 명단을 다시 세우며 계약 선수가 되돌아왔다(카페 11-17) */
   const prospects=Object.values(G.players).filter(p=>p&&p.prospect).map(p=>p.id);
   const source=Array.isArray(G.draftClass)&&G.draftClass.length?G.draftClass:live&&Array.isArray(d.cls)?d.cls:prospects;
   G.draftClass=valid(source);
+  try{ draftClassPrune(); }catch(e){ console.error(e); } /* 옛 저장 수리: 트라이아웃 등으로 계약했는데 명단에 남은 선수(카페 11-17) */
   if(!G.draftClass.length&&!live&&!done){ if(prospects.length)G.draftClass=valid(prospects); else makeDraftClass(); }
   if(live)d.cls=valid(Array.isArray(d.cls)?d.cls:G.draftClass);
-  for(const id of new Set([...G.draftClass,...(live?d.cls:[])])){ const p=G.players[id]; if(!p||!p.prospect)continue;
+  for(const id of new Set([...G.draftClass,...prospects,...(live?d.cls:[])])){ const p=G.players[id]; if(!p||!p.prospect)continue;
     const school=typeof p.school==='string'&&p.school.trim(), known=school&&AREA.find(a=>a.hs.includes(school)||a.un.includes(school));
-    const area=areaDef(p.area)||known||areaDef(areaOf(p));
-    if(!p.area&&area)p.area=area.k; if(!p.region&&area)p.region=area.reg;
-    if(!school)p.school='학교 정보 없음'; /* 근거 없는 학교·아마 성적을 새로 만들지 않는다 */
+    const area=known||areaDef(p.area)||areaDef(areaOf(p));
+    if(area){p.area=area.k;p.region=area.reg;}
+    p.school=school||'학교 정보 없음'; /* 근거 없는 학교·아마 성적을 새로 만들지 않는다 */
     if(p.schoolHue==null)p.schoolHue=Math.floor(u01('sh',p.school)*360);
   }
+  draftRefsPrune();
 }
+/* 지워진 선수 번호만 정리한다. 실제 선수·저학년과 학교/부원 관심 토큰은 보존한다. */
+function draftRefsPrune(){if(!G)return 0;let n=0;const live=id=>!!(G.players?.[id]||G.amU?.L?.[id]),list=L=>{if(!Array.isArray(L))return;for(let i=L.length-1;i>=0;i--)if(typeof L[i]==='number'&&!live(L[i])){L.splice(i,1);n++;}},map=M=>{for(const id in M||{})if(/^\d+$/.test(id)&&!live(id)){delete M[id];n++;}};
+  list(G.shortlist);map(G.dmemo);for(const L of Object.values(G.amFw||{}))list(L);for(const P of Object.values(G.amPr||{}))map(P);for(const C of Object.values(G.dClub||{})){list(C.shortlist);map(C.dmemo);}return n;}
 /* 그해 신인 드래프트 지명 순서: 지난 시즌 순위의 역순(r2: 2라운드부터). 경쟁균형세 3회 연속 초과 구단은 1라운드(r1)에서 9단계 내려간다.
    드래프트 날 전에도 같은 순서를 미리 알려 줄 수 있게 따로 계산한다 */
-function draftOrders(){ const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid); for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
-  if(G.dr1&&G.dr1.y===G.year&&!G.unemp&&G.user!=null&&order.includes(G.user)){ const i=order.indexOf(G.user); order.splice(i,1); order.splice(clamp(G.dr1.slot-1,0,order.length),0,G.user); } /* 1년차 신인 드래프트 순번을 새 게임에서 골랐으면 첫 시즌만 그 자리(오른발고니 11-11) */
+/* 옛 저장의 지정 순번에는 최초 취임 구단을 붙여 이직·사임 전에 고정한다. */
+function draftClubInit(){ if(G.dr1&&G.dr1.tid==null){ const first=(G.chron||[]).find(x=>x.k==='join'&&x.gm&&x.tid!=null); G.dr1.tid=first?first.tid:(G.unemp&&G.unemp.from)??G.user; } }
+function draftClubLeave(old,rehire){ draftClubInit();
+  const T=G.dClub=G.dClub||{}; if(!rehire)T[old]={shortlist:G.shortlist||[],dmemo:G.dmemo||{},dplan:G.dplan||null,drestPre:G.drestPre||null,rchkA:Object.fromEntries(Object.values(G.players).filter(p=>p.rchkA).map(p=>[p.id,p.rchkA]))};
+  const n=!G.unemp&&(G.user!==old||rehire)?T[G.user]:null;
+  G.shortlist=n?n.shortlist:[]; G.dmemo=n?n.dmemo:{}; G.dplan=n?n.dplan:null; G.drestPre=n?n.drestPre:null;
+  for(const p of Object.values(G.players)){ delete p.rchkA; if(n&&n.rchkA&&n.rchkA[p.id])p.rchkA=n.rchkA[p.id]; }
+  if(n)delete T[G.user]; }
+function draftOrders(){ draftClubInit(); const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid); for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
+  if(G.dr1&&G.dr1.y===G.year&&order.includes(G.dr1.tid)){ const i=order.indexOf(G.dr1.tid); order.splice(i,1); order.splice(clamp(G.dr1.slot-1,0,order.length),0,G.dr1.tid); } /* 1년차 신인 드래프트 순번을 새 게임에서 골랐으면 첫 시즌만 그 자리(오른발고니 11-11) */
   const pen=G.teams.filter(t=>t.pickPen===G.year&&order.includes(t.id)).map(t=>t.id);
   return {r1:penOrder(order,pen),r2:order,pen,y:h.y}; }
 /* 1라운드 제재 반영 순서: 제재 구단은 원래 순번에서 9칸 아래 자리에 둔다. 여러 구단이 함께 받아도 서로 밀어 올리지 않게 자리를 먼저 잡고 나머지를 순서대로 채운다(검수 11-07). 지명권 예상 순번도 같은 식(검수 11-08d) */
@@ -193,6 +238,7 @@ function startDraft(){ try{ draftOddsSnap(); }catch(e){} /* 예상 확률 보정
   const D=draftOrders(); const order=D.r2, o1=D.r1;
   if(D.pen.includes(G.user)){ const a=D.r2.indexOf(G.user)+1, b=D.r1.indexOf(G.user)+1; if(b!==a)note('드래프트',`경쟁균형세 3회 연속 초과로 1라운드 지명 순서가 ${a}순위에서 ${b}순위로 내려갔습니다.`); } /* 실제로 바뀐 만큼만(검수 11-07) */
   pkClean(); const picks=draftPlan(); void order; void o1; /* 트레이드로 넘겨받은 지명권은 원래 구단 순번에 쓴다 */
+  try{ draftClassPrune(); }catch(e){ console.error(e); } /* 지명 시작 전: 계약한 선수는 명단에서 뺀다(카페 11-17) */
   G.draft={cls:G.draftClass||[],picks,cur:0,done:false,y:G.year}; { const P=draftRestPre(); if(P)G.draft.rest={mode:P.mode,min:P.min,tid:P.tid}; delete G.drestPre; } /* 준비 화면에서 정해 둔 자동 지명 기준 */
   stop('드래프트',`${G.year} 신인 드래프트가 열립니다. 참가 ${G.draft.cls.length}명, ${DRAFT_ROUNDS}라운드 지명 순번은 ${picks.length}개입니다(어느 라운드든 지명을 건너뛸 수 있어 실제 지명 인원은 더 적을 수 있습니다). 순서는 지난 시즌 성적의 역순이고, ${(()=>{ const f=picks.find(k=>k.tid===G.user); return f?`우리 첫 지명은 ${f.rd}라운드 ${f.no}순위입니다.`:'우리 구단은 이번 드래프트 지명권이 없습니다.'; })()}`);
 }
@@ -201,16 +247,20 @@ function draftTidOf(p){ const st=(p.story||[]).find(x=>x.k==='draft'); if(!st)re
 /* 누락된 지명 장부만 현역/보관 기록의 명시적 지명 정보로 복원한다. 팀 소속·이름으로는 추정하지 않는다. */
 function draftRecoveredRows(y){ const L=[],seen=new Set(),add=(p,a)=>{ const d=p.draft||{}, year=d.y??(a?p.dy:null); if(year!==y||p.id==null||seen.has(String(p.id)))return;
     const tid=d.tid??(a?p.dt:draftTidOf(p)); if(tid==null||!team(tid))return;
-    seen.add(String(p.id)); L.push({id:p.id,nm:p.name,t:tid,rd:d.rd??'?',no:d.no??'?',pos:a?(p.isP?p.pos:POSK[p.pos]||p.pos):posLabel(p),pr:p.press||null}); };
+    seen.add(String(p.id)); L.push({id:p.id,nm:p.name,t:tid,rd:d.rd??'?',no:d.no??'?',...(d.from!=null?{from:d.from}:{}),...(d.nt?{nt:d.nt}:{}),pos:a?(p.isP?p.pos:POSK[p.pos]||p.pos):posLabel(p),pr:p.press||null}); };
   for(const p of Object.values(G.players))if(p)add(p,false);
   for(const p of Object.values(G.arch||{}))if(p&&!seen.has(String(p.id)))add(p,true);
   return L;
 }
 function recoverDraftLogs(){ const years=new Set(); for(const p of Object.values(G.players).concat(Object.values(G.arch||{}))){ if(!p)continue; const y=p.draft&&p.draft.y!=null?p.draft.y:p.dy; if(Number.isInteger(y)&&y<=G.year)years.add(y); }
-  for(const y of years)if(!Array.isArray(G.dlog&&G.dlog[y])){ const L=draftRecoveredRows(y); if(L.length)(G.dlog=G.dlog||{})[y]=L; }
+  for(const y of years){ const rows=draftRecoveredRows(y), L=((G.dlog=G.dlog||{})[y]=Array.isArray(G.dlog[y])?G.dlog[y]:[]), seen=new Map(L.map(x=>[String(x.id),x]));
+    for(const r of rows){ const old=seen.get(String(r.id)); if(old){ for(const k of ['from','nt'])if(old[k]==null&&r[k]!=null)old[k]=r[k]; } else { L.push(r); seen.set(String(r.id),r); } } }
 }
+function draftWidth(y){ const L=(G.dlog||{})[y]||[], d=G.draft&&G.draft.y===y?G.draft:null, h=(G.history||[]).find(h=>h.y===y-1&&h.order);
+  const saved=L.find(x=>x.nt>0); if(saved)return saved.nt;
+  return Math.max(1,...(d?d.picks.map(k=>k.no||0):[]),h?h.order.length:0,...L.map(x=>Number(x.no)||0),y===G.year?G.teams.length:10); }
 function draftClass(y){ const L=Array.isArray(G.dlog&&G.dlog[y])?G.dlog[y]:draftRecoveredRows(y), seen=new Set();
-  return L.filter(x=>x&&x.id!=null&&!seen.has(String(x.id))&&seen.add(String(x.id))).map(x=>{ const p=G.players[x.id]; const c=p?careerOf(p):null; const a=!p&&G.arch&&G.arch[x.id]; /* 은퇴해도 지명 성과는 보관 기록으로 */ return Object.assign({},x,{p,war:c?c.war:a?(a.rows||[]).reduce((s,r)=>s+(r.war||0),0):0,now:p?p.team:null,ovr:p?Math.round(ovr(p)):null,n:Number.isInteger(x.rd)&&Number.isInteger(x.no)?(x.rd-1)*10+x.no:null}); }); }
+  return L.filter(x=>x&&x.id!=null&&!seen.has(String(x.id))&&seen.add(String(x.id))).map(x=>{ const p=G.players[x.id]; const c=p?careerOf(p):null; const a=!p&&G.arch&&G.arch[x.id]; /* 은퇴해도 지명 성과는 보관 기록으로 */ return Object.assign({},x,{p,war:c?c.war:a?(a.rows||[]).reduce((s,r)=>s+(r.war||0),0):0,now:p?p.team:null,ovr:p?Math.round(ovr(p)):null,n:Number.isInteger(x.rd)&&Number.isInteger(x.no)?(x.rd-1)*(x.nt||draftWidth(y))+x.no:null}); }); }
 function draftGrades(y){ const L=draftClass(y); const by={}; for(const x of L){ const t=x.t??(x.p&&x.p.draft?null:null); if(t==null)continue; by[t]=(by[t]||0)+x.war; } const arr=Object.entries(by).map(([t,v])=>({t:+t,v})).sort((a,b)=>b.v-a.v); return arr; }
 /* 지명 3년·5년 뒤 돌아보기: 스틸픽과 실패한 상위 지명 */
 function draftRetro(){ const now=G.year; for(const back of [3,5]){ const y=now-back; const L=draftClass(y); if(L.length<20)continue; /* 은퇴 선수도 보관 기록으로 넣는다: 성적표(draftGrades)와 같은 합계(검수 11-06) */
