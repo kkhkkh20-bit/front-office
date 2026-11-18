@@ -27,15 +27,17 @@ async function ulAutoTick(force){ if(ULA.busy||!G||UI.title)return ''; try{ if(n
   ULA.last=now; if(!ulLs(UL_SEEN_K)){ ulLs(UL_SEEN_K,'1'); ULA.notice=1; try{ toast(UL_AUTO_NOTE); }catch(e){} }
   if(!p.upload){ ulAutoDone(p,'same'); ulSave(); return 'same'; }
   if(!xfAvail()||!FrontOfficeCore.netEnabled()){ ulAutoDone(p,'same'); ulSave(); return 'local'; } /* 서버 없는 판·이 기기에서 서버 래더를 끔: 이 기기 덱만 */
-  ULA.busy=true; const tk=ulTok(); let res='fail', msg='';
+  ULA.busy=true; const tk=ulTok(), wid=cupWid(), payload=JSON.parse(JSON.stringify(p.x)), ack=ulV1DeckKey(U,payload); let res='fail', msg='';
   try{ const ok=await ulV1();
-    if(!ok)res=ulNet().status==='off'?'same':'fail'; /* v1이 꺼진 서버(503 not_configured)는 오류 없이 오늘은 끝 */
+    if(!ulSame(tk)){}
+    else if(!ok)res=ulNet().status==='off'?'same':'fail'; /* v1이 꺼진 서버(503 not_configured)는 오류 없이 오늘은 끝 */
     else if(!(await ulV1Player()))res='fail';
-    else { await ulAutoRename(); const r=await ulV1Call(()=>ulNet().putDeck(p.x,U.tier|0,cupWid(),{auto:1}));
-      if(r.ok){ res='ok'; const d=r.data; if(ulSame(tk)){ UL.me={registered:true,name:d.name,tier:d.tier|0,ovr:d.ovr,v1:1}; UL.srv='ok'; UL.v1sync=cupWid(); UL.sv.meSt=''; if(!U.league&&(U.tier|0)!==(d.tier|0))U.tier=d.tier|0; } }
+    else if(ulSame(tk)){ await ulAutoRename(); if(ulSame(tk)){ const r=await ulV1Call(()=>ulNet().putDeck(payload,U.tier|0,wid,{auto:1}));
+      if(!ulSame(tk)){}
+      else if(r.ok){ res='ok'; const d=r.data; if(ulSame(tk)){ UL.me={registered:true,name:d.name,tier:d.tier|0,ovr:d.ovr,v1:1}; UL.srv='ok'; UL.v1sync=ack; UL.sv.meSt=''; if(!U.league&&(U.tier|0)!==(d.tier|0))U.tier=d.tier|0; } }
       else if(r.status===409&&r.data&&r.data.error==='auto_off'){ ulLs(UL_AUTO_K,'0'); res='reject'; msg='다른 기기에서 자동 참가를 껐습니다.'; }
       else if(r.status>=400&&r.status<500&&![401,403,408,429].includes(r.status)){ res='reject'; msg=(r.data&&((r.data.errors&&r.data.errors[0])||r.data.message))||('HTTP '+r.status); }
-      else res='fail'; } }
+      else res='fail'; } } }
   catch(e){ res='fail'; }
   ULA.busy=false; if(!ulSame(tk))return res; ulAutoDone(p,res,msg); ulSave(); try{ render(); }catch(e){} return res; }
 /* 끄기를 서버에 알리기(끊겨 있었으면 다음에). 토큰이 없으면 서버에 덱도 없다 */
@@ -78,7 +80,7 @@ Object.assign(A,{
   async ulNickAuto(){ if(ULA.busy)return; ULA.busy=true; render(); let r=null; try{ if(await ulV1()&&await ulV1Player())r=await ulNet().rename(ulAutoNick()); }catch(e){} ULA.busy=false;
     if(r&&r.ok){ ulLs(UL_NICK_K,'auto'); ulSvStale(); return ulAutoSay(`자동 이름 ${ulAutoNick()}(으)로 되돌렸습니다.`); } ulAutoSay(r&&r.data&&r.data.message?r.data.message:'지금은 래더 서버에 연결할 수 없습니다.',true); },
   async ulAutoNow(){ if(ULA.busy||!G||G.unemp)return; const U=uld(), now=Date.now(); if(!FrontOfficeCore.ulManOk(U.ar,now))return ulAutoSay(UL_MAN_WAIT,true);
-    if(U.deck&&U.deck.src!=='now')U.deck.src='now'; const p=ulAutoPlan(now,true); if(!p||p.skip)return ulAutoSay('구단을 맡고 있을 때 지금 1군을 등록합니다.',true);
+    if(U.deck&&U.deck.src!=='now')U.deck.src='now'; const p=ulAutoPlan(now,true); if(!p||p.skip)return ulAutoSay(p&&p.msg||'구단을 맡고 있을 때 지금 1군을 등록합니다.',true);
     ULA.busy=true; UL.msg=''; UL.bad=false; render(); let up=false; try{ up=await ulUpload(); }catch(e){} ULA.busy=false;
     if(up||!xfAvail()){ ulAutoManual('now',(U.ar&&U.ar.drop)||[]); ulAutoDone(p,up?'ok':'same'); ulSave(); return ulAutoSay(`${U.deck.e.name} 덱을 다시 등록했습니다(OVR ${FrontOfficeCore.cupOvrTxt(U.deck.e.ovr)}).${p.cap?' 연봉 상한을 넘어 이 단계 리그에는 나가지 못합니다.':''}`,!!p.cap); }
     const rej=!!(UL.msg&&UL.bad); ulAutoDone(p,rej?'reject':'fail',rej?UL.msg:''); ulSave(); ulAutoSay(rej?UL.msg:'서버에 올리지 못했습니다. 연결되면 자동으로 다시 올립니다.',true); }, /* 서버가 거절(하루 1회 등)하면 다시 보내지 않는다 */
