@@ -96,12 +96,12 @@ function gmContact(tid,kind){const why=gmContactWhy(tid,kind);if(why)return {ok:
 /* 역제안: 조금 모자랄 때 상대가 조건을 바꿔 다시 제시 */
 /* 상대 단장의 역제안(사용자 거래 전용, AI끼리 거래는 쓰지 않는다): 우리 선수 더 얹기 · 자기 선수 하나 빼기 · 같은 자리 다른 선수 · 현금 · 지명권.
    보여 주는 안은 모두 그대로 수락하면 성사된다(tradeCtrOk: proposeTrade와 같은 검사와 evalTrade, 점검 11-17) */
-function counterOffer(tid,give,get,cash,pk){ cash=Math.round(cash||0); pk=pkNorm(pk); const ev=(g,t,c,k)=>evalTrade(tid,g,t,c??cash,k||pk); /* 지명권도 넣어 계산(검수 11-06) */ const e=ev(give,get); const gap=e.need-e.gain; if(gap<=0||gap>9)return [];
+function counterOffer(tid,give,get,cash,pk){ cash=Math.round(cash||0); pk=pkNorm(pk); const ev=(g,t,c,k)=>evalTrade(tid,g,t,c??cash,k||pk); /* 지명권도 넣어 계산(검수 11-06) */ const e=ev(give,get); const gap=e.need-e.gain; if(e.pkGate||gap<=0||gap>9)return []; /* 상위 지명권 관문은 값으로 풀 수 없다 */
   const U=team(G.user), T=team(tid), L=[]; const yng=['build','tight'].includes(planOf(T)); /* 유망주 수집·긴축 구단은 지명권·어린 선수를 먼저 부른다 */
   const mk=(c,why)=>({give:[...c.give],get:[...c.get],cash:c.cash??cash,pk:c.pk||pk,why});
   const okC=c=>tradeCtrOk(tid,c);
   /* 지명권: 우리가 가진 지명권 중 상대가 가장 덜 치는 한 장부터 */
-  const pkC=()=>{ if(!get.length||(G.draft&&!G.draft.done))return null; try{ if(pk.y!==pkYear())return null; const H=pkHeld(G.user).filter(k=>!pk.give.includes(k)).map(k=>({k,v:pkVal(T,k)})).sort((a,b)=>a.v-b.v);
+  const pkC=()=>{ if(!get.length||(G.draft&&!G.draft.done))return null; try{ if(pk.y!==pkYear())return null; const H=pkHeldF(G.user).filter(k=>!pk.give.includes(k)).map(k=>({k,v:pkVal(T,k)})) /* 그다음 드래프트 지명권도(카페 11-18). 한도는 아래 pkCheck */.sort((a,b)=>a.v-b.v);
       for(const x of H){ const c=mk({give,get,pk:{give:[...pk.give,x.k],get:[...pk.get],y:pk.y}},`${pkName(x.k)} 지명권을 얹어 주시면 하겠습니다.`); if(!pkCheck(tid,give,get,c.pk)&&okC(c))return c; } }catch(e){} return null; };
   let P=null; if(yng){ P=pkC(); if(P)L.push(P); }
   /* 우리 선수 더 얹기: 우리에게 가장 덜 아까운 선수부터(거부권·육성·부상·값 없는 선수는 부르지 않는다) */
@@ -150,7 +150,7 @@ function trStintFix(){ let n=0; for(const tr of G.trades||[]){ if(!tr.gi)continu
       for(const y of Y){ const R=rows.filter(h=>h.y===y); if(y===tr.y){ const i=R.findIndex(h=>h.t===c); if(i>=0&&R.slice(i+1).some(h=>h.t!==c)){ e=y; break; } continue; } if(R.some(h=>h.t!==c)){ e=R[0].t===c?y:Math.max(tr.y,y-1); break; } } }
     if(e!=null){ (tr.end=tr.end||{})[id]=e; n++; } } } return n; }
 /* 지명권 원구단은 당시 명시된 메타만 쓴다. 옛 저장에 원구단이 없으면 추정 연결하지 않는다. */
-function pkDrafted(y,k){ const [rd,o]=k.split(':').map(Number), picks=G.draft&&G.draft.y===y?G.draft.picks||[]:[], rows=(G.dlog||{})[y]||[];
+function pkDrafted(y,k){ const [rd,o,ky]=k.split(':').map(Number); if(Number.isFinite(ky))y=ky; /* 그다음 드래프트 지명권은 열쇠에 연도가 있다 */ const picks=G.draft&&G.draft.y===y?G.draft.picks||[]:[], rows=(G.dlog||{})[y]||[];
   const ids=new Map(); for(const p of Object.values(G.players).concat(Object.values(G.arch||{})))if(p&&p.draft&&p.draft.y===y)ids.set(p.id,{id:p.id,rd:p.draft.rd,from:p.draft.from,tid:p.draft.tid,meta:true});
   for(const r of rows){ const old=ids.get(r.id); ids.set(r.id,{...(old||{}),id:r.id,rd:r.rd,from:r.from??(old&&old.from),tid:r.t,meta:!!(old&&old.meta)}); }
   for(const p of picks)if(p.pid>0){ const old=ids.get(p.pid)||{}; ids.set(p.pid,{...old,id:p.pid,rd:p.rd,from:p.from??old.from,tid:p.tid,meta:true}); }
@@ -222,7 +222,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     const want=Math.max(want0*.5,want0+relNeedAdj(B.id,A.id)), needA=Math.max(0,relNeedAdj(A.id,B.id)); /* 두 단장 사이 친분(tradeNeed와 같은 몫): 친하면 덜, 나쁘면 더 받으려 한다. 사는 쪽도 사이가 나쁘면 남는 거래만 */ const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
     let pay=null, pkGive=null;
     /* 유망주 수집 구단에 파는 쪽이면 지명권으로 값을 치른다(지명권만, 또는 어린 선수 한 명 + 지명권). 사는 쪽이 우승 도전이면 지명권을 싸게 보고 파는 쪽은 비싸게 봐서 거래가 선다. 1라운드는 특급(종합 60 이상)을 살 때만 */
-    if(o.buyers&&planOf(B)==='build'&&!(G.draft&&!G.draft.done)&&R()<.7){ try{ const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; const HB=pkHeld(B.id); const H=pkHeld(A.id).filter(k=>{ const rd=+k.split(':')[0]; return rd<=4&&(rd>1||(ovr(p)>=(hotA?56:60))); }).map(k=>({k,b:pkVal(B,k),a:pkVal(A,k)*pkKeep(A)*pkHoard(B.id,k)})).sort((x,y)=>x.b-y.b);
+    if(o.buyers&&planOf(B)==='build'&&!(G.draft&&!G.draft.done)&&R()<.7){ try{ const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; const HB=pkHeld(B.id); const H=pkHeldF(A.id).filter(k=>{ const rd=+k.split(':')[0]; return rd<=4&&(rd>1||(ovr(p)>=(hotA?56:60)))&&!pkFutWhy(A.id,[k]); }).map(k=>({k,b:pkVal(B,k),a:pkVal(A,k)*pkKeep(A,k)*pkHoard(B.id,k)})) /* 그다음 드래프트 지명권도 같은 값·한도로(카페 11-18, 우리와 같은 pkFutWhy) */.sort((x,y)=>x.b-y.b);
         for(const x of H){ if(x.b>=want&&vin-x.a>=needA){ pay=[]; pkGive=x.k; break; } }
         if(!pkGive)for(const q of pool){ const x=H.find(x=>stackIn([q.b])+x.b>=want&&vin-q.a-x.a>=needA); if(x){ pay=[q]; pkGive=x.k; break; } } }catch(e){ pay=null; pkGive=null; } }
     for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<needA)continue; pay=arr; break; }
@@ -232,7 +232,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     if(hotA&&o.buyers&&(pkGive||pay.some(x=>x.q.age<=24)))try{ domLog('allinBuy'); if(pkGive&&+pkGive.split(':')[0]===1)domLog('allinR1'); }catch(e){}
     const snap=tradeSnap([p.id,...give]); if(cashC){ payOut(A.id,cashC,'etc'); payIn(B.id,cashC); } tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
     give.forEach(id=>{ const q=G.players[id]; tradeTerms(q); q.team=B.id; story(q,`트레이드로 ${tname(B.id)} 이적`,'move'); delete q.aiListed; });
-    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]).concat(cashC?['현금 '+money(cashC)]:[]),snap,...(cashC?{cash:cashC}:{}),...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive){ const [rd,og]=pkGive.split(':').map(Number); G.pkOwn=G.pkOwn||{}; if(og===B.id)delete G.pkOwn[pkYear()+':'+rd+':'+og]; else G.pkOwn[pkYear()+':'+rd+':'+og]=B.id; } { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
+    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]).concat(cashC?['현금 '+money(cashC)]:[]),snap,...(cashC?{cash:cashC}:{}),...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive)pkSet(pkGive,B.id); { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
     wire('트레이드',`${tshort(A.id)}, 리빌딩 ${tshort(B.id)}에서 ${p.name}(${posLabel(p)}, ${p.age}세) 영입: ${[...give.map(id=>G.players[id].name),...(pkNm?[pkNm+' 지명권']:[])].join(', ')} 내줌`,{tid:A.id,ref:p.id}); n++; done=true; break; }
     if(!done)break; }
   return n; }
