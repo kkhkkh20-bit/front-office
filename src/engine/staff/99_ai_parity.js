@@ -90,9 +90,12 @@ function aiMpickPlan(){ for(const t of G.teams){ if(t.id===ME())continue; const 
 function aiMpickMult(p){ const t=G.teams[p.team], P=t&&t.mpick, m=G.mgr[p.team]; return P&&P.back&&P.y===G.year&&(P.ids||[]).includes(p.id)&&m&&!m.interim&&P.mid===m.id?1.3:1; }
 
 /* --- 멘토: 시즌마다 한 번, 33세 이상 프로의식 높은 베테랑(우리 구단 제안과 같은 조건)을 젊은 선수 멘토로. 수당 5천만 --- */
+/* 멘토 지정 판단(우리 구단 비서 '자동 판단'과 AI 구단이 같은 함수, 국사왕 11-18): 긴축 중이 아니고, 수당 5천만을 낼 돈이 있고, 24세 이하 선수가 있으면 맡긴다. 빈 문자열이면 맡긴다.
+   쓸 수 있는 돈: 우리 구단은 다른 지출과 같은 spendable(구단주 지원 여유 포함), AI 구단은 구단 현금 */
+function mentorWhy(tid){ const t=team(tid); if(!t)return '구단 없음'; if(planOf(t)==='tight')return '긴축 운영 중'; const cash=tid===ME()?spendable(tid):(t.cash||0); if(cash<50)return '수당 5천만을 낼 돈이 부족함'; if(!domestic(tid).some(q=>q.age<=24))return '성장 효과를 볼 24세 이하 선수가 없음'; return ''; }
 function aiMentorPick(){ if(period()!=='season')return; for(const t of G.teams){ if(t.id===ME()||t.mentorY===G.year)continue; t.mentorY=G.year;
-    const cur=t.id===G.user?G.mentor:((G.clubT||{})[t.id]||{}).mentor; if(cur&&cur.y===G.year)continue; if(planOf(t)==='tight'||(t.cash||0)<50)continue;
-    const p=playersOf(t.id).filter(q=>{ initPers(q); return q.age>=33&&q.pers.pro>=13&&!q.foreign; }).sort((a,b)=>b.age-a.age)[0]; if(!p||!domestic(t.id).some(q=>q.age<=24))continue;
+    const cur=t.id===G.user?G.mentor:((G.clubT||{})[t.id]||{}).mentor; if(cur&&cur.y===G.year)continue; if(mentorWhy(t.id))continue;
+    const p=playersOf(t.id).filter(q=>{ initPers(q); return q.age>=33&&q.pers.pro>=13&&!q.foreign; }).sort((a,b)=>b.age-a.age)[0]; if(!p)continue;
     t.cash-=50; p.mor=clamp((p.mor??60)+8,0,100); const M={id:p.id,y:G.year}; if(t.id===G.user)G.mentor=M; else { const K=G.clubT=G.clubT||{}, fy=sponSeason(); if(!K[t.id]||K[t.id].fy!==fy)K[t.id]={fy,ai:1}; /* fy가 있어야 그 구단으로 부임한 단장이 멘토를 이어받는다(검수 11-14). ai: 사람 단장이 남긴 기록이 아님(구단주 신뢰 등은 이어받지 않는다) */ K[t.id].mentor=M; } } }
 
 /* --- 보조 코치: 매달 1일 코치 시장(cmAiMonthly 끝). 시설이 줄어 정원을 넘으면 정리(잔여 연봉 절반) --- */

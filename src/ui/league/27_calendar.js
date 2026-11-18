@@ -217,6 +217,8 @@ function gplWeek(days){ const S=gmPlanSpans(days[0],days[6]), M=gplLanes(S.filte
       h+=`<span class="sch-pb${own(s)?'':' pb-gap'}${d===s.a?' pb-s':''}${d===s.b?' pb-e':''}" style="--pc:${GPL_K[s.k].c}" title="${esc(gplLong(s))} ${dmd(s.a)}~${dmd(s.b)}">${st?esc(d===s.a?gplBarLbl(s):gplShort(s.p)):''}</span>`; } h+='</span>'; }
     const p=gmPlanAt(d), one=p&&!p.miss&&!p.cancelled&&!M.some(s=>s.days.includes(d))?p:null;
     return {top:h,chip:one?`<span class="sch-e sch-pl${one.done?' done':''}" style="--ec:${GPL_K[one.k].c}">${esc(gplShort(one))}</span>`:''}; }; }
+/* 달력을 다시 열 때 지킬 날(국사왕 11-18): 고른 날이 아직 오지 않았으면 그날, 고른 날이 없으면 '이 날까지 진행' 목표일(아직 남았으면). 지난 날이거나 둘 다 없으면 null(오늘) */
+function calKeepSel(){ const s=UI.calSel; if(s!=null)return s>G.day?s:null; const t=UI.calTgt; return t!=null&&t>G.day?t:null; }
 /* PC 일정(FM '주요 일정'처럼): 위 한 주 띠(경기·마감·리그 일정), 아래 왼쪽 시즌 경기 목록(지난 경기 결과·선발, 앞으로 경기 D-day·예상 선발), 오른쪽 고른 날 상세 */
 function calFM(){ const c=G.cal; const sel=UI.calSel??G.day; const so=dobj(sel), mon=sel-((so.w+6)%7);
   const days=Array.from({length:7},(_,i)=>mon+i);

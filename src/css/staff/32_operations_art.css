@@ -56,3 +56,7 @@
  main:has(>.ovs-page)>.seg.itabs button,main:has(>.ovs-page)>nav.subtabs button{flex:none;min-height:36px;white-space:nowrap}
 }
 .ovs-bulk-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;max-height:260px;overflow:auto;overscroll-behavior:contain;margin-bottom:6px}.ovs-bulk-row{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:center;column-gap:6px;padding:5px 7px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);cursor:pointer;min-width:0}.ovs-bulk-row.on{border-color:var(--acc)}.ovs-bulk-row>input{width:16px;height:16px;margin:0;grid-row:span 2;accent-color:var(--acc)}.ovs-bulk-row b,.ovs-bulk-row small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ovs-bulk-row small{color:var(--muted)}
+/* 가을 교육리그 신청 기간 안내(국사왕 11-18): 연수 프로그램 탭 위 한 줄, 교육리그 카드는 신청 전이면 테두리 강조 */
+.ovs-center>.fall-ban{flex:none;margin:0;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;min-width:0}
+.ovs-center>.fall-ban>span{min-width:0;overflow-wrap:anywhere}
+.fall-card.fall-open{border-color:var(--warn)}
