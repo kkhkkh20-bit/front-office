@@ -37,7 +37,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   /* 코치 구단 지원 연수: 원지원 구단의 실제 파견 기간과 귀국일을 표시한다. */
   { const S=G.sis||{},seen=new Set(); for(const T of [S.ct,...(S.ctq||[])]){ if(!T||T.tid!==G.user||seen.has(T.key||T.id+':'+T.to))continue; seen.add(T.key||T.id+':'+T.to); const n=T.name||'코치'; if(Number.isFinite(T.from)&&d===T.from)out.push({k:'me',t:`${n} 코치 연수 출발`}); if(d===T.to)out.push({k:'me',t:`${n} 코치 연수 복귀${T.done?'':' 예정'}`}); else if(Number.isFinite(T.from)&&d>T.from&&d<T.to)out.push({k:'me',span:true,t:`${n} 코치 연수 중`}); } }
   /* 우리 선수: 부상 복귀 예정, 전역 */
-  if(d>G.day&&d-G.day<=120)for(const p of ownedOf(G.user)){ /* 대표팀 차출 중 재활 선수도(검수 11-09t) */ if(p.injOut>0&&G.day+p.injOut===d)out.push({k:'pl',t:`${p.name} 복귀 예정(${injNow(p)})`}); }
+  if(d>G.day)for(const p of ownedOf(G.user)){ /* 확정된 복귀일은 장기 재활도 처음부터 표시(검수 11-18 #447). */ if(p.injOut>0&&G.day+p.injOut===d)out.push({k:'pl',t:`${p.name} 복귀 예정(${injNow(p)})`}); }
   for(const p of Object.values(G.players)){ if(p.team!==G.user&&!(p.mil&&p.mil.tid===G.user))continue; const m=p.mil; if(!m)continue; if(m.until&&m.from===d||m.pf===d)out.push({k:'pl',t:`${p.name} ${m.unit||'군'} 입대`}); if(m.until===d||m.pu===d)out.push({k:'pl',t:`${p.name} 전역${m.exempt?'(병역 특례 조기 전역)':''}`}); } /* 예약 입대와 지난 전역(특례 조기 전역 포함)도(검수 11-09zk) */
   try{ out.push(...promoCalEv(d)); }catch(e){} /* 프로모션 데이(44c_promotions) */
   return [...calPhases(d),...out]; }

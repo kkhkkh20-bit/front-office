@@ -92,7 +92,7 @@ function ovsRiskWord(F){const r=F?F.inj+F.form:0;return r>=.16?'높음':r>=.09?'
 function ovsUp(x,g){ const t=Math.min(100,dvRaw(x)+g); let lo=x,hi=80; if(dvRaw(hi)<=t)return hi; for(let i=0;i<30;i++){ const m=(lo+hi)/2; if(dvRaw(m)<t)lo=m; else hi=m; } return clamp(Math.floor(lo*10)/10,20,80); }
 function ovsRoll(p,o,coachDv){const room=Math.max(0,p.pot-ovr(p)),before=Object.fromEntries(o[p.isP?'P':'B'].map(k=>[k,p.r[k]]));const {big,inj,form,good}=ovsForecast(p,o,coachDv);
   const ks=o[p.isP?'P':'B']; const k=ks[Math.floor(R()*ks.length)]; const sc=Math.min(1,room/6+.4); const v0=p.isP?veloOf(p):null; const x=R(); let r;
-  if(x<inj){ p.injOut=ri(14,60); delete p.injK; (p.injHist=p.injHist||[]).push({y:G.year,days:p.injOut,d:G.day,k:null,ovs:1}); /* 메디컬 부상 이력에도 남긴다(검수 11-07) */ r={t:'inj',k,txt:`훈련 강도를 이기지 못하고 다쳤습니다. 약 ${p.injOut}일 재활이 필요합니다.`}; }
+  if(x<inj){ const raw=ri(14,60),h=p.team!=null&&!milServing(p)?medOf(p.team).hosp:'none',days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{ovs:1}});r={t:'inj',k,txt:`훈련 강도를 이기지 못하고 다쳤습니다. 약 ${days}일 재활이 필요합니다.${p.injOut>days?' 기존 부상 재활은 예정대로 이어갑니다.':''}`}; }
   else if(x<inj+form){ p.r[k]=clamp(p.r[k]-rnd(1,3),20,80); r={t:'form',k,txt:`${jEulReul(OVS_TOOLN[k])} 손보다 폼이 흐트러졌습니다. 다시 잡는 데 시간이 걸립니다.`}; }
   else if(x<inj+form+big){ p.r[k]=ovsUp(p.r[k],R()<.1?rnd(5.5,7):Math.max(2,rnd(2,5)*sc)); if(!p.ovsPot){ p.pot=Math.min(80,p.pot+rnd(.5,2)); p.ovsPot=G.year; } /* 연수로 잠재력이 오르는 건 선수마다 한 번(공략 방지: 해마다 보내 잠재력을 쌓던 것) */ const v1=p.isP?veloOf(p):null; r={t:'big',k,txt:k==='stf'&&v1>v0?`직구 평균 ${v0}km/h에서 ${v1}km/h로 올라 돌아왔습니다.`:`${jIGa(OVS_TOOLN[k])} 확실히 달라져 돌아왔습니다.`}; }
   else if(x<inj+form+big+good){ for(const kk of ks)p.r[kk]=ovsUp(p.r[kk],Math.max(1,rnd(1,3)*sc)*1.4/ks.length); r={t:'good',k,txt:`${ks.map(z=>OVS_TOOLN[z]).join('·')}에서 성장이 확인됐습니다.`}; }
@@ -168,11 +168,12 @@ function injStam(p){ const s=(p.isP?p.r&&p.r.sta:p.r&&p.r.vit)??50; return clamp
    그래서 A→B→A로 돌아오면 원래 남은 기간으로 돌아온다(반올림·14일 문턱 때문에 단축이 남던 문제). 기준 이후 다른 일로 남은 기간이 바뀌었으면 지금 값에서 기준을 새로 잡는다 */
 const hospF=(k,p)=>{ const f=1-HOSP[k].rec; const I=INJ[p.injK]; return I&&I.d[0]>=240?Math.sqrt(f):f; };
 /* 지금 남은 재활에 우리 병원 할인이 들어 있는가: 마지막으로 재활 기간을 정한 구단(병원 변경 c, 부상 당시 injC, 옛 저장은 부상 기록 t)이 지금 구단일 때만(검수 11-09zy: 이적 전 병원 몫까지 되돌림) */
-function hospOwn(p){ const b=p.injB, h=(p.injHist||[]).slice(-1)[0]; const c=b&&b.c!==undefined?b.c:p.injC!==undefined?p.injC:h&&h.t!==undefined?h.t:G.user; return c===G.user; }
-function hospBase(p,o){ if(!hospOwn(p))return p.injOut; const b=p.injB; if(b&&b.h===o&&p.injOut===b.o-(G.day-b.d))return Math.max(0,b.n-(G.day-b.d)/hospF(o,p)); return p.injOut/hospF(o,p); }
+function hospOwn(p){ const b=p.injB, h=injEpisode(p); const c=b&&b.c!==undefined?b.c:p.injC!==undefined?p.injC:h&&h.t!==undefined?h.t:G.user; return c===G.user; }
+function hospBase(p,o){ if(!hospOwn(p))return p.injOut; const b=p.injB,h=injEpisode(p); if(b&&b.h===o&&p.injOut===b.o-(G.day-b.d))return Math.max(0,b.n-(G.day-b.d)/hospF(o,p));return p.injOut/hospF(h&&h.hosp!=null?h.hosp:h&&(h.ovs||h.train||(!h.k&&!p.injK))?'none':o,p); }
+function hospAcquire(p,tid){ if(!(p.injOut>0)||tid==null||milServing(p))return;const k=medOf(tid).hosp;if(!HOSP[k]||p.injOut<14)return;if(!injHospital(p,k,'none',true,tid)){const n0=p.injOut,n=Math.max(1,Math.round(n0*hospF(k,p)));p.injOut=n;p.injC=tid;p.injB={n:n0,h:k,o:n,d:G.day,c:tid,id:injEpisode(p)?.id};}injSync(p); }
 function setHospital(k){ if(!HOSP[k])return ''; const o=G.med.hosp||'none'; if(o===k){ G.medSet=true; return ''; } const L=[];
-  for(const p of ownedOf(G.user)){ if(!(p.injOut>0))continue; const kept=hospOwn(p)&&p.injB&&p.injB.h===o&&p.injOut===p.injB.o-(G.day-p.injB.d); if(!kept&&p.injOut<14){ delete p.injB; continue; } /* 짧은 부상은 그대로(병원을 거쳐 바뀐 기간은 기준에서 되돌린다) */
-    const n0=hospBase(p,o); const n=Math.max(1,Math.round(n0*hospF(k,p))); p.injB={n:n0,h:k,o:n,d:G.day,c:G.user}; if(n!==p.injOut){ L.push(`${p.name} ${p.injOut}일 → ${n}일`); p.injOut=n; for(const e of evOpen())if(e.k==='inj'&&e.data.pid===p.id)e.sit=e.sit.replace(/부상으로 약 \d+일/,`부상으로 약 ${n}일`); /* 조기 복귀 결정 문구도 바뀐 재활 기간으로(검수 11-09zy) */ } }
+  for(const p of ownedOf(G.user)){ if(!(p.injOut>0)||milServing(p))continue; const kept=hospOwn(p)&&p.injB&&p.injB.changed!==false&&(p.injB.changed||p.injB.id==null)&&p.injB.h===o&&p.injOut===p.injB.o-(G.day-p.injB.d); if(!kept&&p.injOut<14){ continue; }
+    const before=p.injOut;if(!injHospital(p,k,o,false)){const n0=hospBase(p,o),n=Math.max(1,Math.round(n0*hospF(k,p)));p.injB={n:n0,h:k,o:n,d:G.day,c:G.user,id:injEpisode(p)?.id};p.injOut=n;}if(before!==p.injOut){L.push(`${p.name} ${before}일 → ${p.injOut}일`);injSync(p);} }
   G.med.hosp=k; G.medSet=true; addLog(`제휴 병원을 ${HOSP[k].name}(으)로 바꿨습니다.${L.length?` 재활 중인 선수 남은 기간: ${L.join(', ')}.`:''}`); return L; }
 function recMult(p){ const tm=milServing(p)?null:p.team; /* 상무 복무 중에는 원소속 구단 병원·재활 시설을 쓰지 않는다(검수 11-09zy) */ return tm==null?1:(1-HOSP[medOf(tm).hosp].rec)*(1-facImpact(facLvK(tm,'rehab'))*.07); } /* 모든 구단 같은 식: 제휴 병원 × 재활 시설 */
 function facWeek(){ for(const t of G.teams){ const dl=facImpact(facLvK(t.id,'dorm')); if(!dl)continue; for(const p of domestic(t.id))if(p.age<=23&&(p.mor??60)<75)p.mor=clamp((p.mor??60)+dl*.3,0,75); } } /* 숙소 효과: 모든 구단 같은 식(사용자 11-13) */
@@ -188,7 +189,7 @@ function dailyCost(){ try{ smCheck(); }catch(e){} const m=G.mgr[G.user]; if(m&&!
    우리 구단 연수생이 있으면 베테랑 한 명이 함께 가서 후배를 챙긴다(연수생 기분 +3, 베테랑 리더십 경험) */
 function vetSelfTrain(young){ const out=[]; const V=domestic(G.user).filter(p=>p.age>=28&&p.age<=35&&p.sal>=300&&!(p.injOut>0)&&!milServing(p)&&!p.hold&&!(G.ovs||[]).some(x=>x.pid===p.id));
   for(const p of V){ initPers(p); if(R()>=.15+p.pers.pro/100)continue; /* 프로 의식이 높을수록 스스로 간다 */ const ks=p.isP?['stf','ctl','sta']:['con','pow','eye']; const k=pick(ks);
-    if(R()<.04){ p.injOut=ri(7,21); delete p.injK; (p.injHist=p.injHist||[]).push({y:G.year,days:p.injOut,d:G.day,t:p.team}); /* 개인 훈련 부상도 이력에(검수 11-09t) */ out.push(`${p.name}: 개인 훈련 중 가벼운 부상(약 ${p.injOut}일)`); continue; }
+    if(R()<.04){ const raw=ri(7,21),h=medOf(p.team).hosp,days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{train:1}});out.push(`${p.name}: 개인 훈련 중 가벼운 부상(약 ${p.injOut}일)`); continue; }
     const d=Math.round(rnd(.3,1.2)*10)/10; p.r[k]=clamp(p.r[k]+d,20,80); out.push(`${p.name}: 미국·일본에서 자비로 개인 훈련. ${OVS_TOOLN[k]} 감각을 끌어올렸습니다`); }
   const lead=V.filter(p=>out.some(t=>t.startsWith(p.name+': 미국')))[0];
   if(lead&&young.length){ for(const y of young)y.mor=clamp((y.mor??60)+3,0,100); lead.mor=clamp((lead.mor??60)+2,0,100); out.push(`${lead.name}이(가) 연수생 ${young.map(y=>y.name).join(', ')}와(과) 함께 훈련하며 후배들을 챙겼습니다. 연수생 기분 상승.`); }

@@ -126,6 +126,7 @@ cb:{
   scan(byT){ for(const t of G.teams)for(const p of byT[t.id]||[]){ if(!(p.injOut>=45)||p.ys||ovr(p)<46)continue; if(!slCan('cb',t.id,[p.id]))continue; const h=(p.injHist||[]).slice(-1)[0]; const tot=Math.max(p.injOut,h&&h.days||0);
       slStart('cb',t.id,[p.id],'rehab',{tot,d0:G.day-Math.max(0,tot-p.injOut),ik:p.injK||h&&h.k||null}); story(p,`${G.year} 긴 재활 시작`,'sl'); } },
   week(s){ const p=slP(s.p[0]); const nm=injName(s.x.ik);
+    if(s.st==='back'&&p.injOut>0){ slEnd(s,'reinjured'); return; } /* 다시 다친 날에는 이전 한 달 성적으로 재기 성공을 발표하지 않는다(검수 11-18 #448). */
     if(s.st==='rehab'&&p.injOut>0&&p.injOut<=Math.max(7,s.x.tot*.3)&&G.day-s.d>=14){ s.st='late'; initPers(p);
       const q=slPick('cb.q',[p.pers.pro>=14&&'"하루도 빼먹지 않고 재활했습니다. 몸은 준비됐습니다."',p.pers.amb>=14&&'"빨리 돌아가서 제 자리를 되찾고 싶습니다."','"동료들이 뛰는 걸 TV로만 보는 게 제일 힘들었습니다."','"조급해하지 않으려고 합니다. 완전히 나아서 돌아가겠습니다."'],p.id);
       if(slMe(s.t)||ovr(p)>=56)slNews(s,p,slPick('cb.t',[`${tshort(s.t)} ${p.name}, 긴 재활 끝 보인다`,`${p.name}, 재활 막바지… 복귀 시계 빨라진다`,`'${nm}' 이겨 낸 ${p.name}, 실전 감각 끌어올리는 중`],p.id),`${slR(nm)} 빠졌던 ${slI(p.name)} 재활 마지막 단계에 들어갔습니다. ${q}`,0); }
