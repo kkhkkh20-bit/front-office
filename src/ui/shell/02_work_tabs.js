@@ -36,7 +36,7 @@ function liveCard(){
   const evs=g.ev.filter(e=>e.h<up).slice(-8).reverse();
   return `<section class="card hero"><div class="row between"><span class="eyebrow">${esc(g.kind||'경기')} · ${dmd(g.day)}</span><span class="pill ${done?(g.res==='승'?'good':g.res==='패'?'bad':''):'warn'}">${done?`경기 종료 · ${g.res}`:`${inn}회${top?'초':'말'} 시작 전`}</span></div>
     <h2 class="sec">${tname(g.away)} 대 ${tname(g.home)}</h2>
-    ${lineScore(g,done?null:up)}
+    ${done?pgBoard(g,{slim:true}):lineScore(g,up)}
     <div class="log">${evs.map(e=>`<p><span class="ticker">${Math.floor(e.h/2)+1}회${e.h%2?'말':'초'}</span> ${esc(e.t)}</p>`).join('')||'<p class="small muted">아직 득점이 없습니다.</p>'}</div>
     ${done?`<div class="btns"><button class="btn" data-a="openGame" data-v="${G.live.i}">박스스코어</button><button class="btn primary" data-a="liveDone">확인</button></div>`:`<div class="btns"><button class="btn primary" data-a="liveNext">다음 이닝</button><button class="btn" data-a="liveEnd">경기 끝까지</button></div>`}
   </section>`;

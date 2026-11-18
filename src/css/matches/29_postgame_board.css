@@ -1,0 +1,85 @@
+/* 경기 후 전광판(사용자 11-18): 검은 판에 LED 숫자. 득점한 이닝은 불이 켜진다. 이닝 칸만 판 안에서 가로로 밀리고 팀 이름·R/H/E/B는 늘 보인다 */
+.pgb{--pgb-led:#ffbf3f;--pgb-dim:#9a7536;--pgb-mut:#8ea3ae;display:grid;gap:8px;min-width:0;max-width:100%;padding:10px 12px;background:linear-gradient(180deg,#0b1116,#06090c);border:1px solid #23303a;border-radius:12px;box-shadow:inset 0 0 0 1px #ffffff08,0 6px 18px rgba(0,0,0,.25);color:#e9eef2;text-align:left}
+.pgb button{all:unset;cursor:pointer;min-width:0}
+.pgb button:focus-visible{outline:2px solid var(--pgb-led);outline-offset:2px}
+.pgb-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px}
+.pgb-tm{display:flex;align-items:center;gap:8px;min-width:0}
+.pgb-tm.h{flex-direction:row-reverse;text-align:right}
+.pgb-tm>span{display:grid;min-width:0}
+.pgb-tm b{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pgb-tm small{font-size:11px;color:var(--pgb-mut);white-space:nowrap}
+.pgb-tm.w small{color:var(--pgb-led)}
+.pgb-tm.l{opacity:.78}
+.pgb-sc{display:grid;grid-template-columns:auto auto auto;align-items:center;justify-items:center;gap:2px 6px}
+.pgb-sc>i{font:700 26px/1 var(--f-num);color:#55636c;font-style:normal}
+.pgb-sc>em{grid-column:1/-1;font-style:normal;font-size:10.5px;color:var(--pgb-mut);white-space:nowrap}
+.pgb-led{min-width:1.3em;padding:3px 9px 1px;background:#000;border:1px solid #1c252c;border-radius:6px;font:700 44px/1 var(--f-num);text-align:center;color:var(--pgb-dim);text-shadow:0 0 6px rgba(255,170,40,.35);background-image:radial-gradient(rgba(255,255,255,.045) 30%,transparent 31%);background-size:3px 3px}
+.pgb-led.w{color:var(--pgb-led);text-shadow:0 0 10px rgba(255,180,40,.7)}
+.pgb-meta{font-size:11.5px;color:var(--pgb-mut);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pgb-meta b{color:#e7c55a;font-weight:700}
+/* 이닝 표: [팀][이닝(가로 이동)][R H E B] */
+.pgb-grid{display:flex;min-width:0;background:#000;border:1px solid #23303a;border-radius:8px;overflow:hidden;font:600 16px/1 var(--f-num);background-image:radial-gradient(rgba(255,255,255,.035) 30%,transparent 31%);background-size:3px 3px}
+.pgb-col{display:grid;grid-template-rows:22px 30px 30px;min-width:28px;text-align:center}
+.pgb-col>i{display:flex;align-items:center;justify-content:center;font-style:normal;border-bottom:1px solid #10171c;color:var(--pgb-dim)}
+.pgb-col>i:last-child{border-bottom:0}
+.pgb-col>i.hd{font:700 11px/1 var(--f-ui,inherit);color:#71858f;background:#0b1217}
+.pgb-col>i.pgb-on{color:var(--pgb-led);text-shadow:0 0 7px rgba(255,180,40,.85);background:#2a1d06;font-weight:800}
+.pgb-col>i.pgb-x{color:#6d7b84}
+.pgb-col.ex>i.hd{color:#e7c55a}
+.pgb-tcol{flex:none;min-width:66px;border-right:1px solid #23303a;background:#05080b}
+.pgb-tcol>i.tn{justify-content:flex-start;padding:0 8px 0 7px;border-left:3px solid var(--tc,#888);font:700 13px/1 var(--f-ui,inherit);color:#c9d4da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pgb-tcol>i.tn.w{color:#fff}
+.pgb-tcol>i.tn.me::after{content:'';width:5px;height:5px;margin-left:5px;border-radius:50%;background:#e7c55a;flex:none}
+.pgb-inn{display:flex;flex:1 1 auto;min-width:0;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#33424d transparent}
+.pgb-inn>.pgb-col{flex:1 0 28px}
+.pgb-inn>.pgb-col:nth-child(3n)>i{border-right:1px solid #141d23}
+.pgb-tot{display:flex;flex:none;border-left:2px solid #2d3a44;background:#05080b}
+.pgb-tot>.pgb-col{min-width:32px}
+.pgb-tot>.pgb-col>i:not(.hd){color:#d9e2e7;text-shadow:none}
+.pgb-tot>.pgb-col.r>i:not(.hd){color:var(--pgb-led);font-size:19px;font-weight:800;text-shadow:0 0 8px rgba(255,180,40,.6)}
+.pgb-tot>.pgb-col.r>i.hd{color:#e7c55a}
+/* 승·패·세·홀드 */
+.pgb-decs{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.pgb-d{display:inline-flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap}
+.pgb-d>em{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 5px;border-radius:5px;font:800 12px/1 var(--f-ui,inherit);font-style:normal;color:#fff;background:#41505a}
+.pgb-d.w>em{background:#2f6fd6}.pgb-d.l>em{background:#d24b43}.pgb-d.s>em{background:#24945c}.pgb-d.hd>em{background:#6c58b8}
+.pgb-d button{display:inline-flex;align-items:baseline;gap:5px;padding-bottom:1px;border-bottom:2px solid var(--tc,#888)}
+.pgb-d b{font-size:13.5px;font-weight:800;color:#fff;white-space:nowrap}
+.pgb-d small{font-size:11px;color:var(--pgb-mut);white-space:nowrap}
+/* 결승타·홈런·MVP */
+.pgb-info{display:flex;flex-wrap:wrap;gap:4px 18px;padding-top:7px;border-top:1px dashed #26323b;font-size:12.5px}
+.pgb-i{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:3px 7px;min-width:0}
+.pgb-i>em{font-style:normal;font-size:11px;font-weight:800;color:#e7c55a;white-space:nowrap}
+.pgb-i b{color:#fff;font-weight:700}
+.pgb-i small{font-size:11px;color:var(--pgb-mut)}
+.pgb-hr button{display:inline-flex;align-items:baseline;gap:4px;padding-left:6px;border-left:2px solid var(--tc,#888)}
+.pgb-hr small{color:#f0c977}
+/* 이미 점수를 크게 보여 주는 카드 안(slim) */
+.pgb.slim{padding:7px 8px;gap:6px;border-radius:10px}
+.pgb.slim .pgb-col{grid-template-rows:20px 26px 26px}
+.pgb.slim .pgb-grid{font-size:15px}
+/* 그래픽 중계 마지막 화면: 전광판 탭(기본) */
+body .cs-prep-teams>section.cs-bcard{display:block;width:min(100%,900px);height:auto;max-height:100%;min-height:0;overflow:auto;padding:0;background:none;border:0}
+.cs-result:not([data-tab="board"]) .cs-bcard{display:none!important}
+.cs-result[data-tab="board"] .cs-rcard,.cs-result[data-tab="board"] .cs-ncard{display:none!important}
+.cs-bcard .pgb{background:linear-gradient(180deg,#0b1116f2,#06090cf2);box-shadow:0 18px 50px rgba(0,0,0,.55)}
+/* 박스스코어·결과 카드 */
+.sheet .pgb,.rescard .pgb,.card .pgb{margin:6px 0 10px}
+.pbp-end .pgb{margin:8px 0}
+@media(max-width:600px){
+ .pgb{padding:8px;gap:6px}
+ .pgb-head{gap:6px}
+ .pgb-tm{gap:5px}.pgb-tm .badge,.pgb-tm>svg,.pgb-tm>img{width:26px;height:26px}
+ .pgb-tm b{font-size:12.5px}.pgb-tm small{font-size:10px}
+ .pgb-led{font-size:32px;padding:2px 6px 0}
+ .pgb-sc>i{font-size:20px}
+ .pgb-grid{font-size:14px}
+ .pgb-col{min-width:22px;grid-template-rows:20px 26px 26px}
+ .pgb-inn>.pgb-col{flex-basis:22px}
+ .pgb-tcol{min-width:46px}.pgb-tcol>i.tn{font-size:11.5px;padding:0 4px 0 5px}
+ .pgb-tot>.pgb-col{min-width:25px}
+ .pgb-tot>.pgb-col.r>i:not(.hd){font-size:16px}
+ .pgb-decs{gap:5px 10px}.pgb-d b{font-size:12.5px}.pgb-d small{font-size:10px}
+ .pgb-info{font-size:11.5px;gap:4px 12px}
+}
+@media(max-width:700px){body .cs-prep-teams>section.cs-bcard{align-self:stretch}}
