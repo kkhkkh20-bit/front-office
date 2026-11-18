@@ -99,7 +99,7 @@ function ulAwards(L){ const C=FrontOfficeCore, B=Object.values(L.bat), P=Object.
 /* 끝난 리그를 다시 보는 자료(G.uld.last.lg): 팀(이름·종류·닉네임·OVR) · 연전(박스 포함) · 선수 기록 · 포스트시즌 · 소식 · 예상 */
 function ulLgPack(L){ const slim=M=>{ const o={}; for(const k in M){ const x=Object.assign({},M[k]); delete x.team; o[k]=x; } return o; }, bat=slim(L.bat), pit=slim(L.pit), pn={}; /* 팀 이름은 키 앞부분으로 찾는다(줄마다 두지 않음) */
   for(const M of [L.pbat||{},L.ppit||{}])for(const k in M)if(!bat[k]&&!pit[k])pn[k]=M[k].name; /* 포스트시즌에만 나온 선수 이름(박스용) */
-  return {v:2,teams:L.teams.map(t=>({key:t.key,kind:t.kind,name:t.name,nick:t.nick||'',ovr:t.e.ovr})),series:L.series.map(s=>({id:s.id,r:s.r,a:s.a,b:s.b,nm:s.nm&&s.nm.slice(),g:s.g,bx:s.bx})),bat,pit,pn,te:L.te,teP:L.teP||0,post:L.post,news:L.news,exp:L.exp,seed:L.seed??null}; }
+  return {v:2,tier:L.tier,teams:L.teams.map(t=>({key:t.key,kind:t.kind,name:t.name,nick:t.nick||'',ovr:t.e.ovr})),series:L.series.map(s=>({id:s.id,r:s.r,a:s.a,b:s.b,nm:s.nm&&s.nm.slice(),g:s.g,bx:s.bx})),bat,pit,pn,te:L.te,teP:L.teP||0,post:L.post,news:L.news,exp:L.exp,seed:L.seed??null}; }
 /* 서버 기록실에 올릴 요약(worker/v1/records.js recParse 형식, 1~2KB): 우리 팀 + 타석 많은 타자 12명 · 아웃 많은 투수 10명 */
 function ulRecUp(L,res){ const me=x=>String(x.key).startsWith(UL_ME+':'), B0=Object.values(L.bat).filter(me), tb=x=>(x.h||0)+(x.d||0)+2*(x.tr||0)+3*(x.hr||0);
   const B=B0.slice().sort((a,b)=>(b.pa||0)-(a.pa||0)).slice(0,12), P=Object.values(L.pit).filter(me).sort((a,b)=>(b.outs||0)-(a.outs||0)).slice(0,10);

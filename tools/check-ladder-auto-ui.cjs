@@ -35,7 +35,7 @@ function deck(o = {}) { const P = [], POS = ['C', '1B', '2B', '3B', 'SS', 'LF', 
     const errs = [];
     /* ===== 1) 게임: 자동 등록·설정 › 래더 ===== */
     const p = await b.newPage(); await p.setViewportSize({ width: 1366, height: 768 }); p.on('pageerror', e => errs.push(String(e))); p.on('dialog', d => d.accept());
-    await p.goto(url); await p.waitForFunction(() => typeof A === 'object' && typeof newGame === 'function', null, { timeout: 30000 });
+    await p.goto(url); await p.waitForFunction(() => typeof A === 'object' && typeof newGame === 'function' && UI.title === true, null, { timeout: 30000 });
     await p.evaluate(() => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; closeSheets(); render(); });
     /* 서버 v1이 꺼진 동안(503 not_configured): 오류 없이 이 기기 덱만 */
     let r = await p.evaluate(async () => { UI.ulAutoTest = true; const x = await ulAutoTick(); return { x, deck: !!(G.uld && G.uld.deck && G.uld.deck.auto), day: G.uld.ar.day, pend: G.uld.ar.pend, signed: ulNet().signedIn() }; });
@@ -64,7 +64,7 @@ function deck(o = {}) { const P = [], POS = ['C', '1B', '2B', '3B', 'SS', 'LF', 
     r = await p.evaluate(async () => { const x = await A.ulReg(); return UL.msg; }); assert.match(r, /하루에 한 번/, '덱 화면 직접 등록도 하루 1회');
     console.log('지금 덱으로 다시 등록(하루 1회) 통과');
     const ph = await b.newPage(); await ph.setViewportSize({ width: 390, height: 844 }); ph.on('pageerror', e => errs.push(String(e)));
-    await ph.goto(url); await ph.waitForFunction(() => typeof A === 'object' && typeof newGame === 'function', null, { timeout: 30000 });
+    await ph.goto(url); await ph.waitForFunction(() => typeof A === 'object' && typeof newGame === 'function' && UI.title === true, null, { timeout: 30000 });
     const bootUld = () => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; closeSheets(); A.go('cfg:uld'); };
     await ph.evaluate(bootUld);
     await ph.waitForFunction(() => { const x = document.querySelector('.ul-auto'); if (x && x.offsetHeight > 0) return true; try { if (!G || UI.title) { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; } closeSheets(); A.go('cfg:uld'); } catch (e) {} return false; }, null, { timeout: 60000, polling: 1500 }).catch(async e => { console.log('DBG', await ph.evaluate(() => JSON.stringify({ tab: UI.tab, sub: UI.sub, title: UI.title, g: !!G, n: document.querySelectorAll('.ul-auto').length, t: document.body.innerText.slice(0, 600) }))); throw e; }); f = await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1); assert.ok(f, '휴대폰 설정 › 래더 가로 넘침');
@@ -90,12 +90,12 @@ function deck(o = {}) { const P = [], POS = ['C', '1B', '2B', '3B', 'SS', 'LF', 
     t = await q.evaluate(() => document.querySelector('.ldax').innerText);
     for (const k of ['등록 현황', '이상 감지', '리그 상황', '시즌 판', '덱 목록', '참여도', '서버 사용량']) assert.ok(t.includes(k), k + ' 칸');
     const D = await q.evaluate(() => LDB.dash); assert.equal(D.reg.total, 8, '등록 덱(게임 1 + 씨앗 7)'); assert.equal(D.reg.off, 1); assert.equal(D.reg.over, 1); assert.ok(D.reg.manual >= 3);
-    assert.match(t, /결과 불일치/); assert.match(t, /비정상 승률/); assert.match(t, /같은 기기에서 여러 덱[\s\S]*2덱/); assert.match(t, /4\/9R/); assert.match(t, /우승 팀3/); assert.match(t, /일 남음/);
+    assert.match(t, /결과 불일치/); assert.match(t, /비정상 승률/); assert.match(t, /같은 기기에서 여러 덱[\s\S]*2덱/); assert.match(t, /4\/9라운드/); assert.match(t, /우승 팀3/); assert.match(t, /일 남음/);
     f = await fit(q); assert.equal(f.y, 0, 'PC 1440 관리자 페이지 스크롤'); assert.ok(f.sw);
     if (shots) await q.screenshot({ path: path.join(shots, 'ladder-dash-1440.png') });
     /* 끝난 리그 눌러서 순위표 */ const id = D.recent.find(x => x.lkey === 'lg-ok-1').id; await q.click(`[data-a="ldbLg"][data-v="${id}"]`); await q.waitForSelector('[data-ldb-lg] table');
     assert.equal(await q.evaluate(() => document.querySelectorAll('[data-ldb-lg] tbody tr').length), 10); await q.click('[data-a="ldbLgClose"]');
-    await q.click(`[data-a="ldbLive"][data-v="${P[1].id}"]`); await q.waitForFunction(() => /진행 중 4\/9라운드/.test((document.querySelector('[data-ldb-lg]') || {}).innerText || ''), null, { timeout: 10000 }); console.log('리그 들여다보기 통과');
+    await q.click(`[data-a="ldbLive"][data-v="${P[1].id}"]`); await q.waitForFunction(() => /마지막 보고: 4\/9라운드/.test((document.querySelector('[data-ldb-lg]') || {}).innerText || ''), null, { timeout: 10000 }); console.log('리그 들여다보기 통과');
     /* 덱 목록: 검색·단계·진행 중 리그·숨기기 */
     await q.fill('#ldbQ', '팀2'); await q.click('[data-a="ldbFind"]'); await q.waitForFunction(() => LDB.decks && LDB.decks.decks.length === 1, null, { timeout: 10000 });
     t = await q.evaluate(() => document.querySelector('.ldb-decks').innerText); assert.match(t, /팀2/); assert.match(t, /진행 중 리그 1/); assert.match(t, /직접/);
