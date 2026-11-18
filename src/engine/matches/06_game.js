@@ -339,8 +339,18 @@ function gameRecord(day,hid,aid,g,kind){
   /* 중계 시점 기록용: 이 경기 직전 시즌 누계를 함께 남긴다(나중에 다른 구단 상대로 쌓은 기록이 옛 경기 중계에 섞이지 않게, 검수 11-08) */
   function preOf(id,K,x){ if(/차전/.test(kind||''))return undefined; const p=G.players[id], t=p&&seasonTotal(p,dobj(day).y,'1군'); if(!t)return undefined; return K.map(k=>Math.max(0,(t[k]||0)-(x[k]||0))); }
   const me=hid===G.user?'h':'a'; const ms=g.score[me], os=g.score[me==='h'?'a':'h'];
-  return {gid:G.gSeq=(G.gSeq||0)+1,day,kind,home:hid,away:aid,hs:g.score.h,as:g.score.a,line:g.line,hits:g.hits,ev:g.ev,pbp:g.pbp,broadcast:g.broadcast,incidents:gameIncidents(day,hid,aid,g),box:{h:side('h'),a:side('a')},res:ms>os?'승':ms<os?'패':'무',inn:g.inn,min:gameMin(g)}; /* 경기 시간(95_game_rules: 피치 클락) */
+  const rec={gid:G.gSeq=(G.gSeq||0)+1,day,kind,home:hid,away:aid,hs:g.score.h,as:g.score.a,line:g.line,hits:g.hits,ev:g.ev,pbp:g.pbp,broadcast:g.broadcast,incidents:gameIncidents(day,hid,aid,g),box:{h:side('h'),a:side('a')},res:ms>os?'승':ms<os?'패':'무',inn:g.inn,min:gameMin(g)}; /* 경기 시간(95_game_rules: 피치 클락) */
+  try{ rec.pg=pgSum(rec,true); }catch(e){} /* 경기 후 전광판: 홈런 순서·결승타·승패 투수 시즌 성적을 기록 시점에 남긴다(문자 기록이 지워진 옛 경기도, 사용자 11-18) */
+  return rec;
 }
+/* 경기 후 전광판 요약(사용자 11-18): 이미 남은 타석 기록(pbp)·박스스코어만 읽는다. 난수·경기 진행과 무관.
+   hr: [반이닝, 타자, 득점, 시즌 n호|null] · gw: [반이닝, 타자, 결과, 타석 순번] 이긴 팀이 다시는 따라잡히지 않은 리드를 만든 타석(실책·병살 득점은 결승타 아님) · rec: 결정 투수 시즌 [승,패,세,홀](live: 기록 직후 1군 누계) */
+function pgSum(g,live){ const L=g.pbp||[], W=g.hs>g.as?'h':g.as>g.hs?'a':null, hi=PRE_B.indexOf('hr'), cnt={}, hr=[]; let prev=0, gw=null;
+  const preHr=id=>{ for(const sd of ['h','a']){ const q=((g.box&&g.box[sd]||{}).bat||[]).find(x=>x.id===id); if(q&&q.pre!=null){ const v=Array.isArray(q.pre)?q.pre[hi]:q.pre.hr; if(v!=null)return v; } } return null; };
+  L.forEach((x,k)=>{ if(!x||typeof x[1]!=='number')return; if(x[3]==='HR'){ cnt[x[1]]=(cnt[x[1]]||0)+1; const b=preHr(x[1]); hr.push([x[0],x[1],x[6]||1,b!=null?b+cnt[x[1]]:null]); }
+    if(W&&typeof x[7]==='number'){ const ld=W==='h'?x[8]-x[7]:x[7]-x[8]; if(prev<=0&&ld>0){ const sp=x[18]&&typeof x[18]==='object'?x[18]:{}; const ok=x[3]!=='DP'&&!x[9]&&!sp.error&&(x[12]==null||x[12]>0); gw=ok?[x[0],x[1],x[3]==='OUT'?(x[13]?'SF':sp.bipType||'OUT'):x[3],k]:null; } prev=ld; } });
+  const o={hr,gw}; if(live&&!/차전/.test(g.kind||'')&&g.box){ const y=dobj(g.day).y; o.rec={}; for(const sd of ['h','a'])for(const q of g.box[sd].pit||[])if(q.d){ const p=G.players[q.id], t=p&&seasonTotal(p,y,'1군'); if(t)o.rec[q.id]=[t.w||0,t.l||0,t.sv||0,t.hld||0]; } }
+  return o; }
 function keepGame(rec){ G.games.unshift(rec); G.games=G.games.slice(0,25); G.games.forEach((g,i)=>{ if(i>=8&&g.pbp)delete g.pbp; }); }
 function ulog(r){ (G.sea.ulog=G.sea.ulog||[]).push({gid:r.gid,d:r.day,h:r.home,a:r.away,hs:r.hs,as:r.as,res:r.res,k:r.kind||'',...(r.dh?{dh:r.dh}:{})});if(r.gid!=null&&!/차전/.test(r.kind||''))for(const tid of [r.home,r.away]){const L=G.sea.tl?.[tid]||[],home=tid===r.home,z=L.find(z=>z[8]===r.gid)||L.find(z=>z[8]==null&&z[5]===r.day&&!!z[3]===home&&z[4]===(home?r.away:r.home)&&z[1]===(home?r.hs:r.as)&&z[2]===(home?r.as:r.hs));if(z){z[8]=r.gid;z[9]=r.dh||0;}} } /* tl 8·9: 이직 뒤에도 경기ID·더블헤더 차전을 복원할 수 있게 남긴다. */
 
