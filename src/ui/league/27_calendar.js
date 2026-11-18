@@ -17,7 +17,7 @@ function calEvents(d){ const o=dobj(d); const out=[]; const c=G.cal;
   const F=G.fa&&G.fa.y0===o.y&&(G.fa.annDay!=null||!G.fa.closed)?G.fa:null; /* 그해 FA 일정은 실제 날짜로: 결산이 늦어 공시·개장이 밀릴 수 있다(검수 11-08) */
   for(const [m,dd,l,k] of CAL_FIX)if(o.m===m&&o.d===dd&&!(F&&m===11&&(dd===2||dd===6)))out.push({k,t:l});
   if(F){ const ann=F.annDay??Math.max(dnum(o.y,11,2),G.day+1), op=F.open?F.openDay:Math.max(F.openDay,ann+1); if(d===ann)out.push({k:'lg',t:'FA 공시'}); if(d===op)out.push({k:'lg',t:'FA 협상 시작'}); }
-  for(const [m,dd,ck,l] of CAL_CER){ const A=G.awards&&G.awards[o.y], cd=(A&&A.cd&&A.cd[ck])??(G.cerNew&&G.cerNew.y===o.y&&G.cerNew.k===ck?G.cerNew.d:null); if(cd!=null?d===cd:o.m===m&&o.d===dd)out.push({k:'lg',t:l(),cer:o.y+':'+ck}); } /* 시상식이 밀리면 실제로 연 날에(검수 11-09l) */
+  for(const [m,dd,ck,l] of CAL_CER)for(const y of new Set([o.y,...Object.keys(G.awards||{}).map(Number)])){const A=G.awards?.[y],cd=A?.cd?.[ck]??A?.days?.[ck]??(G.cerNew&&G.cerNew.y===y&&G.cerNew.k===ck?G.cerNew.d:null);if(cd!=null?d===cd:y===o.y&&o.m===m&&o.d===dd)out.push({k:'lg',t:(y!==o.y?y+'시즌 ':'')+l(),cer:y+':'+ck});} /* 예정·실제 시상일은 다음 해 달력에서도 원래 시즌에 연결한다. */
   if(c&&c.y===o.y){ const L=[[c.camp,'스프링캠프 시작','lg'],[c.campEnd,'캠프 종료','lg'],[c.exh,'시범경기 시작','lg'],[c.open,'정규시즌 개막','lg'],[c.asg,'올스타전','lg'],[c.draft,'신인 드래프트','dl'],[c.end,'정규시즌 종료','lg']]; for(const [n,t,k] of L)if(n===d)out.push({k,t}); }
   /* 국가대표 소집: 최종 명단 전에는 '소집 예정', 발표 뒤에는 우리 선수 이탈 수 */
   try{ for(const x of ntUpcoming(4)){ const e=NT_EV[x.k], D=a=>dnum(x.y,a[0],a[1]); const N=G.nt&&G.nt.k===x.k&&G.nt.y===x.y?G.nt:null; const n=N?N.ids.filter(id=>G.players[id]&&G.players[id].team===G.user).length:null;

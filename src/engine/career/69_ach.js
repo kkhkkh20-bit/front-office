@@ -154,7 +154,7 @@ function achCheck(ctx){ if(!G||G.user==null)return; ctx=ctx||{}; const T=achT();
     if(fin&&t.cash>=20000)achUnlock('cash200');
     if((G.rep??0)>=80)achUnlock('rep80');
     for(const tr of (G.trades||[]).filter(x=>x.gi&&x.y<y)){ let r=null; try{ r=tradeReport(tr); }catch(e){} if(r&&r.net>=8){ achUnlock('steal',`${tr.y}년 ${tshort(tr.with)}와의 트레이드: 받은 쪽 WAR ${r.got.toFixed(1)}, 준 쪽 ${r.gave.toFixed(1)}.`); break; } } }
-  if(ctx.k==='award'){ const y=G.year, A=G.awards&&G.awards[y]; if(!A)return; const U=(T.own||{})[y]??(T.seaY!=null&&T.seaY>=y||G.unemp?null:G.user); if(U==null)return; /* 결산 판정 기록이 없는 옛 저장만 지금 구단으로 본다 */ /* 그 시즌을 마친 구단 기준: 시상식 전에 떠나도 내 몫, 시즌이 끝난 뒤 맡은 구단의 수상은 전임 몫(검수 128·129) */ const mine=x=>x&&x.t===U; const drafted=x=>{ const p=x&&(G.players[x.id]||(G.arch&&G.arch[x.id]&&archP(G.arch[x.id]))); /* 보관 기록으로 옮겨진 수상자도(검수 11-06) */ return !!(p&&p.draft&&p.draft.tid===U); };
+  if(ctx.k==='award'){ const y=ctx.y??G.year, A=G.awards&&G.awards[y]; if(!A)return; const U=(T.own||{})[y]??(T.seaY!=null&&T.seaY>=y||G.unemp?null:G.user); if(U==null)return; /* 결산 판정 기록이 없는 옛 저장만 지금 구단으로 본다 */ /* 그 시즌을 마친 구단 기준: 시상식 전에 떠나도 내 몫, 시즌이 끝난 뒤 맡은 구단의 수상은 전임 몫(검수 128·129) */ const mine=x=>x&&x.t===U; const drafted=x=>{ const p=x&&(G.players[x.id]||(G.arch&&G.arch[x.id]&&archP(G.arch[x.id]))); /* 보관 기록으로 옮겨진 수상자도(검수 11-06) */ return !!(p&&p.draft&&p.draft.tid===U); };
     if(ctx.a==='mvp'){ if(mine(A.mvp)&&drafted(A.mvp))achUnlock('draftMvp',`${y} MVP ${A.mvp.name}.`); if(mine(A.roy)&&drafted(A.roy))achUnlock('draftRoy',`${y} 신인왕 ${A.roy.name}.`); }
     if(ctx.a==='gg'){ const L=Object.values(A.gg||{}).filter(mine); if(L.length>=3)achUnlock('gg3',`${y} 골든글러브 ${L.map(x=>x.name).join(', ')}.`); T.ggMine+=L.filter(drafted).length; } }
   if(G.unemp){ achProg(); return; } /* 결산에서 물러나도 마친 시즌 누계(10시즌 등)는 그날(검수 126) */
@@ -185,7 +185,7 @@ function achSetTitle(t){ const M=achMeta(); M.title=t&&achTitles().includes(t)?t
   /* 결산 직후(우승·성적·재정) */
   wrap('settlement',()=>achCheck({k:'season'}));
   /* 시상식(MVP·신인왕, 골든글러브) */
-  wrap('awardCeremony',(r,args,pend)=>{ if(pend)achCheck({k:'award',a:args[0]}); },(k)=>{ const A=G.awards&&G.awards[G.year]; return !!(A&&A.pend&&A.pend[k]); });
+  wrap('awardCeremony',(r,args,pend)=>{ if(pend)achCheck({k:'award',a:args[0],y:args[1]??G.year}); },(k,y=G.year)=>{ const A=G.awards&&G.awards[y]; return !!(A&&A.pend&&A.pend[k]); });
   /* 영구결번 */
   wrap('retireNumber',(r,a,n0)=>{ if((G.retNos||[]).length>n0)achCheck({k:'retNo'}); },()=>(G.retNos||[]).length); /* 실제로 결번이 늘었을 때만(거절 문구로는 열지 않는다, 검수 11-09zz) */
   /* 구단 이동: 옮기기 전에 기록한다(야인이었는지) */
