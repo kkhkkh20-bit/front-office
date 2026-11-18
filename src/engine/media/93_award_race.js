@@ -72,13 +72,13 @@ function psBoxOf(g){ const o={}; for(const k of ['h','a']){ const s=g.S[k], P=s.
 function psMvpY(y){ const M=G.psMvp=G.psMvp||{}; const o=M[y]=M[y]||{g:[],s:{}}; const ys=Object.keys(M).map(Number).sort((a,b)=>a-b); while(ys.length>25)delete M[ys.shift()]; return o; }
 /* psDay에서: 경기 MVP를 정해 저장(우리 경기 기록에도 붙인다)하고 리그 소식에 한 줄 */
 function psMvpGame(rd,n,g,day,rec){ if(!g||rd==='tb'||!ROUNDK[rd])return null; const box=rec&&rec.box?rec.box:psBoxOf(g); const win=g.score.h>g.score.a?'h':g.score.a>g.score.h?'a':null; const m=psGameMvpBox(box,win); if(!m)return null;
-  const y=G.year, Y=psMvpY(y); if(!Y.g.some(r=>r[0]===rd&&r[1]===n))Y.g.push([rd,n,m.id,m.t,m.n,m.line,day]); if(rec)rec.mvp={id:m.id,n:m.n,t:m.t,line:m.line};
+  const y=G.ps?.y??G.year, Y=psMvpY(y); if(!Y.g.some(r=>r[0]===rd&&r[1]===n))Y.g.push([rd,n,m.id,m.t,m.n,m.line,day]); if(rec)rec.mvp={id:m.id,n:m.n,t:m.t,line:m.line};
   try{ wire('포스트시즌',`${ROUNDK[rd]} ${n}차전 MVP ${m.n}(${tshort(m.t)}) · ${m.line}`,{tid:m.t,ref:m.id}); }catch(e){} return m; }
 /* 시리즈 MVP: 이긴 구단 선수의 그 라운드 합계(G.psSer)로. 한국시리즈 MVP(champSeriesMvp)와 같은 식 */
 function psSeriesMvp(y,rd,tid){ const K=G.psSer&&G.psSer[y]&&G.psSer[y][rd]; if(!K)return null;
   const L=Object.entries(K).filter(([,o])=>o.t===tid).map(([id,o])=>{ const v=o.isP?(o.outs||0)/3*.7-(o.er||0)*1.3+(o.so||0)*.2+(o.w||0)*1.5+(o.sv||0):(o.h||0)+(o.d||0)*.5+(o.hr||0)*2+(o.rbi||0)*.8+(o.bb||0)*.3; return {id:+id,o,v}; }).sort((a,b)=>b.v-a.v); const b=L[0]; if(!b)return null;
   const o=b.o; const line=o.isP?`${o.w||0}승${o.sv?` ${o.sv}세이브`:''} · ${ipStr(o.outs||0)}이닝 ${o.er||0}자책 · 탈삼진 ${o.so||0}`:`${o.ab||0}타수 ${o.h||0}안타 ${o.hr||0}홈런 ${o.rbi||0}타점`; return {id:b.id,n:o.n,line,games:Math.max(...L.map(x=>x.o.g))}; }
-function psMvpSeries(rd,tid,m){ if(!ROUNDK[rd]||rd==='tb')return null; const y=G.year; m=m||psSeriesMvp(y,rd,tid); if(!m)return null; const Y=psMvpY(y); if(Y.s[rd])return Y.s[rd];
+function psMvpSeries(rd,tid,m,y=G.ps?.y??G.year){ if(!ROUNDK[rd]||rd==='tb')return null; m=m||psSeriesMvp(y,rd,tid); if(!m)return null; const Y=psMvpY(y); if(Y.s[rd])return Y.s[rd];
   Y.s[rd]={id:m.id,n:m.n,t:tid,line:m.line};
   if(rd!=='ks'){ const mine=tid===G.user&&!G.unemp; withRng(y*1009+({wc:51,spo:53,po:57})[rd],()=>news('선수',`${ROUNDK[rd]} 시리즈 MVP ${m.n}`,`${tname(tid)}의 ${m.n}이(가) ${m.line}(으)로 ${ROUNDK[rd]} 시리즈 MVP에 뽑혔습니다.`,mine?1:0,{ref:m.id,tid})); }
   return Y.s[rd]; }

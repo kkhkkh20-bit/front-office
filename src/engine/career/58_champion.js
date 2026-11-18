@@ -15,17 +15,24 @@ function champAdopt(tid){ champEventsInit(); const r=Object.values(G.champEvents
 function champSchedule(tid,y){ champEventsInit(); const r=champRecord(tid,y); if(!r.parade)r.parade={tid,y,d:G.day+3,done:false}; if(!r.sales)r.sales={tid,y,pop:team(tid).pop}; r.ringY=y+1; return r; }
 function champRing(tid){ champEventsInit(); return Object.values(G.champEvents||{}).find(r=>r.tid===tid&&r.ringY===G.year&&r.ringDone!==G.year); }
 function champSeriesMvp(y,tid){ tid=tid??G.user;
-  { const r=psSeriesMvp(y,'ks',tid); if(r)return r; } /* 모든 구단의 한국시리즈 기록(psRec)으로. 옛 저장은 아래 우리 경기 기록으로 */
-  const R=(G.games||[]).filter(r=>r.kind&&r.kind.startsWith('한국시리즈')&&dobj(r.day).y===y&&(r.home===tid||r.away===tid)); const sc={};
+  { const r=psSeriesMvp(y,'ks',tid); if(r)return r; } /* 현재 시리즈 합계를 우선하고 옛 박스는 명시 시즌으로 복원합니다. */
+  const R=psStoredGames().filter(r=>r.kind&&r.kind.startsWith('한국시리즈')&&psGameSeason(r)===y&&(r.home===tid||r.away===tid)&&r.box&&r.box[r.home===tid?'h':'a']); const sc={};
   for(const r of R){ const s=r.box[r.home===tid?'h':'a'];
-    for(const b of s.bat){ const v=(b.h||0)+(b.d||0)*.5+(b.hr||0)*2+(b.rbi||0)*.8+(b.bb||0)*.3; const o=sc[b.id]=sc[b.id]||{id:b.id,n:b.n,v:0,b:{ab:0,h:0,hr:0,rbi:0},p:null}; o.v+=v; o.b.ab+=b.ab||0; o.b.h+=b.h||0; o.b.hr+=b.hr||0; o.b.rbi+=b.rbi||0; }
-    for(const x of s.pit){ const v=(x.outs||0)/3*.7-(x.er||0)*1.3+(x.so||0)*.2+(x.d==='승'?1.5:x.d==='세'?1:0); const o=sc[x.id]=sc[x.id]||{id:x.id,n:x.n,v:0,b:null,p:{outs:0,er:0,so:0,w:0,sv:0}}; o.v+=v; o.p=o.p||{outs:0,er:0,so:0,w:0,sv:0}; o.p.outs+=x.outs||0; o.p.er+=x.er||0; o.p.so+=x.so||0; if(x.d==='승')o.p.w++; if(x.d==='세')o.p.sv++; } }
+    for(const b of s.bat||[]){ if(!b||b.id==null)continue; const v=(b.h||0)+(b.d||0)*.5+(b.hr||0)*2+(b.rbi||0)*.8+(b.bb||0)*.3; const o=sc[b.id]=sc[b.id]||{id:b.id,n:b.n,v:0,b:{ab:0,h:0,hr:0,rbi:0},p:null}; o.v+=v; o.b.ab+=b.ab||0; o.b.h+=b.h||0; o.b.hr+=b.hr||0; o.b.rbi+=b.rbi||0; }
+    for(const x of s.pit||[]){ if(!x||x.id==null)continue; const v=(x.outs||0)/3*.7-(x.er||0)*1.3+(x.so||0)*.2+(x.d==='승'?1.5:x.d==='세'?1:0); const o=sc[x.id]=sc[x.id]||{id:x.id,n:x.n,v:0,b:null,p:{outs:0,er:0,so:0,w:0,sv:0}}; o.v+=v; o.p=o.p||{outs:0,er:0,so:0,w:0,sv:0}; o.p.outs+=x.outs||0; o.p.er+=x.er||0; o.p.so+=x.so||0; if(x.d==='승')o.p.w++; if(x.d==='세')o.p.sv++; } }
   const best=Object.values(sc).sort((a,b)=>b.v-a.v)[0]; if(!best)return null;
   const line=best.p&&best.p.outs>=9&&(!best.b||best.b.ab<6)?`${best.p.w}승${best.p.sv?` ${best.p.sv}세이브`:''} · ${ipStr(best.p.outs)}이닝 ${best.p.er}자책 · 탈삼진 ${best.p.so}`:best.b?`${best.b.ab}타수 ${best.b.h}안타 ${best.b.hr}홈런 ${best.b.rbi}타점`:'';
   return {id:best.id,n:best.n,line,games:R.length}; }
-function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.year; const record=champSchedule(P.champ,y);if(!record.chron){const H=typeof clubChron==='function'?clubChron(P.champ):(G.chron||[]);if(!H.some(x=>x.tid===P.champ&&x.y===y&&x.k==='champ'&&/한국시리즈.*우승/.test(x.t)))chron('champ',`${y} 한국시리즈 우승 · 상대 ${tname(P.runner)}${P.res?.ks?` · ${P.res.ks[2]}승 ${P.res.ks[3]}패`:''}`,null,P.champ);record.chron=1;}
+/* 발표된 MVP의 인물 ID를 우선한다. 은퇴 보관 대상도 같은 상을 한 번만 받고 현역 사기만 올린다. */
+function champMvpAward(y,tid,record){ const announced=record.news?.mvp||(G.champNew?.y===y&&G.champNew.tid===tid?G.champNew.mvp:null), m=announced||champSeriesMvp(y,tid); if(!m){record.mvpDone=1;return null;} const q=G.players[m.id]||G.arch?.[m.id]; if(!q)return m;
+  const added=addAward(q,y+' 한국시리즈 최우수선수',tid); if(added&&G.players[m.id]===q)q.mor=clamp((q.mor??60)+5,0,100); record.mvpDone=1; return m; }
+/* 옛 보관 수상은 실제 MVP 발표 영수증이 있을 때만 복구한다. 새 시상 기사나 현재 선수 재평가를 만들지 않는다. */
+function champArchiveMvpMigrate(){ let n=0; const L=Object.values(G.champEvents||{}).map(r=>r.news).concat(G.champNew||[]),seen=new Set(); for(const c of L){ if(!c||!Number.isFinite(c.y)||c.tid==null||c.mvp?.id==null)continue; const k=c.y+':'+c.mvp.id; if(seen.has(k))continue;seen.add(k);const a=G.arch?.[c.mvp.id];if(!a)continue;const label=c.y+' 한국시리즈 최우수선수';if(!(a.aw||[]).includes(label)){(a.aw=a.aw||[]).push(label);n++;} }return n; }
+function champCelebrate(){const P=G.ps;if(!P||P.champ==null)return;const tid=P.champ,y=P.y??G.year,key=tid+':'+y,pending=G.champEvents?.[key]?.pending;
+  return postAtomic('champ:'+key,()=>{const r=champCelebrateCore();const c=G.champEvents?.[key];if(c)delete c.pending;return r;},pending,(v,native)=>{champRecord(tid,y).pending=native?{v}:{};});}
+function champCelebrateCore(){ const P=G.ps; if(!P||P.champ==null)return; const y=P.y??G.year; const record=champSchedule(P.champ,y);champRingCapture(record);if(!record.chron){const H=typeof clubChron==='function'?clubChron(P.champ):(G.chron||[]);if(!H.some(x=>x.tid===P.champ&&x.y===y&&x.k==='champ'&&/한국시리즈.*우승/.test(x.t)))chron('champ',`${y} 한국시리즈 우승 · 상대 ${tname(P.runner)}${P.res?.ks?` · ${P.res.ks[2]}승 ${P.res.ks[3]}패`:''}`,null,P.champ);record.chron=1;}
   /* 우승 구단 효과(인기·선수단 기분·구단주 신뢰)는 플레이어가 맡았는지와 상관없이 같게(검수 11-09zo) */ if(!record.fx){ record.fx=1; const tc=team(P.champ); for(const p of playersOf(P.champ))p.mor=clamp((p.mor??60)+8,0,100); tc.pop=clamp(tc.pop+.1,.7,1.5); tc.trust=clamp(tc.trust+3,0,100); }
-  if(!record.mvpDone&&!record.news){ record.mvpDone=1; const m=champSeriesMvp(y,P.champ), q=m&&G.players[m.id]; if(q){ try{ addAward(q,`${y} 한국시리즈 최우수선수`,P.champ); }catch(e){} q.mor=clamp((q.mor??60)+5,0,100); } if(m){ try{ psMvpSeries('ks',P.champ,m); }catch(e){} if(G.unemp||P.champ!==G.user)withRng(y*1009+59,()=>news('선수',`한국시리즈 MVP ${m.n}`,`${tname(P.champ)}의 ${m.n}이(가) ${m.line}(으)로 한국시리즈 MVP에 뽑혔습니다.`,0,{ref:m.id,tid:P.champ})); } } /* 시리즈 MVP 기록·다른 구단 우승 때도 기사(93_award_race) */ /* AI 구단이 우승해도 시리즈 최우수선수를 뽑는다(검수 11-09zz). 정규시즌 MVP 집계와 섞이지 않게 'MVP' 글자를 쓰지 않는다 */
+  { const m=champMvpAward(y,P.champ,record); if(m&&!record.mvpPublished){ psMvpSeries('ks',P.champ,m,y); if(G.unemp||P.champ!==G.user)withRng(y*1009+59,()=>news('선수',`한국시리즈 MVP ${m.n}`,`${tname(P.champ)}의 ${m.n}이(가) ${m.line}(으)로 한국시리즈 MVP에 뽑혔습니다.`,0,{ref:m.id,tid:P.champ})); record.mvpPublished=1; } } /* 현역·보관 수상과 새 시리즈 MVP 기록·기사를 함께 보존합니다. */
   if(G.unemp||P.champ!==G.user)return; if(record.news)return; const t=team(G.user);
   const prev=(G.history||[]).filter(h=>h.champ===G.user).map(h=>h.y); const last=prev.length?Math.max(...prev):null; const n=prev.length+1;
   const ks=P.res&&P.res.ks?P.res.ks:null; const mvp=champSeriesMvp(y);
@@ -39,9 +46,9 @@ function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.
   G.champPop0=record.sales; /* 우승 효과: 다음 시즌 관중·유니폼·굿즈 판매가 늘어난다(인기는 해마다 조금씩 원래대로 돌아간다) */ prInit(); G.pr.fan=clamp(G.pr.fan+12,0,100); G.pr.press=clamp(G.pr.press+8,0,100);
   /* 구단주 포상: 세 가지 중 하나 */
   const B=bossOf(G.user);
-  evNew('champGift',`구단주 포상: ${tag}`,`${B.own.name} 회장이 라커룸까지 내려와 단장의 손을 잡았습니다. "약속을 지켜 줘서 고마워요. 원하는 걸 말해 보세요."\n\n포상 하나를 고르세요.`,
+  const gift=evNew('champGift',`구단주 포상: ${tag}`,`${B.own.name} 회장이 라커룸까지 내려와 단장의 손을 잡았습니다. "약속을 지켜 줘서 고마워요. 원하는 걸 말해 보세요."\n\n포상 하나를 고르세요.`,
     champGiftOpts(t,y), /* 현금 포상은 줄였다: 우승팀이 바로 전력을 사 오면 쏠림이 커진다. 보상은 인기·명성·판매로 */
-    {exp:14,def:0,from:'구단주실'});
+    {exp:14,def:0,from:'구단주실',data:{tid:t.id,y}});champGiftBind(gift);
   /* 우승 직후 스폰서 제안 쇄도: 비거나 올해 끝나는 자리에 웃돈 제안 */
   try{ sponInit(); const S=G.spon; const made=[]; for(const k of Object.keys(SPON_SLOT)){ if(SPON_SLOT[k].indie&&!t.indie)continue; const c=S.c[k]; if(c&&c.until>y)continue; if(made.length>=3)break; const o=sponMake(k); o.amt=round5(o.amt*1.18); o.exp=G.day+30; S.off.push(o); made.push(o); }
     if(made.length)mail('마케팅팀',`우승 효과: 스폰서 제안 ${made.length}건`,`우승 소식이 나가자마자 기업들의 연락이 몰려들었습니다. 평소보다 18% 높은 조건입니다.\n${made.map(o=>`${o.co}(${SPON_SLOT[o.slot].l}) 연 ${money(o.amt)}`).join('\n')}`,{kind:'스폰서',acts:[{l:'스폰서 보기',a:'go',v:'club:spon'}]}); }catch(e){}
@@ -49,19 +56,57 @@ function champCelebrate(){ const P=G.ps; if(!P||P.champ==null)return; const y=G.
   addLog(`${y} 한국시리즈 우승 (${tag})`); }
 /* 우승 포상 선택지. 모기업이 없는 구단은 모기업 부담 보너스·시설 투자를 받을 수 없고(투자사 지원금만), 시설 투자는 3년에 한 번(연속 우승 때마다 시설이 두 칸씩 오르던 문제, 커뮤니티 피드백 11-07) */
 /* 시설 투자 포상을 받은 해: 단장이 아니라 구단 기록(옛 저장의 전역 값은 그해 우승 구단 몫, 검수 11-09zo) */
+/* FA 특별 자금은 우승 시즌의 겨울에 속한다. 확정 계약 영수증만 용도 이행으로 센다. */
+function champFundKey(f){return (f.tid??G.user)+':'+(Number.isInteger(f.y)?f.y:'due'+f.due);}
+function champFundAll(){const M=new Map();for(const f of Object.values(G.faFunds||{}))if(f)M.set(champFundKey(f),f);if(G.faFund&&!M.has(champFundKey(G.faFund)))M.set(champFundKey(G.faFund),G.faFund);return [...M.values()];}
+function champFundMigrate(){if(!G.faFund&&!G.faFunds)return 0;const B=G.faFunds=G.faFunds||{};let n=0;
+  const put=f=>{const e=f.giftId&&((G.evs||[]).find(e=>e.id===f.giftId)||Object.values(G.champEvents||{}).map(r=>r.gift).find(e=>e&&e.id===f.giftId));if(e&&e.pick===2&&e.data&&e.data.tid!=null&&Number.isInteger(e.data.y)&&(f.tid==null||e.data.tid===f.tid)){if(f.tid==null){f.tid=e.data.tid;n++;}if(f.y!==e.data.y){f.y=e.data.y;n++;}const due=dnum(f.y+1,2,1);if(f.due!==due){f.due=due;n++;}}
+    if(!Number.isInteger(f.y)&&Number.isFinite(f.due)){const d=dobj(f.due);if(d.m===2&&d.d===1){f.y=d.y-1;n++;}}
+    if(f.tid==null){f.tid=champOwner(f.y);n++;}const k=champFundKey(f),old=B[k];if(!old){B[k]=f;n++;return f;}if(old!==f){for(const [a,v] of Object.entries(f))if(old[a]==null){old[a]=v;n++;}for(const a of ['used','done'])if(f[a]&&!old[a]){old[a]=true;n++;}}return old;};
+  const legacy=G.faFund;for(const [key,f] of Object.entries(B)){if(!f)continue;const canonical=put(f);if(champFundKey(canonical)!==key){delete B[key];n++;}if(legacy===f)G.faFund=canonical;}if(legacy){const canonical=put(legacy);if(G.faFund!==canonical){G.faFund=canonical;n++;}}return n;}
+
+function champFundProof(f){if(!Number.isInteger(f.y)||!Number.isFinite(f.due))return null;const from=dnum(f.y,11,1),valid=r=>r&&r.to===f.tid&&r.from!=null&&r.from!==f.tid&&Number.isFinite(r.day??r.d)&&(r.day??r.d)>=from&&(r.day??r.d)<f.due;
+  const r=(G.fa&&G.fa.results||[]).find(valid);if(r)return {pid:r.id,from:r.from,to:r.to,d:r.day,source:'FA 결과'};const m=(G.moves||[]).find(r=>r.t==='FA'&&valid(r));return m?{pid:m.pid,from:m.from,to:m.to,d:m.d,source:'확정 이적 장부'}:null;}
+function champFundUsed(f){return f.assessed?!!f.used:!!(f.used||champFundProof(f));}
+function champFundUse(tid){champFundMigrate();let n=0;for(const f of champFundAll()){if(f.tid!==tid||f.done||f.used||f.assessed||G.day>=f.due)continue;const proof=champFundProof(f);if(proof){f.used=true;f.usedProof=proof;n++;}}return n;}
+function champFundAward(t,y){champFundMigrate();const B=G.faFunds=G.faFunds||{},k=t.id+':'+y;if(B[k]){G.faFund=B[k];return B[k];}const f={tid:t.id,y,amt:3000,used:false,due:dnum(y+1,2,1)},gift=G.champEvents?.[k]?.gift;if(gift&&gift.pick===2&&gift.data?.tid===t.id&&gift.data?.y===y)f.giftId=gift.id;const proof=champFundProof(f);if(proof){f.used=true;f.usedProof=proof;}t.cash+=f.amt;B[k]=f;G.faFund=f;return f;}
+function champFundEarmark(tid){return sum(champFundAll().filter(f=>(f.tid??G.user)===tid&&!f.done&&!f.used).map(f=>Math.max(0,f.amt||0)));}
 function champFacYOf(t){ return t.champFacY??(G.champFacY!=null&&champOwner(G.champFacY)===t.id?G.champFacY:null); }
-function champGiftOpts(t,y){ facInit(); const fy=champFacYOf(t), fac=!t.indie&&!(fy!=null&&y-fy<3)&&FACK.some(k=>G.fac.it[k]<FAC_MAX); /* 모두 최고 단계면 시설 포상을 내지 않는다(검수 11-09zo) */
+function champFacilityTargets(t,S){S=S||(t.id===G.user?G.fac:t.fi||{it:facAlloc(t,t.fac||3).it});return S?.it?FACK.filter(k=>!S.bld?.[k]&&S.it[k]<FAC_MAX).sort((a,b)=>S.it[a]-S.it[b]).slice(0,2):[];}
+function champFacilityCan(t,y){const fy=champFacYOf(t);return !t.indie&&!(fy!=null&&y-fy<3)&&champFacilityTargets(t).length>0;}
+function champFacilityGift(t,y){const fy=champFacYOf(t);if(t.indie)return '모기업이 없는 독립구단은 시설 투자 포상을 받을 수 없습니다.';if(fy!=null&&y-fy<3)return '시설 투자 포상은 3년에 한 번입니다.';const S=facSt(t.id),L=champFacilityTargets(t,S);if(!L.length){t.cash=(t.cash||0)+2000;return '진행 중인 공사를 보존하고, 추가 투자할 시설이 없어 운영 자금 20억으로 대신 받았습니다.';}for(const k of L){S.it[k]=Math.min(FAC_MAX,S.it[k]+1);(S.dn=S.dn||{})[k]=G.day;}t.champFacY=y;if(t.id===G.user)facRecalc();else{S.lv=facCalcLv(S.it);t.fac=S.lv;}return L.map(k=>FACI[k].l+': '+FACI[k].lv[S.it[k]]).join(', ')+'(으)로 바로 올렸습니다. 진행 중인 유상 공사는 그대로 유지됩니다.';}
+function champGiftOpts(t,y){ facInit(); const fac=champFacilityCan(t,y); /* 모두 최고 단계면 시설 포상을 내지 않는다(검수 11-09zo) */
   return [t.indie?{l:'선수단 우승 보너스(구단 부담 5억)',fx:'선수 전원 기분 상승, 충성도가 조금 오릅니다. 구단 현금 -5억'}:{l:'선수단 우승 보너스(모기업 부담)',fx:'선수 전원 기분 상승, 충성도가 조금 오릅니다. 구단 돈은 들지 않습니다'},
     t.indie?{l:'투자사 운영 자금 10억 지원',fx:'구단 현금 +10억(바로 입금)'}:{l:'운영 자금 20억 지원',fx:'구단 현금 +20억(바로 입금)'},
     {l:'FA 영입 특별 자금 30억',fx:'구단 현금 +30억. 단, 이번 겨울 FA를 한 명도 데려오지 않으면 2월 1일에 절반을 돌려받습니다'},
-    fac?{l:'훈련 시설 투자',fx:'가장 뒤처진 훈련 시설 두 곳을 모기업 돈으로 바로 한 단계 올려 줍니다(3년에 한 번)'}:null].filter(Boolean); }
-EVH.champGift={ pick(e,i){ const t=team(G.user); const y=G.year;
-  if(t.indie&&i===0)t.cash-=500; if(t.indie&&i===1){ t.cash+=1000; return '투자사가 운영 자금 10억을 보냈습니다.'; } if(t.indie&&i===2){ t.cash+=3000; G.faFund={y,amt:3000,used:false,due:dnum(y+1,2,1),tid:t.id}; return 'FA 영입 특별 자금 30억이 입금되었습니다. 이번 겨울 FA 영입에 쓰라는 돈입니다. 용도가 정해진 돈이라 결산 때 유보금 회수(보유 현금 100억 초과분)에서는 빠집니다.'; } if(t.indie&&i>2)return '';
-  if(i===0){ for(const p of playersOf(G.user)){ p.mor=clamp((p.mor??60)+6,0,100); initPers(p); if(!p.foreign&&R()<.35)p.pers.loy=Math.min(20,p.pers.loy+1); } return (t.indie?'구단이':'모기업이')+' 선수단에 우승 보너스를 지급했습니다. 선수 전원 기분 상승, 일부 선수는 구단에 더 애착을 갖습니다.'; }
+    fac?{l:'훈련 시설 투자',fx:'공사 중인 항목을 제외한 훈련 시설 최대 두 곳을 모기업 돈으로 한 단계 올려 줍니다(3년에 한 번)'}:null].filter(Boolean); }
+EVH.champGift={ can(e,i){ const tid=e.data&&e.data.tid; if(G.unemp||tid!=null&&tid!==G.user)return '이 포상은 원래 우승 구단의 후임 단장이 처리합니다.';return i===0&&team(tid??G.user).indie&&spendable(tid??G.user)<500?'선수단 보너스에 쓸 현금 5억이 부족합니다.':''; }, pick(e,i){ const t=team(e.data&&e.data.tid!=null?e.data.tid:G.user); const y=e.data&&e.data.y!=null?e.data.y:G.year;
+  if(t.indie&&i===0){if(spendable(t.id)<500){if(!e.auto)return '선수단 보너스에 쓸 현금 5억이 부족합니다.';i=1;e.pick=1;}else t.cash-=500;} if(t.indie&&i===1){ t.cash+=1000; return '투자사가 운영 자금 10억을 보냈습니다.'; } if(t.indie&&i===2){ champFundAward(t,y); return champFundReceipt(t,y); } if(t.indie&&i>2)return '';
+  if(i===0){ for(const p of playersOf(t.id)){ p.mor=clamp((p.mor??60)+6,0,100); initPers(p); if(!p.foreign&&R()<.35)p.pers.loy=Math.min(20,p.pers.loy+1); } return (t.indie?'구단이':'모기업이')+' 선수단에 우승 보너스를 지급했습니다. 선수 전원 기분 상승, 일부 선수는 구단에 더 애착을 갖습니다.'; }
   if(i===1){ t.cash+=2000; return '운영 자금 20억이 입금되었습니다.'; }
-  if(i===2){ t.cash+=3000; G.faFund={y,amt:3000,used:false,due:dnum(y+1,2,1),tid:t.id}; return 'FA 영입 특별 자금 30억이 입금되었습니다. 이번 겨울 FA 영입에 쓰라는 돈입니다. 용도가 정해진 돈이라 결산 때 유보금 회수(보유 현금 100억 초과분)에서는 빠집니다.'; }
-  { const fy=champFacYOf(t); if(fy!=null&&y-fy<3)return '시설 투자 포상은 3년에 한 번입니다.'; } facInit(); const L=FACK.filter(k=>G.fac.it[k]<FAC_MAX).sort((a,b)=>(G.fac.bld[a]?1:0)-(G.fac.bld[b]?1:0)||G.fac.it[a]-G.fac.it[b]).slice(0,2); /* 공사 중인 시설은 뒤로: 낸 공사비가 헛되지 않게 */ for(const k of L){ const b=G.fac.bld[k]; G.fac.it[k]=Math.min(FAC_MAX,Math.max(G.fac.it[k]+1,b?b.lv:0)); delete G.fac.bld[k]; G.fac.dn[k]=G.day; } if(L.length)t.champFacY=y; facRecalc(); /* 실제로 올린 경우에만 3년 제한을 쓴다 */
-  return L.length?`${L.map(k=>`${FACI[k].l}: ${FACI[k].lv[G.fac.it[k]]}`).join(', ')}(으)로 바로 올렸습니다.`:'훈련 시설이 이미 모두 최고 단계라 운영 자금 20억으로 대신 받았습니다.'+(t.cash+=2000,''); } };
+  if(i===2){ champFundAward(t,y); return champFundReceipt(t,y); }
+  return champFacilityGift(t,y); } };
+/* 미결 포상은 구단과 원래 기한에 남는다. 퇴임은 수령이나 거절로 기록하지 않는다. */
+function champGiftBind(e){ if(!e)return; e.data=e.data||{}; const y=e.data.y??(dobj(e.day).m<=2?dobj(e.day).y-1:dobj(e.day).y);
+  let tid=e.data.tid; if(tid==null){ const h=(G.history||[]).find(h=>h.y===y&&h.champ!=null), r=Object.values(G.champEvents||{}).find(r=>r.y===y&&r.news); tid=h?h.champ:r?r.tid:G.ps&&G.ps.champ!=null&&(G.ps.y??G.year)===y?G.ps.champ:null; }
+  if(tid==null)return; e.data.tid=tid;e.data.y=y;champRecord(tid,y).gift=e;return e; }
+function champGiftMail(e,active){ const m=(G.mail||[]).find(m=>m.id===e.mid); if(!m)return; m.acts=active?e.opts.map((o,i)=>({l:o.l,a:'evPick',v:e.id+':'+i})):[]; m.imp=!!active;
+  if(active){delete m.closed; m.read=false;}else{m.closed={label:'후임 단장에게 인계',text:'우승 포상은 원래 구단과 답변 기한을 유지합니다.'};m.read=true;} G.stops=(G.stops||[]).filter(s=>s.id!==e.mid); }
+function champGiftMigrate(){ if(!G)return;evInit();for(const r of Object.values(G.champEvents||{}))if(r.gift&&!G.evs.some(e=>e.id===r.gift.id))G.evs.push(r.gift);
+  for(const e of G.evs.filter(e=>e.k==='champGift')){ if(!champGiftBind(e)||e.pick!=null||e.res&&!e.handoff)continue; const away=!!G.unemp||e.data.tid!==G.user;
+    if(away){e.handoff=true;e.done=true;champGiftMail(e,false);}else if(e.handoff||e.done){delete e.handoff;e.done=false;champGiftMail(e,true);} }
+}
+function champGiftHandOff(tid){champGiftMigrate();for(const e of G.evs||[])if(e.k==='champGift'&&e.data&&e.data.tid===tid&&e.pick==null&&(!e.done||e.handoff)){e.handoff=true;e.done=true;champGiftMail(e,false);} }
+function champGiftAdopt(tid){champGiftMigrate();for(const e of G.evs||[])if(e.k==='champGift'&&e.handoff&&e.data.tid===tid&&!G.unemp){delete e.handoff;e.done=false;champGiftMail(e,true);} }
+function champGiftDaily(){champGiftMigrate();for(const e of G.evs||[])if(e.k==='champGift'&&e.handoff&&e.pick==null&&G.day>e.exp){
+    e.done=false;const m=(G.mail||[]).find(m=>m.id===e.mid);if(m)delete m.closed;
+    const logs=G.autoLog,rows=logs&&logs.slice(),other=e.data.tid!==ME();evPick(e.id,e.def,true);delete e.handoff;
+    if(other){if(logs){logs.splice(0,logs.length,...rows);G.autoLog=logs;}else delete G.autoLog;}
+    const result=(G.evlog||[]).find(x=>x.id===e.id);if(result)result.tid=e.data.tid;
+  } }
+/* 회수할 몫은 선택 지출에 쓰지 않는다. 옛 저장에서 부족해진 몫은 면제하지 않고 남긴다. */
+function champFundReserve(tid){return sum(champFundAll().filter(f=>(f.tid??G.user)===tid&&!f.done&&!f.used).map(f=>Math.max(0,(f.assessed??Math.round((f.amt||0)/2))-(f.recovered||0))));}
+function champFundReceipt(t,y){const cap=financeReserveLimit(t.id,y,3000);return `FA 영입 특별 자금 30억이 입금되었습니다. 이번 겨울 외부 FA를 영입하지 않으면 2월 1일에 15억을 반환합니다. 반환할 15억은 영입 전까지 다른 지출에서 유보합니다. ${t.indie?'투자사 지원금입니다.':`결산의 기본 유보금 상한 ${money(cap.base)}에 특별 자금 ${money(cap.ear)}을 별도로 더합니다(회수 기준 ${money(cap.total)}).`}`;}
 /* FA 특별 자금: 2월 1일까지 FA를 한 명도 데려오지 않으면 절반 회수 */
 /* 우승 퍼레이드(우승 사흘 뒤): 연고 도시 카퍼레이드. 팬 여론·인기가 한 번 더 오른다 */
 function champParade(){ champEventsInit(); for(const r of Object.values(G.champEvents||{}))champParadeRun(r.parade); }
@@ -74,11 +119,16 @@ function champParadeRun(P){ if(!P||P.done||G.day<P.d)return; const tid=P.tid;chr
 다음 시즌 홈 개막전에서 우승 반지 수여식을 엽니다. 그날 표는 이미 매진 분위기입니다.`,{kind:'구단'});
   G.pr.fan=clamp(G.pr.fan+3,0,100); t.pop=clamp(t.pop+.02,.7,1.5); }
 /* 다음 시즌(2월 1일): 우승 효과로 늘어날 관중·굿즈 판매를 알린다 */
-function champSalesNote(){ champAdopt(G.user); const c=G.champPop0; if(!c||c.y!==G.year-1||G.unemp||c.noted||(c.tid!=null&&c.tid!==G.user))return; c.noted=true; const t=team(G.user);
-  const att=Math.round(((.82+.3*t.pop)/(.82+.3*c.pop)-1)*100), mer=Math.round((t.pop/c.pop-1)*100);
-  news('구단',`'디펜딩 챔피언' ${tshort(G.user)}, 시즌권 판매 호조`,`우승 효과로 시즌권과 유니폼 판매가 크게 늘었습니다.`,1,{fanW:1});
-  mail('마케팅팀',`우승 효과: 올 시즌 판매 전망`,`지난 시즌 우승으로 구단 인기가 올랐습니다. 우승 전과 비교하면 관중은 약 ${att}%, 유니폼·굿즈 판매는 약 ${mer}% 늘 것으로 봅니다. 인기는 성적이 따라 주지 않으면 해마다 조금씩 원래대로 돌아갑니다.`,{kind:'구단',acts:[{l:'구단 재정',a:'go',v:'club:fin'}]}); }
-function champDaily(){ try{ champParade(); }catch(e){} { const o=dobj(G.day); if(o.m===2&&o.d===1)try{ champSalesNote(); }catch(e){} } const f=G.faFund; if(!f||f.done||G.day<f.due)return; f.done=true; if(!f.used){ const t=team(f.tid??G.user); t.cash-=Math.round(f.amt/2); if(t.id!==G.user||G.unemp)return; /* 상환 의무는 구단 몫: 단장이 떠나도 옛 구단에서 회수한다(검수 11-09zn) */ t.trust=clamp(t.trust-2,0,100); mail('구단주실','FA 특별 자금 회수',`"FA 데려오라고 준 돈인데 한 명도 안 데려왔군요." 특별 자금의 절반 ${money(Math.round(f.amt/2))}을(를) 모기업이 돌려받았습니다. 구단주 신뢰 조금 하락.`,{kind:'구단주'}); } }
+function champSalesNote(){ champAdopt(G.user);const c=G.champPop0;if(!c||c.y!==G.year-1||G.unemp||c.noted||(c.tid!=null&&c.tid!==G.user))return;c.noted=true;const t=team(G.user),att=Math.round(((.82+.3*t.pop)/(.82+.3*c.pop)-1)*100),mer=Math.round((t.pop/c.pop-1)*100),up=att>0||mer>0,down=att<0||mer<0;
+  const delta=(label,v)=>v?`${label}은 약 ${Math.abs(v)}% ${v>0?'증가':'감소'}할 것으로 봅니다.`:`${label}은 비슷한 수준으로 봅니다.`,text=delta('관중',att)+' '+delta('유니폼·굿즈 판매',mer);
+  news('구단',`'디펜딩 챔피언' ${tshort(G.user)}, 시즌권 ${up?'판매 호조':down?'판매 감소 전망':'판매 전망'}`,text,up?1:0,{fanW:up?1:0});
+  mail('마케팅팀','우승 효과: 올 시즌 판매 전망',`지난 시즌 우승 이후 현재 구단 인기를 반영한 전망입니다. 우승 전과 비교하면 ${text} 인기는 성적이 따라 주지 않으면 해마다 조금씩 원래대로 돌아갑니다.`,{kind:'구단',acts:[{l:'구단 재정',a:'go',v:'club:fin'}]}); }
+
+function champDaily(){ champGiftDaily();try{ champParade(); }catch(e){} { const o=dobj(G.day); if(o.m===2&&o.d===1)try{ champSalesNote(); }catch(e){} }
+  champFundMigrate();for(const f of champFundAll()){if(f.done||G.day<f.due)continue; if(f.assessed==null){if(champFundUsed(f)){f.used=true;f.done=true;continue;}f.assessed=Math.round((f.amt||0)/2);const t=team(f.tid??G.user);t.trust=clamp(t.trust-2,0,100);}
+    const t=team(f.tid??G.user),left=Math.max(0,f.assessed-(f.recovered||0)),cash=Math.max(0,Math.min(t.cash||0,sdCash(t.id)+champFundReserve(t.id))),paid=Math.min(left,cash);t.cash-=paid;f.recovered=(f.recovered||0)+paid;f.done=f.recovered>=f.assessed;
+    if(t.id===G.user&&!G.unemp&&(paid||!f.noted)){mail('구단주실','FA 특별 자금 회수',`이번 겨울 외부 FA 영입이 없어 ${t.indie?'투자사':'모기업'}에 특별 자금의 절반 ${money(f.assessed)}을 반환합니다. 이번 회수액은 ${money(paid)}입니다.${f.done?'':` 현금이 부족해 남은 ${money(f.assessed-f.recovered)}은 반환 의무로 유지합니다.`}`,{kind:'구단주'});f.noted=true;}
+  } }
 /* ===== FA가 보는 구단 매력: 돈이 가장 크고, 그 위에 명성·우승 가능성·출전 기회·연고를 얹는다 =====
    비슷한 금액이면 명성 높고 이길 수 있고 주전으로 뛸 수 있고 고향 팀인 구단이 이긴다(대략 ±20% 범위) */
 let _faCtx=null;
