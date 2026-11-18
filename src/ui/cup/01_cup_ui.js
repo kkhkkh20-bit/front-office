@@ -31,7 +31,9 @@ async function cupFaces(e){ const tid=e.club.tid; for(const s of e.P){ const p=G
   return e; }
 function cupNameIn(){ const el=document.getElementById('cupName'); const v=el?el.value:CUP.name; CUP.name=v; return FrontOfficeCore.cupName(v||team(G.user).nick); }
 /* 신청 보내기. 첫 await 전에 잠그고(외부 검수 11-17 P2: 얼굴 사진을 만드는 동안 단추가 살아 있어 두 번 보내던 것) 어느 길로 끝나든 푼다. 저장 칸이 바뀌면 응답을 버린다 */
-async function cupSend(e){ const C=FrontOfficeCore; if(CUP.busy)return; if(C.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true);
+/* 편집된 저장은 대회 신청·참가 파일을 막는다(엔진 22d_edited) */
+function cupEdited(){ try{ return typeof editedBlock==='function'?editedBlock():''; }catch(e){ return ''; } }
+async function cupSend(e){ const C=FrontOfficeCore; if(CUP.busy)return; { const ed=cupEdited(); if(ed)return cupSay(ed,true); } /* 편집된 저장은 대회 신청 불가(22d_edited) */ if(C.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true);
   CUP.busy=true; const g0=G, cfg=CUP.cfg; cupSay('신청서를 준비하는 중입니다(선수 사진).');
   try{ e.wid=cupWid(); e.cup=cfg.id; e.ts=Date.now(); await cupFaces(e); if(G!==g0)return; e.h=C.cupEntryHash(e);
     const v=C.cupValidate(e,cfg); if(!v.ok)return cupSay(v.errors[0].msg,true); if(v.elig.length)return cupSay(v.elig[0].msg,true);
@@ -53,8 +55,8 @@ Object.assign(A,{
   cupCapReset(){ CUP.drop=null; CUP.msg=''; render(); },
   cupMineT(){ CUP.mineOpen=!CUP.mineOpen; render(); },
   async cupApplyAlb(v){ if(CUP.busy||!CUP.cfg)return; const x=cupAlbum().find(a=>a.id===+v); if(!x)return; const e=JSON.parse(JSON.stringify(x.e)); e.name=cupNameIn(); e.ovr=cupOvr(e); await cupSend(e); },
-  cupFileNow(){ if(!G||G.unemp)return; const e=cupNowEntry(cupNameIn()).e; if(!e)return; if(FrontOfficeCore.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true); e.wid=cupWid(); e.cup=CUP.cfg?CUP.cfg.id:''; e.ts=Date.now(); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,cupFileName(e)); }); },
-  cupFileAlb(v){ const x=cupAlbum().find(a=>a.id===+v); if(!x)return; const e=JSON.parse(JSON.stringify(x.e)); e.name=cupNameIn(); if(FrontOfficeCore.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true); e.wid=cupWid(); e.cup=CUP.cfg?CUP.cfg.id:''; e.ts=Date.now(); e.ovr=cupOvr(e); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,cupFileName(e)); }); },
+  cupFileNow(){ if(!G||G.unemp)return; { const ed=cupEdited(); if(ed)return cupSay(ed,true); } const e=cupNowEntry(cupNameIn()).e; if(!e)return; if(FrontOfficeCore.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true); e.wid=cupWid(); e.cup=CUP.cfg?CUP.cfg.id:''; e.ts=Date.now(); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,cupFileName(e)); }); },
+  cupFileAlb(v){ { const ed=cupEdited(); if(ed)return cupSay(ed,true); } const x=cupAlbum().find(a=>a.id===+v); if(!x)return; const e=JSON.parse(JSON.stringify(x.e)); e.name=cupNameIn(); if(FrontOfficeCore.cupBadName(e.name))return cupSay('팀명에 쓸 수 없는 말이 들어 있습니다.',true); e.wid=cupWid(); e.cup=CUP.cfg?CUP.cfg.id:''; e.ts=Date.now(); e.ovr=cupOvr(e); cupFaces(e).then(()=>{ e.h=FrontOfficeCore.cupEntryHash(e); cupFile(e,cupFileName(e)); }); },
   cupWithdraw(){ if(CUP.busy||!G||!G.wid)return; CUP.busy=true; cupApi('/entry/'+G.wid,{method:'DELETE'}).then(({r,j})=>{ CUP.busy=false; if(r.ok){ CUP.my=null; cupSay('신청을 취소했습니다.'); } else cupSay(j.message||'취소하지 못했습니다.',true); },()=>{ CUP.busy=false; cupSay('서버에 연결하지 못했습니다.',true); }); },
   cupAlbSave(){ if(!G||G.unemp)return; const full=cupAlbum().length>=CUP_ALB_MAX, nx=full?cupAlbumNext():null, gone=nx!=null?cupAlbum()[nx]:null;
     if(full&&!gone)return toast('앨범이 모두 보관 고정이라 더 담을 수 없습니다. 고정을 풀거나 지워 주세요.');

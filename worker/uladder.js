@@ -17,6 +17,7 @@
  * 서버 v1(worker/v1)이 쓰는 읽기 도우미(사용자 11-17): ladderKvPool(D1 덱이 모자랄 때 상대 채우기), ladderKvTier(옮겨 올 때 시작 단계 상한). 둘 다 KV에 쓰지 않는다. */
 import { readText, byteLen } from './v1/http.js';
 import { cupValidate, cupName, cupBadName, cupEntryHash } from '../src/core/cup.mjs';
+import { deckGuard, guardStatus, GUARD_MSG } from './v1/guard.js';
 import { UL_TIERS, ulPick, ulSlim, ulCap, ulCapGate } from '../src/core/uladder.mjs';
 import { cached, cacheGet, cachePut, cacheBust, memLimited, utcDay, shortHash } from './kvcache.js';
 
@@ -29,7 +30,7 @@ export const UL_TTL = 60;               // 공개 GET 캐시(초)
 export const UL_REBUILD_MS = 86400e3;   // 색인 다시 만들기 주기(놓친 갱신 바로잡기)
 const IDX = 'ulIdx';
 const WID = /^w[0-9a-f]{16}$/;
-const MSG = { bad_wid: '세계 id가 올바르지 않습니다.', bad_deck: '덱 형식이 아닙니다.', bad_name: '팀명에 쓸 수 없는 말이 들어 있습니다.', too_large: '덱이 너무 큽니다.', over_cap: '덱 연봉이 이 단계 상한을 넘습니다.', no_pay: '연봉 기록이 없는 덱입니다. 게임을 새로 고친 뒤 다시 등록해 주세요.', not_found: '등록한 덱이 없습니다.', auth: '관리자 인증이 필요합니다.', method: '지원하지 않는 요청입니다.', rate_limited: '오늘은 더 등록할 수 없습니다. 내일 다시 시도해 주세요. 이 기기 리그는 그대로 할 수 있습니다.' };
+const MSG = { ...GUARD_MSG, bad_wid: '세계 id가 올바르지 않습니다.', bad_deck: '덱 형식이 아닙니다.', bad_name: '팀명에 쓸 수 없는 말이 들어 있습니다.', too_large: '덱이 너무 큽니다.', over_cap: '덱 연봉이 이 단계 상한을 넘습니다.', no_pay: '연봉 기록이 없는 덱입니다. 게임을 새로 고친 뒤 다시 등록해 주세요.', not_found: '등록한 덱이 없습니다.', auth: '관리자 인증이 필요합니다.', method: '지원하지 않는 요청입니다.', rate_limited: '오늘은 더 등록할 수 없습니다. 내일 다시 시도해 주세요. 이 기기 리그는 그대로 할 수 있습니다.' };
 function json(status, body) { return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } }); }
 const err = (s, e, x) => json(s, Object.assign({ error: e, message: MSG[e] || '' }, x || {}));
 const tierOf = t => Math.max(0, Math.min(UL_TIERS.length - 1, (+t) | 0));
@@ -137,6 +138,7 @@ export async function handleLadder(req, env, url, now) {
     if (!b || !WID.test(String(b.wid || ''))) return err(400, 'bad_wid');
     if (!b.e || cupBadName(b.e.name)) return err(400, b.e ? 'bad_name' : 'bad_deck');
     const e = ulSlim(b.e); e.name = cupName(e.name); const v = cupValidate(e, {}); if (!v.ok) return err(400, 'bad_deck', { errors: v.errors.map(x => x.msg) });
+    { const an = deckGuard(e, b, 'kv', b.wid); if (an) return err(guardStatus(an), an.code, { errors: an.errors }); delete e.edited; } /* 편집 표시·이상치 거절(구단주 11-18 §8) */
     { const c = ulCap(e, tierOf(b.tier)); if (!c.known || !c.each) return err(400, 'no_pay', { errors: [MSG.no_pay] }); if (!c.ok) return err(400, 'over_cap', { errors: [ulCapGate(e, tierOf(b.tier), now).msg] }); } /* 연봉 상한(사용자 11-17): 화면과 같은 공용 규칙 */
     e.h = cupEntryHash(e); const body = JSON.stringify(e); if (byteLen(body) > UL_DECK_MAX) return err(413, 'too_large');
     const bh = await shortHash(body), prev = (await kv.getWithMetadata('ulD:' + b.wid)).metadata || null, tier = tierOf(b.tier), day = utcDay(now);

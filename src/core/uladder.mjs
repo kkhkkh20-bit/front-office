@@ -2,7 +2,7 @@
    덱 = 프런트컵 엔트리 형식(src/core/cup.mjs) 그대로. 리그 = 내 덱 + 같은 단계 덱 9개, 짝마다 3연전(팀당 27경기). 1·2위 승격, 9·10위 강등.
    리그는 유저 기기에서 돈다(평범한 난수). 결과 조작은 신경 쓰지 않는다(구단주: 래더는 덱 전력을 재는 곳) */
 import { dv } from './ratings.mjs';
-import { cupPayCheck, cupValidate, cupWon, cupName, cupBadName } from './cup.mjs';
+import { cupPayCheck, cupValidate, cupWon, cupName, cupBadName, cupPOvr } from './cup.mjs';
 export const UL_V = 2; /* 2: 래더 v2(선수·상대 누적 기록, 사용자 11-17) */
 export const UL_TIERS = Object.freeze(['루키', '마이너', '1부', '챔피언스', '레전드']);
 export const UL_TEAMS = 10, UL_UP = 2, UL_DOWN = 2;
@@ -188,7 +188,7 @@ export function ulMissions(seas, hist, sid, tier) {
   ].map(m => Object.assign(m, { done: m.cur >= m.goal }));
 }
 /* ---- 덱 구성(메타) ---- 선수 OVR은 본게임 종합 능력(ovr)과 같은 식, 표시 척도(dv) */
-export const ulPOvr = p => { const r = (p && p.r) || {}; return dv(p && p.isP ? (r.stf || 0) * .44 + (r.ctl || 0) * .44 + (r.sta || 0) * .12 : (r.con || 0) * .3 + (r.pow || 0) * .25 + (r.eye || 0) * .15 + (r.spd || 0) * .1 + (r.def || 0) * .2); };
+export const ulPOvr = p => dv(cupPOvr(p)); /* 화면 척도 선수 OVR(내부 식은 cup.mjs cupPOvr = 엔진 ovr()) */
 export const UL_POS = Object.freeze(['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH']);
 export const UL_ARCH = Object.freeze({ pow: '거포형', con: '교타형', spd: '기동력형', def: '수비형', sp: '선발 왕국', pen: '불펜 야구', bal: '균형형' });
 /* 갈래별 기준(표시 척도, 리그 평균 수준 덱·AI 덱 15개로 맞춤 11-17). 덱 성향 = 기준보다 가장 크게 앞선 갈래(3 미만이면 균형형) */

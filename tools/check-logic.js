@@ -9564,6 +9564,36 @@ T('[국사왕 11-18 교육리그] 가을 교육리그 자동 신청: 직접 켜�
   const t=G.teams.find(x=>x.id!==G.user), c0=t.cash; t.cash=100; ok(fallFit(t.id,'jp')==='ul','미야자키 비용이 모자라면 울산'); t.cash=10; ok(fallFit(t.id,'ul')===null&&fallFit(t.id,'jp')===null,'돈이 모자라도 신청'); t.cash=5000; ok(fallFit(t.id,'jp')==='jp','돈이 넉넉하면 원하는 쪽'); t.cash=c0;
   ok(String(ovsAiPlan).includes('fallFit('),'AI 교육리그 신청이 같은 함수를 쓰지 않음'); ok(String(fallRoll).includes('fallPool('),'결과 계산과 안내 명단이 다름');
   takeBack('fall'); ok(!autoOn('fall'),'끄기 실패'); });
+T('[편집 표시 11-18] markEdited 하나로 붙고 영구: 저장·불러오기 뒤에도 첫 편집 날·종류·횟수가 남고, 예전 저장(undefined)은 편집 안 함, 예전 true는 legacy',()=>{ fresh(); ok(G.edited===undefined&&!isEdited()&&editedBlock()==='','새 게임이 편집됨');
+  const d0=G.day; markEdited('rating'); ok(isEdited()&&G.edited.d===d0&&G.edited.k.join()==='rating'&&G.edited.n===1,'첫 표시 '+JSON.stringify(G.edited));
+  G.day+=3; markEdited('contract'); markEdited('rating'); ok(G.edited.d===d0&&G.edited.k.join()==='rating,contract'&&G.edited.n===3,'종류·횟수 '+JSON.stringify(G.edited));
+  rdgStamp(G); G=JSON.parse(JSON.stringify(G)); worldReset(); ok(G.edited&&G.edited.d===d0&&G.edited.n===3,'저장·불러오기 뒤 사라짐'); migrateDraft(); ok(isEdited(),'불러오기 정리(migrateDraft) 뒤 사라짐');
+  ok(editedBlock()&&editedBlock().endsWith('니다.'),'막는 이유 문장(합니다체) 없음'); { const src=String(markEdited)+String(rdgCheck)+String(rdgStamp)+String(editorSet); ok(!src.includes('delete G.edited')&&!src.includes('delete g.edited')&&!src.includes('edited=false')&&!src.includes('edited=null'),'편집 표시를 지우는 길이 있음'); }
+  const g={day:5,year:2030,edited:true}; markEdited('external',g); ok(g.edited.k.join()==='legacy,external'&&g.edited.n===2,'예전 true 변환 '+JSON.stringify(g.edited));
+  ok(!isEdited({}),'예전 저장(표시 없음)이 편집됨'); });
+T('[편집 표시 11-18] 이름·얼굴·등번호 바꾸기는 편집으로 보지 않는다',()=>{ fresh(); const p=playersOf(G.user)[0]; ok(p,'준비 실패');
+  ok(setPlayerName(p.id,'새이름')==='','이름 바꾸기 실패'); cosmRenameMany([{id:playersOf(G.user)[1].id,name:'다른이름'}]);
+  const free=[...Array(100).keys()].find(n=>!playerNoErr(p.id,n)); if(free!=null)ok(setPlayerNo(p.id,free)==='','등번호 바꾸기 실패');
+  ok(G.edited===undefined,'꾸미기로 편집 표시가 붙음'); rdgStamp(G); const s=JSON.stringify(G); const g=JSON.parse(s); ok(!rdgCheck(g)&&g.edited===undefined,'꾸민 저장을 불러오면 편집됨'); });
+T('[편집 표시 11-18] 래더: 편집된 저장은 직접 등록·자동 등록·지금 덱 다시 등록을 거절하고 덱을 바꾸지 않는다',()=>{ fresh(); const U=uld(); const e=cupEntryNow({}); ok(e,'준비 실패: 덱');
+  const r0=ulSetDeck(JSON.parse(JSON.stringify(e)),'now'); ok(r0!==EDITED_MSG,'편집 안 한 저장인데 편집 이유로 거절');
+  const before=JSON.stringify(U.deck); markEdited('rating');
+  ok(ulSetDeck(JSON.parse(JSON.stringify(e)),'now')===EDITED_MSG,'편집된 저장의 직접 등록이 통과'); ok(JSON.stringify(U.deck)===before,'거절했는데 덱이 바뀜');
+  const p=ulAutoPlan(Date.UTC(2026,10,20,3),true,{src:'now'}); ok(p&&p.skip==='edited'&&p.msg===EDITED_MSG,'자동 등록이 거절되지 않음 '+JSON.stringify(p&&{skip:p.skip,due:p.due}));
+  ok(JSON.stringify(U.deck)===before,'자동 등록 거절 뒤 덱이 바뀜');
+  const a=FrontOfficeCore.cupAnomaly(e,{edited:true}); ok(!a.ok&&a.code==='edited','공용 서버 검사가 edited 표시를 거절하지 않음'); const b=FrontOfficeCore.cupAnomaly(e,{}); ok(b.ok,'정상 1군 덱을 서버 이상치 검사가 거절: '+b.code+' '+b.errors.join(' ')); });
+T('[편집 표시 11-18] 능력치 지문: 30일 진행·저장/불러오기·불러오기 정리(이주)·예전 저장에서 헛표시 없음, 게임 밖에서 고친 능력치만 external',()=>{ fresh(); const d0=G.day;
+  ok(!rdgCheck(JSON.parse(JSON.stringify(G))),'지문 없는 예전 저장을 편집됨으로 봄');
+  rdgStamp(G); let s=JSON.stringify(G); let g=JSON.parse(s); ok(!rdgCheck(g)&&!g.edited,'바로 불러온 저장이 편집됨');
+  simTo(()=>period()==='season'&&G.day>=Math.max(d0,G.cal.open)+30); ok(G.day-d0>=30,'준비 실패: 30일 진행 안 됨');
+  for(let k=0;k<3;k++){ rdgStamp(G); s=JSON.stringify(G); g=JSON.parse(s); ok(!rdgCheck(g)&&!g.edited,k+'번째 저장·불러오기에서 편집됨'); G=g; worldReset(); migrateDraft(); const dd=G.day; simTo(()=>G.day>=dd+5); }
+  rdgStamp(G); s=JSON.stringify(G); g=JSON.parse(s); const id=Object.keys(g.players).find(k=>g.players[k].team===G.user&&g.players[k].r); const k0=Object.keys(g.players[id].r)[0];
+  const v0=g.players[id].r[k0]; g.players[id].r[k0]=v0>=75?v0-5:v0+5; ok(rdgCheck(g)&&g.edited&&g.edited.k.includes('external'),'손으로 고친 능력치를 못 찾음');
+  g=JSON.parse(s); { const p0=g.players[id].pot; g.players[id].pot=p0>=75?p0-5:p0+5; } ok(rdgCheck(g)&&g.edited.k.includes('external'),'손으로 고친 잠재력을 못 찾음');
+  g=JSON.parse(s); g.players[id].name='고친이름'; ok(!rdgCheck(g)&&!g.edited,'이름만 고친 파일을 편집됨으로 봄');
+  g=JSON.parse(s); g.players[id].r[k0]=20; g.day+=1; ok(!rdgCheck(g)&&!g.edited,'지문을 모르는 예전 판이 진행한 저장(날짜가 다름)을 편집됨으로 봄');
+  const old=JSON.parse(s); delete old.rdg; ok(!rdgCheck(old)&&!old.edited,'지문 없는 저장을 편집됨으로 봄');
+  const P=Object.values(G.players); const t0=Date.now(); for(let i=0;i<20;i++)rdgOf(G); const ms=(Date.now()-t0)/20; ok(ms<25,'지문 계산이 느림 '+ms.toFixed(1)+'ms, 선수 '+P.length+'명'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

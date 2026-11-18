@@ -83,7 +83,8 @@ export function netCreate(o) {
   /* 기기 표식: 처음 한 번 crypto로 만든다(crypto가 없으면 보내지 않는다. 본게임 난수 Math.random은 쓰지 않는다) */
   N.devId = () => { let d = st.get(NET_DEV); if (d && /^[0-9a-f]{32}$/.test(d)) return d; try { const a = new Uint8Array(16); g().crypto.getRandomValues(a); d = [...a].map(x => x.toString(16).padStart(2, '0')).join(''); st.set(NET_DEV, d); return d; } catch (e) { return null; } };
   /* 덱 올리기. x: {auto:1}(자동 등록) · {man:1}(직접 등록, 하루 1회) · 없으면 맞추기. 래더 v4 */
-  N.putDeck = (e, tier, wid, x) => N.call('PUT', '/ladder/deck', Object.assign({ e, tier, wid }, x || {}, x && (x.auto || x.man) ? { dev: N.devId() } : {}));
+  /* edited: 편집된 저장 표시(o.edited(), 에디터 기획 1단계). 화면이 편집된 저장의 등록을 먼저 막고, 서버도 true면 거절한다 */
+  N.putDeck = (e, tier, wid, x) => N.call('PUT', '/ladder/deck', Object.assign({ e, tier, wid, edited: !!(o.edited && o.edited()) }, x || {}, x && (x.auto || x.man) ? { dev: N.devId() } : {}));
   N.autoSet = on => N.call('PUT', '/ladder/auto', { on: !!on }, { retries: 1 }); /* 자동 참가 켜기·끄기(끄면 서버 덱 지움) */
   N.live = body => N.call('POST', '/ladder/live', body, { retries: 0 }); /* 진행 중 리그(관리자 한눈 보기). 실패해도 그만 */
   N.opponents = q => N.call('GET', '/ladder/opponents?' + new URLSearchParams(Object.assign({ n: 9 }, q || {})));

@@ -3,6 +3,7 @@
    엔트리는 그 순간의 1군 명단(능력·나이·포지션·투타·타순·선발·불펜·감독)을 담는다. 경기는 엔진 cupMatch(엔트리 A, B, 시드)가 본게임 simGame으로 치른다.
    대회는 회차마다 따로 여는 단발 행사다(정기 일정 없음). 회차마다 대회 id(cup1, cup2…)를 새로 정한다 */
 import { ladderSchedule } from './ladder.mjs';
+import { dv } from './ratings.mjs';
 export const CUP_V = 1;
 export const CUP_LNPOS = Object.freeze(['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH']);
 export const CUP_RULES = Object.freeze({
@@ -356,3 +357,36 @@ export function cupMvp(bat, pit, no) {
 }
 /* 명경기 점수: 끝내기·연장·역전 횟수·점수 차·득점 */
 export const cupDrama = g => (g.walk ? 6 : 0) + (g.inn > 9 ? 3 + (g.inn - 10) : 0) + 2 * (g.lc || 0) + (Math.abs(g.sa - g.sb) <= 1 ? 3 : Math.abs(g.sa - g.sb) === 2 ? 1 : 0) + .1 * (g.sa + g.sb);
+
+/* ===== 서버 이상치 검사(에디터 기획 1단계, 구단주 11-18 §8: 편집된 세이브는 래더 제출 불가 + 능력치 범위·덱 OVR 분포·연봉 합계) =====
+   래더(v1·예전 KV)·프런트컵 서버가 덱을 받기 전에 본다. cupValidate는 형식 오류만 거절하고 능력 범위는 주최자 표시(flag)로 남기지만, 이것은 거절 사유다.
+   - 능력치: 엔진은 모든 능력치를 내부 척도 20~80으로 묶는다(addR·훈련·캠프·부상 clamp(…,20,80)). 엔트리는 소수 첫째 자리로 반올림(cupPSnap r1)하므로 그 안이어야 한다.
+     잠재력(pot)도 20~80(드래프트·성장 상한). 나이는 cupValidate의 16~48.
+   - OVR 분포: 선수 OVR(엔진 ovr()와 같은 식) → 화면 척도(dv). 엔진의 '정상급' = 화면 80 이상(10_draft eliteN80, 리그 전체 목표 7명 안팎).
+     한 덱에 정상급이 CUP_ELITE_MAX명을 넘거나, 화면 95 이상(내부 72+, 능력 거의 상한)이 CUP_TOP_MAX명을 넘으면 거절. 값은 장기 시뮬 측정 최대(정상급 4명·95+ 0명)보다 넉넉히.
+   - 연봉: 엔트리의 1군 연봉 합(pay)이 선수 연봉(sal) 합과 맞아야 한다(cupEntryNow·ulCapDrop이 같은 값으로 적는다). 정상급인데 연봉이 최저 연봉보다 낮은 선수가 많으면 거절.
+   → {ok, code, errors:[문장], n:{elite, top}}. code: 'edited'(편집 표시) · 'bad_rating' · 'bad_ovr' · 'bad_pay' */
+/* 여유 0.5: 엔트리는 소수 첫째 자리로 반올림하고, 엔진의 일부 경로가 80을 조금 넘긴다(장기 시뮬 2032년 체력 vit 80.05). 손으로 고친 81 이상·19 이하는 거절 */
+export const CUP_R_LO = 20, CUP_R_HI = 80, CUP_R_EPS = 0.5;
+/* 장기 시뮬(시드 7, 2026→2032, 10구단 1군 덱을 60일마다 63번 측정): 덱당 정상급(화면 80+) 최대 4명·85+ 3명·90+ 1명, 최고 선수 화면 90, 95+ 0명 */
+export const CUP_ELITE_DV = 80, CUP_TOP_DV = 95, CUP_ELITE_MAX = 10, CUP_TOP_MAX = 3;
+export const CUP_CHEAP_SAL = 30, CUP_CHEAP_MAX = 3; /* 최저 연봉 3,000만(엔진 MIN_SAL) 미만은 게임에서 나오지 않는다 */
+/* 선수 OVR(내부 척도): 엔진 ovr()(src/engine/league/01_rules.js)와 같은 식 */
+export function cupPOvr(p) { const r = (p && p.r) || {}, n = k => NUM(r[k]); return p && p.isP ? n('stf') * .44 + n('ctl') * .44 + n('sta') * .12 : n('con') * .3 + n('pow') * .25 + n('eye') * .15 + n('spd') * .1 + n('def') * .2; }
+export function cupAnomaly(e, x) {
+  const out = (code, errors, n) => ({ ok: !code, code: code || '', errors: errors || [], n: n || null });
+  if ((x && x.edited) || (e && e.edited)) return out('edited', ['편집 기능을 쓴 저장의 덱은 받지 않습니다.']);
+  const P = e && Array.isArray(e.P) ? e.P : []; const bad = [];
+  for (const p of P) { if (!p || !p.r || typeof p.r !== 'object') continue;
+    for (const [k, v] of Object.entries(p.r)) if (typeof v !== 'number' || !(v >= CUP_R_LO - CUP_R_EPS && v <= CUP_R_HI + CUP_R_EPS)) bad.push(`${String(p.name || p.id).slice(0, 12)} ${String(k).slice(0, 6)} ${typeof v === 'number' ? Math.round(v * 10) / 10 : '?'}`);
+    if (p.pot != null && (typeof p.pot !== 'number' || !(p.pot >= CUP_R_LO - CUP_R_EPS && p.pot <= CUP_R_HI + CUP_R_EPS))) bad.push(`${String(p.name || p.id).slice(0, 12)} 잠재력 ${Math.round(NUM(p.pot))}`); }
+  if (bad.length) return out('bad_rating', [`능력치가 게임 범위(${CUP_R_LO}~${CUP_R_HI})를 벗어난 선수가 있습니다(${bad.slice(0, 3).join(', ')}${bad.length > 3 ? ` 외 ${bad.length - 3}건` : ''}).`]);
+  const D = P.map(p => dv(cupPOvr(p))), n = { elite: D.filter(v => v >= CUP_ELITE_DV).length, top: D.filter(v => v >= CUP_TOP_DV).length };
+  if (n.elite > CUP_ELITE_MAX || n.top > CUP_TOP_MAX) return out('bad_ovr', [`덱 전력 분포가 게임에서 나올 수 없는 수준입니다(OVR ${CUP_ELITE_DV} 이상 ${n.elite}명·${CUP_TOP_DV} 이상 ${n.top}명, 한도 ${CUP_ELITE_MAX}명·${CUP_TOP_MAX}명).`], n);
+  const each = P.length > 0 && P.every(p => p && typeof p.sal === 'number' && isFinite(p.sal));
+  if (each) { const sum = Math.round(P.reduce((a, p) => a + p.sal, 0));
+    if (e.pay != null && (typeof e.pay !== 'number' || Math.abs(e.pay - sum) > Math.ceil(P.length / 2) + 1) /* 선수 연봉은 반올림해 싣고 합은 원래 값으로 반올림(cupEntryNow): 선수마다 0.5까지 차이 */) return out('bad_pay', [`1군 연봉 합(${cupWon(NUM(e.pay))})이 선수 연봉 합(${cupWon(sum)})과 맞지 않습니다.`], n);
+    const cheap = P.filter((p, i) => D[i] >= CUP_ELITE_DV && p.sal < CUP_CHEAP_SAL).length;
+    if (cheap > CUP_CHEAP_MAX) return out('bad_pay', [`OVR ${CUP_ELITE_DV} 이상인데 연봉이 최저 수준인 선수가 ${cheap}명입니다.`], n); }
+  return out('', [], n);
+}
