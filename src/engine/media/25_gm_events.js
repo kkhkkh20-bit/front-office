@@ -25,7 +25,7 @@ function evExpired(e){ return !!e&&!e.done&&e.exp!=null&&G.day>e.exp; }
 function evPick(id,i,auto){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(!auto&&evExpired(e))return '결정 답변 기한이 지났습니다. 다음 날 기본안으로 처리됩니다.';
   if(!Number.isInteger(i)||i<0||i>=e.opts.length)return '선택할 수 없는 항목입니다.';
   if(e.pt!=null){ const q=G.players[e.data.pid]; if(!q||q.team!==e.pt||G.user!==e.pt){ e.done=true; e.void=true; e.res='선수가 우리 구단을 떠나 결정이 끝났습니다.'; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; m.read=true; m.imp=false; m.body+=`\n\n[종료] ${q?q.name:'선수'}이(가) 우리 구단을 떠나 이 결정은 적용하지 않았습니다.`; } return e.res; } } /* 실행 시점 소속 재검사: 떠난 선수에게 옛 결정(징계·면담 등)을 적용하지 않는다 */
-  if(!auto&&EVH[e.k]&&EVH[e.k].can){ const why=EVH[e.k].can(e,i); if(why)return why; } /* 지금 고를 수 없는 선택은 결정으로 남기지 않고 이유를 알린다(검수 11-06) */
+  if((!auto||EVH[e.k]?.canAuto)&&EVH[e.k]&&EVH[e.k].can){ const why=EVH[e.k].can(e,i); if(why)return why; } /* 지금 고를 수 없는 선택은 결정으로 남기지 않고 이유를 알린다. canAuto 종류는 자동 실행도 같은 사전 검사를 한다. */
   e.done=true; e.pick=i; if(auto)e.auto=true;
   let r=''; try{ r=(EVH[e.k]&&EVH[e.k].pick(e,i))||''; }catch(err){ r=''; } if(Number.isInteger(e.pick)&&e.pick!==i&&e.opts[e.pick])i=e.pick; /* 처리 중 실제로 바뀐 선택(정원이 차 복귀 불가 등)으로 기록(검수 11-07) */
   e.res=r; const m=G.mail.find(x=>x.id===e.mid); if(m){ m.acts=[]; try{ if(EVH[e.k]&&EVH[e.k].acts)m.acts=EVH[e.k].acts(e,i)||[]; }catch(err){} /* 결정 뒤에도 남는 버튼(창단 단장 수락 취소) */ m.read=true; m.imp=false; m.body+=`\n\n[결정] ${e.opts[i].l}${e.deleg?' (비서가 맡은 일)':auto?' (기한이 지나 자동 처리)':''}${r?`\n${r}`:''}`; }
