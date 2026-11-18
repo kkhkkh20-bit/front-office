@@ -178,6 +178,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   offerDropCool(); G.offers=(G.offers||[]).filter(x=>{ if(x.exp<day||!tradeOpen()){ addLog(`${tname(x.from)}의 트레이드 제안이 ${x.exp<day?'만료':'트레이드 마감으로 무효가'}되었습니다.`); offerMailDone(x.id); return false;}
     const why=offerBlockMsg(x); if(why){ note('트레이드',`${tname(x.from)}이(가) 트레이드 제안을 철회했습니다. ${why}`); offerMailDone(x.id); return false; } /* 그사이 성사될 수 없게 된 제안은 자동 철회 */ return true; });
   lateYearTurn();
+  obsWatchFix(); /* 하루 중 채용·이직·은퇴로 줄어든 집중 관찰 정원도 즉시 반영(#654) */
 }
 function specialKind(day,hid,aid){
   if(hid!==G.user&&aid!==G.user)return null;

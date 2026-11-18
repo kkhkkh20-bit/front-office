@@ -141,6 +141,8 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   for(const p of Object.values(G.players))milInit(p);
   try{ dsubMigrate(); }catch(e){ console.error(e); } /* 세부 수비 능력(03b_def_sub): 옛 저장 선수도 같은 값으로 */
   for(const s of G.scouts.concat(G.scoutMarket||[])){ if(!s.role){ s.role='am'; s.since=-999; } }
+  /* 검수 11-18 #644~672: 직원 복원 뒤 구단별 관찰·출장·의견·정원을 결정적으로 정리한다. */
+  obsLogMigrate(); tripMigrate(); obsViewMigrate(); obsWatchFix(); domesticScoutMigrate();
   prInit(); if(!G.goals&&period()==='season')setGoals();
   if((period()==='season'||period()==='post')&&G.entryY!==G.year){ G.entryY=G.year; for(const t of G.teams)setEntry(t.id); }
   if(!G.intl)G.intl={us:1,la:0,jp:0,tw:0,au:0}; if(!G.data)G.data={lv:1}; if(G.spend&&G.spend.intl==null)G.spend.intl=0; if(!G.fac)G.fac={lv:2,build:null}; try{ facInit(); }catch(e){} if(G.spend.fac==null)G.spend.fac=0;

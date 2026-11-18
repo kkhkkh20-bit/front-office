@@ -6,7 +6,7 @@ function tripCalLine(w0){ const y=dobj(w0).y, L=[]; for(const t of AM_TOURS().co
   const m=dobj(w0).m; if(m===12||m<=2)L.unshift('동계 전지훈련(제주·남해)'); return L.length?L.join(' · '):'대회가 없는 기간입니다. 학교 방문으로 저학년을 봅니다'; }
 function tripBox(){ if(G.unemp)return ''; const sc=clubAmScouts(G.user); if(!sc.length)return '<p class="small muted">아마추어 스카우트가 없어 출장을 보낼 수 없습니다.</p>';
   const W=tripPlan4(G.user), w0=W[0].w0, sel=UI.tripSel;
-  const cellT=(s,i)=>{ const k=i===0?tripOf(s):W[i].P[s.id]; return `<td class="${i===0?'now':''}">${esc(tripName(k))}${i===0&&s.trip&&s.trip.man?' <i class="small muted">직접</i>':''}${i===0?` <button class="tc-i" data-a="tripSel" data-v="${s.id}">${sel===String(s.id)?'닫기':'다음 대회 ▾'}</button>`:''}</td>`; };
+  const cellT=(s,i)=>{ const k=i===0?tripOf(s):W[i].P[s.id]; return `<td class="${i===0?'now':''}">${esc(tripName(k))}${i===0&&tripManual(s)?' <i class="small muted">직접</i>':''}${i===0?` <button class="tc-i" data-a="tripSel" data-v="${s.id}">${sel===String(s.id)?'닫기':'다음 대회 ▾'}</button>`:''}</td>`; };
   const pick=s=>sel!==String(s.id)?'':`<tr class="trip-pick"><td colspan="5"><div class="chips">${tripOptions(w0,s.region).map(o=>`<button data-a="tripSet" data-v="${s.id}|${esc(o.k)}" class="${tripOf(s)===o.k?'on':''}">${esc(o.n)}${o.days?` · ${o.days}일`:''}</button>`).join('')}</div></td></tr>`;
   const head=`<tr><th>스카우트</th>${W.map((w,i)=>`<th>${i?dmd(w.w0)+' 주':'이번 주'}</th>`).join('')}</tr>`;
   const rows=sc.map(s=>`<tr><td><button class="lnk" data-a="person" data-v="sc:${s.id}">${esc(s.name)}</button><small class="block muted">${esc(s.region)} ${'★'.repeat(effSkill(s))}</small></td>${W.map((w,i)=>cellT(s,i)).join('')}</tr>${pick(s)}`).join('');
