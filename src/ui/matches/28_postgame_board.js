@@ -4,7 +4,8 @@
    이닝 점수(연장·치르지 않은 9회말 X) · R/H/E/B · 승·패·세·홀 · 결승타 · 홈런(시즌 n호) · 경기 MVP · 구장·관중.
    기록은 경기 기록(g.line·g.hits·박스스코어·g.pg)만 읽는다. g.pg가 없는 옛 기록은 남은 타석 기록에서 다시 계산한다. */
 const PGB_KIND={'1B':'안타','2B':'2루타','3B':'3루타','HR':'홈런','BB':'볼넷','HBP':'몸에 맞는 공','SF':'희생플라이','SAC':'희생번트','GB':'땅볼','FB':'뜬공','LD':'직선타','PU':'뜬공','OUT':'타점'};
-function pgbFacts(g){ let s=g.pg; if(!s||(!s.hr&&!s.gw)){ try{ s=Object.assign({},s||{},pgSum(g,false)); }catch(e){ s=s||{}; } } return s; }
+const _pgbC=new WeakMap(); /* 경기마다 한 번만 요약(같은 경기·같은 장면 수면 다시 계산하지 않는다, 성능 11-18) */
+function pgbFacts(g){ let s=g.pg; if(!s||(!s.hr&&!s.gw)){ const n=(g.pbp||[]).length, c=_pgbC.get(g); if(c&&c.pg===g.pg&&c.n===n)return c.s; try{ s=Object.assign({},s||{},pgSum(g,false)); }catch(e){ s=s||{}; } _pgbC.set(g,{pg:g.pg,n,s}); } return s; }
 function pgbName(g,id){ try{ const q=['h','a'].map(k=>g.box[k]).flatMap(B=>[...(B.bat||[]),...(B.pit||[])]).find(x=>x.id===id); return (q&&q.n)||G.players[id]?.name||''; }catch(e){ return G.players[id]?.name||''; } }
 function pgbSideOf(g,id){ return (g.box.a.bat||[]).some(x=>x.id===id)||(g.box.a.pit||[]).some(x=>x.id===id)?'a':'h'; }
 function pgbInn(h){ return `${Math.floor(h/2)+1}회${h%2?'말':'초'}`; }
