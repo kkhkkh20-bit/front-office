@@ -3,7 +3,7 @@ const TOOLK={con:'컨택',pow:'파워',eye:'선구안',spd:'주루',def:'수비'
 const GOOD={vit:'체력이 좋아 연속 출장에도 지치지 않습니다.',con:'배트 컨트롤이 좋아 삼진을 잘 당하지 않습니다.',pow:'타구에 힘이 실려 장타를 기대할 수 있습니다.',eye:'공을 오래 보고 볼넷을 골라냅니다.',spd:'발이 빨라 내야안타와 도루가 됩니다.',def:'수비 범위와 송구가 안정적입니다.',stf:'구위로 타자를 압도합니다.',ctl:'원하는 곳에 던지는 제구가 됩니다.',sta:'긴 이닝을 버틸 체력이 있습니다.'};
 const BAD={vit:'체력이 약해 연속 출장이 이어지면 성적이 떨어집니다.',con:'변화구 대처가 약해 삼진이 많습니다.',pow:'장타력이 부족합니다.',eye:'유인구에 방망이가 쉽게 나갑니다.',spd:'주력이 느립니다.',def:'수비에서 실수가 잦습니다.',stf:'구위가 평범해 정타를 자주 허용합니다.',ctl:'제구가 흔들려 볼넷이 많습니다.',sta:'투구 수가 늘면 구위가 떨어집니다.'};
 /* 숨은 재능을 못 알아본 만큼 잠재력에서 뺀다: 1군 기록이 쌓여 드러나면(hidR) 0. 스카우트 능력 3부터 알아볼 수 있고(능력 5면 45%), 우리 팀에서 지켜본 시즌만큼 줄어든다 */
-function hidPen(p,sc,own){ if(!p||!p.hidT||p.hidR)return 0; const ak=sc&&p.prospect?areaOf(p):null, nb=ak?(areaNet(G.user,ak)-50)*.003:0; /* 권역 정보망이 촘촘할수록 더 알아본다(정보망 100이면 +15%p, 검수 11-09e #18) */ if(sc&&(sc.skill||1)>=3&&u01('hid'+sc.id,p.id)<((sc.skill||1)-2)*.15+nb)return 0; return own?p.hidT*Math.max(0,1-ownObs(p)*.5):p.hidT; }
+function hidPen(p,sc,own){ if(!p||!p.hidT||p.hidR)return 0; const ak=sc&&p.prospect?areaOf(p):null, nb=ak?(areaNet(G.user,ak)-50)*.003:0; /* 권역 정보망이 촘촘할수록 더 알아본다(정보망 100이면 +15%p, 검수 11-09e #18) */ if(sc&&(sc.skill||1)>=3&&u01(p.prospect?'hid'+sc.id:'hidk'+G.user,p.id)<((sc.skill||1)-2)*.15+nb)return 0; return own?p.hidT*Math.max(0,1-ownObs(p)*.5):p.hidT; }
 /* 구단의 스카우트 담당 지역(수도권·영남·호남·충청): 창단·연고 이전 구단은 '강원·충청·호남'처럼 세부 지역으로 저장돼 프로 담당 스카우트와 이어지지 않았다(카페 11-13 dddddd: 원주 신생 구단 선수가 '미확인') */
 function teamScoutReg(tid){ const t=team(tid); const r=t&&t.region; if(REG.includes(r))return r; const a=t&&typeof AREA!=='undefined'?AREA.find(x=>x.city.includes(t.city)):null; if(a)return a.reg; return r==='강원'||r==='경기'||r==='인천'?'수도권':r==='영남'||r==='경남'||r==='경북'?'영남':'호남·충청'; }
 function coverOf(tid){ const reg=teamScoutReg(tid); return {reg,sc:scoutOf('pro',reg)}; }
@@ -19,13 +19,17 @@ function archetype(t,p){ // t: 평가된 도구 점수
   if(t.pow>=62&&t.con<50)return '거포형'; if(t.pow>=57&&t.con>=55)return '중장거리 강타자'; if(t.con>=58&&t.spd>=58)return '교타형 리드오프';
   if(t.con>=60)return '교타자'; if(t.spd>=62)return '준족형'; if(t.def>=62&&t.con+t.pow<100)return '수비형'; if(t.eye>=62)return '선구안형'; return '밸런스형';
 }
+/* 평가 말은 수준만(FM식): 포지션은 다른 칸에 있으므로 붙이지 않는다(카페 11-18: '리그 최정상급'과 '올스타급 선발'·'상위권 주전 3루'가 들쭉날쭉) */
 function roleOf(ofp,p){
-  const pos=p.isP?(isSP(p)?'선발':'불펜'):POSS[p.pos];
-  if(ofp>=70)return '리그 최정상급'; if(ofp>=65)return '올스타급 '+pos; if(ofp>=60)return '상위권 주전 '+pos; if(ofp>=55)return '주전 '+pos;
-  if(ofp>=50)return p.isP?(isSP(p)?'4~5선발':'필승조급 불펜'):'평균 주전·핵심 백업'; if(ofp>=45)return '1군 백업'; if(ofp>=40)return '1.5군'; return '1군 전력 외';
+  if(ofp>=70)return '리그 최정상급'; if(ofp>=65)return '올스타급'; if(ofp>=60)return '상위권 주전'; if(ofp>=55)return '주전급';
+  if(ofp>=50)return p.isP?(isSP(p)?'4~5선발':'필승조급'):'평균 주전·핵심 백업'; if(ofp>=45)return '1군 백업'; if(ofp>=40)return '1.5군'; return '1군 전력 외';
 }
 /* 잠재력은 끝까지 추정이다. 우리 선수도 스카우트 능력·트래킹 분석원·함께한 시즌 수만큼만 정확해지고, 오차가 0이 되지는 않는다.
-   추정은 반년마다(1월·7월) 새 관찰로 다시 매긴다 */
+   추정은 관찰이 쌓이는 만큼 오차 폭이 줄어 실제 쪽으로 다가간다(오차 방향은 구단마다 고정: potZ) */
+/* 프로 선수 잠재력 추정의 오차 방향(사용자 11-18: 드래프트 선수 별이 시즌마다 4~5개와 2~3개를 오갔다). 예전에는 평가자 id·연도·반기로 오차를 새로 뽑아,
+   진짜 잠재력이 그대로여도 반년마다 별이 크게 뒤집혔다. 이제 '우리 구단이 이 선수에게 받은 인상'은 하나로 고정하고(평가자가 바뀌거나 육성 등록을 바꿔도 같다),
+   관찰이 쌓여 오차 폭(sd)이 줄어드는 만큼 추정이 실제 잠재력 쪽으로 다가간다. 해시 값이라 난수 흐름을 건드리지 않는다 */
+function potZ(p){ return clamp(hn('pz'+G.user,p.id),-2.2,2.2); }
 const sdConf=sd=>sd<=2.5?'매우 높음':sd<=4.5?'높음':sd<=7?'보통':'낮음';
 function halfK(){ return dobj(G.day).m>=7?'h':''; }
 function ownObs(p){ const y0=G.startY??G.year; return new Set((p.hist||[]).filter(h=>h.t===G.user&&h.y>=y0&&(h.pa||h.outs)).map(h=>h.y)).size; }
@@ -45,9 +49,9 @@ function scoutReport1(p){ // KBO 소속 선수는 현재 능력(오버롤)을 �
   const r=scoutReport0(p); if(p.prospect||(p.foreign&&p.team==null)||r.unseen)return r; /* 관찰하지 못한 2군 선수는 목록과 같은 기준으로 상세에서도 평가 없음(검수 11-07) */
   const ref=p.team!=null?p.team:p.faFrom; if(ref==null)return r;
   const own=ref===G.user||exOwnD(p)!=null /* 떠난 지 2년 안의 우리 선수는 우리 팀 시절 자료 */; const cur=Math.round(ovr(p)); let ofp=own?r.ofp:null, who=r.who, sc=r.sc, psd=own?r.sd:99;
-  if(!own){ const cv=coverOf(ref); if(cv.sc){ const sd=scSd(cv.sc,p)*anaEff(G.user).sdm; psd=sd; ofp=clamp(r5(p.pot-hidPen(p,cv.sc)+hn('pf'+cv.sc.id+G.year+halfK(),p.id)*sd),20,80); who=`${cv.sc.name} 스카우트(${cv.reg} 프로 담당)`; sc=cv.sc; }
+  if(!own){ const cv=coverOf(ref); if(cv.sc){ const sd=scSd(cv.sc,p)*anaEff(G.user).sdm; psd=sd; ofp=clamp(r5(p.pot-hidPen(p,cv.sc)+potZ(p)*sd),20,80); who=`${cv.sc.name} 스카우트(${cv.reg} 프로 담당)`; sc=cv.sc; }
     /* 그 지역 프로 스카우트가 없어도 트래킹 분석원이 1군 경기 데이터로 거칠게 추정한다(오차 큼) */
-    else if(anaPow('trk',G.user)>=2&&publicP(p)){ const sd=9.5*anaEff(G.user).sdm; psd=sd; ofp=clamp(r5(p.pot-hidPen(p,null)+hn('pa'+G.year+halfK(),p.id)*sd),20,80); who=`전력분석팀 데이터 추정(${cv.reg} 프로 스카우트 없음)`; }
+    else if(anaPow('trk',G.user)>=2&&publicP(p)){ const sd=9.5*anaEff(G.user).sdm; psd=sd; ofp=clamp(r5(p.pot-hidPen(p,null)+potZ(p)*sd),20,80); who=`전력분석팀 데이터 추정(${cv.reg} 프로 스카우트 없음)`; }
     else who=`${cv.reg} 프로 담당 스카우트 없음`; }
   if(ofp!=null)ofp=Math.max(ofp,cur);
   /* 성장기가 끝난 선수는 잠재 능력이 현재를 크게 넘지 않는다(29세 +4, 30세 +2, 31세 이상 현재 그대로) */
@@ -74,8 +78,9 @@ function scoutReport0(p){
   const hp=futKnown?hidPen(p,sc,own):0, pv=p.pot-hp; const gap=Math.max(0,pv-ovr(p));
   const tools=Object.keys(p.r).map(k=>{ const n=hn('t'+k+key,p.id)*sd*.8+bias; const cur=clamp(r5(p.r[k]+n),20,80); const fut=clamp(r5(p.r[k]+gap*(p.age<=26?1:0)+n+hn('u'+k+key,p.id)*sd*.4),20,80); return {k,cur,fut:futKnown?Math.max(cur,fut):cur}; });
   const cur=clamp(r5(ovr(p)+bias+hn('c'+key,p.id)*sd*.55),20,80);
-  let ofp=futKnown?clamp(Math.max(cur,r5(pv+bias+hn('f'+key,p.id)*sd)),20,80):null;
-  if(ofp!=null&&!p.prospect&&p.age>=29)ofp=Math.min(ofp,cur+Math.max(0,31-p.age)*2);
+  const stab=!p.prospect&&!(p.foreign&&p.team==null), cb=stab?Math.round(ovr(p)):cur; /* KBO 소속·FA 선수: 반년마다 새로 뽑는 오차가 아니라 구단마다 고정된 인상(potZ)에 오차 폭만 곱한다. 현재 능력 하한도 흔들리는 추정이 아니라 실제 능력 */
+  let ofp=futKnown?clamp(Math.max(cb,r5(pv+bias+(stab?potZ(p):hn('f'+key,p.id))*sd)),20,80):null;
+  if(ofp!=null&&!p.prospect&&p.age>=29)ofp=Math.min(ofp,cb+Math.max(0,31-p.age)*2);
   /* 아마추어: 담당 스카우트마다 좋아하는 툴이 있어 그 툴이 좋아 보이면 잠재력을 후하게 보고, 선수마다 마음에 들고 안 드는 인상도 있다(관찰을 늘려도 줄지 않는 오차) */
   if(ofp!=null&&p.prospect&&sc&&p.gmSeen!==G.year){ ofp=clamp(Math.max(cur,ofp+clubLean(sc,p,k=>{ const t=tools.find(x=>x.k===k); return t?t.fut:0; })),20,80); } /* AI 구단도 같은 버릇(clubLean, 스카우트 1단계) */ /* 인상 보정 뒤에도 현재 능력 아래로 내려가지 않는다(검수 11-06) */
   const tv={}; tools.forEach(t=>tv[t.k]=t.cur);

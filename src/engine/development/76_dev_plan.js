@@ -61,11 +61,11 @@ function trnSet(pid,f){ const p=G.players[pid]; if(!p||p.team!==G.user)return '�
   return `${p.name}: ${D.l}${f==='bal'?' 훈련으로 돌립니다':' 집중'}. ${tail}`; }
 /* ===== 훈련 강도(카페 건의 11-09, 설계 수정: 선수별 강도는 코치진 영역) =====
  FM은 선수마다 훈련 부하(Light/Average/Heavy)를 정하고, 부하가 높을수록 성장은 빠르지만 부상 위험·피로가 오른다. 부상 내성·체력이 위험 폭을 가른다.
- 실제 구단에서 선수별 강도는 컨디셔닝·파트 코치가 정한다. 단장은 팀 '육성 방침'(회복 우선·균형·성장 우선) 하나만 정하고, 코치진이 그 안에서 내구성·나이·피로·최근 부상을 보고 선수마다 배분한다.
+ 실제 구단에서 선수별 강도는 컨디셔닝·파트 코치가 정한다. 단장은 팀 '육성 방침'(회복 우선·균형·성장 우선) 하나만 정하고, 코치진이 그 안에서 체력·나이·피로·최근 부상을 보고 선수마다 배분한다.
  특정 선수 강도는 단장이 코치에게 건의하는 예외(G.trnI)로만 둔다. 다른 구단도 같은 배분을 쓰고, 방침은 그 구단 계획에서 온다(trnPolOf, 사용자 11-13).
  KBO 현실: 시즌 중 개인 고강도 훈련은 드물다(경기 피로 관리가 우선). 그래서 균형 방침에서 아주 강하게는 나오지 않는다.
  - 성장: 주간 집중 훈련 증가분 × g, 겨울 성장(잠재력 여지 몫)에 그 시즌 평균 g. 아주 강하게(×1.3) 한 시즌이면 겨울 순성장 약 +40%, 캠프 몫까지 합친 한 해 성장 약 +30~35%
- - 부상: 경기·2군 부상 확률(injMult) × 위험 배수. 증가분은 내구성(투수는 체력)이 낮을수록, 32세·34세 이상일수록 크고, 컨디셔닝코치가 좋으면 조금 작다. 내구성 80이면 아주 강하게 +20% 안팎(아주 강하게는 하한 .4, 공략 방지), 35면 +55%(피로가 덜 풀려 경기 부상이 더 붙는다)
+ - 부상: 경기·2군 부상 확률(injMult) × 위험 배수. 증가분은 체력(투수 sta·야수 vit)이 낮을수록, 32세·34세 이상일수록 크고, 컨디셔닝코치가 좋으면 조금 작다. 체력 80이면 아주 강하게 +20% 안팎(아주 강하게는 하한 .4, 공략 방지), 35면 +55%(피로가 덜 풀려 경기 부상이 더 붙는다)
  - 피로: 매일 피로 회복 속도(recoverAll)를 늦춘다. 1군 주전은 경기 피로가 덜 풀려 위험이 겹친다
  - 회복 위주: 성장 -15%, 부상 -15%, 피로 회복 +15%. 회복 우선 방침이거나 단장이 건의했으면 재활 중 한 주에 하루씩 복귀가 당겨진다 */
 const TRNI=[{l:'회복 위주',s:'회복',g:.85,inj:-.15,fat:-.15},{l:'보통',s:'보통',g:1,inj:0,fat:0},{l:'강하게',s:'강하게',g:1.15,inj:.25,fat:.12},{l:'아주 강하게',s:'아주 강',g:1.3,inj:.55,fat:.25}];
@@ -74,14 +74,14 @@ const trnPol=()=>TRNPOL[G.trnPol]?G.trnPol:'bal'; /* 저장본에 없으면 균�
 /* 어느 구단이든 육성 방침: 맡은 구단은 단장이 정한 것, 다른 구단은 그 구단 계획에서(유망주 수집 → 성장 우선, 긴축 → 회복 우선). 사람 단장과 같은 배분·같은 대가(사용자 11-13) */
 const AI_TRNPOL={build:'grow',win:'bal',next:'bal',star:'bal',tight:'rec'};
 function trnPolOf(tid){ if(tid==null)return 'bal'; if(tid===G.user&&!G.unemp)return trnPol(); const t=G.teams&&G.teams[tid]; if(t&&TRNPOL[t.trnPol])return t.trnPol; return AI_TRNPOL[planOf(t)]||'bal'; }
-const trnDur=p=>(p.isP?p.r.sta:p.r.vit)??50; /* 투수는 내구성 대신 체력 */
+const trnDur=p=>(p.isP?p.r.sta:p.r.vit)??50; /* 훈련 부상 위험에 쓰는 몸 상태: 투수는 체력(sta), 야수는 체력(vit). 선수 화면 세부 능력의 체력과 같은 값(카페 11-18: 내구성으로 잘못 적었다) */
 let _trnCnC={g:null,d:-1,m:{}}; /* 구단별 컨디셔닝코치 값: 하루 한 번(선수마다 부르지 않게). 코치·감독이 바뀌면 그날도 다시 */
 function trnCn(tid){ try{ if(tid==null||!G.coach)return 55; if(_trnCnC.g!==G||_trnCnC.d!==G.day)_trnCnC={g:G,d:G.day,m:{}}; const C=coachesOf(tid), m=G.mgr&&G.mgr[tid], k=(C.cn?C.cn.id:C.cn===undefined?'u':'-')+':'+(m?m.id:'');
     const h=_trnCnC.m[tid]; if(h&&h.k===k)return h.v; const v=C.cn?effC(C.cn,tid,'sk'):C.cn===undefined?55:45; _trnCnC.m[tid]={k,v}; return v; }catch(e){ return 55; } } /* 컨디셔닝코치 지도력(빈자리 45) */
 const trnInjN=p=>(p.injHist||[]).filter(h=>h.d!=null&&G.day-h.d<=365).length; /* 최근 1년 부상 */
-/* 코치진이 고르는 강도와 그 이유: 점수 = 내구성 + 젊음 + 컨디셔닝코치 - 나이 - 최근 부상 - 피로, 방침만큼 위아래로 */
+/* 코치진이 고르는 강도와 그 이유: 점수 = 체력 + 젊음 + 컨디셔닝코치 - 나이 - 최근 부상 - 피로, 방침만큼 위아래로 */
 function trnIAuto(p){ const pol=trnPolOf(p.team), o=TRNPOL[pol].o; if(p.injOut>0)return {i:pol==='rec'?0:1,w:'재활 중'};
-  const d=trnDur(p), n=trnInjN(p), f=p.fat||0; const W=[[(d-50)/10,d>=60?'내구성 높음':d<42?'내구성 낮음':''],[p.age<=24?1:0,'젊은 선수'],[-(p.age>=34?2:p.age>=31?1:0),'30대 체력 관리'],[-Math.min(3,n),'최근 부상'],[-(f>=60?2:f>=40?1:0),'피로 누적'],[(trnCn(p.team)-55)/20,'']];
+  const d=trnDur(p), n=trnInjN(p), f=p.fat||0; const W=[[(d-50)/10,d>=60?'체력 높음':d<42?'체력 낮음':''],[p.age<=24?1:0,'젊은 선수'],[-(p.age>=34?2:p.age>=31?1:0),'30대 체력 관리'],[-Math.min(3,n),'최근 부상'],[-(f>=60?2:f>=40?1:0),'피로 누적'],[(trnCn(p.team)-55)/20,'']];
   const s=W.reduce((a,x)=>a+x[0],0)+o; let i=s>=3?3:s>=1.2?2:s>=-2.5?1:0; /* 균형 방침에서 보통이 대부분이 되게(리그 기본과 비슷) */ const dy=p.age<=24&&d>=70&&n===0&&f<40; /* 튼튼한 젊은 선수는 어느 방침이든 코치진이 아주 강하게까지 올릴 수 있다(AI도 같은 수단) */ if(!(dy&&s>=3)){ if(pol==='bal')i=Math.min(i,2); if(pol==='rec')i=Math.min(i,1); } else i=3;
   const top=W.filter(x=>x[1]).sort((a,b)=>Math.abs(b[0])-Math.abs(a[0]))[0]; return {i,w:top&&Math.abs(top[0])>=.5?top[1]:'무난한 몸 상태'}; }
 /* 지시는 현재 영입 회차에만 귀속한다. 같은 선수를 재영입해도 예전 강도 건의가 되살아나지 않는다. */

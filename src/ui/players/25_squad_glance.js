@@ -164,7 +164,8 @@ function glanceRow(p,lab,own,lvl){ const rp=scoutReport(p); const y=G.year; cons
 /* 1군 투수진(선발 로테이션·불펜 보직)과 벤치: 전력 구성 화면에서 배치도 옆에 붙인다 */
 function glancePitch(tid){ const own=tid===G.user; const d=depth(tid); const R=(p,lab)=>glanceRow(p,lab,own,'1'); const roles=['마무리','필승조','필승조','추격조','추격조','롱릴리프','롱릴리프'];
   const order=orderList(d.start,tid), posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k; /* 1군 야수도 목록으로(사용자 피드백 11-07: 전력 구성에 1군 야수가 안 보임) */
-  return `<div class="eyebrow">1군 타순</div>${order.map((p,i)=>R(p,`${i+1} ${SLK[posOf[p.id]]||''}`)).join('')}<div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>R(p,`${i+1}선발`)).join('')}<div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>R(p,roles[i]||'불펜')).join('')}${d.bench.length?`<div class="eyebrow">벤치</div><div class="gl-chips">${d.bench.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${SLK[pSlot(p)]||posLabel(p)} ${rchip(scoutReport(p).cur)}</i></button>`).join('')}</div>`:''}`; }
+  /* 야수 백업(벤치)은 타순 바로 아래: 스크롤하지 않고 주전과 백업을 함께 본다(카페 11-18). PC는 줄을 낮춰 한 칸에 담는다 */
+  return `<div class="gl1"><div class="eyebrow">1군 타순</div>${order.map((p,i)=>R(p,`${i+1} ${SLK[posOf[p.id]]||''}`)).join('')}${d.bench.length?`<div class="eyebrow">벤치 · 야수 백업 ${d.bench.length}명</div><div class="gl-chips gl-bench">${d.bench.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${SLK[pSlot(p)]||posLabel(p)} ${rchip(scoutReport(p).cur)}</i></button>`).join('')}</div>`:''}<div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>R(p,`${i+1}선발`)).join('')}<div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>R(p,roles[i]||'불펜')).join('')}</div>`; }
 /* 빠진 선수: 부상·징계와 대표팀 차출(playersOf는 차출 선수를 빼므로 따로 더한다, 검수 11-09zi) */
 const outList=tid=>playersOf(tid).filter(p=>!healthy(p)).concat(awayOf(tid).filter(p=>!milServing(p)));
 /* 2군 화면이 읽는 실제 2군 라인업: 올해 것만, 지금 1군·부상·차출·이적 선수는 뺀다(검수 11-09zi) */

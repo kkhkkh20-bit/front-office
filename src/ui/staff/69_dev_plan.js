@@ -42,11 +42,11 @@ function trnPolBox(){ const cur=trnPol(); const ps=domestic(G.user).filter(p=>!m
   return `<div class="trn-env"><b>육성 방침</b>${hiI('선수별 훈련 강도는 코치진이 정합니다.')}
   <div class="seg trn-seg">${Object.entries(TRNPOL).map(([k,v])=>`<button data-a="trnPolSet" data-v="${k}" class="${cur===k?'on':''}">${v.l}</button>`).join('')}</div>
   <div class="small">${esc(TRNPOL[cur].d)}</div><div class="small muted">지금 배분: ${TRNI.map((t,i)=>`${t.l} ${n[i]}명`).join(' · ')}</div>${UI.trnPolMsg?`<div class="note">${esc(UI.trnPolMsg)}</div>`:''}</div>`; }
-/* 훈련 강도(선수 화면 육성 탭): 코치가 정한 결과를 보여 주고, 단장 건의는 접힌 예외 항목. 부상 위험은 내구성(투수는 체력)·나이를 반영한 전체 위험 */
+/* 훈련 강도(선수 화면 육성 탭): 코치가 정한 결과를 보여 주고, 단장 건의는 접힌 예외 항목. 부상 위험은 체력(선수 화면 세부 능력의 체력)·나이를 반영한 전체 위험 */
 function trnIBox(p){ const cur=trnI(p), gm=trnIByGm(p), a=trnIAuto(p); const lv=i=>{ const r=injStam(p)*trnIRisk(p,i); return r<.95?'낮음':r<1.25?'보통':'높음'; }; const T=TRNI[cur];
   return `<div class="trn-env"><b>훈련 강도</b> <span class="small muted">육성 방침 ${TRNPOL[trnPol()].l}</span>
   <div class="small">${gm?`단장 건의로 <b>${T.l}</b> <span class="muted">(코치진 판단은 ${TRNI[a.i].l} · ${esc(a.w)})</span>`:`코치가 정한 강도: <b>${T.l}</b> (${esc(a.w)})`}</div>
-  <div class="small muted">성장 ×${T.g.toFixed(2)} · 부상 위험 ${lv(cur)} · ${p.isP?'체력':'내구성'} ${rchip(trnDur(p))}${p.age>=32?` · ${p.age}세라 위험 가중`:''}</div>
+  <div class="small muted">성장 ×${T.g.toFixed(2)} · 부상 위험 ${lv(cur)} · 체력 ${rchip(trnDur(p))}${p.age>=32?` · ${p.age}세라 위험 가중`:''}</div>
   <details class="trn-adv"${gm||(UI.trnMsg&&UI.trnMsg.id===p.id)?' open':''}><summary class="small">코치에게 강도 건의(예외)</summary>
   <div class="seg trn-seg">${TRNI.map((t,i)=>`<button data-a="trnISet" data-v="${p.id}:${i}" class="${gm&&cur===i?'on':''}">${t.l}</button>`).join('')}</div>${gm?`<div class="talk"><button class="btn small" data-a="trnISet" data-v="${p.id}:coach">코치진 판단으로 돌리기</button></div>`:''}
   ${TRNI.map((t,i)=>`<div class="small muted">${t.l} · 성장 ×${t.g.toFixed(2)} · 부상 위험 ${lv(i)}${i===0?' · 피로·재활 회복 빠름':i>=2?' · 피로 회복 느림':''}</div>`).join('')}

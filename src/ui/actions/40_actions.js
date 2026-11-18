@@ -6,9 +6,11 @@ function bondCard(p){
   <p class="small">${esc(moraleWhy(p))}</p>${moraleBox(p)}${p.team===G.user?roleLines(p):''}
   <p class="small muted">성향: ${esc(mentalSum(p))}${p.promise?` · 출전 약속 ${dmd(p.promise.until)}까지`:''}${p.listed?' · 트레이드 명단':''}${G.med.hosp==='a'?` · 정밀 검진: 부상 체질 ${p.inj>.24?'취약':p.inj>.15?'보통':'튼튼'}`:''}</p>
   ${p.team===G.user?`<button class="btn small mt-go" data-a="meetOpen" data-v="pl:${p.id}">${avImg(p)}<span><b>개인 면담</b><i>${talkUsed(p,'praise')?'이번 주 칭찬·분발 촉구는 했습니다 · 고민은 언제든':'칭찬, 분발 촉구, 출전 기회, 계약, 고민'}</i></span></button>`:''}
-  ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>`:''}
+  ${UI.talkMsg&&UI.talkMsg.id===p.id?`<div class="note ${UI.talkMsg.d>0?'good':UI.talkMsg.d<0?'bad':''}">${esc(UI.talkMsg.msg)}</div>${UI.talkMsg.ext?extTalkBtn(p,'btn small primary'):''}`:''}
   </section>`;
 }
+/* 면담에서 선수가 다년계약에 응하겠다고 하면: 연장 협상 버튼, 지금 열 수 없으면 그 이유(피드백 11-17 연장) */
+function extTalkBtn(p,cls){ const why=extWhy(p); return why?`<p class="small muted ext-why">연장 협상은 지금 열 수 없습니다. ${esc(why)}</p>`:`<button class="${cls}" data-a="extNgt" data-v="${p.id}">연장 협상 시작</button>`; }
 function devForm(p){const current=(G.ovs||[]).find(x=>x.pid===p.id);return `<section class="card"><div class="row between"><h2 class="sec">해외연수 · 목표와 결과</h2><button class="btn small" data-a="ovsCenter" data-v="${p.id}">해외 연수 화면에서 선수 고르기 ›</button></div>${current?`<p>${OVS[current.prog].l} · ${current.go?'참가 중':'출발 전 예약'}</p>${!current.go?`<button class="btn" data-a="ovsSet" data-v="${p.id}:">예약 취소</button>`:''}`:''}${overseasProgramDetails(p)}${UI.devMsg?`<p class="note" role="status">${esc(UI.devMsg)}</p>`:''}${(p.ovsH||[]).length?'<h3>귀국 후 실제 변화</h3>'+overseasHistory(p):''}</section>`;}
 
 /* 중요한 소식으로 멈추면 홈이 아니라 소식함에서 그 소식을 연다(일반 진행·달력 진행·관전 공용) */
@@ -134,7 +136,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   pmgmt(v){ A.player(v); UI.ptab='mgmt'; renderSheet(); },
   mailAct(v){ const [id,i]=v.split(':'); const m=G.mail.find(x=>x.id===id); if(!m)return; const a=m.acts[+i]; m.read=true; if(!a)return; if(a.a==='meetOpen'&&a.v==='mgr'&&m.ref!=null&&/약속은 어디 갔습니까/.test(m.subj))a.v=`mgr|use:${m.ref}`; /* 예전 저장의 약속 위반 메일도 그 선수 건의로(카페 11-09) */const status=mailButtonStatus(m,a);if(status){toast(status.text);render();return;} UI.actRes=null; UI.actFail=null; if(a.a==='meetOpen'&&m.subj.includes('감독이 단장실에 들렀습니다'))meetOpen('mgr',null,{visit:true}); else if(a&&A[a.a])A[a.a](a.v); else render(); if(UI.actFail&&UI.actRes)try{ toast(UI.actRes); }catch(e){} if(a&&(MAIL_ONCE.test(a.a)||a.a==='pactKeep'||a.a==='tripPlanGo')&&!UI.actFail){ a.done=true; a.res=UI.actRes||'처리했습니다.'; if(a.a==='pactKeep')m.closed=mailEnd('유망주 기회 합의를 유지하기로 했습니다.'); if(a.a==='tripPlanGo')m.closed=mailEnd(a.res); /* 보낸 출장 안 메일은 세 버튼 모두 완료로(리뷰② 11-17) */ if(/^(posReq|fcampSet)/.test(a.a)){ const g=a.a.startsWith('posReq')?/^posReq/:/^fcampSet$/; m.acts.forEach(x=>{ if(g.test(x.a))x.done=x.done||x!==a&&'skip'; }); } save(); render(); } if(UI.tab!=='inbox'){ UI.fromMail=id; render(); } }, /* 소식의 버튼으로 다른 화면에 가면 '소식함으로' 돌아오는 버튼을 띄운다 */
   expGmCancel(){ const r=expGmCancel(); save(); toast(r); render(); }, /* 창단 단장 수락 취소(11월 20일 부임 전까지) */
-  evPick(v){ const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); const r=evPick(id,+i); save(); if(e&&!e.done){ if(r)toast(r); render(); return; } /* 고를 수 없는 선택이면 이유만 알린다(검수 11-09z) */ sfx('confirm',.6); if(e&&e.res)toast(e.res.split('\n')[0].slice(0,140)); /* 결정 결과를 바로 알린다(본문도 전부 펼침) */ if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.player(e.data.pid); UI.ptab='mgmt'; renderSheet(); render(); return; } if(e&&e.k==='fx'&&+i===0){ const fp=G.players[e.data&&e.data.pid]; UI.ff=Object.assign({t:'yb',r:'all',s:'cur'},UI.ff||{}); UI.ff.t=fp&&fp.foreign==='아시아'?'asia':'yb'; UI.ff.r='all'; A.go('transfer:foreign'); return; } /* 그 선수 종류의 후보 탭으로(플레이 테스트 11-13: 일반 외국인인데 아시아쿼터 탭이 열림) */ if(e&&e.k==='ret'&&/코치 우선 협상/.test((e.opts[+i]||{}).l||'')){ A.go('staff:coach'); return; } /* 은퇴 선수를 코치 후보로: 바로 코치진 계약 화면으로 */ render(); },
+  evPick(v){ const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); const r=evPick(id,+i); save(); if(e&&!e.done){ if(r)toast(r); render(); return; } /* 고를 수 없는 선택이면 이유만 알린다(검수 11-09z) */ sfx('confirm',.6); if(e&&e.res)toast(e.res.split('\n')[0].slice(0,140)); /* 결정 결과를 바로 알린다(본문도 전부 펼침) */ if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.extNgt(e.data.pid); return; } /* 다년계약 요구를 받아들이면 바로 연장 협상 창을 연다. 열 수 없으면 이유를 알리고 선수 화면만(피드백 11-17 연장) */ if(e&&e.k==='fx'&&+i===0){ const fp=G.players[e.data&&e.data.pid]; UI.ff=Object.assign({t:'yb',r:'all',s:'cur'},UI.ff||{}); UI.ff.t=fp&&fp.foreign==='아시아'?'asia':'yb'; UI.ff.r='all'; A.go('transfer:foreign'); return; } /* 그 선수 종류의 후보 탭으로(플레이 테스트 11-13: 일반 외국인인데 아시아쿼터 탭이 열림) */ if(e&&e.k==='ret'&&/코치 우선 협상/.test((e.opts[+i]||{}).l||'')){ A.go('staff:coach'); return; } /* 은퇴 선수를 코치 후보로: 바로 코치진 계약 화면으로 */ render(); },
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
   mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); },
   goWork(v){ const g=GW[v]||['home']; A.go(g.join(':')); },
@@ -157,7 +159,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   setPrev(v){ G.med.prev=+v; G.medSet=true; save(); render(); },
   setHosp(v){ const L=setHospital(v); if(L&&L.length)note('의무',`재활 중인 선수 남은 기간: ${L.join(', ')}`); save(); render(); },
   medOk(){ G.medSet=true; save(); render(); },
-  talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0}; save(); render(); },
+  talk(v){ const [id,k]=v.split(':'); const r=talk(+id,k); UI.talkMsg={id:+id,msg:r.msg,d:r.d||0,ext:!!r.ext}; save(); render(); },
   devSet(v){ const [id,k]=v.split(':'); UI.devMsg=setDev(+id,k||null); if(!UI.devMsg&&k)sfx('confirm',.5); save(); if(UI.sheet!=null)renderSheet(); render(); },
   devOff(v){ setDev(+v,null); save(); render(); },
   ovsSet(v){ const [id,k]=v.split(':'); UI.devOk=false; UI.devMsg=setOvs(+id,k||null); save(); if(UI.sheet!=null)renderSheet(); render(); },
@@ -359,7 +361,10 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   trimClose(){ UI.trimOn=false;UI.trimHidden=true;UI.trimSel=[];UI.trimN=0;UI.it=UI.it||{};UI.it.roster='list';UI.tab='roster';UI.rosterTeam=null;closeSheets();render();window.scrollTo(0,0); },
   trimSel(v){ const id=+v, S=UI.trimSel=UI.trimSel||[]; const i=S.indexOf(id); if(i>=0)S.splice(i,1); else S.push(id); render(); },
   trimMore(){ UI.trimN=(UI.trimN||10)+10; render(); },
-  trimClr(){ UI.trimSel=[]; render(); },
+  trimClr(){ UI.trimSel=[]; UI.trimYsSel=[]; render(); },
+  trimYsSel(v){ const id=+v, S=UI.trimYsSel=UI.trimYsSel||[]; const i=S.indexOf(id); if(i>=0)S.splice(i,1); else S.push(id); render(); }, /* 정리 모드 육성선수 고르기(카페 11-18) */
+  trimYsUp(v){ const p=G.players[+v]; const r=fromYS(+v); UI.trimMsg=r||`${p?p.name:'선수'}을(를) 정식 선수로 등록했습니다.`; if(!r)UI.trimYsSel=(UI.trimYsSel||[]).filter(id=>id!==+v); save(); render(); },
+  ysRelBatch(){ const L=(UI.trimYsSel||[]).map(id=>G.players[id]).filter(p=>p&&p.ys&&p.team===G.user); L.forEach(p=>releasePlayer(p.id)); UI.trimYsSel=[]; UI.trimMsg=L.length?`육성선수 ${L.length}명을 방출했습니다.`:''; save(); render(); },
   relBatch(){ releaseMany(UI.trimSel||[]); UI.trimSel=[]; save(); render(); },
   tpartnerGo(v){UI.trade={tid:+v,give:(UI.trade&&UI.trade.give)||[],get:[],msg:'',seg:'bat',side:'get',sort:'cur'}; A.go('trade:table');},
   lseg(v){ if(v==='find'){ A.go('trade:find'); return; } UI.lseg=lsegFix(v);render();window.scrollTo(0,0);},
@@ -420,6 +425,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   mfcOpen(v){ const el=document.getElementById('m-'+v); if(el){ el.classList.toggle('open'); const b=el.querySelector('.mfc-more'); if(b)b.textContent=el.classList.contains('open')?'접기':'전체 보기'; } },
   lrAll(){ UI.lrAll=!UI.lrAll; render(); },
   extOpen(v){ A.player(v); A.jump('ext'); },
+  /* 연장 협상 창 바로 열기(연장 요구 소식·면담 계약 이야기·소식 버튼): 열 수 없으면 이유를 알린다(피드백 11-17 연장) */
+  extNgt(v){ const p=G.players[+v]; const why=extWhy(p); if(why){ toast(`연장 협상을 열 수 없습니다. ${why}`); if(p&&p.team===G.user&&!UI.meet){ A.player(p.id); UI.ptab='mgmt'; renderSheet(); } render(); return; } if(!UI.meet&&UI.sheet!==p.id)A.player(p.id); UI.ptab='mgmt'; UI._ngtY=0; ngtOpen('ext',p.id); render(); },
   jump(v){ UI.ptab='mgmt'; renderSheet(); const el=document.getElementById('s-'+v); if(el)el.scrollIntoView({block:'start'}); },
   ptab(v){ UI.ptab=v; renderSheet(); const sh=document.querySelector('#sheet .sheet'); if(sh)sheetScrollTo(0); },
   lsort(v){ const [id,k]=v.split(':'); UI.ls=UI.ls||{}; const c=UI.ls[id]; const asc=['era','whip','ra','hra','bb','so','name','tm','pos','role'].includes(k)&&!(id==='bat'&&k==='bb')&&!(id==='pit'&&k==='so')&&!(id==='team'&&k==='so'); UI.ls[id]={k,dir:c&&c.k===k?-c.dir:(asc?1:-1)}; render(); },

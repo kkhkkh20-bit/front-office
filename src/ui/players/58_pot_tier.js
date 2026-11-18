@@ -9,3 +9,8 @@ function potChipP(p){ try{ return ' '+potChip(scoutReport(p),p); }catch(e){ retu
 function potStars(st){ if(st==null)return ''; return `<span class="pst" aria-label="별 ${st}개"><i class="pst-fill" aria-hidden="true" style="width:${st*20}%">★★★★★</i>★★★★★</span>`; }
 /* 현재와 잠재력은 같은 내부 등급표로 비교한다. 화면 환산점수를 다시 별로 바꾸지 않는다. */
 function currentAbilityStars(rp){ const known=rp&&typeof rp.cur==='number'&&isFinite(rp.cur),label=rp&&rp.exact?'현재 능력':'현재 능력 · 스카우트 추정'; return `<span class="current-rating-stars" data-tip="${esc(label+'\n\n'+POT_HELP)}" aria-label="${esc(label)}">${known?potStars(potStarN(rp.cur)):'?'}</span>`; }
+
+/* 1년 전 대비 종합 능력 증감(카페 11-18: 지난 시즌 대비 증감을 다시 보고 싶다). 우리 선수만, 매달 남기는 능력치 기록(rmBase '1y')과 비교.
+   1년 치 기록이 없으면 가장 오래된 기록과 비교하고, 말풍선에 기준 날짜를 적는다 */
+function yrDelta(p){ if(!p||p.team!==G.user||p.prospect||!p.r)return null; const b=typeof rmBase==='function'?rmBase(p,'1y'):null; if(!b||b.d>=G.day)return null; const o=dv(ovr({isP:p.isP,r:b.r})), n=dv(ovr(p)); return {x:n-o,o,n,from:b.d}; }
+function yrDTag(p,cls){ const D=yrDelta(p); if(!D||!D.x)return ''; const up=D.x>0; return `<i class="ovd pf-dl ${up?'up':'dn'}${cls?' '+cls:''}" title="${esc(`${dsh(D.from)} 대비 종합 ${D.o} → 지금 ${D.n}`)}" aria-label="${esc(`${dsh(D.from)} 대비 ${up?'상승':'하락'} ${Math.abs(D.x)}`)}">${up?'+':'−'}${Math.abs(D.x)}</i>`; }

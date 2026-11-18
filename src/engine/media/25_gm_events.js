@@ -169,11 +169,12 @@ const EVH={
       if(i===0){ G.spend.etc=(G.spend.etc||0)+200; G.pr.fan=clamp(G.pr.fan+8,0,100); t.pop=clamp(t.pop+.01,0,1.5); return '2억 지출. 팬 여론 크게 호전, 구단 인기 소폭 상승.'; }
       if(i===1){ G.spend.etc=(G.spend.etc||0)+80; G.pr.fan=clamp(G.pr.fan+3,0,100); return '8천만 지출. 팬 여론 호전.'; } return ''; } },
   /* FA 앞둔 주축의 다년계약 요구 */
-  agent:{ w:.8, check(){ const top=playersOf(G.user).map(ovr).sort((a,b)=>b-a); const bar=top[11]||50; const L=playersOf(G.user).filter(p=>!p.foreign&&!p.faC&&!p.extNext&&p.svc===faSvc(p)-1&&ovr(p)>=bar&&!p.agentY); return L.sort((a,b)=>ovr(b)-ovr(a))[0]||null; },
+  agent:{ w:.8, check(){ const top=playersOf(G.user).map(ovr).sort((a,b)=>b-a); const bar=top[11]||50; const L=playersOf(G.user).filter(p=>canExtend(p)&&!p.faC&&p.svc===faSvc(p)-1&&ovr(p)>=bar&&!p.agentY); /* 다년계약을 실제로 협상할 수 있는 선수만(피드백 11-17 연장: 35세 이상은 요구만 오고 협상 버튼이 없었다) */ return L.sort((a,b)=>ovr(b)-ovr(a))[0]||null; },
     make(p){ p.agentY=G.year; evNew('agent',`${p.name} 측, 다년계약 요구`,`올 시즌 뒤 FA가 되는 ${p.name}(${posLabel(p)}, ${p.age}세)의 에이전트가 시즌 중 다년계약 협상을 원합니다.\n올해 기록: ${evLine(p)}`,
-      [{l:'다년계약 협상하기',fx:'선수 관리 화면에서 조건을 제시합니다. 협상이 틀어지면 기분이 내려갈 수 있습니다.'},
+      [{l:'다년계약 협상하기',fx:'연장 협상 화면이 열리고 조건을 제시합니다. 협상이 틀어지면 기분이 내려갈 수 있습니다.'},
        {l:'시즌 끝나고 이야기하자',fx:'선수 기분이 조금 내려가고, FA 시장에 나갈 가능성이 커집니다.'}],{ref:p.id,face:p.id,from:'에이전트',data:{pid:p.id},def:1}); },
-    pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0)return '선수 정보의 관리 탭에서 다년계약 조건을 제시하세요.'; p.mor=clamp(p.mor-5,0,100); return `${p.name} 기분 하락.`; } },
+    pick(e,i){ const p=evP(e.data.pid); if(!p)return ''; if(i===0){ const why=extWhy(p); return why?`연장 협상을 열 수 없습니다: ${why}`:'연장 협상 화면에서 다년계약 조건을 제시하세요. 이 소식의 \'연장 협상 열기\'나 선수 화면 위 \'연장 협상\' 버튼으로 다시 열 수 있습니다.'; } p.mor=clamp(p.mor-5,0,100); return `${p.name} 기분 하락.`; },
+    acts(e,i){ const p=evP(e.data.pid); return i===0&&p&&canExtend(p)?[{l:'연장 협상 열기',a:'extNgt',v:p.id}]:[]; } }, /* 결정 뒤에도 소식에 협상 버튼을 남긴다(피드백 11-17 연장) */
   /* 주전 슬럼프 */
   slump:{ w:1.1, check(){ const d=depth(G.user); const L=d.start.filter(p=>(p.l10||[]).length>=8).map(p=>{ const L=p.l10; const ab=sum(L.map(x=>x[0])),h=sum(L.map(x=>x[1])),bb=sum(L.map(x=>x[3])),xb=sum(L.map(x=>x[5]||0)),sf=sum(L.map(x=>x[6]||0)); if(ab<25)return null; const hp=sum(L.map(x=>x[7]||0)); const ops=(h+bb+hp)/(ab+bb+hp+sf)+(h+xb)/ab; return ops<.5?{p,ops,avg:h/ab}:null; }).filter(Boolean).sort((a,b)=>a.ops-b.ops); return L[0]||null; },
     make(x){ const p=x.p; evNew('slump',`${p.name}, 깊은 슬럼프`,`주전 ${p.name}(${posLabel(p)})이(가) 최근 10경기(${dmd(G.day)} 기준) 타율 ${fmt3(x.avg)}, OPS ${fmt3(x.ops)}에 그치고 있습니다. 전력분석팀은 타격 밸런스가 무너졌다고 봅니다.\n시즌 기록: ${evLine(p)}`,
