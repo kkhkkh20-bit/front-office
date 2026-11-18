@@ -234,7 +234,10 @@ function ntCrAdd(c,S){ if(!S)return; const P=!!S.P, o=P?(c.p||(c.p={})):(c.b||(c
 function ntCareerAdd(T){ if(T.cr)return 0; T.cr=1; const tag=`${T.y} ${NT_EV[T.k].n} ${T.res}`; let n=0;
   for(const key of Object.keys(T.st)){ if(!/^\d+$/.test(key))continue; try{ const p=G.players[+key]; if(!p)continue; const S=T.st[key], c=p.ntcr||(p.ntcr={ev:[]}); if(!Array.isArray(c.ev))c.ev=[];
       ntCrAdd(c,S); if(S.x&&typeof S.x==='object')ntCrAdd(c,S.x); c.ev.push(tag); n++; }catch(err){ (G.flErr=(G.flErr||[]).slice(-9)).push('ntCr:'+key+':'+String(err&&err.message).slice(0,60)); } }
-  return n; }
+  return n+ntAbroadCareerAdd(T); }
+/* 해외파도 같은 개인 대표 통산을 쌓는다. 원본 보관본과 별도 사본에 함께 남겨 복귀 때 이어받는다. */
+function ntAbroadCareerRestore(a,p){if(!a?.ntcr||!p)return p;const ev=a.ntcr.ev||[];if(!p.ntcr||(p.ntcr.ev||[]).every(e=>ev.includes(e)))p.ntcr=JSON.parse(JSON.stringify(a.ntcr));return p;}
+function ntAbroadCareerAdd(T){if(!T?.st||!NT_EV[T.k])return 0;const tag=`${T.y} ${NT_EV[T.k].n} ${T.res}`;let n=0;for(const key of Object.keys(T.st)){if(!/^o\d+$/.test(key))continue;try{const id=+key.slice(1),a=(G.abroad||[]).find(a=>a.id===id&&!a.foreign&&!a.back)||(G.abroad||[]).find(a=>a.id===id&&!a.foreign);let p=G.players[id];if(p?.ntTmp)p=null;if(!p&&a?.pj)p=JSON.parse(a.pj);if(!p)continue;ntAbroadCareerRestore(a,p);if(p.ntc&&typeof p.ntc==='object'){const c=ntCrFromOld(p.ntc,id);delete p.ntc;p.ntcr=p.ntcr?ntCrMerge(p.ntcr,c):c;}const c=p.ntcr||(p.ntcr={ev:[]});if(!Array.isArray(c.ev))c.ev=[];if(!c.ev.includes(tag)){const S=T.st[key];ntCrAdd(c,S);if(S.x&&typeof S.x==='object')ntCrAdd(c,S.x);c.ev.push(tag);n++;}if(a){a.ntcr=JSON.parse(JSON.stringify(c));if(a.pj&&!a.back)a.pj=ovsPj(p);}}catch(err){(G.flErr=(G.flErr||[]).slice(-9)).push('ntCr:'+key+':'+String(err&&err.message).slice(0,60));}}return n;}
 /* 예전 저장 수리(불러오기마다, 두 번 해도 같다): p.ntc가 객체(대표 통산 모양: ev 배열·경기 수)면 p.ntcr로 옮기고 p.ntc는 거부권 숫자만 남긴다.
    예전 모양은 타격·투구가 한 칸에 섞였다: 타격에만 있는 칸(타석·타수·타점…)과 투구에만 있는 칸(아웃·자책·승패…)으로 나누고, 함께 쓰는 칸(경기·안타·볼넷·삼진·홈런)은
    둘 다 있으면 지금 대회(G.nt.tour) 기록으로 그 대회 역할 몫을 떼어 내고 나머지를 다른 역할로 본다. 알 수 없으면 마지막 역할(P) 쪽에 둔다 */
@@ -250,6 +253,7 @@ function ntSaveFix(){ if(!G||!G.players)return 0; let n=0;
   for(const p of Object.values(G.players)){ if(!p||p.ntc==null||typeof p.ntc!=='object')continue; const x=ntCrFromOld(p.ntc,p.id); delete p.ntc; p.ntcr=p.ntcr?ntCrMerge(p.ntcr,x):x; n++; }
   /* 예전 대회 기록에 남은 대체 선수(fillB0 등 두 나라가 같은 키를 썼다, #217): 개인 기록이 아니므로 뺀다 */
   for(const T of [G.nt&&G.nt.tour].filter(Boolean))for(const k of Object.keys(T.st||{}))if(String(k).startsWith('fill')){ delete T.st[k]; if(T.sc)delete T.sc[k]; n++; }
+  if(G.nt?.tour?.done&&G.nt.tour.cr)n+=ntAbroadCareerAdd(G.nt.tour);
   return n; }
 /* 대회가 끝나면: 기록실에 남기고(G.ntArc), 활약 선수 인기·우리 팬 여론 */
 function ntTourArchive(T,N){ const e=NT_EV[T.k]; const nm=key=>{ if(/^\d+$/.test(String(key))){ const p=G.players[+key]; return p?p.name:''; } if(String(key).startsWith('o')){ const x=(N.ovs||[]).find(o=>'o'+o.id===key); return x?x.name:''; } const pl=ntFindPl(key); return pl?pl.nm:''; };
