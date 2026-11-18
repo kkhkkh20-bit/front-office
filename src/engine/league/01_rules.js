@@ -181,12 +181,15 @@ function newPlayer(o){
 }
 let PROJ_FX=0; /* 1이면 KBO 1군 실적이 없는 외국인을 빼고 본다(예상 전력의 외국인 불확실성, 03_depth projRating) */
 const fUnproven=p=>!!p&&!!p.foreign&&(()=>{ const L=(p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2); return sum(L.map(h=>h.pa||0))<100&&sum(L.map(h=>h.outs||0))<90; })(); /* KBO 1군 100타석·30이닝 미만 */
-const playersOf=tid=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); return Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p))); }; /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
+/* 성능(11-18): 세계를 바꾸지 않는 평가 구간(AI 트레이드 후보 계산 등)에서는 구단 명단을 한 번만 걸러 쓴다. 구간 밖에서는 늘 새로 거른다(결과 동일). 돌려줄 때는 사본이라 호출한 쪽이 정렬·수정해도 기억이 바뀌지 않는다 */
+let _rosM=null; function rosterMemoOn(){ _rosM=new Map(); } function rosterMemoOff(){ _rosM=null; }
+function rosterMemo(k,f){ if(!_rosM)return f(); let v=_rosM.get(k); if(v===undefined){ v=f(); _rosM.set(k,v); } return Array.isArray(v)?v.slice():v; }
+const playersOf=tid=>rosterMemo('p'+tid+':'+(PROJ_LENS?1:0)+(PROJ_FX?1:0),()=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); return Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p))); }); /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
 const awayOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&isAway(p));
 const domestic=tid=>playersOf(tid).filter(p=>!p.foreign);
 /* 구단이 돈을 주는 선수(계약 기준): 국가대표 차출로 잠시 빠진 선수도 소속 선수로 연봉·샐러리캡·선수 수에 넣는다. 군 복무 중인 선수만 지급에서 뺀다.
    playersOf·domestic은 '지금 경기에 뛸 수 있는 선수'라 계약·돈 계산에는 쓰지 않는다 */
-const ownedOf=(tid,d=G.day)=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!milOn(p,d)); /* d: 그날 병역 처리(입대·전역)를 마친 뒤 기준 */
+const ownedOf=(tid,d=G.day)=>rosterMemo('o'+tid+':'+d,()=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&!milOn(p,d))); /* d: 그날 병역 처리(입대·전역)를 마친 뒤 기준 */
 const domPayOf=tid=>ownedOf(tid).filter(p=>!p.foreign);
 /* 다음 시즌(s) 상한 전망: 그 시즌 정규시즌에 연봉을 받는 선수만(시즌 전체 복무·시즌 뒤 전역은 빼고, 개막 전 전역은 넣는다, 검수 11-09zk) */
 const milCapOut=(p,s)=>payFrac(p,s)<=0;
@@ -212,7 +215,8 @@ function salNext(p){ if(!p)return 0; if(p.extNext)return p.extNext.annual; { con
 /* 웨이버로 이어받을 계약의 s시즌 상한 반영액: 양수 뒤 실제 집계(salNext+capBAt)와 같게. 다음 시즌 다년계약은 그 계약금의 연 반영액(검수 11-17 #194), 연봉은 그 시즌 최저 연봉 이상(양수 때 올려 준다, 검수 11-17 #195) */
 function wvCapAmt(wc,s,nx){ const x=nx&&wc.extNext, b=x&&x.terms&&x.terms.bonus; const sal=x?x.annual:Math.max(minSalOf(s),wc.sal||0); const cb=x&&b>0&&s>G.year?Math.round(b/Math.max(1,x.years)):wc.capB&&wc.capB.until>=s?wc.capB.a:0; return sal+cb; }
 /* 트레이드 뒤 상위 40명 연봉 합계(받는 선수는 옛 계약 조건의 상한 반영액이 끝난다) */
-function capPayAs(tid,inIds,outIds){ const y=sponSeason(), nx=y>G.year||preSeason(y), inS=new Set(inIds||[]), out=new Set(outIds||[]); /* 겨울(개막 전 1월 포함)은 다음 시즌 기준(확정한 다음 시즌 연봉 포함, 검수 11-06·11-08) */
+function capPayAs(tid,inIds,outIds){ return _rosM?rosterMemo('C'+tid+'|'+(inIds||[]).join(',')+'|'+(outIds||[]).join(','),()=>capPayAs0(tid,inIds,outIds)):capPayAs0(tid,inIds,outIds); } /* 평가 구간에서는 같은 거래 합계를 한 번만(성능 11-18) */
+function capPayAs0(tid,inIds,outIds){ const y=sponSeason(), nx=y>G.year||preSeason(y), inS=new Set(inIds||[]), out=new Set(outIds||[]); /* 겨울(개막 전 1월 포함)은 다음 시즌 기준(확정한 다음 시즌 연봉 포함, 검수 11-06·11-08) */
   const amt=(p,inn=inS.has(p.id))=>{ const wc=inn&&p.wv&&p.team==null?p.wv.c:null; /* 웨이버 양수: 승계하는 계약과 계약금 반영액(검수 11-06·11-07·11-08) */ if(nx)return wc?wvCapAmt(wc,y,true):inn?salNext(p):salNext(p)+capBAt(p,y); return wc?wvCapAmt(wc,G.year):inn?p.newSal??p.sal:p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0); }; /* 받는 선수는 옛 계약 조건의 상한 반영액이 끝난다. 재계약 합의 연봉은 이적 때 확정(mvLog) */
   const fid=franId(tid,outIds,inIds,amt,nx?y:null); /* 예외 대상도 합계와 같은 금액으로 고른다(웨이버 양수 선수가 방출 뒤 연봉으로 뽑혔다, 검수 11-09zzb) */
   const L=(nx?domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)):domPayOf(tid).filter(p=>!isRookie(p))).filter(p=>!out.has(p.id)).map(p=>capAmt(p,tid,amt(p,false),fid));
