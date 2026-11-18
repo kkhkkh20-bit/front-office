@@ -35,7 +35,7 @@ function despOf(t){ if(!t||t.id===ME()||t.indie)return 0; const H=(G.history||[]
 function domArms(t,rk){ const L=domLead(); if(!L||L.tid===t.id||rk>5.5)return 0; return Math.min(1.5,L.s)*.9; }
 /* 견제 기록(측정·소식용): ref 거절, over 웃돈, outbid FA 가로채기, allin 올인, arms 군비 경쟁 전환 */
 let _domSeen={d:-1,s:new Set()};
-function domLog(kind,key){ if(key!=null){ if(_domSeen.d!==G.day)_domSeen={d:G.day,s:new Set()}; const k=kind+':'+key; if(_domSeen.s.has(k))return; _domSeen.s.add(k); }
+function domLog(kind,key){ if(key!=null){ if(_domSeen.d!==G.day||_domSeen.g!==G)_domSeen={d:G.day,g:G,s:new Set()}; const k=kind+':'+key; if(_domSeen.s.has(k))return; _domSeen.s.add(k); }
   const y=G.year; G.domLog=G.domLog||{}; const o=G.domLog[y]=G.domLog[y]||{}; o[kind]=(o[kind]||0)+1; for(const k in G.domLog)if(+k<y-12)delete G.domLog[k]; }
 /* 트레이드 견제: 상대(독주 구단)에게 붙일 웃돈 비율과 거절 여부. t: 파는 구단, dtid: 사는 구단, starter: 주전을 내주는 거래인지
    bench: 파는 구단이 비주전(주전·상위 6명 아님)만 내주는 거래(16_trade trBenchOnly). 백업 한 명은 독주 구단 전력을 거의 키우지 않으니 웃돈은 1/4만(피드백 11-18: 상위 팀은 백업 맞교환도 안 됐다). 우리·AI 같은 식 */

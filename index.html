@@ -16990,9 +16990,9 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   /* 외국인 후보 채우기는 다음 날짜 진행(07_daily)에 맡긴다: 같은 저장을 두 번 열면 후보가 달라졌다(검수 11-09zr #13) */
   migrateDraftPool(); /* 학교 정보 하나가 없거나 풀이 작다는 이유로 저장한 후보를 다시 뽑지 않는다 */
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
-  recoverDraftLogs(); draftClubInit(); rchkInit(); sdObFix(); ctMilClauseFix(); sdContractFix(); salMilFix(); migrateMoveContracts(); faClosedFix();
+  recoverDraftLogs(); draftClubInit(); rchkInit(); sdObFix(); ctMilClauseFix(); sdContractFix(); salMilFix(); migrateMoveContracts(); faClosedFix(); aiBlockDates();
   /* 검수 11-18 #731~750: 실제 구단·복무 상태를 복원한 뒤 소속별 기록을 조용히 정리한다. */
-  captainMigrate(); leadAdjMigrate(); playPromiseFix();
+  captainMigrate(); leadAdjMigrate(); playPromiseFix(); goalSupportFix();
 }
 /* 드래프트 명단 정리(카페 11-17 ddddddd): 어느 구단과든 계약한 선수(트라이아웃·무적·해외 복귀 등)는 신인 드래프트 명단·진행 중 지명 명단에서 뺀다.
    계약했는데 신인 후보(prospect) 표시가 남은 선수는 표시를 푼다(1월 1일 명단 정리 때 지워지지 않게). 난수를 쓰지 않는다. 사람·AI 구단 공통 */
@@ -18586,7 +18586,7 @@ function offerExtension0(id,annual,years,acc,T,lock){
     if(G.contract&&!G.contract.done&&G.contract.ended.includes(p.id)){ G.contract.ended=G.contract.ended.filter(x=>x!==p.id); if(G.contract.neg)delete G.contract.neg[p.id]; delete p.newSal; }
     if(T&&T.pm)T={...T,pm:{...T.pm,d:G.day}}; /* 보강 약속은 합의한 날부터의 영입을 센다 */
     const pay=T?T.annual:annual; const tx=T?termsTxt(T,false):`${years}년 연 ${money(annual)}(총 ${money(annual*years)})`;
-    if(now){ p.sal=pay; p.yrs=years; p.cyrs=years; p.faC=true; p.ext=true; { const C=G.contract; if(C&&C.neg)delete C.neg[p.id]; if(C&&C.ended)C.ended=C.ended.filter(x=>x!==p.id); delete p.newSal; delete p.hold; } } /* 다년계약을 맺었으면 연봉 미계약 협상은 끝(개막 직전 자동 합의가 덮어쓰지 않게) */ else p.extNext={annual:pay,years,...(T?{terms:T.opt>0?{...T,optC:optCrit(p)}:T}:{})};
+    if(now){ p.sal=pay; p.yrs=years; p.cyrs=years; p.faC=true; p.ext=true; { const C=G.contract; if(C&&C.neg)delete C.neg[p.id]; if(C&&C.ended)C.ended=C.ended.filter(x=>x!==p.id); delete p.newSal; delete p.hold; } } /* 다년계약을 맺었으면 연봉 미계약 협상은 끝(개막 직전 자동 합의가 덮어쓰지 않게) */ else p.extNext={annual:pay,years,...(T?{terms:T.opt>0?{...T,optC:T.optC||optCrit(p)}:T}:{})};
     if(T&&now)termsApply(p,T,'ext',ctSeason()); else if(T&&T.bonus>0){ G.spend=G.spend||{}; G.spend.faB=(G.spend.faB||0)+T.bonus; } /* 다음 시즌 계약: 계약금만 지금 주고 나머지 조건은 새 계약이 시작될 때 반영 */
     if(now&&!T)termsClear(p); story(p,`비FA 다년계약 ${T?termsTxt(T,true):`${years}년 연 ${money(annual)}`}`,'move');
     addLog(`${p.name}와(과) 비FA 다년계약에 합의했습니다. ${tx}.`);
@@ -18772,7 +18772,7 @@ function genBalance(){ const T=G.teams.map(t=>t.id);
    표본이 클수록 더 믿는다(타자 타석/(타석+200), 투수 이닝/(이닝+60)). 남의 팀 선수는 성적 비중 최대 60%, 자기 팀 선수는 매일 보니 35%.
    데이터형 단장은 운에 덜 흔들리고(절반) ERA 대신 FIP를 본다. 우리 구단 평가(사용자 쪽)는 실제 능력 기준 그대로 */
 let _lkC={k:'',m:new Map()};
-function statLuck(p){ const k=G.year+':'+G.day; if(_lkC.k!==k)_lkC={k,m:new Map()}; if(_lkC.m.has(p.id))return _lkC.m.get(p.id); let r=null;
+function statLuck(p){ const k=G.year+':'+G.day; if(_lkC.k!==k||_lkC.g!==G)_lkC={k,g:G,m:new Map()}; if(_lkC.m.has(p.id))return _lkC.m.get(p.id); let r=null;
   try{ let num=0,num2=0,den=0; const o=ovr(p);
     for(const [y,wt] of [[G.year,1],[G.year-1,.5]]){ const h=seasonTotal(p,y,'1군'); if(!h)continue;
       if(p.isP){ const ip=(h.outs||0)/3; if(ip<5)continue; const era=(h.er||0)*27/h.outs, fip=(13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*(h.so||0))/ip+3.1; num+=(era-(13.85-.1885*o))*ip*wt; num2+=(fip-(12.17-.1616*o))*ip*wt; den+=ip*wt; }
@@ -18814,7 +18814,7 @@ function projO(p,i,dp){ const o=ovr(p)+pvShift(p)+(i===0?condOf(p)*.3:0); const 
   const old=Math.max(0,Math.min(k,p.age+k-30)); /* 앞으로 31세 이상으로 보낼 해 수 */ return o-old*1.3; }
 function ctrlYears(p){ if(p.foreign)return 1; if(p.faC||p.ext)return Math.max(1,p.yrs||1); /* 비FA 다년계약(ext)도 계약 연수로(커뮤니티 11-13: 다년계약한 선수가 코치진 보고에 FA로 나옴) */ if(p.extNext)return 1+p.extNext.years; return clamp(faLeft(p),1,6); } /* 보유 가능 기간: 선수 계약 설명(ctText)과 같은 FA 시점 */
 let _tcC={k:null,m:{}};
-function teamCtx(t){ const k=G.year+':'+G.day; if(_tcC.k!==k)_tcC={k,m:{}}; if(_tcC.m[t.id])return _tcC.m[t.id];
+function teamCtx(t){ const k=G.year+':'+G.day; if(_tcC.k!==k||_tcC.g!==G)_tcC={k,g:G,m:{}}; if(_tcC.m[t.id])return _tcC.m[t.id];
   const per=period(); const st=per==='season'&&G.day>G.cal.open+20?standingsNow():null; const rk=st?st.findIndex(x=>x.tid===t.id)+1:null;
   const contend=rk?rk<=4||(t.mode==='contend'&&rk<=6):t.mode==='contend'; const ci=capInfo(t.id);
   const tr=gmTrait(t.id); const money=clamp((t.indie?1.5:t.owner==='profit'?1.25:t.owner==='win'?.85:1)*(ci.over>0?1.25:1)*(contend?.9:1.1)*(tr==='miser'?1.3:tr==='data'?1.15:tr==='gambler'?.9:1),.8,1.5); /* 여러 사정이 겹쳐도 연봉 부담은 1.5배까지(겹쳐서 2.2배가 되면 멀쩡한 고액 선수 값이 0이 됐다) */
@@ -18822,11 +18822,26 @@ function teamCtx(t){ const k=G.year+':'+G.day; if(_tcC.k!==k)_tcC={k,m:{}}; if(_
 function pSlot(p){ return p.isP?(isSPr(p)?'SP':'RP'):p.pos; }
 /* 트레이드 평가 중 상대가 내주는 주전 자리: 같은 자리 선수를 받으면 그 빈자리를 메우므로 '쓸모없는 영입'으로 깎지 않는다 */
 let _evOut=null, _evOutB=null; /* _evOutB: 중간급끼리 거래에서 상대가 내주는 비주전 자리(같은 자리 백업을 받으면 그 자리를 채운다, 11-18 4차) */
-function roleFactor(t,p,dir){ const L=leagueSlots()[t.id]; const k=pSlot(p); const sl=L&&L[k]; if(!sl)return 1;
-  if(dir==='out'){ const starter=sl.ps.some(q=>q.id===p.id); if(!starter)return 1; return teamCtx(t).contend?1.38:1.22; }
-  if(_evOut&&_evOut.has(k))return 1.05;
+/* 주 포지션과 숙련된 보조 포지션을 함께 보되, 실제 빠지는 자리 하나는 영입 한 명만 채운다. */
+function tradeSlotsOf(p){ return !p?[]:p.isP?[pSlot(p)]:[...new Set([p.pos,...subsOf(p.pexp?p:{...p})])]; }
+function tradeOutSlots(tid,ids){ const L=leagueSlots()[tid]||{}; return new Set(Object.keys(L).filter(k=>(L[k].ps||[]).some(p=>ids.includes(p.id)))); }
+function tradeRoleAt(t,p,k,open){ const L=leagueSlots()[t.id], sl=L&&L[k]; if(!sl)return 1;
+  if(open&&open.has(k))return p.age<=23?.85:.6;
   const base=k==='SP'?(sl.ps.length<5?30:Math.min(...sl.ps.map(spV))):k==='RP'?(sl.ps.length<4?30:Math.min(...sl.ps.map(penV))):sl.v;
-  const up=slotGain(k,p)-base; if(up>0)return 1+Math.min(.35,up/20); return _evOutB&&_evOutB.has(k)?TR_TUNE.midSlot:p.age<=23?.85:.6; }
+  const up=slotGain(k,p)-base; return up>0?1+Math.min(.35,up/20):p.age<=23?.85:.6; }
+function tradeRolePlan(t,give,get,mid){ const L=leagueSlots()[t.id]||{}, front={},back={};
+  for(const id of get){ const p=G.players[id]; if(!p)continue; const ks=Object.keys(L).filter(k=>(L[k].ps||[]).some(q=>q.id===id));
+    if(ks.length)for(const k of ks)front[k]=(front[k]||0)+1; else if(mid){ const k=pSlot(p); back[k]=(back[k]||0)+1; } }
+  const open=new Set(Object.keys(front)), ps=[...new Set(give)].map(id=>G.players[id]).filter(Boolean).sort((a,b)=>String(a.id)<String(b.id)?-1:String(a.id)>String(b.id)?1:0), keys=[...Object.keys(front).map(k=>'s:'+k),...Object.keys(back).map(k=>'b:'+k)].sort(), cap=keys.map(k=>(k[0]==='s'?front:back)[k.slice(2)]), memo=new Map();
+  const base=ps.map(p=>Math.max(...tradeSlotsOf(p).map(k=>tradeRoleAt(t,p,k,open)),p.age<=23?.85:.6));
+  const solve=(i,left)=>{ if(i===ps.length)return {v:0,a:[]}; const key=i+':'+left.join(','); if(memo.has(key))return memo.get(key); const rest=solve(i+1,left); let best={v:base[i]+rest.v,a:[base[i],...rest.a]};
+    for(let j=0;j<keys.length;j++){ if(!left[j]||!tradeSlotsOf(ps[i]).includes(keys[j].slice(2)))continue; const f=keys[j][0]==='s'?1.05:TR_TUNE.midSlot; if(f<=base[i])continue; const n=left.slice(); n[j]--; const r=solve(i+1,n),v=f+r.v; if(v>best.v+1e-12)best={v,a:[f,...r.a]}; }
+    memo.set(key,best); return best; }; const a=solve(0,cap).a; return new Map(ps.map((p,i)=>[p.id,a[i]])); }
+let _evRole=null;
+function roleFactor(t,p,dir){ const L=leagueSlots()[t.id]; if(!L)return 1;
+  if(dir==='out'){ const starter=Object.values(L).some(sl=>sl.ps.some(q=>q.id===p.id)); if(!starter)return 1; return teamCtx(t).contend?1.38:1.22; }
+  if(_evRole&&_evRole.tid===t.id&&_evRole.m.has(p.id))return _evRole.m.get(p.id);
+  return Math.max(...tradeSlotsOf(p).map(k=>{ if(_evOut&&_evOut.has(k))return 1.05; const f=tradeRoleAt(t,p,k); return f<1&&_evOutB&&_evOutB.has(k)?Math.max(f,TR_TUNE.midSlot):f; }),p.age<=23?.85:.6); }
 /* 성장 예측은 불확실하다: 지금 능력보다 높게 잡힌 몫은 깎아서 본다(유망주 한 명에 주전을 내주지 않도록).
    보류 기간이 끝난 뒤에도 KBO는 원 소속 구단 잔류가 많아 그 뒤 가치도 일부 인정한다 */
 /* 11-12 커뮤니티(beeseo·마스터쉐프): 잠재력 가치가 너무 낮아 고잠재 유망주가 주전 한 명에 쉽게 오가고, 반대로 우리 유망주로는 스타를 못 데려왔다.
@@ -18851,14 +18866,14 @@ function tval(t,p,dir){ if(!p)return 0; const c=teamCtx(t); const ny=ctrlYears(p
   if(v>0)v*=medTradeF(p); /* 부상 체질·최근 부상·후유증·인대 이력·팔 부하 */
   if(v>0&&dir==='out'&&p.pledged&&p.pledged.tid===G.user&&G.day<=p.pledged.until&&p.team===t.id)v*=1.12; /* 우리 단장이 공개적으로 원한 선수: 값을 더 부른다 */
   if(p.injOut>20)v-=Math.abs(v)*(p.injOut>150?.55:p.injOut>60?.32:.2); /* 수술·장기 재활 선수는 값이 크게 깎인다 */
-  if(dir==='out'){ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(p)]; const starter=sl&&sl.ps.some(q=>q.id===p.id)&&!p.aiListed; const fl=p.aiListed?Math.max(.6,seasonWorth(projO(p,0)+sd)*(p.aiUrg?.25:t.mode==='rebuild'?.35:.45)):starter?seasonWorth(projO(p,0)+sd)*(c.contend?1.5:t.mode==='rebuild'?.45:1.1):.4; /* 11-12: 유망주 가치를 올린 만큼 주전 하한도 함께 올림(예전 .8/.3/.6) */ /* 주전은 연봉이 많아도 그 자리 전력이라 쉽게 내주지 않는다(리빌딩 구단만 정리). 예전 .25는 고액 주전을 어린 백업 하나와 바꿔 줬다 */ v=Math.max(v,fl); }
+  if(dir==='out'){ const L=leagueSlots()[t.id]; const starter=L&&Object.values(L).some(sl=>sl.ps.some(q=>q.id===p.id))&&!p.aiListed; const fl=p.aiListed?Math.max(.6,seasonWorth(projO(p,0)+sd)*(p.aiUrg?.25:t.mode==='rebuild'?.35:.45)):starter?seasonWorth(projO(p,0)+sd)*(c.contend?1.5:t.mode==='rebuild'?.45:1.1):.4; /* 11-12: 유망주 가치를 올린 만큼 주전 하한도 함께 올림(예전 .8/.3/.6) */ /* 주전은 연봉이 많아도 그 자리 전력이라 쉽게 내주지 않는다(리빌딩 구단만 정리). 예전 .25는 고액 주전을 어린 백업 하나와 바꿔 줬다 */ v=Math.max(v,fl); }
   /* 연봉이 부담스러워도 주전급은 공짜로 내주지 않는다(다른 구단에 팔 수 있으므로) */
   if(dir==='out'){ const core=tvCore6(t.id).has(p.id); const w0=seasonWorth(projO(p,0)+sd);
     /* 팀 핵심(상위 6명)은 연봉과 상관없이 쉽게 내주지 않는다. 젊으면 더 비싸다 */
     if(p.aiListed){} else if(core)v=Math.max(v,w0*(c.contend?1:.8)*(p.age<=28?1.25:1)); else if(ovr(p)>=50)v=Math.max(v,w0*(c.contend?.45:.3)); } /* 매물로 내놓은 선수는 핵심 보호 하한을 두지 않는다 */
   return v; }
 function stackIn(vals){ const pos=vals.filter(x=>x>0).sort((a,b)=>b-a), neg=vals.filter(x=>x<=0); const w=[1,.62,.42,.3,.25]; return sum(pos.map((x,i)=>x*(w[i]??.25)))+sum(neg); }
-function tradeNeed(t,outVal,relOv){ const tr=gmTrait(t.id); const ab=gmAbOf(t.id); const rel=relOv??t.rel; /* relOv: AI끼리 거래는 두 단장 사이 친분(84b_person_rels) */ let n=.9+Math.max(0,outVal)*.075-(rel-50)/30*(tr==='loyal'?2:1) /* 친분 계수 절반(공략 방지) */+(ab?(ab.neg-60)/30:0); /* 협상력이 높을수록 더 받아 내려 한다 */ if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&rel>=70)n-=1; return relOv!=null?Math.max(0,n):n; } /* AI끼리: 친분으로 요구치가 음수가 되지 않는다 */
+function tradeNeed(t,outVal,relOv){ const tr=gmTrait(t.id); const ab=gmAbOf(t.id); const rel=relOv??t.rel; /* relOv: AI끼리 거래는 두 단장 사이 친분(84b_person_rels) */ let n=.9+Math.max(0,outVal)*.075-(rel-50)/30*(tr==='loyal'?2:1) /* 친분 계수 절반(공략 방지) */+(ab?(ab.neg-60)/30:0); /* 협상력이 높을수록 더 받아 내려 한다 */ if(tr==='hard')n=n*1.35+.8; if(tr==='gambler')n-=.5; if(tr==='loyal'&&rel>=70)n-=1; return n; } /* 같은 친분은 우리·AI 모두 같은 요구치에 반영하며 최소 마진은 공통 최종 판정에서 적용한다. */
 function trueVal(p){ const o=ovr(p); const eff=p.age<=25?o+Math.max(0,p.pot-o)*.6:p.age>=32?o-(p.age-31)*1.3:o; return Math.pow(Math.max(0,eff-36),1.7)/10-(p.sal/100)*.35; }
 /* 한국시리즈가 끝나고 결산 전(이틀)에는 끝난 시즌 장부가 바뀌지 않게 막는다 */
 function preSettle(){ return !!(G.ps&&G.ps.done&&G.ps.finDay!=null&&G.day<G.ps.finDay&&!(G.last&&G.last.y>=G.year)); }
@@ -18879,8 +18894,7 @@ function cashCost(t,cash){ return cash<0?(-cash)/100*teamCtx(t).money*.9:0; }
 function cashFor(t,gap,room){ if(!(gap>0))return 0; if(room!=null&&gap>room)return 0; /* 현금 한도(내주는 값의 22%)로 못 메우는 차이면 현금으로는 안 된다 */ const c=cashInv(gap/(teamCtx(t).money*.9)*100); return Math.ceil(c/10)*10; }
 /* 그 구단의 지금 주전: 선발 라인업 9명(제 포지션이 아니어도), 선발 로테이션, 불펜 상위 4명. 포지션별 1순위만 보던 판정은 다른 자리에서 뛰는 주전을 놓쳤다 */
 let _stC={k:'',m:{}};
-function startersOf(tid){ const k=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.lgTrades||[]).length+':'+(G.acqSeq||0); /* AI끼리 트레이드·영입이 있으면 다시 계산 */ if(_stC.k!==k)_stC={k,m:{}}; if(_stC.m[tid])return _stC.m[tid]; let S=new Set();
-  try{ const d=depth(tid); S=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].filter(Boolean).map(p=>p.id)); }catch(e){} return _stC.m[tid]=S; }
+function startersOf(tid){ const L=leagueSlots(); /* 실제 자리표가 바뀌면 날짜가 같아도 새로 고른다. 자리표는 저장·건강·라인업·보직을 함께 구분한다. */ if(_stC.g!==G||_stC.k!==L)_stC={g:G,k:L,m:{}}; if(_stC.m[tid])return _stC.m[tid]; const slots=L[tid]||{}; return _stC.m[tid]=new Set(Object.values(slots).flatMap(s=>s.ps||[]).map(p=>p.id)); }
 /* 한 구단과 거래를 마치면 30일 동안은 그 구단과 다시 거래하지 않는다(받은 선수가 자리 잡는 걸 본다). 한 시즌 몇 건으로 막는 대신 간격을 둔다 */
 const TRADE_COOL=30;
 /* 같은 구단과는 한 시즌에 두 번까지: 그쪽 단장도 팬 여론과 받은 선수 적응을 먼저 본다 */
@@ -18947,29 +18961,34 @@ const TR_TUNE={lstDay:.02,prosW:.1,midSlot:.9,prosGap:10,prosLo:.05,prosHi:.15,p
 function trProsMul(p,dp){ if(!p||p.age>24)return 1; const g=(p.pot||0)+(dp||0)-ovr(p); return g>=TR_TUNE.prosGap?1+Math.min(TR_TUNE.prosHi,TR_TUNE.prosLo+(g-TR_TUNE.prosGap)*.01):1; }
 function trMid(tid,p){ if(!p)return false; if(p.age>=TR_TUNE.midOld)return true; if(p.age<TR_TUNE.midAge)return false; return (p.pot||0)+potSeenD(team(tid),p)-ovr(p)<=TR_TUNE.midGap; }
 function trMidOnly(tid,ids){ return !!(ids&&ids.length)&&ids.every(id=>trMid(tid,G.players[id])); }
-function trFills(tid,p,skip){ if(!p)return false; const k=pSlot(p); if(k==='DH'||(skip&&skip.has(k)))return false; const L=leagueSlots()[tid]; if(!L||!L[k])return false; return slotGain(k,p)-slotBase(tid,k)>=TR_TUNE.fitUp; }
+function trFills(tid,p,skip){ if(!p)return false; const L=leagueSlots()[tid]; return tradeSlotsOf(p).some(k=>k!=='DH'&&!(skip&&skip.has(k))&&L&&L[k]&&slotGain(k,p)-slotBase(tid,k)>=TR_TUNE.fitUp); }
 function trBenchOnly(tid,ids){ if(!ids||!ids.length)return false; const S=startersOf(tid), C=tvCore6(tid); return ids.every(id=>{ const p=G.players[id]; return !!p&&p.team===tid&&!S.has(id)&&!C.has(id); }); }
-function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=null; const bench=tid!==G.user&&!pk.get.length&&trBenchOnly(tid,get); const parts={dom:0,rep:0,domV:0,repV:0,sub:false,core:false,bench}; /* parts: 거절 때 보여 줄 웃돈 내역(tradeGapNote) */
+/* 같은 후보 탐색 안에서 변하지 않는 구단 기준값만 보관한다. 실제 묶음의 상위 40명은 capPayAs가 매번 다시 고른다. */
+function tradeHoldState(){ const H=typeof _slHold!=='undefined'?_slHold:null; if(!H)return null;
+  const sl=leagueSlots(), k=G.year+':'+G.day+':'+(G.trades||[]).length+':'+(G.lgTrades||[]).length+':'+(G.mvN||0)+':'+(G.acqSeq||0);
+  if(!H.ev||H.ev.g!==G||H.ev.ps!==G.players||H.ev.k!==k||H.ev.sl!==sl)H.ev={g:G,ps:G.players,k,sl,base:new Map(),count:new Map()}; return H.ev; }
+function tradeBaseOf(tid){ const H=tradeHoldState(); if(H&&H.base.has(tid))return H.base.get(tid); const v={n:rosterN(tid),pay:capInfo(tid).pay}; if(H)H.base.set(tid,v); return v; }
+function tradeActorCount(tid){ const H=tradeHoldState(); if(H&&H.count.has(tid))return H.count.get(tid); const n=Object.values(G.players).filter(p=>p.team===tid).length; if(H)H.count.set(tid,n); return n; }
+function evalTrade(tid,give,get,cash,pk,actorTid,relOv){ const actor=actorTid??G.user; cash=cash||0; pk=pkNorm(pk); let domX=null; const bench=tid!==actor&&!pk.get.length&&trBenchOnly(tid,get); const parts={dom:0,rep:0,domV:0,repV:0,sub:false,core:false,bench}; /* parts: 거절 때 보여 줄 웃돈 내역(tradeGapNote) */
   const t=team(tid); const P=id=>G.players[id];
-  const I=aiInterest(tid); const hit=give.filter(id=>I.includes(id));
-  const mid=bench&&trMidOnly(tid,get); _evOutB=mid?new Set(get.map(id=>pSlot(P(id)))):null; /* 11-18 4차: 중간급끼리 */
-  _evOut=new Set(get.map(id=>P(id)).filter(q=>{ const L=leagueSlots()[t.id]; const sl=L&&L[pSlot(q)]; return sl&&sl.ps.some(x=>x.id===q.id); }).map(pSlot));
-  let inV, outV, premiumV; try{ inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t)*pkHoard(ME(),k,pk.give,pk.get)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=null; _evOutB=null; }
+  const I=aiInterest(tid,actor); const hit=give.filter(id=>I.includes(id));
+  const mid=bench&&trMidOnly(tid,get); const heldOut=_evOut,heldB=_evOutB,heldRole=_evRole; /* 11-18 4차: 중간급끼리 */
+  let inV, outV, premiumV, listedV=0,plainV=0; try{ _evOutB=null; _evOut=tradeOutSlots(tid,get); _evRole={tid,m:tradeRolePlan(t,give,get,mid)}; inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t)*pkHoard(actor,k,pk.give,pk.get)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; listedV=sum(outs.filter(x=>x.p&&x.p.aiListed).map(x=>Math.max(0,x.v))); plainV=Math.max(0,sum(outs.filter(x=>!x.p||!x.p.aiListed).map(x=>x.v))+other); premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=heldOut; _evOutB=heldB; _evRole=heldRole; }
   const cashCap=trCashCap(outV,bench), cashV=Math.min(cashVal(t,cash),cashCap); inV+=cashV; /* 현금은 내주는 값의 22%까지만 메운다(바닥 1.5, 비주전 거래는 3) */
   const cashFull=cash>0&&cashVal(t,cash)>cashCap+1e-9, cashUse=cashFull?cashFor(t,cashCap):0; /* 한도를 넘긴 현금: 얼마부터 더 얹어도 값이 그대로인지(피드백 11-18: 30억을 붙여도 반응 막대가 안 움직였다) */
-  const theirN=rosterN(tid)+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
+  const base=tradeBaseOf(tid), theirN=base.n+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
   if(mid)parts.mid=true;
-  const stOut=tid!==G.user?get.map(P).filter(q=>q&&!q.aiListed&&startersOf(tid).has(q.id)):[]; const fit=!!stOut.length&&give.some(id=>trFills(tid,P(id),new Set(stOut.map(pSlot)))); if(fit)parts.fit=true; /* 11-18 4차: 주전을 내주고 빈 자리를 메우는 선수를 받는다 */
-  const ov=Math.max(0,outV); let need=(n0=>fit&&n0>0?n0*TR_TUNE.fitNeed:n0)(trNeedAs(t,outV,bench,undefined,mid))-(get.some(id=>P(id)&&P(id).aiListed)?Math.min(1.5,ov*.3):0)-(hit.length?Math.min(.6,.2+ov*.1):0); /* 양보 폭은 선수 값에 비례(커뮤니티 피드백 11-11: 값 0.6짜리 급매 유망주를 1.5 고정 양보로 거의 공짜에 넘겼다) */ /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ const lstOnly=!!get.length&&get.every(id=>P(id)&&P(id).aiListed)&&!pk.get.length&&cash>=0; /* 지명권·현금을 함께 받아 가면 그 몫에는 웃돈이 그대로(급매 면제와 같은 조건) */ if(lstOnly)parts.lst=true; /* 11-18 4차: 매물·급매만 데려가는 거래는 값이 같으면 대부분 넘긴다(독주 견제·반복 거래 웃돈을 붙이지 않고 그날 기분 폭도 줄인다). 헐값 방지는 그대로: 급매도 값의 70% 아래로는 안 판다(tval 하한) */ if(get.length&&get.every(id=>P(id)&&P(id).aiListed))need=Math.min(need,get.every(id=>P(id).aiUrg)?-Math.min(.9,ov*.3):-Math.min(.3,ov*.12)); /* 급매는 손해를 조금 보더라도 넘긴다(받을 값의 30%까지) */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
+  const stOut=tid!==actor?get.map(P).filter(q=>q&&!q.aiListed&&startersOf(tid).has(q.id)):[]; const fit=!!stOut.length&&give.some(id=>trFills(tid,P(id),tradeOutSlots(tid,stOut.map(p=>p.id)))); if(fit)parts.fit=true; /* 11-18 4차: 주전을 내주고 빈 자리를 메우는 선수를 받는다 */
+  const ov=Math.max(0,outV); let need=(n0=>fit&&n0>0?n0*TR_TUNE.fitNeed:n0)(trNeedAs(t,outV,bench,relOv??(actor===G.user?undefined:relAsRel(tid,actor)),mid))-Math.min(1.5,listedV*.3)-(hit.length?Math.min(.6,.2+ov*.1):0); /* 양보 폭은 선수 값에 비례(커뮤니티 피드백 11-11: 값 0.6짜리 급매 유망주를 1.5 고정 양보로 거의 공짜에 넘겼다) */ /* 매물로 내놓은 선수는 비슷한 값이면 넘긴다(정리하고 싶은 선수다) */ const lstOnly=!!get.length&&get.every(id=>P(id)&&P(id).aiListed)&&!pk.get.length&&cash>=0; /* 지명권·현금을 함께 받아 가면 그 몫에는 웃돈이 그대로(급매 면제와 같은 조건) */ if(lstOnly)parts.lst=true; /* 11-18 4차: 매물·급매만 데려가는 거래는 값이 같으면 대부분 넘긴다(독주 견제·반복 거래 웃돈을 붙이지 않고 그날 기분 폭도 줄인다). 헐값 방지는 그대로: 급매도 값의 70% 아래로는 안 판다(tval 하한) */ if(lstOnly)need=Math.min(need,get.every(id=>P(id).aiUrg)?-Math.min(.9,ov*.3):-Math.min(.3,ov*.12)); /* 급매는 손해를 조금 보더라도 넘긴다(받을 값의 30%까지) */ if(theirN>=ROSTER_MAX-1&&give.length>get.length)need+=.8*(give.length-get.length);
   const theirPay=capPayAs(tid,give,get); /* 연봉 차액을 더하지 않고 상위 40명을 다시 고른다 */
-  const capT=tid!==G.user?aiCapTake(tid,theirPay,capInfo(tid).pay):null; if(capT&&!capT.hard)need+=cashCost(t,-capT.tax); /* 상한을 넘겨 떠안으면 낼 세금만큼 값을 더 요구한다(소프트캡, 13_roster aiCapTake) */
-  const c=(G.gmc||{})[tid]||{}; let anc=0; for(const id of get){ if(tradeUrgent(tid,P(id)))continue; const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,premiumV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*(lstOnly?TR_TUNE.lstDay*Math.max(1,outV):.06*Math.max(3,outV));
+  const capT=tid!==actor?aiCapTake(tid,theirPay,base.pay):null; if(capT&&!capT.hard)need+=cashCost(t,-capT.tax); /* 상한을 넘겨 떠안으면 낼 세금만큼 값을 더 요구한다(소프트캡, 13_roster aiCapTake) */
+  const c=actor===G.user?((G.gmc||{})[tid]||{}):{}; let anc=0; for(const id of get){ if(tradeUrgent(tid,P(id)))continue; const a=c.ask&&c.ask[id]; if(a&&a.until>=G.day)anc+=a.m; } need+=Math.max(0,premiumV)*Math.min(.25,anc)+hn('gmday'+tid,G.day)*(lstOnly?TR_TUNE.lstDay*Math.max(1,outV):.06*Math.max(3,outV));
   /* 같은 구단과 올해 거래를 반복할수록, 상대 핵심 선수를 데려갈수록 웃돈을 요구한다 */
-  if(tid!==G.user){ const mine=x=>x.y===G.year&&(x.me==null||x.me===G.user); /* 지금 구단이 한 거래만(이직 전 구단 거래 제외, 검수 11-08c) */ const nT=(G.trades||[]).filter(x=>mine(x)&&x.with===tid).length; const urgentOnly=get.length&&get.every(id=>tradeUrgent(tid,P(id)))&&!pk.get.length&&cash>=0, repeatedV=urgentOnly||lstOnly?0:Math.max(1.5,premiumV); const rk=bench?TR_BENCH.rep:1; if(nT){ need+=repeatedV*.25*rk*nT; parts.repV+=repeatedV*.25*rk*nT; if(repeatedV)parts.rep+=.25*rk*nT; }
+  if(tid!==actor){ const trades=[...(G.trades||[]).map(x=>({y:x.y,a:x.me??G.user,b:x.with})),...(G.lgTrades||[])], mine=x=>x.y===G.year&&(x.a===actor||x.b===actor); /* 지금 구단이 한 거래만(이직 전 구단 거래 제외, 검수 11-08c) */ const nT=trades.filter(x=>mine(x)&&(x.a===tid||x.b===tid)).length; const urgentOnly=get.length&&get.every(id=>tradeUrgent(tid,P(id)))&&!pk.get.length&&cash>=0, repeatedV=urgentOnly||lstOnly?0:Math.max(1.5,premiumV); const rk=bench?TR_BENCH.rep:1; if(nT){ need+=repeatedV*.25*rk*nT; parts.repV+=repeatedV*.25*rk*nT; if(repeatedV)parts.rep+=.25*rk*nT; }
     /* 리그 전체 눈치: 한 시즌에 우리가 트레이드를 많이 할수록(세 번째부터) 다른 단장들도 값을 올린다. KBO는 구단당 한 해 트레이드가 몇 건 안 된다 */
-    { const nA=(G.trades||[]).filter(mine).length; if(nA>=2){ need+=repeatedV*.12*rk*(nA-1); parts.repV+=repeatedV*.12*rk*(nA-1); if(repeatedV)parts.rep+=.12*rk*(nA-1); } }
+    { const nA=trades.filter(mine).length; if(nA>=2){ need+=repeatedV*.12*rk*(nA-1); parts.repV+=repeatedV*.12*rk*(nA-1); if(repeatedV)parts.rep+=.12*rk*(nA-1); } }
     if(HARD())need+=Math.max(1.5,outV)*.25; /* 하드 모드: 다른 단장들이 25% 더 요구한다 */
-    { const S=startersOf(tid); const D=domTradeTax(t,G.user,get.some(id=>S.has(id)&&!(P(id)&&P(id).aiListed)),bench); if(D.k>0&&!lstOnly){ const dv=trDomBase(outV,bench)*D.k*(fit?TR_TUNE.fitDom:1); need+=dv; domX={k:D.k,refuse:D.refuse,v:dv}; parts.dom=D.k; parts.domV=dv; } } /* 독주 견제(86b_dynasty): 우리가 독주 구단이면 경쟁 구단은 값을 올리고, 우승 경쟁 중인 구단은 주전을 내주지 않는다. 리빌딩 구단은 팔되 비싸게 */
+    { const S=startersOf(tid); const D=domTradeTax(t,actor,get.some(id=>S.has(id)&&!(P(id)&&P(id).aiListed)),bench); if(D.k>0&&!lstOnly){ const dv=trDomBase(premiumV,bench)*D.k*(fit?TR_TUNE.fitDom:1); need+=dv; domX={k:D.k,refuse:D.refuse,v:dv}; parts.dom=D.k; parts.domV=dv; } } /* 독주 견제(86b_dynasty): 우리가 독주 구단이면 경쟁 구단은 값을 올리고, 우승 경쟁 중인 구단은 주전을 내주지 않는다. 리빌딩 구단은 팔되 비싸게 */
     const core=new Set(domestic(tid).filter(q=>!q.ys&&!q.aiListed).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(q=>q.id)); if(get.some(id=>core.has(id))){ need+=Math.max(1,outV)*.2; parts.core=true; } }
   /* 한 명의 주축을 여러 명의 B급과 바꾸지 않는다: 받는 선수 중 가장 좋은 선수가 내주는 주축의 75%는 돼야 한다 */
   { const outs=get.map(id=>tval(t,P(id),'out')).filter(x=>x>0); const ins=give.map(id=>tval(t,P(id),'in')); const topO=outs.length?Math.max(...outs):0, topI=ins.length?Math.max(...ins):0;
@@ -18983,15 +19002,15 @@ function evalTrade(tid,give,get,cash,pk){ cash=cash||0; pk=pkNorm(pk); let domX=
       const ya=Math.min(...st.map(q=>q.age)); if(!reb||!give.some(id=>P(id)&&P(id).age<ya)){ const sv=x=>ovr(x)+pvShift(x)+seenDelta(t,x); const bo=Math.max(...st.map(sv)), bi=Math.max(-99,...give.map(P).filter(Boolean).map(sv)); if(bi<bo-8){ need+=Math.max(3,outV)*(.6+.3*(bo-8-bi)); parts.sub=true; } } } }
   /* 친분·관심·매물 할인은 비슷한 거래를 기울게 할 뿐이다: 내주는 가치의 10%를 넘게 손해 보는 거래는 하지 않는다(매물로 내놓은 선수는 예외).
      예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
-  if(!get.some(id=>P(id)&&P(id).aiListed))need=bench?Math.max(need,Math.max(0,outV)*(mid?TR_TUNE.midMargin:TR_BENCH.margin),mid?TR_TUNE.midMin:TR_BENCH.min):Math.max(need,Math.max(0,outV)*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%(비주전 거래는 1.5%, 그래도 최소 0.15)는 더 받아야 한다(예전 -10%까지 손해 감수) */
-  const gain=inV-outV; const ok=gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); if(domX&&tid!==G.user&&get.length){ const k=tid+':'+get.join(','); if(domX.refuse&&gain>=need)domLog('ref',k); else if(!ok&&gain>=need-domX.v)domLog('over',k); } /* 견제가 결과를 바꾼 경우만 센다 */
+  if(plainV>0)need=bench?Math.max(need,plainV*(mid?TR_TUNE.midMargin:TR_BENCH.margin),mid?TR_TUNE.midMin:TR_BENCH.min):Math.max(need,plainV*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%(비주전 거래는 1.5%, 그래도 최소 0.15)는 더 받아야 한다(예전 -10%까지 손해 감수) */
+  const gain=inV-outV; const ok=gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); /* 견제 집계는 실제 제출한 제안에만 남긴다(tradeEvalLog). */
   return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{})};
 }
 /* FA 신청을 앞둔 선수: 시즌 결산 뒤 FA 공시(스토브리그 시작) 전까지는 트레이드할 수 없다. 데려가도 곧 FA로 나가는 선수를 지명권·유망주와 바꾸던 허점(커뮤니티 11-12) */
 let _faLk={k:null,s:null};
 /* FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없다(계약금 크게·연봉 작게 맺고 바로 넘기는 세탁 방지, 공략 방지). 우리·AI 같은 규칙 */
 function faSignLock(p){ const y=p&&p.faTrY; if(y==null||p.team==null)return false; return G.year<y||(G.year===y&&!!G.cal&&G.day<G.cal.open); }
-function faLock(p){ if(faSignLock(p))return true; if(!p||p.team==null||p.foreign||!(G.last&&G.last.y>=G.year)||G.rolled===G.year)return false; const k=G.year+':'+G.day; if(_faLk.k!==k){ let L=[]; try{ L=faUpcoming(); }catch(e){} _faLk={k,s:new Set(L.filter(x=>x.why!=='svc'||x.sure).map(x=>x.p.id))}; } return _faLk.s.has(p.id); }
+function faLock(p){ if(faSignLock(p))return true; if(!p||p.team==null||p.foreign||!(G.last&&G.last.y>=G.year)||G.rolled===G.year)return false; /* 한 선수만 현재 계약으로 확인한다. 날짜만 같은 다른 저장이나 당일 연장 합의가 잠금을 공유하지 않는다. */ const k=G.year+':'+G.day; let locked=false; try{ locked=faUpcoming(p).some(x=>x.why!=='svc'||x.sure); }catch(e){} _faLk={k,g:G,s:new Set(locked?[p.id]:[])}; return locked; }
 function faLockMsg(ids){ { const S=ids.map(id=>G.players[id]).filter(faSignLock); if(S.length)return `${S.map(p=>p.name).join(', ')}: FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다.`; } const L=ids.map(id=>G.players[id]).filter(faLock); return L.length?`${L.map(p=>p.name).join(', ')}: FA 신청을 앞둔 선수는 FA 공시(스토브리그 시작) 전까지 트레이드할 수 없습니다.`:''; }
 /* 상대가 상한 때문에 연봉을 못 받는 이유(절대 한도·긴축) */
 function aiCapMsg(t,c){ return `${tfull(t)} 단장: ${c.tight?'모기업이 지갑을 닫아 상한을 넘겨 가며 연봉을 받을 수는 없습니다.':`이 거래로 저희 상위 40명 연봉이 ${money(c.pay)}이 돼 구단주가 허락하는 한도(${money(c.lim)})를 넘습니다.`} 연봉이 적은 선수로 바꾸거나 저희 쪽 연봉을 함께 받아 가 주십시오.`; }
@@ -19000,18 +19019,13 @@ function aiCapMsg(t,c){ return `${tfull(t)} 단장: ${c.tight?'모기업이 지�
 const TRADE_ADD_MIN=.5;
 function tradeAddable(tid,give,p){ return !!p&&p.team===G.user&&!p.foreign&&!p.ys&&healthy(p)&&!(p.joinY>G.year)&&!give.includes(p.id)&&!ntcOfFor([p.id],tid)&&!faLock(p)&&!recentTr(p); }
 /* 상대가 낸 역제안을 그대로 수락하면 proposeTrade의 모든 검사(FA 잠금·소속·거부권·외국인·현금·지명권·간격·구단주·연봉 상한·로스터)를 통과하고 받아들여지는지 */
-function tradeCtrOk(tid,c){ const give=c.give||[], get=c.get||[], cash=Math.round(c.cash||0), pk=pkNorm(c.pk), P=id=>G.players[id], t=team(tid);
-  if(!give.length&&!get.length)return false; if(tradeRecentMsg([...give,...get]))return false; if(faLockMsg([...give,...get]))return false;
-  if(give.some(id=>!P(id)||P(id).team!==G.user)||get.some(id=>!P(id)||P(id).team!==tid))return false; if([...give,...get].some(id=>P(id).foreign))return false;
-  if(ntcOfFor(give,tid)||ntcOf(get))return false;
-  if(Math.abs(cash)>3000||(cash<0&&(!give.length||(t.cash||0)<-cash))||(cash>0&&(!get.length||spendable(G.user)<cash)))return false;
-  if(pkCheck(tid,give,get,pk)||tradeCool(tid,get,cash,pk))return false;
+function tradeCtrOk(tid,c){ const give=c.give||[], get=c.get||[], cash=Math.round(c.cash||0), pk=pkNorm(c.pk);
+  if(!tradePreflight(tid,give,get,cash,pk,false).ok)return false;
   const e=evalTrade(tid,give,get,cash,pk); if(!(e.ok&&e.theirN<=ROSTER_MAX&&e.theirN>=ROSTER_MIN))return false; /* 값 판정을 먼저(구단주 검사는 예산을 다시 계산해 무겁다) */
   const oc=tradeOwnerCheck(give,get,cash); if(oc&&!oc.ok)return false; const cc=tradeCapCheck(give,get); return !(cc&&!cc.ok); }
-/* 한 번 협상에서 역제안을 주고받는 횟수: 이만큼 오가면 상대 단장이 협상을 접는다(강경파는 2번) */
-const TRADE_ROUNDS=3;
-function proposeTrade(tid,give,get,cash,pk){
-  const t=team(tid); cash=Math.round(cash||0); pk=pkNorm(pk); /* cash>0 우리가 얹음, cash<0 상대에게 현금을 받음(사용자 피드백 11-05) */
+
+/* 실제 제출·추천·역제안이 공유하는 자격 검사. 예산 승인은 값 판정 뒤 검사할 수 있다. */
+function tradePreflight(tid,give,get,cash,pk,budget=true){ const t=team(tid); cash=Math.round(cash||0); pk=pkNorm(pk);
   { const msg=tradeRecentMsg([...give,...get]); if(msg)return {ok:false,msg}; }
   if(!tradeOpen())return {ok:false,msg:'트레이드 마감(7월 31일)이 지났습니다. 포스트시즌이 끝난 뒤 다시 할 수 있습니다.'};
   if(!give.length&&!get.length)return {ok:false,msg:'주고받을 선수를 골라 주세요.'};
@@ -19023,21 +19037,33 @@ function proposeTrade(tid,give,get,cash,pk){
   if(cash<0&&!give.length)return {ok:false,msg:'선수를 보내지 않고 현금만 받는 거래는 할 수 없습니다.'};
   if(cash<0&&(t.cash||0)<-cash)return {ok:false,msg:`${tname(tid)}은(는) 그만한 현금 여유가 없습니다(보유 ${money(Math.max(0,t.cash||0))}).`};
   if(cash>0&&!get.length)return {ok:false,msg:'현금만 주고 선수를 받지 않는 거래는 할 수 없습니다.'};
-  const myC=spendable(G.user); /* 앞선 거래에서 약정한 현금은 이미 쓴 돈(검수 11-08b), 모기업 구단은 구단주 지원 여유까지(피드백 11-09j) */ if(cash>0&&myC<cash)return {ok:false,msg:`우리 구단 선수 영입 자금(${team(G.user).indie?'독립구단이라 보유 현금만, 앞선 거래 약정분 제외':'보유 현금 + 구단주 지원 여유'} ${money(Math.max(0,myC))})이 얹을 현금 ${money(cash)}보다 적습니다.`}; /* 상대 쪽과 같은 보유 현금 검사(검수 11-08) */
+  if(cash>0){ const myC=spendable(G.user); /* 약정 현금과 구단주 지원 여유를 포함한 실제 지출 가능액 */ if(myC<cash)return {ok:false,msg:`우리 구단 선수 영입 자금(${team(G.user).indie?'독립구단이라 보유 현금만, 앞선 거래 약정분 제외':'보유 현금 + 구단주 지원 여유'} ${money(Math.max(0,myC))})이 얹을 현금 ${money(cash)}보다 적습니다.`}; }
   if([...give,...get].some(id=>G.players[id].foreign))return {ok:false,msg:'외국인 선수는 트레이드할 수 없습니다.'};
   { const pe=pkCheck(tid,give,get,pk); if(pe)return {ok:false,msg:pe}; }
-  const gmn=`${tfull(t)} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash)+pkSig(pk);
+  const gmn=`${tfull(t)} ${gmOf(tid).name} 단장`;
   { const cd=tradeCool(tid,get,cash,pk); if(cd)return {ok:false,cool:true,msg:cd.cap?`${gmn}: 올해 귀 구단과는 벌써 ${cd.n}번 거래했습니다. 팬 여론도 있고, 받은 선수들이 적응하는 것부터 봐야 합니다. 내년에 다시 이야기합시다.`:`${gmn}: 지난번 거래(${dsh(cd.d)}) 뒤 여론과 받은 선수들이 자리 잡는 걸 먼저 보겠습니다. ${dsh(cd.until)}부터 다시 이야기합시다.`}; }
+  if(!budget)return {ok:true};
   const oc0=tradeOwnerCheck(give,get,cash); if(oc0&&!oc0.ok)return {ok:false,owner:true,msg:oc0.msg};
   const cc0=tradeCapCheck(give,get); if(cc0&&!cc0.ok)return {ok:false,owner:true,msg:cc0.msg};
-  const isCtr=!!(nt.ctr&&nt.ctr[sig]!=null&&G.day-nt.ctr[sig]<=7); /* 상대가 직접 낸 역제안·보완안은 일주일 동안 횟수·중복 제한 없이 받는다 */
+  return {ok:true,oc0,cc0};
+}
+/* 조회 때가 아닌 실제 협상 제출 때만 견제로 바뀐 결과를 집계한다. */
+function tradeEvalLog(tid,get,e){ if(!e||!e.dom||tid===G.user||!get.length)return; const k=G.user+':'+tid+':'+get.join(','); if(e.dom.refuse&&e.gain>=e.need)domLog('ref',k); else if(!e.ok&&e.gain>=e.need-e.dom.v)domLog('over',k); }
+/* 한 번 협상에서 역제안을 주고받는 횟수: 이만큼 오가면 상대 단장이 협상을 접는다(강경파는 2번) */
+const TRADE_ROUNDS=3;
+function proposeTrade(tid,give,get,cash,pk){
+  const t=team(tid); cash=Math.round(cash||0); pk=pkNorm(pk);
+  const valid=tradePreflight(tid,give,get,cash,pk); if(!valid.ok)return valid; const {oc0,cc0}=valid;
+  const gmn=`${tfull(t)} ${gmOf(tid).name} 단장`; const nt=negTurn(tid); const ni=negInfo(tid); const sig=tsig(give,get,cash)+pkSig(pk);
+  const isCtr=!!(nt.ctr&&nt.ctr[sig]!=null&&nt.ctr[sig]<=G.day&&G.day-nt.ctr[sig]<=7); /* 상대가 직접 낸 역제안·보완안은 일주일 동안 횟수·중복 제한 없이 받는다 */
   if(!isCtr&&nt.seen[sig]!=null)return {ok:false,msg:`${gmn}: 그 안은 ${dsh(nt.seen[sig])}에 이미 답을 드렸습니다. 조건을 바꿔서 오시죠.`,dup:true};
   if(!isCtr&&!ni.left)return {ok:false,msg:`${gmn}: 이번 달은 더 시간을 내기 어렵습니다. ${ni.next}에 다시 연락 주십시오.${ni.free?'':' (우리와 맞대결하는 기간에는 경기장에서 따로 만날 수 있습니다)'}`,closed:true};
   const e=evalTrade(tid,give,get,cash,pk);
   if(e.theirN>ROSTER_MAX)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다. 받을 선수를 늘려 주세요.`};
   if(e.theirN<ROSTER_MIN)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다.`};
   if(e.capT&&e.capT.hard)return {ok:false,cap:true,msg:aiCapMsg(t,e.capT)};
-  if(isCtr&&!e.ok&&e.gain>=e.need-Math.max(1.5,e.outV)*.15)e.ok=true; /* 자기가 낸 조건을 맞춰 오면 그날그날 기분(일일 변동)으로 뒤집지 않는다(커뮤니티 피드백 11-07) */
+  if(isCtr&&!e.ok&&!(e.dom&&e.dom.refuse)&&!(e.capT&&e.capT.hard)&&e.gain>=e.need-Math.max(1.5,e.outV)*.15)e.ok=true; /* 자기가 낸 조건을 맞춰 오면 그날그날 기분(일일 변동)으로 뒤집지 않는다(커뮤니티 피드백 11-07) */
+  tradeEvalLog(tid,get,e);
   if(e.ok){ const mv=mgrTradeView(tid,give,get); const grade=tradeGrade(tid,give,get,cash,pk); const snap=tradeSnap([...give,...get]);
     give.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=tid; story(G.players[id],`트레이드로 ${tname(tid)} 이적`,'move'); }); get.forEach(id=>{ tradeTerms(G.players[id]); G.players[id].team=G.user; story(G.players[id],`트레이드로 ${tname(G.user)} 이적`,'move'); }); try{ leaveSweep(); }catch(e){} /* 보낸 선수에게 붙인 우리 구단 약속·명단 표시 정리 */
     for(const k in G.lineup) if(give.includes(G.lineup[k]))delete G.lineup[k];
@@ -19059,8 +19085,8 @@ function proposeTrade(tid,give,get,cash,pk){
   const why=((e.dom&&e.dom.k>=.12?'선두를 달리는 팀에 전력을 보태 주는 거래라 값을 더 받아야겠습니다. ':'')+(e.capT?`이 연봉을 받으면 상한을 넘겨 경쟁균형세(약 ${money(e.capT.tax)})를 내야 해 그만큼 더 받아야 합니다. `:'')+tradeWhyNot(t,give,get,pk)+' '+tradeGapNote(e)).trim();
   if(gap>9){ t.rel=clamp(t.rel-2,0,100); return {ok:false,msg:`${gmn}: 진지한 제안으로 보기 어렵습니다.${why?` ${why}`:''}${aiQ(tid,'no')} (친분 조금 하락)`}; }
   /* 상대 단장이 조건을 고쳐 다시 제안한다(사용자 11-17: 우리만 끌고 가지 않게). 한 협상에서 몇 번 오가면 접는다 */
-  const ch=nt.chain&&G.day-nt.chain.d<=7?nt.chain.n:0; if(ch>=(gmTrait(tid)==='hard'?TRADE_ROUNDS-1:TRADE_ROUNDS)){ nt.chain=null; nt.ctr={}; return {ok:false,ended:true,msg:`${gmn}: 이 정도면 어렵겠습니다. 이번 건은 여기서 접고 다음에 다시 이야기하시죠.${why?` ${why}`:''}${aiQ(tid,'no')}`}; }
-  const co=counterOffer(tid,give,get,cash,pk); nt.ctr={}; for(const c of co)nt.ctr[tsig(c.give,c.get,c.cash||0)+pkSig(c.pk)]=G.day; /* 상대가 낸 조건 그대로면 7일 동안 받는다(isCtr) */
+  const ch=nt.chain&&G.day-nt.chain.d<=7?nt.chain.n:0; if(ch>=(gmTrait(tid)==='hard'?TRADE_ROUNDS-1:TRADE_ROUNDS)){ nt.chain=null; return {ok:false,ended:true,msg:`${gmn}: 이 정도면 어렵겠습니다. 이번 건은 여기서 접고 다음에 다시 이야기하시죠.${why?` ${why}`:''}${aiQ(tid,'no')}`}; }
+  const co=counterOffer(tid,give,get,cash,pk); nt.ctr=nt.ctr||{}; for(const k in nt.ctr)if(!Number.isFinite(nt.ctr[k])||nt.ctr[k]>G.day||G.day-nt.ctr[k]>7)delete nt.ctr[k]; for(const c of co)nt.ctr[tsig(c.give,c.get,c.cash||0)+pkSig(c.pk)]=G.day; /* 상대가 낸 조건 그대로면 7일 동안 받는다(isCtr) */
   if(co.length){ nt.chain={d:G.day,n:ch+1}; return {ok:false,msg:`${gmn}: 이대로는 어렵습니다.${why?` ${why}`:''} 저희 조건은 이렇습니다.${aiQ(tid,'short')}`,counters:co}; }
   return {ok:false,msg:`${gmn}: 조금 부족합니다.${why?` ${why}`:''} 저희가 맞춰 드릴 안이 마땅치 않습니다. 받는 선수를 바꾸거나 줄여 주세요.${aiQ(tid,'short')}`};
 }
@@ -19307,6 +19333,7 @@ function setGoals(intro,first,pre){ prInit(); delete G.bLock; if(G.bLocks)delete
   G.goals={y:G.year,owner:ow,rank,sup:ex?Math.max(sup,1):sup,fan:ex?Math.min(fan,50):fan,youth,v:2,...(ex?{exp:ex}:{}),...(first?{fd:true}:{}),...(pre?{pre:true}:{})}; /* 첫해 표시를 목표와 함께 저장(월간 평가 완화, 검수 11-09zzd) */
   /* FA 영입 자금을 받으며 약속한 목표가 있으면 올 시즌 목표에 얹는다 */
   { const P=(G.pitchCommit||[]).filter(c=>c.y===G.year); for(const c of P){ if(c.k==='rank')G.goals.rank=Math.max(1,G.goals.rank-c.v); if(c.k==='fan')G.goals.fan=Math.min(80,G.goals.fan+c.v); if(c.k==='sup')G.goals.sup=Math.max(.1,Math.round((G.goals.sup-c.v)*100)/100); } if(P.length)G.goals.pitch=P.map(c=>c.l); } { const LK=G.bLocks&&G.bLocks[G.user]; if(LK&&LK.fy===G.year)LK.gf=G.goals.sup; } /* 확정 예산 기준은 목표를 정하기 전에(projSupport) 잡히므로, 정한 목표(재정 약속 포함)로 맞춘다(예산 화면·여유가 구단주 메일과 같게, 검수 11-08·11-09x) */
+  goalSupportBase(t,G.goals,G.goals.y); /* 목표 확정 때 기본 지원율도 저장하여 첫 자금 조회에서 목표를 바꾸지 않는다. */
   const lines=[G.goals.exp&&G.goals.rank>=G.teams.length?`정규시즌 순위 목표 없음(창단 ${G.goals.exp}년차)`:`정규시즌 ${G.goals.rank}위 이내${G.goals.exp&&G.goals.rank===G.teams.length-1?'(탈꼴찌)':''}`,t.indie?'시즌 수지 적자 없이(독립구단: 모기업 보전 없음)':`모기업 적자 보전을 한도의 ${Math.round(G.goals.sup*100)}% 이하로`,`팬 여론 ${G.goals.fan} 이상 유지`]; if(G.goals.pitch)lines.push(`(FA 영입 때 약속: ${G.goals.pitch.join(', ')})`); if(youth)lines.push('24세 이하 선수 1명 이상을 1군 주전급(규정 타석 절반 또는 80이닝)으로');
   mail('구단주실',`${G.year} 시즌 구단 목표`,`${intro?intro+'\n\n':''}구단주께서 올 시즌 목표를 정하셨습니다.${G.goals.exp?`\n${expGraceTxt(G.user)}`:''}\n\n${lines.map((l,i)=>`${i+1}. ${l}`).join('\n')}\n\n전력분석팀 예상 순위는 ${proj}위입니다${G.goals.pre||first?'(대표팀 차출·개막 무렵 복귀할 부상 선수는 있는 것으로, 외국인 빈자리는 평균 수준으로 채운다고 보고, KBO 경력이 없는 외국인은 평균과의 차이를 절반만 반영한 전력)':''}. 홈 화면 예상 순위는 지금 전력 기준이라 다를 수 있습니다. ${OWNER[ow].msg} 매달 말 구단주께서 진행 상황을 보고받으십니다.${G.goals.pre?`\n\n개막일 ${dmd(G.cal.open)} 전까지 순위 목표를 한 번 상의할 수 있습니다. 높여 제안하면 구단주가 의욕을 높이 사 신뢰가 조금 오릅니다. 낮춰 요청하면 구단주 신뢰·단장 명성에 따라 받아들이거나 거절합니다.`:''}`,{imp:true,kind:'구단주',acts:[...(G.goals.pre&&!G.goals.talk?[{l:'그대로 수락',a:'goalTalk',v:'ok'},...(G.goals.rank>1?[{l:`한 계단 높여 제안(${G.goals.rank-1}위)`,a:'goalTalk',v:'up'}]:[]),...(G.goals.rank<Math.max(8,G.teams.length-1)?[{l:`한 계단 낮춰 요청(${G.goals.rank+1}위)`,a:'goalTalk',v:'down'}]:[])]:[]),{l:'목표 보기',a:'go',v:'club:owner'}]});
 }
@@ -19323,6 +19350,8 @@ function financeCashReturns(tid,y,cash,net,o={}){ const t=team(tid),capital=o.ca
   const div=t.indie?Math.round(Math.max(0,after-Math.round(INDIE_DIV_T*EI))*INDIE_DIV_R):0,sweep=t.indie?0:Math.round(Math.max(0,after-Math.round(RES_CAP*EI)-(o.ear||0))*RES_RATE);
   return {rate,back,div,sweep,endCash:after-div-sweep+capital}; }
 function goalSupportBase(t,g,fy){ if(g.baseSup==null){const lock=G.bLocks&&G.bLocks[t.id]&&G.bLocks[t.id].fy===fy?G.bLocks[t.id]:G.bLock&&G.bLock.tid===t.id&&G.bLock.fy===fy?G.bLock:null,cap=supportCap(t),grant=t.grant&&t.grant.y===fy?t.grant.amt:0;g.baseSup=lock?lock.gf:cap>grant?clamp((g.sup*cap-grant)/(cap-grant),0,1.5):g.sup;}return g.baseSup; }
+/* 목표 생성·저장 복원에서 기본 지원율을 확정한다. 예산 조회의 구형 저장 폴백도 같은 계산을 쓴다. */
+function goalSupportFix(){ if(!G)return; const fix=(tid,g)=>{ const t=(G.teams||[]).find(x=>x.id===tid); if(t&&g&&g.y===G.year&&g.baseSup==null&&Number.isFinite(g.sup))goalSupportBase(t,g,g.y); }; fix(G.user,G.goals); for(const [tid,c] of Object.entries(G.clubT||{}))if(c)fix(+tid,c.goals); }
 function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경제 지수로(검수 11-08) */ const t=team(G.user); const ci=capInfo(G.user); const S=G.spend||{}; const m=G.mgr[G.user]; prInit();
   const rem=Math.max(0,finYearEnd()-G.day)/365; const acc=(spent,annual)=>Math.round((spent||0)+annual*rem);
   const settled=G.last&&G.last.y>=G.year; const HO=G.hoL&&G.hoL[fyNow()+':'+G.user], cash=t.cash-(HO?HO.net:0); /* 같은 해 떠났다 돌아온 구단: 이직 때 정산한 수입·지출도 결산처럼 올해 예산표에(현금은 그 정산 전 기준으로, 검수 11-09x) */ const SPj=stadProj(G.user,settled); const CT=G.contract, fRe=p=>CT&&!CT.done&&(CT.foreignEnd||[]).includes(p.id)&&p.newSal!=null; /* 재계약 협상 중인 외국인은 합의(제시) 연봉으로(재계약 한도 화면과 같게, 검수 11-09x) */ const fsNow=sum(forPayOf(G.user).filter(p=>!fDropIds(G.user).includes(p.id)).map(p=>fRe(p)?p.newSal:p.sal))+fDeadOf(G.user,sponSeason()); /* 개막 전 방출 선수의 보장 연봉 포함 */
@@ -19614,17 +19643,19 @@ function offerRevert(id){ const o=(G.offers||[]).find(x=>x.id===id); if(!o||!o.p
   o.exp=exp; o.give=o.prev.give; if(o.prev.adv!==undefined)o.adv=o.prev.adv; else delete o.adv; if(o.prev.pot!==undefined)o.pot=o.prev.pot; else delete o.pot; delete o.prev;
   return `${tfull(t)} 단장: 알겠습니다. 처음 제안한 조건대로 하죠.`; }
 /* 다른 구단 트레이드 매물: 이유가 있는 선수를 올리고 6주까지 둔다. 압박받는 단장·연봉 초과 구단은 급매 */
-const BLKWHY={reb:'리빌딩 정리',room:'자리 없음',dup:'중복 자원',sal:'연봉 정리',fa:'FA 앞둔 주전',cut:'백업 정리'};
+const BLKWHY={deadline:'마감 정리',reb:'리빌딩 정리',room:'자리 없음',dup:'중복 자원',sal:'연봉 정리',fa:'FA 앞둔 주전',cut:'백업 정리'};
 /* FA를 앞둔 주전의 처리(11-12, 사용자 "AI도 유저처럼 머리를 쓰게"): 재계약할 수 있으면 지키고, FA 보상(A·B등급 보상선수·보상금)이 쏠쏠하면 기다리고,
    가을야구가 멀고 재계약도 어려우면 시즌 중에 제값 받고 판다. 예전에는 연봉 정리 때 FA 직전 고액 주전을 급매로 내놓아 다른 구단이 싸게 데려갔다 */
 function aiCY(p){ return !!p&&!p.foreign&&(preFA(p)||(p.faC&&(p.yrs||0)<=1&&!p.extNext)); }
 function aiFaPlan(t,p){ if(!aiCY(p)||ovr(p)<52)return null; if(teamCtx(t).contend)return 'keep';
   const loy=((p.pers&&p.pers.loy)??10)-10; const rs=clamp(.55+((t.cash||0)>3000?.15:(t.cash||0)<0?-.25:0)+(t.owner==='profit'?-.15:0)-Math.max(0,p.age-30)*.06+loy/100,.05,.9);
   const comp=p.age<=32&&ovr(p)>=54; if(rs>=.55||(comp&&rs>=.35))return 'keep'; return 'sell'; }
-function aiBlockWeekly(){ if(!tradeOpen())return;
+/* 날짜 없이 등록하던 경로는 마감 주간 소식이었다. 옛 매물은 가장 최근 마감 주간으로 연결하고, 원인이 있는 미상 날짜는 불러온 날부터 유효 기간을 제한한다. */
+function aiBlockDates(){ if(!G||!G.players)return 0; let n=0; const drop=p=>{delete p.aiListed;delete p.aiWhy;delete p.aiUrg;delete p.aiLd;}; for(const p of Object.values(G.players)){if(!p.aiListed)continue; if(!Number.isFinite(p.aiLd)){let y=G.year;if(G.day<dnum(y,7,24))y--;p.aiLd=p.aiWhy?G.day:dnum(y,7,24);if(!p.aiWhy)p.aiWhy='deadline';n++;} if(G.day-p.aiLd>42){drop(p);n++;}} return n; }
+function aiBlockWeekly(){ aiBlockDates(); if(!tradeOpen())return;
   for(const p of playersOf(G.user)){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; }
   for(const t of G.teams){ if(t.id===ME())continue; const ds=domestic(t.id).filter(p=>!p.ys&&healthy(p)&&!(p.joinY>G.year)&&!(hasNtc(p)||faLock(p))&&!mvRecent(p)); /* 거부권 선수는 동의 절차가 없어 데려갈 수 없으니 매물로 내놓지 않는다 */ for(const p of domestic(t.id))if(p.aiListed&&(hasNtc(p)||faLock(p))){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; }
-    for(const p of domestic(t.id))if(p.aiListed&&mvRecent(p)&&p.aiWhy!=='mood'){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } for(const p of ds){ if(p.aiListed&&G.day-(p.aiLd||G.day)>42){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } }
+    for(const p of domestic(t.id))if(p.aiListed&&mvRecent(p)&&p.aiWhy!=='mood'){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } for(const p of ds){ if(p.aiListed&&G.day-(p.aiLd??G.day)>42){ delete p.aiListed; delete p.aiWhy; delete p.aiUrg; delete p.aiLd; } }
     const cur=ds.filter(p=>p.aiListed); const heat=gmHeat(t.id); const ci=capInfo(t.id);
     const pl=planOf(t); if(cur.length<(pl==='build'?3:2)&&R()<.55){ const top3=new Set([...ds].sort((x,y)=>ovr(y)-ovr(x)).slice(0,3).map(q=>q.id)); const d=depth(t.id); const st=new Set([...d.start,...d.sp,...d.pen.slice(0,3)].map(q=>q.id)); let pk=null, why=null;
       /* 정리 대상은 '연봉이 높은 선수'가 아니라 '받는 돈만큼 못 하는 선수'다: 몸값(시장 연봉) 대비 초과분이 큰 순, 나이가 많을수록 먼저.
@@ -19641,7 +19672,7 @@ function aiBlockWeekly(){ if(!tradeOpen())return;
        잠재력이 큰 25세 이하 유망주는 뺀다. 그래서 스타·유망주 급매는 생기지 않고, 급매 할인은 선수 값에 비례한다(16_trade, 11-11) */
     { const n=ds.filter(p=>p.aiListed).length; if(n<(pl==='build'?4:3)&&rngHash('aiFire',G.year,G.day,t.id)%100<20){ const S=startersOf(t.id), C6=tvCore6(t.id);
       const q=ds.filter(p=>!p.aiListed&&!S.has(p.id)&&!C6.has(p.id)&&p.age>=24&&ovr(p)>=44&&!(p.age<=25&&p.pot-ovr(p)>=6)).sort((x,y)=>ovr(y)-ovr(x)||x.id-y.id)[0]; if(q){ q.aiListed=true; q.aiWhy='cut'; q.aiLd=G.day; } } }
-    for(const p of ds.filter(q=>q.aiListed)){ p.aiUrg=p.aiWhy==='cut'?true:p.aiWhy==='fa'?(G.day>=tradeDL()-7):(p.aiWhy==='sal'&&ci.pay>ci.cap||heat>=.6||(G.day-(p.aiLd||G.day)>21)); /* FA 앞둔 주전은 마감 직전 주에만 급해진다. 다른 매물은 3주가 지나도 안 팔리면 급매(11-18, 예전 5주) */ } } }
+    for(const p of ds.filter(q=>q.aiListed)){ p.aiUrg=p.aiWhy==='cut'?true:p.aiWhy==='fa'?(G.day>=tradeDL()-7):(p.aiWhy==='sal'&&ci.pay>ci.cap||heat>=.6||(G.day-(p.aiLd??G.day)>21)); /* FA 앞둔 주전은 마감 직전 주에만 급해진다. 다른 매물은 3주가 지나도 안 팔리면 급매(11-18, 예전 5주) */ } } }
 /* FA 에이전트 */
 function faMood0(p){ const ag=p?agentOf(p):null; return clamp(Math.round(50+(agRel(ag)-50)*.6+agMemMood(ag,G.user)),25,85); } /* 첫 분위기: 친분 + 지난 협상 기억(계약 2단계) */
 function negOf(id){ const F=G.fa; F.neg=F.neg||{}; if(!F.neg[id]){ F.neg[id]={rounds:0,mood:faMood0(G.players[id]),log:[],counter:null,closed:false,warned:false}; } return F.neg[id]; }
@@ -20800,7 +20831,7 @@ function leagueSlotsKeyed(k0){ const k=k0+':'+slotsRosterKey()+':'+JSON.stringif
 /* 트레이드 마감 주간: 사는 구단(상위권의 약한 자리)과 파는 구단(하위권의 베테랑) 루머 */
 function deadlineRumors(quiet){ const st=standingsNow(); const buyers=st.slice(0,5).map(x=>x.tid).filter(t=>t!==G.user); const sellers=st.slice(6).map(x=>x.tid).filter(t=>t!==G.user);
   const L=[]; for(const t of buyers.slice(0,3)){ const rk=slotRanks(t); const weak=PSLOTS.filter(k=>k!=='DH').sort((a,b)=>rk[b].rank-rk[a].rank)[0]; if(weak&&rk[weak].rank>=6)L.push(`${tshort(t)}(${st.findIndex(x=>x.tid===t)+1}위)은(는) ${SLOTK[weak]} 보강을 노립니다`); }
-  for(const t of sellers.slice(0,3)){ const v=domestic(t).filter(p=>p.age>=29&&ovr(p)>=54&&!p.ys&&!(hasNtc(p)||faLock(p))&&!mvRecent(p)).sort((a,b)=>ovr(b)-ovr(a))[0]; if(v){ v.aiListed=true; L.push(`${tshort(t)}은(는) ${v.name}(${posLabel(v)}, ${v.age}세)을(를) 시장에 내놓을 수 있습니다`); } }
+  for(const t of sellers.slice(0,3)){ const v=domestic(t).filter(p=>p.age>=29&&ovr(p)>=54&&!p.ys&&!(hasNtc(p)||faLock(p))&&!mvRecent(p)).sort((a,b)=>ovr(b)-ovr(a))[0]; if(v){ if(!v.aiListed){v.aiLd=G.day;v.aiWhy='deadline';} else if(!Number.isFinite(v.aiLd))v.aiLd=G.day; v.aiListed=true; L.push(`${tshort(t)}은(는) ${v.name}(${posLabel(v)}, ${v.age}세)을(를) 시장에 내놓을 수 있습니다`); } }
   if(!L.length)return; news('트레이드',`트레이드 마감 앞두고 시장 꿈틀`,L.join('. ')+'.',0); if(!quiet)note('트레이드',`마감 주간 시장 소식: ${L.join('. ')}. 트레이드 → 추천·선수 찾기에서 그 구단을 살펴보세요.`); }
 /* 마감 2주 전: 단장이 올해 방향(보강·유지·정리)을 정한다. 순위와 남은 경기로 부단장이 상황을 정리해 준다 */
 function deadlineDecision(){ if(G.dline&&G.dline.y===G.year)return; const st=standingsNow(); const rk=st.findIndex(x=>x.tid===G.user)+1; const r=G.sea.rec[G.user]; const gb5=(()=>{ const f=st[4]; return ((f.w-f.l)-(r.w-r.l))/2; })();
@@ -20822,12 +20853,13 @@ EVH.dline={ pick(e,i){ const t=team(G.user); G.dline={y:G.year,mode:['buy','hold
 function slotRanks(tid){ const L=leagueSlots(); const out={}; for(const k of PSLOTS){ const vs=L.map((s,i)=>({i,v:s[k].v})).sort((a,b)=>b.v-a.v); out[k]={rank:vs.findIndex(x=>x.i===tid)+1,v:L[tid][k].v,ps:L[tid][k].ps}; } return out; }
 function rankWith(k,v){ return leagueSlots().filter((s,i)=>i!==G.user&&s[k].v>v).length+1; }
 function myCoreIds(){ const d=depth(G.user); return new Set([...d.start,...d.sp.slice(0,3),...d.pen.slice(0,1)].map(p=>p.id)); }
-function buildPackage(t,p,core){ if(hasNtc(p))return null; /* 거부권 선수는 실제 제출 때 막히므로 추천하지 않는다(검수 11-05) */ const v=tval(t,p,'out'); const need=tradeNeed(t,v)-(p.aiListed?1.5:0); const target=v+need+.3;
+function buildPackage(t,p,core){ if(hasNtc(p))return null; /* 최종 제출 자격과 값은 tradeCtrOk가 공통으로 판정한다. */
   const pool=domestic(G.user).filter(q=>!q.ys&&!(hasNtc(q)||faLock(q))&&!core.has(q.id)&&healthy(q)&&!(q.joinY>G.year)&&!recentTr(q)).map(q=>({q,v:tval(t,q,'in')})).filter(x=>x.v>.2).sort((a,b)=>a.v-b.v);
-  let best=null,bo=1e9; for(let i=0;i<pool.length;i++){ if(pool[i].v>=target&&pool[i].v-target<bo){ bo=pool[i].v-target; best=[pool[i].q.id]; } for(let j=i+1;j<pool.length;j++){ const sm=Math.max(pool[i].v,pool[j].v)+.72*Math.min(pool[i].v,pool[j].v); if(sm>=target&&sm-target<bo-.6){ bo=sm-target+.6; best=[pool[i].q.id,pool[j].q.id]; } } }
-  if(!best)return null; const e=evalTrade(t.id,best,[p.id]); if(!e.ok||e.theirN>ROSTER_MAX||e.theirN<ROSTER_MIN)return null; if(e.capT&&e.capT.hard)return null; /* 소프트캡: 한도 안 초과는 세금만큼 값으로 따졌다(evalTrade) */
-  if(rosterN(G.user)-best.length+1>ROSTER_MAX)return null; return best; }
-function tsugValid(s){ const p=G.players[s.id]; if(!(p&&p.team===s.tid&&s.give.every(id=>G.players[id]&&G.players[id].team===G.user&&!recentTr(G.players[id]))))return false; if(ntcOf([s.id,...s.give])||tradeCool(s.tid,[s.id]))return false; /* 제출 때 막힐 거부권·거래 간격(검수 11-09w) */ return evalTrade(s.tid,s.give,[s.id]).ok; }
+  /* 옛 기본 요구치를 문턱으로 쓰면 비주전·보강 할인으로 성사되는 안을 버린다. 값은 후보 순서에만 쓰고 각 안은 실제 제출 검사로 확인한다. */
+  const C=[]; for(let i=0;i<pool.length;i++){ C.push({give:[pool[i].q.id],v:pool[i].v}); for(let j=i+1;j<pool.length;j++)C.push({give:[pool[i].q.id,pool[j].q.id],v:stackIn([pool[i].v,pool[j].v])+.6}); }
+  C.sort((a,b)=>a.v-b.v||a.give.length-b.give.length);
+  for(const c of C){ if(rosterN(G.user)-c.give.length+1>ROSTER_MAX)continue; if(tradeCtrOk(t.id,{give:c.give,get:[p.id],cash:0}))return c.give; } return null; }
+function tsugValid(s){ const p=G.players[s.id]; return !!(p&&p.team===s.tid&&Array.isArray(s.give)&&tradeCtrOk(s.tid,{give:s.give,get:[s.id],cash:0})); }
 /* 조건부 영입 요청: 자리·유형·나이·연봉 조건으로 스카우트가 후보를 추린다. 능력 순이 아니라 조건과 팀 사정으로 설명한다 */
 const RTYPE={now:'즉시 전력',cheap:'저비용',grow:'성장형'};
 function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=depth(G.user); const core=myCoreIds();
@@ -21003,8 +21035,12 @@ function counterOffer(tid,give,get,cash,pk){ cash=Math.round(cash||0); pk=pkNorm
   if(get.length>1){ for(const id of [...get].sort((a,b)=>tval(T,G.players[b],'out')-tval(T,G.players[a],'out'))){ const ng=get.filter(x=>x!==id); const rest=ng.map(x=>G.players[x].name).join(', '); const c=mk({give,get:ng},`${G.players[id].name}은(는) 못 드립니다. ${rest}(이)라면 하겠습니다.`); if(okC(c)){ L.push(c); break; } } }
   /* 같은 자리 다른 선수 */
   if(get.length===1){ const p=G.players[get[0]]; const k=pSlot(p); const alt=domestic(tid).filter(q=>q.id!==p.id&&!q.ys&&healthy(q)&&pSlot(q)===k&&!ntcOf([q.id])&&ovr(q)>=ovr(p)-8).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>({q,c:mk({give,get:[q.id]},`${p.name} 대신 ${q.name}(${posLabel(q)})이면 됩니다.`)})).find(x=>okC(x.c)); if(alt)L.push(alt.c); }
-  /* 현금: 부족분만큼(5천만 원 단위로 올림), 현금으로 메울 수 있는 몫(CASH_SHARE) 안에서 */
-  { const room=Math.max(0,(e.cashCap??CASH_SHARE*Math.max(1.5,e.outV))-(e.cashV||0)); /* evalTrade와 같은 한도(비주전 거래는 바닥 3) */ const need=cashFor(T,gap,room); if(need){ for(const m of [1,1.2]){ const add=Math.ceil(need*m/50)*50, tot=cash+add; if(tot>3000)break; const c=mk({give,get,cash:tot},tot>0?`현금 ${money(add)}을(를) ${cash>0?'더 ':''}얹어 주시면 하겠습니다.`:`받으실 현금을 ${tot<0?money(-tot)+'(으)로 줄여':'없애'} 주시면 하겠습니다.`); if(okC(c)){ L.push(c); break; } } } }
+  /* 현금은 기존 제시액을 포함한 총액으로 다시 평가한다. 5억·15억의 환율 경계와 받을 현금 감액도 같은 판정을 쓴다.
+     경제성은 총액에 단조이므로 백만 원 정수 이분 탐색 후 최소 성사액에만 구단주·예산 검사를 한다. */
+  { let lo=Math.max(cash+1,-Math.max(0,Math.floor(T.cash||0))), hi=get.length?Math.min(3000,Math.max(0,Math.floor(spendable(G.user)))):0;
+    if(lo<=hi&&ev(give,get,hi).ok){ while(lo<hi){ const mid=Math.floor((lo+hi)/2); if(ev(give,get,mid).ok)hi=mid; else lo=mid+1; }
+      for(const tot of lo<0?[lo,0]:[lo]){ const add=tot-cash, c=mk({give,get,cash:tot},tot>0?`현금 ${money(cash>0?add:tot)}을(를) ${cash>0?'더 ':''}얹어 주시면 하겠습니다.`:`받으실 현금을 ${tot<0?money(-tot)+'(으)로 줄여':'없애'} 주시면 하겠습니다.`); if(okC(c)){ L.push(c); break; } }
+    } }
   if(!yng){ P=pkC(); if(P)L.push(P); }
   const S=new Set(), out=L.filter(c=>{ const k=tsig(c.give,c.get,c.cash||0)+pkSig(c.pk); if(S.has(k))return false; S.add(k); return true; });
   return gmTrait(tid)==='hard'?out.slice(0,1):out.slice(0,3); }
@@ -21053,7 +21089,13 @@ function aiCashTop(A,B,gap,outV,bench){ if(!(gap>0))return 0; const c=cashFor(B,
 /* 그 자리 현재 기준값(가장 약한 주전/선발 5번째/불펜 4번째) */
 function slotBase(tid,k){ const L=leagueSlots()[tid]; return k==='SP'?(L.SP.ps.length<5?30:Math.min(...L.SP.ps.map(spV))):k==='RP'?(L.RP.ps.length<4?30:Math.min(...L.RP.ps.map(penV))):L[k].v; }
 const slotFits=(p,k)=>(k==='SP'||k==='RP')?pSlot(p)===k:(!p.isP&&(p.pos===k||subsOf(p).includes(k)));
-/* o.swap: 맞트레이드. 서로 약한 자리를 상대의 남는 자원으로 메운다. 양쪽 모두 이득이라 웃돈(need)을 절반만 요구하고, 가치가 비슷한 선수끼리라 한쪽으로 전력이 쏠리지 않는다 */
+/* AI 거래도 실제로 이동할 전체 묶음을 양쪽 구단의 공통 가치·자격 규칙으로 확인한다. 맞트레이드는 후보 선택만 달라진다. */
+function aiTradePackage(A,B,give,get,cash,pk){ cash=Math.round(cash||0); pk=pkNorm(pk); const P=id=>G.players[id], legal=(ids,tid)=>ids.every(id=>{const p=P(id);return p&&p.team===tid&&!p.foreign&&!p.ys&&!(p.joinY>G.year)&&healthy(p)&&!hasNtc(p)&&!faLock(p)&&!recentTr(p);});
+  if(A.id===B.id||new Set(give).size!==give.length||new Set(get).size!==get.length||!legal(give,A.id)||!legal(get,B.id)||Math.abs(cash)>3000||(cash>0&&(!get.length||cash>(A.cash||0)-AI_CASH_BUF))||(cash<0&&(!give.length||-cash>(B.cash||0)-AI_CASH_BUF)))return {ok:false};
+  const b=evalTrade(B.id,give,get,cash,pk,A.id), size=e=>e.theirN>=ROSTER_MIN&&e.theirN<=ROSTER_MAX; if(!b.ok||!size(b))return {ok:false,b}; const a=evalTrade(A.id,get,give,-cash,{y:pk.y,give:pk.get,get:pk.give},B.id);
+  return {ok:!!(a.ok&&size(a)),a,b}; }
+/* 모자란 현금은 현재 거래 전체를 다시 계산해 찾는다. 현금 가치는 구간별로 달라지며 추가 한도를 넘겨서는 채울 수 없다. */
+function aiTradeCash(A,B,give,get){ const top=Math.min(2000,Math.floor((A.cash||0)-AI_CASH_BUF)); if(top<=0)return null; const at=c=>aiTradePackage(A,B,give,get,c); let lo=0,hi=top, e=at(hi); if(!e.b||!e.b.ok)return null; while(lo+1<hi){ const m=Math.floor((lo+hi)/2),q=at(m); if(q.b&&q.b.ok)hi=m;else lo=m; } e=at(hi); return e.ok?{cash:hi,e}:null; }
 /* AI끼리 거래에서 파는 쪽(B)이 더 받으려는 몫: 우리 구단과의 거래(evalTrade)와 같은 규칙. needBf는 주전을 내주고 빈 자리를 메우는 선수를 받을 때 */
 function aiNeedB(B,p,vOut,bchB,relB,DX){ const nB0=trNeedAs(B,vOut,bchB,relB,bchB&&trMidOnly(B.id,[p.id])), dB=trDomBase(vOut,bchB)*DX.k; const lstB=!!p.aiListed, nBl=lstB?Math.min(nB0,p.aiUrg?-Math.min(.9,Math.max(0,vOut)*.3):-Math.min(.3,Math.max(0,vOut)*.12)):nB0;
   return {needB:nBl+(lstB?0:dB),needBf:(nBl>0?nBl*TR_TUNE.fitNeed:nBl)+(lstB?0:dB*TR_TUNE.fitDom)}; }
@@ -21070,17 +21112,15 @@ function aiTradeTryRun(aid,o){ o=o||{}; const tc={}; (G.lgTrades||[]).filter(t=>
   for(const c of cands.slice(0,8)){ const B=c.B, p=c.p; const vOut=tval(B,p,'out'), vInA=tval(A,p,'in'); if(vInA<=0)continue;
     const DX=domTradeTax(B,A.id,startersOf(B.id).has(p.id)&&!p.aiListed,trBenchOnly(B.id,[p.id])); /* 비주전만 내주면 견제 웃돈 1/4(우리 구단과의 거래와 같은 식, 11-18) */ if(DX.refuse){ domLog('ref',B.id+':'+p.id); domRumor(B.id,A.id); continue; } if(DX.k>=.1)domLog('over',B.id+':'+p.id); /* 독주 견제(86b_dynasty) */
     if(relTradeRefuse(B.id,A.id))continue; /* 사이가 아주 나쁜 단장과는 거래하지 않는다(84b_person_rels) */ const relB=relAsRel(B.id,A.id), relA=relAsRel(A.id,B.id);
-    const bchB=trBenchOnly(B.id,[p.id]); const {needB,needBf}=aiNeedB(B,p,vOut,bchB,relB,DX); /* 11-18 3·4차: evalTrade와 같은 식(비주전 거래 견제 웃돈은 실제 값에·기본 요구치는 거래 크기만큼, 중간급 ×0.75, 빈 자리를 메우는 선수 ×0.5, 매물·급매는 같은 양보·견제 없음) */ const pStB=!p.aiListed&&startersOf(B.id).has(p.id), skB=new Set([pSlot(p)]); /* 11-18 4차: 중간급끼리 요구치 ×0.75, 주전을 내주고 빈 자리를 메우는 선수를 받으면 요구치 ×0.5·견제 ×0.75(evalTrade와 같은 식) */ /* 우리 구단과의 거래(evalTrade)와 같은 식: 비주전 거래는 견제 웃돈을 실제 값에, 기본 요구치는 거래 크기만큼(11-18 3차) */
     /* 2대2: B의 블록 선수 한 명을 끼워 함께 받는 경우 */
     const extra=!o.swap&&R()<.3?domestic(B.id).find(q=>q.aiListed&&q.id!==p.id&&healthy(q)&&!q.ys&&!(hasNtc(q)||faLock(q))&&!recentTr(q)):null; const gets=extra?[p,extra]:[p];
-    const vOutAll=sum(gets.map(q=>tval(B,q,'out'))), vInAAll=stackIn(gets.map(q=>tval(A,q,'in')));
-    _evOutB=bchB&&trMidOnly(B.id,[p.id])?new Set([pSlot(p)]):null; /* 11-18 4차: 중간급끼리는 같은 자리 백업을 받으면 그 자리를 채운다(evalTrade와 같은 식) */ let pool; try{ pool=corePool(A.id).filter(q=>healthy(q)&&!q.ys&&!faLock(q)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in')*(q.aiListed?1.1:1),a:tval(A,q,'out'),f:pStB&&trFills(B.id,q,skB),fa:startersOf(A.id).has(q.id)&&trFills(A.id,p,new Set([pSlot(q)]))})).filter(x=>x.b>.3&&(!o.swap||(slotFits(x.q,bNeed[B.id].k)&&slotGain(bNeed[B.id].k,x.q)-bNeed[B.id].base>=1))).sort((x,y)=>x.b-y.b).slice(0,22); } finally { _evOutB=null; } const nm=o.swap?.5:1;
-    let best=null,bo=1e9; const tryS=arr=>{ const nb=arr.some(x=>x.f)?needBf:needB; const bv=stackIn(arr.map(x=>x.b)); if(bv<vOutAll+nb*nm)return; if(arr.length>gets.length&&((vOut>=2&&Math.max(...arr.map(x=>x.b))<vOut*.75)||(ovr(p)>=56&&Math.max(...arr.map(x=>ovr(x.q)))<ovr(p)-5)))return; const av=sum(arr.map(x=>x.a)); const nA=tradeNeed(A,av,relA); if(vInAAll-av<(arr.some(x=>x.fa)&&nA>0?nA*TR_TUNE.fitNeed:nA)*nm)return; const ob=bv-vOutAll-nb*nm+arr.length*.5; if(ob<bo){ bo=ob; best=arr; } };
+    const getIds=gets.map(q=>q.id);
+    const pool=corePool(A.id).filter(q=>healthy(q)&&!q.ys&&!faLock(q)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3&&(!o.swap||(slotFits(x.q,bNeed[B.id].k)&&slotGain(bNeed[B.id].k,x.q)-bNeed[B.id].base>=1))).sort((x,y)=>x.b-y.b).slice(0,22);
+    let best=null,bo=1e9; const tryS=arr=>{ if(arr.length*.5>=bo)return; const e=aiTradePackage(A,B,arr.map(x=>x.q.id),getIds,0); if(!e.ok)return; const ob=e.b.gain-e.b.need+arr.length*.5; if(ob<bo){bo=ob;best=arr;} };
     for(let i=0;i<pool.length;i++){ tryS([pool[i]]); for(let j=i+1;j<pool.length;j++)tryS([pool[i],pool[j]]); }
-    let cashC=0; if(!best&&!o.swap&&aiCashRich(A)){ for(const x of pool){ const c=aiCashTop(A,B,vOutAll+(x.f?needBf:needB)*nm-x.b,vOutAll,bchB&&gets.length===1); if(!c)continue; const ca=c/100*teamCtx(A).money*.9; const nA=tradeNeed(A,x.a+ca,relA); if(vInAAll-x.a-ca<(x.fa&&nA>0?nA*TR_TUNE.fitNeed:nA)*nm)continue; if(!best||c<cashC){ best=[x]; cashC=c; } } } /* 돈 많은 구단은 모자란 값을 현금으로(우리와 같은 cashVal: 10억 넘는 몫은 절반 값) */
+    let cashC=0; if(!best&&!o.swap&&aiCashRich(A)){ for(const x of pool){ const z=aiTradeCash(A,B,[x.q.id],getIds); if(z&&(!best||z.cash<cashC)){best=[x];cashC=z.cash;} } }
     if(!best)continue;
-    if(rosterN(B.id)+best.length-gets.length>ROSTER_MAX)continue;
-    { const gs=sum(best.map(x=>x.q.sal)), ps=sum(gets.map(q=>q.sal)); const capY=capOf(G.year); const gI=gets.map(q=>q.id), bI=best.map(x=>x.q.id); if((ps>gs&&capPayAs(A.id,gI,bI)>capY)||(gs>ps&&capPayAs(B.id,bI,gI)>capY))continue; }
+    if(!aiTradePackage(A,B,best.map(x=>x.q.id),getIds,cashC).ok)continue;
     const give=best.map(x=>x.q.id); const snap=tradeSnap([...gets.map(q=>q.id),...give]); if(cashC){ payOut(A.id,cashC,'etc'); payIn(B.id,cashC); }
     gets.forEach(q=>{ tradeTerms(q); q.team=A.id; story(q,`트레이드로 ${tname(A.id)} 이적`,'move'); delete q.aiListed; delete q.aiWhy; delete q.aiUrg; }); give.forEach(id=>{ tradeTerms(G.players[id]); /* 달성한 옵션은 원소속 구단이 지급(양쪽 같게, 검수 11-09v) */ G.players[id].team=B.id; story(G.players[id],`트레이드로 ${tname(B.id)} 이적`,'move'); delete G.players[id].aiListed; });
     G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:gets.map(q=>q.id),bg:give,an:gets.map(q=>q.name),bn:give.map(id=>G.players[id].name).concat(cashC?['현금 '+money(cashC)]:[]),snap,...(o.swap?{sw:1}:{}),...(cashC?{cash:cashC}:{})}); /* an·bn: 은퇴 뒤에도 이름을 보이게(검수 11-08d) */ { const tr=mvTr(); gets.forEach(q=>mvLog('트레이드',q,B.id,A.id,'',0,tr)); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
@@ -21100,7 +21140,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     cands.sort((x,y)=>y.d-x.d); let done=false;
     for(const best of cands.slice(0,6)){ /* 가장 도움 되는 선수부터, 값이 안 맞으면 다음 후보 */
     const B=best.B, p=best.p; const vOut=tval(B,p,'out'), vin=tval(A,p,'in'); const core=new Set(domestic(A.id).filter(q=>!q.ys).sort((a,b)=>ovr(b)-ovr(a)).slice(0,6).map(q=>q.id));
-    /* 리빌딩 구단은 서른 안팎 베테랑의 남은 계약 가치보다 젊은 선수를 받는 것을 앞세운다: 남은 가치의 30%만 채워도 판다(AI끼리만. 우리 구단과의 트레이드는 평소 기준) */
+    /* 보강 후보는 운영 방향에 맞춰 찾되, 실제 이동은 아래 공통 최종 심사를 통과해야 한다. */
     if(relTradeRefuse(B.id,A.id))continue; /* 사이가 아주 나쁜 단장과는 거래하지 않는다(aiTradeTry와 같게, 84b_person_rels) */
     const bchB=trBenchOnly(B.id,[p.id]); const DX=domTradeTax(B,A.id,false,bchB); if(DX.k>=.1)domLog('over',B.id+':'+p.id); const want0=vOut*(nx?.6:o.wantF||.3)+1+trDomBase(vOut,bchB)*DX.k; /* 독주 구단에는 리빌딩 구단도 비싸게 판다 */
     const want=Math.max(want0*.5,want0+relNeedAdj(B.id,A.id)), needA=Math.max(0,relNeedAdj(A.id,B.id)); /* 두 단장 사이 친분(tradeNeed와 같은 몫): 친하면 덜, 나쁘면 더 받으려 한다. 사는 쪽도 사이가 나쁘면 남는 거래만 */ const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
@@ -21112,6 +21152,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<needA)continue; pay=arr; break; }
     let cashC=0; if(!pay&&o.buyers&&aiCashRich(A)){ for(const q of [null,...pool.slice(0,8)]){ const qb=q?q.b:0, qa=q?q.a:0; const c=aiCashTop(A,B,want-qb,vOut); if(!c)continue; const ca=c/100*teamCtx(A).money*.9; if(vin-qa-ca<needA)continue; pay=q?[q]:[]; cashC=c; break; } } /* 현금 트레이드: 돈 많은 구단은 모자란 값을 현금으로 */
     if(!pay||(!pay.length&&!pkGive&&!cashC))continue; const give=pay.map(x=>x.q.id); const pkNm=pkGive?pkName(pkGive):null; if(rosterN(B.id)+give.length-1>ROSTER_MAX||capPayAs(A.id,[p.id],give)>capOf(G.year)*(hotA&&o.buyers?1.06:1))continue;
+    if(!aiTradePackage(A,B,give,[p.id],cashC,{y:pkYear(),give:pkGive?[pkGive]:[],get:[]}).ok)continue;
     if(hotA&&o.buyers&&(pkGive||pay.some(x=>x.q.age<=24)))try{ domLog('allinBuy'); if(pkGive&&+pkGive.split(':')[0]===1)domLog('allinR1'); }catch(e){}
     const snap=tradeSnap([p.id,...give]); if(cashC){ payOut(A.id,cashC,'etc'); payIn(B.id,cashC); } tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
     give.forEach(id=>{ const q=G.players[id]; tradeTerms(q); q.team=B.id; story(q,`트레이드로 ${tname(B.id)} 이적`,'move'); delete q.aiListed; });
@@ -23148,11 +23189,11 @@ function fwatchWeek(){ G.fwatch=G.fwatch||[]; const out=[]; try{ fwAiWeek(); }ca
 
 /* 상대 구단이 눈여겨보는 우리 선수: 그 팀 약한 자리에 맞고 그 팀 눈에 값어치가 큰 선수 3명. 매주 바뀐다 */
 let _intC={};
-function aiInterest(tid){ if(tid===G.user||!G.teams[tid])return []; const wk=G.year*100+Math.floor(G.day/7); const n=Object.values(G.players).filter(p=>p.team===G.user).length; const k=wk+':'+n+':'+(G.trades||[]).length;
-  if(_intC[tid]&&_intC[tid].k===k)return _intC[tid].v; const t=team(tid); let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){}
-  const back=new Set((G.trades||[]).filter(r=>r.with===tid&&r.y===G.year).flatMap(r=>r.gi||[])); /* 올해 이 구단에서 받아 온 선수는 되찾으려 하지 않는다 */
-  const v=domestic(G.user).filter(p=>!p.ys&&!p.noTrade&&!(p.joinY>G.year)&&healthy(p)&&!back.has(p.id)).map(p=>{ const val=tval(t,p,'in'); const fit=weak.includes(pSlot(p))?1.35:1; return {id:p.id,s:val*fit+hn('int'+tid+':'+wk,p.id)*.6}; }).filter(x=>x.s>.6).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.id);
-  _intC[tid]={k,v}; return v; }
+function aiInterest(tid,actorTid){ const actor=actorTid??G.user; if(tid===actor||!G.teams[tid])return []; const wk=G.year*100+Math.floor(G.day/7); const n=tradeActorCount(actor); const k=actor+':'+wk+':'+n+':'+(G.trades||[]).length+':'+(G.lgTrades||[]).length; const ck=tid+':'+actor;
+  if(_intC[ck]&&_intC[ck].g===G&&_intC[ck].k===k)return _intC[ck].v; const t=team(tid); let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){}
+  const back=new Set([...(G.trades||[]).filter(r=>r.y===G.year).flatMap(r=>{ const me=r.me??G.user; return me===actor&&r.with===tid?r.gi||[]:r.with===actor&&me===tid?r.go||[]:[]; }),...(G.lgTrades||[]).filter(r=>r.y===G.year).flatMap(r=>r.a===actor&&r.b===tid?r.ag||[]:r.b===actor&&r.a===tid?r.bg||[]:[])]); /* 올해 이 구단에서 받아 온 선수는 되찾으려 하지 않는다 */
+  const v=domestic(actor).filter(p=>!p.ys&&!p.noTrade&&!(p.joinY>G.year)&&healthy(p)&&!back.has(p.id)).map(p=>{ const val=tval(t,p,'in'); const fit=weak.includes(pSlot(p))?1.35:1; return {id:p.id,s:val*fit+hn('int'+tid+':'+wk,p.id)*.6}; }).filter(x=>x.s>.6).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.id);
+  _intC[ck]={k,v,g:G}; return v; }
 function interestKnown(tid){ return team(tid).rel>=35; }
 
 function interestWhy(tid,p){ const w=[]; let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){} if(weak.includes(pSlot(p)))w.push(`${SLOTK[pSlot(p)]} 보강`); const tr=gmTrait(tid);
@@ -27266,9 +27307,15 @@ function cpromSeason(y){ for(const p of Object.values(G.players)){ const C=p.cpr
       else mail(who,`${p.name} 계약 약속 ${bad.length?'불이행':'이행'}`,`${y}시즌 약속을 확인했습니다.\n${L}\n\n${bad.length?`약속을 어겨 선수 기분이 떨어졌고${ag?', 에이전트와의 관계도 나빠졌습니다. 이 에이전트는 다음 협상에서 이 일을 기억합니다':''}.`:`약속을 지켜 선수 기분이 올랐습니다${ag?'. 에이전트도 다음 협상에서 이 일을 기억합니다':''}.`}`,{kind:'면담',imp:!!bad.length,ref:p.id,acts:[{l:'선수 보기',a:'player',v:p.id}]}); }
     else if(req&&p.team!=null){ try{ wire('구단 사정',`${tshort(p.team)} ${p.name}, 계약 약속 불이행에 불만 · 트레이드 요청`,{tid:p.team,ref:p.id}); }catch(e){} } } }
 function capBOf(p){ return ctOn(p)&&p.capB&&p.capB.until>=G.year?p.capB.a:0; }
-/* 예산 전망용 옵션 예상액: 시즌 중엔 지금 페이스로, 개막 전·비시즌엔 주전이면 달성한다고 본다 */
-function optProj(tid,y){ let s=y===G.year&&G.sea&&G.sea.optPd?G.sea.optPd[tid]||0:0; /* 시즌 중 이미 준 옵션 */ for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year)continue; { const xo=y>G.year&&p.extNext&&p.extNext.terms&&p.extNext.terms.opt; if(xo){ if(isRegular(p))s+=xo; continue; } } /* 합의한 다음 시즌 계약의 옵션(검수 11-09zzb) */ if(!ctOn(p)||!p.opt||p.opt.until<y||p.opt.paidY===y)continue; /* 전 구단이 이미 준 옵션은 다시 잡지 않는다(검수 11-09zzb) */ if(milServing(p)){ /* 며칠 뒤 돌아오는 대표팀 차출은 페이스대로 본다(검수 11-09zzb) */ if(y===G.year&&optEarned(p))s+=p.opt.a; continue; } const h=y===G.year?seasonTotal(p,G.year,'1군'):null; const r=G.sea&&G.sea.rec&&G.sea.rec[tid]; const g=r?r.w+r.l+(r.t||0):0;
-  const c=p.opt.c||optCrit(p), oc=OPT_CRIT[c]||OPT_CRIT[optCrit(p)]; const ok=oc[3]==='award'?(c==='as'?y===G.year&&optEarned(p):false):h&&g>=20?optMet(c,h,p,144/g):isRegular(p)&&oc[3]==='play'; if(ok)s+=p.opt.a; } return s; } /* 수상 옵션은 받기 전에는 잡지 않는다 */
+/* 예산 전망은 조회 시즌에 유효한 계약 한 건만 본다. 확정된 다음 계약은 옵션이 없어도 옛 조항을 대체한다. */
+function optForSeason(p,y){ if(y>G.year&&p.extNext){ const x=p.extNext,T=x.terms,from=G.year+1,until=from+Math.max(1,x.years||T&&T.years||1)-1; return y<=until&&T&&T.opt>0?{a:T.opt,from,until,c:T.optC||optCrit(p)}:null; }
+  const o=ctOn(p)&&p.opt; return o&&!(o.from>y)&&!(o.until<y)&&o.paidY!==y?o:null; }
+/* 현재·미래 계약의 종류별 전망은 같은 판정을 쓴다. 수상은 실제 선정 전에는 지출로 잡지 않는다. */
+function optProjMet(p,y,o){ if(milServing(p))return y===G.year&&optEarned(p); /* 짧은 대표팀 차출은 복무가 아니므로 평소 페이스를 쓴다 */
+  const c=o.c||optCrit(p),oc=OPT_CRIT[c]||OPT_CRIT[optCrit(p)]; if(oc[3]==='award')return c==='as'&&y===G.year&&optEarned(p);
+  const h=y===G.year?seasonTotal(p,G.year,'1군'):null,r=G.sea&&G.sea.rec&&G.sea.rec[p.team],g=r?r.w+r.l+(r.t||0):0;
+  return h&&g>=20?optMet(c,h,p,144/g):isRegular(p)&&oc[3]==='play'; }
+function optProj(tid,y){ let s=y===G.year&&G.sea&&G.sea.optPd?G.sea.optPd[tid]||0:0; /* 시즌 중 이미 준 옵션 */ for(const p of Object.values(G.players)){ if(p.team!==tid||p.joinY>G.year)continue; const o=optForSeason(p,y); if(o&&optProjMet(p,y,o))s+=o.a; } return s; }
 /* 옵션 달성 기준: 타자 400타석, 선발 120이닝, 불펜 50이닝(규정 달성형 옵션을 단순화) */
 /* 옵션 기준: 계약 때 보직(b 타자 400타석 · sp 선발 120이닝 · rp 불펜 50이닝). 저장된 기준이 없으면(예전 계약) 지금 보직 */
 function optCrit(p){ return p.isP?(isSPr(p)?'sp':'rp'):'b'; }
@@ -29968,15 +30015,17 @@ function roleKeepPen(p){ return roleKeep(p)==='cl'?RK.clPen:0; }
  - 수비 집중 훈련(수비 능력 자체)과는 별개다. */
 const POS_F=['C','1B','2B','3B','SS','LF','CF','RF'];
 const POS_NEED={C:50,SS:45,CF:45,'2B':45,'3B':35,LF:35,RF:35,'1B':0};
-function versOf(p){ if(p.vers==null)p.vers=Math.round(clamp(50+hn('vers',p.id)*13+(((p.r&&p.r.spd)||50)-50)*.25+(['SS','2B','CF'].includes(p.pos)?6:p.pos==='1B'||p.pos==='DH'?-7:p.pos==='C'?-3:0),20,80)); return p.vers; }
-function pexpOf(p){ if(!p.pexp){ p.pexp={}; if(SUBMAP[p.pos]){ let n=0; for(const [k,pr] of SUBMAP[p.pos]){ if(n<2&&u01('sub'+k,p.id)<pr){ p.pexp[k]=50; n++; } } } } return p.pexp; }
+function versOf(p){ return p.vers??Math.round(clamp(50+hn('vers',p.id)*13+(((p.r&&p.r.spd)||50)-50)*.25+(['SS','2B','CF'].includes(p.pos)?6:p.pos==='1B'||p.pos==='DH'?-7:p.pos==='C'?-3:0),20,80)); }
+function pexpOf(p){ if(p.pexp)return p.pexp; const E={}; if(SUBMAP[p.pos]){ let n=0; for(const [k,pr] of SUBMAP[p.pos])if(n<2&&u01('sub'+k,p.id)<pr){ E[k]=50; n++; } } return E; }
+/* 파생 기본값은 화면·거래 조회에서 저장하지 않는다. 실제 숙련 변화 때만 장부를 만든다. */
+function pexpEnsure(p){ if(p.vers==null)p.vers=versOf(p); return p.pexp||(p.pexp=pexpOf(p)); }
 function posRaw(from,pos){ const IF=['2B','SS','3B'], OF=['LF','CF','RF'];
   if(pos==='C')return 25; if(pos==='1B')return 4; if(IF.includes(pos)&&IF.includes(from))return pos==='SS'?7:5; if(OF.includes(pos)&&OF.includes(from))return pos==='CF'?8:4;
   if(OF.includes(pos))return pos==='CF'?13:(from==='3B'||from==='1B'?8:10); return 14; } /* 3루·1루 → 코너 외야는 조금 덜 어렵다 */
 const versF=p=>clamp(2-versOf(p)/50,.55,1.4);
 function posExp(p,pos){ return p.pos===pos?100:(pexpOf(p)[pos]||0); }
 function posLearnRate(p){ return Math.pow(versOf(p)/50,1.5)*(p.age<=22?1.3:p.age<=25?1.1:p.age<=29?.9:.6); }
-function posGain(p,pos,x){ if(pos===p.pos||!POS_F.includes(pos))return; const E=pexpOf(p); const e=E[pos]||0; E[pos]=Math.min(100,+(e+x*(1-e/120)).toFixed(1)); }
+function posGain(p,pos,x){ if(pos===p.pos||!POS_F.includes(pos))return; const E=pexpEnsure(p); const e=E[pos]||0; E[pos]=Math.min(100,+(e+x*(1-e/120)).toFixed(1)); }
 /* 매주: 1군에서 다른 자리로 뛴 경기만큼 배우고, 전환 훈련 중이면 훈련(2군이면 그 자리로 경기도)으로 배운다 */
 function posWeek(){ const per=period(); const y=G.year; const done=[];
   for(const p of Object.values(G.players)){ if(p.isP||p.team==null)continue; const u=p.use;
@@ -29985,7 +30034,7 @@ function posWeek(){ const per=period(); const y=G.year; const done=[];
     const C=p.pconv; if(!C)continue; if(p.joinY>G.year){ delete p.pconv; continue; } /* 합류 전 신인은 구단 훈련으로 포지션이 바뀌지 않는다(검수 11-06) */
     if((per==='pre'||per==='season')&&!(p.injOut>0||milServing(p)||isAway(p)||p.hold||ovsAbroad(p))) /* 해외 연수 중에도 구단 전환 훈련은 없다(검수 11-09o) */ /* 군 복무·대표팀·미계약 중에는 구단 훈련을 받지 못한다 */
     posGain(p,C.pos,1.5*posLearnRate(p)*(p.e1?1:posCoachF(p.team))); /* 전환 완료 검사는 비시즌에도 한다: 마무리캠프에서 기준을 넘길 수 있다(검수 11-06) */ /* 훈련(2군에서는 2군 코치진 육성력만큼 빠르거나 느리다). 2군에 있으면 2군 라인업에서 그 자리로 경기에도 나가 따로 쌓인다 */
-    if(posExp(p,C.pos)>=90){ const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[C.pos]; p.pos=C.pos; delete p.pconv; story(p,`${y} ${POSK[old]}에서 ${POSK[C.pos]}로 포지션 전환`); if(p.team===G.user&&!G.unemp)done.push(`${p.name}: ${POSK[old]} → ${POSK[C.pos]}`); } }
+    if(posExp(p,C.pos)>=90){ const old=p.pos; pexpEnsure(p)[old]=100; delete p.pexp[C.pos]; p.pos=C.pos; delete p.pconv; story(p,`${y} ${POSK[old]}에서 ${POSK[C.pos]}로 포지션 전환`); if(p.team===G.user&&!G.unemp)done.push(`${p.name}: ${POSK[old]} → ${POSK[C.pos]}`); } }
   if(done.length){ const m=G.mgr[G.user]; mail('감독실',`포지션 전환 완료 (${done.length}명)`,`${m?m.name+' 감독':'코치진'}: 전환 훈련을 마쳐 주 포지션을 바꿉니다.\n\n${done.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
 /* 단장 요청: 전환 훈련 시작·중단 */
 function posConv(pid,pos){ const p=G.players[pid]; if(!p||p.team!==G.user||p.isP)return '우리 야수만 정할 수 있습니다.'; if(p.joinY>G.year)return `${p.name}은(는) ${p.joinY}년에 합류하는 신인이라 아직 구단 훈련을 지시할 수 없습니다.`; const m=G.mgr[G.user]; const who=m&&!m.interim?`${m.name} 감독`:'코치진';
@@ -30008,7 +30057,7 @@ function dvGrade(v){ return v>=70?'A':v>=60?'B':v>=50?'C':v>=40?'D':'E'; }
    유격↔2루, 3루→1루, 코너 외야 거포→1루, 우익→중견처럼 성적을 내려고 옮긴 자리가 그대로 굳는다. 포수는 바뀌지 않는다 */
 function posSettle(y){ const out=[]; for(const p of Object.values(G.players)){ if(p.isP||p.team==null||p.pos==='C'||p.pconv)continue; const u=p.use; if(!u||u.y!==y||!u.pos)continue;
     const tot=Object.values(u.pos).reduce((a,b)=>a+b,0); let k=null,n=0; for(const q in u.pos)if(q!=='DH'&&q!==p.pos&&u.pos[q]>n){ n=u.pos[q]; k=q; }
-    if(!k||n<50||n<tot*.6||posExp(p,k)<75)continue; const old=p.pos; pexpOf(p)[old]=100; delete p.pexp[k]; p.pos=k; story(p,`${y} ${POSK[old]}에서 ${POSK[k]}로 자리를 옮겨 정착`); if(p.team===G.user&&!G.unemp)out.push(`${p.name}: ${POSK[old]} → ${POSK[k]} (지난 시즌 ${k==='1B'?'1루':POSK[k]} 선발 ${n}경기)`); }
+    if(!k||n<50||n<tot*.6||posExp(p,k)<75)continue; const old=p.pos; pexpEnsure(p)[old]=100; delete p.pexp[k]; p.pos=k; story(p,`${y} ${POSK[old]}에서 ${POSK[k]}로 자리를 옮겨 정착`); if(p.team===G.user&&!G.unemp)out.push(`${p.name}: ${POSK[old]} → ${POSK[k]} (지난 시즌 ${k==='1B'?'1루':POSK[k]} 선발 ${n}경기)`); }
   if(out.length){ const m=G.mgr[G.user]; mail('감독실',`주 포지션 정착 (${out.length}명)`,`${m&&!m.interim?m.name+' 감독':'코치진'}: 지난 시즌 주로 뛴 자리를 주 포지션으로 굳힙니다.\n\n${out.join('\n')}\n\n원래 자리도 그대로 맡을 수 있습니다.`,{kind:'감독'}); } }
 /* 감독의 자리 돌리기: 캠프 시작(2월 1일)과 6월 1일에 감독이 이기는 라인업을 짜 보고, 다른 자리에 넣은 주전은 그 자리 전환 훈련을 시킨다.
    수비가 약한 유격수라도 방망이가 좋으면 3루·2루로, 거기서도 밀리면 1루·코너 외야로 옮겨 다니다 수비 부담이 적은 자리에 자리 잡는다.
@@ -31556,7 +31605,7 @@ function despOf(t){ if(!t||t.id===ME()||t.indie)return 0; const H=(G.history||[]
 function domArms(t,rk){ const L=domLead(); if(!L||L.tid===t.id||rk>5.5)return 0; return Math.min(1.5,L.s)*.9; }
 /* 견제 기록(측정·소식용): ref 거절, over 웃돈, outbid FA 가로채기, allin 올인, arms 군비 경쟁 전환 */
 let _domSeen={d:-1,s:new Set()};
-function domLog(kind,key){ if(key!=null){ if(_domSeen.d!==G.day)_domSeen={d:G.day,s:new Set()}; const k=kind+':'+key; if(_domSeen.s.has(k))return; _domSeen.s.add(k); }
+function domLog(kind,key){ if(key!=null){ if(_domSeen.d!==G.day||_domSeen.g!==G)_domSeen={d:G.day,g:G,s:new Set()}; const k=kind+':'+key; if(_domSeen.s.has(k))return; _domSeen.s.add(k); }
   const y=G.year; G.domLog=G.domLog||{}; const o=G.domLog[y]=G.domLog[y]||{}; o[kind]=(o[kind]||0)+1; for(const k in G.domLog)if(+k<y-12)delete G.domLog[k]; }
 /* 트레이드 견제: 상대(독주 구단)에게 붙일 웃돈 비율과 거절 여부. t: 파는 구단, dtid: 사는 구단, starter: 주전을 내주는 거래인지
    bench: 파는 구단이 비주전(주전·상위 6명 아님)만 내주는 거래(16_trade trBenchOnly). 백업 한 명은 독주 구단 전력을 거의 키우지 않으니 웃돈은 1/4만(피드백 11-18: 상위 팀은 백업 맞교환도 안 됐다). 우리·AI 같은 식 */
@@ -34260,7 +34309,7 @@ const PK_V=[15,3,1.6,.05,.05,.05,.05,.05,.05,.05,.05]; /* 4라운드부터는 �
 const PK_R1S=[1.25,1.15,1.05,.85,.8,.75,.7,.45,.4,.35]; /* 1라운드 순번별 배율: 상위 세 순번과 하위 세 순번의 차이가 크다 */
 const PK_KEEP=1.2; /* 지명권은 내줄 때 더 아낀다(사용자 11-13: 지명권을 소중히). 올인·벼랑 끝 구단만 그대로 내준다 */
 const pkKeep=t=>t&&t.id!==ME()&&(t.allIn===sponSeason()||despOf(t)>=.5)?1:PK_KEEP; /* 1라운드는 순번이 앞설수록 훨씬 비싸다(커뮤니티 피드백 11-07: 상위 지명권을 너무 싸게 모음) */ /* 라운드별 가치(트레이드 가치 단위, 현금 1억 ≈ 0.9) */
-const pkHoard=(buyer,k,gv,incoming)=>{ if(+k.split(':')[0]!==1)return 1; const out=new Set(gv||[]); const n=pkHeld(buyer).filter(x=>+x.split(':')[0]===1&&!out.has(x)).length; const add=[...new Set(incoming||[k])].filter(x=>+x.split(':')[0]===1).sort((a,b)=>+a.split(':')[1]- +b.split(':')[1]).indexOf(k); return 1+.4*Math.max(0,n+Math.max(0,add)-1); }; /* gv: 같은 거래에서 내주는 지명권은 빼고 센다(국사왕 11-16: 1라 9·10번을 들고 10번을 4번과 바꾸면 거래 뒤에도 두 장인데 세 장째 값을 불렀다) */ /* 1라운드 지명권 보유 한도는 없다(KBO도 받는 장수 제한 없음, 사용자 11-15). 대신 이미 1라운드를 여러 장 쥔 구단에는 파는 단장이 더 비싸게 부른다: 두 장째부터 한 장마다 40%씩. 우리·AI 같음 */
+const pkHoard=(buyer,k,gv,incoming)=>{ if(+k.split(':')[0]!==1)return 1; const out=new Set(gv||[]); const n=pkHeld(buyer).filter(x=>+x.split(':')[0]===1&&!out.has(x)).length; const add=[...new Set(incoming||[k])].filter(x=>+x.split(':')[0]===1).sort((a,b)=>+a.split(':')[1]- +b.split(':')[1]).indexOf(k); return 1+.4*Math.max(0,n+Math.max(0,add)); }; /* gv: 같은 거래에서 내주는 지명권은 빼고 센다(국사왕 11-16: 1라 9·10번을 들고 10번을 4번과 바꾸면 거래 뒤에도 두 장인데 세 장째 값을 불렀다) */ /* 1라운드 지명권 보유 한도는 없다(KBO도 받는 장수 제한 없음, 사용자 11-15). 대신 이미 1라운드를 여러 장 쥔 구단에는 파는 단장이 더 비싸게 부른다: 두 장째부터 한 장마다 40%씩. 우리·AI 같음 */
 const pkYear=()=>G.draft&&G.draft.y===G.year?G.year+1:G.year;
 function pkOwner(y,rd,orig){ const o=G.pkOwn&&G.pkOwn[y+':'+rd+':'+orig]; return o??orig; }
 /* 그 구단이 가진 다음 드래프트 지명권: 'rd:원래 구단' 목록 */
@@ -38579,7 +38628,7 @@ function gmAv(tid,expr){ const g=gmOf(tid); if(!g)return ''; return avImg({perso
 function relBar(r){ return `<span class="relb" title="친분 ${relLabel(r)}"><i style="width:${r}%;background:${r>=65?'#3fbf6a':r>=45?'#e6b93b':'#e0564f'}"></i></span>`; }
 function deadlineBanner(){ const per=period(); if(per!=='season')return ''; const end=tradeDL(); const d=end-G.day; if(d<0||d>30)return '';
   return `<div class="dlb${d<=7?' hot':''}"><b>${d===0?'오늘 트레이드 마감':`트레이드 마감 D-${d}`}</b><span>7월 31일 자정까지${d<=7?' · 제안이 몰리는 시기입니다':''}</span></div>`; }
-function vsBanner(short){ if(!tradeOpen())return ''; const o=seriesOpp(); if(o==null)return ''; const g=gmOf(o); if(short)return `<div class="vsb sm">${badge(o,16)}<span><b>이번 상대 ${esc(tshort(o))}</b> · 횟수 제한 없이 협상 가능</span><button class="btn small" data-a="tpartnerGo" data-v="${o}">협상</button></div>`; return `<div class="vsb">${badge(o,22)}<div><b>이번 상대 구단: ${esc(tshort(o))}</b><span>${g?esc(g.name)+' 단장이 경기장에 와 있습니다. 이 구단과는 횟수 제한 없이 협상할 수 있습니다.':'이 구단과는 횟수 제한 없이 협상할 수 있습니다.'}</span></div><button class="btn small primary" data-a="tpartnerGo" data-v="${o}">협상하기</button></div>`; }
+function vsBanner(short){ if(!tradeOpen())return ''; const o=seriesOpp(); if(o==null)return ''; const g=gmOf(o), ni=negInfo(o), left=ni.left?`맞대결 협상 ${ni.left}/${ni.cap}회 남음`:`이번 달 협상을 모두 사용했습니다. ${ni.next}부터 재개합니다.`; if(short)return `<div class="vsb sm">${badge(o,16)}<span><b>이번 상대 ${esc(tshort(o))}</b> · ${esc(left)}</span><button class="btn small" data-a="tpartnerGo" data-v="${o}">협상</button></div>`; return `<div class="vsb">${badge(o,22)}<div><b>이번 상대 구단: ${esc(tshort(o))}</b><span>${g?esc(g.name)+' 단장이 경기장에 와 있습니다. ':''}${esc(left)}</span></div><button class="btn small primary" data-a="tpartnerGo" data-v="${o}">협상하기</button></div>`; }
 function negChip(tid){ const ni=negInfo(tid); return ni.free?`<span class="negc free${ni.left?'':' out'}">맞대결 중 · 협상 <b>${ni.left}</b>/${ni.cap}</span>`:`<span class="negc ${ni.left?'':'out'}">이번 달 협상 <b>${ni.left}</b>/${ni.cap}${ni.left?'':` · ${ni.next} 재개`}</span>`; }
 /* 트레이드 표시(국사왕 11-15 #6·#8): 매물·급매 표시와, 제안해도 규정상 막히는 선수의 '트레이드 불가' 표시. 이유는 말풍선으로.
    hard: 규정상 거래가 막힘(검색에서 숨김 대상). soft: 우리 선수 쪽 표시만(직접 제안은 가능하거나 동의가 필요) */
@@ -38659,9 +38708,11 @@ function tcFind(mode="buy"){ const tg=UI.findT&&G.players[UI.findT]&&G.players[U
   else B=`<section class="card"><h2 class="sec">우리 선수 시장 가치 보기</h2>${(()=>{ const P=pager('mval',domestic(G.user).filter(p=>!p.ys&&!(p.joinY>G.year)).sort((a,b)=>ovr(b)-ovr(a)),innerWidth<700?tradeListSize():8); return `<div class="fl" data-pg="mval">${P.items.map(p=>`<div class="flr"${rowTap('findMine',p.id,p.name+' 시장 가치 보기')}>${rowQuiet(pMini(p))}<span class="small muted">${money(p.sal)}${tradeTags(p)}</span><span class="rt-go" aria-hidden="true">›</span></div>`).join('')}</div>${P.bar}`; })()}</section>`;
   return (UI.deskMsg?`<div class="note ${UI.deskOk?'':'bad'}">${esc(UI.deskMsg)}</div>`:'')+(mode==='sell'?B:A); }
 function tcGms(){ return `<section class="card"><div class="row between"><h2 class="sec">상대 단장</h2><span class="small muted">안부 연락 2주 1회 · 식사 한 달 1회</span></div>${UI.gmMsg?`<div class="note">${esc(UI.gmMsg)}</div>`:''}${(()=>{ const L=G.teams.filter(t=>t.id!==G.user), P=innerWidth<700?pager('gms',L,1):{items:L,bar:''}; /* PC는 아홉 구단 단장을 한 칸에 모두(넓으면 한 화면, 좁으면 칸 안 스크롤, 카페 11-18). 휴대폰만 한 명씩 넘긴다 */ return `<div class="gmg" data-pg="gms">${P.items.map(t=>gmCard(t,true)).join('')}</div>${P.bar}`; })()}</section>`; }
+/* 당시 추가 대가는 선수 이름 보관 배열의 꼬리와 명시된 현금을 함께 읽는다. 지명권 없이 지급한 현금도 표시한다. */
+function lgTradeExtras(x){ const L=(x.bn||[]).slice((x.bg||[]).length); if(x.cash>0&&!L.some(v=>String(v).startsWith('현금 ')))L.push('현금 '+money(x.cash)); return L; }
 function tcReport(){ const my=(G.trades||[]).filter(t=>t.gi).slice().reverse(); const rep=G.rep??50;
   const row=t=>{ const r=tradeReport(t); return `<div class="trr"><div><b>${t.y} ${t.d!=null?dmd(t.d):''} · ${badge(t.with,14)} ${esc(tshort(t.with))}</b><span>받음 ${esc(trSide(t,'get'))} · 보냄 ${esc(trSide(t,'give'))}</span></div><span class="grade g${t.grade||'C'}">${t.grade||'-'}</span>${r?`<span class="trw ${r.net>=.5?'up':r.net<=-.5?'dn':''}">${r.net>=0?'+':''}${r.net.toFixed(1)} WAR</span>`:''}</div>`; };
-  const lg=(G.lgTrades||[]).slice(0,10).map(x=>`<div class="fd"><span class="pill acc">${x.y}</span><span>${esc(tshort(x.a))} ← ${x.ag.map((id,i)=>{ const n=pNmAny(id); return n==='?'&&x.an?x.an[i]:n; }).join(', ')} / ${esc(tshort(x.b))} ← ${[...x.bg.map((id,i)=>{ const n=pNmAny(id); return n==='?'&&x.bn?x.bn[i]:n; }),...(x.pk&&x.bn?x.bn.slice(x.bg.length).map(esc):[])].join(', ')}</span><i>${dsh(x.d)}</i></div>`).join('');
+  const lg=(G.lgTrades||[]).slice(0,10).map(x=>`<div class="fd"><span class="pill acc">${x.y}</span><span>${esc(tshort(x.a))} ← ${x.ag.map((id,i)=>{ const n=pNmAny(id); return n==='?'&&x.an?x.an[i]:n; }).join(', ')} / ${esc(tshort(x.b))} ← ${[...x.bg.map((id,i)=>{ const n=pNmAny(id); return n==='?'&&x.bn?x.bn[i]:n; }),...lgTradeExtras(x).map(esc)].join(', ')}</span><i>${dsh(x.d)}</i></div>`).join('');
   return `  <section class="card"><div class="row between"><h2 class="sec">우리 트레이드 성적표</h2><span class="small muted">평점은 거래 당시 언론 평가, WAR은 이후 실제 성적 차이</span></div>${my.some(t=>!t.snap?.byTeam)?'<p class="small muted">옛 거래 일부는 거래 전 기여가 섞여 있을 수 있습니다. '+hiI('구단별 기준선이 없는 옛 거래 기록은 거래 전 기여가 포함될 수 있습니다. 새 거래부터는 거래 이후의 구단별 기여만 셉니다.')+'</p>':''}${my.length?my.map(row).join(''):'<p class="small muted">아직 트레이드 기록이 없습니다.</p>'}</section>
   <section class="card"><h2 class="sec">리그 트레이드</h2>${lg?`<div class="feed">${lg}</div>`:'<p class="small muted">아직 없습니다.</p>'}</section>`; }
 function tradeCenter(){faCelebrate();const s=curSub('trade'),BODY={block:blockCenter,market:tcMarket,fa:faCenter,find:()=>tcFind('buy'),table:tradeView,offers:blockCenter,gms:tcGms,report:tcReport};
