@@ -1770,7 +1770,7 @@ T('[검수 #981 새등록] 같은선수의 정식재등록은 새로운부상기
 T('[검수 #981 편집거절] 등록기준에서대체불가한편집은현재리그와등록원본을바꾸지 않는다 [래더덱검수]',()=>{const e=ld980Fresh(),q=e.P.find(p=>p.id===e.ln.find(x=>x[1]==='SS')[0]);q.injOut=8;ok(!ulSetDeck(e,'now'),'준비등록');const L=ulMakeLeague({seed:981015}).league,x=JSON.parse(JSON.stringify(L.teams[0].e));x.bn=[];const rng=__rngState(),raw=JSON.stringify(G);const msg=ulEditDeck(x);ok(!!msg&&JSON.stringify(G)===raw&&__rngState()===rng,'불가편집수락/변경');});
 T('[검수 #980 자동실제] 실제자동엔트리와강제계획은건강한현재1군을순수하게등록한다 [래더덱검수]',()=>{ld980Fresh();const raw=JSON.stringify(G),rng=__rngState(),e=ulAutoEntry();ok(e&&!ulDeckReady(e),'실제자동엔트리부족');const before=JSON.parse(raw),after=JSON.parse(JSON.stringify(G));delete before.uld;delete after.uld;ok(JSON.stringify(after)===JSON.stringify(before),'자동엔트리커리어변경');const p=ulAutoPlan(1700000000000,true);ok(p.due&&!p.skip&&G.uld.deck&&G.uld.deck.auto===1,'실제자동계획등록실패');ok(__rngState()===rng,'실제자동난수변경');});
 T('[검수 #980 투수] 건강한투수가없는덱은수동등록과기존리그시작에서 같은이유로거절한다 [래더덱검수]',()=>{const e=ld980Fresh();for(const p of e.P)if(p.isP)p.injOut=1;const rng=__rngState(),raw=JSON.stringify(G),msg=ulSetDeck(e,'now');ok(msg.includes('건강한 투수')&&JSON.stringify(G)===raw&&__rngState()===rng,'불가투수등록/변경');});
-T('[검수 #980 정상경기RNG] 공통편성추출뒤 건강한정상덱 실제경기의전체박스와주난수는기준그대로다 [래더덱검수]',()=>{const e=ld980Fresh(),op=cupEntryNow({tid:G.teams.find(t=>t.id!==G.user).id,name:'정상상대980'});for(const x of [e,op]){for(const p of x.P)p.injOut=0;x.h=FrontOfficeCore.cupEntryHash(x);}const prep=JSON.stringify(G),prng=__rngState();LADDER_WORLD=null;withRng(980101,()=>ladderWorldJson({season:'cup'}));ok(JSON.stringify(G)===prep&&__rngState()===prng,'기준세계준비가커리어/주난수변경');__seed(980102);const rng=__rngState(),raw=JSON.stringify(G),res=withRng(980103,()=>cupMatch(e,op,{best:3,all:1,tie:1}));ok(res.ok&&res.games.length===3,'정상실제3경기실패');const hash=FrontOfficeCore.cupHashStr(JSON.stringify(res));ok(hash==='a28c9fc1','GOLDEN980 '+hash+' / '+__rngState());ok(__rngState()===rng&&JSON.stringify(G)===raw,'정상실경기가커리어/주난수변경');});
+T('[검수 #980 정상경기RNG] 공통편성추출뒤 건강한정상덱 실제경기의전체박스와주난수는기준그대로다 [래더덱검수]',()=>{const e=ld980Fresh(),op=cupEntryNow({tid:G.teams.find(t=>t.id!==G.user).id,name:'정상상대980'});for(const x of [e,op]){for(const p of x.P)p.injOut=0;x.h=FrontOfficeCore.cupEntryHash(x);}const prep=JSON.stringify(G),prng=__rngState();LADDER_WORLD=null;withRng(980101,()=>ladderWorldJson({season:'cup'}));ok(JSON.stringify(G)===prep&&__rngState()===prng,'기준세계준비가커리어/주난수변경');__seed(980102);const rng=__rngState(),raw=JSON.stringify(G),res=withRng(980103,()=>cupMatch(e,op,{best:3,all:1,tie:1}));ok(res.ok&&res.games.length===3,'정상실제3경기실패');const hash=FrontOfficeCore.cupHashStr(JSON.stringify(res,(k,v)=>k==='hld'?undefined:v)); /* 홀드(hld, 래더 기록 세분화 11-18)는 새로 붙은 칸이라 빼고 예전 기준과 맞춘다 */ok(res.games.every(g=>g.stats.pit.every(p=>p.hld===0||p.hld===1)),'투수 줄 홀드 칸');ok(hash==='a28c9fc1','GOLDEN980 '+hash+' / '+__rngState());ok(__rngState()===rng&&JSON.stringify(G)===raw,'정상실경기가커리어/주난수변경');});
 function ld985Legacy(){const e=ld980Fresh();for(const p of e.P){delete p.pexp;delete p.vers;delete p.dsb;}const q=e.P.find(p=>p.id===e.ln.find(x=>x[1]==='SS')[0]);q.injOut=3;for(const p of e.P.filter(p=>!p.isP&&e.bn.includes(p.id))){p.pos='RF';p.r={con:50,pow:50,eye:50,spd:50,def:50,vit:50};}e.h=FrontOfficeCore.cupEntryHash(e);return e;}
 function ld985Installed(a,b){return withRng(985101,()=>ladderSwap(JSON.parse(ladderWorldJson({season:'cup'})),()=>{const kA=cupIdBase(a),CA=cupInstall(0,a,kA),CB=cupInstall(1,b,cupIdBase(b,kA)),D=FrontOfficeCore.dv;return [CA,CB].map(C=>{const s=ladderSide(C,G.day),rot=C.rot.filter(p=>!(p.injOut>0)),pen=C.pen.filter(p=>!(p.injOut>0)).map(penV).sort((a,b)=>b-a).slice(0,5);return{ids:s.order.map(p=>p.id),p:{off:D(avg(s.order.map(offV))),pow:D(avg(s.order.map(p=>p.r.pow))),con:D(avg(s.order.map(p=>p.r.con))),def:D(avg(s.order.filter(p=>s.posOf[p.id]!=='DH').map(p=>defAt(p,s.posOf[p.id])))),sp:D(avg(rot.map(spV))),pen:D(pen.length?avg(pen):0)}};});}));}
 T('[검수 #985 옛ID] 숙련·다재다능·세부수비가없는옛덱도실제설치ID의대체선수와전체프로필을쓴다 [래더덱검수]',()=>{const a=ld985Legacy(),b=ld980Fresh();let raw=JSON.stringify([a,b]),rng=__rngState();for(let n=0;n<6;n++){a.name='ID탐사'+n;a.h=FrontOfficeCore.cupEntryHash(a);const want=ld985Installed(a,b)[0],got=ulProfile(a);ok(JSON.stringify(got)===JSON.stringify(want.p),'실제설치전체프로필불일치 '+JSON.stringify([got,want.p]));const ids=ulReadyLineup(a).map(x=>x[0].id);ok(JSON.stringify(ids)===JSON.stringify(want.ids),'실제대체ID불일치 '+JSON.stringify([ids,want.ids]));}ok(__rngState()===rng,'옛ID조회가주난수소비');});
@@ -8218,7 +8218,7 @@ T('[유저 레더] 래더 v2 저장 옮기기(사용자 11-17): 예전 저장(G.
   ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({}).league; ok(L.tier===2,'옮긴 단계로 리그'); while(L.next<L.sched.length)ulRunRound(L); ulFinish(); ok(Object.keys(G.uld.ps).length>=14&&Object.keys(G.uld.opp).length===9,'옮긴 뒤 리그 기록이 쌓임');
   const e=G.uld.deck.e, m=C.ulDeckMeta(e), m2=C.ulDeckMeta(JSON.parse(JSON.stringify(e))); ok(m&&JSON.stringify(m)===JSON.stringify(m2)&&C.UL_POS.filter(k=>m.pos[k]).length===9&&m.n===e.P.length&&m.age.reduce((a,b)=>a+b,0)===e.P.length&&m.a in C.UL_ARCH,'덱 구성 요약 '+JSON.stringify(m));
   const A=C.ulMetaAgg([m,m2,null]); ok(A.n===2&&A.t.avg===m.t&&A.pos.SS.h.reduce((a,b)=>a+b,0)===2&&A.arch[m.a]===2&&A.age.reduce((a,b)=>a+b,0)===2*e.P.length,'집계 '+JSON.stringify(A.t)); ok(C.ulMetaAgg([]).n===0,'빈 집계'); });
-T('[유저 레더] 연봉 상한(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 엔트리에 선수 연봉·리그 평균을 적고, 배수는 세계 물가가 3배여도 같으며, 넘는 덱은 등록이 막히고 추천대로 빼면 들어가며, 승격·유예 끝은 리그 시작을 막는다(본게임 난수 그대로)',()=>{ fresh(); const C=FrontOfficeCore;
+T('[유저 레더] 연봉 상한(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 엔트리에 선수 연봉·리그 평균을 적고, 배수는 세계 물가가 3배여도 같으며, 래더 상한 없음(구단주 11-18): 넘는 덱·연봉 기록 없는 덱도 등록·리그·상대로 쓰고, 상한 계산·선수 빼기 추천(프런트컵용)은 그대로(본게임 난수 그대로)',()=>{ fresh(); const C=FrontOfficeCore;
   const r0=__rngState(); const me=cupEntryNow({name:'와이'}); ok(__rngState()===r0,'엔트리·리그 평균이 난수를 씀');
   ok(me.P.every(p=>p.sal===Math.round(G.players[p.id].sal||0)),'선수 연봉'); ok(me.pay===me.P.reduce((a,p)=>a+p.sal,0),'연봉 합');
   const t26=tid=>playersOf(tid).map(p=>p.sal||0).sort((a,b)=>b-a).slice(0,26).reduce((a,b)=>a+b,0), oth=G.teams.filter(t=>t.id!==G.user&&!t.indie);
@@ -8227,22 +8227,15 @@ T('[유저 레더] 연봉 상한(사용자 11-17 "레더나 대회마다 연봉�
   const old=JSON.parse(JSON.stringify(me)); for(const p of old.P)delete p.sal; ok(!C.ulCap(old,2).known,'선수 연봉이 없는 예전 엔트리는 모름');
   const big=JSON.parse(JSON.stringify(me)); { const k=15500/Math.max(1,me.P.reduce((a,p)=>a+p.sal,0)); for(const p of big.P)p.sal=Math.round(p.sal*k); } /* 155억: 상한 143.97억을 넘음 */
   ok(!C.ulCap(big,1).ok&&C.ulCap(big,1).room<0&&!C.ulCap(big,4).ok&&C.ulCap(big,1).cap===C.ulCap(big,4).cap,'155억: 모든 단계에서 넘음(같은 금액)');
-  G.uld=null; uld().tier=1; const m=ulSetDeck(big,'now'); ok(m.includes('마이너 상한')&&!G.uld.deck,'넘는 덱이 등록됨 '+m);
-  const sg=C.ulCapSuggest(big,1); ok(sg.ok&&sg.ids.length>=1&&sg.ids.length<=6,'추천 '+JSON.stringify(sg)); const dr=C.ulCapDrop(big,sg.ids);
+  G.uld=null; uld().tier=1; const m=ulSetDeck(big,'now'); ok(m===''&&G.uld.deck,'래더는 넘는 덱도 등록 '+m);
+  const sg=C.ulCapSuggest(big,1); ok(sg.ok&&sg.ids.length>=1&&sg.ids.length<=6,'추천(프런트컵 선수 빼기와 같은 계산) '+JSON.stringify(sg)); const dr=C.ulCapDrop(big,sg.ids);
   ok(!dr.err&&C.ulCap(dr.e,1).ok&&dr.e.P.length===big.P.length-sg.ids.length&&dr.e.ln.length===9&&C.cupValidate(dr.e,{}).ok,'추천대로 빼면 상한 안 '+dr.err);
-  ok(dr.e.ln.every(([id])=>dr.e.P.some(p=>p.id===id))&&dr.e.rot.every(id=>dr.e.P.some(p=>p.id===id&&p.isP)),'빠진 자리는 벤치·불펜으로 채움');
-  const keep=C.ulCapDrop(big,big.P.filter(p=>p.isP).map(p=>p.id)); ok(keep.err,'투수를 다 빼면 덱 규칙에 걸림');
-  dr.e.ovr=cupOvr(dr.e); ok(ulSetDeck(dr.e,'now')==='','줄인 덱 등록'); ok(ulMakeLeague({fetched:[]}).ok,'상한 안 덱으로 리그'); G.uld.league=null;
-  /* 이미 등록한 덱이 넘으면(예: 저장 파일을 고친 덱) 리그를 열지 않는다 */
-  G.uld.deck={id:8,src:'now',e:big}; const r1=ulMakeLeague({fetched:[]}); ok(!r1.ok&&r1.cap&&r1.msg.includes('마이너 상한'),'넘는 덱으로 리그 '+r1.msg); G.uld.deck=null;
-  /* 예전 덱(연봉 기록 없음): 유예(11.30 시즌 전)까지만 */
-  const unst=JSON.parse(JSON.stringify(me)); for(const p of unst.P)delete p.sal; delete unst.payRef; delete unst.capRef; unst.h=C.cupEntryHash(unst); G.uld.deck={id:9,src:'now',e:unst};
-  ok(ulMakeLeague({fetched:[],now:C.UL_CAP_FROM-1000}).ok,'유예 중 예전 덱'); G.uld.league=null; const r2=ulMakeLeague({fetched:[],now:C.UL_CAP_FROM+1000}); ok(!r2.ok&&r2.msg.includes('다시 등록'),'유예 끝 '+r2.msg);
-  ok(ulSetDeck(unst,'now').includes('연봉 기록'),'연봉 기록 없는 로스터는 새로 등록 못 함');
-  /* 상대: 상한을 넘는 유저 덱은 빼고 AI로 채운다(AI는 상한 밖) */
-  G.uld.deck=null; ok(ulSetDeck(me,'now')==='','다시 등록'); const ok1=Object.assign(cupEntryNow({tid:(G.user+1)%G.teams.length,name:'알뜰'}),{}); const no1=cupEntryNow({tid:(G.user+2)%G.teams.length,name:'넘침'}); { const k=16000/Math.max(1,no1.P.reduce((a,p)=>a+p.sal,0)); for(const p of no1.P)p.sal=Math.round(p.sal*k); } { const k=Math.min(1,12000/Math.max(1,ok1.P.reduce((a,p)=>a+p.sal,0))); for(const p of ok1.P)p.sal=Math.round(p.sal*k); }
-  const r3=ulMakeLeague({fetched:[ok1,no1]}); ok(r3.ok&&r3.league.src.user===1&&r3.league.teams.some(t=>t.name==='알뜰')&&!r3.league.teams.some(t=>t.name==='넘침'),'넘는 상대 덱 '+JSON.stringify(r3.league.src));
-  ok(r3.league.teams.filter(t=>t.kind==='ai').every(t=>t.e.ai===1&&C.ulCapGate(t.e,2).ok&&C.ulCapGate(t.e,2).ai),'AI는 상한 밖'); });
+  ok(ulMakeLeague({fetched:[]}).ok,'넘는 덱으로 리그'); G.uld.league=null;
+  const unst=JSON.parse(JSON.stringify(me)); for(const p of unst.P)delete p.sal; delete unst.payRef; delete unst.capRef; unst.h=C.cupEntryHash(unst);
+  ok(ulSetDeck(unst,'now')==='','연봉 기록 없는 로스터도 등록'); ok(ulMakeLeague({fetched:[],now:C.UL_CAP_FROM+1000}).ok,'예전 유예가 끝나도 리그'); G.uld.league=null;
+  G.uld.deck=null; ok(ulSetDeck(me,'now')==='','다시 등록'); const ok1=cupEntryNow({tid:(G.user+1)%G.teams.length,name:'알뜰'}), no1=cupEntryNow({tid:(G.user+2)%G.teams.length,name:'넘침'}); { const k=16000/Math.max(1,no1.P.reduce((a,p)=>a+p.sal,0)); for(const p of no1.P)p.sal=Math.round(p.sal*k); }
+  const r3=ulMakeLeague({fetched:[ok1,no1]}); ok(r3.ok&&r3.league.src.user===2&&r3.league.teams.some(t=>t.name==='넘침'),'넘는 상대 덱도 상대로 '+JSON.stringify(r3.league.src));
+  ok(r3.league.teams.filter(t=>t.kind==='ai').every(t=>t.e.ai===1&&C.ulCapGate(t.e,2).ok),'AI 덱'); });
 T('[유저 레더] AI 덱 단계 OVR(사용자 11-17 "레더 ai 도 챔피언스 이런곳은 고 오버롤로"): 루키 62·마이너 66·1부 70·챔피언스 75·레전드 79, 리그 안 ±2 벌림, 투타 고르게(타자 ≈ 총−1), 9자리·선발 5·능력치 85 이하, 서버 평균은 기준~기준+3',()=>{ fresh(); const C=FrontOfficeCore;
   ok(JSON.stringify(C.UL_TIER_OVR)==='[62,66,70,75,79]','기준 '+C.UL_TIER_OVR); ok(C.ulAiTarget(4,90,5)===82&&C.ulAiTarget(0,74.3,6)===65&&C.ulAiTarget(2,0,0)===70&&C.ulAiTarget(3,80,2)===75&&C.ulAiTarget(1,60,9)===66,'서버 평균 반영');
   let prev=0;
@@ -8853,11 +8846,11 @@ T('[검수 11-17 #182·#186] 래더 리그 중 덱에서 뺀 외야수도 그때
   const dr=C.ulCapDrop(U.deck.e,[of.id]); ok(!dr.err,'준비 실패: 빼기 '+dr.err); ok(ulEditDeck(dr.e)==='','덱 고치기 실패'); ok(ip().injOut===0,'덱을 고치니 부상이 되살아남');
   while(L.next<L.sched.length)ulRunSeries(L); ok(L.bat['me:'+inj.id]&&L.bat['me:'+inj.id].g>=1,'다음 연전부터도 못 나옴'); ulFinish();
   const R=C.ulPsRows(U.ps,'b',{pos:of.pos}); ok(R.some(x=>String(x.id)===String(of.id)),'뺀 외야수가 포지션 거르기에 없음 '+of.pos); const o=U.ps[String(of.id)]; ok(Object.values(o.s).every(s=>s.ps===of.pos),'칸 포지션 '+JSON.stringify(o.s)); });
-T('[검수 11-17 #183] 래더 리그: 연봉 상한을 넘는 가져온 우승 덱은 상대로 넣지 않고 AI가 채운다(상한 안 우승 덱은 그대로)',()=>{ fresh(); const C=FrontOfficeCore; ulSetDeck(cupEntryNow({name:'와이'}),'now');
-  const op=G.teams.find(t=>t.id!==G.user).id, big=cupEntryNow({tid:op,name:'우승덱'}); const cap=C.ulCap(big,0).cap; for(const p of big.P)p.sal=Math.ceil(cap*2/big.P.length); ok(!C.ulCapGate(big,0,Date.now()).ok,'준비 실패: 상한 안');
-  let L=ulMakeLeague({cup:[big]}).league; ok(L.src.cup===0&&L.src.ai===9&&L.teams.every(t=>t.kind==='me'||C.ulCapGate(t.e,0,Date.now()).ok),'상한 넘는 우승 덱이 상대로 '+JSON.stringify(L.src)); G.uld.league=null;
-  const fine=cupEntryNow({tid:G.teams.find(t=>t.id!==G.user&&t.id!==op).id,name:'우승덱2'}); ok(C.ulCapGate(fine,0,Date.now()).ok,'준비 실패: 상한 안 덱');
-  L=ulMakeLeague({cup:[big,fine]}).league; ok(L.src.cup===1&&L.src.ai===8,'상한 안 우승 덱 '+JSON.stringify(L.src)); });
+T('[검수 11-17 #183] 래더 리그(래더 연봉 상한 없음, 구단주 11-18): 예전 상한을 크게 넘는 가져온 우승 덱도 상대로 들어간다(우승 덱 최대 2)',()=>{ fresh(); const C=FrontOfficeCore; ulSetDeck(cupEntryNow({name:'와이'}),'now');
+  const op=G.teams.find(t=>t.id!==G.user).id, big=cupEntryNow({tid:op,name:'우승덱'}); const cap=C.ulCap(big,0).cap; for(const p of big.P)p.sal=Math.ceil(cap*2/big.P.length); ok(!C.ulCap(big,0).ok&&C.ulCapGate(big,0,Date.now()).ok,'준비: 예전 상한은 넘지만 래더는 통과');
+  let L=ulMakeLeague({cup:[big]}).league; ok(L.src.cup===1&&L.src.ai===8,'비싼 우승 덱도 상대로 '+JSON.stringify(L.src)); G.uld.league=null;
+  const fine=cupEntryNow({tid:G.teams.find(t=>t.id!==G.user&&t.id!==op).id,name:'우승덱2'});
+  L=ulMakeLeague({cup:[big,fine]}).league; ok(L.src.cup===2&&L.src.ai===7,'우승 덱 둘 '+JSON.stringify(L.src)); });
 T('[검수 11-17 #184] 래더 주간 목표는 그 주 첫 단계로 고정: 주중에 레전드로 올라가 도장을 받은 뒤에도 같은 주 목표는 다 찬 채로 보인다',()=>{ const C=FrontOfficeCore; const t0=Date.UTC(2026,10,16,3); /* 월요일 */
   const H=[0,1,2,3].map(i=>({tier:3,rank:2,move:'stay',to:3,w:15,l:10,ts:t0+i*36e5})).concat([{tier:3,rank:1,move:'up',to:4,w:18,l:8,ts:t0+5*36e5}]);
   const tk=C.ulGoalsTick(null,H,t0+6*36e5,3); ok(tk.week,'준비 실패: 주간 도장 '+JSON.stringify(C.ulWeeklyGoals(H,t0+6*36e5,3)));
@@ -8882,7 +8875,7 @@ T('[래더 3연전] 순위표·팀 기록이 경기 박스와 맞는다: 박스 
   ok(other.every(s=>s.bx.every(b=>!b.b&&(b.d.filter(Boolean).length>=1||b.r[0]===b.r[1]))),'다른 경기는 줄 점수·승패');
   const TS=ulTeamStats(L); for(const t of TS.T){ const B=Object.values(L.bat).filter(x=>String(x.key).startsWith(t.key+':')); ok(t.hr===B.reduce((a,x)=>a+(x.hr||0),0)&&t.h===B.reduce((a,x)=>a+(x.h||0),0)&&t.e===L.te[t.i],'팀 기록 '+t.name); }
   const hrBox=L.teams.map(()=>0); for(const s of L.series)for(const b of s.bx)for(const [sd,,n] of b.hr)hrBox[sd?s.b:s.a]+=n; ok(TS.T.every(t=>t.hr===hrBox[t.i]),'팀 홈런 = 박스 홈런 '+JSON.stringify([TS.T.map(t=>t.hr),hrBox]));
-  ok(TS.rank.era.every(r=>r>=1&&r<=10)&&TS.lg.ops>0&&TS.lg.era>0,'리그 순위·평균'); const LD=ulLeaders(L); ok(LD.qpa===84&&LD.qo===81&&LD.cats.length===10&&LD.cats.find(c=>c[0]==='타율')[1].every(x=>x.pa>=84)&&LD.cats.find(c=>c[0]==='평균자책점')[1].every(x=>x.outs>=81),'규정 타석·이닝(27경기) '+[LD.qpa,LD.qo]); });
+  ok(TS.rank.era.every(r=>r>=1&&r<=10)&&TS.lg.ops>0&&TS.lg.era>0,'리그 순위·평균'); const LD=ulLeaders(L); ok(LD.qpa===84&&LD.qo===81&&LD.cats.length===19&&TS.T.every(x=>x.fip!=null&&x.k9!=null&&x.bbp!=null)&&LD.cats.find(c=>c[0]==='타율')[1].every(x=>x.pa>=84)&&LD.cats.find(c=>c[0]==='평균자책점')[1].every(x=>x.outs>=81),'규정 타석·이닝(27경기) '+[LD.qpa,LD.qo]); });
 T('[래더 3연전] 포스트시즌: 정규 1~4위가 1-4·2-3 준결승(3전 2선승), 승자끼리 결승(5전 3선승, 높은 시드가 홈). 정규 1위·우승·준우승을 따로 남기고, 승강은 정규 순위(우승팀은 승격)',()=>{ fresh(); const C=FrontOfficeCore;
   ok(C.ulPsWin([[3,1],[2,5],[4,0]],3)==='a'&&C.ulPsWin([[3,1]],3)===null&&C.ulPsWin([[1,3],[0,2],[5,4],[1,2]],5)==='b','시리즈 승자');
   ulSetDeck(cupEntryNow({name:'와이'}),'now'); const L=ulMakeLeague({seed:23}).league; while(L.next<L.sched.length)ulRunRound(L); const st=ulStand(L), P=ulPostInit(L);
@@ -8917,7 +8910,7 @@ T('[래더 3연전] 저장 크기·기록 올리기: 끝난 리그 전체 기록
   console.log('    G.uld 진행 중 '+Math.round(mid/1024)+'KB · 끝난 뒤 '+Math.round(all/1024)+'KB(다시 보기 '+Math.round(last/1024)+'KB)'); ok(all<200000&&last<120000,'G.uld 크기 '+all+' / '+last);
   const up=ulRecUp(L,res), sz=JSON.stringify(up).length; ok(sz<3072&&up.b.length>=9&&up.b.length<=12&&up.p.length>=5&&up.p.length<=10,'올리는 요약 '+sz+'B');
   ok(up.team.n===L.teams[0].name&&up.team.rs===res.rs&&up.team.hr===Object.values(L.bat).filter(x=>x.key.startsWith('me:')).reduce((a,x)=>a+(x.hr||0),0),'팀 요약');
-  ok(up.b.every(x=>x.length===11&&x[1]>=1&&x[1]<=27&&x[3]<=x[2]&&x[4]<=x[3]&&x[6]<=x[4]&&x[5]>=x[4]&&x[5]<=4*x[4]&&x[9]+x[3]+x[10]<=x[2])&&up.p.every(x=>x.length===8&&x[2]>0&&x[4]<=x[2]+3),'선수 줄이 서버 검사(records.js)를 통과할 모양'); });
+  ok(up.b.every(x=>x.length===15&&x[11]+x[12]+x[6]<=x[4]&&x[5]===x[4]+x[11]+2*x[12]+3*x[6]&&x[1]>=1&&x[1]<=27&&x[3]<=x[2]&&x[4]<=x[3]&&x[6]<=x[4]&&x[5]>=x[4]&&x[5]<=4*x[4]&&x[9]+x[3]+x[10]<=x[2])&&up.p.every(x=>x.length===14&&x[8]+x[6]<=x[1]&&x[10]+x[11]<=x[7]&&x[12]<=x[10]&&x[2]>0&&x[4]<=x[2]+3),'선수 줄이 서버 검사(records.js)를 통과할 모양'); });
 T('[래더 자동 등록] 이름: 닉네임을 정하지 않으면 구단명#4자리 태그(12자 안), 단장 이름은 쓰지 않는다. 직접 정한 닉네임은 그대로',()=>{ fresh(); const C=FrontOfficeCore;
   ok(C.ulAutoName('부산 자이언츠','3812')==='부산 자이언츠#3812','기본 '+C.ulAutoName('부산 자이언츠','3812'));
   const L=C.ulAutoName('아주아주긴구단이름입니다요','7'); ok([...L].length<=12&&L.endsWith('#0007')&&C.cupName(L)===L,'긴 구단명 '+L);
@@ -8935,9 +8928,9 @@ T('[래더 자동 등록] 하루 한 번(그날 처음·날짜 넘김)과 시즌
   ulAutoDone(q,'fail',null,t0+2*D); q=ulAutoPlan(t0+2*D+60e3); ok(q.due&&q.why==='pend'&&q.upload,'연결이 끊겨 못 보낸 것은 다시 '+q.why); ulAutoDone(q,'ok',null,t0+2*D+120e3); ok(!G.uld.ar.pend&&G.uld.ar.h===q.x.h,'보낸 뒤');
   ok(!ulAutoPlan(t0+2*D+150e3).due,'보낸 뒤 같은 날'); cupAlbumAdd('auto'); q=ulAutoPlan(t0+2*D+180e3); ok(q.due&&q.why==='season'&&!q.upload,'시즌 종료(같은 날이어도 봄) '+q.why);
   ok(__rngState()===r0,'난수'); });
-T('[래더 자동 등록] 연봉 상한을 넘는 1군도 덱으로 등록되지만, 그 단계 리그는 지금 안내(상한 초과)로 막는다',()=>{ fresh(); uld(); for(const p of Object.values(G.players))if(p.team===G.user)p.sal=(p.sal||0)+2000;
-  const p=ulAutoPlan(Date.UTC(2026,10,20,3)); ok(p.due&&p.cap===1&&G.uld.deck&&G.uld.deck.e.h===p.x.h&&G.uld.ar.cap===1,'상한 초과도 등록 '+JSON.stringify([p.cap]));
-  const r=ulMakeLeague({seed:5}); ok(!r.ok&&r.cap&&r.msg.includes('상한')&&!G.uld.league,'그 단계 리그는 막음 '+r.msg); });
+T('[래더 자동 등록] 래더 연봉 상한 없음(구단주 11-18): 예전 상한을 넘는 1군도 덱으로 등록되고 그 단계 리그도 그대로 시작한다',()=>{ fresh(); uld(); for(const p of Object.values(G.players))if(p.team===G.user)p.sal=(p.sal||0)+2000;
+  const p=ulAutoPlan(Date.UTC(2026,10,20,3)); ok(p.due&&p.cap===0&&G.uld.deck&&G.uld.deck.e.h===p.x.h&&!FrontOfficeCore.ulCap(p.x,0).ok,'예전 상한 초과 1군 그대로 등록 '+JSON.stringify([p.cap]));
+  const r=ulMakeLeague({seed:5}); ok(r.ok&&!r.cap&&G.uld.league,'리그 시작 '+r.msg); G.uld.league=null; });
 T('[래더 자동 등록] 직접 다시 등록은 하루 1회, 앨범 시즌 덱을 직접 고르면 자동 갱신을 멈추고, 맡은 구단이 없으면 쉰다',()=>{ fresh(); const C=FrontOfficeCore, t=Date.UTC(2026,10,20,3), D=864e5; uld();
   ok(C.ulManOk(null,t)&&C.ulManOk({},t),'처음'); ulAutoPlan(t); ulAutoManual('now',[],t); ok(!C.ulManOk(G.uld.ar,t)&&!C.ulManOk(G.uld.ar,t+3600e3)&&C.ulManOk(G.uld.ar,t+D),'하루 1회');
   const a=cupAlbumAdd('hand'); ok(a&&!ulSetDeck(a.e,'alb:'+a.id),'앨범 덱 등록'); ulAutoManual('alb:'+a.id,[],t); ok(G.uld.deck.auto===0&&ulAutoPlan(t+2*D).skip==='album','앨범 덱이면 자동 갱신 멈춤');

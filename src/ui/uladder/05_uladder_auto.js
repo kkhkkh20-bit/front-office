@@ -101,12 +101,12 @@ function ulLiveFlush(){ if(ULL.busy)return ULL.busy; const p=(async()=>{ try{ co
 function ulLiveSt(L,res){ return {st:(res.stand||[]).map(x=>[x.name,x.w,x.l,x.t,x.kind]),champ:res.ps?res.ps.champN:undefined,runner:res.ps?res.ps.runnerN:undefined}; }
 const ulAgoS=ms=>!ms?'':typeof ulAgo==='function'?ulAgo(ms):'';
 /* 설정 › 래더 */
-function ulAutoCard(){ const U=G&&uld(), A=(U&&U.ar)||{}, on=ulAutoOn(), pending=ulAutoPending(), C=FrontOfficeCore, cg=U&&U.deck?C.ulCapGate(U.deck.e,U.tier|0,Date.now()):null;
+function ulAutoCard(){ const U=G&&uld(), A=(U&&U.ar)||{}, on=ulAutoOn(), pending=ulAutoPending(), C=FrontOfficeCore;
   const roster=on&&!(G&&G.unemp)&&U&&(!U.deck||U.deck.src==='now')&&A.rosterErr;
   const st=pending==='off'?'꺼져 있습니다. 서버 참가 중지·덱 삭제를 기다리고 있습니다.':pending==='on'?'서버 참가 설정·덱 반영을 기다리고 있습니다.':!on?'꺼져 있습니다. 서버 참가 중지와 덱 삭제를 반영했습니다. 이 기기 래더 리그는 그대로 할 수 있습니다.':G&&G.unemp?'지금은 맡은 구단이 없어 자동 등록을 쉽니다.':U&&U.deck&&U.deck.src!=='now'?'앨범 시즌 덱을 직접 등록해 자동 갱신을 멈췄습니다. 아래 \'지금 덱으로 다시 등록\'을 누르면 다시 이어집니다.':roster?`현재 1군 자동 갱신을 보류했습니다. ${U.deck?'기존 등록 덱을 유지합니다.':'1군 명단을 확인해 주세요.'}`:A.pend?'연결이 끊겨 기다리는 중입니다. 연결되면 바로 올립니다.':A.localAt&&A.localAt>=(A.at||0)?`이 기기 덱으로 등록했습니다 · ${ulAgoS(A.localAt)}(서버에 올릴 수 없는 판이거나 바뀐 것이 없습니다).`:A.at?`마지막 갱신 ${ulAgoS(A.at)} · ${U&&U.deck?esc(U.deck.e.name)+' OVR '+C.cupOvrTxt(U.deck.e.ovr):''}`:A.day?'이 기기 덱으로 등록했습니다(서버에 올릴 수 없는 판이거나 바뀐 것이 없습니다).':'곧 등록합니다(게임을 켜 두면 1분 안에).';
   const ed=ulEdited(); if(ed)return `<section class="card ul-auto"><h2 class="sec">래더 자동 참가</h2><div class="note bad ul-edited" role="status">${esc(ed)}</div></section>`; /* 편집된 저장(22d_edited): 켜기·끄기 대신 이유만 */
   return `<section class="card ul-auto"><h2 class="sec">래더 자동 참가</h2><div class="chips">${[['1','켜기'],['0','자동 참가 끄기']].map(([v,l])=>`<button data-a="ulAutoSet" data-v="${v}" class="${(on?'1':'0')===v?'on':''}" aria-pressed="${(on?'1':'0')===v}"${ULA.busy?' disabled':''}>${l}</button>`).join('')}</div>
-    <p class="small keep">${st}</p>${on&&cg&&!cg.ok?`<div class="note bad">상한 초과: ${esc(cg.msg)} 덱은 등록되지만 이 단계 리그에는 나가지 못합니다. 래더 › 덱에서 선수를 빼 맞출 수 있습니다.</div>`:''}${roster?`<div class="note bad">${esc(roster)}</div>`:on&&!pending&&A.err?`<div class="note bad">${esc(A.err)}</div>`:''}
+    <p class="small keep">${st}</p>${roster?`<div class="note bad">${esc(roster)}</div>`:on&&!pending&&A.err?`<div class="note bad">${esc(A.err)}</div>`:''}
     <p class="small muted">커리어 구단 1군 26명을 래더 덱으로 자동 등록합니다. 하루 한 번(그날 처음 켜거나 날짜를 넘길 때)과 시즌이 끝날 때, 바뀐 경우에만 올립니다. 올라가는 것은 구단 1군 스냅샷(선수 이름·능력치·연봉)과 구단명·닉네임뿐이며 단장 이름은 올리지 않습니다. 끄면 서버의 내 덱을 지웁니다.</p>${ULA.notice?`<p class="small ul-auto-new">${esc(UL_AUTO_NOTE)}</p>`:''}${ULA.msg&&ULA.msg!==roster?`<div class="note${ULA.bad?' bad':''}" role="status">${esc(ULA.msg)}</div>`:''}</section>`; }
 function ulNickCard(){ const N=ulNet(), p=N.signedIn()?N.player():null, set=ulNickSet(), want=ulAutoNick(), show=p&&p.nickname||want, pending=!set&&p&&p.nickname!==want;
   return `<section class="card ul-nick"><h2 class="sec">래더 닉네임</h2><p class="ul-nick-now"><b>${esc(show)}</b> <span class="small muted">${set?'직접 정한 닉네임':p?'서버에 반영된 자동 이름':'자동 이름(구단명#태그)'}</span></p>
@@ -138,9 +138,9 @@ Object.assign(A,{
     if(r&&r.ok){ ulLs(UL_NICK_K,'auto'); ulSvStale(); return ulAutoSay(`자동 이름 ${ulAutoNick()}(으)로 되돌렸습니다.`); } ulAutoSay(r&&r.data&&r.data.message?r.data.message:'지금은 래더 서버에 연결할 수 없습니다.',true); },
   async ulAutoNow(){if(ULA.busy||UL.busy||!G||G.unemp)return;const U=uld(),now=Date.now();if(!FrontOfficeCore.ulManOk(U.ar,now))return ulAutoSay(UL_MAN_WAIT,true);
     const p=ulAutoPlan(now,true,{src:'now'});if(!p||p.skip)return ulAutoSay(p&&p.msg||'구단을 맡고 있을 때 지금 1군을 등록합니다.',true);
-    const M=ulManualRemember(U,'now',(U.ar&&U.ar.drop)||[],now),tk=ulTok(),intent=ulAutoIntentKey(),key=ulV1DeckKey(U),work={tk,u:U};ULA.work=work;ULA.busy=true;UL.msg='';UL.bad=false;ulSave();render();const r=await ulUploadResult(now);
+    const M=ulManualRemember(U,'now',[],now),tk=ulTok(),intent=ulAutoIntentKey(),key=ulV1DeckKey(U),work={tk,u:U};ULA.work=work;ULA.busy=true;UL.msg='';UL.bad=false;ulSave();render();const r=await ulUploadResult(now);
     if(!ulSame(tk)||uld()!==U||ULA.work!==work)return;ULA.work=null;ULA.busy=false;if(key!==ulV1DeckKey(U)||intent!==ulAutoIntentKey()||r.status==='stale')return;ulManualFinish(U,M,r);ulSave();
-    if(r.status==='ok'||r.status==='offline')return ulAutoSay(`${U.deck.e.name} 덱을 다시 등록했습니다(OVR ${FrontOfficeCore.cupOvrTxt(U.deck.e.ovr)}).${p.cap?' 연봉 상한을 넘어 이 단계 리그에는 나가지 못합니다.':''}`,!!p.cap);
+    if(r.status==='ok'||r.status==='offline')return ulAutoSay(`${U.deck.e.name} 덱을 다시 등록했습니다(OVR ${FrontOfficeCore.cupOvrTxt(U.deck.e.ovr)}).`,false);
     if(r.status==='localoff')return ulAutoSay(r.msg);ulAutoSay(r.status==='reject'?r.msg:'서버에 올리지 못했습니다. 연결되면 자동으로 다시 올립니다.',true); },
 });
 try{ setInterval(()=>{ ulAutoTick().catch(()=>{}); },60e3); setTimeout(()=>{ ulAutoTick().catch(()=>{}); },5e3);

@@ -1,7 +1,7 @@
 /* v1 래더: 덱 등록·상대 받기·리그 결과(포인트·단계·맞대결·소식)·순위표·소식·내 기록·라이벌.
    리그는 지금처럼 유저 기기에서 돈다. 서버는 결과 요약만 받는다(조작은 신경 쓰지 않는다: src/core/uladder.mjs 머리말). 단계 계산은 서버가 공용 규칙(ulTierAfter)으로 한다 */
 import { cupValidate, cupName, cupBadName, cupEntryHash } from '../../src/core/cup.mjs';
-import { UL_TIERS, UL_TEAMS, ulTierAfter, ulSlim, ulDeckMeta, ulMetaAgg, ulCap, ulCapGate } from '../../src/core/uladder.mjs';
+import { UL_TIERS, UL_TEAMS, ulTierAfter, ulSlim, ulDeckMeta, ulMetaAgg, ulCap, ulCapGate, UL_CAP_ON } from '../../src/core/uladder.mjs';
 import { json, err, pub, readJson, cached, kstHour, kstDay, qInt, byteLen } from './http.js';
 import { PID } from './auth.js';
 import { currentSeason, entryFor } from './season.js';
@@ -64,7 +64,7 @@ export async function putDeck(req, db, me, now, env) {
   const tier0 = (await entryFor(db, s.id, me.id, now, first, false)).tier;
   /* 래더 v4(구단주 11-18 §1): auto 자동 등록(자동 참가를 끈 플레이어는 409) · man 직접 등록(하루 1회, 이미 덱이 있으면 429 reg_wait). 표를 못 만들면 예전처럼 */
   const rg = (await ensureAuto(db)) ? await regCheck(db, me, b, e, tier0, had, now) : null; if (rg && rg.error) return rg.error;
-  const bad = capErr(e, tier0); if (bad && !(rg && rg.auto && rg.cap.known && rg.cap.each)) return bad; /* 연봉 상한(사용자 11-17): 쓰기 전에 그 단계 상한을 본다. 자동 등록은 넘어도 받고 그 단계 리그에서만 막는다(상대 고르기·리그 시작) */
+  /* 연봉 상한 없음(구단주 11-18 "래더는 일단 상한을 두지 말고 자유롭게"): 예전 capErr(no_pay·over_cap)은 보지 않는다. ladder_reg.cap_ok·pay_x 열은 남기되 쓰지 않는다(1·null) */
   const en = await entryFor(db, s.id, me.id, now, first); if (!en) return err(401, 'auth'); /* 그 사이 지운 플레이어 */
   const ovr = e.ovr && typeof e.ovr === 'object' ? e.ovr : null;
   const consent = rg ? " AND NOT EXISTS (SELECT 1 FROM ladder_reg WHERE player_id = ? AND off = 1)" : "";
@@ -78,12 +78,12 @@ export async function putDeck(req, db, me, now, env) {
   /* 검사 뒤 끄기 요청이 먼저 확정되면 같은 batch의 쓰기도 막는다. 거절된 덱을 성공으로 알리거나 구성 요약을 되살리지 않는다. */
   if (!wrote[rg ? 1 : 0]?.meta?.changes) { const stopped = await regGet(db, me.id); return err(stopped?.off ? 409 : 401, stopped?.off ? 'auto_off' : 'auth'); }
   await metaPut(db, me.id, e, now); /* 덱 구성 요약(래더 v2 메타, 사용자 11-17): 실패해도 덱 등록은 된다 */
-  return json(200, { ok: true, at: now, man_day: rg&&rg.man ? kstDay(now) : null, season: s.id, name: e.name, ovr, tier: en.tier, bytes, h: e.h, auto: rg ? rg.auto : null, cap_ok: rg ? rg.capOk : !bad, pay_x: rg ? rg.payX : null });
+  return json(200, { ok: true, at: now, man_day: rg&&rg.man ? kstDay(now) : null, season: s.id, name: e.name, ovr, tier: en.tier, bytes, h: e.h, auto: rg ? rg.auto : null, cap_ok: true, pay_x: null });
 }
 
-/* 연봉 상한 검사(사용자 11-17 "레더나 대회마다 연봉에 제약을 두게 하면 좋을것 같음 공평하게"): 화면과 같은 공용 규칙(ulCap).
-   서버는 덱 선수(P)마다 적힌 연봉(sal)으로 합을 다시 세고, 그 세계 기준(payRef)으로 나눈다. 연봉이 없는 새 덱은 받지 않는다(예전 덱은 상대 고르기에서 유예) */
+/* 연봉 상한 검사(예전, 사용자 11-17). 래더 상한 없음(구단주 11-18) 뒤로는 부르지 않는다. UL_CAP_ON을 다시 켜면 putDeck에서 쓴다 */
 export function capErr(e, tier) {
+  if (!UL_CAP_ON) return null;
   const c = ulCap(e, tier); if (!c.known || !c.each) return err(400, 'no_pay', { errors: ['연봉 기록이 없는 덱입니다. 게임을 새로 고친 뒤 다시 등록해 주세요.'] });
   if (!c.ok) return err(400, 'over_cap', { errors: [ulCapGate(e, tier).msg], cap: { x: c.x, pay: c.pay, ref: c.ref, cap: c.cap, r: c.r } });
   return null;
@@ -100,7 +100,7 @@ export async function opponents(url, db, me, now, env) {
   const n = qInt(url.searchParams.get('n'), OPP_MAX, 1, OPP_MAX), lim = n * 2, since = now - STALE; /* 정수만(srv2 #40) */
   const q = dir => db.prepare(`SELECT d.player_id, d.name, d.year, d.ovr, d.ovr_json, d.at, d.body, p.nickname FROM decks d JOIN players p ON p.id = d.player_id WHERE d.tier = ? AND d.ovr ${dir === 'up' ? '>=' : '<'} ? AND d.player_id != ? AND p.hidden = 0 AND d.at >= ? ORDER BY d.ovr ${dir === 'up' ? 'ASC' : 'DESC'} LIMIT ?`).bind(tier, ovr, me.id, since, lim).all();
   const [up, dn] = await Promise.all([q('up'), q('dn')]);
-  /* 연봉 상한(사용자 11-17): 그 단계 상한을 넘는 덱(승격 뒤 그대로인 덱)·유예가 끝난 예전 덱(연봉 기록 없음)은 상대로 내보내지 않는다 */
+  /* 연봉 상한 없음(구단주 11-18): ulCapGate는 언제나 ok(UL_CAP_ON=false). 본문을 못 읽는 덱만 뺀다 */
   const all = [...(up.results || []), ...(dn.results || [])].map(x => { try { x.e = JSON.parse(x.body); } catch (e) { return null; } return ulCapGate(x.e, tier, now).ok ? x : null; }).filter(Boolean);
   const pick = all.map(x => [Math.abs(x.ovr - ovr), x]).sort((a, b) => a[0] - b[0] || b[1].at - a[1].at).slice(0, n).map(x => x[1]);
   const avg = all.length ? Math.round(all.reduce((a, x) => a + x.ovr, 0) / all.length * 10) / 10 : 0;
@@ -215,10 +215,15 @@ export async function meView(db, me, now) {
   const past = (await db.prepare("SELECT season, tier, best_tier, points, leagues, titles FROM ladder_entries WHERE player_id = ? AND season < ? ORDER BY season DESC LIMIT 10").bind(me.id, s.id).all()).results || [];
   const recent = (await db.prepare('SELECT lkey AS key, season, tier, to_tier, rank, teams, w, l, d, delta, at FROM league_results WHERE player_id = ? ORDER BY id DESC LIMIT 10').bind(me.id).all()).results || [];
   const titles = past.flatMap(x => JSON.parse(x.titles || '[]')), reg = await regGet(db, me.id);
+  /* 서버 통산(래더 기록 세분화, 구단주 11-18): 모든 시즌 리그 결과 합. 색인 없는 열 합계지만 한 플레이어 줄만(리그 수만큼) 읽는다 */
+  const cr = await db.prepare('SELECT COUNT(*) AS leagues, SUM(w) AS w, SUM(l) AS l, SUM(d) AS d, SUM(CASE WHEN to_tier > tier THEN 1 ELSE 0 END) AS ups, SUM(CASE WHEN to_tier < tier THEN 1 ELSE 0 END) AS downs, SUM(CASE WHEN rank = 1 THEN 1 ELSE 0 END) AS firsts, MAX(tier) AS best_tier FROM league_results WHERE player_id = ?').bind(me.id).first() || {};
+  let crTitles = 0, bestRank = null; try { if (cr.leagues) { bestRank = ((await db.prepare('SELECT MIN(rank) AS r FROM league_results WHERE player_id = ? AND tier = ?').bind(me.id, cr.best_tier | 0).first()) || {}).r ?? null;
+    if (await ensureAuto(db)) crTitles = ((await db.prepare("SELECT COUNT(*) AS n FROM ladder_leagues WHERE player_id = ? AND ps = 'c'").bind(me.id).first()) || {}).n || 0; } } catch (e) {}
+  const career = { leagues: cr.leagues || 0, w: cr.w || 0, l: cr.l || 0, d: cr.d || 0, ups: cr.ups || 0, downs: cr.downs || 0, firsts: cr.firsts || 0, titles: crTitles, best_tier: cr.best_tier | 0, reached: Math.max(cr.best_tier | 0, en.best_tier | 0), best_rank: bestRank }; /* best_tier·best_rank = 뛰어 본 가장 높은 단계와 그 단계 최고 순위, reached = 올라가 본 가장 높은 단계 */
   return json(200, { ok: true, player: { id: me.id, nickname: me.nickname, hidden: !!me.hidden }, season: { id: s.id, starts: s.starts, ends: s.ends },
     entry, reg: reg ? {man_day:reg.man_day,at:reg.at,off:reg.off,auto:reg.auto} : null,
     deck: deck ? { name: deck.name, year: deck.year, ovr: deck.ovr_json ? JSON.parse(deck.ovr_json) : null, tier: deck.tier, h: deck.h, at: deck.at } : null,
-    past: past.map(x => ({ season: x.season, tier: x.tier, best_tier: x.best_tier, points: x.points, leagues: x.leagues })), titles, recent });
+    past: past.map(x => ({ season: x.season, tier: x.tier, best_tier: x.best_tier, points: x.points, leagues: x.leagues })), titles, recent, career });
 }
 
 /* 라이벌: 내가 가장 많이 상대한 덱(공격) + 내 덱을 가장 많이 상대한 유저(수비, 그쪽 기록을 내 쪽으로 뒤집어 보여 준다) */
