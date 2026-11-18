@@ -119,12 +119,12 @@ const QUICK=process.env.QUICK==='1';
       if(UI.ngt&&b.extCounter){ A.ngtCounter(); }
       out.done=!!b.extNext||(b.ext&&b.faC); const st=document.querySelector('.stamp-w'); out.stamp=!!st;
       if(st){ const r=st.getBoundingClientRect(); const e=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2); out.top=!!(e&&e.closest('.stamp-w')); }
-      out.log=(b.extLast||{}).st||''; return out; });
+      out.log=(b.extLast||{}).st||''; out.why=[(b.extLast||{}).t||'',b.agId,a.agId,!!b.extCounter,(document.querySelector('#sheet .ng-res')||{}).innerText||''].join(' | '); return out; });
     if(!r||r.skip)return;
     if(!/거절|안 됩니다|시장/.test(r.first))add('협상 결과','낮은 다년계약 제안 뒤 결과 줄이 없음: '+JSON.stringify(r.first));
     if(!/접었|\d+\/\d+/.test(r.noRes))add('협상 결과','라운드 한도 뒤 다시 제안할 수 있는 날이 안 보임: '+JSON.stringify(r.noRes));
     if(r.noBtn==='on')add('협상 결과','에이전트가 협상을 접었는데 제안하기 버튼이 그대로 켜져 있음');
-    if(!r.done)add('협상 결과','요구의 1.5배 제안에도 합의되지 않음(시나리오 준비 실패)');
+    if(!r.done)add('협상 결과','요구의 1.5배 제안에도 합의되지 않음(시나리오 준비 실패): '+r.why);
     else if(!r.stamp)add('협상 결과','다년계약 합의 도장이 선수단 화면에 안 뜸');
     else if(!r.top)add('협상 결과','합의 도장이 선수 정보 창에 가려짐');
     await ev(()=>{ UI.stamp=null; closeSheets(); render(); }); };
@@ -289,7 +289,7 @@ const QUICK=process.env.QUICK==='1';
       if(!r.en)add('입대 결재','현역 입대가 확인 없이 바로 확정됨'); if(!r.canc)add('입대 결재','입대 예약 취소가 없음'); } }
   /* 날짜 넘김 연출: 한 주를 넘기면 경기 결과 창(시트)이 바로 열리는데, 그때도 날짜가 넘어가는 표시는 보여야 한다(휴대폰에서 안 보이던 문제) */
   { where='날짜 넘김'; await ev(()=>{ closeSheets(); const p=domestic(G.user)[0]; A.player(p.id); dayTick(G.day-5); }); await pg.waitForTimeout(350);
-    const r=await ev(()=>{ if(fmOn()){ const b=document.querySelector('.fmtop .fm-date'); const vis=b&&b.getBoundingClientRect().height>0&&document.elementFromPoint(b.getBoundingClientRect().left+4,b.getBoundingClientRect().top+4)?.closest('.fm-date'); const busy=!!document.querySelector('.fmtop .goset>button.fm-busy'); closeSheets(); return vis&&busy?{disp:'block',op:1,z:99}:{none:true,fm:true,vis:!!vis,busy}; } /* PC는 FM처럼 오른쪽 위 날짜·계속 버튼 진행 막대 */ const el=document.getElementById('dtick'); if(!el)return {none:true}; const cs=getComputedStyle(el); const v={disp:cs.display,op:+cs.opacity,z:+cs.zIndex}; closeSheets(); return v; });
+    const r=await ev(()=>{ if(fmOn()){ const b=document.querySelector('.fmtop .fm-date'); const vis=b&&b.getBoundingClientRect().height>0&&document.elementFromPoint(b.getBoundingClientRect().left+4,b.getBoundingClientRect().top+4)?.closest('.fm-date'); const busy=!!document.querySelector('.fmtop .goset>button.fm-busy'); closeSheets(); return vis&&busy?{disp:'block',op:1,z:99}:{none:true,fm:true,vis:!!vis,busy}; } /* PC는 FM처럼 오른쪽 위 날짜·계속 버튼 진행 막대 */ if(document.querySelector('.top .goset')){ const b=document.querySelector('.top .tbar .club>div>span'); const R=b&&b.getBoundingClientRect(); const vis=!!(R&&R.height>0&&document.elementFromPoint(R.left+4,R.top+4)?.closest('.top .tbar .club')); const busy=!!document.querySelector('.top .goset>button.fm-busy'); closeSheets(); return vis&&busy?{disp:'block',op:1,z:99}:{none:true,mob:true,vis,busy}; } /* 휴대폰도 위 날짜가 넘어가고 진행하기 버튼에 막대(사용자 11-09, dayTick): 가운데 띠(#dtick)는 위 막대가 없을 때만 */ const el=document.getElementById('dtick'); if(!el)return {none:true}; const cs=getComputedStyle(el); const v={disp:cs.display,op:+cs.opacity,z:+cs.zIndex}; closeSheets(); return v; });
     if(r){ if(r.none||r.disp==='none'||r.op<.5)add('날짜 넘김',`시트가 열려 있으면 날짜 넘김 표시가 안 보임(${JSON.stringify(r)})`); else if(r.z<=40)add('날짜 넘김','날짜 넘김 표시가 시트 뒤에 깔림 z '+r.z); } await pg.waitForTimeout(1800); }
   /* 주황 점: 알림이 뜬 하위 탭에 들어가면 무엇 때문인지 맨 위에 보여야 한다 */
   { where='알림 이유'; const r=await ev(()=>{ closeSheets(); const keep=G.scouts.slice(); G.scouts=G.scouts.filter(x=>(x.role||'am')!=='am'||x.region!=='영남'); const on=subAlert('staff','scouts'); UI.tab='staff'; UI.sub=Object.assign({},UI.sub||{},{staff:'scouts'}); render(); const why=(document.querySelector('#app .alert-why')||{}).textContent||''; G.scouts=keep; UI.tab='home'; render(); return {on,why}; });
@@ -339,7 +339,7 @@ const QUICK=process.env.QUICK==='1';
   { where='드래프트 추천 순번'; const r=await ev(()=>{ if(typeof draftCenter!=='function'||typeof mockDraft!=='function')return null; const mk=mockDraft(12); if(!mk.some(m=>m.mine))return null; const all=(G.draftClass||[]).map(id=>G.players[id]).filter(Boolean).map(p=>({p,rp:scoutReport(p)})); if(!all.length)return null; const h=draftCenter(all,false); return {grp:/까지 남을 확률/.test(h)&&/우리 차례에도 남을 듯|반반|앞에서 데려갈 듯/.test(h)}; }); /* 스카우트 1단계(11-16): 순번 기준 묶음이 '우리 차례까지 남을 확률' 구간으로 바뀜 */
     if(r&&!r.grp)add('드래프트 추천','추천이 우리 지명 순번을 고려하지 않음'); }
   /* 추천 트레이드의 다른 자리 공백·예산 이름(외부 리뷰 B) */
-  { where='트레이드 공백·예산'; const r=await ev(()=>{ const d=depth(G.user); const sp=d.sp[4]||d.sp[0]; const o=G.teams.find(t=>t.id!==G.user); const q=domestic(o.id).find(x=>!x.isP); const h=typeof dealSide==='function'?dealSide([sp.id],[q.id]):''; UI.tab='home'; render(); const tx=(document.querySelector('#app')||{}).textContent||''; return {gap:/선발 대체 필요/.test(h),bud:/상한 잔여|연봉 여유|연봉 상한까지/.test(tx)}; });
+  { where='트레이드 공백·예산'; const r=await ev(()=>{ const d=depth(G.user); const sp=d.sp[4]||d.sp[0]; const o=G.teams.find(t=>t.id!==G.user); const q=domestic(o.id).find(x=>!x.isP); const h=typeof dealSide==='function'?dealSide([sp.id],[q.id]):''; UI.tab='home'; let tx=''; const p0=UI.homePage||0; for(let i=0;i<8;i++){ UI.homePage=i; render(); tx+=(document.querySelector('#app')||{}).textContent||''; } UI.homePage=p0; render(); /* 휴대폰 홈은 카드를 장으로 나눠 예산 카드가 뒷장에 있다(사용자 11-06): 모든 장을 본다 */ return {gap:/선발 대체 필요/.test(h),bud:/상한 잔여|연봉 여유|연봉 상한까지/.test(tx)}; });
     if(r){ if(!r.gap)add('추천 트레이드','선발을 내주는 거래에 선발 공백 안내가 없음'); if(!r.bud)add('예산','홈 예산 여유 타일에 연봉 상한 잔여·현금이 없음'); } }
   /* 선수단 계획 합계·캡 여유, 코치 후보 성격(외부 리뷰 B) */
   { where='계획·코치'; const r=await ev(()=>{ const tx=plannerCard().replace(/<[^>]+>/g,' '); UI.tab='staff'; UI.sub=Object.assign({},UI.sub||{},{staff:'coach'}); UI.it=Object.assign({},UI.it||{},{mg_staff_coach:'coach'}); render(); const tc=(document.querySelector('#app')||{}).textContent||''; UI.tab='home'; render(); return {plan:/캡 여유/.test(tx),coach:/후보$|후보 ·|강한 후보|메우는 후보/.test(tc)}; });
@@ -485,7 +485,7 @@ const QUICK=process.env.QUICK==='1';
       const pts=[...h.matchAll(/data-v="(\d+)" data-x="([-\d.e]+)" data-y="([-\d.e]+)"><title>[^<]*<\/title><circle cx="([\d.]+)"/g)].map(m=>({id:+m[1],vx:+m[2],cx:+m[4]})); out.n=pts.length;
       const S=[...pts].sort((a,b)=>b.vx-a.vx); out.edge=S.length>2&&!(S[0].vx>S[1].vx+1e-9&&S[0].cx<=S[1].cx+1e-6)&&!(S[S.length-1].vx<S[S.length-2].vx-1e-9&&S[S.length-1].cx>=S[S.length-2].cx-1e-6);
       UI.dsX='war'; UI.dsYk='war'; h=distView(); out.same=!/WAR와 WAR/.test(h);
-      UI.dsX='ops'; UI.dsYk='war'; UI.dsPos='SS'; h=distView(); const ids=[...h.matchAll(/class="ds-p[^"]*" data-a="dsPick" data-v="(\d+)"/g)].map(m=>+m[1]); out.pos=ids.every(id=>G.players[id]&&G.players[id].pos==='SS')&&/data-[ak]="dsPos"/.test(h);
+      UI.dsX='ops'; UI.dsYk='war'; UI.dsPos='SS'; h=distView(); const ids=[...h.matchAll(/class="ds-p[^"]*" data-a="dsPick" data-v="(\d+)"/g)].map(m=>+m[1]); out.pos=ids.every(id=>{ const q=G.players[id]||(G.arch&&G.arch[id]&&archP(G.arch[id])); return q&&q.pos==='SS'; }) /* 리그를 떠난(보관) 선수의 그 시즌 기록도 점으로 들어간다(검수 11-09zg) */&&/data-[ak]="dsPos"/.test(h);
       UI.dsPos=null; UI.dsG='P'; UI.dsX='hr9'; UI.dsYk='ip'; h=distView(); out.pit=/HR\/9와 이닝/.test(h);
       Object.assign(UI,{dsG:keep.g,dsX:keep.x,dsYk:keep.yk,dsPos:keep.pos,dsAx:keep.ax,dsMin:keep.min}); return out; });
     if(r){ if(!r.sel)add('리그 분포','가로·세로 축 선택과 기본 차트 선택이 없음'); if(!r.lab)add('리그 분포','고른 축(OPS·도루)으로 그리지 않음'); if(!r.mean)add('리그 분포','기준선이 표시 선수 평균이라고 적혀 있지 않음'); if(!r.pre)add('리그 분포','기본 차트가 바로 누를 수 있게 보이지 않음(사용자 2026-11-01 20:48)'); if(!r.bnav)add('하단 탭','하단 탭에 리그가 없음(사용자 2026-11-01 20:48)'); if(r.bnavRow===false)add('하단 탭','하단 탭 버튼이 두 줄로 넘어감'); if(r.n<5)add('리그 분포','점 좌표·값을 읽을 수 없음('+r.n+')'); else if(!r.edge)add('리그 분포','가장 큰·작은 값의 점이 다른 점과 같은 가장자리에 붙음(이상치 숨김)');

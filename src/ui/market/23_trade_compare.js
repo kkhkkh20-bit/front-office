@@ -16,7 +16,7 @@ function tradeInsight(tid,give,get){
 }
 
 /* 드래프트 센터(스카우트 1단계): 정답 같은 모의 지명 대신 '우리 차례에 남을 확률'과 소문. AI의 실제 지명 함수는 쓰지 않는다(65_draft_odds) */
-function doChip(o){ if(!o)return ''; const v=o.av; return `<span class="do-chip ${v>=.7?'good':v>=.35?'':'warn'}" title="${esc(o.top?`가장 먼저 데려갈 듯한 구단: ${tshort(o.top.tid)} (${doPct(o.top.s)})`:'')}">남을 확률 ${doPct(v)}</span>`; }
+function doChip(o){ if(!o)return ''; if(o.av==null)return '<span class="do-chip muted">'+(o.noPick==='pass'?'남은 지명 건너뛰기':'지명권 없음')+'</span>'; const v=o.av; return `<span class="do-chip ${v>=.7?'good':v>=.35?'':'warn'}" title="${esc(o.top?`가장 먼저 데려갈 듯한 구단: ${tshort(o.top.tid)} (${doPct(o.top.s)})`:'')}">남을 확률 ${doPct(v)}</span>`; }
 function draftCenter(all,mine){ const O=draftOdds(G.user), live=G.draft&&!G.draft.done; const pk=O.pick;
   const L=all.slice(0,40).map(x=>Object.assign({o:O.P[x.p.id]},x)).filter(x=>x.o);
   const hi=L.filter(x=>x.o.av>=.7).slice(0,3), mid=L.filter(x=>x.o.av>=.3&&x.o.av<.7).slice(0,3), lo=L.filter(x=>x.o.av<.3).slice(0,3);

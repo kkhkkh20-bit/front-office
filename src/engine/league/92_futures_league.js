@@ -15,11 +15,11 @@ function flInit(){ const y=G.year; if(G.fl&&G.fl.y===y)return G.fl;
   const rec={}; for(const t of flTeams())rec[t]={w:0,l:0,d:0,rs:0,ra:0};
   G.fl={y,div:{N,S},rec,games:[],rot:{},round:0}; try{ flSeedSM(); }catch(e){ console.error(e); } return G.fl; }
 /* 상무 선수단이 모자라면(새 게임 첫해 등) AI 구단 2군의 군 미필 21~26세를 상무에 입대시켜 채운다. 우리 구단 선수는 건드리지 않는다.
-   입대일을 지난 1년 사이로 흩어 전역도 나눠서 한다(복무 1년 6개월) */
+   보충은 오늘 실제 입대한다. 확정된 지난 시즌 연봉·1군 출장일을 소급해 복무로 바꾸지 않는다. */
 function flSeedSM(){ const sv=Object.values(G.players).filter(p=>p.team!=null&&milServing(p)&&milPeriod(p).unit==='상무'); let nb=sv.filter(p=>!p.isP).length, np=sv.filter(p=>p.isP).length; if(nb>=13&&np>=10)return 0;
-  const per={}; const C=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!p.foreign&&!p.prospect&&!p.e1&&!p.ys&&p.age>=21&&p.age<=26&&milFree(p)&&!(p.mil&&p.mil.app)&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a)); let n=0;
+  const per={}; const C=Object.values(G.players).filter(p=>p.team!=null&&p.team!==G.user&&!(p.joinY>G.year)&&!p.foreign&&!p.prospect&&!p.e1&&!p.ys&&p.age>=21&&p.age<=26&&milFree(p)&&!(p.mil&&p.mil.app)&&healthy(p)).sort((a,b)=>ovr(b)-ovr(a)); let n=0;
   for(const p of C){ if(nb>=13&&np>=10)break; if(p.isP?np>=10:nb>=13)continue; if((per[p.team]||0)>=3)continue; per[p.team]=(per[p.team]||0)+1;
-    enlist(p,'상무',G.day-ri(0,300)); try{ story(p,`${G.year} 상무 입대`,'mil'); }catch(e){} if(p.isP)np++; else nb++; n++; }
+    ri(0,300); /* 기존 보충 판정의 난수 소비 순서는 보존한다. 날짜에는 적용하지 않는다. */ enlist(p,'상무',G.day); try{ story(p,`${G.year} 상무 입대`,'mil'); }catch(e){} if(p.isP)np++; else nb++; n++; }
   return n; }
 function flDay(d){ const w=dobj(d).w; return w!==1&&w!==5; } /* 월·금 휴식 */
 /* 원 돌리기(circle method) 대진: 홀수면 '쉼'을 넣는다 */
@@ -40,19 +40,21 @@ function flGameOn(tid,d){ d=+d; if(!flOpenOn(d)||d<=G.day)return null; const y=d
 function flOurGame(d){ const F=G.fl; if(!F||F.y!==dobj(d).y)return null; for(let i=F.games.length-1;i>=0;i--){ const x=F.games[i]; if(x.d===d&&(x.h===G.user||x.a===G.user)&&x.box)return x; if(x.d<d)break; } return null; }
 /* 그날 나갈 수 있는 2군 선수 */
 function flPool(t,d){
-  if(t===FL_SM){ const L=Object.values(G.players).filter(p=>p.team!=null&&milServing(p)&&milPeriod(p).unit==='상무'&&healthy(p)&&!(p.ntAway>d&&p.ntFrom<=d)); return {B:L.filter(p=>!p.isP),P:L.filter(p=>p.isP)}; }
+  if(t===FL_SM){ const L=Object.values(G.players).filter(p=>p.team!=null&&!(p.joinY>dobj(d).y)&&milOn(p,d)&&milPeriod(p).unit==='상무'&&healthy(p)&&!(p.ntAway>d&&p.ntFrom<=d)); return {B:L.filter(p=>!p.isP),P:L.filter(p=>p.isP)}; }
   const dd=depth(t); const ok=p=>healthy(p)&&!futUpToday(p)&&futEligibleDay(p,t,d); return {B:dd.futB.filter(ok),P:dd.futP.filter(ok)}; }
 function flRested(p,d){ const L=p.ld||[]; const last=L.length?L[L.length-1][0]:null; return last==null||d-last>=(isSPr(p)?5:1); }
 /* 임시 육성 선수: 2군 인원이 모자란 날 그 경기에만 채운다(실제 KBO 구단은 정식 65명+육성 선수라 2군이 늘 9명 이상, 이 게임은 정원이 작다).
    경기 동안만 선수 명단에 두고 끝나면 지운다. 기록·피로·부상에 남지 않고, 박스스코어에는 '육성 선수'로 남는다 */
 let FL_TMP=[];
+/* 상무 휴식 순번에는 해당 복무·시즌에서 상무로 뛴 경기만 센다. 원구단 2군 누적 기록과 구분한다. */
+function flSmGames(p){ const u=p.flSmUse,m=milPeriod(p); return u&&m&&u.y===G.year&&u.from===m.from?u.g||0:0; }
 function flTemp(t,isP,pos){ const p=newPlayer({isP,pos,age:ri(19,23)}); for(const k in p.r)if(typeof p.r[k]==="number")p.r[k]=clamp(Math.round(N(44,4)),36,52); /* 2군 하위권 수준 */ p.team=t===FL_SM?null:t; p.flTemp=1; p.name='육성 '+p.name; FL_TMP.push(p.id); return p; }
 function flSide(t,d){ const F=G.fl, {B,P}=flPool(t,d); if(B.length<6||P.length<2)return null; /* 그래도 너무 적으면(6명·2명 미만) 경기 취소 */
   const W=t!==FL_SM&&G.futLn&&G.futLn[t]; let ln=null;
   if(W&&W.ln){ const L={}; let ok=true; for(const k in W.ln){ const p=B.find(q=>q.id===W.ln[k]); if(!p){ ok=false; break; } L[k]=p; } if(ok&&Object.keys(L).length>=9)ln=L; } /* 2군 감독의 주간 라인업 그대로 */
-  if(!ln&&t===FL_SM&&B.length>10){ const gp=q=>(seasonTotal(q,G.year,'퓨처스')||{}).g||0; const S=B.slice().sort((x,y)=>gp(y)-gp(x)); const rest=new Set(S.slice(0,B.length-10)); const B2=B.filter(q=>!rest.has(q)); if(B2.length>=9)ln=futLineupE(t,B2); } /* 상무: 복무 선수가 고르게 뛰도록 많이 뛴 선수부터 번갈아 쉰다 */
+  if(!ln&&t===FL_SM&&B.length>10){ const gp=flSmGames; const S=B.slice().sort((x,y)=>gp(y)-gp(x)); const rest=new Set(S.slice(0,B.length-10)); const B2=B.filter(q=>!rest.has(q)); if(B2.length>=9)ln=futLineupE(t,B2); } /* 상무: 복무 선수가 고르게 뛰도록 많이 뛴 선수부터 번갈아 쉰다 */
   if(!ln)ln=futLineupE(t,B);
-  if(t===FL_SM){ const gp=q=>(seasonTotal(q,G.year,'퓨처스')||{}).g||0; const inL=new Set(Object.values(ln)); const low=B.filter(q=>!inL.has(q)).sort((x,y)=>gp(x)-gp(y))[0]; const lo=Object.values(ln).reduce((m,q)=>Math.min(m,gp(q)),1e9);
+  if(t===FL_SM){ const gp=flSmGames; const inL=new Set(Object.values(ln)); const low=B.filter(q=>!inL.has(q)).sort((x,y)=>gp(x)-gp(y))[0]; const lo=Object.values(ln).reduce((m,q)=>Math.min(m,gp(q)),1e9);
     if(low&&gp(low)<=lo-3){ ln.DH=low; } } /* 상무: 오래 못 뛴 선수는 지명타자로라도 내보낸다 */
   for(const k of FGPOS)if(!ln[k])ln[k]=flTemp(t,false,k==='DH'?'1B':k); /* 빈 자리는 임시 육성 선수 */
   const posOf={}; for(const k in ln)posOf[ln[k].id]=k; const start=Object.values(ln); const order=orderList(ORDER.filter(k=>ln[k]).map(k=>ln[k]),t===FL_SM?null:t);
@@ -66,7 +68,7 @@ function flSide(t,d){ const F=G.fl, {B,P}=flPool(t,d); if(B.length<6||P.length<2
 /* 경기 결과를 선수 퓨처스 기록·피로·부상·재활에 반영(applyGame의 2군판) */
 function applyFarm(d,g){ const y=G.year;
   for(const k of ['h','a']){ const s=g.S[k];
-    for(const [id,x] of s.box){ const p=G.players[id]; if(!p||p.flTemp)continue; const t=p.team; if(t==null)continue; const mil=milServing(p)&&milPeriod(p).unit==='상무';
+    for(const [id,x] of s.box){ const p=G.players[id]; if(!p||p.flTemp)continue; const t=p.team; if(t==null)continue; const mil=milServing(p)&&milPeriod(p).unit==='상무'; if(mil){ const from=milPeriod(p).from; if(!p.flSmUse||p.flSmUse.y!==y||p.flSmUse.from!==from)p.flSmUse={y,from,g:0}; p.flSmUse.g++; }
       if(p.isP){ const sp=id===s.sp.id; const o={g:1,gs:sp?1:0,outs:x.outs,h:x.h,hr:x.hr,bb:x.bb,hbp:x.hbp||0,so:x.so,er:x.er,r:x.r||0,w:g.dec.w===id?1:0,l:g.dec.l===id?1:0,sv:g.dec.sv===id?1:0,hld:(g.dec.hld||[]).includes(id)?1:0,bf:x.bf||0};
         addTo(lineFor(p,y,t,'퓨처스'),o); injRecover(p,x.outs); const cd=pitchApp(p,d,x.pc||0,sp); p.fat=clamp((p.fat||0)+pitFatGain(p,x.pc||0,sp),0,100);
         if(!(p.injOut>0)&&R()<p.inj*(sp?.075*(x.pc||0)/95:.026*(x.pc||0)/17)*injMult(p)*loadMult(p,cd,d)/LOAD_NORM)injure(p,d,{sp,pc:x.pc||0,farm:1}); }

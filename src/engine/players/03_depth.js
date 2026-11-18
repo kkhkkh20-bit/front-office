@@ -160,7 +160,7 @@ function aiYsUp(tid){ if(tid===ME()||period()!=='season'||G.day<KD(5,1)||preSett
   const bar=reg.slice(0,10).reduce((a,p)=>a+keepScore(p),0)/10; if(keepScore(c)<bar+3)return 0;
   if(rosterN(tid)>=ROSTER_MAX){ const w=reg.find(p=>ysOk(p)); if(!w||keepScore(c)<keepScore(w)+3)return 0; ysSet(w); }
   if(rosterN(tid)>=ROSTER_MAX)return 0; ysUnset(c); return 1; }
-function fromYS(id){ const p=G.players[id]; if(!p||!p.ys||p.team!==G.user||G.unemp)return '대상이 아닙니다.'; if(period()==='season'&&G.day<KD(5,1))return '육성선수는 5월 1일부터 정식 선수로 등록할 수 있습니다.'; if(period()==='post'||preSettle())return '포스트시즌과 결산 전에는 정식 선수로 새로 등록할 수 없습니다.'; if(!milServing(p)&&rosterN(G.user)>=ROSTER_MAX)return `정식 로스터가 ${ROSTER_MAX}명으로 꽉 찼습니다.`;
+function fromYS(id){ const p=G.players[id]; if(!p||!p.ys||p.team!==G.user||G.unemp)return '대상이 아닙니다.'; if(period()==='season'&&G.day<KD(5,1))return '육성선수는 5월 1일부터 정식 선수로 등록할 수 있습니다.'; if(period()==='post'||preSettle())return '포스트시즌과 결산 전에는 정식 선수로 새로 등록할 수 없습니다.'; const d=milServing(p)?p.mil.until:G.day; if(milRosterAt(G.user,d)>=ROSTER_MAX||(!milOn(p,rosterOpenDay())&&rosterProj(G.user)>=ROSTER_MAX))return `정식 로스터가 전역·합류 예정 인원을 포함해 ${ROSTER_MAX}명으로 꽉 찼습니다.`;
   ysUnset(p); addLog(`${p.name}을(를) 정식 선수로 등록했습니다.`); return ''; }
 function makeLineupFrom(tid,bats){ const save=G.entryY; G.entryY=-1; const ln=makeLineup(tid,bats); G.entryY=save; return ln; }
 function depth(tid){

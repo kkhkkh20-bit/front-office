@@ -30,6 +30,8 @@ button.lnk{min-height:30px}
 .gl-l{font-size:var(--ui-caption);color:var(--dim)}.gl-m{display:grid;min-width:0}.gl-m b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gl-m i{font-style:normal;font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gl-o{display:flex;gap:4px;align-items:center}
 .gr{font-style:normal;font-size:var(--ui-caption)}.gr.up{color:var(--good)}.gr.dn{color:var(--bad)}.potb{font-style:normal;font-size:var(--ui-caption);color:var(--good);border:1px solid currentColor;border-radius:3px;padding:0 3px;margin-left:3px}
 .gl-chips{display:flex;flex-wrap:wrap;gap:8px}.gl-chips .lnk{font-size:13px}.gl-chips i{font-style:normal;margin-left:3px}
+/* 전력 구성 1군 칸(PC): 줄을 낮춰 타순 9명과 벤치 백업이 스크롤 없이 함께 보이게(카페 11-18) */
+@media (min-width:1100px){.gl1 .gl-r{padding:2px 0;gap:6px}.gl1 .gl-r img.av,.gl1 .gl-r .av{width:30px;height:30px}.gl1 .gl-r .gl-m i{line-height:15px}.gl1 .gl-r .gl-m b{line-height:17px}.gl1 .eyebrow{margin:6px 0 2px}.gl1 .gl-bench{gap:4px 10px;padding:2px 0 4px}}
 .dlive{margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:6px;position:relative}.dlive.on{border-color:var(--tc,#e0564f)}
 .dl-dot{position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--tc,#e0564f);animation:dlp 1s infinite}@keyframes dlp{50%{opacity:.25}}
 .dl-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.dl-h b{font-size:13px}.dl-h .chips{margin:0;padding-right:14px}

@@ -103,6 +103,15 @@ function extParts(p,years){ const ytf=Math.max(0,faSvc(p)-(p.svc||0)); const age
   return {ytf,mkt,expFA:round5(expFA),disc,elite,yadj,mood,why}; }
 function extDemand(p,years){ const x=extParts(p,years); const d=x.expFA*x.disc*x.yadj*x.mood; return round5(x.elite?d:Math.min(d,faAsk(p).annual*1.1)); }
 function canExtend(p){ return p&&p.team===G.user&&!p.foreign&&!p.ys&&!p.extNext&&!(p.joinY>G.year)&&(!p.faC||p.yrs<=1)&&p.age<=34&&!p.prospect; } /* 연봉 협상 기간에도 다년계약은 따로 제안할 수 있다 */
+/* 다년계약(연장 협상)을 지금 열 수 없는 이유. 열 수 있으면 ''(canExtend와 같은 조건). 연장 요구 결정·면담 계약 이야기에서 버튼 대신 이유를 보여 준다(피드백 11-17 연장) */
+function extWhy(p){ if(!p)return '선수가 없습니다.'; if(G.unemp||p.team!==G.user)return `${p.name}은(는) 우리 구단 선수가 아닙니다.`;
+  if(p.foreign)return '외국인 선수는 비FA 다년계약 대상이 아닙니다. 재계약은 시즌 뒤 외국인 재계약에서 정합니다.';
+  if(p.prospect||p.joinY>G.year)return '아직 입단하지 않은 선수입니다. 입단한 뒤 협상할 수 있습니다.';
+  if(p.ys)return '육성선수는 다년계약을 맺을 수 없습니다. 정식 선수로 등록한 뒤 제안하세요.';
+  if(p.extNext)return `이미 다음 시즌부터 ${p.extNext.years}년 연 ${money(p.extNext.annual)} 다년계약에 합의했습니다.`;
+  if(p.faC&&p.yrs>1)return `FA 계약이 ${p.yrs}년 남아 있습니다. 계약 마지막 해부터 연장 협상을 할 수 있습니다.`;
+  if(p.age>34)return `${p.age}세 선수는 비FA 다년계약 대상이 아닙니다(34세까지). 계약이 끝나면 시즌 뒤 FA·재계약 협상에서 정합니다.`;
+  return canExtend(p)?'':'지금은 다년계약을 제안할 수 없는 선수입니다.'; }
 /* 다년계약 제안 결과: st = ok(합의) · counter(역제안, 7일 안에 수락 가능) · no(거절) · market(FA 시장을 보겠다며 거절) · locked(이번 주 협상 끝) · na(대상 아님).
    결과는 선수에게 남겨(p.extLast) 협상 창을 닫았다 열어도, 선수 정보에서도 볼 수 있게 한다 */
 function offerExtension(id,annual,years,acc,T,lock){ const r=offerExtension0(id,annual,years,acc,T,lock); const p=G.players[id];
@@ -134,7 +143,7 @@ function extCutFit(ft,fl,years,lk){ if(!ft||!fl)return ft; const gap=fl-extCutEq
   if(!L.includes('annual'))return {...ft,annual:Math.ceil((ft.annual+gap)/5)*5}; if(!L.includes('bonus'))return {...ft,bonus:Math.ceil(((ft.bonus||0)+gap*years/CT_BON)/5)*5}; return null; }
 function extMinY(p){ const ag=hasAgent(p)?agentOf(p):null; return ag&&(ag.style==='hard'||ag.size==='big')?(p.age<=29?4:p.age<=32?3:2)-1:0; }
 const extNextDay=p=>p&&p.extNg&&p.extNg.fold!=null&&p.extNg.fold>G.day?p.extNg.fold:null; /* 에이전트가 협상을 접었으면 다시 제안할 수 있는 날(계약 1단계: 한 주 한 번 대신 라운드 한도) */
-const extNgOf=p=>p.extNg||(p.extNg={});
+const extNgOf=p=>{ if(p.extNg&&p.extNg.tid!=null&&p.extNg.tid!==p.team){delete p.extNg;delete p.extCounter;} const S=p.extNg||(p.extNg={}); S.tid=p.team;return S; };
 /* 다년계약의 상한 결재(13_roster capOwnerCheck): 계약이 시작하는 시즌 기준, 계약금은 연평균 */
 function extCapCheck(p,pay,bonus,years){ const now=(G.rolled===G.year&&G.day>=KD(11,1))||period()==='pre'; const s=now?ctSeason():G.year+1; const a=pay+Math.round((bonus||0)/Math.max(1,years||1)); return capOwnerCheck(capPayWith(G.user,p.id,a,s).tot,capPayWith(G.user,null,null,s).tot,s,'ext'+p.id); }
 function offerExtension0(id,annual,years,acc,T,lock){
@@ -191,7 +200,7 @@ function releaseMany(ids){ const L=relPick(ids), cost=L.reduce((s,p)=>s+relCost(
    결산 뒤 겨울에는 올해 연봉을 다 줬고, 해마다 협상하는 연봉은 아직 계약 전이라 보장이 아니다. 우리·AI 같은 식 */
 const REL_FUT=.8;
 const relSettled=()=>!!(G.last&&G.last.y>=G.year); /* 올해 결산을 마쳤다(올해 연봉은 다 줬다) */
-function relCurFrac(p){ if(relSettled())return 0; const per=period(); if(per==='season')return tradeYrFrac(); if(per==='pre')return trimUnsigned(p)||p.hold?0:1; return 0; }
+function relCurFrac(p){ if(relSettled())return 0; const per=period(); if(per==='pre'&&(trimUnsigned(p)||p.hold))return 0; if(per==='season'||per==='pre'){ const [a,b]=payWin(G.year), start=per==='season'?Math.max(a,G.day):a, m=milPeriod(p); const away=m?Math.max(0,Math.min(b,m.until)-Math.max(start,m.from)):0; return clamp((b-start-away)/(b-a),0,1); } return 0; }
 function relCost(p){ if(!p||p.foreign)return {cur:0,next:0,fut:0,tot:0}; const c0=Math.round((p.sal||0)*relCurFrac(p)); const left=(p.yrs||1)-(relSettled()&&G.rolled===G.year?0:1); /* 계약 넘김(rolled) 뒤 겨울에는 남은 연수가 모두 다음 시즌부터 */ const fut=p.faC?Math.round(p.sal*Math.max(0,left)*REL_FUT):0, next=p.extNext?Math.round(p.extNext.annual*p.extNext.years*REL_FUT):0; const cur=c0+fut; return {cur,next,fut,tot:cur+next}; }
 function releasePlayer(id){
   const p=G.players[id]; if(!p||p.team!==G.user)return;

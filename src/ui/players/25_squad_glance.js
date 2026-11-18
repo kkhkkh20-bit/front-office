@@ -10,11 +10,13 @@ function originOf(p){ if(!p||p.team!==G.user)return ''; if(p.foreign)return '외
   if(G.fd&&(G.fd.all||[]).includes(p.id))return '창단 배분'; return '자체 영입'; }
 /* 앞으로 몇 년의 예상 능력: 어리면 잠재 쪽으로, 31세부터 하락 */
 /* 선수별 장기 연봉표(OOTP식): 선수와 시즌을 교차해 확정액·협상 예상·FA·미계약을 구분한다. 복무 중 시즌은 지급하지 않는 게임 규칙을 따른다 */
+/* 계약 연차는 복무 중 결산에서 멈춘다. 확정된 복무 일정으로 남은 시즌을 센다. */
+function cgElapsed(p,a,b){ let n=0; for(let y=a;y<b;y++)if(!milOn(p,faAssessDay(y)))n++; return n; }
 function cgCell(p,k,Y){ const y=Y+k; const m=p.mil; const srv=m&&m.until&&dobj(m.from).y<=y&&dobj(m.until).y>=y; const due=!p.foreign&&milFree(p)&&G.year+Math.max(0,27-p.age)===y;
   const tag=srv?' <i class="cg-m">복무</i>':due?' <i class="cg-m">입대 기한</i>':''; const fr=s=>s<3?.35:s<6?.55:s<faSvc(p)?.78:1;
   if(p.foreign)return k===0?{t:'fix',v:p.sal,h:`${money(p.sal)}`}:{t:'neg',v:0,h:'재계약 협상'};
-  if(p.extNext){ if(k===0)return {t:'fix',v:Math.round(p.sal*payFrac(p,y)),h:`${money(p.sal)}${tag}`}; if(k<=p.extNext.years)return {t:'fix',v:Math.round(p.extNext.annual*payFrac(p,y)),h:`${money(p.extNext.annual)}${tag}`}; return k===p.extNext.years+1?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
-  if(p.faC){ const n=Math.max(1,p.yrs||1); if(k<n)return {t:'fix',v:Math.round(p.sal*payFrac(p,y)),h:`${money(p.sal)}${tag}`}; return k===n?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
+  if(p.extNext){ if(k===0)return {t:'fix',v:Math.round(p.sal*payFrac(p,y)),h:`${money(p.sal)}${tag}`}; const elapsed=cgElapsed(p,Y+1,y); if(elapsed<p.extNext.years)return {t:'fix',v:Math.round(p.extNext.annual*payFrac(p,y)),h:`${money(p.extNext.annual)}${tag}`}; return elapsed===p.extNext.years?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
+  if(p.faC){ const n=Math.max(1,p.yrs||1), elapsed=cgElapsed(p,Y,y); if(elapsed<n)return {t:'fix',v:Math.round(p.sal*payFrac(p,y)),h:`${money(p.sal)}${tag}`}; return elapsed===n?{t:'fa',v:0,h:'FA'}:{t:'none',v:0,h:'미계약'}; }
   const cy=ctrlYears(p); if(k===0)return {t:'fix',v:Math.round(p.sal*payFrac(p,y)),h:`${money(p.sal)}${tag}`};
   if(k<cy){ const e=round5(marketSal(projPlan(p,k))*Math.min(1,fr((p.svc||0)+k))); const v=Math.max(MIN_SAL,e); return {t:'est',v:Math.round(v*payFrac(p,y)),h:`~${money(v)}${tag}`}; }
   return k===cy?{t:'fa',v:0,h:`FA 예상${tag}`}:{t:'none',v:0,h:'미계약'}; }
@@ -33,7 +35,7 @@ function projPlan(p,k){ let o=ovr(p), a=p.age; const pot=Math.max(scoutReport(p)
 /* 선수단 계획(모바일 plannerCard·PC planFM 공용). KBO 병역: 만 28세가 되는 해까지 입대(게임 규칙), 복무 1년 6개월.
    그해 7월(시즌 한가운데)에 복무 중이면 그 시즌 계획에서 뺀다. 아직 입대 일정이 없는 미필 선수는 기한 다음 해를 복무로 본다 */
 const planDueY=p=>milFree(p)?G.year+Math.max(0,27-p.age):null;
-function milOut(p,y){ const m=p.mil; if(m&&m.until){ const pre=o=>o.y<y||(o.y===y&&o.m<7); return pre(dobj(m.from))&&!pre(dobj(m.until)); } const d=planDueY(p); return d!=null&&y===d+1; }
+function milOut(p,y){ if(milPeriod(p))return milOn(p,dnum(y,7,1)); const d=planDueY(p); if(d==null)return false; const from=dnum(d+1,1,20), day=dnum(y,7,1); return from<=day&&day<from+MIL_DAYS; }
 function planCol(k){ const Y=G.year, EX=new Set(G.plEx&&G.plEx.y===Y?G.plEx.ids:[]); const av=Object.values(G.players).filter(p=>p.team===G.user&&!(p.joinY>Y+k)&&(k===0||!EX.has(p.id))&&!milOut(p,Y+k));
     const leave=p=>p.foreign?(k>=1?'재계약':''):k>=ctrlYears(p)?'FA':planDueY(p)===Y+k?'입대 기한':''; const v=p=>projPlan(p,k);
     const bats=av.filter(p=>!p.isP), pits=av.filter(p=>p.isP); const used=new Set(), ln={}, bk={};
@@ -43,8 +45,8 @@ function planCol(k){ const Y=G.year, EX=new Set(G.plEx&&G.plEx.y===Y?G.plEx.ids:
     const sp=[...pits].sort((a,b)=>(v(b)+roleBias(G.user,b))-(v(a)+roleBias(G.user,a))).slice(0,5); const rp=pits.filter(p=>!sp.includes(p)).sort((a,b)=>v(b)-v(a)).slice(0,7);
     return {ln,bk,sp,rp,v,leave,bats,pits}; }
 /* 연봉 전망: 확정(남은 다년·FA 계약)과 예상(보류권 선수 연봉 협상)을 나눈다 */
-function planPay(k){ const Y=G.year, EX=new Set(G.plEx&&G.plEx.y===Y?G.plEx.ids:[]), ps=Object.values(G.players).filter(p=>p.team===G.user); const fr=p=>p.svc<3?.35:p.svc<6?.55:p.svc<faSvc(p)?.78:1; const D=ps.filter(p=>!p.foreign&&!p.prospect&&!(p.joinY>Y+k)&&!(k>0&&EX.has(p.id))); let fix=0,est=0,fa=0,faN=0;
-    for(const p of D){ if(k===0){ fix+=p.sal; continue; } const cy=ctrlYears(p); if(p.faC&&p.yrs>k){ fix+=p.sal; continue; } if(!p.faC&&cy>k){ est+=round5(marketSal(projPlan(p,k))*Math.min(1,fr({svc:(p.svc||0)+k,college:p.college}))); continue; } if(projPlan(p,k)>=50){ fa+=round5(marketSal(projPlan(p,k))); faN++; } }
+function planPay(k){ const Y=G.year, EX=new Set(G.plEx&&G.plEx.y===Y?G.plEx.ids:[]), ps=Object.values(G.players).filter(p=>p.team===G.user); const D=ps.filter(p=>!p.foreign&&!p.prospect&&!(p.joinY>Y+k)&&!(k>0&&EX.has(p.id))); let fix=0,est=0,fa=0,faN=0;
+    for(const p of D){ const c=cgCell(p,k,Y); if(c.t==='fix')fix+=c.v; else if(c.t==='est')est+=c.v; else if(projPlan(p,k)>=50){ const v=Math.round(round5(marketSal(projPlan(p,k)))*payFrac(p,Y+k)); fa+=v; if(v>0)faN++; } }
     return {fix,est,fa,faN,cap:capOf(Y+k)}; }
 /* 내년 예상은 젊은 선수일수록 범위로 보여 준다(코치진 추정) */
 function planRng(p,k){ const Y=G.year, v=projPlan(p,k); if(k===0||p.age+k>27)return rchip(Math.round(v)); const w=clamp((28-p.age-k)*.8,1.5,5); const m=v+hn('plr'+Y,p.id)*w*.4; return `<span class="pl-r" style="--c:${rcol(Math.round(m))}">${dv(m-w)}~${dv(m+w)}</span>`; }
@@ -162,7 +164,8 @@ function glanceRow(p,lab,own,lvl){ const rp=scoutReport(p); const y=G.year; cons
 /* 1군 투수진(선발 로테이션·불펜 보직)과 벤치: 전력 구성 화면에서 배치도 옆에 붙인다 */
 function glancePitch(tid){ const own=tid===G.user; const d=depth(tid); const R=(p,lab)=>glanceRow(p,lab,own,'1'); const roles=['마무리','필승조','필승조','추격조','추격조','롱릴리프','롱릴리프'];
   const order=orderList(d.start,tid), posOf={}; for(const k in d.ln)posOf[d.ln[k].id]=k; /* 1군 야수도 목록으로(사용자 피드백 11-07: 전력 구성에 1군 야수가 안 보임) */
-  return `<div class="eyebrow">1군 타순</div>${order.map((p,i)=>R(p,`${i+1} ${SLK[posOf[p.id]]||''}`)).join('')}<div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>R(p,`${i+1}선발`)).join('')}<div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>R(p,roles[i]||'불펜')).join('')}${d.bench.length?`<div class="eyebrow">벤치</div><div class="gl-chips">${d.bench.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${SLK[pSlot(p)]||posLabel(p)} ${rchip(scoutReport(p).cur)}</i></button>`).join('')}</div>`:''}`; }
+  /* 야수 백업(벤치)은 타순 바로 아래: 스크롤하지 않고 주전과 백업을 함께 본다(카페 11-18). PC는 줄을 낮춰 한 칸에 담는다 */
+  return `<div class="gl1"><div class="eyebrow">1군 타순</div>${order.map((p,i)=>R(p,`${i+1} ${SLK[posOf[p.id]]||''}`)).join('')}${d.bench.length?`<div class="eyebrow">벤치 · 야수 백업 ${d.bench.length}명</div><div class="gl-chips gl-bench">${d.bench.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${SLK[pSlot(p)]||posLabel(p)} ${rchip(scoutReport(p).cur)}</i></button>`).join('')}</div>`:''}<div class="eyebrow">선발 로테이션</div>${d.sp.map((p,i)=>R(p,`${i+1}선발`)).join('')}<div class="eyebrow">불펜</div>${d.pen.slice(0,7).map((p,i)=>R(p,roles[i]||'불펜')).join('')}</div>`; }
 /* 빠진 선수: 부상·징계와 대표팀 차출(playersOf는 차출 선수를 빼므로 따로 더한다, 검수 11-09zi) */
 const outList=tid=>playersOf(tid).filter(p=>!healthy(p)).concat(awayOf(tid).filter(p=>!milServing(p)));
 /* 2군 화면이 읽는 실제 2군 라인업: 올해 것만, 지금 1군·부상·차출·이적 선수는 뺀다(검수 11-09zi) */

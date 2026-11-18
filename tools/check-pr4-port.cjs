@@ -47,7 +47,7 @@ test('훈련: 야인은 지시 없음, 구단별 방침 보존, 이적 선수 �
 
 test('위임: 현금 조건을 평가에 넣고, 거절한 제안의 메일은 미결로 남기지 않는다',()=>{
   const b=other(),p=domestic(G.user)[0],q=domestic(b)[0];G.auto={};const off={id:'pr4-off',from:b,give:[q.id],get:[p.id],cash:20000,exp:G.day+7};G.offers=[off];
-  const m=mail('단장','위임 테스트','본문');m.oid=off.id;assert.ok(Math.abs(troDiff({...off,cash:0})-troDiff(off)-80)<1e-6,'현금 비용 미반영');
+  const m=mail('단장','위임 테스트','본문');m.oid=off.id;{const cc=cashCost(team(G.user),-20000);assert.ok(cc>0&&Math.abs(troDiff({...off,cash:0})-troDiff(off)-cc)<1e-6,'현금 비용 미반영');} /* 주는 현금은 트레이드 값 계산과 같은 cashCost로(11-17 부단장 현금 평가 통일, 예전 /250) */
   autoSet('tro','good');assert.ok(!G.offers.length,'불리한 제안이 남음');assert.ok(m.read,'메일이 미결로 남음');});
 
 test('독립구단: 예약된 유니폼 제작비를 다시 쓸 수 없다',()=>{

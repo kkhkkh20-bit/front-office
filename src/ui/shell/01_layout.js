@@ -59,7 +59,8 @@ function goSet(per,b){ if(UI.advRun)return `<div class="goset"><button class="co
   const hint=G.unemp?'제의가 오거나 1주일이 지날 때까지':!G.unemp&&(per==='season'||nextGames(1).some(x=>x.d<=G.day+7))?'한 시리즈씩 · 예약한 경기만 관전':'최대 7일 · 중요한 소식까지';
   const sub=b?nextLabel():contSub(advNextStop(per)||hint);
   const tip=G.unemp?hint:per==='season'?'같은 팀과 치르는 한 시리즈(보통 3연전)를 이어서 진행합니다. 예약한 관전 경기와 설정한 멈춤 조건에서 멈추고, 확인할 소식이 있으면 먼저 엽니다':`${hint}. 확인할 소식이 있으면 먼저 엽니다`;
-  return `<div class="goset"><button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="${esc(tip)}"><b>진행하기</b><i title="${esc(sub)}">${esc(goSub(sub))}</i></span>${ICO.ff}</button>${advMenu(per,b)}</div>`; }
+  const d1=G.day+1, day=G.unemp?'':`<button class="step advday" data-a="adv" data-v="day" ${b?'disabled':''} aria-label="하루 진행" title="${esc(dmd(d1))}(${WD[dobj(d1).w]})까지 하루만 진행합니다"><span class="st-l">하루</span><span class="st-x"> 진행</span></button>`; /* 하루 진행은 한 번에 누르게 진행하기 왼쪽에 둔다(카페 11-18). 휴대폰은 자리가 없어 ▾ 메뉴에만 */
+  return `<div class="goset">${day}<button class="continue${!b&&ibNeedList().length?' need':''}" data-a="adv" data-v="event" ${b?'disabled':''}><span class="cl" title="${esc(tip)}"><b>진행하기</b><i title="${esc(sub)}">${esc(goSub(sub))}</i></span>${ICO.ff}</button>${advMenu(per,b)}</div>`; }
 /* 기본 진행이 멈출 다음 지점: 경기가 있으면 다음 경기, 없으면 7일 안의 일정이나 7일 뒤 날짜 */
 function advNextStop(per){ if(G.unemp)return ''; const g=nextGames(1)[0]; if(g&&(per==='season'||per==='post'||g.d<=G.day+7))return `${dsh(g.d)} ${g.home?'vs':'@'} ${tshort(g.op)}`;
   const u=(upcoming()||[])[0]; return u&&u[0]<=G.day+7?`${dsh(u[0])} ${u[1]}`:`${dmd(G.day+7)}까지`; }

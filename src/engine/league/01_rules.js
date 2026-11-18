@@ -190,7 +190,8 @@ const forPayOf=tid=>ownedOf(tid).filter(p=>p.foreign);
 const payroll=tid=>sum(domPayOf(tid).map(p=>p.sal));
 /* 그해 지급 비율: 군 복무 기간은 연봉을 주지 않는다. 입대·전역 날짜를 알면 그 해 복무하지 않는 기간 몫만(전역 예정일 기준으로 미리) */
 /* 연봉을 나눠 받는 기간(정규시즌): 복무 비율과 이적 비율이 같은 기준을 써야 한다(검수 11-07: 개막 전 전역 선수가 이적 여부에 따라 83.8%/100%) */
-function payWin(y){ const C=G.cal&&dobj(G.cal.open).y===y?G.cal:null; return C?[C.open,C.end+1]:[dnum(y,3,22),dnum(y,10,1)]; }
+const _payWinC=new Map();
+function payWin(y){ let C=G.cal&&dobj(G.cal.open).y===y?G.cal:null; if(!C){ const n=(G.teams||[]).length, k=y+':'+n; C=_payWinC.get(k); if(!C){ C=withRng(y*104729+n*7919,()=>buildCalendar(y)); _payWinC.set(k,C); } } return [C.open,C.end+1]; } /* 일정의 상대 편성만 별도 시드로 계산해 날짜 전망이 본 게임 난수 순서를 바꾸지 않는다. */
 function payFrac(p,y){ const m=p&&p.mil; const f=m&&(m.from??m.pf), u=m&&(m.until||m.pu); if(!m||f==null||!u)return 1; const [a,b]=payWin(y); const s=Math.max(a,f), e=Math.min(b,u); return 1-Math.max(0,e-s)/(b-a); }
 /* 한 해 국내 선수 연봉 지급액(결산·예산 전망): 복무 중인 선수도 그해 복무하지 않는 기간 몫은 넣는다 */
 /* y시즌이 아직 개막 전인가(겨울): 그 시즌 연봉은 합의한 다음 시즌 기준(salNext)으로 본다. 결산 뒤 12월과 해가 바뀐 1월이 같은 값 */
@@ -210,7 +211,9 @@ function capPayAs(tid,inIds,outIds){ const y=sponSeason(), nx=y>G.year||preSeaso
   const amt=(p,inn=inS.has(p.id))=>{ const wc=inn&&p.wv&&p.team==null?p.wv.c:null; /* 웨이버 양수: 승계하는 계약과 계약금 반영액(검수 11-06·11-07·11-08) */ if(nx)return wc?wvCapAmt(wc,y,true):inn?salNext(p):salNext(p)+capBAt(p,y); return wc?wvCapAmt(wc,G.year):inn?p.newSal??p.sal:p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0); }; /* 받는 선수는 옛 계약 조건의 상한 반영액이 끝난다. 재계약 합의 연봉은 이적 때 확정(mvLog) */
   const fid=franId(tid,outIds,inIds,amt,nx?y:null); /* 예외 대상도 합계와 같은 금액으로 고른다(웨이버 양수 선수가 방출 뒤 연봉으로 뽑혔다, 검수 11-09zzb) */
   const L=(nx?domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)):domPayOf(tid).filter(p=>!isRookie(p))).filter(p=>!out.has(p.id)).map(p=>capAmt(p,tid,amt(p,false),fid));
-  L.push(...capDeadA(tid,nx?y:G.year)); /* 방출·계약금 남은 몫(capPay와 같게, 겨울은 다음 시즌 몫) */
+  L.push(...capDeadA(tid,nx?y:G.year));
+  /* 보내는 선수의 선지급 계약금은 실제 이적 뒤에도 원구단 캡에 남는다. */
+  for(const id of out){ const p=G.players[id]; if(p&&p.team===tid&&!p.foreign&&p.ctT===tid&&p.capB?.a>0&&p.capB.until>=(nx?y:G.year))L.push(p.capB.a); } /* 방출·계약금 남은 몫(capPay와 같게, 겨울은 다음 시즌 몫) */
   for(const id of (inIds||[])){ const p=G.players[id]; if(!p||p.foreign||(nx?(p.draft&&p.draft.y===y-1)||milCapOut(p,y):isRookie(p)||milServing(p)))continue; /* 복무 선수는 실제 합계와 같게(검수 11-09g) */ L.push(capAmt(p,tid,amt(p,true),fid)); }
   return sum(L.sort((a,b)=>b-a).slice(0,40)); }
 /* 다음 시즌 기준 상위 40명 연봉: 재계약 중인 선수는 새 연봉(newSal), 계약금 상한 반영도 다음 시즌까지 남는 것만 */

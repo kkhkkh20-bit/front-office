@@ -111,7 +111,7 @@ function workspaceFit(host){
       else panel.append(scroller);
     }
     scroller.classList.add('ws-scroll');scroller.tabIndex=0;scroller.setAttribute('role','region');scroller.setAttribute('aria-label',label(panel)+' 내용');
-    scroller.addEventListener('scroll',()=>{if(!panel.hidden)positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true});
+    scroller.addEventListener('scroll',()=>{if(!panel.hidden&&!document.querySelector('#sheet .sheet'))positions[key+':'+index]=[scroller.scrollTop,scroller.scrollLeft];},{passive:true}); /* 상세 창이 떠 있는 동안 뒤 목록이 다시 그려지며 생긴 스크롤(0으로 줄어듦)은 기억하지 않는다: 뒤로 오면 보던 자리로(터치 점검 큰 태블릿 가로) */
     if(workspaceCompact()&&!panel.matches('.roster-list')){
       const before=[...panel.children].slice(0,[...panel.children].indexOf(scroller));
       const controls=before.filter(el=>!el.matches('h1,h2,h3,header,.row:first-child,.itabs,.ws-tab-row,nav,.staff-market-modes')&&el.matches('.chips,.seg,.row:has(input,select,button),label:has(input,select),input,select,.rcp,.trade-search-main,.trade-pool-options'));
@@ -121,7 +121,9 @@ function workspaceFit(host){
   if(innerHeight<500){const panel=panels[0],scroll=panel?.querySelector(':scope > .ws-scroll'),notes=[...root.querySelectorAll(':scope > .note')];if(scroll&&notes.length){const body=document.createElement('div');body.className='ws-scroll';body.tabIndex=0;body.setAttribute('role','region');body.setAttribute('aria-label',label(panel)+' 내용');scroll.before(body);scroll.classList.remove('ws-scroll');scroll.classList.add('ws-flow');body.append(...notes,scroll);body.addEventListener('scroll',()=>{positions[key+':0']=[body.scrollTop,body.scrollLeft];},{passive:true});}}
   const columns=Math.min(panels.length,innerWidth>=1600?3:innerWidth>=700?2:1) /* 넓은 PC는 세 칸까지 한 화면에 */;
   /* 넓은 칸(data-wsw="2", 예: 선수 기록 탭 연도별 기록 표 — 국사왕 11-17): 칸 몇 개를 함께 쓴다. 쪽 나눔은 칸 너비를 더해 채운다 */
-  const pageOf=[];{ let pg=0,used=0; panels.forEach((panel,i)=>{ const w=Math.max(1,Math.min(columns,+(panel.dataset&&panel.dataset.wsw)||1)); if(used&&used+w>columns){ pg++; used=0; } pageOf[i]=pg; used+=w; panel._wsPage=pg; panel.style.gridColumn=w>1?`span ${w}`:''; }); }
+  const pageOf=[];{ let pg=0,used=0; panels.forEach((panel,i)=>{ const w=Math.max(1,Math.min(columns,+(panel.dataset&&panel.dataset.wsw)||1)); if(used&&used+w>columns){ pg++; used=0; } pageOf[i]=pg; used+=w; panel._wsPage=pg; panel._wsW=w; panel.style.gridColumn=w>1?`span ${w}`:''; }); }
+  /* 넓은 칸이 쪽에 남는 칸이 있으면 그 칸까지 넓힌다(연도별 기록 표가 혼자 남은 쪽에서 가로 스크롤 없이 — 카페 11-18) */
+  { const used={}; panels.forEach((panel,i)=>{ used[pageOf[i]]=(used[pageOf[i]]||0)+panel._wsW; }); panels.forEach((panel,i)=>{ const left=columns-used[pageOf[i]]; if(panel._wsW>1&&left>0){ panel.style.gridColumn=`span ${panel._wsW+left}`; used[pageOf[i]]=columns; } }); }
   const pages=(pageOf.length?pageOf[pageOf.length-1]:0)+1;
   deck.style.setProperty('--ws-columns',columns);
   UI.workspacePages=UI.workspacePages||{};
@@ -137,7 +139,7 @@ function workspaceFit(host){
     const body=document.createElement('div');body.className='ws-scroll';body.tabIndex=0;body.setAttribute('role','region');body.setAttribute('aria-label',label(panel)+' 내용');
     const ordered=[...panel.children].filter(el=>el===scroll||content.includes(el));ordered[0].before(body);
     scroll.classList.remove('ws-scroll');scroll.classList.add('ws-flow');ordered.forEach(el=>body.append(el));
-    body.addEventListener('scroll',()=>{positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
+    body.addEventListener('scroll',()=>{if(!document.querySelector('#sheet .sheet'))positions[key+':'+index]=[body.scrollTop,body.scrollLeft];},{passive:true});
   }
   panels.forEach((panel,index)=>panel._workspaceFit=()=>fitPanel(panel,index));
   const show=()=>{panels.forEach((panel,i)=>{panel.hidden=pageOf[i]!==page;if(panel.hidden)return;fitPanel(panel,i);const pos=positions[key+':'+i],scroll=panel.querySelector('.ws-scroll');if(pos){scroll.scrollTop=pos[0];scroll.scrollLeft=pos[1];}});UI.workspacePages[key]=page;};show();
