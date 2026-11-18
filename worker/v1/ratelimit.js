@@ -7,6 +7,10 @@ export const LIMITS = Object.freeze({
   write: [60, 600],     // 플레이어당 10분에 쓰기 60번(덱·결과·닉네임)
   read: [240, 600],     // 플레이어(또는 IP)당 10분에 읽기 240번
   admin: [120, 60],
+  cloud_put: [6, 60],   // 클라우드 저장 올리기: 플레이어당 분당 6번(하루 200번은 D1 cloud_usage가 센다)
+  cloud_get: [30, 60],  // 클라우드 저장 받기: 플레이어당 분당 30번
+  link: [10, 3600],     // 기기 연결 코드·복구 코드 입력: IP당 시간당 10번
+  code: [10, 3600],     // 기기 연결 코드·복구 코드 만들기: 플레이어당 시간당 10번
 });
 const mem = new Map();
 export function _resetRL() { mem.clear(); }

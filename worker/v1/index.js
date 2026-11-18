@@ -8,6 +8,7 @@
      PUT    /api/v1/ladder/deck  {e, tier?, wid?}  GET /api/v1/ladder/opponents?tier=&ovr=&n=9
      POST   /api/v1/ladder/result {key, rank, teams, w, l, d, opps:[{pid,w,l,d}]}
      GET    /api/v1/ladder/leaderboard?tier=|all&season=   GET /api/v1/ladder/feed   GET /api/v1/ladder/meta?tier=|all (덱 구성 집계, 10분 캐시)   GET /api/v1/ladder/me   GET /api/v1/ladder/rivals   GET /api/v1/ladder/h2h/PID
+     클라우드 저장(R2 env.SAVES, 없으면 503 not_configured): GET cloud · GET/PUT/DELETE saves[/SLOT] · POST player/link-code[/redeem] · POST player/recovery[/redeem] · GET player/devices · PUT player/devices/me · DELETE player/devices/ID (worker/v1/cloud.js)
      관리자: GET admin/stats · GET admin/export?kind=decks|results&n=&cursor=&from=&to= (CSV용 줄, 페이지) · GET admin/players?q= · PUT admin/hide {pid, hide} · DELETE admin/player/PID · DELETE admin/deck/PID · POST admin/season/roll · POST admin/migrate
    계정 연결과 기기 토큰(srv2 #64): 연결(POST player/link)은 지금 플레이어에 계정을 붙일 뿐 토큰을 바꾸지 않는다. 그래서 연결 전의 익명 기기 토큰과
      새 기기에서 login으로 받은 토큰이 모두 같은 플레이어로 풀린다(기기마다 devices 한 줄). 다른 익명 플레이어가 있는 기기에서 login하면 그 기기는 받은 토큰으로
@@ -22,9 +23,10 @@ import { handleAdmin, deletePlayer, deleteDeck, migrate } from './admin.js';
 import { PROVIDERS, linkReady, verify } from './link.js';
 import { countDB, statStmts, takeUsage } from './usage.js';
 import { SCHEMA_VERSION } from './schema.js';
+import { cloudPublic, cloudRoute, _cloudReset } from './cloud.js';
 
 let schemaOk = false, fetcher = (...a) => fetch(...a);
-export function _v1Reset() { schemaOk = false; }
+export function _v1Reset() { schemaOk = false; _cloudReset(); }
 export function _setFetch(f) { fetcher = f || ((...a) => fetch(...a)); }
 
 async function schemaVersion(db) {
@@ -47,7 +49,7 @@ async function route(req, env, url, now) {
       if (await limited(env, 'admin', 'admin', now)) return err(429, 'rate_limited');
       if (rest === 'admin/migrate' && req.method === 'POST') { const r = await migrate(db); schemaOk = true; return r; }
       if (!(await ensureSchema(db))) return err(503, 'schema_missing');
-      return await handleAdmin(rest.slice(6), req, url, db, now);
+      return await handleAdmin(rest.slice(6), req, url, db, now, env);
     }
     if (!(await ensureSchema(db))) return err(503, 'schema_missing');
     if (rest === 'health' && req.method === 'GET') { const s = await currentSeason(db, now); return json(200, { ok: true, schema: SCHEMA_VERSION, season: { id: s.id, starts: s.starts, ends: s.ends }, platforms: PLATFORMS }); }
@@ -58,13 +60,15 @@ async function route(req, env, url, now) {
     }
     if (rest === 'player' && req.method === 'POST') return await postPlayer(req, env, db, now);
     if (rest === 'player/login' && req.method === 'POST') return await login(req, env, db, now);
+    { const c = await cloudPublic(rest, req, env, db, now); if (c) return c; } /* 클라우드 저장: 기능 확인·코드로 기기 연결(로그인 없이) */
     /* 여기부터 로그인 필요 */
     const me = await authPlayer(req, db, now);
     if (!me) return err(401, 'auth');
     const write = req.method !== 'GET';
     if (await limited(env, write ? 'write' : 'read', me.id, now)) return err(429, 'rate_limited', null, { 'Retry-After': '60' });
     if (rest === 'player/me' && req.method === 'GET') return json(200, { ok: true, player: profile(me) });
-    if (rest === 'player' && req.method === 'DELETE') { await deletePlayer(db, me.id); return json(200, { ok: true, deleted: me.id }); }
+    if (rest === 'player' && req.method === 'DELETE') { await deletePlayer(db, me.id, env); return json(200, { ok: true, deleted: me.id }); } /* 클라우드 저장(R2 본문)까지 */
+    { const c = await cloudRoute(rest, req, env, db, me, now); if (c) return c; }
     if (rest === 'player/link' && req.method === 'POST') return await link(req, env, db, me, now);
     if (rest === 'ladder/deck' && req.method === 'PUT') return await putDeck(req, db, me, now, env);
     if (rest === 'ladder/deck' && req.method === 'DELETE') { await deleteDeck(db, me.id); return json(200, { ok: true }); }
