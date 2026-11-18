@@ -53,7 +53,7 @@ function fDramaUser(p,k){ const m=G.mgr[G.user], mn=m&&!m.interim?`${m.name} 감
   evNew('fdrama',`외국인 선수 ${FD_T[k]}: ${p.name}`,sit,O.map(o=>({l:o[1],fx:o[2]})),{def,data:{pid:p.id,t:k,keys:O.map(o=>o[0]),injId:injToken(p),n:(p.injHist||[]).length},ref:p.id,face:p.id,from:k==='slack'?'코치진':k==='fake'?'의무팀':'운영팀',exp:4});
   if(R()<.5)try{ ivRequest('fdrama',{pid:p.id,t:k}); }catch(e){} }
 EVH.fdrama={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; const c=e.data.keys[i], t=team(G.user), m=G.mgr[G.user]; initPers(p);
-  const mor=d=>{ p.mor=clamp((p.mor??60)+d,0,100); }, ad=d=>{ p.adapt=clamp((p.adapt??50)+d,15,85); }, pay=a=>{ G.spend.etc=(G.spend.etc||0)+a; }, rel=d=>{ if(m&&!m.interim)m.rel=clamp(m.rel+d,0,100); };
+  const mor=d=>{ p.mor=clamp((p.mor??60)+d,0,100); }, ad=d=>{ p.adapt=clamp((p.adapt??50)+d,15,85); }, pay=a=>{ ledgerMe('etc',a); }, rel=d=>{ if(m&&!m.interim)m.rel=clamp(m.rel+d,0,100); };
   const rel_=()=>{ try{ releaseForeign(p.id); }catch(err){} return `${p.name}을(를) 방출했습니다. 남은 연봉은 그대로 나갑니다. 외국인 시장에서 대체 선수를 찾아야 합니다.`; };
   switch(c){
     case 'leave': { const late=p.pers.temp>=14&&R()<.3; p.fLeave=G.day+ri(7,10)+(late?ri(3,6):0); ad(6); mor(8); delete p.fhome; return `${p.name}이(가) 귀국했습니다. ${dmd(p.fLeave)}에 돌아올 예정입니다.${late?' 다만 연락이 뜸해 복귀가 늦어질 수 있다는 말이 나옵니다.':''}`; }

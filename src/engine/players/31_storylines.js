@@ -221,7 +221,7 @@ function slBaby(p){ const F=slFam(p); const n=(F.k||0)+1; const boy=slU('boy'+G.
   else slFamAct(p,slMe(p.team)?'msg':slFamAi(p)); }
 /* AI 단장의 출산 축하: 선물(300만 원)이 기분 효과가 가장 크다. 현금이 바닥이면 시즌 중 지친 선수는 휴식 건의, 아니면 인사만 */
 function slFamAi(p){ const t=team(p.team); if(t&&(t.cash??0)>=3)return 'gift'; return period()==='season'&&(p.fat||0)>=30?'rest':'msg'; }
-function slFamAct(p,k){ if(k==='gift'){ slMor(p,5,90); if(slMe(p.team)){ G.spend=G.spend||{}; G.spend.etc=(G.spend.etc||0)+3; } else { const t=team(p.team); if(t&&t.cash!=null)t.cash-=3; } return `${p.name}: "구단에서 이렇게까지 챙겨 주실 줄 몰랐습니다. 감사합니다." 기분 상승.`; }
+function slFamAct(p,k){ if(k==='gift'){ slMor(p,5,90); { const me=slMe(p.team), t=team(p.team); if(me||t&&t.cash!=null)ledger(p.team,'etc',3,{me}); } return `${p.name}: "구단에서 이렇게까지 챙겨 주실 줄 몰랐습니다. 감사합니다." 기분 상승.`; }
   if(k==='rest'){ slMor(p,3,88); p.fat=Math.max(0,(p.fat||0)-20); return `감독이 ${p.name}에게 하루 휴식을 줬습니다. 피로가 풀리고 기분이 조금 올랐습니다.`; }
   slMor(p,1,85); return `${p.name}에게 축하 인사를 전했습니다.`; }
 EVH.slFam={ pick(e,i){ const p=G.players[e.data.pid]; if(!p||p.team!==G.user)return '이제 우리 선수가 아닙니다.'; return slFamAct(p,e.data.ks[i]); } };
