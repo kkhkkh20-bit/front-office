@@ -161,10 +161,18 @@ const OPT_CRIT={b:['pa',400,'400타석','play',.45],bg:['g',120,'120경기 출�
 const OPT_GRP={play:'출전',perf:'성적',award:'수상'};
 /* 보직별로 고를 수 있는 옵션 */
 function optKinds(p){ return p.isP?(isSPr(p)?['sp','era','gg','as']:['rp','rpg','sv','hld','as']):['b','bg','avg','ops','gg','as']; }
+/* 시즌 중 외국인 계약은 지급액과 같은 남은 일정 비율을 출전 조건에도 쓴다. 율·수상 값은 낮추지 않는다. */
+function optFracEvidence(p){ const o=p&&p.opt,c=G.cal; if(!p||!p.foreign||!o||o.from!==G.year||!Number.isFinite(p.fjD)||dobj(p.fjD).y!==o.from||!c||p.fjD<c.open||p.fjD>c.end)return null; const ds=Object.keys(c.sched||{}); return ds.length?ds.filter(d=>+d>p.fjD).length/ds.length:null; }
+function optFrac(p){ const o=p&&p.opt; if(!o)return 1; if(Number.isFinite(o.fr)&&o.fr>=0&&o.fr<=1)return o.fr; return optFracEvidence(p)??1; }
+function optCountNeed(p,c){ const o=OPT_CRIT[c]; return o?Math.ceil(o[1]*(o[3]==='award'?1:optFrac(p))-1e-9):0; }
+/* 저장된 실제 조건 표시. 출전량은 정수 기록으로 달성할 수 있는 최소값을 보여 준다. */
+function optLabel(p){ const x=p&&p.opt,c=x&&(x.c||optCrit(p)),o=OPT_CRIT[c]; if(!o)return ''; const fr=optFrac(p); if(fr>=1||o[3]==='award')return o[2]; if(['avg','ops','era'].includes(c))return o[2]+'(규정 출전량은 잔여 일정 비례)'; const n=optCountNeed(p,c); return (o[0]==='outs'?ipStr(n)+'이닝':n+({pa:'타석',g:p.isP?'경기 등판':'경기 출전',sv:'세이브',hld:'홀드'}[o[0]]||''))+'(잔여 일정 비례)'; }
+/* 옛 저장은 현재 계약 시즌과 실제 입단일·일정이 함께 남은 경우에만 비율을 복원한다. */
+function optProrationFix(p0){ let n=0; for(const p of p0?[p0]:Object.values(G.players||{})){ if(!p||!p.opt||Number.isFinite(p.opt.fr))continue; const fr=optFracEvidence(p); if(fr!=null&&fr<1){ p.opt.fr=fr; n++; } } return n; }
 /* 달성 판정: sc는 시즌 중 페이스 환산(144/경기 수) */
-function optMet(c,h,p,sc){ const o=OPT_CRIT[c]; if(!o||!h)return false; sc=sc||1; const g=G.sea&&G.sea.rec&&p.team!=null&&G.sea.rec[p.team]; const tg=Math.max(1,(g?g.w+g.l+(g.t||0):144)*sc);
-  if(c==='avg'||c==='ops'){ if((h.pa||0)*sc<Math.round(tg*3.1))return false; return bRate(h)[c]>=o[1]; } if(c==='era'){ if((h.outs||0)*sc<tg*3)return false; return pRate(h).era<=o[1]; }
-  return (h[o[0]]||0)*sc>=o[1]; }
+function optMet(c,h,p,sc){ const o=OPT_CRIT[c]; if(!o||!h)return false; sc=sc||1; const g=G.sea&&G.sea.rec&&p.team!=null&&G.sea.rec[p.team]; const tg=Math.max(1,(g?g.w+g.l+(g.t||0):144)*sc),fr=optFrac(p);
+  if(c==='avg'||c==='ops'){ if((h.pa||0)*sc<Math.round(tg*3.1*fr))return false; return bRate(h)[c]>=o[1]; } if(c==='era'){ if((h.outs||0)*sc<tg*3*fr)return false; return pRate(h).era<=o[1]; }
+  return (h[o[0]]||0)*sc>=optCountNeed(p,c); }
 function optEarned(p){ if(!ctOn(p)||!p.opt||p.opt.until<G.year||p.opt.from>G.year)return false; const c=p.opt.c||optCrit(p);
   if(c==='gg')return false; /* 골든글러브는 결산 뒤(12월) 시상식에서 optAward가 지급한다 */ if(c==='as')return (p.aw||[]).some(l=>l.startsWith(G.year+' 올스타'));
   const h=seasonTotal(p,G.year,'1군'); if(!h)return false; return optMet(c,h,p,1); }

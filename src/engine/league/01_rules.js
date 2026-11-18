@@ -33,18 +33,22 @@ const SCOUT_SD=[13,9.5,7.5,5.5,4.2,3];
 const USD=14;                // 1만 달러 = 약 1,400만원 (100만 달러 = 약 14억)
 const F_NEW_CAP=100*USD, F_TOTAL_CAP=400*USD, ASIA_CAP=20*USD;
 /* 외국인 연봉 규정의 물가 반영(커뮤니티 11-12): 리그 샐러리캡이 오른 만큼 협회가 상한을 10% 단위로 올린다(시작 시점 1.0). 실제 KBO 신규 상한 100만 달러는 2019년부터 그대로지만, 수십 년 플레이에서는 국내 연봉만 오르고 외국인 금액이 멈춰 있게 된다 */
-function fEcoK(){ try{ return Math.max(1,Math.round(ecoIdx(sponSeason())*10)/10); }catch(e){ return 1; } } /* 겨울에는 다음 시즌 기준(샐러리캡과 같은 시즌 구분) */
+function fEcoK(y){ try{ return Math.max(1,Math.round(ecoIdx(y??sponSeason())*10)/10); }catch(e){ return 1; } } /* 겨울에는 다음 시즌 기준(샐러리캡과 같은 시즌 구분) */
 function asiaCap(){ return Math.round(ASIA_CAP*fEcoK()); }
 /* 아시아쿼터 재계약 상한: 신규는 20만 달러. 재계약은 직전 연봉+10만 달러, 또는 20만+10만×KBO에서 뛴 시즌 수 가운데 큰 쪽(KBO 2026 아시아쿼터 규정, 유저 제보 11-07·11-14) */
 function asiaReCap(p){ if(!(p&&p.foreign==='아시아'&&p.team!=null))return asiaCap(); const k=p.kept, b=k&&k.base!=null&&k.y===(G.contract&&!G.contract.done?G.contract.y:G.year)?k.base:(p.sal||0); const n=new Set((p.hist||[]).filter(h=>h&&!h.y2&&(h.lvl==='1군'||h.lvl==='2군')&&h.y<(G.contract&&!G.contract.done?G.contract.y:G.year)+0).map(h=>h.y)).size; return Math.max(asiaCap(),b+Math.round(10*USD*fEcoK()),asiaCap()+Math.round(n*10*USD*fEcoK())); } /* 카페 11-14: KBO 문구('매년 10만 달러씩 상향 가능')를 연차 상한으로도 읽는다. 직전 연봉+10만과 20만+10만×KBO 연차 중 큰 쪽(20→30→30→50 허용) */ /* 같은 겨울 해외 제안 잔류로 이미 올린 연봉을 다시 기준으로 쓰지 않는다(검수 11-09a: 한 겨울 두 번 인상) */
 /* 외국인 선수 한 명이 총액 한도에 차지하는 금액: 보장 연봉 + 아직 유효한 인센티브(신규·재계약·화면이 모두 이 계산을 쓴다) */
-function fCommit(p,sy){ sy=sy>999?sy:ctSeason(); /* map(fCommit)이 넘기는 순번을 시즌으로 보지 않게(검수 11-09a: 끝난 인센티브가 한도에 남음) */ return (p.sal||0)+(p.opt&&p.ctT===p.team&&p.opt.until>=sy?(p.opt.a||0):0); } /* sy: 계약 대상 시즌(기본: 지금 계약이 잡히는 시즌 — 겨울이면 다음 시즌). 그 시즌에 유효한 인센티브만 더한다(달력 연도로 보지 않음) */
+function fCommit(p,sy){ sy=sy>999?sy:ctSeason(); /* map(fCommit)이 넘기는 순번을 시즌으로 보지 않게(검수 11-09a: 끝난 인센티브가 한도에 남음) */ return (p.sal||0)+(p.opt&&p.ctT===p.team&&!(p.opt.from>sy)&&p.opt.until>=sy?(p.opt.a||0):0); } /* sy: 계약 대상 시즌(기본: 지금 계약이 잡히는 시즌 — 겨울이면 다음 시즌). 그 시즌에 유효한 인센티브만 더한다(달력 연도로 보지 않음) */
 /* 신생 구단 혜택(89_league_expansion): 1군 첫 두 시즌은 일반 외국인 4명까지, 총액 한도 +100만 달러(KBO 9·10구단 창단 혜택을 본뜸) */
 function fNewBonus(tid,y0){ const t=tid!=null&&typeof G!=='undefined'&&G&&G.teams?G.teams[tid]:null; const y=y0??(typeof sponSeason==='function'?sponSeason():G.year); return !!(t&&t.born&&y>=t.born&&y<=t.born+1); } /* 시즌 기준(결산 뒤면 다음 시즌): 혜택이 끝나는 겨울에는 이미 3명 한도 */
 function fMaxYB(tid,y){ return fNewBonus(tid,y)?4:3; }
 /* 일반 외국인 구성 규정(명단 L 기준): 정원(fMaxYB)을 넘지 않고, 정원을 한 유형(투수·타자)으로 다 채우지 않는다. 3명 구단은 같은 유형 2명까지, 신생 구단(4명)은 3명까지. 일반 영입·부상 대체 복귀·정식 전환이 같은 판정(검수 11-17 #229) */
-function fYBMixErr(tid,L){ const max=fMaxYB(tid); if(L.length>max)return `일반 외국인(아시아쿼터 제외)은 ${max}명까지인데 ${L.length}명이 됩니다`; const nP=L.filter(x=>x.isP).length; for(const [n,k] of [[nP,'투수'],[L.length-nP,'타자']])if(n>=max)return `일반 외국인 ${max}명이 모두 ${k}가 됩니다`+(max>3?`(같은 유형은 ${max-1}명까지)`:''); return ''; }
-function fCap(tid,ex){ return (fNewBonus(tid)?100*USD:0)+fTotCap()+10*USD*sum(playersOf(tid).filter(x=>x.foreign==='용병'&&x.id!==ex).map(x=>x.rsy||0)); } /* ex: 내보낼 선수(그 선수의 재계약 가산도 빠진 한도, 검수 11-09a) */ /* 재활 명단 선수의 재계약 가산도 유지(대체 등록 직후 한도가 줄어 초과되지 않게) */
+function fYBMixErr(tid,L,y){ const max=fMaxYB(tid,y); if(L.length>max)return `일반 외국인(아시아쿼터 제외)은 ${max}명까지인데 ${L.length}명이 됩니다`; const nP=L.filter(x=>x.isP).length; for(const [n,k] of [[nP,'투수'],[L.length-nP,'타자']])if(n>=max)return `일반 외국인 ${max}명이 모두 ${k}가 됩니다`+(max>3?`(같은 유형은 ${max-1}명까지)`:''); return ''; }
+/* 신규·재계약·AI는 계약 대상 시즌과 확정 조건이 반영된 같은 명단으로 정원·구성·총액을 검사한다. */
+function fYBCap(tid,L,y){ y=y??sponSeason(); return (fNewBonus(tid,y)?100*USD:0)+fTotCap(y)+10*USD*sum(L.filter(x=>x.foreign==='용병').map(x=>x.rsy||0)); }
+function fYBInfo(tid,L,y){ y=y??sponSeason(); const yb=L.filter(x=>x.foreign==='용병'),tot=sum(yb.map(x=>fCommit(x,y))),cap=fYBCap(tid,yb,y); return {tot,cap,over:Math.max(0,tot-cap),n:yb.length,max:fMaxYB(tid,y),mix:fYBMixErr(tid,yb,y)}; }
+function fCap(tid,ex,y){ return fYBCap(tid,playersOf(tid).filter(x=>x.foreign==='용병'&&x.id!==ex),y); } /* 내보낼 선수의 가산은 빼고, 재활 명단 선수의 재계약 가산은 유지한다. */
+
 const F_REPL_MAX=2, ASIA_REPL_MAX=1;
 const fReplMax=kind=>kind==='아시아'?ASIA_REPL_MAX:F_REPL_MAX;
 function fReplUsed(tid,kind){ const S=G.sea; if(!S||S.y!==G.year)return 0; const by=kind==='아시아'?S.asiaRepl:S.repl; return (by&&by[tid])||0; }

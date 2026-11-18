@@ -345,13 +345,27 @@ function aiPreFA(p){ if(!preFA(p)||p.newSal==null)return; const t=team(p.team); 
 /* 예비 FA 웃돈을 줄까(AI 판단 점검 #6): 사용자가 웃돈 버튼을 누를 때 따지는 것과 같다. 다시 잡을 뜻이 있는 선수(계획에 맞는 나이·팀 내 순위)에게만 준다.
    긴축은 주지 않는다. 유망주 수집은 28세 이하 상위 5위만. 우승 도전·흥행은 상위 8위, 그 밖은 상위 5위 */
 function aiPreFAWant(t,p,rk){ const pl=planOf(t); if(pl==='tight')return false; if(pl==='build')return p.age<=28&&rk<=5; return rk<=(pl==='win'||pl==='star'||t.mode==='contend'?8:5); }
+/* AI도 같은 다음 시즌 규정으로 재계약 명단을 정리한다. 새로 발견한 위반은 주 난수를 쓰지 않는다. */
+/* 외국인 계약 종료는 구단의 운영 주체와 무관하게 같은 이동·권리·국내 시장 처리를 따른다. */
+function fForeignEnd(p,tid,free){ if(!p||p.team!==tid)return null;free=!!(free||p.fRel);const mkt=free&&ovr(p)>=50&&p.age<=34;if(tid===ME())addLog(`외국인 선수 ${p.name}와(과) 재계약하지 않았습니다(${!free?'보류권 유지: 5년간 국내 다른 구단 입단 불가':mkt?'보류권 해제: 다른 구단과 계약 가능':'보류권은 풀었지만 국내에서 찾는 구단이 없어 해외로 떠났습니다'}).`);
+  mvLog('외국인 계약 종료',p,tid,null,!free?'재계약 결렬 · 보류권 유지(5년)':mkt?'재계약 결렬 · 보류권 해제 · 다른 구단과 계약 가능':'재계약 결렬 · 보류권 해제 · 국내 활동 종료');delete p.ovsOffer;if(free)foResRelease(p,tid);
+  if(mkt){delete p.newSal;delete p.fInc;delete p.fRel;delete p.fleft;delete p.fCtY;delete p.fMulti;delete p.kept;termsClear(p);p.team=null;p.e1=false;p.fsrc='agent';p.fday=G.day;p.fpub=G.day;p.fExitD=G.day;p.ask=round5(fAsk(p));p.ask0=p.ask;G.fmarket=Array.from(new Set((G.fmarket||[]).concat(p.id)));wire('외국인',`${tshort(tid)}, ${p.name} 보류권 해제. 다른 구단과 계약 가능`,{tid,ref:p.id});}else{if(!free)foResAdd(p,tid);dropP(p.id);}return {free,mkt}; }
+function fAiReOut(w,free){return fForeignEnd(w,w.team,free);}
+
+function fAiRePrune(tid,sy){ const before=foreignOf(tid).filter(x=>x.foreign==='용병'),weak=[...before].sort((a,b)=>ovr(a)-ovr(b))[0];
+  /* 기존 보장 연봉 초과 분기의 난수 한 자리는 그대로 소비한다. 새 인센티브·정원 위반은 고정 해시로 판단한다. */
+  const oldCap=(fNewBonus(tid)?100*USD:0)+Math.round(F_TOTAL_CAP*(lgRuleNow().fcap||1)*fEcoK())+10*USD*sum(playersOf(tid).filter(x=>x.foreign==='용병').map(x=>x.rsy||0));
+  const oldOver=sum(before.map(x=>x.sal))>oldCap,draw=oldOver&&weak&&ovr(weak)>=55&&weak.age<=33?R():null;
+  for(let n=0;n<before.length;n++){ const L=fReRoster(tid,sy),f=fYBInfo(tid,L,sy); if(!f.over&&!f.mix)break; const yb=L.filter(x=>x.foreign==='용병'),np=yb.filter(x=>x.isP).length,kind=np>=f.max?true:yb.length-np>=f.max?false:null;
+    const w=yb.filter(x=>kind==null||x.isP===kind).sort((a,b)=>ovr(a)-ovr(b))[0]; if(!w)break; const q=G.players[w.id],v=n===0&&weak&&w.id===weak.id&&draw!=null?draw:hn('fReRule'+sy+':'+tid,w.id); fAiReOut(q,ovr(q)>=55&&q.age<=33&&v<.5); } }
 function contractStart(){
   const ended=[], foreignEnd=[], aiSal=[];
   for(const p of Object.values(G.players)){
     if(p.team==null||p.joinY>G.year)continue;
     if(p.foreign&&p.fy>G.year)continue; /* 12월 1일 계약해 다음 시즌부터 뛰는 외국인은 재계약 심사 대상이 아니다(검수 11-09zl) */
+    if(p.foreign&&p.fCtY>G.year)continue; /* 같은 겨울 해외 제안을 막고 이미 확정한 다음 시즌 계약 */
     if(p.foreign&&p.fMulti>G.year){ p.rsy=(p.rsy||0)+1; continue; } /* 2년 계약 중인 외국인은 이번 겨울 재계약 없이 같은 연봉(커뮤니티 요청 11-07) */
-    if(p.foreign){ p.newSal=newSalary(p); if(p.team===ME())foreignEnd.push(p.id); else { const pf=perfOf(seasonTotal(p,G.year,'1군'),p.isP); if(p.age>=35||pf==null||pf<52||ovr(p)<(p.foreign==='아시아'?48:54)){ if(!p.fRel)try{ foResAdd(p,p.team); }catch(e){} dropP(p.id); } /* 재계약하지 않으면 우리와 같이 보류권을 남긴다(검수 11-09zzb) */ /* 성적이 평범하거나 국내 주전급보다 약한 외국인은 놓고 시장에서 더 나은 선수를 찾는다 */ else { p.sal=p.newSal; p.rsy=(p.rsy||0)+1; p.fCtY=G.year+1; if(p.foreign==='용병'){ const yb=foreignOf(p.team).filter(x=>x.foreign==='용병'); if(sum(yb.map(x=>x.sal))>fCap(p.team)){ const w=[...yb].sort((a,b)=>ovr(a)-ovr(b))[0]; if(ovr(w)>=55&&w.age<=33&&R()<.5){ const ot=w.team; w.team=null; w.fsrc='agent'; w.fday=G.day; w.fpub=G.day; w.ask=round5(fAsk(w)); w.ask0=w.ask; G.fmarket=(G.fmarket||[]).concat(w.id); wire('외국인',`${tshort(ot)}, 외국인 ${w.name} 보류권 해제. 다른 구단과 계약 가능`,{tid:ot,ref:w.id}); } else { try{ foResAdd(w,w.team); }catch(e){} dropP(w.id); } } } } } continue; }
+    if(p.foreign){ p.newSal=newSalary(p); if(p.team===ME())foreignEnd.push(p.id); else { const pf=perfOf(seasonTotal(p,G.year,'1군'),p.isP); if(p.age>=35||pf==null||pf<52||ovr(p)<(p.foreign==='아시아'?48:54)){ fForeignEnd(p,p.team,!!p.fRel); } /* 재계약하지 않으면 우리와 같이 보류권을 남긴다(검수 11-09zzb) */ /* 성적이 평범하거나 국내 주전급보다 약한 외국인은 놓고 시장에서 더 나은 선수를 찾는다 */ else { p.sal=p.newSal; p.rsy=(p.rsy||0)+1; p.fCtY=G.year+1; if(p.foreign==='용병')fAiRePrune(p.team,G.year+1); } } continue; }
     if(p.faC)continue;
     if(p.ctEnd==null&&p.lastFA!=null)p.ctEnd=G.year; /* 예전 저장본: 끝난 FA 계약 연봉이 그대로 남아 있으면 한 번 시장가로 */
     p.newSal=newSalary(p); if(p.team===ME())ended.push(p.id); else /* 야인이면 전 구단도 AI가 처리(검수 11-09zx) */ { aiPreFA(p); aiPayGen(p); aiSal.push(p); } /* AI 연봉 협상은 올해 협상 기준(G.contract.y)이 선 뒤에(계약 2단계) */
@@ -365,11 +379,14 @@ function contractStart(){
   if(!G.unemp){ stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`); if(G.mail[0])G.mail[0].auto=foreignEnd.length?['sal','fre']:['sal']; }
 }
 /* 외국인 재계약: 잘한 선수는 더 달라고 한다. 3명 총액 한도(400만 달러 + 재계약 연차당 10만 달러)를 넘으면 확정할 수 없다 */
-function fReCapInfo(){ const C=G.contract; if(!C)return null; const FE=C.foreignEnd||[], FD=C.foreignDrop||[]; /* 일부 계약 상태에는 외국인 목록이 없을 수 있다(검수 11-12) */ const keep=FE.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!FD.includes(p.id));
-  const others=foreignOf(G.user).filter(x=>x.foreign==='용병'&&!FE.includes(x.id)); const tot=sum(keep.map(p=>p.newSal+(p.fInc||0)))+sum(others.map(fCommit)); /* 총액 한도에는 인센티브도 들어간다 */
-  const cap=fTotCap()+10*USD*sum(keep.map(p=>(p.rsy||0)+1))+10*USD*sum(others.map(p=>p.rsy||0)); return {tot,cap,over:Math.max(0,tot-cap),n:keep.length+others.length}; }
-/* 결별하지 않은 일반 외국인이 3명 모두 투수거나 모두 타자인가(결별 취소·계약 확정이 인원수만 보던 문제, 검수 11-09a) */
-function fReMixBad(){ const C=G.contract; const yb=foreignOf(G.user).filter(x=>x.foreign==='용병'&&!(C&&!C.done&&C.foreignDrop.includes(x.id))); return yb.length>=3&&yb.every(x=>x.isP===yb[0].isP); }
+/* 계약 대상 시즌의 실제 잔류 명단. 합의·제시 조건은 복사본에 반영해 조회가 저장을 바꾸지 않는다. */
+function fReRoster(tid,sy,C=G.contract){ const active=C&&!C.done&&(C.tid??G.user)===tid&&C.y+1===sy,FE=new Set(active?C.foreignEnd||[]:[]),FD=new Set(active?C.foreignDrop||[]:[]); return foreignOf(tid).filter(p=>!FD.has(p.id)&&!(p.joinY>sy)).map(p=>{ if(!FE.has(p.id)||p.fCtY>=sy)return p; const agreed=!!(C.fre&&C.fre[p.id]&&C.fre[p.id].ok),inc=p.fInc||0,opt=inc>0?{a:inc,from:sy,until:sy,c:optCrit(p)}:agreed?null:p.opt; return {...p,sal:p.newSal??p.sal,rsy:(p.rsy||0)+1,opt,ctT:opt?tid:p.ctT}; }); }
+function fReCapInfo(){ const C=G.contract; return C?fYBInfo(G.user,fReRoster(G.user,C.y+1,C),C.y+1):null; }
+function fReMixBad(){ const f=fReCapInfo(); return !!(f&&f.mix); }
+/* 마감·이직 인계도 같은 정원·구성·총액에 맞춘다. 과다한 유형에서 비싼 재계약부터 포기한다. */
+function fReAutoDrop(C,tid){ const sy=C.y+1; for(let n=0;n<(C.foreignEnd||[]).length;n++){ const L=fReRoster(tid,sy,C),f=fYBInfo(tid,L,sy); if(!f.over&&!f.mix)return f; const yb=L.filter(x=>x.foreign==='용병'),np=yb.filter(x=>x.isP).length,kind=np>=f.max?true:yb.length-np>=f.max?false:null;
+    const k=(C.foreignEnd||[]).map(id=>G.players[id]).filter(p=>p&&p.team===tid&&p.foreign==='용병'&&!(C.foreignDrop||[]).includes(p.id)&&(kind==null||p.isP===kind)).sort((a,b)=>(b.newSal??b.sal)-(a.newSal??a.sal))[0]; if(!k)break; (C.foreignDrop=C.foreignDrop||[]).push(k.id); if(tid===G.user)addLog(`다음 시즌 외국인 규정에 따라 ${k.name}와(과)는 재계약하지 않습니다.`); }
+  return fYBInfo(tid,fReRoster(tid,sy,C),sy); }
 /* 15% 깎아 협상의 합의 확률: 구단 충성심·적응력이 높을수록 받아들이고, 지난 시즌 WAR 3 이상 스타는 잘 받아들이지 않는다.
    성적은 계약 협상이 열린 시즌(C.y) 기준. 1월 1일이 지나도 지난 시즌 성적으로 본다 */
 function fReNegChance(p){ const C=G.contract; initPers(p); const y=(C&&C.y)??(period()==='pre'?G.year-1:G.year); const h=seasonTotal(p,y,'1군'); const star=!!(h&&warOf(h,p)>=3);
@@ -382,22 +399,20 @@ function fReNeg(id){ const C=G.contract; const p=G.players[id]; if(!C||!p||C.don
 /* 협상하지 않고 둔 외국인: 해외 제안이 요구액보다 확실히 좋으면 그쪽으로 떠난다(협상하면 그 이상을 줘야 하므로, 방치가 더 싸지 않게) */
 function fReIdleOut(p){ const O=foReOut(p); return O&&!O.none&&O.v*.97>p.newSal?O:null; }
 function fReFinish(C,tid){ const me=tid===G.user;
-  for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||p.team!==tid)continue;
-    if(!C.foreignDrop.includes(id)&&!(C.fre&&C.fre[id]&&C.fre[id].ok)){ const O=fReIdleOut(p); if(O){ const rel=(C.fFree||[]).includes(id)||p.fRel; /* 계약에 보류권 해제 조항이 있으면 그대로 지킨다(검수 11-06) */ if(me)addLog(`외국인 선수 ${p.name}이(가) 재계약 협상 없이 ${O.k} 구단 제안(${usdT(O.v)})을 받아들여 떠났습니다(${rel?'계약 조항대로 보류권 해제':'보류권 유지: 5년간 국내 다른 구단 입단 불가'}).`); if(!rel)try{ foResAdd(p,tid); }catch(e){} { const lg=O.k==='미국'?'MLB':O.k==='일본'?'NPB':'CPBL'; ovsLeave(p,lg,lg==='MLB'?pick(MLBT):lg==='NPB'?pick(NPBT):'타이베이',1,Math.round(O.v/USD),'외국인'); } /* 해외파 이력에도 남긴다(검수 11-09b) */ continue; } }
-    if(C.foreignDrop.includes(id)){ const free=((C.fFree||[]).includes(id)||p.fRel); /* 조항은 누가 결렬시켰든 지킨다(선수가 거절해도 보류권을 다시 잡지 않음, 검수 11-06) */ /* 계약 때 보류권 해제 조항을 넣었으면 약속대로 푼다 */ const mkt=free&&ovr(p)>=50&&p.age<=34; if(me)addLog(`외국인 선수 ${p.name}와(과) 재계약하지 않았습니다(${!free?'보류권 유지: 5년간 국내 다른 구단 입단 불가':mkt?'보류권 해제: 다른 구단과 계약 가능':'보류권은 풀었지만 국내에서 찾는 구단이 없어 해외로 떠났습니다'}).`);
-      mvLog('외국인 계약 종료',p,tid,null,!free?'재계약 결렬 · 보류권 유지(5년)':mkt?'재계약 결렬 · 보류권 해제 · 다른 구단과 계약 가능':'재계약 결렬 · 보류권 해제 · 국내 활동 종료');
-      if(mkt){ delete p.newSal; delete p.fInc; delete p.fRel; delete p.fleft; termsClear(p); /* 옛 계약 조항은 새 계약으로 따라가지 않는다 */ p.team=null; p.fsrc='agent'; p.fday=G.day; p.fpub=G.day; p.ask=round5(fAsk(p)); p.ask0=p.ask; G.fmarket=(G.fmarket||[]).concat(p.id); wire('외국인',`${tshort(tid)}, ${p.name} 보류권 해제. 다른 구단과 계약 가능`,{tid}); } else { if(!free)try{ foResAdd(p,tid); }catch(e){} dropP(id); } }
-    else { if(p.newSal!=null)p.sal=p.newSal; delete p.newSal; p.rsy=(p.rsy||0)+1; p.fCtY=C.y+1; delete p.fleft; if(p.fInc){ p.ctT=p.team; p.opt={a:p.fInc,from:C.y+1,until:C.y+1,c:optCrit(p)}; delete p.fInc; } } } }
+  for(const id of C.foreignEnd){ const p=G.players[id]; if(!p||p.team!==tid)continue; if(p.kept&&p.kept.y===C.y&&p.fCtY>=C.y+1)continue; if(p.ovsOffer&&!C.foreignDrop.includes(id)&&!(C.fre&&C.fre[id]&&C.fre[id].ok))continue; /* 미결 해외 제안은 잔류 결정 또는 후임 인계에서 정한다. */
+    if(!C.foreignDrop.includes(id)&&!(C.fre&&C.fre[id]&&C.fre[id].ok)){ const O=fReIdleOut(p); if(O){ const rel=(C.fFree||[]).includes(id)||p.fRel; /* 계약에 보류권 해제 조항이 있으면 그대로 지킨다(검수 11-06) */ if(me)addLog(`외국인 선수 ${p.name}이(가) 재계약 협상 없이 ${O.k} 구단 제안(${usdT(O.v)})을 받아들여 떠났습니다(${rel?'계약 조항대로 보류권 해제':'보류권 유지: 5년간 국내 다른 구단 입단 불가'}).`); if(rel)foResRelease(p,tid);else try{ foResAdd(p,tid); }catch(e){} { const lg=O.k==='미국'?'MLB':O.k==='일본'?'NPB':'CPBL'; ovsLeave(p,lg,lg==='MLB'?pick(MLBT):lg==='NPB'?pick(NPBT):'타이베이',1,Math.round(O.v/USD),'외국인'); } /* 해외파 이력에도 남긴다(검수 11-09b) */ continue; } }
+    if(C.foreignDrop.includes(id)){fForeignEnd(p,tid,(C.fFree||[]).includes(id)||p.fRel);}
+    else { if(p.newSal!=null)p.sal=p.newSal; delete p.newSal; p.rsy=(p.rsy||0)+1; p.fCtY=C.y+1; delete p.fleft; if(p.fInc){ optLedKeep(p); p.ctT=p.team; p.opt={a:p.fInc,from:C.y+1,until:C.y+1,c:optCrit(p)}; delete p.fInc; } else if(C.fre&&C.fre[id]&&C.fre[id].ok){ optLedKeep(p); delete p.opt; } } } }
 /* 이직할 때: 떠나는 구단의 남은 연봉 협상은 그 구단(이제 AI)이 정리하고, 새 구단은 이미 연봉을 마친 상태로 시작한다 */
 function contractHandOff(oldTid){ const C=G.contract; if(!C||C.done)return; for(const [id,n] of Object.entries(C.neg||{})){ const p=G.players[id]; if(n.st==='arb'&&p&&p.team===oldTid){ p.arbP={club:n.arb.club,player:n.arb.player,tid:oldTid}; n.st='arbOut'; } } /* 조정 신청은 1월 20일 위원회 결정까지 그대로(검수 11-09zzb) */ try{ salTalkClose(true); }catch(e){} /* 사인 거부 선수는 전 구단에서도 미계약으로 남아 holdDaily 일정대로 정리된다(검수 11-09zzb) */
-  { let g=0; while(fReCapInfo().over>0&&g++<4){ const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>b.newSal-a.newSal)[0]; if(!k)break; C.foreignDrop.push(k.id); } } /* 외국인 총액 한도를 넘는 재계약은 비싼 선수부터 포기(평소 확정과 같은 한도) */
+  fReAutoDrop(C,oldTid);
   for(const id of C.ended){ const p=G.players[id]; if(p&&p.team===oldTid&&p.newSal!=null){ p.sal=Math.max(MIN_SAL,p.newSal); delete p.newSal; } }
   fReFinish(C,oldTid); /* 단장이 내린 결별·합의(인센티브 포함)를 그대로 마무리한다 */
   G.contract={y:C.y,tid:null,ended:[],foreignEnd:[],foreignDrop:[],released:[],done:true}; }
 function confirmContracts(force){ /* force: 1월 31일 마감·이직 정리(조정도 바로 판정) */
   const C=G.contract; if(!C||C.done)return; if(C.tid!=null&&C.tid!==G.user){ C.done=true; return; } /* 이직 전 구단의 계약은 확정하지 않는다 */
-  { const own=id=>{ const p=G.players[id]; return p&&p.team===G.user; }; C.ended=C.ended.filter(own); C.foreignEnd=C.foreignEnd.filter(own); } /* 그사이 떠난 선수는 빼고 */ { const f=fReCapInfo(); if(f&&f.over>0)return `외국인 3명 연봉 총액이 한도를 ${money(f.over)} 넘습니다. 한 명과 재계약하지 않거나 금액을 낮춰 협상하세요.`; }
-  if(fReMixBad()){ if(!force)return '재계약 선수까지 합치면 일반 외국인 3명이 모두 투수(또는 타자)입니다. 한 명과 결별하세요.'; const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>b.newSal-a.newSal)[0]; if(k){ C.foreignDrop.push(k.id); addLog(`외국인 3명이 모두 ${k.isP?'투수':'타자'}가 돼 ${k.name}와(과)는 재계약하지 않았습니다.`); } } /* 마감 확정은 재계약 선수 중 가장 비싼 한 명과 결별 */
+  { const own=id=>{ const p=G.players[id]; return p&&p.team===G.user; }; C.ended=C.ended.filter(own); C.foreignEnd=C.foreignEnd.filter(own); }
+  { const f=force?fReAutoDrop(C,G.user):fReCapInfo(); if(f&&f.over>0)return `외국인 ${f.max}명 총액이 한도를 ${money(f.over)} 넘습니다. 한 명과 재계약하지 않거나 금액을 낮춰 협상하세요.`; if(f&&f.mix)return `재계약 선수까지 합치면 ${f.mix}. 한 명과 결별하세요.`; }
   if(!force&&C.neg&&G.day<dnum((C.y??G.year)+1,1,20)&&Object.entries(C.neg).some(([id,n])=>n.st==='arb'&&G.players[id]&&G.players[id].team===G.user))return '연봉조정 중인 선수가 있어 1월 20일 결정이 나온 뒤에 확정됩니다. 그 전에 선수안을 받아들이면 바로 확정할 수 있습니다.'; /* 일괄 확정으로 조정이 앞당겨 끝나지 않게(검수 11-06) */
   salTalkClose();
   for(const id of C.ended){ const p=G.players[id]; if(p&&p.newSal!=null){p.sal=Math.max(MIN_SAL,p.newSal); delete p.newSal;} }
