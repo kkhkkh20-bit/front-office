@@ -32,7 +32,7 @@ test('스키마: migrations/0003_cloud_saves.sql과 worker/v1/cloud.js CLOUD_SQL
   const { CLOUD_SQL, cloudStatements } = await CL;
   assert.equal(CLOUD_SQL, fs.readFileSync(path.join(root, 'migrations/0003_cloud_saves.sql'), 'utf8'));
   assert.equal(cloudStatements().length, 6); assert.ok(cloudStatements().every(s => /^CREATE (TABLE|INDEX) IF NOT EXISTS/.test(s)));
-  const wr = fs.readFileSync(path.join(root, 'wrangler.jsonc'), 'utf8'); assert.match(wr, /\/\/\s*"r2_buckets": \[\{ "binding": "SAVES", "bucket_name": "fronttime-saves" \}\]/, 'R2 바인딩은 주석으로(버킷을 만들기 전 배포가 깨지지 않게)');
+  const wr = fs.readFileSync(path.join(root, 'wrangler.jsonc'), 'utf8'); assert.match(wr, /^\s*"r2_buckets": \[\{ "binding": "SAVES", "bucket_name": "fronttime-saves" \}\],$/m, 'R2 바인딩 SAVES(버킷 fronttime-saves, 11-18 운영자 생성)');
 });
 test('코드: 글자표·길이·정리', async () => {
   const { newCode, normCode, ALPHABET } = await CL;
