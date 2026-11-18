@@ -11,8 +11,6 @@ function personHero(o){
     ${o.sum?`<div class="pf-fm-role pc-sum"><b>${esc(o.sum.t)}</b>${o.sum.d?`<span>${esc(o.sum.d)}</span>`:''}</div>`:''}</section>`; }
 /* 능력 차트: 축 [이름, 내부 값, 내부 값, 보일 말(없으면 화면 숫자)] */
 function personRadar(ax,cap,title){ return ''; /* 능력 차트는 선수만(사용자 11-16). 인물 카드는 사진 카드 + 세부 표 */ }
-function personRadarOld(ax,cap,title){
-  return `<section class="card pf-radar pc-radar"><h3>${esc(title||'능력 차트')}</h3>${radarSVG(ax,false,true)}<p class="small keep pf-rd-key"><i class="k1"></i>현재 <i class="k3"></i>중간 기준</p>${cap?`<p class="small muted keep pc-cap">${cap}</p>`:''}</section>`; }
 /* 세부 능력 표: cols = [[{h, rows:[[이름, 값, 'n'(숫자)|'w'(말), 설명]], html}]] */
 function personAttrs(title,cols,foot){
   const row=([l,v,k,d])=>k==='r'?`<div class="pf-attribute-row"${d?` title="${esc(d)}"`:''}><span>${esc(l)}</span><b class="pf-score" style="color:${rcol(pcInv(v))}">${Math.round(v)}</b></div>` /* r: 화면에 100점 그대로 보이던 값(단장 능력) */
@@ -43,7 +41,6 @@ function mgrProfileView(m,o){ o=o||{}; mgrFix(m); const ty=mgrType(m), v=MV[mgrV
 }
 
 /* 코치: 기본 지도·육성과 세부 지도 능력(모두 화면 숫자) */
-const CAB_S=k=>CAB[k].replace(' 지도','').replace('유망주 ','').replace('데이터 ','');
 function coachProfileView(c,o){ /* o.more: 성격·관계 말 줄, o.avTeam: 사진 유니폼 구단(후보) */ o=o||{}; const a=cAb(c)||{}, D=CDOM[c.role]||[], order=[...new Set([...D,'yng','com','ana','stf','con','def','ctl','pow','spd'])].slice(0,6) /* 차트는 늘 6축: 맡은 자리 능력부터 */, rest=Object.keys(CAB).filter(k=>!D.includes(k)&&!['yng','com','ana'].includes(k));
   const role=(c.ax?'보조 ':'')+(CROLE[c.role]?.l||'코치'), S=cStrong(c), W=cWeak(c);
   const hero=personHero({av:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:o.avTeam!==undefined?o.avTeam:o.tid??G.user},tid:o.tid,eyebrow:o.eyebrow||role,name:c.name,sub:`${c.age}세${c.car?' · '+esc(c.car):''}`,pills:(typeof coachTag==='function'?coachTag(c):'')+(c.ob?obTag(c.ob):''),

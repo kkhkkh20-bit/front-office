@@ -32,7 +32,6 @@ function facSt(tid){ if(tid==null)return null; if(tid===G.user){ if(!G.fac||!G.f
 /* 다른 구단의 시설 단계: 매일 모든 선수에 쓰므로 가볍게. 아직 만들지 않았으면 리그 기준(2단계) */
 function facLvK(tid,k){ if(tid==null)return 2; if(tid===G.user)return facOf(k); const t=G.teams[tid]; return t&&t.fi&&t.fi.it?(t.fi.it[k]||0):2; }
 /* 다른 구단 부상·회복·2군 효과는 리그 중간인 2단계를 기준(예전 값)으로 본다. 예전엔 이 효과가 없었으므로 2단계 구단은 그대로다 */
-function facAiInj(tid){ return tid==null?1:1-(facImpact(facLvK(tid,'weight'))-2)*.05; }
 function facAiRec(tid){ return tid==null?1:1-facImpact(facLvK(tid,'rehab'))*.07; } /* 우리 구단과 같은 식(0단계 기준). 병원 등급 몫은 AI에 없다 */
 function facAiFat(tid){ return tid==null?1:1+facImpact(facLvK(tid,'rehab'))*.06; } /* 우리 구단과 같은 식(사용자 결정 11-07) */
 function facAiFut(tid){ return tid==null?0:(facImpact(facLvK(tid,'fut'))-2)*.05; }

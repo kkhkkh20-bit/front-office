@@ -35,7 +35,7 @@ function teleEv(name,p,beacon){ try{ if(!teleOn())return; teleLoad(); const e={n
   if(TELE.ga&&window.gtag)try{ gtag('event',name,e.p); }catch(x){} if(!TELE.ph)return; TS.q.push(e); if(TS.ready||TS.fail)teleFlush(beacon); }catch(x){} }
 /* 함수 감싸기: 원래 함수는 그대로 실행하고 끝난 뒤 기록만 남긴다 */
 function teleWrap(name,fn){ const f=window[name]; if(typeof f!=='function'||f._tw)return; const w=function(...a){ const pre={tr:(G&&G.trades||[]).length,fa:(G&&G.fa&&G.fa.results||[]).length,iv:G&&G.iv&&!G.iv.done}; const r=f.apply(this,a); try{ fn(a,r,pre); }catch(e){} return r; }; w._tw=1; window[name]=w; }
-function teleActWrap(k,fn){ const f=A[k]; if(typeof f!=='function'||f._tw)return; const w=function(...a){ let pre=null; try{ pre=fn.pre?fn.pre(a):null; }catch(e){} const r=f.apply(this,a); try{ fn(a,r,pre); }catch(e){} return r; }; w._tw=1; A[k]=w; }
+function teleActWrap(k,fn){ const f=A[k]; if(typeof f!=='function'||f._tw)return; const w=function(...a){ let pre=null; try{ pre=fn.pre?fn.pre(a):null; }catch(e){} const r=f.apply(this,a); try{ fn(a,r,pre); }catch(e){} return r; }; w._tw=1; w._gw=f._gw; A[k]=w; } /* 결재창 감싸기 표시(_gw)를 물려받아 guardWrap이 두 번 감싸지 않게 */
 function teleHooks(){ if(window._teleH)return; window._teleH=1; const ev=teleEv, me=()=>!G||G.unemp?false:true;
   /* 기능 사용 */
   teleWrap('proposeTrade',(a,r,pre)=>ev('trade_propose',{partner:a[0],give_n:(a[1]||[]).length,get_n:(a[2]||[]).length,cash:a[3]||0,done:(G.trades||[]).length>pre.tr}));

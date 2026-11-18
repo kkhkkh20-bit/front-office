@@ -1,9 +1,6 @@
 /* 예전 저장 정리: 기한 임박 알림이 따로 만들던 중복 소식을 지운다(지금은 원래 소식을 끌어올림) */
 function mailMigrate(){ if(G.mailMig>=1)return; G.mailMig=1; G.mail=(G.mail||[]).filter(m=>!(m.kind==='결정'&&/^내일까지 정하지 않으면/.test(m.subj||''))); }
 /* ===== 드래프트 ===== */
-const SCH_CITY={수도권:['서울','인천','수원','성남','부천','안산','의정부'],영남:['부산','대구','울산','창원','포항','김해','경주'],'호남·충청':['광주','대전','전주','청주','목포','천안','순천']};
-const SCH_HS=['새빛고','한결고','솔뫼고','누리고','다솜고','미르고','해담고','가온고','라온고','늘품고','한울공고','푸름고'];
-const SCH_UN=['한결대','누리대','새빛대','가온대','미르대','해담대'];
 const AM_INJ_P=['팔꿈치 인대 접합 수술(토미 존) 이력','어깨 염증으로 3개월 공백','팔꿈치 뼛조각 제거 수술 이력','고3 시즌 혹사 논란(투구 수 과다)'];
 /* 아마추어 기록(카페 11-15: 1라운드 1순위 고졸 투수의 아마 기록이 ERA 6.18·WHIP 1.87).
    예전에는 프로 확률식(batProbs/pitProbs)에 상대 수준 보정(+14.5~19.5)만 더하고 1군 폭(shrinkQ)으로 줄여 돌렸다. 유망주(능력 25~50)가 KBO 평균 안팎 선수처럼 나와
@@ -161,7 +158,7 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
   recoverDraftLogs(); draftClubInit(); rchkInit(); sdObFix(); ctMilClauseFix(); sdContractFix(); salMilFix(); migrateMoveContracts(); faClosedFix(); aiBlockDates();
   /* 검수 11-18 #731~750: 실제 구단·복무 상태를 복원한 뒤 소속별 기록을 조용히 정리한다. */
-  captainMigrate(); leadAdjMigrate(); playPromiseFix(); goalSupportFix(); foResFix(); ovsRenewFix(); optProrationFix(); fovsMigrate(); facDealsMigrate(); newStadMigrate(); mreqDoneFix(); fTmpRecordFix(); flMigrate(); meTradeAgeMigrate();
+  captainMigrate(); leadAdjMigrate(); playPromiseFix(); goalSupportFix(); foResFix(); ovsRenewFix(); try{ ovsSlimFix(); }catch(e){} optProrationFix(); fovsMigrate(); facDealsMigrate(); newStadMigrate(); mreqDoneFix(); fTmpRecordFix(); flMigrate(); meTradeAgeMigrate();
   try{ psArchiveRainMigrate(); }catch(e){} try{ champGiftMigrate(); }catch(e){} try{ champFundMigrate(); }catch(e){} try{ archPsMigrate(); }catch(e){} try{ champArchiveMvpMigrate(); }catch(e){}
 }
 /* 드래프트 명단 정리(카페 11-17 ddddddd): 어느 구단과든 계약한 선수(트라이아웃·무적·해외 복귀 등)는 신인 드래프트 명단·진행 중 지명 명단에서 뺀다.
