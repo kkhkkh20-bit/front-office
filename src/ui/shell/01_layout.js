@@ -152,6 +152,7 @@ function saveCheck(g){ const o=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
   if(!o(g.sea)||!Array.isArray(g.sea.rec)||g.sea.rec.length!==g.teams.length||!g.sea.rec.every(r=>o(r)&&Number.isFinite(r.w)&&Number.isFinite(r.l)))return '시즌 기록'; /* 상대 구단 전적이 빠져도 경기·순위 계산에서 오류(검수 11-09zr #12) */
   { const bad=saveCalendarCheck(g); if(bad)return bad; }
   if(g.games!=null&&!Array.isArray(g.games))return '경기 기록';
+  try{ rdgCheck(g); }catch(e){} /* 이주 전 원본의 능력치 지문이 다르면 게임 밖에서 고친 파일: 편집됨(22d_edited). 저장을 막지는 않는다 */
   return ''; }
 /* 세이브가 바뀌면(G 객체가 달라지면) 이전 게임에서 하던 화면 상태를 비운다(검수 11-09: 백업 코드·훈련 대기·드래프트 타이머·비교 목록이 다른 세이브에 남음) */
 /* 슬롯 전환·백업 가져오기·새로고침의 공통 지점(render·저장 직전 prepG가 부른다): 중계 위치·경기 전 사본·경기 요약·소식함 돌아가기·확인 절차·동석 자동 열기도 이전 게임 것을 버린다(검수 11-09zzc #1·#2·#21·#28·#29·#30) */
@@ -168,7 +169,7 @@ let _uiG; function uiSaveSync(){ if(_uiG===G)return; _uiG=G; if(typeof ulGameSwi
 function saveActionSource(){ return {g:G,slot:curSlot(),rev:SLOT_REV,title:!!UI.title,j:G?prepG():null}; }
 function saveActionSame(s,withRev=true){ return !!s&&s.g===G&&s.slot===curSlot()&&s.title===!!UI.title&&(!withRev||s.rev===SLOT_REV)&&s.j===(G?prepG():null); }
 /* 복원은 동기 구간에서만 임시 G로 검증한다. 저장을 기다리는 동안 화면과 G는 원래 게임이다. */
-function savePrepareGame(g){ const old=G,stage=_saveGStage; try{_saveGStage=true;G=g;migrateDraft();return {g,data:packJ(JSON.stringify(g)),info:slotInfo()};}finally{G=old;_saveGStage=stage;try{worldReset();syncMinSal();}catch(e){}} }
+function savePrepareGame(g){ const old=G,stage=_saveGStage; try{_saveGStage=true;G=g;migrateDraft();rdgStampSafe();return {g,data:packJ(JSON.stringify(g)),info:slotInfo()};}finally{G=old;_saveGStage=stage;try{worldReset();syncMinSal();}catch(e){}} }
 function saveOpenGame(g,n,m){ const old=G;try{G=old;closeSheets();}finally{G=g;}CUR_SLOT=n;slotRevSync(n,m);delete SLOT_BAD[n];delete SLOT_BAD_AT[n];try{worldReset();syncMinSal();}catch(e){}uiSaveSync();svMark();UI.overAsk=null;UI.confLoad=null;UI.title=false;UI.sstep='main';UI.tab='inbox';UI._ibFirst=true; }
 async function saveCanLeave(source,key){
  if(G&&!meta().slots[source.slot]?.lock&&!(source.j===_svJ&&_svN===source.slot&&!SAVE_CONFL)){const ok=await saveCurrentConfirmed();if(!saveActionSame(source,false)){UI.slotMsg='저장을 기다리는 사이 게임이 바뀌어 옮기지 않았습니다.';render();return false;}if(!ok&&!SAVE_CONFL){UI.slotMsg=`지금 게임을 저장하지 못해 옮기지 않았습니다. ${SAVE_ERR||''}`.trim();render();return false;}}

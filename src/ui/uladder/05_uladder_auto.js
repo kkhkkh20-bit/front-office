@@ -44,7 +44,7 @@ async function ulAutoRename(){ const N=ulNet(); if(!N.signedIn()||ulNickSet())re
 async function ulAutoTick(force){ if(ULA.busy||!G||UI.title)return ''; try{ if(navigator.webdriver&&!UI.ulAutoTest)return ''; }catch(e){}
   const start=ulTok(); if(ulLs(UL_OFFP_K)==='1')await ulAutoOffFlush();
   try{ if(typeof ulLiveFlush==='function')await ulLiveFlush(); }catch(e){}
-  if(!ulSame(start)||ULA.busy||!ulAutoOn())return ''; const intent=ulAutoIntentKey(), now=Date.now(), U=uld(); if(!U)return '';
+  if(!ulSame(start)||ULA.busy||!ulAutoOn())return ''; if(ulEdited())return 'edited'; /* 편집된 저장은 자동 등록하지 않는다(22d_edited) */ const intent=ulAutoIntentKey(), now=Date.now(), U=uld(); if(!U)return '';
   if(ulAutoPending()==='on'&&!await ulAutoOnFlush())return 'fail'; if(!ulSame(start)||intent!==ulAutoIntentKey()||ULA.busy)return '';
   const rename=async()=>{if(xfAvail()&&FrontOfficeCore.netEnabled()&&ulNet().signedIn())await ulAutoRename();return ulSame(start)&&intent===ulAutoIntentKey()&&!ULA.busy;};
   if(U.ar&&U.ar.manual&&typeof ulManualRetry==='function'){if(!await rename())return '';return await ulManualRetry();}
@@ -85,7 +85,7 @@ const ulLiveRevision=()=>ULL.rev=Math.max(Date.now()*1024,ULL.rev+1);
 function ulLivePhase(L){ const post=!!L.post, done=post?Math.max(0,Math.min(3,L.post.next|0)):0;
   return {stage:post?['semi-ready','semi-one-done','final-ready','complete'][done]:L.next>=L.sched.length?'regular-done':'regular',postDone:done,postTotal:3}; }
 function ulLive(L){ try{ const N=ulNet(), U=uld(), pid=(N.player()||{}).id;
-  if(!L||!L.net||!L.nk||!U||U.league!==L||!ulV1On()||!N.signedIn()||!pid||!ulAutoOn()||L.livePid&&L.livePid!==pid||ulLiveQueue().some(x=>x.pid===pid&&x.key===L.nk))return;
+  if(ulEdited()||!L||!L.net||!L.nk||!U||U.league!==L||!ulV1On()||!N.signedIn()||!pid||!ulAutoOn()||L.livePid&&L.livePid!==pid||ulLiveQueue().some(x=>x.pid===pid&&x.key===L.nk))return;
   if(!L.livePid)L.livePid=pid; if(!L.liveOpened){ const n=parseInt(String(L.nk).split('.').pop(),36); L.liveOpened=Number.isSafeInteger(n)&&n>1e12&&n<=Date.now()+300e3?n:Date.now(); }
   const st=ulStand(L), done=L.next>0&&L.sched[L.next-1]?L.sched[L.next-1].r:0;
   N.live(Object.assign({key:L.nk,tier:L.tier|0,round:done,post:L.post?1:0,opened:L.liveOpened,revision:ulLiveRevision(),teams:L.teams.map(t=>[t.name,t.pid||null,t.kind]),st:st.map(x=>[L.teams[x.key].name,x.w,x.l,x.t,L.teams[x.key].kind])},ulLivePhase(L))).catch(()=>{});
@@ -104,6 +104,7 @@ const ulAgoS=ms=>!ms?'':typeof ulAgo==='function'?ulAgo(ms):'';
 function ulAutoCard(){ const U=G&&uld(), A=(U&&U.ar)||{}, on=ulAutoOn(), pending=ulAutoPending(), C=FrontOfficeCore, cg=U&&U.deck?C.ulCapGate(U.deck.e,U.tier|0,Date.now()):null;
   const roster=on&&!(G&&G.unemp)&&U&&(!U.deck||U.deck.src==='now')&&A.rosterErr;
   const st=pending==='off'?'꺼져 있습니다. 서버 참가 중지·덱 삭제를 기다리고 있습니다.':pending==='on'?'서버 참가 설정·덱 반영을 기다리고 있습니다.':!on?'꺼져 있습니다. 서버 참가 중지와 덱 삭제를 반영했습니다. 이 기기 래더 리그는 그대로 할 수 있습니다.':G&&G.unemp?'지금은 맡은 구단이 없어 자동 등록을 쉽니다.':U&&U.deck&&U.deck.src!=='now'?'앨범 시즌 덱을 직접 등록해 자동 갱신을 멈췄습니다. 아래 \'지금 덱으로 다시 등록\'을 누르면 다시 이어집니다.':roster?`현재 1군 자동 갱신을 보류했습니다. ${U.deck?'기존 등록 덱을 유지합니다.':'1군 명단을 확인해 주세요.'}`:A.pend?'연결이 끊겨 기다리는 중입니다. 연결되면 바로 올립니다.':A.localAt&&A.localAt>=(A.at||0)?`이 기기 덱으로 등록했습니다 · ${ulAgoS(A.localAt)}(서버에 올릴 수 없는 판이거나 바뀐 것이 없습니다).`:A.at?`마지막 갱신 ${ulAgoS(A.at)} · ${U&&U.deck?esc(U.deck.e.name)+' OVR '+C.cupOvrTxt(U.deck.e.ovr):''}`:A.day?'이 기기 덱으로 등록했습니다(서버에 올릴 수 없는 판이거나 바뀐 것이 없습니다).':'곧 등록합니다(게임을 켜 두면 1분 안에).';
+  const ed=ulEdited(); if(ed)return `<section class="card ul-auto"><h2 class="sec">래더 자동 참가</h2><div class="note bad ul-edited" role="status">${esc(ed)}</div></section>`; /* 편집된 저장(22d_edited): 켜기·끄기 대신 이유만 */
   return `<section class="card ul-auto"><h2 class="sec">래더 자동 참가</h2><div class="chips">${[['1','켜기'],['0','자동 참가 끄기']].map(([v,l])=>`<button data-a="ulAutoSet" data-v="${v}" class="${(on?'1':'0')===v?'on':''}" aria-pressed="${(on?'1':'0')===v}"${ULA.busy?' disabled':''}>${l}</button>`).join('')}</div>
     <p class="small keep">${st}</p>${on&&cg&&!cg.ok?`<div class="note bad">상한 초과: ${esc(cg.msg)} 덱은 등록되지만 이 단계 리그에는 나가지 못합니다. 래더 › 덱에서 선수를 빼 맞출 수 있습니다.</div>`:''}${roster?`<div class="note bad">${esc(roster)}</div>`:on&&!pending&&A.err?`<div class="note bad">${esc(A.err)}</div>`:''}
     <p class="small muted">커리어 구단 1군 26명을 래더 덱으로 자동 등록합니다. 하루 한 번(그날 처음 켜거나 날짜를 넘길 때)과 시즌이 끝날 때, 바뀐 경우에만 올립니다. 올라가는 것은 구단 1군 스냅샷(선수 이름·능력치·연봉)과 구단명·닉네임뿐이며 단장 이름은 올리지 않습니다. 끄면 서버의 내 덱을 지웁니다.</p>${ULA.notice?`<p class="small ul-auto-new">${esc(UL_AUTO_NOTE)}</p>`:''}${ULA.msg&&ULA.msg!==roster?`<div class="note${ULA.bad?' bad':''}" role="status">${esc(ULA.msg)}</div>`:''}</section>`; }
