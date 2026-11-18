@@ -1,0 +1,43 @@
+{
+  "runtime_id": "v22_cheer22_red_05",
+  "index": 4,
+  "base_source_candidate_id": "v22_red_sf001352_a198",
+  "operation": "new_fictional_cast",
+  "hair": "wave",
+  "hair_color": "natural dark brown",
+  "r": "cheer22",
+  "a": 25,
+  "smile": "big",
+  "pose": "v",
+  "uc": "red",
+  "reference_photo": "/workspace/front-office-v22/assets/v22/cheer_stage/work/exports/v22_red_sf001352_a198_master512.png",
+  "id": "v22_cheer22_red_05",
+  "f": 1,
+  "generation_attempt": 911,
+  "status": "PENDING_VALIDATION",
+  "purpose": "v22 revision01 new Korean adult stage casting from a distinct fictional identity guide",
+  "revision": 1,
+  "source_parent_candidate": "v22_red_sf001352_a198",
+  "composition_reference": "/dev/shm/v22_work/revision01/sf002383_composition.png",
+  "costume_reference": "/dev/shm/v22_work/kits/red.png",
+  "prompt": "ONE entirely coherent authentic professional PHOTOGRAPH of this EXACT DISTINCT fictional Korean ADULT woman age25 from ref1. Preserve HER OWN individual face, eye shape, eye spacing, cheek/jaw shape, nose and lips, natural asymmetry, do not replace her with a generic beauty-template face. Make her a beautiful polished youthful Korean baseball cheerleader through grooming, hair styling and tasteful professional stage makeup, not face reshaping. Clearly grown woman in her early/mid20s; no child look or older middle-aged appearance. Team members and captains look equally youthful. LONG layered loose S-wave hair extending well BELOW shoulders, visibly dyed natural dark brown; no short hair/bob. Keep normal-sized DARK BROWN irises, her own natural eyelids and normal human facial proportions. Defined neat brows, subtle crisp eyeliner, individually defined lashes, flattering rosy lip tint, luminous light foundation preserving faint real skin texture. No waxy airbrush, excessive pore overlay, artificial aging or glassy contacts. Warm bright naturally tooth-showing smile, normal real individual teeth, no exaggerated grin. Ref1 is a whole-photo composition guide with GRAY missing canvas. Fill gray with the full natural crown, long hair, shoulders and coherent scene. Keep the face scale and eye placement from ref1 rather than zooming in; LOOSE native framing: crown about15%down, eyes45%down, faceheight35%, ample headroom and shoulders for later wholephoto crop. Wear EXACTLY ref2 kit, same color/collar/trim/seams, fully covered chest and abdomen, no logos/text/numbers. ONE natural correct V hand beside face, not hiding it. NIGHT baseball cheer platform background, stadium floodlights and indistinct audience bokeh; same85mm camera, frontal upper soft keylight with stage rim behind. Head and upperchest portrait, shoulders lower in frame. ONE new square native1254x1254orhigher photograph with coherent fine native details, no gray leftover, no montage, no face paste, no body emphasis. Do not imitate real people.",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row002383_identity_guide.jpg",
+  "source_guide_id": "sf3_002383",
+  "source_guide_dataset": "SelfishGene SFHQ part3, public synthetic CC0 reference",
+  "source_guide_row_idx": 2383,
+  "source_guide_sha256": "6c55dc6c1ec9e5578a1d63e2ba9fb747d515a4cfb9925b4c28338395c7f41dda",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "source_guide_parquet": "default/train/0000.parquet",
+  "technical_reference_only_crop_xyxy": [
+    -127,
+    -99,
+    385,
+    413
+  ],
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-34b0182d-3b89-473b-954b-2f658da2dbee.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "final_selection_status": "NOT_SELECTED_REVISION01",
+  "exclude_from_casting": true
+}

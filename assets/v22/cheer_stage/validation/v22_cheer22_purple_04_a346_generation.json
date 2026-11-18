@@ -1,0 +1,51 @@
+{
+  "runtime_id": "v22_cheer22_purple_04",
+  "index": 39,
+  "base_source_candidate_id": "v22_purple_sf000215_a154",
+  "operation": "new_fictional_cast",
+  "hair": "pony",
+  "hair_color": "warm chocolate brown",
+  "r": "cheer22",
+  "a": 25,
+  "smile": "big",
+  "pose": "v",
+  "uc": "purple",
+  "reference_photo": "/workspace/front-office-v22/assets/v22/cheer_stage/work/exports/v22_purple_sf000215_a154_master512.png",
+  "id": "v22_cheer22_purple_04",
+  "f": 1,
+  "generation_attempt": 346,
+  "status": "PENDING_VALIDATION",
+  "purpose": "v22 revision01 whole-photograph canvas outpaint only; preserve new fictional casting",
+  "revision": 1,
+  "source_parent_candidate": "v22_cheer22_purple_04_a246",
+  "composition_reference": "/dev/shm/v22_work/revision01/v22_cheer22_purple_04_a246_outpaint_reference.png",
+  "costume_reference": "/dev/shm/v22_work/kits/purple.png",
+  "prompt": "ONE high-fidelity native photographic edit of this exact whole photograph. Preserve EXACT SAME distinct fictional Korean ADULT woman age25: same face/eye proportions/darkbrown irises/nose/cheeks/lips/teeth/smile/pose/makeup, same LONG warm chocolate brown hairstyle, same covered outfit neckline/colors/trim, same night85mm lighting. Do NOT replace her with a generic beautyface, change face anatomy or age. ONLY fill the surrounding GRAY border with coherent continuation of the NIGHT baseball stadium, natural shoulders and her own hair. Gently tidy isolated flyaway hairs so no sparse tall spikes extend above the natural full crown; no change to skull/face or hair character. Keep central whole photograph EXACT relative scale and placement as supplied, do NOT zoom in, no crop/discard margins. Keep the normal V hand in same pose beside face without hiding any face. Preserve normal natural skin texture and professionally made-up youthful adult stage appearance. One new square native1254x1254orhigher coherent photograph with native fine detail, NO gray canvas/borders/text/logos/glasses/hats, no montage or face paste.",
+  "source_identity_guide": "/workspace/generated_images/v22_sfhq_part3_row004392_identity_guide.jpg",
+  "source_guide_id": "sf3_004392",
+  "source_guide_dataset": "SelfishGene SFHQ part3, public synthetic CC0 reference",
+  "source_guide_row_idx": 4392,
+  "source_guide_sha256": "8a3a599998345cabb9d897f0ac0b240f75fb0441c3f659238ee692b95cb27672",
+  "source_guide_native_size": [
+    256,
+    256
+  ],
+  "source_guide_parquet": "default/train/0000.parquet",
+  "technical_reference_only_crop_xyxy": [
+    -154,
+    -125,
+    414,
+    443
+  ],
+  "source_photo_reference": "/workspace/generated_images/exec-e1aac8dd-45ce-413c-9063-ade3bcc4dc05.png",
+  "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-af4cc32c-9cff-454e-be2e-aebc84e7281a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "final_selection_status": "SELECTED_REVISION01_FINAL_ACTUAL_ATLAS_PASSED",
+  "exclude_from_casting": false,
+  "final_runtime_id": "v22_cheer22_purple_04",
+  "final_index": 39,
+  "final_sheet_sha256": {
+    "512": "1a8f07b7f80effef14867d25a05c72ea369257b2e9844f69137a38c5e7301240",
+    "256": "64380bb9b65f07d176a67809c596d9b03fa977ae1d73f6385d1a34508ecb1641",
+    "128": "67e493e54e68e49925b13b338fbe92440f2fc39a66f01341f100b17fc4a9a588"
+  }
+}

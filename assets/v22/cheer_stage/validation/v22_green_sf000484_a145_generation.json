@@ -20,7 +20,7 @@
   ],
   "costume_reference": "/dev/shm/v22_work/kits/green.png",
   "generation_attempt": 145,
-  "status": "PENDING_VALIDATION",
+  "status": "SUPERSEDED_BY_USER_REVIEW_REVISION01",
   "purpose": "new native stage portrait from public synthetic identity reference",
   "composition_reference": "/dev/shm/v22_work/v22_green_sf000484_reference.png",
   "technical_reference_only_crop_xyxy": [
@@ -46,5 +46,9 @@
     1250,
     623
   ],
-  "operation": "independent four-portrait whole-photo stage edit/outpaint"
+  "operation": "independent four-portrait whole-photo stage edit/outpaint",
+  "exclude_from_casting": true,
+  "user_review_runtime_id": "v22_ccap22_green_06",
+  "user_review_index": 35,
+  "revision01_action": "new_fictional_cast"
 }

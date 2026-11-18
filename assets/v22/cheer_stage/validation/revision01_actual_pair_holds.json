@@ -1,0 +1,198 @@
+[
+  {
+    "a": "v22_cheer22_red_03_a402",
+    "b": "v22_orange_rv3_14_a137",
+    "actual_atlas_raw_max": 0.40652865171432495,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight001_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_02_a501",
+    "b": "v22_black_rv3_27_a159",
+    "actual_atlas_raw_max": 0.4012066721916199,
+    "resolution": "512",
+    "source": "validation/revision01_atlas_preflight001_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_04_a331",
+    "b": "v22_cheer22_green_04_a341",
+    "actual_atlas_raw_max": 0.4310014247894287,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight002_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_05_a702",
+    "b": "v22_navy_sf000820_a182",
+    "actual_atlas_raw_max": 0.4005868434906006,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight002_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_04_a331",
+    "b": "v22_cheer22_purple_01_a344",
+    "actual_atlas_raw_max": 0.4014780521392822,
+    "resolution": "128",
+    "source": "validation/revision01_atlas_preflight003_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_05_a702",
+    "b": "v22_navy_sf000820_a182",
+    "actual_atlas_raw_max": 0.4005868434906006,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight003_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_05_a702",
+    "b": "v22_navy_sf000820_a182",
+    "actual_atlas_raw_max": 0.4005868434906006,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight004_failed.json"
+  },
+  {
+    "a": "v22_ccap22_red_06_a333",
+    "b": "v22_cheer22_green_05_a554",
+    "actual_atlas_raw_max": 0.40300828218460083,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight004_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_05_a702",
+    "b": "v22_navy_sf000820_a182",
+    "actual_atlas_raw_max": 0.4005868434906006,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight005_failed.json"
+  },
+  {
+    "a": "v22_ccap22_red_06_a333",
+    "b": "v22_cheer22_green_05_a903",
+    "actual_atlas_raw_max": 0.40012237429618835,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight005_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_05_a904",
+    "b": "v22_cheer22_sky_01_a348",
+    "actual_atlas_raw_max": 0.404636412858963,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight006_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_02_a801",
+    "b": "v22_orange_rv3_14_a137",
+    "actual_atlas_raw_max": 0.4019526243209839,
+    "resolution": "512",
+    "source": "validation/revision01_atlas_preflight006_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_02_a401",
+    "b": "v22_black_rv3_27_a159",
+    "actual_atlas_raw_max": 0.40473824739456177,
+    "resolution": "512",
+    "source": "validation/revision01_atlas_preflight007_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_02_a905",
+    "b": "v22_cheer22_sky_04_a349",
+    "actual_atlas_raw_max": 0.41238152980804443,
+    "resolution": "128",
+    "source": "validation/revision01_atlas_preflight008_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_02_a501",
+    "b": "v22_cheer22_sky_04_a349",
+    "actual_atlas_raw_max": 0.4023173749446869,
+    "resolution": "128",
+    "source": "validation/revision01_atlas_preflight009_failed.json"
+  },
+  {
+    "a": "v22_ccap22_red_06_a333",
+    "b": "v22_cheer22_green_05_a903",
+    "actual_atlas_raw_max": 0.4146561622619629,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight009_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_03_a802",
+    "b": "v22_orange_rv3_14_a137",
+    "actual_atlas_raw_max": 0.40886497497558594,
+    "resolution": "512",
+    "source": "validation/revision01_atlas_preflight009_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_04_a331",
+    "b": "v22_cheer22_purple_01_a344",
+    "actual_atlas_raw_max": 0.4071803092956543,
+    "resolution": "128",
+    "source": "validation/revision01_atlas_preflight010_failed.json"
+  },
+  {
+    "a": "v22_ccap22_red_06_a1006",
+    "b": "v22_cheer22_green_03_a340",
+    "actual_atlas_raw_max": 0.41238048672676086,
+    "resolution": "128",
+    "source": "validation/revision01_atlas_preflight010_failed.json"
+  },
+  {
+    "a": "v22_ccap22_red_06_a1006",
+    "b": "v22_orange_rv3_14_a137",
+    "actual_atlas_raw_max": 0.42408284544944763,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight010_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_02_a801",
+    "b": "v22_orange_rv3_14_a137",
+    "actual_atlas_raw_max": 0.4056071639060974,
+    "resolution": "512",
+    "source": "validation/revision01_atlas_preflight010_failed.json"
+  },
+  {
+    "a": "v22_ccap22_red_06_a1006",
+    "b": "v22_orange_rv3_14_a137",
+    "actual_atlas_raw_max": 0.42110395431518555,
+    "resolution": "512",
+    "source": "validation/revision01_atlas_preflight010_failed.json"
+  },
+  {
+    "a": "v22_ccap22_red_06_a1008",
+    "b": "v22_cheer22_green_04_a901",
+    "actual_atlas_raw_max": 0.41220003366470337,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight011_failed.json"
+  },
+  {
+    "a": "v22_navy_05_a114",
+    "b": "v22_cheer22_blue_03_a335",
+    "actual_atlas_raw_max": 0.4106353521347046,
+    "resolution": "512",
+    "source": "validation/revision01_atlas_preflight011_failed.json"
+  },
+  {
+    "a": "v22_orange_sf000925_a183",
+    "b": "v22_cheer22_purple_01_a344",
+    "actual_atlas_raw_max": 0.41062793135643005,
+    "resolution": "512",
+    "source": "validation/revision01_atlas_preflight011_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_04_a331",
+    "b": "v22_cheer22_purple_01_a344",
+    "actual_atlas_raw_max": 0.4001099169254303,
+    "resolution": "128",
+    "source": "validation/revision01_atlas_preflight012_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_05_a702",
+    "b": "v22_navy_sf000820_a182",
+    "actual_atlas_raw_max": 0.4005868434906006,
+    "resolution": "256",
+    "source": "validation/revision01_atlas_preflight012_failed.json"
+  },
+  {
+    "a": "v22_cheer22_red_05_a911",
+    "b": "v22_cheer22_blue_04_a336",
+    "actual_atlas_raw_max": 0.41490671038627625,
+    "resolution": "512",
+    "source": "validation/revision01_atlas_preflight013_failed.json"
+  }
+]

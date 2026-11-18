@@ -1,8 +1,8 @@
 {
   "passed": true,
-  "reviewer": "assistant visual review",
-  "reviewed_at_utc": "2026-11-17T21:53:59.887757+00:00",
-  "source_final_sheet_256_sha256": "c2b37321b77d12f5928a80fd212117f22ca9e6fb9d956a01ff069fde12991137",
+  "reviewer": "assistant visual review, not user approval",
+  "reviewed_at_utc": "2026-11-18T01:56:33.661682+00:00",
+  "source_final_sheet_256_sha256": "64380bb9b65f07d176a67809c596d9b03fa977ae1d73f6385d1a34508ecb1641",
   "reviewed_ids": [
     "v22_cheer22_red_01",
     "v22_cheer22_red_02",
@@ -53,20 +53,18 @@
     "v22_cheer22_sky_05",
     "v22_ccap22_sky_06"
   ],
-  "reviewed_artifacts": [
-    "previews/by_color.png",
-    "previews/all_128.png",
-    "actual512 individual crops for additional facial detail"
-  ],
+  "review_surface": "previews/by_color.png derived from actual decoded final256 atlas, all48; generated native and512 crops inspected for retakes",
   "checks": {
-    "fictional_Korean_adult_stage_casting": true,
-    "natural_human_face_eye_proportions_and_skin": true,
-    "no_childlike_or_obviously_overage_member": true,
-    "color_groups_same_modest_costume_cut": true,
-    "all_night_stadium_and_consistent_key_rim_lighting": true,
-    "no_hat_glasses_logos_text_or_excess_exposure": true,
-    "v_hands_anatomical_and_do_not_obscure_face": true,
-    "upper_body_crop_and_consistent_face_placement": true
+    "believable_Korean_young_adult_stage_casting_direction": true,
+    "captains_not_intentionally_aged": true,
+    "normal_eye_and_face_proportions": true,
+    "natural_skin_and_teeth": true,
+    "no_bob_for_revised_hairstyles": true,
+    "long_wave_pony_half_up_and_varied_black_brown_colors": true,
+    "matching_modest_costume_within_color": true,
+    "night_stadium_backgrounds": true,
+    "no_logos_glasses_hats": true,
+    "no_broken_photos_or_obscuring_hands": true
   },
-  "notes": "Visual age and nationality styling are artistic casting judgments, not biometric predictions. Professional stage makeup varies naturally; no beauty-template eye enlargement or facial warping was applied. Original fictional sources are preserved. Qualitative pass does not override separate strict numerical checks."
+  "notes": "Creative adult casting and photographic style judgment; not biometric inference of ethnicity or exact age. Does not override any numeric gate and is not user aesthetic approval."
 }

@@ -12,7 +12,7 @@
   "source_guide_id": "rv2_08",
   "costume_reference": "/dev/shm/v22_work/kits/purple.png",
   "generation_attempt": 105,
-  "status": "PENDING_VALIDATION",
+  "status": "SUPERSEDED_BY_USER_REVIEW_REVISION01",
   "operation": "independent four-portrait whole-photo stage edit/outpaint",
   "source_prompt_age": 26,
   "recast_reason": "Retained same fictional person, visually suitable for late-twenties captain role; no facial age alteration",
@@ -32,5 +32,9 @@
     0,
     627,
     627
-  ]
+  ],
+  "exclude_from_casting": true,
+  "user_review_runtime_id": "v22_ccap22_purple_06",
+  "user_review_index": 41,
+  "revision01_action": "new_fictional_cast"
 }
