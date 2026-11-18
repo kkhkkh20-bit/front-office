@@ -209,7 +209,7 @@ function evalTrade(tid,give,get,cash,pk,actorTid,relOv){ const actor=actorTid??G
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid,actor); const hit=give.filter(id=>I.includes(id));
   const mid=bench&&trMidOnly(tid,get); const heldOut=_evOut,heldB=_evOutB,heldRole=_evRole; /* 11-18 4차: 중간급끼리 */
-  let inV, outV, premiumV, listedV=0,plainV=0; try{ _evOutB=null; _evOut=tradeOutSlots(tid,get); _evRole={tid,m:tradeRolePlan(t,give,get,mid)}; inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t)*pkHoard(actor,k,pk.give,pk.get)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; listedV=sum(outs.filter(x=>x.p&&x.p.aiListed).map(x=>Math.max(0,x.v))); plainV=Math.max(0,sum(outs.filter(x=>!x.p||!x.p.aiListed).map(x=>x.v))+other); premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=heldOut; _evOutB=heldB; _evRole=heldRole; }
+  let inV, outV, premiumV, listedV=0,plainV=0; try{ _evOutB=null; _evOut=tradeOutSlots(tid,get); _evRole={tid,m:tradeRolePlan(t,give,get,mid)}; inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t,k)*pkHoard(actor,k,pk.give,pk.get)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; listedV=sum(outs.filter(x=>x.p&&x.p.aiListed).map(x=>Math.max(0,x.v))); plainV=Math.max(0,sum(outs.filter(x=>!x.p||!x.p.aiListed).map(x=>x.v))+other); premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=heldOut; _evOutB=heldB; _evRole=heldRole; }
   const cashCap=trCashCap(outV,bench), cashV=Math.min(cashVal(t,cash),cashCap); inV+=cashV; /* 현금은 내주는 값의 22%까지만 메운다(바닥 1.5, 비주전 거래는 3) */
   const cashFull=cash>0&&cashVal(t,cash)>cashCap+1e-9, cashUse=cashFull?cashFor(t,cashCap):0; /* 한도를 넘긴 현금: 얼마부터 더 얹어도 값이 그대로인지(피드백 11-18: 30억을 붙여도 반응 막대가 안 움직였다) */
   const base=tradeBaseOf(tid), theirN=base.n+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
@@ -239,8 +239,9 @@ function evalTrade(tid,give,get,cash,pk,actorTid,relOv){ const actor=actorTid??G
   /* 친분·관심·매물 할인은 비슷한 거래를 기울게 할 뿐이다: 내주는 가치의 10%를 넘게 손해 보는 거래는 하지 않는다(매물로 내놓은 선수는 예외).
      예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
   if(plainV>0)need=bench?Math.max(need,plainV*(mid?TR_TUNE.midMargin:TR_BENCH.margin),mid?TR_TUNE.midMin:TR_BENCH.min):Math.max(need,plainV*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%(비주전 거래는 1.5%, 그래도 최소 0.15)는 더 받아야 한다(예전 -10%까지 손해 감수) */
-  const gain=inV-outV; const ok=gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); /* 견제 집계는 실제 제출한 제안에만 남긴다(tradeEvalLog). */
-  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{})};
+  const pkGate=tid!==actor?pkGateWhy(t,pk.get,give):''; if(pkGate)parts.pkGate=true; /* 상위 5순번 지명권 관문: 값 비교 전에(소유자 11-18, 96_pick_trade) */
+  const gain=inV-outV; const ok=!pkGate&&gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); /* 견제 집계는 실제 제출한 제안에만 남긴다(tradeEvalLog). */
+  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{}),...(pkGate?{pkGate}:{})};
 }
 /* FA 신청을 앞둔 선수: 시즌 결산 뒤 FA 공시(스토브리그 시작) 전까지는 트레이드할 수 없다. 데려가도 곧 FA로 나가는 선수를 지명권·유망주와 바꾸던 허점(커뮤니티 11-12) */
 let _faLk={k:null,s:null};
@@ -298,6 +299,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if(e.theirN>ROSTER_MAX)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다. 받을 선수를 늘려 주세요.`};
   if(e.theirN<ROSTER_MIN)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다.`};
   if(e.capT&&e.capT.hard)return {ok:false,cap:true,msg:aiCapMsg(t,e.capT)};
+  if(e.pkGate)return {ok:false,gate:true,msg:`${gmn}: ${e.pkGate}${aiQ(tid,'no')}`}; /* 상위 지명권 관문: 친분을 깎지 않고 역제안도 하지 않는다 */
   if(isCtr&&!e.ok&&!(e.dom&&e.dom.refuse)&&!(e.capT&&e.capT.hard)&&e.gain>=e.need-Math.max(1.5,e.outV)*.15)e.ok=true; /* 자기가 낸 조건을 맞춰 오면 그날그날 기분(일일 변동)으로 뒤집지 않는다(커뮤니티 피드백 11-07) */
   tradeEvalLog(tid,get,e);
   if(e.ok){ const mv=mgrTradeView(tid,give,get); const grade=tradeGrade(tid,give,get,cash,pk); const snap=tradeSnap([...give,...get]);

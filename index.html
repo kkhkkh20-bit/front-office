@@ -17630,7 +17630,7 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   if(G.dmemo)for(const id in G.dmemo)if(!(G.players[id]&&G.players[id].prospect))delete G.dmemo[id]; /* 실제로 사라진 후보의 메모만 정리 */
   recoverDraftLogs(); draftClubInit(); try{ draftBoardSortMigrate(); }catch(e){} rchkInit(); sdObFix(); ctMilClauseFix(); sdContractFix(); salMilFix(); migrateMoveContracts(); faClosedFix(); aiBlockDates();
   /* 검수 11-18 #731~750: 실제 구단·복무 상태를 복원한 뒤 소속별 기록을 조용히 정리한다. */
-  captainMigrate(); leadAdjMigrate(); playPromiseFix(); try{ faGrantMigrate(); }catch(e){} try{ trainingDelegationMigrate(); }catch(e){} goalSupportFix(); foResFix(); ovsRenewFix(); try{ ovsSlimFix(); }catch(e){} optProrationFix(); fovsMigrate(); facDealsMigrate(); newStadMigrate(); mreqDoneFix(); fTmpRecordFix(); flMigrate(); meTradeAgeMigrate();
+  pkMigrate(); captainMigrate(); leadAdjMigrate(); playPromiseFix(); try{ faGrantMigrate(); }catch(e){} try{ trainingDelegationMigrate(); }catch(e){} goalSupportFix(); foResFix(); ovsRenewFix(); try{ ovsSlimFix(); }catch(e){} optProrationFix(); fovsMigrate(); facDealsMigrate(); newStadMigrate(); mreqDoneFix(); fTmpRecordFix(); flMigrate(); meTradeAgeMigrate();
   try{ psArchiveRainMigrate(); }catch(e){} try{ champGiftMigrate(); }catch(e){} try{ champFundMigrate(); }catch(e){} try{ archPsMigrate(); }catch(e){} try{ champArchiveMvpMigrate(); }catch(e){}
 }
 /* 드래프트 명단 정리(카페 11-17 ddddddd): 어느 구단과든 계약한 선수(트라이아웃·무적·해외 복귀 등)는 신인 드래프트 명단·진행 중 지명 명단에서 뺀다.
@@ -19613,7 +19613,7 @@ function evalTrade(tid,give,get,cash,pk,actorTid,relOv){ const actor=actorTid??G
   const t=team(tid); const P=id=>G.players[id];
   const I=aiInterest(tid,actor); const hit=give.filter(id=>I.includes(id));
   const mid=bench&&trMidOnly(tid,get); const heldOut=_evOut,heldB=_evOutB,heldRole=_evRole; /* 11-18 4차: 중간급끼리 */
-  let inV, outV, premiumV, listedV=0,plainV=0; try{ _evOutB=null; _evOut=tradeOutSlots(tid,get); _evRole={tid,m:tradeRolePlan(t,give,get,mid)}; inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t)*pkHoard(actor,k,pk.give,pk.get)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; listedV=sum(outs.filter(x=>x.p&&x.p.aiListed).map(x=>Math.max(0,x.v))); plainV=Math.max(0,sum(outs.filter(x=>!x.p||!x.p.aiListed).map(x=>x.v))+other); premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=heldOut; _evOutB=heldB; _evRole=heldRole; }
+  let inV, outV, premiumV, listedV=0,plainV=0; try{ _evOutB=null; _evOut=tradeOutSlots(tid,get); _evRole={tid,m:tradeRolePlan(t,give,get,mid)}; inV=stackIn(give.map(id=>tval(t,P(id),'in')*(I.includes(id)?1.2:1)).concat(pk.give.map(k=>pkVal(t,k)))); /* 현금은 아래에서 상한을 두고 더한다 */ /* 지명권도 여러 장이면 덜 친다(stackIn, 공략 방지) */ const outs=get.map(id=>({p:P(id),v:tval(t,P(id),'out')})), other=sum(pk.get.map(k=>pkVal(t,k)*pkKeep(t,k)*pkHoard(actor,k,pk.give,pk.get)))+cashCost(t,cash); outV=sum(outs.map(x=>x.v))+other; listedV=sum(outs.filter(x=>x.p&&x.p.aiListed).map(x=>Math.max(0,x.v))); plainV=Math.max(0,sum(outs.filter(x=>!x.p||!x.p.aiListed).map(x=>x.v))+other); premiumV=get.some(id=>tradeUrgent(tid,P(id)))?sum(outs.filter(x=>!tradeUrgent(tid,x.p)).map(x=>x.v))+other:outV; /* 급매 선수만 제외: 함께 받는 일반 선수·지명권·현금에는 기존 웃돈을 붙인다 */ } finally { _evOut=heldOut; _evOutB=heldB; _evRole=heldRole; }
   const cashCap=trCashCap(outV,bench), cashV=Math.min(cashVal(t,cash),cashCap); inV+=cashV; /* 현금은 내주는 값의 22%까지만 메운다(바닥 1.5, 비주전 거래는 3) */
   const cashFull=cash>0&&cashVal(t,cash)>cashCap+1e-9, cashUse=cashFull?cashFor(t,cashCap):0; /* 한도를 넘긴 현금: 얼마부터 더 얹어도 값이 그대로인지(피드백 11-18: 30억을 붙여도 반응 막대가 안 움직였다) */
   const base=tradeBaseOf(tid), theirN=base.n+give.filter(tradeCntN).length-get.filter(tradeCntN).length;
@@ -19643,8 +19643,9 @@ function evalTrade(tid,give,get,cash,pk,actorTid,relOv){ const actor=actorTid??G
   /* 친분·관심·매물 할인은 비슷한 거래를 기울게 할 뿐이다: 내주는 가치의 10%를 넘게 손해 보는 거래는 하지 않는다(매물로 내놓은 선수는 예외).
      예전에는 친분이 높으면 손해 폭이 2~3을 넘어도 받아 줘서, 백업끼리 바꾸는 작은 거래를 여러 번 하면 공짜로 전력이 올라갔다 */
   if(plainV>0)need=bench?Math.max(need,plainV*(mid?TR_TUNE.midMargin:TR_BENCH.margin),mid?TR_TUNE.midMin:TR_BENCH.min):Math.max(need,plainV*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%(비주전 거래는 1.5%, 그래도 최소 0.15)는 더 받아야 한다(예전 -10%까지 손해 감수) */
-  const gain=inV-outV; const ok=gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); /* 견제 집계는 실제 제출한 제안에만 남긴다(tradeEvalLog). */
-  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{})};
+  const pkGate=tid!==actor?pkGateWhy(t,pk.get,give):''; if(pkGate)parts.pkGate=true; /* 상위 5순번 지명권 관문: 값 비교 전에(소유자 11-18, 96_pick_trade) */
+  const gain=inV-outV; const ok=!pkGate&&gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); /* 견제 집계는 실제 제출한 제안에만 남긴다(tradeEvalLog). */
+  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{}),...(pkGate?{pkGate}:{})};
 }
 /* FA 신청을 앞둔 선수: 시즌 결산 뒤 FA 공시(스토브리그 시작) 전까지는 트레이드할 수 없다. 데려가도 곧 FA로 나가는 선수를 지명권·유망주와 바꾸던 허점(커뮤니티 11-12) */
 let _faLk={k:null,s:null};
@@ -19702,6 +19703,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if(e.theirN>ROSTER_MAX)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다. 받을 선수를 늘려 주세요.`};
   if(e.theirN<ROSTER_MIN)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다.`};
   if(e.capT&&e.capT.hard)return {ok:false,cap:true,msg:aiCapMsg(t,e.capT)};
+  if(e.pkGate)return {ok:false,gate:true,msg:`${gmn}: ${e.pkGate}${aiQ(tid,'no')}`}; /* 상위 지명권 관문: 친분을 깎지 않고 역제안도 하지 않는다 */
   if(isCtr&&!e.ok&&!(e.dom&&e.dom.refuse)&&!(e.capT&&e.capT.hard)&&e.gain>=e.need-Math.max(1.5,e.outV)*.15)e.ok=true; /* 자기가 낸 조건을 맞춰 오면 그날그날 기분(일일 변동)으로 뒤집지 않는다(커뮤니티 피드백 11-07) */
   tradeEvalLog(tid,get,e);
   if(e.ok){ const mv=mgrTradeView(tid,give,get); const grade=tradeGrade(tid,give,get,cash,pk); const snap=tradeSnap([...give,...get]);
@@ -21746,12 +21748,12 @@ function gmContact(tid,kind){const why=gmContactWhy(tid,kind);if(why)return {ok:
 /* 역제안: 조금 모자랄 때 상대가 조건을 바꿔 다시 제시 */
 /* 상대 단장의 역제안(사용자 거래 전용, AI끼리 거래는 쓰지 않는다): 우리 선수 더 얹기 · 자기 선수 하나 빼기 · 같은 자리 다른 선수 · 현금 · 지명권.
    보여 주는 안은 모두 그대로 수락하면 성사된다(tradeCtrOk: proposeTrade와 같은 검사와 evalTrade, 점검 11-17) */
-function counterOffer(tid,give,get,cash,pk){ cash=Math.round(cash||0); pk=pkNorm(pk); const ev=(g,t,c,k)=>evalTrade(tid,g,t,c??cash,k||pk); /* 지명권도 넣어 계산(검수 11-06) */ const e=ev(give,get); const gap=e.need-e.gain; if(gap<=0||gap>9)return [];
+function counterOffer(tid,give,get,cash,pk){ cash=Math.round(cash||0); pk=pkNorm(pk); const ev=(g,t,c,k)=>evalTrade(tid,g,t,c??cash,k||pk); /* 지명권도 넣어 계산(검수 11-06) */ const e=ev(give,get); const gap=e.need-e.gain; if(e.pkGate||gap<=0||gap>9)return []; /* 상위 지명권 관문은 값으로 풀 수 없다 */
   const U=team(G.user), T=team(tid), L=[]; const yng=['build','tight'].includes(planOf(T)); /* 유망주 수집·긴축 구단은 지명권·어린 선수를 먼저 부른다 */
   const mk=(c,why)=>({give:[...c.give],get:[...c.get],cash:c.cash??cash,pk:c.pk||pk,why});
   const okC=c=>tradeCtrOk(tid,c);
   /* 지명권: 우리가 가진 지명권 중 상대가 가장 덜 치는 한 장부터 */
-  const pkC=()=>{ if(!get.length||(G.draft&&!G.draft.done))return null; try{ if(pk.y!==pkYear())return null; const H=pkHeld(G.user).filter(k=>!pk.give.includes(k)).map(k=>({k,v:pkVal(T,k)})).sort((a,b)=>a.v-b.v);
+  const pkC=()=>{ if(!get.length||(G.draft&&!G.draft.done))return null; try{ if(pk.y!==pkYear())return null; const H=pkHeldF(G.user).filter(k=>!pk.give.includes(k)).map(k=>({k,v:pkVal(T,k)})) /* 그다음 드래프트 지명권도(카페 11-18). 한도는 아래 pkCheck */.sort((a,b)=>a.v-b.v);
       for(const x of H){ const c=mk({give,get,pk:{give:[...pk.give,x.k],get:[...pk.get],y:pk.y}},`${pkName(x.k)} 지명권을 얹어 주시면 하겠습니다.`); if(!pkCheck(tid,give,get,c.pk)&&okC(c))return c; } }catch(e){} return null; };
   let P=null; if(yng){ P=pkC(); if(P)L.push(P); }
   /* 우리 선수 더 얹기: 우리에게 가장 덜 아까운 선수부터(거부권·육성·부상·값 없는 선수는 부르지 않는다) */
@@ -21800,7 +21802,7 @@ function trStintFix(){ let n=0; for(const tr of G.trades||[]){ if(!tr.gi)continu
       for(const y of Y){ const R=rows.filter(h=>h.y===y); if(y===tr.y){ const i=R.findIndex(h=>h.t===c); if(i>=0&&R.slice(i+1).some(h=>h.t!==c)){ e=y; break; } continue; } if(R.some(h=>h.t!==c)){ e=R[0].t===c?y:Math.max(tr.y,y-1); break; } } }
     if(e!=null){ (tr.end=tr.end||{})[id]=e; n++; } } } return n; }
 /* 지명권 원구단은 당시 명시된 메타만 쓴다. 옛 저장에 원구단이 없으면 추정 연결하지 않는다. */
-function pkDrafted(y,k){ const [rd,o]=k.split(':').map(Number), picks=G.draft&&G.draft.y===y?G.draft.picks||[]:[], rows=(G.dlog||{})[y]||[];
+function pkDrafted(y,k){ const [rd,o,ky]=k.split(':').map(Number); if(Number.isFinite(ky))y=ky; /* 그다음 드래프트 지명권은 열쇠에 연도가 있다 */ const picks=G.draft&&G.draft.y===y?G.draft.picks||[]:[], rows=(G.dlog||{})[y]||[];
   const ids=new Map(); for(const p of Object.values(G.players).concat(Object.values(G.arch||{})))if(p&&p.draft&&p.draft.y===y)ids.set(p.id,{id:p.id,rd:p.draft.rd,from:p.draft.from,tid:p.draft.tid,meta:true});
   for(const r of rows){ const old=ids.get(r.id); ids.set(r.id,{...(old||{}),id:r.id,rd:r.rd,from:r.from??(old&&old.from),tid:r.t,meta:!!(old&&old.meta)}); }
   for(const p of picks)if(p.pid>0){ const old=ids.get(p.pid)||{}; ids.set(p.pid,{...old,id:p.pid,rd:p.rd,from:p.from??old.from,tid:p.tid,meta:true}); }
@@ -21872,7 +21874,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     const want=Math.max(want0*.5,want0+relNeedAdj(B.id,A.id)), needA=Math.max(0,relNeedAdj(A.id,B.id)); /* 두 단장 사이 친분(tradeNeed와 같은 몫): 친하면 덜, 나쁘면 더 받으려 한다. 사는 쪽도 사이가 나쁘면 남는 거래만 */ const pool=domestic(A.id).filter(q=>!q.ys&&healthy(q)&&!(hasNtc(q)||faLock(q))&&q.age<=27&&!core.has(q.id)&&!recentTr(q)).map(q=>({q,b:tval(B,q,'in'),a:tval(A,q,'out')})).filter(x=>x.b>.3).sort((x,y)=>x.b-y.b);
     let pay=null, pkGive=null;
     /* 유망주 수집 구단에 파는 쪽이면 지명권으로 값을 치른다(지명권만, 또는 어린 선수 한 명 + 지명권). 사는 쪽이 우승 도전이면 지명권을 싸게 보고 파는 쪽은 비싸게 봐서 거래가 선다. 1라운드는 특급(종합 60 이상)을 살 때만 */
-    if(o.buyers&&planOf(B)==='build'&&!(G.draft&&!G.draft.done)&&R()<.7){ try{ const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; const HB=pkHeld(B.id); const H=pkHeld(A.id).filter(k=>{ const rd=+k.split(':')[0]; return rd<=4&&(rd>1||(ovr(p)>=(hotA?56:60))); }).map(k=>({k,b:pkVal(B,k),a:pkVal(A,k)*pkKeep(A)*pkHoard(B.id,k)})).sort((x,y)=>x.b-y.b);
+    if(o.buyers&&planOf(B)==='build'&&!(G.draft&&!G.draft.done)&&R()<.7){ try{ const r1=L=>L.filter(k=>+k.split(':')[0]===1).length; const HB=pkHeld(B.id); const H=pkHeldF(A.id).filter(k=>{ const rd=+k.split(':')[0]; return rd<=4&&(rd>1||(ovr(p)>=(hotA?56:60)))&&!pkFutWhy(A.id,[k]); }).map(k=>({k,b:pkVal(B,k),a:pkVal(A,k)*pkKeep(A,k)*pkHoard(B.id,k)})) /* 그다음 드래프트 지명권도 같은 값·한도로(카페 11-18, 우리와 같은 pkFutWhy) */.sort((x,y)=>x.b-y.b);
         for(const x of H){ if(x.b>=want&&vin-x.a>=needA){ pay=[]; pkGive=x.k; break; } }
         if(!pkGive)for(const q of pool){ const x=H.find(x=>stackIn([q.b])+x.b>=want&&vin-q.a-x.a>=needA); if(x){ pay=[q]; pkGive=x.k; break; } } }catch(e){ pay=null; pkGive=null; } }
     for(let i=0;i<pool.length&&!pay;i++)for(const arr of [[pool[i]],...pool.slice(i+1).map(y=>[pool[i],y])]){ if(stackIn(arr.map(x=>x.b))<want)continue; if(vin-sum(arr.map(x=>x.a))<needA)continue; pay=arr; break; }
@@ -21882,7 +21884,7 @@ function fdStrengthen(o){ o=o||{}; gmInit(); const U=ME(); const ai=G.teams.filt
     if(hotA&&o.buyers&&(pkGive||pay.some(x=>x.q.age<=24)))try{ domLog('allinBuy'); if(pkGive&&+pkGive.split(':')[0]===1)domLog('allinR1'); }catch(e){}
     const snap=tradeSnap([p.id,...give]); if(cashC){ payOut(A.id,cashC,'etc'); payIn(B.id,cashC); } tradeTerms(p); p.team=A.id; story(p,`트레이드로 ${tname(A.id)} 이적`,'move'); delete p.aiListed; delete p.aiWhy; delete p.aiUrg;
     give.forEach(id=>{ const q=G.players[id]; tradeTerms(q); q.team=B.id; story(q,`트레이드로 ${tname(B.id)} 이적`,'move'); delete q.aiListed; });
-    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]).concat(cashC?['현금 '+money(cashC)]:[]),snap,...(cashC?{cash:cashC}:{}),...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive){ const [rd,og]=pkGive.split(':').map(Number); G.pkOwn=G.pkOwn||{}; if(og===B.id)delete G.pkOwn[pkYear()+':'+rd+':'+og]; else G.pkOwn[pkYear()+':'+rd+':'+og]=B.id; } { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
+    G.lgTrades.unshift({y:G.year,d:G.day,a:A.id,b:B.id,ga:(A.gm||{}).id,gb:(B.gm||{}).id,ag:[p.id],bg:give,an:[p.name],bn:give.map(id=>G.players[id].name).concat(pkNm?['지명권 '+pkNm]:[]).concat(cashC?['현금 '+money(cashC)]:[]),snap,...(cashC?{cash:cashC}:{}),...(pkGive?{pk:[pkGive],pky:pkYear()}:{}),...(o.buyers?{}:{fd:1})}); if(pkGive)pkSet(pkGive,B.id); { const tr=mvTr(); mvLog('트레이드',p,B.id,A.id,'',0,tr); give.forEach(id=>mvLog('트레이드',G.players[id],A.id,B.id,'',0,tr)); } try{ relTradeLog(G.lgTrades[0]); }catch(e){} if(G.lgTrades.length>60)G.lgTrades.length=60;
     wire('트레이드',`${tshort(A.id)}, 리빌딩 ${tshort(B.id)}에서 ${p.name}(${posLabel(p)}, ${p.age}세) 영입: ${[...give.map(id=>G.players[id].name),...(pkNm?[pkNm+' 지명권']:[])].join(', ')} 내줌`,{tid:A.id,ref:p.id}); n++; done=true; break; }
     if(!done)break; }
   return n; }
@@ -35715,43 +35717,107 @@ function sdContractFix(){ for(const p of Object.values(G.players)){ const b=p.ct
 /* ===== 신인 지명권 트레이드 (KBO 2020 시즌부터) =====
    출처: 엑스포츠뉴스 2020.4.30(2020 시즌부터 다음 연도 신인 지명권을 선수와 맞바꿀 수 있게 됨),
          노컷뉴스 2022.9.8(넘겨받은 지명권을 원래 구단 순번에 행사: 예: 다른 구단의 2라운드 12번을 받으면 그 순번에 지명).
-   - 주고받을 수 있는 것은 다음에 열릴 신인 드래프트의 지명권뿐이다(드래프트가 끝나면 그다음 해 지명권).
+   - 다음에 열릴 신인 드래프트 지명권과, 게임 규칙으로 그다음 드래프트 지명권까지 주고받을 수 있다(카페 11-18 건의: 미래 지명권 트레이드).
+     실제 KBO는 다음 연도 지명권만 허용한다. 그다음 드래프트 자기 지명권은 구단당 PK_FUT_OUT장까지만 내줄 수 있다(우리·AI 같은 함수 pkFutWhy).
    - 지명권만 따로 사고팔 수는 없고 선수와 맞바꿔야 한다.
-   - 넘겨받은 지명권은 원래 구단의 순번에 쓴다.
-   shortcut: AI 구단끼리의 지명권 거래와 AI가 먼저 지명권을 제안하는 일은 없다. 필요해지면 AI 트레이드 쪽에 붙인다 */
+   - 넘겨받은 지명권은 원래 구단의 순번에 쓴다(10_draft draftPlan이 G.pkOwn을 연도별로 읽는다).
+   지명권 열쇠: 'rd:원래 구단'은 다음 드래프트(pkYear) 것, 'rd:원래 구단:연도'는 그 뒤 드래프트 것. G.pkOwn['연도:rd:원래 구단']=지금 보유 구단(없으면 원래 구단) */
 /* 11-13 측정(AI 리그 12시즌): 1라운드 1~3순위는 6년 안에 주전이 될 확률 46%·간판급 21%, 4~7순위 34%·0%, 8~10순위 13%·0%, 2라운드 4%.
-   잠재력이 다 터지지 않는 성장 모형이라 지명권 값은 '주전이 될 확률 × 주전 몇 해의 값'으로 맞췄다(1라운드 앞 순번 18.8 → 끝 순번 5.3, 2라운드 3.9~2.3) */
+   잠재력이 다 터지지 않는 성장 모형이라 지명권 값은 '주전이 될 확률 × 주전 몇 해의 값'으로 맞췄다(1라운드 앞 순번 18.8 → 끝 순번 3.5(11-18 곡선 조정), 2라운드 3.9~2.3) */
 const PK_V=[15,3,1.6,.05,.05,.05,.05,.05,.05,.05,.05]; /* 4라운드부터는 주전 확률이 거의 없어 값이 거의 없다(공략 방지) */
-const PK_R1S=[1.25,1.15,1.05,.85,.8,.75,.7,.45,.4,.35]; /* 1라운드 순번별 배율: 상위 세 순번과 하위 세 순번의 차이가 크다 */
+const PK_R1S=[1.25,1.1,.95,.7,.6,.5,.42,.32,.27,.23]; /* 1라운드 순번별 배율: 상위 세 순번과 하위 세 순번의 차이가 크다. 11-18 소유자: 곡선을 더 가파르게(예전 .85·.8·.75·.7·.45·.4·.35). 측정(12개 세계): 지명 직후 신인 값 1순위 28·2~3순위 15·4~5순위 8·6~7순위 4·8~10순위 1 안팎 */
 const PK_KEEP=1.2; /* 지명권은 내줄 때 더 아낀다(사용자 11-13: 지명권을 소중히). 올인·벼랑 끝 구단만 그대로 내준다 */
-const pkKeep=t=>t&&t.id!==ME()&&(t.allIn===sponSeason()||despOf(t)>=.5)?1:PK_KEEP; /* 1라운드는 순번이 앞설수록 훨씬 비싸다(커뮤니티 피드백 11-07: 상위 지명권을 너무 싸게 모음) */ /* 라운드별 가치(트레이드 가치 단위, 현금 1억 ≈ 0.9) */
-const pkHoard=(buyer,k,gv,incoming)=>{ if(+k.split(':')[0]!==1)return 1; const out=new Set(gv||[]); const n=pkHeld(buyer).filter(x=>+x.split(':')[0]===1&&!out.has(x)).length; const add=[...new Set(incoming||[k])].filter(x=>+x.split(':')[0]===1).sort((a,b)=>+a.split(':')[1]- +b.split(':')[1]).indexOf(k); return 1+.4*Math.max(0,n+Math.max(0,add)); }; /* gv: 같은 거래에서 내주는 지명권은 빼고 센다(국사왕 11-16: 1라 9·10번을 들고 10번을 4번과 바꾸면 거래 뒤에도 두 장인데 세 장째 값을 불렀다) */ /* 1라운드 지명권 보유 한도는 없다(KBO도 받는 장수 제한 없음, 사용자 11-15). 대신 이미 1라운드를 여러 장 쥔 구단에는 파는 단장이 더 비싸게 부른다: 두 장째부터 한 장마다 40%씩. 우리·AI 같음 */
+/* 11-18 카페·소유자(1순위 지명권은 진짜 희귀해야): 상위 지명권 값은 그대로 두고(자기 상위 3순번 ×2~2.6, 내줄 때 ×1.2, 매집 ×1.4), 순번 곡선만 가파르게 했다.
+   1~3순위는 프리미엄, 8~10순위는 탄탄한 주전 한 명이면 살 수 있게, 2라운드부터는 싸다. 우리·AI 같은 함수(k는 예전 호출과 맞추려 받기만 한다) */
+const pkKeep=(t,k)=>t&&t.id!==ME()&&(t.allIn===sponSeason()||despOf(t)>=.5)?1:PK_KEEP;
+const pkCanon=k=>{ const a=pkParse(k); return pkKey(a.rd,a.o,a.y); };
+const pkHoard=(buyer,k,gv,incoming)=>{ const K=pkParse(k); if(K.rd!==1)return 1; const same=x=>{ const a=pkParse(x); return a.rd===1&&a.y===K.y; }; const out=new Set((gv||[]).map(pkCanon)); const n=pkHeldF(buyer).filter(x=>same(x)&&!out.has(x)).length; const add=[...new Set((incoming||[k]).map(pkCanon))].filter(same).sort((a,b)=>pkParse(a).o-pkParse(b).o).indexOf(pkCanon(k)); return 1+.4*Math.max(0,n+Math.max(0,add)); }; /* gv: 같은 거래에서 내주는 지명권은 빼고 센다(국사왕 11-16: 1라 9·10번을 들고 10번을 4번과 바꾸면 거래 뒤에도 두 장인데 세 장째 값을 불렀다) */ /* 1라운드 지명권 보유 한도는 없다(KBO도 받는 장수 제한 없음, 사용자 11-15). 대신 같은 해 1라운드를 여러 장 쥔 구단에는 파는 단장이 더 비싸게 부른다: 두 장째부터 한 장마다 40%씩. 우리·AI 같음 */
 const pkYear=()=>G.draft&&G.draft.y===G.year?G.year+1:G.year;
+const PK_FUT=1; /* 다음 드래프트 뒤로 한 해 더(최대 두 번의 드래프트) */
+const PK_FUT_OUT=2; /* 그다음 드래프트 자기 지명권은 구단당 2장까지만 남에게 넘길 수 있다 */
+const pkYears=()=>{ const y=pkYear(); return Array.from({length:PK_FUT+1},(_,i)=>y+i); };
+function pkParse(k){ const a=String(k).split(':').map(Number); return {rd:a[0],o:a[1],y:a.length>2&&Number.isFinite(a[2])?a[2]:pkYear()}; }
+function pkKey(rd,o,y){ return y===pkYear()?rd+':'+o:rd+':'+o+':'+y; }
 function pkOwner(y,rd,orig){ const o=G.pkOwn&&G.pkOwn[y+':'+rd+':'+orig]; return o??orig; }
 /* 그 구단이 가진 다음 드래프트 지명권: 'rd:원래 구단' 목록 */
 function pkHeld(tid){ const y=pkYear(), L=[]; for(let rd=1;rd<=DRAFT_ROUNDS;rd++)for(const t of G.teams)if(pkOwner(y,rd,t.id)===tid)L.push(rd+':'+t.id); return L; }
-function pkName(k){ const [rd,o]=k.split(':').map(Number); return `${pkYear()} 드래프트 ${rd}라운드(${tshort(o)} 순번)`; }
+/* 다음 드래프트와 그다음 드래프트까지: 트레이드 화면·거래 검사·AI 거래가 같이 쓴다 */
+function pkHeldF(tid){ const L=[]; for(const y of pkYears())for(let rd=1;rd<=DRAFT_ROUNDS;rd++)for(const t of G.teams)if(pkOwner(y,rd,t.id)===tid)L.push(pkKey(rd,t.id,y)); return L; }
+function pkName(k){ const {rd,o,y}=pkParse(k); return `${tshort(o)} ${y} ${rd}라운드`; }
 /* 예상 순번(0이 첫 순번): 올해 드래프트 전이면 정해진 순서, 끝났으면 지금 순위의 역순 */
 function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; let o=D?(rd===1?D.r1:D.r2):standingsNow().map(x=>x.tid).reverse(); if(!D&&rd===1)o=penOrder(o,G.teams.filter(t=>t.pickPen===pkYear()).map(t=>t.id)); /* 이미 확정된 다음 드래프트 순번 하락 제재: 실제 순번과 같은 식(검수 11-07, 11-08d: 두 구단이 같은 순번으로 잡힘) */ let i=o.indexOf(orig); if(i<0)i=5; return i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
+/* 올 시즌 진행 정도(0~1): 팀당 평균 경기 수 / 144 */
+function pkSeasonProg(){ try{ const r=G.sea&&G.sea.rec; if(!r||(G.sea.y!=null&&G.sea.y!==G.year))return 0; const g=G.teams.map(t=>{ const x=r[t.id]||{}; return (x.w||0)+(x.l||0)+(x.t||0); }); return clamp(g.reduce((a,b)=>a+b,0)/g.length/144,0,1); }catch(e){ return 0; } }
+/* 미래 지명권의 예상 순번(카페 11-18): 그 드래프트 순서를 정할 시즌이 아직 덜 끝났으면 지금 전력(순위, 시즌 초엔 지난 순서)으로 어림하고 가운데 쪽으로 당겨 본다.
+   y가 다음 드래프트면 예전 pkSlot과 같은 식, 그 뒤 해는 지금 순위(10경기 전엔 지난 시즌 순서)로. 올해 확정 순서는 그대로 */
+function pkProjIdx(o,rd,y){ if(y===pkYear())return pkSlot(o,rd); let ord; const D=draftOrders(); if(pkSeasonProg()*144>=10||!D)ord=standingsNow().map(x=>x.tid).reverse(); else ord=[...D.r2];
+  if(rd===1)ord=penOrder(ord,G.teams.filter(t=>t.pickPen===y).map(t=>t.id)); const i=ord.indexOf(o); return i<0?5:i; }
+function pkSlotY(o,rd,y){ const i=pkProjIdx(o,rd,y); if(!(y>G.year))return i; const n=G.teams.length, mid=(n-1)/2; const w=y===G.year+1?.5+.45*pkSeasonProg():.4; return mid+(i-mid)*w; }
+/* 시간 할인: 그 드래프트까지 남은 해(올해 0, 내년 1, 후년 2). 순번이 정해지지 않았고 후보도 아직 모른다 */
+const PK_DISC=[1,.92,.82];
+const pkDisc=y=>PK_DISC[Math.max(0,Math.min(PK_DISC.length-1,y-G.year))];
+/* 드래프트 후보가 보이는 해(올해 드래프트 전): 그 구단 스카우트 눈(aiDraftEst, 우리 보고서와 같은 재료)으로 본 이번 후보층 순위별 평가를 평년(12개 세계 평균)과 견준다.
+   그 순번 근처(순번·다음 두 순위) 후보가 평년보다 1점 높으면 1라운드 값 +4%, 0.85~1.15배. 난수를 쓰지 않는다(해시 오차) */
+const PK_CLS_REF=[78.7,74.1,71.6,69.7,68.2,66.9,65.9,65,64.3,63.6,63,62.4,61.8,61.3,60.9,60.5,60.1,59.6,59.3,58.9,58.5,58.2];
+let _pkCls={k:null,g:null,m:{}};
+function pkClassEst(tid){ const k=G.year+':'+G.day+':'+(G.draftClass||[]).length; if(_pkCls.k!==k||_pkCls.g!==G)_pkCls={k,g:G,m:{}}; if(_pkCls.m[tid])return _pkCls.m[tid];
+  const L=(G.draftClass||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null).map(p=>{ try{ return aiDraftEst(tid,p).v; }catch(e){ return null; } }).filter(v=>Number.isFinite(v)).sort((a,b)=>b-a).slice(0,PK_CLS_REF.length); return _pkCls.m[tid]=L; }
+function pkClassMul(t,rd,sl,y){ if(rd!==1||y!==G.year||!t||(G.draft&&G.draft.y===G.year))return 1; const L=pkClassEst(t.id); const i=Math.max(0,Math.min(PK_CLS_REF.length-3,Math.round(sl))); if(L.length<i+3)return 1;
+  const e=(L[i]+L[i+1]+L[i+2])/3, r=(PK_CLS_REF[i]+PK_CLS_REF[i+1]+PK_CLS_REF[i+2])/3; return clamp(1+(e-r)*.04,.85,1.15); }
 /* 10구단 배율은 유지하고, 확장 리그는 4순번 이후 곡선을 늘린다. */
 function pkR1Mul(sl){ const n=G.teams.length, x=n>10&&sl>=3?3+(sl-3)*6/(n-4):sl, lo=Math.min(PK_R1S.length-1,Math.max(0,Math.floor(x))), hi=Math.min(lo+1,PK_R1S.length-1); return PK_R1S[lo]+(PK_R1S[hi]-PK_R1S[lo])*(x-lo); }
-function pkVal(t,k){ const [rd,o]=k.split(':').map(Number); const m=planPickMul(t)||(t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1); /* 운영 전략: 유망주 수집 1.5배·긴축 1.3배·우승 도전 0.7배(우리 구단은 예전 기준) */ const sl=pkSlot(o,rd); const own=rd===1&&o===t.id?pkTopMul(t,sl):1; /* 상위 3순번 자기 1라운드 지명권: 안 파는 게 아니라 아주 비싸게 판다(유저 피드백 11-07) */ return (PK_V[rd-1]||.05)*(rd===1?pkR1Mul(sl)*m:1.3-.06*sl)*own*TR_TUNE.pk; } /* 11-18 4차: 지명권은 AI 눈에 ×1.15(16_trade TR_TUNE) */ /* 운영 전략 배율은 1라운드에만 */
+function pkVal(t,k){ const {rd,o,y}=pkParse(k); const m=planPickMul(t)||(t.mode==='rebuild'?1.3:teamCtx(t).contend?.8:1); /* 운영 전략: 유망주 수집 1.5배·긴축 1.3배·우승 도전 0.9배(우리 구단은 예전 기준) */ const sl=pkSlotY(o,rd,y); const own=rd===1&&o===t.id?pkTopMul(t,sl):1; /* 상위 3순번 자기 1라운드 지명권: 안 파는 게 아니라 아주 비싸게 판다(유저 피드백 11-07) */
+  return (PK_V[rd-1]||.05)*(rd===1?pkR1Mul(sl)*m*pkClassMul(t,rd,sl,y):1.3-.06*sl)*own*pkDisc(y)*TR_TUNE.pk; } /* 11-18 4차: 지명권은 AI 눈에 ×1.15(16_trade TR_TUNE) */ /* 운영 전략 배율은 1라운드에만 */ /* 11-18 카페: 후보층(pkClassMul)·미래 순번 어림(pkSlotY)·시간 할인(pkDisc) */
 const PK_TOP3=2;
 /* 자기 상위 1라운드 지명권(1~5순번): 아주 비싸게 판다. 유망주 수집·내년 도전·긴축 구단은 더(공략 방지 11-14: 애매한 선수+현금으로 상위 지명권을 해마다 사 가던 것). AI끼리도 같은 값 */
 const pkTopMul=(t,sl)=>{ const keen=['build','next','tight'].includes(planOf(t)); return sl<3?(keen?2.6:PK_TOP3):sl<5?(keen?1.7:1.4):1; };
 const pkNorm=pk=>({give:[...new Set((pk&&pk.give)||[])],get:[...new Set((pk&&pk.get)||[])],y:pk&&pk.y!=null?pk.y:pkYear()}); /* y: 거래안에 넣을 때의 드래프트 연도. 드래프트가 끝나도 다음 해 것으로 바뀌지 않게(검수 11-06) */ /* 같은 지명권을 두 번 넣어도 한 장(검수 11-06) */
 const pkSig=pk=>{ pk=pkNorm(pk); return pk.give.length||pk.get.length?'|p'+pk.y+':'+[...pk.give].sort().join(',')+'/'+[...pk.get].sort().join(','):''; };
+/* 그다음 드래프트 자기 지명권 한도: 이미 남에게 넘긴 장수 + 이번에 내줄 장수가 PK_FUT_OUT을 넘으면 안 된다. 우리·AI 같은 함수 */
+function pkFutOut(tid){ const y=pkYear(); let n=0; for(const yy of pkYears())if(yy>y)for(let rd=1;rd<=DRAFT_ROUNDS;rd++)if(pkOwner(yy,rd,tid)!==tid)n++; return n; }
+function pkFutWhy(tid,out){ const y=pkYear(); const add=new Set((out||[]).map(pkCanon).filter(k=>{ const a=pkParse(k); return a.o===tid&&a.y>y&&pkOwner(a.y,a.rd,tid)===tid; })).size; if(!add)return ''; const n=pkFutOut(tid);
+  return n+add>PK_FUT_OUT?`${tid===G.user?'우리 구단':tname(tid)}은(는) ${y+1} 드래프트 자기 지명권을 ${n?`이미 ${n}장 넘겨 `:''}더 내줄 수 없습니다(그다음 드래프트 자기 지명권은 구단당 ${PK_FUT_OUT}장까지).`:''; }
 function pkCheck(tid,give,get,pk){ pk=pkNorm(pk); if(!pk.give.length&&!pk.get.length)return '';
   if(G.draft&&!G.draft.done)return '신인 드래프트가 진행 중이라 지명권을 주고받을 수 없습니다.';
-  if(pk.y!==pkYear())return `거래안의 지명권은 ${pk.y} 드래프트 것입니다. 지금 주고받을 수 있는 것은 ${pkYear()} 드래프트 지명권입니다. 다시 골라 주세요.`;
-  const mine=pkHeld(G.user), their=pkHeld(tid); if(pk.give.some(k=>!mine.includes(k))||pk.get.some(k=>!their.includes(k)))return '지명권 보유 구단이 바뀌었습니다. 다시 골라 주세요.';
+  if(pk.y!==pkYear())return `거래안의 지명권은 ${pk.y} 드래프트 때 고른 것입니다. 지금 주고받을 수 있는 것은 ${pkYears().join('·')} 드래프트 지명권입니다. 다시 골라 주세요.`;
+  const mine=pkHeldF(G.user), their=pkHeldF(tid); if(pk.give.some(k=>!mine.includes(pkCanon(k)))||pk.get.some(k=>!their.includes(pkCanon(k))))return '지명권 보유 구단이 바뀌었습니다. 다시 골라 주세요.';
   if((pk.give.length&&!get.length)||(pk.get.length&&!give.length))return '리그 규약상 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 지명권을 주려면 선수를 받고, 지명권을 받으려면 선수를 보내야 합니다.';
-  return ''; }
-function pkMove(pk,tid){ pk=pkNorm(pk); const y=pkYear(); G.pkOwn=G.pkOwn||{};
-  const mv=(k,to)=>{ const [rd,o]=k.split(':').map(Number); if(to===o)delete G.pkOwn[y+':'+rd+':'+o]; else G.pkOwn[y+':'+rd+':'+o]=to; };
-  pk.give.forEach(k=>mv(k,tid)); pk.get.forEach(k=>mv(k,G.user)); }
-/* 드래프트를 열 때: 지난 해 이전 기록은 지운다 */
+  return pkFutWhy(G.user,pk.give)||pkFutWhy(tid,pk.get); }
+/* ===== 상위 지명권 기준선(소유자 11-18 "정말 류현진이면 거래하겠지") =====
+   1라운드 지명권 값은 '적어도 주전, 잘되면 간판'의 기대값이다(주전 확률 × 주전 값 + 간판 확률 × 간판 값, 활약까지 남은 해만큼 할인: PK_V·PK_R1S·pkDisc).
+   1~5순번(미래 지명권은 예상 순번 5순번 안)은 값 비교 전에 기준선을 넘어야 한다: 리그 A급 선수(리그 주전 가운데 현재 능력 상위 8%)를 연봉 부담이 크지 않게(연봉 ≤ 그 능력 한 해 값) 받고,
+   그 선수 자리가 받는 구단에 필요해야 한다(그 자리가 리그 아래쪽 절반이고 그 자리 가장 약한 주전보다 3 이상 낫다). 1순위는 기준선 맨 위: 리그 최정상급(상위 3%, 화면 종합 80 이상) 특급이어야 한다.
+   기준선을 넘으면 그다음은 보통 값 비교(1순위는 여전히 가장 비싸다). 우리 구단의 제안(evalTrade)·AI끼리 거래(aiTradePackage → evalTrade) 모두 같은 함수. 올인 구단은 기준선 없음(이미 미래를 내건 상태).
+   실제 사례(KBO 2020~2024): 1순위 지명권 트레이드는 한 번도 없었다. 1라운드 #7+3라운드 ↔ 22세 주전 내야수 김휘집(2024.5 키움→NC), 1라운드 #10+4라운드+10억 ↔ FA 1년 앞 마무리 조상우(2024.12 키움→KIA),
+   2라운드+선수+10억 ↔ 주전 포수 박동원(2022.4), 2라운드 ↔ 백업 포수 주효상, 3라운드 ↔ 불펜 김태훈, 3라운드 ↔ 유틸리티 베테랑(2020 롯데↔kt). 6순번 이하는 값 곡선(PK_R1S)으로만 따진다 */
+const PK_GATE=5, PK_A_PCT=.92, PK_STAR_PCT=.97;
+let _pkLn={k:null,g:null,v:null};
+function pkLines(){ const k=G.year+':'+G.day; if(_pkLn.k===k&&_pkLn.g===G)return _pkLn.v; const S=new Set(); for(const t of G.teams)for(const id of startersOf(t.id))S.add(id);
+  const V=[...S].map(id=>G.players[id]).filter(Boolean).map(ovr).sort((a,b)=>a-b), at=f=>V.length?V[Math.min(V.length-1,Math.floor(V.length*f))]:99; const v={a:at(PK_A_PCT),star:at(PK_STAR_PCT)}; _pkLn={k,g:G,v}; return v; }
+/* 2: 특급(1순위 기준), 1: A급(2~5순위 기준), 0: 그 밖. 연봉이 그 능력 한 해 값보다 많으면 0 */
+function pkGrade(p){ if(!p||p.ys||p.age>33||!healthy(p))return 0; const o=ovr(p); if(p.sal/100>seasonWorth(o+pvShift(p)))return 0; const L=pkLines(); return o>=L.star&&dv(o)>=80?2:o>=L.a?1:0; }
+function pkAce(p){ return pkGrade(p)>=2; }
+function pkTopSlot(k){ const a=pkParse(k); return a.rd===1&&pkSlotY(a.o,1,a.y)<PK_GATE-.5; }
+/* 자리가 필요하다: 그 선수가 뛸 자리(지명타자 제외)가 리그 아래쪽 절반(순위 n/2 이하)이고, 그 자리 가장 약한 주전보다 3 이상 낫다(trFills와 같은 기준) */
+function pkNeedFor(t,p){ try{ const R=slotRanks(t.id), n=G.teams.length; return tradeSlotsOf(p).some(k=>k!=='DH'&&R[k]&&R[k].rank>=n/2&&slotGain(k,p)-slotBase(t.id,k)>=TR_TUNE.fitUp); }catch(e){ return false; } }
+/* 기준선에 못 미치는 이유(없으면 ''). t: 지명권을 내주는 AI 구단, inIds: 그 구단이 받는 선수 */
+function pkGateWhy(t,out,inIds){ if(!t||t.id===ME())return ''; const top=(out||[]).filter(pkTopSlot); if(!top.length)return ''; if(t.allIn===sponSeason())return '';
+  const one=top.some(k=>{ const a=pkParse(k); return pkSlotY(a.o,1,a.y)<.5; }), bar=one?2:1; const P=(inIds||[]).map(id=>G.players[id]).filter(Boolean), gr=P.filter(p=>pkGrade(p)>=bar);
+  if(gr.some(p=>pkNeedFor(t,p)))return '';
+  return `${top.map(pkName).join(', ')} 지명권은 ${one?'리그 최정상급(특급) 선수':'리그 A급 선수'}를 받고 그 자리가 필요할 때만 검토합니다${gr.length?'(그 선수 자리는 지금 저희에게 급하지 않습니다)':''}. 팬들이 미래를 판다고 볼 거래입니다.`; }
+/* 상위 5순번 1라운드 지명권을 내준 구단은 팬 여론이 조금 나빠진다(우리·AI 같음, 난수 없음) */
+function pkFanHit(tid){ try{ const P=prOf(tid); if(P&&P.fan!=null)P.fan=clamp(P.fan-2,0,100); }catch(e){} }
+/* 지명권 한 장의 보유 구단을 바꾼다(우리·AI 거래 공통) */
+function pkSet(k,to){ const {rd,o,y}=pkParse(k); G.pkOwn=G.pkOwn||{}; { const from=pkOwner(y,rd,o); if(from!==to&&rd===1&&pkTopSlot(k))pkFanHit(from); } if(to===o)delete G.pkOwn[y+':'+rd+':'+o]; else G.pkOwn[y+':'+rd+':'+o]=to; }
+function pkMove(pk,tid){ pk=pkNorm(pk); pk.give.forEach(k=>pkSet(k,tid)); pk.get.forEach(k=>pkSet(k,G.user)); }
+/* 구단 정보(30_card_common teamSheet)·트레이드 화면용 지명권 장부 요약: 받은 남의 지명권과 넘긴 자기 지명권(다음·그다음 드래프트) */
+function pkSummary(tid){ const got=[], gone=[]; for(const y of pkYears())for(let rd=1;rd<=DRAFT_ROUNDS;rd++)for(const t of G.teams){ const own=pkOwner(y,rd,t.id); if(own===tid&&t.id!==tid)got.push(pkName(pkKey(rd,t.id,y))); else if(t.id===tid&&own!==tid)gone.push(`${pkName(pkKey(rd,tid,y))}(→${tshort(own)})`); }
+  return got.length||gone.length?[got.length?'받음 '+got.join(', '):'',gone.length?'넘김 '+gone.join(', '):''].filter(Boolean).join(' · '):`${pkYears().join('·')} 자기 지명권 모두 보유`; }
+/* 드래프트를 열 때: 지난 해 이전 기록은 지운다(미래 연도 기록은 남는다) */
 function pkClean(){ if(!G.pkOwn)return; for(const k in G.pkOwn)if(+k.split(':')[0]<G.year)delete G.pkOwn[k]; }
+/* 예전 저장(11-18): 보유 장부가 없으면 빈 장부(= 모든 지명권은 원래 구단 것)를 만들고, 깨진 줄·원래 구단으로 돌아온 줄을 지운다. 난수 없음, 여러 번 불러도 같다 */
+function pkMigrate(){ if(!G)return; if(!G.pkOwn||typeof G.pkOwn!=='object'||Array.isArray(G.pkOwn))G.pkOwn={};
+  for(const k of Object.keys(G.pkOwn)){ const a=k.split(':').map(Number), v=G.pkOwn[k]; if(a.length!==3||a.some(x=>!Number.isFinite(x))||!Number.isFinite(v)||!G.teams[v]||!G.teams[a[2]]||v===a[2])delete G.pkOwn[k]; } G.pkV=1; }
 /* ===== KBO 경기 규정: ABS(자동 투구 판정 시스템)·피치 클락 =====
    출처: KBO 실행위원회 2024.1.24 의결(뉴스서울 2024.1.25): ABS 존은 홈플레이트 좌우 각 2cm 확대, 상단 타자 키의 56.35%·하단 27.64%,
          홈플레이트 중간면과 끝면을 모두 통과해야 스트라이크(포수 포구 위치와 무관). 피치 클락 위반은 투수 볼·타자 스트라이크, 2024년 1군은 시범 운영(경고만).
@@ -43733,7 +43799,7 @@ function teamSheet(tid){ const t=team(tid); if(!t)return ''; const g=gmOf(tid); 
     ${(()=>{ /* 한 화면에(UI 3단계 3-0): 개요·사람들·우승 트로피를 탭으로. 아래 동작 버튼 줄은 늘 보인다 */
       const ppl=teamPeople(tid), T=[['main','개요'],['pos','포지션 순위'],...(ppl?[['ppl','구단 사람들']]:[]),['tro','우승 트로피']], cur=T.some(x=>x[0]===UI.tsTab)?UI.tsTab:'main';
       const body=cur==='ppl'?ppl:cur==='tro'?trophyCase(tid,true):cur==='pos'?`<div class="eyebrow">포지션별 리그 순위</div>${slotBar(rk)}${startAvgBox(tid)}`:`${teamCard(t).replace(/ data-a="[a-zA-Z]+" data-v="[^"]*" role="button" tabindex="0"/,'').replace(/<button[^>]*data-a="tpartnerGo"[^>]*>[^<]*<\/button>/g,'')}
-    <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${relLabel(t.rel)}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd><dt>팀 분위기</dt><dd>${chemLine(tid)}</dd></dl>`;
+    <dl class="kv"><dt>단장</dt><dd>${g?`${esc(g.name)}${g.age?` (${g.age}세)`:''} · ${GMT[g.trait].l} · 친분 ${relLabel(t.rel)}`:'-'}</dd><dt>구단 사정</dt><dd>${esc(needText(tid))}</dd><dt>팀 분위기</dt><dd>${chemLine(tid)}</dd><dt>신인 지명권</dt><dd>${esc(pkSummary(tid))}</dd></dl>`;
       return `<div class="chips ps-tabs" role="tablist" aria-label="구단 정보 구역">${T.map(([k,l])=>`<button type="button" role="tab" data-a="tsTab" data-v="${k}" class="${k===cur?'on':''}" aria-selected="${k===cur}">${l}</button>`).join('')}</div><div class="ts-body ts-${cur}">${body}</div>`; })()}
     <div class="row" style="margin-top:10px"><button class="btn primary" data-a="teamInspect" data-v="${tid}">구단 정보·연대기</button><button class="btn" data-a="lteam" data-v="${tid}">선수단 보기</button>${tradeOpen()?`<button class="btn" data-a="tpartnerGo" data-v="${tid}">트레이드 협상</button>`:''}</div>
   </div></div>`; }
@@ -43876,6 +43942,7 @@ function draftBoard(){
     const dn=draftNo(G.user);
     head=`<section class="card hero dhead"><div class="row between"><span class="eyebrow">${G.year} 신인 드래프트 · ${dmd(G.cal.draft)}</span><span class="pill">D-${left}</span></div>
       <p class="dpre-no">${dn?`우리 첫 지명은 <b>${draftFirstTxt(dn)}</b>${dn.first&&(dn.first.rd!==1||dn.first.no!==dn.r1)?` (원래 1라운드 ${dn.r1}순위 · 지명권 거래 반영)`:dn.r2!==dn.r1?`, 2라운드부터 ${dn.r2}순위`:''}`:`참가 ${pool.length}명`} ${hiI(`참가 선수 ${pool.length}명 중 ${DRAFT_ROUNDS}라운드 순번 ${(draftPlan()||[]).length}개만큼 지명합니다. 구단은 어느 라운드든 지명을 건너뛸(패스) 수 있어 실제 지명 인원은 더 적을 수 있습니다. 지명 순서는 지난 시즌 성적의 역순입니다.`)}</p>
+      ${(()=>{ const T=(draftPlan()||[]).filter(k=>k.from!=null); return T.length?`<p class="small muted">지명권 거래 반영: ${esc(T.map(k=>`${tshort(k.from)} ${G.year} ${k.rd}라운드(${k.no}순위) → ${tshort(k.tid)}`).join(' · '))}</p>`:''; })()}
       ${dn?(fmOn()?drestBox(draftRestPre(),'드래프트 전에 미리 정해 두기'):`<details class="dpre-rest" data-k="draftRest" ${UI.open?.draftRest?'open':''}><summary class="small">자동 지명 기준 · 미리 정해 두기</summary>${drestBox(draftRestPre(),'드래프트 전에 미리 정해 두기')}</details>`):''}
       <details class="frule"><summary class="small">로스터·순위 안내</summary><p class="small">지금 정식 로스터는 ${rosterN(G.user)}/${ROSTER_MAX}명입니다. 지명한 신인은 내년 1월에 합류하므로, 그만큼 기존 선수를 방출해야 합니다. 지명은 어느 라운드든 건너뛸 수 있고, 다른 구단도 로스터가 차면 건너뜁니다.</p>
       <p class="small muted">언론 순위는 성적과 체격만 본 평가이고, 우리 순위는 담당 스카우트·단장 관찰을 더한 평가입니다. 스카우트도 틀립니다. ${hiI("우리 순위에는 관찰 전 임시 현재능력 추정도 들어갑니다. 관찰 0회 후보의 잠재력은 첫 관찰 전까지 ?로 표시합니다. 관찰이 쌓일수록 정확해지지만, 스카우트마다 좋아하는 유형이 있어 그 버릇은 남습니다. '강력 추천'은 스카우트가 언론보다 훨씬 높게 보는 후보입니다.")}${noScout.length?` <b>${noScout.join(', ')}</b> 지역은 담당 스카우트가 없어 잠재력이 ?로 나옵니다${noScout.some(gmN)?`(단장이 직접 본 후보 ${noScout.map(gmN).reduce((a,b)=>a+b,0)}명은 평가됨)`:''}.`:''} 관심 표시한 선수는 지명 때 바로 고를 수 있습니다.</p>
@@ -43909,7 +43976,7 @@ function draftResults(){
   const d=G.draft; if(!d)return csec('지명 현황','<p class="small muted">드래프트가 시작되면 라운드별 지명 결과가 여기에 쌓입니다.</p>');
   const order=d.picks.filter(x=>x.rd===1).map(x=>x.from??x.tid); /* 열은 원래 구단 순번(지명권 트레이드로 넘긴 칸은 → 새 구단 표시) */
   const rows=[]; for(let r=1;r<=DRAFT_ROUNDS;r++){ rows.push(`<tr><th>${r}R</th>${order.map(tid=>{ const x=d.picks.find(q=>q.rd===r&&(q.from??q.tid)===tid); const q=x&&x.pid>0?G.players[x.pid]:null;
-    return `<td class="${x&&x.tid===G.user?'me':''}">${x?`<small class="muted">${x.no}순위</small> `:''}${x&&x.pass?`<span class="muted">건너뜀${x.passReason?` · ${esc(x.passReason)}`:''}</span>`:q?`<button class="lnk" data-a="player" data-v="${q.id}">${esc(q.name)}</button><i>${posLabel(q)}</i>`:'<span class="muted">-</span>'}${x&&x.from!=null?`<i>→${esc(tshort(x.tid))}</i>`:''}</td>`; }).join('')}</tr>`); }
+    return `<td class="${x&&x.tid===G.user?'me':''}">${x?`<small class="muted">${x.no}순위</small> `:''}${x&&x.pass?`<span class="muted">건너뜀${x.passReason?` · ${esc(x.passReason)}`:''}</span>`:q?`<button class="lnk" data-a="player" data-v="${q.id}">${esc(q.name)}</button><i>${posLabel(q)}</i>`:'<span class="muted">-</span>'}${x&&x.from!=null?`<i title="${esc(`${tshort(x.from)} ${d.y} ${r}라운드 지명권 → ${tshort(x.tid)}(트레이드)`)}">→${esc(tshort(x.tid))}</i>`:''}</td>`; }).join('')}</tr>`); }
   const mine=d.picks.filter(x=>x.tid===G.user&&x.pid>0).map(x=>G.players[x.pid]).filter(Boolean);
   return `${mine.length?`<section class="card"><div class="row between"><h2 class="sec">우리 지명 선수</h2><span class="small muted">${mine.length}명 · 내년 1월 합류</span></div><div class="tw"><table class="sqt candidate-table"><thead><tr>${['선수','순번','학교','능력','잠재력 추정','아마 기록','계약금'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>${mine.map(p=>{ const rp=scoutReport(p); return `<tr><td><button class="candidate-name" data-a="player" data-v="${p.id}">${avImg(p)}<span>${esc(p.name)}<small>${posLabel(p)} · ${p.age}세</small></span></button></td><td>${p.draft.rd}R ${p.draft.no}순위</td><td>${esc(p.school||'-')}</td><td>${hideOvr(p)?'?':rchip(rp.cur)}</td><td>${dpotChip(rp)}</td><td class="candidate-note">${esc(amLine(p))}</td><td class="num">${money(p.draft.bonus??bonusOf(p.draft.rd,p.draft.no,p))}</td></tr>`; }).join('')}</tbody></table></div></section>`:''}
   <section class="card"><h2 class="sec">라운드별 지명</h2><p class="small muted">열은 1라운드 순서입니다. 2라운드부터는 칸의 순위 숫자가 실제 지명 순서입니다.</p><div class="tw"><table class="dres"><thead><tr><th></th>${order.map(t=>`<th>${badge(t,18)}<br>${esc(tshort(t))}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div></section>`;
@@ -44648,6 +44715,7 @@ function tradeMood(tid,give,get,cash,pk){
   { let cd=null; try{ cd=tradeCool(tid,get); }catch(e){} if(cd)return {k:'no',l:'거래 제한',s:cd.cap?`올해 이 구단과 거래 한도(${cd.max}번)를 채웠습니다`:`최근 거래해 ${dsh(cd.until)}부터 다시 거래할 수 있습니다`,c:'var(--bad)',w:3,sd:0}; } /* 보내기 전에 거래 제한을 반응 막대에(플레이 테스트 11-13) */
   if(faLockMsg([...give,...get]))return {k:'no',l:'트레이드 불가',s:[...give,...get].some(id=>faSignLock(G.players[id]))?'FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다':'FA 신청을 앞둔 선수는 FA 공시 전까지 트레이드할 수 없습니다',c:'var(--bad)',w:3,sd:0};
   const t=team(tid); const e=evalTrade(tid,give,get,cash,pk);
+  if(e.pkGate)return {k:'no',l:'상위 지명권',s:'1라운드 1~5순번 지명권은 리그 A급 선수(1순위는 특급)를 받고 그 자리가 필요할 때만 검토합니다',c:'var(--bad)',w:3,sd:0};
   if(e.capT&&e.capT.hard)return {k:'no',l:'연봉 한도',s:'상대 구단 연봉이 구단주 허용 한도를 넘습니다',c:'var(--bad)',w:3,sd:0};
   const sd=1.2+Math.max(0,75-t.rel)/10; // 관계가 좋을수록 상대 속내를 정확히 읽는다
   const key=[...give].sort((a,b)=>a-b).join('-')+'|'+[...get].sort((a,b)=>a-b).join('-');
@@ -44688,9 +44756,9 @@ function tradeView(){
   const capAfter=capPayAs(G.user,tr.get||[],tr.give||[]), cap=capOf(sponSeason()); /* 엔진과 같이 상위 40명을 다시 고른다 */
   const thAfter=capPayAs(tr.tid,tr.give||[],tr.get||[]), th0=capInfo(tr.tid).pay, thT=aiCapTake(tr.tid,thAfter,th0), my0=capInfo(G.user).pay; /* 상대 쪽 상한 영향(소프트캡: 넘기면 세금만큼 값을 더 요구, 한도를 넘으면 거절) */
   const myN=rosterN(G.user)-tr.give.filter(tradeCntN).length+tr.get.filter(tradeCntN).length, thN=rosterN(tr.tid)+tr.give.filter(tradeCntN).length-tr.get.filter(tradeCntN).length; /* 엔진·확인창과 같은 정식 선수 기준(육성·복무 제외, 검수 11-08c) */
-  { const P=pkNorm(tr.pk), hm=pkHeld(G.user), ht=pkHeld(tr.tid), same=P.y===pkYear(); tr.pk={give:same?P.give.filter(k=>hm.includes(k)):[],get:same?P.get.filter(k=>ht.includes(k)):[],y:pkYear()}; /* 지명권 보유가 바뀌었으면 뺀다 */
+  { const P=pkNorm(tr.pk), hm=pkHeldF(G.user), ht=pkHeldF(tr.tid), same=P.y===pkYear(); tr.pk={give:same?P.give.filter(k=>hm.includes(k)):[],get:same?P.get.filter(k=>ht.includes(k)):[],y:pkYear()}; /* 지명권 보유가 바뀌었으면 뺀다 */
     const lostK=P.give.length+P.get.length-tr.pk.give.length-tr.pk.get.length; /* 빠진 조건은 말없이 넘기지 않는다(검수 11-09v) */
-    if(lostP.length||lostK){ tr.msg=`거래안이 바뀌었습니다: ${[lostP.length?`${lostP.map(id=>G.players[id]?G.players[id].name:'선수').join(', ')}(소속·신분이 바뀌어 거래할 수 없음)`:'',lostK?(same?`보유 구단이 바뀐 지명권 ${lostK}장`:`${P.y} 드래프트 지명권 ${lostK}장(지금은 ${pkYear()} 드래프트 지명권만 주고받을 수 있음)`):''].filter(Boolean).join(', ')}을(를) 뺐습니다. 남은 조건을 다시 확인하고 제안하세요.`; tr.ok=false; tr.want=null; tr.counters=null; } }
+    if(lostP.length||lostK){ tr.msg=`거래안이 바뀌었습니다: ${[lostP.length?`${lostP.map(id=>G.players[id]?G.players[id].name:'선수').join(', ')}(소속·신분이 바뀌어 거래할 수 없음)`:'',lostK?(same?`보유 구단이 바뀐 지명권 ${lostK}장`:`${P.y} 드래프트 지명권 ${lostK}장(지금은 ${pkYears().join('·')} 드래프트 지명권을 주고받을 수 있음)`):''].filter(Boolean).join(', ')}을(를) 뺐습니다. 남은 조건을 다시 확인하고 제안하세요.`; tr.ok=false; tr.want=null; tr.counters=null; } }
   const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);
   const tgm=gmOf(t.id)||{};
   const board=`<section class="card tboard">
@@ -44822,13 +44890,16 @@ function stopCard(){ const S=G.stopCfg||{}; return `<section class="card" id="st
   <div class="stop-l">${STOP_CATS.map(([k,l,d])=>{ const lock=k==='must'; const on=lock||(S[k]!=null?!!S[k]:STOP_DEF[k]); return `<label class="chk stop-r${lock?' lock':''}"><input type="checkbox" ${lock?'checked disabled':`data-a="stopTg" data-v="${k}" ${on?'checked':''}`}> <b>${l}</b> <span class="small muted">${d}${lock?'':STOP_DEF[k]?'':' · 기본은 멈추지 않음'}</span></label>`; }).join('')}</div></section>`; }
 function advSetCard(){ const on=!!G.advAsk; return `<section class="card"><div class="row between"><h2 class="sec">진행 방식</h2><button class="btn small" data-a="advAskTog">${on?'묻지 않기':'매번 묻기'}</button></div><p class="small muted">${on?'지금: 진행할 때마다 어디까지 갈지 확인 창을 띄웁니다.':'지금: 남은 결정·트레이드 제안·안 읽은 중요 소식이 없으면 묻지 않고 바로 진행합니다. 있으면 진행 전에 알려 줍니다.'}</p></section>`; }
 
-/* 신인 지명권 얹기(KBO 2020~): 다음 드래프트 지명권만, 선수와 맞바꿀 때만 */
+/* 신인 지명권 얹기(KBO 2020~): 다음 드래프트와 그다음 드래프트 지명권(카페 11-18), 선수와 맞바꿀 때만. 연도별로 나눠 보이고, 고른 지명권은 '(구단) 연도 N라운드'로 적는다 */
 function pkRow(tr){ if(G.draft&&!G.draft.done)return ''; const P=pkNorm(tr.pk);
-  const chip=(side,k,on)=>{ const [rd,o]=k.split(':').map(Number); const own=side==='give'?G.user:tr.tid; return `<button data-a="pkT" data-v="${side}:${k}" class="${on?'on':''}">${rd}R${o!==own?`(${esc(tshort(o))})`:''}</button>`; };
-  return `<div class="tcash"><span class="small">신인 지명권 · ${pkYear()} 드래프트</span>
-    <div class="small muted">우리 지명권 보내기</div><div class="chips">${pkHeld(G.user).map(k=>chip('give',k,P.give.includes(k))).join('')||'<span class="small muted">없음</span>'}</div>
-    <div class="small muted">상대 지명권 받기</div><div class="chips">${pkHeld(tr.tid).map(k=>chip('get',k,P.get.includes(k))).join('')||'<span class="small muted">없음</span>'}</div>
-    <span class="small muted">리그 규약: 다음에 열릴 신인 드래프트 지명권만 주고받을 수 있고, 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 넘겨받은 지명권은 원래 구단 순번에 씁니다. 리빌딩 구단일수록 지명권을 높게 칩니다.</span></div>`; }
+  const chip=(side,k,on)=>{ const {rd,o}=pkParse(k); const own=side==='give'?G.user:tr.tid; return `<button data-a="pkT" data-v="${side}:${k}" class="${on?'on':''}" title="${esc(pkName(k))}">${rd}R${o!==own?`(${esc(tshort(o))})`:''}</button>`; };
+  const rows=(side,tid)=>{ const H=pkHeldF(tid); return pkYears().map(y=>{ const L=H.filter(k=>pkParse(k).y===y); return `<div class="pk-y"><span class="small muted">${y}</span><div class="chips">${L.map(k=>chip(side,k,P[side].includes(k))).join('')||'<span class="small muted">없음</span>'}</div></div>`; }).join(''); };
+  const sel=[...P.give.map(k=>'보냄 '+pkName(k)),...P.get.map(k=>'받음 '+pkName(k))];
+  return `<div class="tcash"><span class="small">신인 지명권 · ${pkYears().join('·')} 드래프트</span>
+    <div class="small muted">우리 지명권 보내기</div>${rows('give',G.user)}
+    <div class="small muted">상대 지명권 받기</div>${rows('get',tr.tid)}
+    ${sel.length?`<div class="small"><b>고른 지명권</b> ${esc(sel.join(' · '))}</div>`:''}
+    <span class="small muted">리그 규약: 다음 드래프트와 그다음 드래프트 지명권까지 주고받을 수 있고(그다음 드래프트 자기 지명권은 구단당 ${PK_FUT_OUT}장까지), 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 넘겨받은 지명권은 원래 구단 순번에 씁니다. 상위 순번일수록, 리빌딩 구단일수록 지명권을 높게 치고, 먼 해 지명권은 순번과 후보를 아직 몰라 낮게 칩니다.</span></div>`; }
 /* ---------- 관중석 증설 카드(구장 관리 → 구장 시설) ----------
    한눈에: 명분(점유율·매진) → 고를 수 있는 증설 두 가지(좌석·구단 부담·예상 효과) → 진행 상태. 자세한 규칙은 ⓘ */
 function stadXpTip(){ const R=STADX_RULE; return `구장은 시 소유라 좌석을 늘리려면 시와 합의해야 합니다.\n\n명분: 지난 시즌(또는 올해 홈 36경기 이상) 좌석 점유율 ${Math.round(R.occ*100)}% 이상이거나 홈경기의 ${Math.round(R.so*100)}% 이상 매진.\n\n시 협의 ${R.talk}일. 지역 관계·구단주 신뢰·연고 시장·점유율이 높을수록 잘 됩니다. 결렬되면 ${R.retry}일 뒤 다시.\n\n합의하면 다음 공사 기간(10월~2월) 안에 착공합니다. 공사비의 ${Math.round(R.city*100)}%는 시가, 나머지는 구단이 냅니다. 시 인허가(30~120일) 뒤 공사하고, 공사가 시즌과 겹치면 그 구역 좌석을 막습니다.\n\n늘린 좌석은 원래 구장이 꽉 찰 만큼 표를 찾는 관중이 있을 때만 찹니다. 평소 빈자리가 많은 구장이면 효과가 거의 없고 빈자리만 늘어 응원 열기가 덜해 보입니다. 해마다 유지비가 붙습니다.\n\n한도: 구장당 ${R.n}번, 일반 구장 ${R.max.toLocaleString('ko-KR')}석·돔 ${R.domeMax.toLocaleString('ko-KR')}석·초대형 신구장 ${R.megaMax.toLocaleString('ko-KR')}석까지. 개장 3년 안 된 구장은 늘릴 수 없습니다. 신구장을 지으면 새로 셉니다.`; }
@@ -50943,6 +51014,11 @@ const PATCH=[
   {id:'2026-11-18-scale-kbo',d:'11월 18일',t:'20-80 표기를 KBO 주전 평균 50 기준으로 맞췄습니다',items:[
     '설정 > 구단·기록 > 능력치 표기에서 20-80을 고르면 KBO 1군 주전 평균이 50으로 보입니다. 예전에는 내부 값을 그대로 보여 줘 주전 평균이 52~53 안팎이었습니다. 실제 능력과 계산은 그대로이고 100점 표기도 그대로입니다.',
     '20-80 표기에서 외국인 후보 카드와 영입 명단의 직전 리그에 마우스를 올리면 그 리그 주전 평균을 KBO 기준으로 환산한 값을 함께 보여 줍니다(MLB 약 61, NPB 1군 약 55, 트리플A 약 50).'
+  ]},
+  {id:'2026-11-18-pick-trade',d:'11월 18일',t:'미래 신인 지명권도 트레이드할 수 있고, 상위 지명권은 리그 A급 선수로만 움직입니다',items:[
+    '다음 드래프트에 더해 그다음 드래프트 지명권까지 주고받을 수 있습니다. 트레이드 화면에서 연도별로 고르고, 고른 지명권은 \'(구단) 2027 1라운드\'처럼 표시합니다. 그다음 드래프트 자기 지명권은 구단당 2장까지만 넘길 수 있습니다. 넘긴 지명권은 그해 드래프트 순서에 새 구단으로 들어가며, 구단 정보 창에 받은·넘긴 지명권이 보입니다.',
+    '미래 지명권은 지금 순위로 예상 순번을 어림하고, 순번과 후보를 아직 모르는 만큼 낮게 칩니다. 올해 지명권은 그 구단 스카우트가 본 이번 후보층 수준만큼 값이 오르내립니다.',
+    '1라운드 1~5순번 지명권은 리그 A급 선수(1순위는 최정상급 특급)를 그 자리가 필요한 구단에 연봉 부담 없이 보낼 때만 검토합니다. 상위 지명권을 내준 구단은 팬 여론이 조금 나빠집니다. 6순번 아래는 실제 KBO 사례처럼 젊은 주전 한 명 안팎이면 움직입니다. 우리 구단과 AI 구단이 같은 기준을 씁니다.'
   ]},
   {id:'2026-11-18-sheet-face',d:'11월 18일',t:'선수 정보 창 얼굴 사진이 커졌습니다',items:[
     '선수 능력 탭 왼쪽 인물 카드 맨 위에 얼굴 사진을 가운데 정렬로 크게(PC 1600×900 기준 약 190px 이상, 1920×1080에서는 더 크게) 보여 줍니다. 등번호와 구단은 사진 모서리 배지로 올리고, 올해 성적·역할·연봉 줄은 한 줄씩으로 줄였습니다. 휴대폰 머리말 사진도 다시 크게 보입니다.'

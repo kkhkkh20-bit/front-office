@@ -166,6 +166,7 @@ function tradeMood(tid,give,get,cash,pk){
   { let cd=null; try{ cd=tradeCool(tid,get); }catch(e){} if(cd)return {k:'no',l:'거래 제한',s:cd.cap?`올해 이 구단과 거래 한도(${cd.max}번)를 채웠습니다`:`최근 거래해 ${dsh(cd.until)}부터 다시 거래할 수 있습니다`,c:'var(--bad)',w:3,sd:0}; } /* 보내기 전에 거래 제한을 반응 막대에(플레이 테스트 11-13) */
   if(faLockMsg([...give,...get]))return {k:'no',l:'트레이드 불가',s:[...give,...get].some(id=>faSignLock(G.players[id]))?'FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다':'FA 신청을 앞둔 선수는 FA 공시 전까지 트레이드할 수 없습니다',c:'var(--bad)',w:3,sd:0};
   const t=team(tid); const e=evalTrade(tid,give,get,cash,pk);
+  if(e.pkGate)return {k:'no',l:'상위 지명권',s:'1라운드 1~5순번 지명권은 리그 A급 선수(1순위는 특급)를 받고 그 자리가 필요할 때만 검토합니다',c:'var(--bad)',w:3,sd:0};
   if(e.capT&&e.capT.hard)return {k:'no',l:'연봉 한도',s:'상대 구단 연봉이 구단주 허용 한도를 넘습니다',c:'var(--bad)',w:3,sd:0};
   const sd=1.2+Math.max(0,75-t.rel)/10; // 관계가 좋을수록 상대 속내를 정확히 읽는다
   const key=[...give].sort((a,b)=>a-b).join('-')+'|'+[...get].sort((a,b)=>a-b).join('-');
@@ -206,9 +207,9 @@ function tradeView(){
   const capAfter=capPayAs(G.user,tr.get||[],tr.give||[]), cap=capOf(sponSeason()); /* 엔진과 같이 상위 40명을 다시 고른다 */
   const thAfter=capPayAs(tr.tid,tr.give||[],tr.get||[]), th0=capInfo(tr.tid).pay, thT=aiCapTake(tr.tid,thAfter,th0), my0=capInfo(G.user).pay; /* 상대 쪽 상한 영향(소프트캡: 넘기면 세금만큼 값을 더 요구, 한도를 넘으면 거절) */
   const myN=rosterN(G.user)-tr.give.filter(tradeCntN).length+tr.get.filter(tradeCntN).length, thN=rosterN(tr.tid)+tr.give.filter(tradeCntN).length-tr.get.filter(tradeCntN).length; /* 엔진·확인창과 같은 정식 선수 기준(육성·복무 제외, 검수 11-08c) */
-  { const P=pkNorm(tr.pk), hm=pkHeld(G.user), ht=pkHeld(tr.tid), same=P.y===pkYear(); tr.pk={give:same?P.give.filter(k=>hm.includes(k)):[],get:same?P.get.filter(k=>ht.includes(k)):[],y:pkYear()}; /* 지명권 보유가 바뀌었으면 뺀다 */
+  { const P=pkNorm(tr.pk), hm=pkHeldF(G.user), ht=pkHeldF(tr.tid), same=P.y===pkYear(); tr.pk={give:same?P.give.filter(k=>hm.includes(k)):[],get:same?P.get.filter(k=>ht.includes(k)):[],y:pkYear()}; /* 지명권 보유가 바뀌었으면 뺀다 */
     const lostK=P.give.length+P.get.length-tr.pk.give.length-tr.pk.get.length; /* 빠진 조건은 말없이 넘기지 않는다(검수 11-09v) */
-    if(lostP.length||lostK){ tr.msg=`거래안이 바뀌었습니다: ${[lostP.length?`${lostP.map(id=>G.players[id]?G.players[id].name:'선수').join(', ')}(소속·신분이 바뀌어 거래할 수 없음)`:'',lostK?(same?`보유 구단이 바뀐 지명권 ${lostK}장`:`${P.y} 드래프트 지명권 ${lostK}장(지금은 ${pkYear()} 드래프트 지명권만 주고받을 수 있음)`):''].filter(Boolean).join(', ')}을(를) 뺐습니다. 남은 조건을 다시 확인하고 제안하세요.`; tr.ok=false; tr.want=null; tr.counters=null; } }
+    if(lostP.length||lostK){ tr.msg=`거래안이 바뀌었습니다: ${[lostP.length?`${lostP.map(id=>G.players[id]?G.players[id].name:'선수').join(', ')}(소속·신분이 바뀌어 거래할 수 없음)`:'',lostK?(same?`보유 구단이 바뀐 지명권 ${lostK}장`:`${P.y} 드래프트 지명권 ${lostK}장(지금은 ${pkYears().join('·')} 드래프트 지명권을 주고받을 수 있음)`):''].filter(Boolean).join(', ')}을(를) 뺐습니다. 남은 조건을 다시 확인하고 제안하세요.`; tr.ok=false; tr.want=null; tr.counters=null; } }
   const mood=tradeMood(tr.tid,tr.give,tr.get,tr.cash||0,tr.pk);
   const tgm=gmOf(t.id)||{};
   const board=`<section class="card tboard">
@@ -340,10 +341,13 @@ function stopCard(){ const S=G.stopCfg||{}; return `<section class="card" id="st
   <div class="stop-l">${STOP_CATS.map(([k,l,d])=>{ const lock=k==='must'; const on=lock||(S[k]!=null?!!S[k]:STOP_DEF[k]); return `<label class="chk stop-r${lock?' lock':''}"><input type="checkbox" ${lock?'checked disabled':`data-a="stopTg" data-v="${k}" ${on?'checked':''}`}> <b>${l}</b> <span class="small muted">${d}${lock?'':STOP_DEF[k]?'':' · 기본은 멈추지 않음'}</span></label>`; }).join('')}</div></section>`; }
 function advSetCard(){ const on=!!G.advAsk; return `<section class="card"><div class="row between"><h2 class="sec">진행 방식</h2><button class="btn small" data-a="advAskTog">${on?'묻지 않기':'매번 묻기'}</button></div><p class="small muted">${on?'지금: 진행할 때마다 어디까지 갈지 확인 창을 띄웁니다.':'지금: 남은 결정·트레이드 제안·안 읽은 중요 소식이 없으면 묻지 않고 바로 진행합니다. 있으면 진행 전에 알려 줍니다.'}</p></section>`; }
 
-/* 신인 지명권 얹기(KBO 2020~): 다음 드래프트 지명권만, 선수와 맞바꿀 때만 */
+/* 신인 지명권 얹기(KBO 2020~): 다음 드래프트와 그다음 드래프트 지명권(카페 11-18), 선수와 맞바꿀 때만. 연도별로 나눠 보이고, 고른 지명권은 '(구단) 연도 N라운드'로 적는다 */
 function pkRow(tr){ if(G.draft&&!G.draft.done)return ''; const P=pkNorm(tr.pk);
-  const chip=(side,k,on)=>{ const [rd,o]=k.split(':').map(Number); const own=side==='give'?G.user:tr.tid; return `<button data-a="pkT" data-v="${side}:${k}" class="${on?'on':''}">${rd}R${o!==own?`(${esc(tshort(o))})`:''}</button>`; };
-  return `<div class="tcash"><span class="small">신인 지명권 · ${pkYear()} 드래프트</span>
-    <div class="small muted">우리 지명권 보내기</div><div class="chips">${pkHeld(G.user).map(k=>chip('give',k,P.give.includes(k))).join('')||'<span class="small muted">없음</span>'}</div>
-    <div class="small muted">상대 지명권 받기</div><div class="chips">${pkHeld(tr.tid).map(k=>chip('get',k,P.get.includes(k))).join('')||'<span class="small muted">없음</span>'}</div>
-    <span class="small muted">리그 규약: 다음에 열릴 신인 드래프트 지명권만 주고받을 수 있고, 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 넘겨받은 지명권은 원래 구단 순번에 씁니다. 리빌딩 구단일수록 지명권을 높게 칩니다.</span></div>`; }
+  const chip=(side,k,on)=>{ const {rd,o}=pkParse(k); const own=side==='give'?G.user:tr.tid; return `<button data-a="pkT" data-v="${side}:${k}" class="${on?'on':''}" title="${esc(pkName(k))}">${rd}R${o!==own?`(${esc(tshort(o))})`:''}</button>`; };
+  const rows=(side,tid)=>{ const H=pkHeldF(tid); return pkYears().map(y=>{ const L=H.filter(k=>pkParse(k).y===y); return `<div class="pk-y"><span class="small muted">${y}</span><div class="chips">${L.map(k=>chip(side,k,P[side].includes(k))).join('')||'<span class="small muted">없음</span>'}</div></div>`; }).join(''); };
+  const sel=[...P.give.map(k=>'보냄 '+pkName(k)),...P.get.map(k=>'받음 '+pkName(k))];
+  return `<div class="tcash"><span class="small">신인 지명권 · ${pkYears().join('·')} 드래프트</span>
+    <div class="small muted">우리 지명권 보내기</div>${rows('give',G.user)}
+    <div class="small muted">상대 지명권 받기</div>${rows('get',tr.tid)}
+    ${sel.length?`<div class="small"><b>고른 지명권</b> ${esc(sel.join(' · '))}</div>`:''}
+    <span class="small muted">리그 규약: 다음 드래프트와 그다음 드래프트 지명권까지 주고받을 수 있고(그다음 드래프트 자기 지명권은 구단당 ${PK_FUT_OUT}장까지), 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 넘겨받은 지명권은 원래 구단 순번에 씁니다. 상위 순번일수록, 리빌딩 구단일수록 지명권을 높게 치고, 먼 해 지명권은 순번과 후보를 아직 몰라 낮게 칩니다.</span></div>`; }
