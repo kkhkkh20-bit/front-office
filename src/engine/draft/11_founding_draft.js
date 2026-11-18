@@ -260,7 +260,7 @@ function draftRestPre(){ const P=G.drestPre; return P&&P.y===G.year&&P.tid===G.u
 function draftRestOf(){ const d=G.draft; return d&&!d.done&&d.rest&&d.rest.tid===G.user&&!G.unemp?d.rest:null; }
 function draftCondSummary(min){ const d=G.draft, ids=d&&!d.done?d.cls:G.draftClass||[]; let total=0,fit=0,unknown=0;for(const id of ids){const p=G.players[id];if(!p?.prospect)continue;total++;const T=potTierP(scoutReport(p),p);if(!T)unknown++;else if(T.n>=min)fit++;}return {total,fit,unknown,full:rosterProj(G.user)>=ROSTER_MAX}; }
 /* 우리 보드 맡기기(사용자 11-17 드래프트 전 전략): 남은 후보 중 우리 보드(관심 목록 순서) 맨 위. AI 구단도 자기 평가 순서로 고르니 같은 방식이다 */
-function draftBoardTop(){ const d=G.draft; if(!d||d.done)return null; const av=new Set(d.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null)); return (G.shortlist||[]).find(id=>av.has(id))??null; }
+function draftBoardTop(){ const d=G.draft; if(!d||d.done)return null; const av=new Set(d.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null)); return draftBoardOrder().find(id=>av.has(id))??null; }
 function draftRestPick(){ const d=G.draft; const R0=draftRestOf(); const pk=R0&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return null;
   if(R0.mode==='board'){ const id=rosterProj(G.user)<ROSTER_MAX?draftBoardTop():null; if(id){ pk.rule=true; pk.board=true; doPick(id); return {pk,pid:id,me:true}; }
     if(rosterProj(G.user)>=ROSTER_MAX){ pk.passReason=`정식 로스터 한도 ${ROSTER_MAX}명`; passCurrent(); return {pk,pass:true}; }

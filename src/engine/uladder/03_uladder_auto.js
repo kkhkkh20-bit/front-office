@@ -20,6 +20,7 @@ function ulAutoEntry(info){ if(!G||G.unemp||G.user==null||!team(G.user))return n
 function ulAutoPlan(now,force,opt){ const U=uld(), C=FrontOfficeCore; if(!U)return {skip:'noteam'}; const A=U.ar||(U.ar={}); now=now??Date.now();
   if(U.deck&&U.deck.src&&U.deck.src!=='now'&&!(force&&opt&&opt.src==='now'))return {skip:'album'};
   if(!G||G.unemp||G.user==null||!team(G.user))return {skip:'noteam'};
+  { const ed=editedBlock(); if(ed)return {skip:'edited',msg:ed}; } /* 편집된 저장은 자동 등록하지 않는다(22d_edited). 덱도 만들지 않는다 */
   if(!force&&G&&!G.unemp&&G.user!=null&&team(G.user)){ const alb0=ulAutoAlb(), d0=C.ulAutoDue(A,now,null,alb0); if(!d0.due)return {...d0,upload:false,alb:alb0}; } /* 차례가 아니면 덱(1군 26명 사본)을 만들지 않는다: 1분마다 확인할 때 무거웠다(성능 11-18). 차례 판정(날·시즌 앨범·재전송)은 덱 해시와 무관 */
   const info={}; let x=null, why=''; try{ x=ulAutoEntry(info); why=x?ulDeckReady(x):info.msg||'현재 1군 덱을 만들 수 없습니다. 1군 등록 인원과 선수 구성을 확인해 주세요.'; }catch(e){ why='현재 1군 덱을 만들 수 없습니다. 1군 등록 인원과 선수 구성을 확인해 주세요.'; }
   if(why){ A.rosterErr=why; A.rosterAt=now; return {skip:'roster',msg:why}; }

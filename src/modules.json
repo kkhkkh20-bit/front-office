@@ -36,6 +36,7 @@
       "src/engine/market/21_block_agents.js",
       "src/engine/media/22_club_history.js",
       "src/engine/players/22c_cosmetic.js",
+      "src/engine/players/22d_edited.js",
       "src/engine/media/23_notes_odds.js",
       "src/engine/staff/24_coaches.js",
       "src/engine/media/25_gm_events.js",

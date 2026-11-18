@@ -268,7 +268,8 @@ dbTest('연봉 상한(사용자 11-17 "공평하게"): 덱 연봉 합이 고정 
   let j = await J('PUT', '/api/v1/ladder/deck', { e: pricey(), tier: 0 }, a.A);
   assert.equal(j._s, 400); assert.equal(j.error, 'over_cap'); assert.ok(/루키 상한/.test(j.errors[0]) && j.cap.cap === 14397 && j.cap.pay === 16800, JSON.stringify(j));
   const nosal = deck(); delete nosal.P[3].sal; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: nosal, tier: 0 }, a.A)).error, 'no_pay', '선수 연봉이 빠짐');
-  const fake = deck({ pay: 100 }); fake.P[0].sal = 9000; /* 9000 + 23 × 300 = 159억 */ assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 2 }, a.A)).error, 'over_cap', '합(pay)을 줄여 적어도 서버는 선수마다 연봉으로 다시 센다');
+  const fake = deck(); fake.P[0].sal = 9000; /* 9000 + 23 × 300 = 159억 */ assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 2 }, a.A)).error, 'over_cap', '서버는 선수마다 연봉으로 다시 센다');
+  { const w = console.warn; console.warn = () => {}; try { fake.pay = 100; assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: fake, tier: 2 }, a.A)).error, 'bad_pay', '합(pay)을 줄여 적은 덱은 이상치로 거절(구단주 11-18 §8)'); } finally { console.warn = w; } }
   assert.equal(env.DB._sqlite.prepare('SELECT COUNT(*) AS n FROM decks').get().n, 0, '거절한 덱은 쓰지 않는다');
   j = await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '꽉참' }), tier: 1 }, a.A); assert.equal(j._s, 200, '72억은 상한 안'); assert.equal(j.tier, 1);
   assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: pricey({ name: '넘침' }), tier: 2 }, b.A)).error, 'over_cap', '168억은 상한을 넘음');
