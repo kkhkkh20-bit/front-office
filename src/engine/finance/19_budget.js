@@ -30,6 +30,12 @@ function financeCashReturns(tid,y,cash,net,o={}){ const t=team(tid),capital=o.ca
   const back=operating>0?Math.min(Math.round(operating*rate),Math.max(0,Math.round(available))):0,after=available-back,EI=ecoIdx(y);
   const div=t.indie?Math.round(Math.max(0,after-Math.round(INDIE_DIV_T*EI))*INDIE_DIV_R):0,sweep=t.indie?0:Math.round(Math.max(0,after-financeReserveLimit(tid,y,o.ear||0).total)*RES_RATE);
   return {rate,back,div,sweep,endCash:after-div-sweep+capital}; }
+/* 적자 자체 충당(결산·예산 전망 공통): 보유 현금 30억 초과분의 절반까지. 아직 쓰지 않은 우승 포상 FA 특별 자금(ear)은 보유 현금에서 뺀다(11-20) */
+function finSelfCover(gap,cash,ear=0){ return gap>0?Math.min(gap,Math.max(0,cash-(ear||0)-3000)*.5):0; }
+/* 다음 시즌 모기업 지원 한도 축소(결산): 현금(특별 자금 제외)이 50억(경제 지수)을 넘는 부분의 35~60%. 그해 구단 현금으로 적자를 메웠으면 그만큼 덜 줄인다(구단주 11-20 ①) */
+function finSupCutCalc(t,y,cash,ear=0,self=0){ const EI=ecoIdx(y),th=Math.round(5000*EI),basis=cash-(ear||0); if(t.indie||basis<=th)return {amt:0,raw:0,self:0,th,ear:ear||0,basis};
+  const r=t.owner==='profit'?.6:t.owner==='pr'?.45:.35, raw=Math.min(Math.round((basis-th)*r),Math.round(16000*EI*.8)), off=Math.min(raw,Math.round(self||0));
+  return {amt:raw-off,raw,self:off,th,ear:ear||0,basis}; }
 function goalSupportBase(t,g,fy){ if(g.baseSup==null){const lock=G.bLocks&&G.bLocks[t.id]&&G.bLocks[t.id].fy===fy?G.bLocks[t.id]:G.bLock&&G.bLock.tid===t.id&&G.bLock.fy===fy?G.bLock:null,cap=supportCap(t),grant=t.grant&&t.grant.y===fy?t.grant.amt:0;g.baseSup=lock?lock.gf:cap>grant?clamp((g.sup*cap-grant)/(cap-grant),0,1.5):g.sup;}return g.baseSup; }
 /* 목표 생성·저장 복원에서 기본 지원율을 확정한다. 예산 조회의 구형 저장 폴백도 같은 계산을 쓴다. */
 function goalSupportFix(){ if(!G)return; const fix=(tid,g)=>{ const t=(G.teams||[]).find(x=>x.id===tid); if(t&&g&&g.y===G.year&&g.baseSup==null&&Number.isFinite(g.sup))goalSupportBase(t,g,g.y); }; fix(G.user,G.goals); for(const [tid,c] of Object.entries(G.clubT||{}))if(c)fix(+tid,c.goals); }
@@ -54,7 +60,7 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
   if(HO){ const add=(A,o)=>{ for(const [l,v] of Object.entries(o)){ const r=A.find(x=>x[0]===l); if(r)r[1]+=v; else A.push([l,v,'ops']); } }; add(inc,HO.inc); add(exp,HO.exp); }
   const E=sum(exp.map(x=>x[1])), I=sum(inc.map(x=>x[1])),capital=financeCapitalYear(G.user,EY); const gap=E-I+capital; const cap=supportCap(t);
   const g=G.goals&&G.goals.y===G.year&&!settled?G.goals:null; const plan=!g&&!settled&&G.supPlan&&G.supPlan.y===G.year?G.supPlan.gf:null; const gf=g?goalSupportBase(t,g,EY):plan!=null?plan:settled?(G.goals&&(G.goals.baseSup??G.goals.sup)!=null?(G.goals.baseSup??G.goals.sup):.6):clamp((cap?Math.max(0,gap)/cap:0)*(t.owner==='profit'?.85:t.owner==='pr'?1:1.15)+.05,.2,1); const fy=sponSeason(); const grantNow=t.grant&&t.grant.y===fy?t.grant.amt:0; const goalSup=t.indie?0:Math.round(gf*(cap-grantNow))+grantNow; /* 추가 승인분을 기본 목표율에 다시 섞지 않는다(검수 11-18 #487). */
-  const selfC=gap>0?Math.min(gap,Math.max(0,cash-3000)*.5):0, need=gap-selfC; /* 결산처럼 보유 현금 30억 초과분의 절반으로 적자를 먼저 메운다 */
+  const ear=champFundEarmark(G.user), selfC=finSelfCover(gap,cash,ear), need=gap-selfC; /* 결산처럼 보유 현금 30억 초과분의 절반으로 적자를 먼저 메운다 */
   const support=t.indie?0:clamp(need,0,cap);
   /* 시즌 예산 확정: 구단주 지원(신뢰에 따른 한도·목표)과 예상 수입(입장·중계·광고·스폰서)은 시즌을 시작할 때(목표 확정·1월 1일 계획·결산 직후) 그해 몫으로 정한다.
      시즌 중에 신뢰가 오르거나 수입이 늘어도 단장이 쓸 수 있는 돈(예산 여유)은 늘지 않는다. 늘어난 수입은 구단(모기업) 몫이고, 구단주에게 추가 지원을 요청할 근거가 된다.
@@ -62,9 +68,9 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
   const LK=G.bLocks=G.bLocks||{}; if(G.bLock){ if(!LK[G.bLock.tid])LK[G.bLock.tid]=G.bLock; delete G.bLock; } /* 확정 기준은 구단별로 보관한다: 다른 구단을 거쳐 돌아와도 그 시즌 기준이 바뀌지 않게(검수 11-06) */ let lock=LK[G.user]&&LK[G.user].fy===fy?LK[G.user]:null; if(!lock&&!G.unemp)lock=LK[G.user]={fy,tid:G.user,I,capB:cap-grantNow,gf,d:G.day,eco:ecoIdx(fy)}; if(lock&&lock.eco&&lock.eco!==ecoIdx(fy)){ lock.capB=Math.round(lock.capB*ecoIdx(fy)/lock.eco); lock.eco=ecoIdx(fy); } /* 12월 이사회가 상한을 정하면 확정 한도도 그 경제 지수로 맞춘다(검수 11-09y) */
   /* 독립구단은 모기업이 없어 늘어난 수입이 곧 쓸 수 있는 돈이다: 스폰서 계약·관중 증가가 예산 여유에 바로 들어간다(플레이 테스트 11-13: 연 77억 스폰서 뒤에도 두 달 그대로) */
   const IL=t.indie?I:(lock?lock.I:I), capL=lock?lock.capB+grantNow:cap, goalL=t.indie?0:(lock?Math.round(lock.gf*lock.capB)+grantNow:goalSup);
-  const gapL=E-IL, selfCL=gapL>0?Math.min(gapL,Math.max(0,cash-3000)*.5):0, needL=gapL-selfCL;
-  const ear=champFundEarmark(G.user),returns=financeCashReturns(G.user,EY,cash,I+support-E,{capital,ear,owner:financeSeasonOwner(G.user,EY).owner});
-  return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,grant:t.indie?0:grantNow,cash:t.cash,endCash:returns.endCash,divEst:returns.div,sweepEst:returns.sweep,backEst:returns.back,capital, /* 결산과 같은 흑자 조정·유보금·배당을 거친 기말 현금이다. */
+  const gapL=E-IL, selfCL=finSelfCover(gapL,cash,ear), needL=gapL-selfCL;
+  const returns=financeCashReturns(G.user,EY,cash,I+support-E,{capital,ear,owner:financeSeasonOwner(G.user,EY).owner});
+  return {exp,inc,E,I,gap,cap,support,selfC,goalSup:goalL,goalFrac:lock?lock.gf:gf,grant:t.indie?0:grantNow,cash:t.cash,endCash:returns.endCash,ear,divEst:returns.div,sweepEst:returns.sweep,backEst:returns.back,capital, /* 결산과 같은 흑자 조정·유보금·배당을 거친 기말 현금이다. */
     lockI:IL, selfCL, extra:Math.round(I-IL), lockD:lock?lock.d:null, capLock:capL, goalLive:goalSup,
     roomGoal:goalL-needL, roomCap:capL-needL, roomMax:capL-gapL+Math.max(0,cash), rem, indie:!!t.indie, trust:t.trust,
     fR,fRoom:Math.max(0,fR-fs),fUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='용병').map(p=>fRe(p)?p.newSal+(p.fInc||0):fCommit(p))), fCap:fCap(G.user), aUsed:sum(fStayOf(G.user).filter(p=>p.foreign==='아시아').map(p=>fRe(p)?p.newSal:p.sal)), ci}; }
