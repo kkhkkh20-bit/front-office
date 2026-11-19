@@ -3,6 +3,8 @@
 .am-plist{display:flex;flex-direction:column;gap:6px}
 .am-pfilt{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
 .am-pfilt .chips{margin:0}
+.am-auto{display:inline-flex;align-items:center;gap:5px;color:var(--muted);cursor:pointer;white-space:nowrap}.am-auto input{margin:0}
+.am-pager{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 0}.am-pager .am-pgs{margin:0}.am-pager .am-pgs button{padding:3px 8px;min-height:0}
 .am-pscroll{max-height:70vh;overflow:auto;margin:0}
 .am-pscroll thead th{position:sticky;top:0;background:var(--panel);z-index:2}
 .am-ptable td,.am-ptable th{font-size:12px;padding:6px 8px;vertical-align:top}

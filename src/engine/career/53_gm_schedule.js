@@ -92,8 +92,19 @@ function gmSchRange(d,mode){ const o=dobj(d); let a, b;
   if(mode==='schm'){ a=dnum(o.y,o.m,1); b=dnum(o.m===12?o.y+1:o.y,o.m===12?1:o.m+1,1)-1; }
   else { const y=dobj(G.day).y; a=dnum(y,3,1); b=dnum(y,10,31); }
   a=Math.max(a,G.day+1); while(a<=b&&!gmSchSeason(b))b--; while(a<=b&&!gmSchSeason(a))a++; return a<=b?[a,b]:null; }
+/* 매주 자동 잡기(카페 11-19 '단장 일정' 묶음): G.gmAuto={sch:권역, scout:권역, fut:'all'|'home'}. 없으면(옛 저장) 아무것도 하지 않는다.
+   날이 넘어갈 때마다 앞으로 7일을 손으로 '한꺼번에' 누를 때와 같은 함수(gmPlanBulkSch·gmPlanBulk·gmPlanBulkFut)로 채운다. 이미 잡힌 날은 그대로,
+   주 1회·같은 학교 효과 감소·대회 날만 출장 같은 규칙은 gmPlanSet이 그대로 지킨다. 난수는 쓰지 않는다.
+   우리 구단(G.user)의 G.gmPlan만 다룬다. AI 구단은 gmAiFieldDaily로 따로 돌며 이 일정 체계를 쓰지 않는다 */
+function gmAuto(){ return G.gmAuto||null; }
+function gmAutoSet(k,v){ const A=G.gmAuto=G.gmAuto||{}; if(A[k]===v)delete A[k]; else A[k]=v; const on=A[k]||null; if(!Object.keys(A).length)delete G.gmAuto; return on; }
+function gmAutoFill(h){ const A=gmAuto(); if(!A||G.unemp)return 0; const P=gmPlans(), d=G.day+(h||7), n0=Object.keys(P).length;
+  if(A.sch&&REG.includes(A.sch))gmPlanBulkSch(d,A.sch);
+  if(A.scout&&REG.includes(A.scout))gmPlanBulk(d,A.scout,'upto');
+  if(A.fut==='all'||A.fut==='home')gmPlanBulkFut(d,A.fut);
+  return Object.keys(P).length-n0; }
 /* 전날: 직관 알림(진행을 멈춘다). 당일: 출장·방문 결과 */
-function gmPlanDaily(){ if(G.unemp)return; try{ const o=dobj(G.day); if(o.m===3&&o.d>=1&&G.gmPlanTip!==o.y&&!G.gmPlanTipSeen){ G.gmPlanTip=o.y; G.gmPlanTipSeen=1; mail('스카우트팀장','달력에서 단장 일정을 잡을 수 있습니다','일정 화면의 달력에서 앞으로의 날짜를 누르면 고교 대회 출장, 고교 방문, 경기 직관, 2군 경기 관전을 잡을 수 있습니다. 출장은 그 지역 후보를 넓게, 고교 방문은 한 학교 후보를 깊게 봅니다. 2군 경기를 보면 선수들 흐름을 직접 확인합니다. 출장과 2군 관전은 기간을 정해 한꺼번에 잡을 수도 있습니다.',{kind:'운영',acts:[{l:'일정 열기',a:'go',v:'league:score'}]}); } }catch(e){} /* 카페 11-14: 60시즌을 해도 몰랐다는 기능을 한 번 알린다 */ const P=gmPlans(); const tm=P[G.day+1];
+function gmPlanDaily(){ if(G.unemp)return; try{ gmAutoFill(); }catch(e){} try{ const o=dobj(G.day); if(o.m===3&&o.d>=1&&G.gmPlanTip!==o.y&&!G.gmPlanTipSeen){ G.gmPlanTip=o.y; G.gmPlanTipSeen=1; mail('스카우트팀장','달력에서 단장 일정을 잡을 수 있습니다','일정 화면의 달력에서 앞으로의 날짜를 누르면 고교 대회 출장, 고교 방문, 경기 직관, 2군 경기 관전을 잡을 수 있습니다. 출장은 그 지역 후보를 넓게, 고교 방문은 한 학교 후보를 깊게 봅니다. 2군 경기를 보면 선수들 흐름을 직접 확인합니다. 출장과 2군 관전은 기간을 정해 한꺼번에 잡을 수도 있습니다.',{kind:'운영',acts:[{l:'일정 열기',a:'go',v:'league:score'}]}); } }catch(e){} /* 카페 11-14: 60시즌을 해도 몰랐다는 기능을 한 번 알린다 */ const P=gmPlans(); const tm=P[G.day+1];
   if(tm&&!tm.done&&tm.k==='attend'&&!tm.warned)gmAttendWarn(tm);
   /* 우천 순연 등으로 열리지 않은 직관 일정은 취소한다(구단주 동행 한도를 계속 차지하지 않게). 오늘 할 일이 없어도 먼저 정리한다 */
   for(const d in P){ const q=P[d]; if(+d<G.day&&!q.done&&q.k==='attend'){ q.done=true; q.miss=true; if(q.mid){G.mail=G.mail.filter(m=>m.id!==q.mid);G.stops=(G.stops||[]).filter(m=>m.id!==q.mid);} note('일정',`${dmd(+d)} 직관하려던 경기가 열리지 않아 일정을 취소했습니다.`); } }

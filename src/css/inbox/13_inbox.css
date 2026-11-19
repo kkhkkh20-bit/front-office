@@ -237,3 +237,12 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ib-subtabs button.hot i{background:var(--warn);color:#1a1405}
 /* 생일 줄(구단주 11-19): 한 줄로, 좁은 화면에서는 말줄임 */
 .ibx-bd{min-width:0;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}.ibx-bd .muted{margin-left:2px}
+
+/* 보낸이·읽지 않음 필터 칩(카페 11-19): 분류 탭 아래 한 줄, 넘치면 가로 스크롤 */
+.ibx-from{margin:-6px 0 10px;padding-bottom:4px;align-items:center}
+.ibx-from button{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 9px;min-height:28px}
+.ibx-from button i{font-style:normal;font-size:12px;color:var(--muted);background:var(--panel);border-radius:8px;padding:0 5px;line-height:15px}
+.ibx-from button.on i{color:#fff;background:rgba(255,255,255,.25)}
+.ibx-fsep{flex:none;width:1px;height:16px;background:var(--line);margin:0 4px}
+.ibx-unread-only.on{background:var(--warn,#d9822b);border-color:var(--warn,#d9822b)}
+@media (max-width:1099px){ .ibx-from{margin:0 0 8px} }

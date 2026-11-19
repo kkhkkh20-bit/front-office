@@ -443,6 +443,11 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .gpl-md{font:600 12px var(--f-num,inherit);white-space:nowrap}
 .gpl-mt{display:flex;align-items:center;gap:6px;min-width:0}.gpl-mt i{width:9px;height:9px;border-radius:2px;flex:none}.gpl-mt b{font-weight:500;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gpl-leg{margin-top:8px}
+/* 줄마다 취소·취소 범위·매주 자동 잡기(카페 11-19) */
+.gpl-mw{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--line);min-width:0}.gpl-mw>.gpl-mr{flex:1 1 0;border-bottom:0;min-width:0}.gpl-mw.past>.gpl-mr{opacity:.6}
+.gpl-mw>.gpl-x{flex:none;padding:4px 8px}.gpl-sc{gap:6px;flex-wrap:wrap;margin:4px 0 6px}
+.gpl-auto .gpl-bk{flex-wrap:wrap}.gpl-auto>.small>.pill{margin-left:4px;font-size:11px;padding:1px 6px}.gpl-sch.watch{border-color:var(--acc,#ffb547)}
+@media(max-width:480px){.gpl-mr{grid-template-columns:76px minmax(0,1fr) auto;gap:6px}}
 /* PC 한 주 띠의 단장 일정 */
 .sch-pbw{display:flex;flex-direction:column;gap:2px;margin:0 -8px}
 .sch-pb{height:16px;line-height:16px;font-size:var(--ui-caption);font-weight:700;color:#fff;text-shadow:0 0 2px rgba(0,0,0,.7);background:var(--pc);padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:-1px}

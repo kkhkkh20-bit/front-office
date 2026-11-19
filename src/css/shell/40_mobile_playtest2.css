@@ -34,3 +34,42 @@
   #app main.content:not(.ws-frame):not(.inbox-workspace):not(:has(.home-workspace)){padding-bottom:calc(var(--bnav-h,58px) + env(safe-area-inset-bottom,0px) + 8px)}
   #sheet .sheet .sh-foot,#sheet .sheet .pn-foot{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
 }
+
+/* ---------- 카페 11-19 신인 드래프트 화면 ---------- */
+/* 표 머리글: 고정 열(선수·행동)도 다른 머리글과 같은 회색 배경(가로 스크롤 때도) */
+.candidate-table thead th:first-child,.tw .candidate-table thead th:first-child,.tw .sqt.candidate-table thead th:first-child,.draft-candidates .candidate-table thead th:last-child,.fx-scr .sqt.candidate-table thead th{background:var(--head)}
+/* '남은 지명 건너뛰기'는 자동 지명 묶음 밖 보조 버튼(작게, 위험 색) */
+.drest-pass-row{margin-top:2px}.drest-pass-row .btn.text.danger{display:inline;padding:0 4px;min-height:0;font-size:12px;text-decoration:underline;text-underline-offset:2px;border:0;background:none}
+.drest-pass-row .btn.text.danger.primary{text-decoration:none;border:1px solid var(--bad);border-radius:4px;padding:1px 6px}
+/* 드래프트 집중 모드: 하위 탭 대신 '← 영입·계약' 한 줄, 왼쪽 메뉴는 접고 후보 표를 넓게 */
+nav.subtabs.dfocus-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;overflow:visible;margin:2px 0 8px;padding:0 0 6px;min-width:0;border-bottom:1px solid var(--line)}.dfocus-bar .dfocus-t{font-size:15px;white-space:nowrap}.dfocus-bar.off{margin:0 0 6px}
+.shell.dfocus{grid-template-columns:minmax(0,1fr)}.shell.dfocus>.rail{display:none}
+@media(min-width:1100px){
+  .fmsh.dfocus>.fmbody{grid-template-columns:52px minmax(0,1fr)}
+  .fmsh.dfocus .fm2{padding-left:64px}
+  #app .fmsh.dfocus .fmside button{justify-content:center;padding-inline:0;gap:0}
+  .fmsh.dfocus .fmside button span{display:none}
+  .fmsh.dfocus .fmside button .ico{width:18px;height:18px;flex-basis:18px;opacity:.9}
+  .fmsh.dfocus .fmside button .cnt{position:absolute;top:0;right:4px}
+  .fmsh.dfocus .fmside button .sdot{position:absolute;top:4px;right:8px}
+}
+/* 휴대폰(.tw.twp)에서는 머리글이 --card 배경이라 고정 열도 그 색으로 맞춘다 */
+.tw.twp .sqt.candidate-table thead th:first-child,.tw.twp .sqt.candidate-table thead th:last-child,.draft-candidates .tw.twp .candidate-table thead th:last-child{background:var(--card,#181b20)}
+
+/* 카페 11-19(2차): 후보 표 행 높이 축소 — 아마 기록은 올해 핵심 한 줄 + 학년 흐름 작은 한 줄, 잠재력 별 옆에 위험 한 줄 */
+.draft-candidates .candidate-table td{padding-block:4px}
+.draft-candidates .candidate-table .candidate-note{white-space:nowrap;max-width:300px;min-width:0;line-height:1.3;overflow:hidden;text-overflow:ellipsis}
+.draft-candidates .candidate-table .candidate-note .cn-l1{display:block;overflow:hidden;text-overflow:ellipsis}
+.draft-candidates .candidate-table small.block{line-height:1.3;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draft-candidates .candidate-table .cn-pot{white-space:nowrap}.draft-candidates .candidate-table .cn-risk{display:block;font-size:var(--ui-micro);line-height:1.3} /* 별 아래 한 줄(이름 칸과 같은 2줄 높이) */
+.draft-candidates .candidate-table .candidate-name small{line-height:1.3}
+.draft-candidates .candidate-table .candidate-name .av{width:28px;height:28px}
+.draft-candidates .candidate-table .am-tr{white-space:nowrap}
+@media(min-width:1100px){.drf-c>.candidate-list .candidate-table td{padding-block:3px}.drf-c .candidate-table th,.drf-c .candidate-table td{padding-inline:5px}.drf-c .candidate-table .candidate-note,.drf-c .candidate-table small.block{max-width:200px}
+  @media(min-width:1560px){.drf-c .candidate-table .candidate-note,.drf-c .candidate-table small.block{max-width:260px}}
+  /* 오른쪽: 진행 중에는 머리 칸(다른 구단 지명 진행)을 절반 아래로 묶고 우리 지명 칸을 넉넉하게 */
+  .drf .tf-r.drf-live>.drf-hd{max-height:calc((100dvh / var(--z,1) - 120px) * .46)}.drf .tf-r.drf-live>.drf-my{min-height:220px}} /* 백분율 max-height는 격자 줄 높이를 먼저 재는 동안 무시돼 빈칸이 생긴다 → 화면 높이 기준 절대값 */
+.dl-my{display:inline-flex;align-items:center;gap:5px;margin-left:6px;vertical-align:middle}.dl-my .rc{font-size:12px}
+.st-extra{display:flex;align-items:center;gap:6px}.dl-picked{margin:6px 0 2px}
+/* 휴대폰: 손가락 목표 36px(30_mobile_workspace)는 그대로 두고 칸 여백만 줄인다 */
+@media(max-width:699px){#app .shell .draft-candidates .candidate-table td{padding-block:2px}#app .shell .draft-candidates .candidate-table .tc-i{padding:3px 8px}.draft-candidates .candidate-table .candidate-name .av{width:26px;height:26px}}
