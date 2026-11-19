@@ -75,12 +75,8 @@ function faAsk(p){
      예전에는 능력표(tab)의 0.45~2배로 묶어 선수가 스스로 매긴 값이 남았다. 이제 국내 선수는 시장가 그대로이고, 최저 연봉과 리그 상한의 25%(salCeil)만 넘지 않는다. 표는 외국인(시장 엔진 밖)에만 쓴다 */
   let ann=tab; if(!p.foreign&&typeof mktPrice==='function'){ try{ ann=mktPrice(p); }catch(e){ ann=tab; } }
   ann*=domPrem(p.team??p.faFrom); /* 우승 프리미엄: 독주 구단 선수는 시장에서 더 부른다 */
-  /* 공급 과잉으로 청산값이 유보가 아래면(08_market_engine mktFa) 유보가 근처 1년 계약을 요구한다: 헐값 다년계약 대신 한 해 뛰고 다시 평가받는다 */
-  let prove=false; if(!p.foreign&&p.team==null&&p.faFrom!=null&&typeof mktFa==='function'){ try{ prove=mktFa(p).prove; }catch(e){} }
-  return prove?{annual:round5(clamp(ann,MIN_SAL,salCeil())),years:1,prove:true}:{annual:round5(clamp(ann,MIN_SAL,salCeil())),years};
+  return {annual:round5(clamp(ann,MIN_SAL,salCeil())),years};
 }
-/* 1년 재평가(prove) 상태의 계약 관문: 요구액의 90% 아래는 계약하지 않고, 115% 아래는 1년만 계약한다(우리·AI 같은 규칙) */
-function faProveGate(p){ return p&&p.ask&&p.ask.prove?{min:round5(p.ask.annual*.9),multi:round5(p.ask.annual*1.15)}:null; }
 /* 한 선수 연평균 상한: 리그 연봉 상한의 25%(실제 KBO 최고 연봉은 상한의 20~25%). 시장가·다년계약 요구·연봉 협상 요구가 모두 넘지 않는 안전선(우리·AI 같은 값) */
 const SAL_CEIL_R=.25; function salCeil(s){ return round5(capOf(s??sponSeason())*SAL_CEIL_R); }
 /* FA 시장 분위기(겨울마다 다름): 지난해 분위기를 절반쯤 이어받고, 리그 구단들의 상한 여유가 클수록 과열된다. FA 요구액·구단 평가액에 함께 곱한다 */
