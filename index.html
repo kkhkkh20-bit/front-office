@@ -20671,7 +20671,7 @@ function climateOf(tid){ if(!G._cl||G._cl.d!==G.day)G._cl={d:G.day,v:{}}; const 
   const key=[tc,c&&c.id,c&&c.team,L.str,L.cha,mid,md,adj].join(':');
   const S=clamp(Math.round(L.str*5*.6+md*.4+adj),0,100); const w=clamp(L.cha/14,.35,1.3);
   const boost=(S>=45&&S<=65?.4:0)*w-(S<40?1.2*(40-S)/40:0)*w-(S>70?.8*(S-70)/30:0)*w;
-  const o={S,w,boost,cap:c,band:S<40?'loose':S>70?'rigid':S>=45&&S<=65?'good':'ok',key}; Object.defineProperty(o,'k',{value:[tc,c&&c.team,L.str,L.cha,mid,md,adj]}); /* 비교용 값은 저장하지 않는다 */ return C[tid]=o; }
+  const o={S,w,boost,band:S<40?'loose':S>70?'rigid':S>=45&&S<=65?'good':'ok',key}; Object.defineProperty(o,'k',{value:[tc,c&&c.team,L.str,L.cha,mid,md,adj]}); /* 비교용 값은 저장하지 않는다 */ Object.defineProperty(o,'cap',{value:c}); /* 주장은 선수 객체 참조: 저장(G._cl)에 선수 사본이 들어가면 불러온 뒤 옛 능력치 사본이 남고(x.cap===c도 깨짐) 저장도 커진다. 저장하지 않고 다시 계산한다 */ return C[tid]=o; }
 /* 주간: 느슨하면 기행, 너무 세면 젊은 선수 불만. 모든 구단 같은 규칙(사용자 11-14 "AI도 공평하게").
    우리 구단 사고는 단장 결정으로 오고, 다른 구단은 AI 단장이 같은 세 가지 징계 가운데 고른다(aiLeadPick) */
 function leadAdjOf(tid){const owner=G.leadAdjTid??G.user,A=tid===owner&&G.leadAdj?G.leadAdj:(G.leadAdjT||{})[tid];return A&&A.until>G.day?A:null;}
