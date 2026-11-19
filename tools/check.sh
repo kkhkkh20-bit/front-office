@@ -110,6 +110,7 @@ step "화면 점검(휴대폰)"; W=390 QUICK=1 node tools/check-ui.js || fail=1
 step "노트북 배치·상세 이동"; node tools/check-layout.cjs || fail=1
 step "경기 대시보드·재생 기록"; node tools/check-match.cjs || fail=1
 step "중계 정보(카드·점수판·해설)"; node tools/check-cast-info.cjs || fail=1
+step "중계 수비 연출(타구 자리·처리 야수)"; node tools/check-cast-fielding.cjs || fail=1
 step "사이트 배포·파일 크기·3D 재시도"; node tools/check-site.cjs || fail=1
 step "인게임 동작·이름·수비·전광판"; node tools/check-gameplay.cjs || fail=1
 step "3D 경기장·동작·오프라인"; node tools/check-match3d.cjs || fail=1
