@@ -351,6 +351,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   gplAll(){ const can=gplMonthSpans().filter(s=>gplCanDays(s).length); UI.gplSel=gplPicked(can).length===can.length?[]:can.map(s=>s.a); render(); },
   gplCancel(){ const L=gplPicked(gplMonthSpans()); let n=0; for(const s of L)for(const d of gplCanDays(s)){ gmPlanSet(d,null,null); n++; } UI.gplSel=[]; UI.gplEdit=false; if(n)toast(`단장 일정 ${L.length}건(${n}일)을 취소했습니다.`); save(); render(); },
   gmPlanBulk(v){ const [d,x,m]=String(v).split(':'); toast(gmPlanBulk(+d,x,m)); save(); render(); },
+  gplCancel1(v){ const s=gplMonthSpans().find(x=>x.a===+v); if(!s)return; const D=gplCanDays(s); for(const d of D)gmPlanSet(d,null,null); if(D.length)toast(`${gplLong({...s,days:D})} 일정${D.length>1?`(${D.length}일)`:''}을 취소했습니다.`); save(); render(); }, /* 줄마다 취소(카페 11-19) */
+  gplScope(v){ UI.gplScope=v==='season'?'season':null; UI.gplSel=[]; render(); }, /* 취소 범위: 이번 달까지 / 시즌 끝까지 */
+  gmAuto(v){ const [k,x]=String(v).split(':'); const on=gmAutoSet(k,x); const l=k==='sch'?`${x} 고교 방문`:k==='scout'?`${x} 대회 출장`:`2군 ${x==='home'?'홈 ':''}경기 관전`; const n=on?gmAutoFill():0; toast(on?`${l}을 매주 자동으로 잡습니다.${n?` 앞으로 한 주에 ${n}일을 잡았습니다.`:''}`:`${l} 자동 잡기를 껐습니다. 이미 잡은 일정은 그대로 둡니다.`); save(); render(); }, /* 매주 자동 잡기(카페 11-19) */
   capex(v){ const [k,x]=String(v).split(':'); const r=capexAsk(k,x); toast(r||'공사를 시작했습니다.'); save(); render(); },
   offerAsk(v){ const [id,k]=String(v).split(':'); const o=(G.offers||[]).find(x=>String(x.id)===id); if(!o)return toast('끝난 제안입니다.'); offerAdvise(o,k); save(); render(); },
   offerCounter(v){ const o=(G.offers||[]).find(x=>String(x.id)===String(v)); if(!o)return toast('끝난 제안입니다.'); UI.trade={tid:o.from,give:[...o.get],get:[...o.give],cash:0,msg:'',seg:'bat',side:'give',sort:'cur'}; A.go('trade:table'); },

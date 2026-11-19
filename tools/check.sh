@@ -124,6 +124,7 @@ step "모바일 메뉴·트레이드·코치 보직 버튼"; node tools/check-mo
 step "카페 11-19: 홈 화면 추가·전체 화면, 플레잉코치 항목, 잠재력 고르기, 일정 일괄 취소"; node tools/check-ui-cafe-1119.cjs || fail=1
 step "카페 11-19 표시: 트라이아웃·엔트리 꼬리표·별, 90점대 색 구간, 능력 칸 정렬, 병역 현황, 이적 시즌 합계"; node tools/check-ui-display-1119.cjs || fail=1
 step "카페 11-19: 소식함 보낸이·읽지 않음 필터, 아마추어 전 학년 목록·쪽 나누기·자동 관심"; node tools/check-inbox-amateur-1119.cjs || fail=1
+step "카페 11-19: 단장 일정 줄마다 취소·시즌 끝까지·매주 자동 잡기·관심 선수 학교"; node tools/check-calendar-plans-1119.cjs || fail=1
 step "직원 카드·관계·희망 보직"; node tools/check-staff.cjs || fail=1
 step "결재 키 입력·상세 복귀 리뷰"; node tools/check-review.cjs || fail=1
 step "모든 상세 화면 상단바"; node tools/check-topbar.cjs || fail=1
