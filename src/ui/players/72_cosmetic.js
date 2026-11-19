@@ -9,8 +9,8 @@
 const COSM_PG=40, COSM_FACE_N=36;
 /* 그 선수가 고를 수 있는 템플릿 사진 묶음: {k:'6'|'17'|'21', tid, L:[번호]} 또는 null */
 function cosmFace(p){ if(!p||p.persona||p.id==null||!G||G.f6off||!G.players[p.id]||typeof FACE6==='undefined'||typeof face6Pool!=='function')return null;
-  if(p.team!=null){ if(!FACE6.sheet||!FACE6.sheet[String(p.team)])return null; const res=new Set(); for(const k in G.f6s||{}){ const [t,i]=k.split(':'); if(G.f6s[k]&&t===String(p.team))res.add(+i); } /* 선수 출신 지도자가 쓰는 얼굴은 뺀다 */
-    return {k:'6',tid:p.team,L:face6Pool(p).filter(i=>!res.has(i))}; }
+  if(p.team!=null){ if(!FACE6.sheet||typeof f6T!=='function'||f6T(p.team)==null)return null; const res=new Set(); for(const k in G.f6s||{}){ const [t,i]=k.split(':'); if(G.f6s[k]&&t===String(p.team))res.add(+i); } /* 선수 출신 지도자가 쓰는 얼굴은 뺀다 */
+    return {k:'6',tid:f6T(p.team),L:face6Pool(p).filter(i=>!res.has(i))}; }
   if(p.foreign){ if(typeof FACE17==='undefined'||!FACE17.ids)return null; const q=p.foreign==='아시아'?1:0; return {k:'17',L:FACE17.ids.map((x,i)=>i).filter(i=>FACE17.ids[i].q===q)}; }
   if(typeof FACE21!=='undefined'&&FACE21.ids&&FACE21.ids.length&&typeof amFaceOn==='function'&&amFaceOn(p))return {k:'21',L:FACE21.ids.map((x,i)=>i)};
   return null; }
