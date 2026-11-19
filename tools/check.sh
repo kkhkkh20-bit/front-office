@@ -94,6 +94,7 @@ step "인물 이전·다음·연속 면담"; node tools/check-people-navigation.
 step "사진·소식함·코치 표시·시즌 행사·영구결번"; node tools/check-community-ui.cjs || fail=1
 step "전체 구단 영구결번·이직·모바일 이동"; node tools/check-retired-navigation.cjs || fail=1
 step "현재·잠재력 별과 드래프트 별 배치"; node tools/check-player-stars.cjs || fail=1
+step "신인 드래프트 지명 간격·남을 확률 계산(카페 11-19)"; node tools/check-draft-pace-1119.cjs || fail=1
 step "선수단 정리 모드 실행·종료"; node tools/check-roster-cleanup.cjs || fail=1
 step "긴 대화·관전 보고·읽기 위치"; node tools/check-reading-navigation.cjs || fail=1
 step "트레이드 제안 카드 레이아웃"; node tools/check-trade-layout.cjs || fail=1
