@@ -47699,10 +47699,15 @@ const clFmt=c=>String(c||'').match(/.{1,4}/g).join('-');
 function clDevName(){ let u='',tp=0; try{ u=navigator.userAgent||''; tp=navigator.maxTouchPoints||0; }catch(e){}
   const os=/Android/.test(u)?'안드로이드':/iPhone|iPad|iPod/.test(u)||(/Macintosh/.test(u)&&tp>1)?'아이폰·아이패드':/Windows/.test(u)?'Windows':/Mac OS X/.test(u)?'Mac':/Linux/.test(u)?'Linux':'기기';
   const br=/SamsungBrowser/.test(u)?'삼성 인터넷':/Edg\//.test(u)?'Edge':/Firefox\//.test(u)?'Firefox':/Chrome\//.test(u)?'Chrome':/Safari\//.test(u)?'Safari':'브라우저'; return os+' · '+br; }
+/* 응답 본문 읽기(던지지 않는다): 비어 있거나 JSON이 아니면(404 빈 응답·중간 서버의 HTML 오류 쪽 등) data=null, bad=true.
+   r.json()이 빈 본문에서 던지던 예외를 조용히 삼키지 않고, 호출하는 쪽이 안내 문구(CL_BAD_BODY 또는 각자의 실패 문구)를 보이게 한다 */
+const CL_BAD_BODY='서버 응답을 읽지 못했습니다. 잠시 뒤 다시 시도해 주세요.';
+async function clBody(r){ let t=''; try{ t=await r.text(); }catch(e){ return {data:null,bad:true}; } if(!t||!t.trim())return {data:null,bad:true};
+  try{ const d=JSON.parse(t); return d&&typeof d==='object'?{data:d,bad:false}:{data:null,bad:true}; }catch(e){ return {data:null,bad:true}; } }
 /* 요청: 던지지 않는다 → {ok,status,data,res,offline} */
 async function clReq(method,path,o){ o=o||{}; const h=Object.assign({},o.headers||{}), t=clTok(); if(t&&o.auth!==false)h.Authorization='Bearer '+t; if(o.json!=null)h['Content-Type']='application/json';
   let r=null,data=null; try{ r=await fetch('/api/v1'+path,{method,headers:h,body:o.json!=null?JSON.stringify(o.json):o.body,cache:'no-store',credentials:'same-origin'}); }catch(e){ return {ok:false,status:0,offline:true}; }
-  if(o.raw&&r.ok)return {ok:true,status:r.status,res:r}; try{ data=await r.json(); }catch(e){} if(r.status===503&&data&&data.error==='not_configured')CL.st='off'; return {ok:r.ok,status:r.status,data,res:r}; }
+  if(o.raw&&r.ok)return {ok:true,status:r.status,res:r}; const b=await clBody(r); data=b.data; if(b.bad&&!r.ok&&!data)data={message:CL_BAD_BODY}; if(r.status===503&&data&&data.error==='not_configured')CL.st='off'; return {ok:r.ok,status:r.status,data,res:r}; }
 function clProbe(){ if(CL.st||CL.probing||!xfAvail())return; CL.probing=true;
   clReq('GET','/cloud',{auth:false}).then(r=>{ CL.st=r.ok&&r.data&&r.data.ok?'ok':'off'; },()=>{ CL.st='off'; }).then(()=>{ CL.probing=false; if(CL.st==='ok'&&clOn()&&clTok())clList(true); try{ render(); }catch(e){} }); }
 /* 익명 플레이어(래더와 같은 것). 없으면 조용히 만든다 */
@@ -47752,7 +47757,7 @@ function clLocal(wid){ const m=meta(); let n=G&&G.wid===wid&&!UI.title?curSlot()
   if(n==null)return null; const s=m.slots[n]; return {slot:n,lrev:revOf(m,n),lDay:s.day,lAt:s.at,lName:s.name||'',lock:!!s.lock}; }
 function clAskFor(wid,c){ const l=clLocal(wid); if(!l||!c)return null; return Object.assign({wid,c,newer:Number.isFinite(c.day)&&Number.isFinite(l.lDay)?c.day>l.lDay:false,older:Number.isFinite(c.day)&&Number.isFinite(l.lDay)?l.lDay<c.day:false},l); }
 async function clDownload(wid){ const r=await clReq('GET','/saves/'+encodeURIComponent(wid),{raw:true});
-  if(!r.ok){ if(r.status===401){ clAuthLost(); return null; } let d=r.data; if(!d&&r.res){ try{ d=await r.res.json(); }catch(e){} } clSay(r.offline?'서버에 연결하지 못했습니다.':(d&&d.message)||'클라우드 저장을 받지 못했습니다.',true); return null; }
+  if(!r.ok){ if(r.status===401){ clAuthLost(); return null; } let d=r.data; if(!d&&r.res)d=(await clBody(r.res)).data; clSay(r.offline?'서버에 연결하지 못했습니다.':(d&&d.message)||'클라우드 저장을 받지 못했습니다.',true); return null; }
   try{ const u=new Uint8Array(await r.res.arrayBuffer()); if(CL_MAGIC.some((x,i)=>u[i]!==x))throw 0; const txt=new TextDecoder().decode(fflate.inflateSync(u.subarray(4))); return {txt,rev:+r.res.headers.get('X-Save-Rev')||0}; }
   catch(e){ clSay('클라우드 저장을 읽지 못했습니다. 새 버전에서 저장한 기록이면 새로고침해 업데이트한 뒤 다시 받아 주세요.',true); return null; } }
 /* 받은 저장 넣기: how 'rep' = 같은 게임 슬롯을 바꾸기(고른 뒤에만), 'empty' = 빈 슬롯. importText가 검사(saveCheck)·판번호 확인·저장을 한다 */
