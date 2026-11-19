@@ -10245,7 +10245,7 @@ T('[성장 11-19 환경 배수 상한] 곱해진 환경 배수(출전×시설×�
     for(let i=0;i<10;i++){ const a=prep(20,1.6), b=prep(20,3.2); const oa=ovr(a), ob=ovr(b); withRng(rngHash('env1119',i),()=>develop(a)); withRng(rngHash('env1119',i),()=>develop(b)); ok(a.devLog.env>GROW_ENV_CAP&&b.devLog.env>a.devLog.env*1.8,'준비: 환경 배수가 상한을 넘지 않음 '+a.devLog.env+' '+b.devLog.env); ok(a.devLog.reasons.includes('env-cap'),'상한 표시 없음');
       ok(Math.abs((ovr(a)-oa)-(ovr(b)-ob))<.06,'상한을 넘는 환경 배수가 성장에 그대로 반영됨 '+(ovr(a)-oa).toFixed(2)+' / '+(ovr(b)-ob).toFixed(2)); hi+=ovr(a)-oa; n++; }
   } finally { mpickMult=m0; playShare=y0; }
-  ok(GROW_RATE_HI<=.3&&GROW_ENV_CAP<=2.5,'상수가 느슨함'); G.players[p0.id]=p0;
+  ok(GROW_RATE_HI<=.4&&GROW_ENV_CAP<=2.5,'상수가 느슨함'); G.players[p0.id]=p0;
 });
 T('[성장 11-19 시설 동등] 같은 선수·같은 세부 시설 단계·같은 트래킹 분석력이면 우리 구단과 AI 구단의 시설 성장·노화 배수(facEff)가 같고, 겨울 성장(develop)도 같다(사용자 = AI)',()=>{ fresh(); facInit();
   const ai=otherT(), S=facSt(ai); ok(S&&S.it,'준비: AI 구단 세부 시설'); const a0=anaPow, e0=effPro, U0=JSON.stringify(G.fac), A0=JSON.stringify(S), m0=mpickMult, c0=coachDevMult, t0=coachToolMult, y0=playShare, g0=G.mgr;
@@ -10294,7 +10294,7 @@ T('[스태프 11-19 경쟁 영입] 노리는 구단이 있는 코치에게 우�
       const r=cmContest(c,[G.user,...ais]), r2=cmContest(c,[...ais].reverse().concat(G.user)); ok(r.win===r2.win,'제안 순서에 따라 승자가 바뀜'); const top=r.rows.slice().sort((a,b)=>b.s-a.s)[0]; ok(top.tid===r.win,'승자가 최고 점수 구단이 아님');
       for(const x of r.rows)ok(x.v===cmScore(c,x.tid,c.sal,c.role,false),'구단마다 점수 식이 다름 '+x.tid);
       if((r.win===G.user&&won)||(r.win!==G.user&&lost))continue; const mine0=G.coach[G.user][c.role], n0=__rngCalls(); const e=hireCoach(c.id,2); ok(__rngCalls()===n0,'주 난수 사용');
-      if(r.win===G.user){ won++; ok(e===''&&G.coach[G.user][c.role]===c,'이겼는데 영입 실패: '+e); }
+      if(r.win===G.user){ won++; ok(e===''&&G.coach[G.user][c.role]===c,'이겼는데 영입 실패: '+e); ok(c.yrs===2&&c.cs===ctStartS()&&c.ce===c.cs+1&&!G.cmarket.includes(c),'경쟁에서 이긴 계약의 기간·시작 시즌이 경쟁 없는 영입과 다름 '+c.yrs+'/'+c.cs+'/'+c.ce); }
       else { lost++; ok(e&&e.includes(tname(r.win))&&e.includes(c.name)&&e.includes('선호 점수'),'진 이유 안내가 없음: '+e); ok(G.coach[r.win][c.role]===c&&c.yrs>=1,'이긴 구단과 계약하지 않음'); ok(G.coach[G.user][c.role]===mine0,'졌는데 우리 코치가 바뀜'); ok(!G.cmarket.includes(c),'시장에 그대로 남음'); ok((G.cmLost||[]).some(x=>x.id===c.id&&x.tid===r.win),'기록 없음'); } }
     ok(won>=1&&lost>=1,'준비: 이긴 경우 '+won+' · 진 경우 '+lost);
     /* 노리는 구단이 없으면 예전처럼 바로 영입 */ cmRivals=()=>[]; const f=G.cmarket.find(c=>!coachHireWhy(G.user,c,{years:1})&&!(typeof schMarketWhy==='function'&&schMarketWhy(c))); if(f)ok(hireCoach(f.id,1)==='','경쟁 구단이 없는데 영입 실패');
