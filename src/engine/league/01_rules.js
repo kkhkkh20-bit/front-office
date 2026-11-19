@@ -71,7 +71,7 @@ const TEAM_DEF=[
    대전(오렌지), 광주(빨강·남색·금색), 대구(파랑), 부산(네이비), 창원(마린 블루·금색). 배지 바탕색을 주색으로 맞춘다(사용자 2026-11-02) */
 const TPAL={SC:['#A50034','#111111','#2b000e','#ff3f78'],SH:['#131230','#ED1C24','#09091a','#4b5fd6'],IS:['#CE0E2D','#ffffff','#34040c','#ff4a5c'],SS:['#141414','#ED1C24','#000000','#ff3c3c'],GS:['#570514','#ffffff','#1f0207','#c23a52'],
   DR:['#F37321','#282828','#3f1606','#ff8a45'],GB:['#EA0029','#091330','#3b0507','#ff4048'],DT:['#074CA1','#A1A0A4','#002340','#2e92ec'],BW:['#041E42','#ffffff','#020c1a','#3d72d9'],CA:['#1D467B','#C6A269','#0f1b2f','#5d8ad6']};
-/* 신생 구단 홈 유니폼 키트(v23 납품 assets/v23/expansion_kits, 카페 11-19): 창단 순서(구단 번호)로 고정한다. 11구단(번호 10)=expansion_a 숲 녹색·골드, 12구단(번호 11)=expansion_b 퍼플·실버.
+/* 신생 구단 홈 유니폼 키트(v23 납품, 엠블럼은 v23b로 교체: assets/v23b/expansion_kits·crests. 키트 이름·색은 그대로라 저장을 바꾸지 않는다. 카페 11-19): 창단 순서(구단 번호)로 고정한다. 11구단(번호 10)=expansion_a 숲 녹색·골드, 12구단(번호 11)=expansion_b 퍼플·실버.
    구단 색(pal: 주색·보조색·어두운 바탕·밝은 강조)과 hue를 유니폼 사진·배지에 맞춘다(난수 없음). 사진 시트 = 00l_faces_v23_data.js(FACE23), 배지 = 00a2_badges_exp_data.js(BADGE_IMG 10·11) */
 const EXP_KIT=[{key:'expansion_a',hue:155,pal:['#0B5D3B','#C9A227','#04261a','#3fae78']},{key:'expansion_b',hue:265,pal:['#4B2A7B','#A7A9AC','#1d1033','#9a72d6']}];
 function expKit(t){ const id=t!=null&&typeof t==='object'?t.id:t; if(id==null||id===''||!Number.isInteger(+id))return null; const i=+id-TEAM_DEF.length; return i>=0&&i<EXP_KIT.length?EXP_KIT[i]:null; }
