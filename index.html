@@ -24261,11 +24261,11 @@ function fwatchWeek(){ G.fwatch=G.fwatch||[]; const out=[]; try{ fwAiWeek(); }ca
 
 /* 상대 구단이 눈여겨보는 우리 선수: 그 팀 약한 자리에 맞고 그 팀 눈에 값어치가 큰 선수 3명. 매주 바뀐다 */
 let _intC={};
-function aiInterest(tid,actorTid){ const actor=actorTid??G.user; if(tid===actor||!G.teams[tid])return []; const wk=G.year*100+Math.floor(G.day/7); const n=tradeActorCount(actor); const k=actor+':'+wk+':'+n+':'+(G.trades||[]).length+':'+(G.lgTrades||[]).length; const ck=tid+':'+actor;
-  if(_intC[ck]&&_intC[ck].g===G&&_intC[ck].k===k)return _intC[ck].v; const t=team(tid); let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){}
+function aiInterest(tid,actorTid){ const actor=actorTid??G.user; if(tid===actor||!G.teams[tid])return []; const wk=G.year*100+Math.floor(G.day/7); const n=tradeActorCount(actor); const k=actor+':'+wk+':'+n+':'+(G.trades||[]).length+':'+(G.lgTrades||[]).length; const ck=tid+':'+actor; const lt=(G.trades||[])[(G.trades||[]).length-1]||null, ll=(G.lgTrades||[])[(G.lgTrades||[]).length-1]||null; /* 거래 장부는 길이만 보면 같은 길이로 바뀐(앞을 덜어 내거나 새로 쓴) 장부를 놓친다: 마지막 기록까지 같아야 기억을 쓴다 */
+  if(_intC[ck]&&_intC[ck].g===G&&_intC[ck].k===k&&_intC[ck].lt===lt&&_intC[ck].ll===ll)return _intC[ck].v; const t=team(tid); let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){}
   const back=new Set([...(G.trades||[]).filter(r=>r.y===G.year).flatMap(r=>{ const me=r.me??G.user; return me===actor&&r.with===tid?r.gi||[]:r.with===actor&&me===tid?r.go||[]:[]; }),...(G.lgTrades||[]).filter(r=>r.y===G.year).flatMap(r=>r.a===actor&&r.b===tid?r.ag||[]:r.b===actor&&r.a===tid?r.bg||[]:[])]); /* 올해 이 구단에서 받아 온 선수는 되찾으려 하지 않는다 */
   const v=domestic(actor).filter(p=>!p.ys&&!p.noTrade&&!(p.joinY>G.year)&&healthy(p)&&!back.has(p.id)).map(p=>{ const val=tval(t,p,'in'); const fit=weak.includes(pSlot(p))?1.35:1; return {id:p.id,s:val*fit+hn('int'+tid+':'+wk,p.id)*.6}; }).filter(x=>x.s>.6).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.id);
-  _intC[ck]={k,v,g:G}; return v; }
+  _intC[ck]={k,v,g:G,lt,ll}; return v; }
 function interestKnown(tid){ return team(tid).rel>=35; }
 
 function interestWhy(tid,p){ const w=[]; let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){} if(weak.includes(pSlot(p)))w.push(`${SLOTK[pSlot(p)]} 보강`); const tr=gmTrait(tid);
