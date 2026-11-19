@@ -61,12 +61,12 @@ const pkSig=pk=>{ pk=pkNorm(pk); return pk.give.length||pk.get.length?'|p'+pk.y+
 function pkFutOut(tid){ const y=pkYear(); let n=0; for(const yy of pkYears())if(yy>y)for(let rd=1;rd<=DRAFT_ROUNDS;rd++)if(pkOwner(yy,rd,tid)!==tid)n++; return n; }
 function pkFutWhy(tid,out){ const y=pkYear(); const add=new Set((out||[]).map(pkCanon).filter(k=>{ const a=pkParse(k); return a.o===tid&&a.y>y&&pkOwner(a.y,a.rd,tid)===tid; })).size; if(!add)return ''; const n=pkFutOut(tid);
   return n+add>PK_FUT_OUT?`${tid===G.user?'우리 구단':tname(tid)}은(는) ${y+1} 드래프트 자기 지명권을 ${n?`이미 ${n}장 넘겨 `:''}더 내줄 수 없습니다(그다음 드래프트 자기 지명권은 구단당 ${PK_FUT_OUT}장까지).`:''; }
-function pkCheck(tid,give,get,pk){ pk=pkNorm(pk); if(!pk.give.length&&!pk.get.length)return '';
+function pkCheck(tid,give,get,pk,me){ me=me??G.user; pk=pkNorm(pk); /* me: 지명권을 주는 쪽(기본 우리 구단). AI끼리 거래도 같은 검사(AI 규칙 동등 11-19) */ if(!pk.give.length&&!pk.get.length)return '';
   if(G.draft&&!G.draft.done)return '신인 드래프트가 진행 중이라 지명권을 주고받을 수 없습니다.';
   if(pk.y!==pkYear())return `거래안의 지명권은 ${pk.y} 드래프트 때 고른 것입니다. 지금 주고받을 수 있는 것은 ${pkYears().join('·')} 드래프트 지명권입니다. 다시 골라 주세요.`;
-  const mine=pkHeldF(G.user), their=pkHeldF(tid); if(pk.give.some(k=>!mine.includes(pkCanon(k)))||pk.get.some(k=>!their.includes(pkCanon(k))))return '지명권 보유 구단이 바뀌었습니다. 다시 골라 주세요.';
+  const mine=pkHeldF(me), their=pkHeldF(tid); if(pk.give.some(k=>!mine.includes(pkCanon(k)))||pk.get.some(k=>!their.includes(pkCanon(k))))return '지명권 보유 구단이 바뀌었습니다. 다시 골라 주세요.';
   if((pk.give.length&&!get.length)||(pk.get.length&&!give.length))return '리그 규약상 지명권은 선수와 맞바꿀 때만 넘길 수 있습니다. 지명권을 주려면 선수를 받고, 지명권을 받으려면 선수를 보내야 합니다.';
-  return pkFutWhy(G.user,pk.give)||pkFutWhy(tid,pk.get); }
+  return pkFutWhy(me,pk.give)||pkFutWhy(tid,pk.get); }
 /* ===== 상위 지명권 기준선(소유자 11-18 "정말 류현진이면 거래하겠지") =====
    1라운드 지명권 값은 '적어도 주전, 잘되면 간판'의 기대값이다(주전 확률 × 주전 값 + 간판 확률 × 간판 값, 활약까지 남은 해만큼 할인: PK_V·PK_R1S·pkDisc).
    1~5순번(미래 지명권은 예상 순번 5순번 안)은 값 비교 전에 기준선을 넘어야 한다: 리그 A급 선수(리그 주전 가운데 현재 능력 상위 8%)를 연봉 부담이 크지 않게(연봉 ≤ 그 능력 한 해 값) 받고,

@@ -138,10 +138,14 @@ const TRADE_MAX_SAME=2;
 /* 거래로 한도(한 시즌 2번)나 30일 간격에 걸린 구단의 받은 제안은 수락할 수 없으니 닫는다(카페 11-09: 수락해도 계속 불발) */
 function offerDropCool(){ G.offers=(G.offers||[]).filter(x=>{ if(!tradeCool(x.from,x.give,x.cash||0,x.pk))return true; offerMailDone(x.id); return false; }); }
 function tradeRecentMsg(ids){ const L=ids.map(id=>G.players[id]).filter(p=>recentTr(p)); return L.length?`${L.map(p=>p.name).join(', ')}: 최근 트레이드 뒤 ${TRADE_COOL}일이 지나야 다시 거래할 수 있습니다.`:''; }
-function tradeCool(tid,get,cash=0,pk){ if(get?.length&&get.every(id=>tradeUrgent(tid,G.players[id]))&&cash>=0&&!pkNorm(pk).get.length)return null;
-  const h2h=seriesOpp()===tid; const cap=TRADE_MAX_SAME+(h2h?1:0);
-  const Y=(G.trades||[]).filter(x=>x.with===tid&&x.y===G.year&&(x.me==null||x.me===G.user)); if(Y.length>=cap){ const d=Math.max(...Y.map(x=>x.d??G.day)); return {d,until:dnum(G.year+1,1,1),cap:true,n:Y.length,max:cap}; }
-  if(h2h)return null; const L=(G.trades||[]).filter(x=>x.with===tid&&(x.me==null||x.me===G.user)&&x.d!=null&&G.day-x.d<TRADE_COOL&&G.day>=x.d); /* 30일 간격은 해를 넘겨도 잇는다(12월 말 거래, 검수 11-09w) */ if(!L.length)return null; const d=Math.max(...L.map(x=>x.d)); return {d,until:d+TRADE_COOL}; }
+/* me 구단과 tid 구단 사이의 지난 거래({y,d}): 우리 구단은 G.trades, AI 구단은 AI끼리 거래(G.lgTrades)와 그 구단이 우리 구단이던 때의 G.trades(AI 규칙 동등 11-19) */
+function tradesBetween(me,tid){ if(me===G.user)return (G.trades||[]).filter(x=>x.with===tid&&(x.me==null||x.me===G.user));
+  return (G.lgTrades||[]).filter(t=>(t.a===me&&t.b===tid)||(t.a===tid&&t.b===me)).concat((G.trades||[]).filter(x=>x.me!=null&&((x.me===me&&x.with===tid)||(x.me===tid&&x.with===me)))); }
+/* me: 거래 간격을 따지는 구단(기본 우리 구단). AI끼리 거래(16b_trade_rules TRADE_RULES.ai)도 같은 함수·같은 한도 */
+function tradeCool(tid,get,cash=0,pk,me){ me=me??G.user; if(get?.length&&get.every(id=>tradeUrgent(tid,G.players[id]))&&cash>=0&&!pkNorm(pk).get.length)return null;
+  const h2h=(me===G.user?seriesOpp():seriesOppOf(me))===tid; const cap=TRADE_MAX_SAME+(h2h?1:0); const T=tradesBetween(me,tid);
+  const Y=T.filter(x=>x.y===G.year); if(Y.length>=cap){ const d=Math.max(...Y.map(x=>x.d??G.day)); return {d,until:dnum(G.year+1,1,1),cap:true,n:Y.length,max:cap}; }
+  if(h2h)return null; const L=T.filter(x=>x.d!=null&&G.day-x.d<TRADE_COOL&&G.day>=x.d); /* 30일 간격은 해를 넘겨도 잇는다(12월 말 거래, 검수 11-09w) */ if(!L.length)return null; const d=Math.max(...L.map(x=>x.d)); return {d,until:d+TRADE_COOL}; }
 /* 예산을 넘겨 연봉을 떠안는 트레이드는 구단주 승인이 필요하다. 연봉은 한 해 치로 이번 결산에 잡힌다(budget의 국내 선수 연봉).
    허용 폭: 성적 우선 구단주 15억·인기 10억·수익 5억, 신뢰 70 이상이면 1.5배, 50 미만이면 절반. 승인하면 신뢰 -2 */
 /* 올해 결산에 잡히는 연봉 비율: 시즌 중이면 남은 정규시즌 기간만(payTeamFrac와 같은 기준) */
@@ -153,16 +157,23 @@ function roomAfter(give,get){ const rm=_rosM; _rosM=null; try{ return roomAfter0
 function roomAfter0(give,get){ const b0=budget(); const sv=[]; const mv=(id,t)=>{ const p=G.players[id]; if(!p)return; sv.push([p,p.team,p.tLog]); if(!p.foreign&&period()==='season')p.tLog=(p.tLog||[]).concat({y:G.year,d:G.day,f:p.team,t}); p.team=t; }; /* 시즌 중이면 결산처럼 남은 기간 연봉만(검수 11-06) */
   const other=get.length&&G.players[get[0]]?G.players[get[0]].team:-9; give.forEach(id=>mv(id,other)); get.forEach(id=>mv(id,G.user));
   let b1=b0; try{ b1=budget(); }finally{ sv.reverse().forEach(([p,t,l])=>{ p.team=t; if(l===undefined)delete p.tLog; else p.tLog=l; }); } return {before:Math.round(b0.roomGoal),after:Math.round(b1.roomGoal),dE:Math.round(b1.E-b0.E),dI:Math.round(b1.I-b0.I),cash0:Math.round(b0.endCash),cash1:Math.round(b1.endCash)}; }
-function tradeOwnerCheck(give,get,cash,after){ if(G.unemp||team(G.user).indie)return null;
-  const sc=tradeSalChg(give,get), fr=sc.fr; const dSal=sc.yr+(cash||0); if(dSal<=0)return null; let b; try{ b=budget(); }catch(e){ return null; }
-  let post=b.roomGoal; if(!after){ try{ post=roomAfter(give,get).after-(cash||0); }catch(e){ post=b.roomGoal-dSal; } } /* 거래 뒤 실제 예산 여유로 판정(플레이 테스트 3차: 확인창의 '거래 후 예산 여유'와 승인 판정 금액이 달랐다) */
-  const over=-post; if(over<=0)return null; const t=team(G.user);
+/* AI 구단의 올해 예산 여유(우리 budget().roomGoal과 같은 뜻): 구단주가 정하는 지원 목표 - 적자 보전에 드는 지원.
+   AI는 시즌 전망표가 없어 지난 결산(적자·지원)과 지금 현금·지원 한도로 같은 식(보유 현금 30억 초과분 절반 먼저, 목표율 = 적자/한도 × 구단주 성향 + 5%)을 쓴다. 결산 기록이 없으면(첫 시즌) 지원 한도의 60%를 적자로 본다 */
+function aiTradeRoom(tid){ const t=team(tid); const cap=supportCap(t), f=capexLastFin(tid); const gap=f?(f.support||0)-(f.net||0):Math.round(cap*.6);
+  const selfC=gap>0?Math.min(gap,Math.max(0,(t.cash||0)-3000)*.5):0, need=gap-selfC; const gf=clamp((cap?Math.max(0,gap)/cap:0)*(t.owner==='profit'?.85:t.owner==='pr'?1:1.15)+.05,.2,1);
+  return Math.round(gf*cap)-need; }
+/* me: 결재를 받는 구단(기본 우리 구단). AI끼리 거래는 사는 쪽·파는 쪽 모두 자기 구단주에게 같은 식으로 받는다(AI 규칙 동등 11-19) */
+function tradeOwnerCheck(give,get,cash,after,me){ me=me??G.user; const mine=me===G.user; if((mine&&G.unemp)||!team(me)||team(me).indie)return null;
+  const sc=tradeSalChg(give,get), fr=sc.fr; const dSal=sc.yr+(cash||0); if(dSal<=0)return null; let post;
+  if(mine){ let b; try{ b=budget(); }catch(e){ return null; } post=b.roomGoal; if(!after){ try{ post=roomAfter(give,get).after-(cash||0); }catch(e){ post=b.roomGoal-dSal; } } } /* 거래 뒤 실제 예산 여유로 판정(플레이 테스트 3차: 확인창의 '거래 후 예산 여유'와 승인 판정 금액이 달랐다) */
+  else post=aiTradeRoom(me)-dSal;
+  const over=-post; if(over<=0)return null; const t=team(me);
   const lim=Math.round((t.owner==='win'?1500:t.owner==='pr'?1000:500)*(t.trust>=70?1.5:t.trust>=50?1:.5));
   if(over<=lim)return {ok:true,over,lim,dSal};
   return {ok:false,over,lim,dSal,msg:`구단주 승인 필요: 이 트레이드로 올해 부담이 ${money(dSal)}(선수 연봉 ${money(dSal-(cash||0))}${fr<1?`(남은 시즌 ${Math.round(fr*100)}% 몫)`:''}${cash?` + 일회성 현금 ${money(cash)}`:''}) 늘어 연봉 여유(예산 기준, 구단주 지원 목표 안)를 ${money(over)} 넘깁니다. 구단주가 지금 넘겨도 된다고 보는 폭은 ${money(lim)}입니다. 연봉이 적은 선수를 받거나, 우리 쪽에서 연봉이 많은 선수를 함께 보내거나, 구단주에게 보강 자금을 받아 오세요(구단 → 구단주).`}; }
 /* 트레이드의 상한 결재(13_roster capOwnerCheck): 받는 선수 계약으로 다음에 잴 상위 40명 합계(겨울은 다음 시즌 기준) */
-function tradeCapCheck(give,get){ if(!(get||[]).length)return null; const s=sponSeason(); return capOwnerCheck(capPayAs(G.user,get,give),capInfo(G.user).pay,s,'tr'+[...get].sort((a,b)=>a-b).join(',')); }
-function tradeOwnerOk(oc){ const t=team(G.user); t.trust=clamp(t.trust-2,0,100); try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 조금 하락.`,{kind:'구단주'}); }catch(e){} }
+function tradeCapCheck(give,get,me){ if(!(get||[]).length)return null; me=me??G.user; const s=sponSeason(); return capOwnerCheck(capPayAs(me,get,give),capInfo(me).pay,s,'tr'+[...get].sort((a,b)=>a-b).join(','),me); } /* me: 결재를 받는 구단(AI끼리 거래도 같은 함수) */
+function tradeOwnerOk(oc,me){ me=me??G.user; const t=team(me); t.trust=clamp(t.trust-2,0,100); if(me!==G.user||G.unemp)return; /* AI 구단도 승인 대가로 신뢰가 같은 만큼 깎인다(소식함 편지는 우리 구단만) */ try{ const B=bossOf(G.user); mail('구단주실','구단주: 예산 초과 트레이드 승인',`${B&&B.own?B.own.name+' 회장':'구단주'}: "이번 트레이드로 연봉이 예산을 ${money(oc.over)} 넘기지만 승인하겠습니다. 성적으로 보여 주세요." 구단주 신뢰 조금 하락.`,{kind:'구단주'}); }catch(e){} }
 /* 정식 인원은 선수 신분(육성·복무·입단 예정 제외)으로 센다(rosterN과 같은 기준) */
 function tradeCntN(id){ const q=G.players[id]; return !!q&&!q.ys&&!milServing(q)&&!(q.joinY>G.year); }
 /* 우리 쪽 정원: 상대 쪽 초과는 막지만 우리 쪽은 넘어도 성사되고, 넘은 만큼 정리해야 진행된다. 확인창·받은 제안에 미리 보여 준다 */

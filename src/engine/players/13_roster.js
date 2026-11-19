@@ -87,22 +87,22 @@ function aiCapTake(tid,pay,before,s){ const t=team(tid); if(!t||tid===ME())retur
   return {hard,tight:tight&&pay<=lim,pay,inc,over:pay-cap,lim,n,tax:Math.round(inc*capRate(n))}; }
 function capOwnerLim(t){ return t.owner==='win'&&t.trust>=70?.15:.10; }
 function capOwnerP(t,r){ const L=capOwnerLim(t), n=t.capOver||0; return clamp((t.owner==='win'?.85:t.owner==='pr'?.6:.35)+((t.trust??50)-50)/100-.15*n-(n>=2?.15:0)-.5*clamp(r/L,0,1),.05,.95); } /* n: 지난 시즌까지 연속 초과 횟수(이번에 넘기면 n+1회째) */
-function capRoll(key){ let h=2166136261>>>0; const s='capOwn|'+G.year+'|'+G.user+'|'+key; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } h=Math.imul(h^(h>>>13),2246822507)>>>0; return (h>>>0)/4294967296; } /* 경기 난수를 쓰지 않는 고정값 */
+function capRoll(key,tid){ let h=2166136261>>>0; const s='capOwn|'+G.year+'|'+(tid??G.user)+'|'+key; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } h=Math.imul(h^(h>>>13),2246822507)>>>0; return (h>>>0)/4294967296; } /* 경기 난수를 쓰지 않는 고정값 */
 const capPLabel=p=>p>=.7?'높음':p>=.4?'반반':'낮음';
 /* pay: 움직임 뒤 상한 합계, before: 움직임 전, s: 그 합계를 재는 시즌, key: 결재 건(선수·거래). 결재가 필요 없으면 null */
-function capOwnerCheck(pay,before,s,key){ if(G.unemp)return null; const t=team(G.user); if(!t||t.indie)return null; s=s??sponSeason(); const cap=capOf(s); pay=Math.round(pay); before=Math.round(before??0);
+function capOwnerCheck(pay,before,s,key,tid){ tid=tid??G.user; if(tid===G.user&&G.unemp)return null; const t=team(tid); if(!t||t.indie)return null; /* tid: 결재를 받는 구단(AI끼리 트레이드도 같은 결재, AI 규칙 동등 11-19) */ s=s??sponSeason(); const cap=capOf(s); pay=Math.round(pay); before=Math.round(before??0);
   if(!(pay>cap)||pay<=before)return null; /* 상한 안이거나 합계를 늘리지 않는 움직임은 결재가 필요 없다 */
-  const B=bossPeek(G.user), who=B&&B.own?B.own.name+' 회장':'구단주'; const r=(pay-cap)/cap, L=capOwnerLim(t), lim=Math.floor(cap*(1+L)), n=(t.capOver||0)+1;
+  const B=bossPeek(tid), who=B&&B.own?B.own.name+' 회장':'구단주'; const r=(pay-cap)/cap, L=capOwnerLim(t), lim=Math.floor(cap*(1+L)), n=(t.capOver||0)+1;
   const base={pay,before,cap,s,over:pay-cap,r,lim,L,n,who,key};
   const why=`${s}시즌 상위 40명 연봉이 ${money(pay)}으로 상한 ${money(cap)}을 ${money(pay-cap)}(${Math.round(r*100)}%) 넘습니다`;
   if(pay>lim)return {...base,ok:false,hard:true,p:0,msg:`구단주 승인 불가 · ${why}. ${who}은(는) 상한의 ${Math.round(L*100)}%(${money(lim)})를 넘는 지출은 어떤 경우에도 허락하지 않습니다${L<.15?' (성적 우선 구단주가 단장을 크게 신뢰하면 15%까지)':''}. 금액을 줄이거나 연봉이 많은 선수를 먼저 정리하세요.`};
   if(pay-Math.max(cap,before)<=Math.round(cap*CAP_SMALL))return {...base,ok:true,p:1,small:true,msg:''}; /* 소폭(상한의 2% 이하) 더 넘기는 건은 결재만 올리면 승인(11-15 커뮤니티: 상한을 조금 넘긴 뒤로는 연봉이 줄어드는 트레이드밖에 못 했다). 세금·신뢰 감점은 그대로 */
-  const p=capOwnerP(t,r), ok=capRoll(key)<p;
+  const p=capOwnerP(t,r), ok=capRoll(key,tid)<p;
   return {...base,ok,p,msg:ok?'':`구단주 결재 거절 · ${why}. ${who}: "${n>=3?'3년 연속 초과면 신인 1라운드 지명까지 밀립니다. ':n===2?'2년 연속이면 세금이 초과분의 절반입니다. ':''}${t.owner==='profit'?'세금까지 내 가며 쓸 돈은 없습니다.':t.owner==='pr'?'규정을 넘겨 가며 쓰는 건 그룹 이미지에 좋지 않습니다.':'상한을 넘길 만큼의 선수인지 아직 확신이 서지 않습니다.'}" 초과 폭을 줄이면 다시 결재를 올릴 수 있습니다.`}; }
 /* 화면 미리보기: 제출 전에 결재가 필요한지·허락하는 범위인지 */
 function capOwnerTxt(c){ if(!c)return ''; if(c.grant)return `상한 ${money(c.over)} 초과 · 구단주가 영입 자금을 낸 선수라 승인합니다`; if(c.small)return `상한 ${money(c.over)} 초과 · 소폭이라 구단주가 승인합니다`; if(c.hard)return `구단주 허용 한도 ${money(c.lim)} 초과 · 구단주가 승인하지 않습니다`; return `상한 ${money(c.over)} 초과 · 구단주 결재 필요 · 승인 가능성 ${capPLabel(c.p)}`; } /* 결재 결과(고정값)는 미리 알려 주지 않는다: 올려 봐야 안다 */
 /* 결재 통과: 구단주 신뢰가 초과 폭만큼 깎인다(5% 넘으면 -2, 10% 넘으면 -3) */
-function capOwnerOk(c,what){ if(!c||!c.ok)return; const t=team(G.user); const d=c.r>.1?3:c.r>.05?2:1; t.trust=clamp(t.trust-d,0,100);
+function capOwnerOk(c,what,tid){ if(!c||!c.ok)return; tid=tid??G.user; const t=team(tid); const d=c.r>.1?3:c.r>.05?2:1; t.trust=clamp(t.trust-d,0,100); if(tid!==G.user||G.unemp)return; /* AI 구단도 같은 신뢰 차감(편지는 우리 구단만) */
   try{ mail('구단주실',`구단주: 상한 초과 결재 (${what})`,`${c.who}: "${what}로 ${c.s}시즌 상위 40명 연봉이 상한을 ${money(c.over)}(${Math.round(c.r*100)}%) 넘지만 이번만 승인하겠습니다. 시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(c.n)*100)}%를 야구발전기금으로 내고, 모기업 지원도 그만큼 줄어듭니다." 구단주 신뢰 하락.`,{kind:'구단주'}); }catch(e){} }
 function floorRate(n){ return n>=3?1:n===2?.5:.3; } /* KBO 하한(2027~): 미달분의 1회 30%·2회 연속 50%·3회 연속 100%(유소년 발전기금) */
 /* AI 구단은 상한을 지킨다: 가성비가 낮은 고액 선수부터 여유 있는 구단으로 넘기고(연봉 덜어내기 트레이드), 받을 곳이 없으면 방출한다 */
