@@ -49,9 +49,9 @@ function potPerfSeason(){ const out=[]; const F=potFits('per'), AW=potAwardIds(G
     const up=potUpAdd(p,amt,{b:base,s:1,sp:sp&&base<=POT_UP.bands[0][0]}); if(!up)continue; out.push({id:p.id,tid:p.team,age:p.age,b:base,v:up,z:+z.toFixed(2),n:Math.round(n),sp:sp?1:0,pot:p.pot}); try{ story(p,G.year+' 성적 보상으로 잠재력 재평가'); }catch(e){}
     if(p.team===G.user&&!G.unemp)try{ note('육성',p.name+' 잠재력 상승(올 시즌 성적 보상)',p.id); }catch(e){} }
   return out; }
-/* 국제대회 성적 보상: 대회가 끝날 때(84b ntTourFinish). 타자 8타석 이상 OPS .750→1.000, 투수 3이닝 이상 평균자책점 4.00→1.50 사이를 0~1로 보고 최대 +1.2 */
+/* 국제대회 성적 보상: 대회가 끝날 때(84b ntTourFinish). 타자 8타석 이상 OPS .850→1.100, 투수 3이닝 이상 평균자책점 3.00→1.00 사이를 0~1로 보고 최대 +1.2(구단주 11-19: 예전 .750→1.000·4.00→1.50은 출전 선수 대부분이 상한을 받아 문턱을 올림) */
 function potIntlUp(T){ const out=[]; if(!T||!T.st)return out; for(const key in T.st){ const p=G.players[key]; if(!p||p.team==null||p.pot==null||(p.ntKey&&p.ntKey!==p.id))continue; if(p.potUp&&p.potUp.y===G.year&&p.potUp.iv)continue; const base=potBaseSet(p); if(!potBandCap(base,false))continue;
-    const S=T.st[key]; let q=0; if(S.P){ const o=S.outs||0; if(o>=9)q=clamp((4-(S.er||0)*27/o)/2.5,0,1); } else if((S.pa||0)>=8&&S.ab){ const obp=((S.h||0)+(S.bb||0))/S.pa, slg=((S.h||0)+(S.d||0)+2*(S.tr||0)+3*(S.hr||0))/S.ab; q=clamp((obp+slg-.75)/.25,0,1); }
+    const S=T.st[key]; let q=0; if(S.P){ const o=S.outs||0; if(o>=9)q=clamp((3-(S.er||0)*27/o)/2,0,1); } else if((S.pa||0)>=8&&S.ab){ const obp=((S.h||0)+(S.bb||0))/S.pa, slg=((S.h||0)+(S.d||0)+2*(S.tr||0)+3*(S.hr||0))/S.ab; q=clamp((obp+slg-.85)/.25,0,1); }
     const amt=Math.round(POT_UP.intl*q*10)/10; if(!(amt>=POT_UP.minUp))continue; const up=potUpAdd(p,amt,{b:base,iv:1}); if(!up)continue; out.push({id:p.id,tid:p.team,v:up,b:base}); try{ story(p,G.year+' 국제대회 활약으로 잠재력 재평가'); }catch(e){}
     if(p.team===G.user&&!G.unemp)try{ note('육성',p.name+' 잠재력 상승(국제대회 성적 보상)',p.id); }catch(e){} }
   return out; }
