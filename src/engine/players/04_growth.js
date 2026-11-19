@@ -118,7 +118,7 @@ function develop(p){
     if(!mil){ let cut=false; for(const k in p.r)if(r0[k]!=null&&p.r[k]-r0[k]>WIN_SUB_CAP){ p.r[k]=r0[k]+WIN_SUB_CAP; cut=true; } if(cut){ roundR(p); p.devLog.reasons.push('sub-cap'); } } } /* 모든 선수: 겨울 한 해 종합 +5·능력 하나 +7.5까지(상무도 5, 넘친 몫 이월 없음) */ /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
   const no=ovr(p);
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
-  if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0)+(p.gcar||0)); /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
+  if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0)+(p.gcar||0)+(p.potUp&&p.potUp.y===G.year?p.potUp.v:0)); /* 올해 성적 보상으로 오른 잠재력(65_cur_eval potPerfSeason·potIntlUp)은 이번 정리에서 지켜 준다 */ /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
   p.pot=clamp(Math.max(p.pot,no),20,80);if(p.pot<potBefore)p.devLog.reasons.push('potential-reassessment');
   if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0);
   (p.oh=p.oh||[]).push({y:G.year,o:Math.round(no)}); if(p.oh.length>12)p.oh.shift();

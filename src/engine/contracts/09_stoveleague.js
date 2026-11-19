@@ -492,6 +492,7 @@ function lateYearTurn(){ if(dobj(G.day).y<=G.year||seasonYearPending())return;
 }
 function newYear(){
   if(seasonYearPending())return false;
+  try{ potPerfSeason(); }catch(e){} /* 시즌 결산: 성적 보상 잠재력(65_cur_eval, 난수 없음). 시상 확정 뒤·겨울 성장 전 */
   try{ compactPlayers(); }catch(e){}
   try{ gmRelYear(); }catch(e){} try{ relsYear(); }catch(e){} /* 인물 관계도 같은 비율로 되돌림(84b_person_rels) */
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */

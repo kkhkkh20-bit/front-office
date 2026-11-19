@@ -10289,6 +10289,37 @@ T('[성장 11-19 한 해 상한] 구단주 11-19: 겨울 성장(분기 몫 포�
     /* 상한과 무관한 평소 회복은 예전과 같다 */ const q=prep(ai); q.injFx=[{n:'시험 부상',need:100,got:0,L:{con:3,pow:2},P:{}}]; const q0={...q.r}; injRecover(q,100); ok(Math.abs(q.r.con-q0.con-3)<.051&&Math.abs(q.r.pow-q0.pow-2)<.051&&q.injFx[0].done===G.year&&!q.injFx[0].hold,'평소 회복이 달라짐 '+JSON.stringify(q.injFx[0])); }
   G.players[p0.id]=p0;
 });
+T('[성장 11-19 성적 잠재력] 구단주 11-19: 시즌 결산 때 기대 대비 성적(삼진율·볼넷율·순장타율 / FIP·삼진-볼넷)이 뚜렷이 좋으면 실제 잠재력이 오르되 시즌 기준 잠재력 구간 상한(60 이하 2.5·특별 3 / ~64 1.5 / ~68 1.2 / ~69.5 0.8 / 초과 없음)을 넘지 않고, 시즌 중 올라도 구간은 그대로이며, 예전 저장 기준값은 한 번만 적히고, 국제대회는 따로 +1.2·최종 72, 31세 이상도 대상이고, 평범·표본 부족은 0, 깎지 않으며, 우리·AI 같은 식이고 주 난수를 쓰지 않는다',()=>{ fresh();
+  const p0=Object.values(G.players).find(p=>p.team===G.user&&!p.foreign&&!p.prospect&&!p.isP&&!p.mil), q0=Object.values(G.players).find(p=>p.team===G.user&&!p.foreign&&!p.prospect&&p.isP&&!p.mil); ok(p0&&q0,'준비'); const ai=otherT();
+  ok(JSON.stringify(POT_UP.bands)==='[[60,2.5],[64,1.5],[68,1.2],[69.5,0.8]]'&&POT_UP.sp===3&&POT_UP.intl===1.2&&POT_UP.top===72,'상수가 바뀜');
+  const FB={c:[{a:.2,b:0,r:.04},{a:.09,b:0,r:.025},{a:.12,b:0,r:.04}],n:60,y:G.year}, FP={c:[{a:4.5,b:0,r:.6},{a:4,b:0,r:1.5}],n:60,y:G.year}; /* 기대: 삼진율 20%·볼넷율 9%·순장타율 .120 / FIP 4.50·9이닝당 삼진-볼넷 4.0 */
+  const line=(pa,k,bb,iso,lvl)=>{ const nb=Math.round(pa*bb), ab=pa-nb, hr=Math.round(ab*iso/3), d=Math.round((ab*iso-hr*3)); return {y:G.year,lvl:lvl||'1군',t:0,g:Math.round(pa/4),pa,ab,h:Math.round(ab*.27),d,tr:0,hr,bb:nb,hbp:0,sf:0,so:Math.round(pa*k),r:0,rbi:0}; };
+  const made=[]; const bat=o=>{ const p=JSON.parse(JSON.stringify(p0)); p.id='pt'+(G.nextId++); G.players[p.id]=p; made.push(p); p.team=o.tid??G.user; setOvr(p,o.ovr??40); p.pot=o.pot??50; p.age=o.age??23; p.hist=o.fut?[line(o.pa??450,o.k,o.bb,o.iso,'퓨처스')]:[line(o.pa??450,o.k,o.bb,o.iso)]; delete p.potUp; delete p.mil; delete p.ntKey; p.potBase={y:G.year,v:o.base??p.pot}; return p; };
+  const TOP={k:.12,bb:.14,iso:.2}, GOOD={k:.14,bb:.12,iso:.17}, FAIR={k:.16,bb:.115,iso:.16}, AVG={k:.2,bb:.09,iso:.12}, BAD={k:.3,bb:.04,iso:.05};
+  const f0=potFits, a0=potAwardIds; let AW=new Set(); try{ potFits=()=>({b:{'1군':FB,'퓨처스':FB},p:{'1군':FP,'퓨처스':FP},kind:'per'}); potAwardIds=()=>AW;
+    const F=potFits(); { const z=potPerfZ(bat({...GOOD,tid:ai}),F), zt=potPerfZ(bat({...TOP,tid:ai}),F), zf=potPerfZ(bat({...FAIR,tid:ai}),F); ok(z.z>=2&&z.z<2.6&&zt.z>=2.6&&zf.z>1.4&&zf.z<2&&z.n===450,'준비: 초과 정도 '+z.z.toFixed(2)+'/'+zt.z.toFixed(2)+'/'+zf.z.toFixed(2)); }
+    const run=o=>{ const p=bat(o); const b=p.pot; potPerfSeason(); return {p,up:Math.round((p.pot-b)*10)/10}; };
+    const c0=__rngCalls(), s0=__rngState(), m0=G.mail.length;
+    /* 예: 잠재력 50·현재 40 */ const g=run({...FAIR}); ok(g.up>=1.5&&g.up<2.5,'꽤 좋은 성적 +'+g.up); const g2=run({...GOOD}); ok(g2.up===2.5,'뚜렷이 좋은 성적은 일반 상한 2.5: +'+g2.up); const g3=run({...TOP}); ok(g3.up===3&&g3.p.potUp.sp===1,'최상위 성적은 특별 조건 3: +'+g3.up);
+    const gai=run({...GOOD,tid:ai}); ok(gai.up===g2.up,'우리와 AI가 다름');
+    ok(G.mail.length-m0===3&&JSON.stringify(G.mail).includes(g.p.name+' 잠재력 상승(올 시즌 성적 보상)'),'우리 선수 소식 '+(G.mail.length-m0));
+    ok(run({...AVG}).up===0,'평범한 성적인데 오름'); ok(run({...BAD}).up===0,'나쁜 성적에 깎이거나 오름'); ok(run({...TOP,pa:60}).up===0,'표본이 적은데 오름'); const half=run({...GOOD,pa:235}); ok(half.up>1&&half.up<2,'표본 절반이면 절반쯤 +'+half.up); const fu=run({...GOOD,fut:1}); ok(fu.up>.9&&fu.up<2.5,'2군 성적은 표본 절반으로 +'+fu.up);
+    ok(run({...GOOD,age:33}).up===2.5,'33세도 대상이어야 함');
+    /* 구간 경계 */ for(const [pot,want] of [[60,2.5],[60.1,1.5],[64,1.5],[64.1,1.2],[68,1.2],[68.1,.8],[69.5,.8],[69.6,0],[75,0]]){ const r=run({...GOOD,pot,ovr:Math.min(pot-8,60)}); ok(r.up===want,'기준 잠재력 '+pot+' 구간 상한 '+want+' ≠ '+r.up); }
+    /* 특별 조건(수상·타이틀): 60 이하만 3, 다른 구간은 그대로 */ { const a=bat({...GOOD}), b=bat({...GOOD,pot:62,ovr:50}); AW=new Set([String(a.id),String(b.id)]); potPerfSeason(); ok(a.pot===53&&b.pot===63.5,'수상자 '+a.pot+' / '+b.pot); AW=new Set(); }
+    /* 시즌 중 올라도 구간은 시즌 시작 값 */ { const p=bat({...GOOD,pot:60}); p.pot=61.2; potPerfSeason(); ok(p.pot===63.7&&p.potBase.v===60,'시즌 중 상승 뒤 구간이 바뀜 '+p.pot); potPerfSeason(); ok(p.pot===63.7,'같은 해 두 번 보상'); }
+    /* 예전 저장: 기준값은 처음 한 번만 */ { const p=bat({...GOOD,pot:60}); delete p.potBase; potBaseAll(false); ok(p.potBase&&p.potBase.y===G.year&&p.potBase.v===60,'기준값이 적히지 않음'); p.pot=66; potBaseAll(false); ok(p.potBase.v===60,'다시 불러오면 기준값이 바뀜'); potBaseAll(true); ok(p.potBase.v===66,'개막일에는 새 기준값'); }
+    /* 국제대회: 따로 최대 +1.2, 한 해 한 번, 자격은 시즌 기준 잠재력, 최종 72 */ { const mk=p=>({k:'wbc',st:{[p.id]:{P:0,g:5,pa:20,ab:17,h:8,d:2,tr:0,hr:2,bb:3,so:2}}});
+      const a=bat({...GOOD,pot:60}); const n1=G.mail.length; let o=potIntlUp(mk(a)); ok(a.pot===61.2&&o.length===1&&a.potUp.iv===1.2,'국제대회 +1.2가 아님 '+a.pot); ok(JSON.stringify(G.mail).includes('잠재력 상승(국제대회 성적 보상)'),'국제대회 소식 없음'); potIntlUp(mk(a)); ok(a.pot===61.2,'한 해 두 번'); potPerfSeason(); ok(a.pot===63.7,'국제대회 뒤 시즌 보상은 기준 구간 그대로 '+a.pot);
+      const b=bat({...GOOD,pot:69.5,ovr:60}); potPerfSeason(); ok(b.pot===70.3,'69.5 구간 +0.8 '+b.pot); potIntlUp(mk(b)); ok(b.pot===71.5,'시즌 보상으로 69.5를 넘어도 그해 국제대회 자격 유지 '+b.pot);
+      const c=bat({...GOOD,pot:71.4,ovr:60,base:69}); potIntlUp(mk(c)); ok(c.pot===72,'최종 상한 72 '+c.pot); const d=bat({...GOOD,pot:70,ovr:60}); potIntlUp(mk(d)); ok(d.pot===70,'기준 69.5 초과는 대상 아님'); const e=bat({...GOOD,pot:60}); potIntlUp({k:'wbc',st:{[e.id]:{P:0,g:3,pa:12,ab:11,h:2,d:0,tr:0,hr:0,bb:1,so:4}}}); ok(e.pot===60,'평범한 국제대회 성적에 오름'); }
+    /* 투수 */ { const p=JSON.parse(JSON.stringify(q0)); p.id='pt'+(G.nextId++); G.players[p.id]=p; made.push(p); setOvr(p,40); p.pot=50; p.age=31; delete p.potUp; p.potBase={y:G.year,v:50}; p.hist=[{y:G.year,lvl:'1군',t:0,g:30,gs:20,outs:360,er:60,h:110,bb:30,hbp:0,so:130,hr:8,w:8,l:6,sv:0}]; const z=potPerfZ(p,F); potPerfSeason(); ok(z.z>=2&&p.pot>=52.5&&p.pot<=53,'투수(FIP·삼진-볼넷) z '+z.z.toFixed(2)+' → '+p.pot); }
+    /* 80·현재 능력 */ { const p=bat({...TOP,pot:50,ovr:40}); p.pot=79.9; p.potBase.v=50; potPerfSeason(); ok(p.pot<=80,'80 초과 '+p.pot); }
+    /* 겨울 성장의 잠재력 정리가 올해 오른 몫을 지우지 않는다 */ { const p=bat({...GOOD,age:30}); p.dt='norm'; p.realK=1; p.potB=40; potPerfSeason(); ok(p.potUp&&p.potUp.v===2.5,'준비'); const o=ovr(p); withRng(rngHash('potup1119',1),()=>develop(p)); ok(p.pot>=ovr(p)+2.5-.11||p.pot>=52.4,'겨울 정리가 올해 오른 잠재력을 지움 '+p.pot+' / 능력 '+ovr(p)); }
+    ok(__rngCalls()===c0&&__rngState()===s0,'잠재력 보상이 주 난수를 씀');
+  } finally { potFits=f0; potAwardIds=a0; for(const p of made)delete G.players[p.id]; }
+  /* 실제 식: 리그 선수로 맞춘 기대값이 만들어지고 주 난수를 쓰지 않는다 */ { const c=__rngCalls(); const F=potFits('per'), R2=potFits('res'); ok(__rngCalls()===c,'맞춤이 주 난수를 씀'); ok(F.kind==='per'&&R2.kind==='res','종류'); }
+});
 T('[성장 11-19 환경 배수 상한] 곱해진 환경 배수(출전×시설×감독×코치×지목×성격×훈련 강도)는 GROW_ENV_CAP까지만 겨울 성장에 반영되고, 성장률 천장은 GROW_RATE_HI(성장 구간 마지막 해와 그 전해가 같은 천장)',()=>{ fresh();
   const p0=Object.values(G.players).find(p=>p.team===G.user&&!p.foreign&&!p.prospect&&!p.isP&&!p.mil); ok(p0,'준비');
   const prep=(pro,ti)=>{ const p=JSON.parse(JSON.stringify(p0)); G.players[p.id]=p; setOvr(p,45); p.dt='norm'; p.pers={pro,amb:pro,loy:10,temp:8}; p.age=21; p.pot=75; p.potB=45; p.realK=1; delete p.bloomY; delete p.gcar; delete p.mil; delete p.trD; p.trI={y:G.year,s:ti,n:1}; return p; };

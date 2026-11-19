@@ -1,5 +1,6 @@
 /* ===== 시즌 구간 이벤트 ===== */
 function openingDay(){
+  try{ potBaseAll(true); }catch(e){} /* 시즌 기준 잠재력(65_cur_eval POT_UP): 개막일 값이 그 시즌 구간을 정한다 */
   /* 시범경기 등판 순서를 지우고 개막전은 1선발부터 */
   for(const p of Object.values(G.players))if(p.isP&&p.team!=null){ delete p.lastStart; } for(const t of G.teams)t.rot=0;
   for(const t of G.teams) G.sea.fspend[t.id]=sum(forPayOf(t.id).map(p=>p.sal))+fDeadOf(t.id,G.year); /* 개막 전에 방출한 선수의 보장 연봉 포함 */
