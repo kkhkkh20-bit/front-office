@@ -24,6 +24,18 @@ function mgrRolePlan(p,tid,ctx){ const m=mgrOf(tid); const thr=rpThr(tid); const
 function rpClubRequest(tid,p){if(!p||p.team!==tid)return null;const direct=G.prole&&G.prole[p.id],saved=G.clubT&&G.clubT[tid]&&G.clubT[tid].prole&&G.clubT[tid].prole[p.id];if(direct&&(direct.tid===tid||direct.tid==null&&tid===G.user))return direct;return saved&&(saved.tid??tid)===tid?saved:null;}
 function rpPlanOf(tid,p){ if(!p||!p.isP||p.team!==tid)return null;const request=rpClubRequest(tid,p);if(request)return request.k;const x=G.rplan&&G.rplan[p.id];return x&&x.tid===tid?x.k:null; }
 function rpBias(tid,p){ const k=rpPlanOf(tid,p); return k==='sp'?12:k==='rp'?-25:0; }
+/* ===== 선발 순번(카페 11-19: 선발 요청한 유망주 둘이 1·2선발이 되고 기존 선발이 3~5선발로 밀렸다) =====
+ 단장의 선발 요청·선발 보직 약속은 '선발 5명에 넣을지'에만 가산한다. 다섯 명 안의 순번은 감독이 자기 기준(구위·제구·체력, 체력 기준, 최근 내용, 맡겨 온 보직, 운영 방침)으로 매긴다.
+ 순번은 쉽게 바뀌지 않는다: 어제 순번을 그대로 두고, 아래 순번 투수의 평가가 SP_ORD_GAP 넘게 앞설 때만 자리를 바꾼다. 새로 들어온 투수는 평가에 맞는 자리에 끼운다. 새 시즌에는 처음부터 다시 매긴다.
+ 순번 기억(t.spO)은 하루 한 번 roleSync에서만 저장한다(화면 조회는 저장하지 않는다). 모든 구단 같은 규칙. 주 난수를 쓰지 않는다 */
+const SP_ORD_GAP=3;
+function spAskB(tid,p){ return (rpPlanOf(tid,p)==='sp'?rpBias(tid,p)-staGate0(p):0)+rpB(tid,p,'SP'); } /* 단장 요청·보직 약속이 선발 고르기에 준 가산: 순번에서는 뺀다 */
+function spOrder(tid,five,nat){ const t=team(tid), V=new Map(five.map(p=>[p.id,nat(p)])), v=p=>V.get(p.id); const byV=[...five].sort((a,b)=>v(b)-v(a));
+  const o=t&&t.spO&&t.spO.y===G.year?t.spO.ids:null; if(!o)return byV;
+  const L=o.map(id=>five.find(p=>p.id===id)).filter(Boolean); if(!L.length)return byV;
+  for(const p of byV){ if(L.includes(p))continue; const i=L.findIndex(q=>v(q)<v(p)); if(i<0)L.push(p); else L.splice(i,0,p); }
+  for(let n=0;n<5;n++){ let sw=false; for(let i=0;i+1<L.length;i++)if(v(L[i+1])>v(L[i])+SP_ORD_GAP){ const x=L[i]; L[i]=L[i+1]; L[i+1]=x; sw=true; } if(!sw)break; }
+  return L; }
 const rpFitGap=(p,tid)=>p.r.sta+(p.rAdj||0)/.9-rpThr(tid);
 function rpWhy(p,tid){ const thr=rpThr(tid), m=mgrOf(tid); const sm=m&&m.small!=null?m.small:50; const gap=rpFitGap(p,tid);
   const st=gap>=3?'선발로 버틸 체력이 됩니다':gap>=-3?'선발 체력 기준에 거의 닿았습니다':gap>=-9?'선발로 던지기에는 체력이 조금 모자랍니다':'선발로 던지기에는 체력이 많이 모자랍니다';

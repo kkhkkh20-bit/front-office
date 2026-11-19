@@ -71,10 +71,14 @@ function faAsk(p){
   const b2=ovr(p)+(p.foreign?0:pvShift(p)); const t2=b2>=62?1:clamp(.7+(b2-50)*.025,.7,1); const fl=marketSal(b2)*1.05*af*t2*faMktNow()*.7;
   const tab=Math.max(marketSal(base)*1.05*af*tier*faMktNow(),fl);
   /* 요구액은 시장가에서 시작한다(시장 엔진: 두 번째로 높은 지불 의사). 표 기준 금액은 하한(45%)·상한(2배)으로만 남겨 이상값을 막는다 */
-  let ann=tab; if(!p.foreign&&typeof mktPrice==='function'){ try{ ann=clamp(mktPrice(p),tab*.45,tab*2); }catch(e){ ann=tab; } }
+  /* 요구액 = 시장가(구단주 원칙 11-19: 모든 값은 실제 시장 값). 원하는 구단이 적으면 잘하는 선수도 싸고, 많으면 덜한 선수도 비싸다.
+     예전에는 능력표(tab)의 0.45~2배로 묶어 선수가 스스로 매긴 값이 남았다. 이제 국내 선수는 시장가 그대로이고, 최저 연봉과 리그 상한의 25%(salCeil)만 넘지 않는다. 표는 외국인(시장 엔진 밖)에만 쓴다 */
+  let ann=tab; if(!p.foreign&&typeof mktPrice==='function'){ try{ ann=mktPrice(p); }catch(e){ ann=tab; } }
   ann*=domPrem(p.team??p.faFrom); /* 우승 프리미엄: 독주 구단 선수는 시장에서 더 부른다 */
-  return {annual:round5(Math.min(ann,3000*ecoCap(G.year)/14397,typeof faTop==='function'?Math.max(tab,faTop()):1e9)),years};
+  return {annual:round5(clamp(ann,MIN_SAL,salCeil())),years};
 }
+/* 한 선수 연평균 상한: 리그 연봉 상한의 25%(실제 KBO 최고 연봉은 상한의 20~25%). 시장가·다년계약 요구·연봉 협상 요구가 모두 넘지 않는 안전선(우리·AI 같은 값) */
+const SAL_CEIL_R=.25; function salCeil(s){ return round5(capOf(s??sponSeason())*SAL_CEIL_R); }
 /* FA 시장 분위기(겨울마다 다름): 지난해 분위기를 절반쯤 이어받고, 리그 구단들의 상한 여유가 클수록 과열된다. FA 요구액·구단 평가액에 함께 곱한다 */
 function faMktOf(y){ G.faMkt=G.faMkt||{}; if(G.faMkt[y]!=null)return G.faMkt[y]; const prev=G.faMkt[y-1]!=null?G.faMkt[y-1]:1.08;
   const rooms=G.teams.map(t=>Math.max(0,capOf(y)-capPay(t.id))/capOf(y)); const room=sum(rooms)/rooms.length;
@@ -85,10 +89,12 @@ function faMktLabel(v){ return v>=1.15?'과열':v>=1.06?'뜨거움':v>.99?'보�
 /* 비FA 다년계약 요구의 근거: 예상 FA 시장가 × 다년 할인(안정을 사는 값). 초특급은 할인 대신 웃돈(시장 과열을 기대) */
 function extParts(p,years){ const ytf=Math.max(0,faSvc(p)-(p.svc||0)); const ageF=p.age+ytf; initPers(p);
   const pf=perfOvr(p,3), pf1=perfOvr(p,1); const self=p.age<=27?ovr(p)+(p.pot-ovr(p))*.4:ovr(p)-Math.max(0,p.age-31); const base=(pf==null?self:self*.6+pf*.4)+(p.foreign?0:pvShift(p));
-  const af=ageF<30?1.15:ageF<=32?1:ageF<=34?.8:.6; const mkt=faMktNow(); const expFA=marketSal(base)*1.05*af*mkt;
+  const af=ageF<30?1.15:ageF<=32?1:ageF<=34?.8:.6; const mkt=faMktNow(); const tabFA=marketSal(base)*1.05*af*mkt;
+  /* 예상 FA 시장가: 능력표가 아니라 지금 구단들의 지불 의사(시장가, 분위기 포함)를 FA가 될 해 나이로 옮긴 값. 외국인은 표 */
+  const amk=a=>a<30?1.12:a<=32?1:a<=34?.75:.55; let expFA=tabFA; if(!p.foreign&&typeof mktPrice==='function'){ try{ expFA=mktPrice(p)*amk(ageF)/amk(p.age); }catch(e){ expFA=tabFA; } }
   const elite=ovr(p)>=65&&p.age<=31; const why=[];
   let disc;
-  if(elite&&ytf<=1){ disc=1.04+Math.max(0,mkt-1); why.push(`초특급이라 시장에 나가면 몸값이 더 뛴다고 봅니다(+${Math.round((disc-1)*100)}%)`); }
+  if(elite&&ytf<=1){ disc=1.04; why.push('초특급이라 시장에 나가면 경쟁이 붙는다고 봅니다(+4%)'); } /* 시장 분위기는 예상 FA 시장가에 이미 들어 있다(예전: 분위기를 한 번 더 더해 과열 +18%가 초특급 +22%로 겹쳤다) */
   else { /* 구단주 보충(11-17): 선수는 길게 받기보다 빨리 많이 받기를 원한다. 다년 보장을 이유로 연봉을 깎아 주지 않는 것이 기본이고,
        30대 중반·부상 이력·하락세만 안정을 조금 더 원한다(각 -3~4%). 에이전트 성향: 경매형·강경형은 연봉 극대화 +2%, 관계형·실속형은 기간을 조금 봐 -2% */
     disc=1; why.push('다년 보장을 이유로 연봉을 깎아 주지 않습니다');
@@ -100,8 +106,9 @@ function extParts(p,years){ const ytf=Math.max(0,faSvc(p)-(p.svc||0)); const age
     const pa=(p.pers.amb-12)*.006, pl=-(p.pers.loy-10)*.004; disc+=pa+pl; if(Math.abs(pa+pl)>=.015)why.push(pa+pl>0?'야망이 커서 덜 깎음':'구단 애착이 커서 더 깎음');
     disc=clamp(disc,.86,1.06); }
   const yadj=p.age<=29?1+.025*(years-1):p.age>=34?1-.025*(years-1):1-.01*(years-1); /* 젊은 선수는 같은 총액이면 짧고 높은 연봉을 원해 길수록 연평균을 더 부른다. 30대 초반은 거의 중립, 30대 중반부터 기간을 조금 쳐 준다 */ const mood=1-((p.mor??60)-60)/400;
-  return {ytf,mkt,expFA:round5(expFA),disc,elite,yadj,mood,why}; }
-function extDemand(p,years){ const x=extParts(p,years); const d=x.expFA*x.disc*x.yadj*x.mood; return round5(x.elite?d:Math.min(d,faAsk(p).annual*1.1)); }
+  const lim=Math.min(Math.max(MIN_SAL,faAsk(p).annual)*1.1,salCeil()), raw=expFA*disc*yadj*mood; if(raw>lim)why.push(`시장가 상한 연 ${money(round5(lim))}(지금 FA 시장가의 110%, 리그 상한의 25% 이내)`);
+  return {ytf,mkt,expFA:round5(expFA),disc,elite,yadj,mood,why,lim:round5(lim),capped:raw>lim}; }
+function extDemand(p,years){ const x=extParts(p,years); const d=x.expFA*x.disc*x.yadj*x.mood; return round5(Math.min(d,x.lim)); } /* 초특급도 시장가 상한을 넘지 않는다(예전: 초특급만 상한이 없어 연 120억까지 불렀다) */
 function canExtend(p){ return p&&p.team===G.user&&!p.foreign&&!p.ys&&!p.extNext&&!(p.joinY>G.year)&&(!p.faC||p.yrs<=1)&&p.age<=34&&!p.prospect; } /* 연봉 협상 기간에도 다년계약은 따로 제안할 수 있다 */
 /* 다년계약(연장 협상)을 지금 열 수 없는 이유. 열 수 있으면 ''(canExtend와 같은 조건). 연장 요구 결정·면담 계약 이야기에서 버튼 대신 이유를 보여 준다(피드백 11-17 연장) */
 function extWhy(p){ if(!p)return '선수가 없습니다.'; if(G.unemp||p.team!==G.user)return `${p.name}은(는) 우리 구단 선수가 아닙니다.`;
@@ -126,7 +133,7 @@ function offerExtension(id,annual,years,acc,T,lock){ const r=offerExtension0(id,
    - 계약금은 없다(KBO 규약 제81조: 신인·자유계약선수 외 계약금 불가). 옵션은 보통 총액의 10~30%. 베테랑은 1+1·2+1(구단 연장 옵션)
    - 사용자·AI 구단 같은 함수(extJudge·extDemandAll). 이미 맺은 계약은 그대로 */
 function extFloor(p){ if(!p||p.foreign||p.faC||salReset(p))return 0; let pf=null,pf1=null; try{ pf=perfOvr(p,3); pf1=perfOvr(p,1); }catch(e){} const dec=p.age>=35||(p.age>=33&&pf!=null&&pf1!=null&&pf1<=pf-2); return dec?salCutFloor(p,true):p.sal; }
-function extDemandAll(p,years,tid){ return round5(Math.max(extFloor(p),extDemand(p,years)*(hasAgent(p)?agExtMul(p,tid):1)*(agExtTestMarket(p,tid)?1.08:1))); } /* 요구는 감액 한도 아래로 내려가지 않는다(제보 11-17: 예상 FA 시장가 × 다년 할인만 보고 4억 선수가 3,500만 원을 요구했다) */
+function extDemandAll(p,years,tid){ return round5(Math.max(extFloor(p),Math.min(salCeil(),extDemand(p,years)*(hasAgent(p)?agExtMul(p,tid):1)*(agExtTestMarket(p,tid)?1.08:1)))); } /* 에이전트 웃돈을 얹어도 리그 상한의 25%를 넘지 않는다 */ /* 요구는 감액 한도 아래로 내려가지 않는다(제보 11-17: 예상 FA 시장가 × 다년 할인만 보고 4억 선수가 3,500만 원을 요구했다) */
 /* 다년계약 판정(계약 2단계: 사용자·AI 구단이 같은 함수). annual: 환산 연평균(조건 묶음이면 termsVal). 순서도 사용자 판정과 같다:
    최소 기간 → 감액 한도(eq: 연봉+계약금 연평균, 제보 11-17) → FA 시장 확인(요구의 98% 미만이면 거절) → 에이전트 역제안(요구의 90~98%) → 합의(98% 이상 또는 보여 준 역제안 수락) → 거절 */
 function extJudge(p,annual,years,tid,acc,eq){ const ag=hasAgent(p)?agentOf(p):null; const d=extDemandAll(p,years,tid);

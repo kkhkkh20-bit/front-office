@@ -17,3 +17,10 @@ function currentAbilityStars(rp){ const known=rp&&typeof rp.cur==='number'&&isFi
    1년 치 기록이 없으면 가장 오래된 기록과 비교하고, 말풍선에 기준 날짜를 적는다 */
 function yrDelta(p){ if(!p||p.team!==G.user||p.prospect||!p.r)return null; const b=typeof rmBase==='function'?rmBase(p,'1y'):null; if(!b||b.d>=G.day)return null; const o=dv(ovr({isP:p.isP,r:b.r})), n=dv(ovr(p)); return {x:n-o,o,n,from:b.d}; }
 function yrDTag(p,cls){ const D=yrDelta(p); if(!D||!D.x)return ''; const up=D.x>0; return `<i class="ovd pf-dl ${up?'up':'dn'}${cls?' '+cls:''}" title="${esc(`${dsh(D.from)} 대비 종합 ${D.o} → 지금 ${D.n}`)}" aria-label="${esc(`${dsh(D.from)} 대비 ${up?'상승':'하락'} ${Math.abs(D.x)}`)}">${up?'+':'−'}${Math.abs(D.x)}</i>`; }
+
+/* 목록 줄의 능력 칸(카페 11-19): 색 꼬리표 · 컨디션 · 1년 전 대비 증감을 저마다 폭이 정해진 자리에 놓는다. 증감·컨디션이 없는 줄도 자리는 남아 꼬리표가 한 줄로 선다.
+   선수 명단 '현재' 열 · 엔트리 관리 · 트라이아웃이 같이 쓴다. solo는 컨디션·증감이 있을 수 없는 목록(계약 전 선수)용: 꼬리표 자리만 */
+function abilSlots(tag,cond,delta,solo){ return `<span class="abc${solo?' abc-solo':''}"><span class="abc-t">${tag}</span>${solo?'':`<span class="abc-c">${cond||''}</span><span class="abc-d">${delta||''}</span>`}</span>`; }
+function abilCell(p,rp){ rp=rp||scoutReport(p); return abilSlots(rchipG(rp.cur,rp.exact),condChip(p),yrDTag(p)); }
+/* 꼬리표 + 잠재력 별(이름 옆에 붙이는 묶음) */
+function abilPot(p,rp){ rp=rp||scoutReport(p); return `<span class="abp">${abilCell(p,rp)}${potChip(rp,p)}</span>`; }

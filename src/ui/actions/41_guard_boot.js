@@ -75,6 +75,8 @@ const GUARD={
   fireScout(v){ const s=(G.scouts||[]).find(x=>x.id===v); if(!s)return null; return {subj:`스카우트 ${s.name} 계약 해지`,kind:'스카우트',lines:[`${s.region} 담당 · 능력 ${s.skill}`],warn:'해지하면 그 지역 정보가 줄어듭니다.'}; },
   crewFire(v){ const c=crewOf()[v]; if(!c)return null; return {subj:`${CREW_JOB[v].l} ${c.name} 계약 해지`,kind:'팬 운영',lines:[`남은 기간 정산금 ${money(crewSettle(c))}`],warn:'해지하면 되돌릴 수 없습니다.'}; }, /* 위험 동작은 늘 확인(UI 2단계 2-5) */
   anaFire(v){ const a=anaList().find(x=>x.id===v); if(!a)return null; return {subj:`분석원 ${a.name} 계약 해지`,kind:'전력분석',lines:[`${AROLE[a.role].l} · 능력 ${a.skill}`],warn:'해지하면 되돌릴 수 없습니다.'}; },
+  gplCancel1(v){ const s=gplMonthSpans().find(x=>x.a===+v); if(!s)return null; const D=gplCanDays(s); if(D.length<2)return null; /* 하루짜리는 그날 칸의 취소처럼 바로 지운다 */
+    return {head:'단장 일정',kind:'일정',subj:`${gplLong({...s,days:D})} 취소`,noMail:true,ok:'취소하기',no:'그대로 두기',lines:[`${dmd(D[0])}~${dmd(D[D.length-1])} · ${gplLong({...s,days:D})}`,`모두 ${D.length}일의 일정을 지웁니다. 지난 날과 오늘은 그대로 둡니다.`]}; },
   gplCancel(){ const L=gplPicked(gplMonthSpans()); if(!L.length)return null; const n=L.reduce((x,s)=>x+gplCanDays(s).length,0);
     return {head:'단장 일정',kind:'일정',subj:`단장 일정 ${L.length}건 취소`,noMail:true,ok:'취소하기',no:'그대로 두기',lines:[...L.slice(0,12).map(s=>{ const D=gplCanDays(s); return `${D.length>1?`${dmd(D[0])}~${dmd(D[D.length-1])}`:dmd(D[0])} · ${gplLong({...s,days:D})}`; }),L.length>12?`외 ${L.length-12}건`:'',`모두 ${n}일의 일정을 지웁니다. 지난 날과 이미 다녀온 일정은 그대로 둡니다.`].filter(Boolean),warn:'지운 일정은 달력에서 다시 잡을 수 있습니다.'}; },
   relBatch(){ const L=relPick(UI.trimSel||[]); if(!L.length)return null; const cost=L.reduce((s,p)=>s+relCost(p).tot,0), n=rosterN(G.user);
