@@ -7234,6 +7234,27 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
   #app main.content:not(.ws-frame):not(.inbox-workspace):not(:has(.home-workspace)){padding-bottom:calc(var(--bnav-h,58px) + env(safe-area-inset-bottom,0px) + 8px)}
   #sheet .sheet .sh-foot,#sheet .sheet .pn-foot{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
 }
+
+/* ---------- 카페 11-19 신인 드래프트 화면 ---------- */
+/* 표 머리글: 고정 열(선수·행동)도 다른 머리글과 같은 회색 배경(가로 스크롤 때도) */
+.candidate-table thead th:first-child,.tw .candidate-table thead th:first-child,.tw .sqt.candidate-table thead th:first-child,.draft-candidates .candidate-table thead th:last-child,.fx-scr .sqt.candidate-table thead th{background:var(--head)}
+/* '남은 지명 건너뛰기'는 자동 지명 묶음 밖 보조 버튼(작게, 위험 색) */
+.drest-pass-row{margin-top:2px}.drest-pass-row .btn.text.danger{display:inline;padding:0 4px;min-height:0;font-size:12px;text-decoration:underline;text-underline-offset:2px;border:0;background:none}
+.drest-pass-row .btn.text.danger.primary{text-decoration:none;border:1px solid var(--bad);border-radius:4px;padding:1px 6px}
+/* 드래프트 집중 모드: 하위 탭 대신 '← 영입·계약' 한 줄, 왼쪽 메뉴는 접고 후보 표를 넓게 */
+nav.subtabs.dfocus-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;overflow:visible;margin:2px 0 8px;padding:0 0 6px;min-width:0;border-bottom:1px solid var(--line)}.dfocus-bar .dfocus-t{font-size:15px;white-space:nowrap}.dfocus-bar.off{margin:0 0 6px}
+.shell.dfocus{grid-template-columns:minmax(0,1fr)}.shell.dfocus>.rail{display:none}
+@media(min-width:1100px){
+  .fmsh.dfocus>.fmbody{grid-template-columns:52px minmax(0,1fr)}
+  .fmsh.dfocus .fm2{padding-left:64px}
+  #app .fmsh.dfocus .fmside button{justify-content:center;padding-inline:0;gap:0}
+  .fmsh.dfocus .fmside button span{display:none}
+  .fmsh.dfocus .fmside button .ico{width:18px;height:18px;flex-basis:18px;opacity:.9}
+  .fmsh.dfocus .fmside button .cnt{position:absolute;top:0;right:4px}
+  .fmsh.dfocus .fmside button .sdot{position:absolute;top:4px;right:8px}
+}
+/* 휴대폰(.tw.twp)에서는 머리글이 --card 배경이라 고정 열도 그 색으로 맞춘다 */
+.tw.twp .sqt.candidate-table thead th:first-child,.tw.twp .sqt.candidate-table thead th:last-child,.draft-candidates .tw.twp .candidate-table thead th:last-child{background:var(--card,#181b20)}
 /* 기분 이유 목록·팀 분위기(39b_morale): 한 줄에 한 가지, 오른쪽에 방향 표시 */
 .mrl-box{margin-top:8px}
 .mrl-h{font-size:var(--ui-caption,12px);color:var(--muted);margin-bottom:4px;display:flex;align-items:center}
@@ -39231,7 +39252,7 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
   if(fmOn()){ fmNavRec(); app.innerHTML=fmShell(t,per,unread,b); { const mc=app.querySelector('main.content'); if(mc)mc.dataset.tab=UI.tab; } document.body.classList.toggle('help',helpOn()); document.body.classList.add('fm'); markHints(app); renderSheet(); try{ autoLink($('#app')); }catch(e){} if(UI.tab==='inbox')inboxWire(); if(UI.stamp&&!UI.stamp._t){ const st=UI.stamp; st._t=setTimeout(()=>{ if(UI.stamp===st){ UI.stamp=null; render(); } },4000); } return; }
   document.body.classList.remove('fm');
   const dk=draftTopOn(); const nav=NAV; const ic=i=>ICO[i]||ICO2[i]; const inMenu=!BNAV.includes(UI.tab); const menuAlert=NAV.some(([k])=>!BNAV.includes(k)&&tabAlert(k));
-  app.innerHTML=`<div class="shell">
+  app.innerHTML=`<div class="shell${draftFocusOn()?' dfocus':''}">
   <aside class="rail" aria-label="메뉴"><div class="brand" data-a="tab" data-v="home" role="button" tabindex="0" title="홈으로">${badge(G.user,38)}<b>${esc(tsplit(t)[0])}${tsplit(t)[0]?"<br>":""}${esc(tsplit(t)[1])}</b></div>${nav.map(([k,l,i])=>`<button data-a="tab" data-v="${k}" class="${UI.tab===k?'on':''}">${ic(i)}${l}${k==='inbox'&&unread?`<span class="cnt">${unread}</span>`:tabAlert(k)?'<i class="sdot"></i>':''}</button>`).join('')}<button class="railme ${UI.tab==='me'?'on':''}" data-a="tab" data-v="me">${avImg(meAv())}<span>${esc(meName()||'단장 프로필')}</span></button><button class="railset" data-a="go" data-v="cfg:set">${ICO2.cog}설정 · 권한</button></aside>
   <div class="mainc">
    <header class="top"><div class="gut"><div class="tbar wrap">
@@ -39239,7 +39260,7 @@ function render0(){appZoom();document.documentElement.classList.toggle('meeting-
      ${fullOk()?`<button class="mailbtn fullbtn${fullOn()?' on':''}" data-a="fullTg" aria-label="전체 화면" title="전체 화면 켜기·끄기">${ICO.full}</button>`:''}${dk&&!UI.fromMail?`<button class="mailbtn tophelp${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button>`:''}${G.unemp?'':`<button class="mailbtn calbtn" data-a="calOpen" aria-label="캘린더" title="캘린더 · 마감과 일정">${ICO.cal}</button>`}${`<button class="mailbtn" data-a="inbox" aria-label="소식함${unread?` · 확인할 중요 소식 ${unread}건`:''}" title="소식함${unread?` · 확인할 중요 소식 ${unread}건`:''}">${ICO.mail}${unread?`<i>${unread>99?'99+':unread}</i>`:''}</button>`}${dk?draftGo():goSet(per,b)}
    </div></div>${topBlocks(b)}</header>
    <div class="gut"><div class="wrap">
-     ${dk&&!UI.fromMail?'':`<div class="subhead${!wide()&&UI.tab!=='home'&&!UI.fromMail?' notitle':''}">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${TITLE[UI.tab]}</h1><div class="meta">${UI.tab==='club'&&UI.clubInspect!=null?'<span class="small muted">공개 구단 자료</span>':metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>`}
+     ${dk&&!UI.fromMail?'':`<div class="subhead${!wide()&&UI.tab!=='home'&&!UI.fromMail?' notitle':''}">${UI.fromMail&&UI.tab!=='inbox'?'<button class="btn small back2ib" data-a="ibReturn">◀ 소식함으로</button>':''}<h1>${draftFocusOn()?'신인 드래프트':TITLE[UI.tab]}</h1><div class="meta">${UI.tab==='club'&&UI.clubInspect!=null?'<span class="small muted">공개 구단 자료</span>':metaChips()}<button class="helpbtn${helpOn()?' on':''}" data-a="help" aria-label="설명 ${helpOn()?'숨기기':'보기'}" title="설명 ${helpOn()?'숨기기':'보기'}">?</button></div></div>`}
      <main class="content">${tabBody()}</main>${UI.stamp?stampView():''}${patchPop()} <!-- 도장(합의·거래 성사)은 어느 화면에서든 맨 위에 뜬다 -->
    </div></div>
   </div>
@@ -39603,14 +39624,15 @@ function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)ret
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
 const FM_SUBROW={roster:()=>rosterSubRow(),inbox:()=>inboxSubRow()};
 function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;if(UI.cast)return '<span class="fm-ttl">경기 중계</span>'; /* 중계 중에는 홈 하위 탭(눌러도 중계가 그대로)을 숨긴다 */ const tab=UI.tab; if(tab==='club'&&UI.clubInspect!=null)return '<span class="fm-ttl">'+esc(tname(UI.clubInspect))+' · 공개 구단 기록</span>'; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
+  if(draftFocusOn()){ const d=G.draft, pk=d.picks[d.cur]; return back+`<button class="fm-ib dfocus-x" data-a="dfocusOff" title="영입·계약 하위 탭과 왼쪽 메뉴를 다시 펼칩니다">← 영입·계약</button><span class="fm-ttl">${d.y||G.year} 신인 드래프트 · ${pk.rd}라운드 ${pk.no}순위${pk.tid===G.user?' · 우리 차례':''}</span>`; } /* 드래프트 집중 모드(카페 11-19) */
   if(SUBS[tab])return back+subTabsRaw(tab);
   { const f=FM_SUBROW[tab], h=f&&f(); if(h)return back+h; } /* 화면이 자기 하위 탭(UI.it)을 이 줄에 건다(사용자 11-17: 선수단 탭이 본문 아래에 묻혔다) */
   return back+`<span class="fm-ttl">${esc(TITLE[tab]||'')}</span>`; }
 function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||[];
-  const location=UI.cast?'경기 중계':UI.tab==='club'&&UI.clubInspect!=null?tname(UI.clubInspect)+' · 공개 구단 기록':TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
+  const location=UI.cast?'경기 중계':UI.tab==='club'&&UI.clubInspect!=null?tname(UI.clubInspect)+' · 공개 구단 기록':draftFocusOn()?'신인 드래프트':TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
   const ico=(a,v,i,l,on,n)=>`<button class="fm-i${on?' on':''}" data-a="${a}"${v?` data-v="${v}"`:''} aria-label="${l}" title="${l}">${ic(i)}${n?`<i>${n>99?'99+':n}</i>`:''}</button>`;
   const d=dobj(G.day);
-  return `<div class="shell fmsh${UI.tab==='home'&&!UI.meet&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
+  return `<div class="shell fmsh${draftFocusOn()?' dfocus':''}${UI.tab==='home'&&!UI.meet&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
   <header class="fmtop"><div class="fm1">
     <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.meet||UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
     <button class="fm-club" ${G.unemp?'':'data-a="tab" data-v="home" title="홈으로" aria-label="홈으로"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,36)}</button>
@@ -44684,7 +44706,12 @@ function dcard(p,rp,rk,mine){
 }
 /* 스카우트 추천 자동 지명 기준(카페 피드백 11-09v: 접혀 있어 못 찾았다). pre: 드래프트 전 미리 정한 기준(있으면 표시) */
 function drestBox(pre,sub){ const on=(m,n)=>pre&&pre.mode===m&&(m==='pass'||pre.min===n)?' primary':''; const S=draftCondSummary(pre?.min||4);
-  return `<div class="drest drest-v"><div class="row between"><b>스카우트 추천으로 자동 지명</b><span class="small muted">${sub}</span></div><div class="row"><button class="btn small${on('cond',3)}" data-a="draftRest" data-v="cond:3">★2(1군 백업) 이상만</button><button class="btn small${on('cond',4)}" data-a="draftRest" data-v="cond:4">★3(주전감) 이상만</button><button class="btn small${on('board',3)}" data-a="draftRest" data-v="board:3" title="보드(관심 목록) 순서대로 남은 맨 위 후보를 지명합니다. 보드가 비면 ★2 이상 추천으로 이어 갑니다">우리 보드 순서대로</button><button class="btn small${on('pass')}" data-a="draftRest" data-v="pass:0">남은 지명 건너뛰기</button>${pre?'<button class="btn small" data-a="draftRest" data-v="off">해제</button>':''}</div><p class="small">현재 후보 ${S.total}명 · ${pre?.min===3?'★2':'★3'} 이상 확인 ${S.fit}명 · 잠재력 미확인 ${S.unknown}명${S.full?' · 로스터 한도 도달: 자동 지명은 건너뜁니다':''}</p><p class="small muted">${pre?`드래프트가 열리면 '${pre.mode==='pass'?'남은 지명 건너뛰기':pre.mode==='board'?'우리 보드 순서대로':pre.min>=4?'★3 이상만':'★2 이상만'}' 기준으로 우리 지명을 자동 처리합니다. `:''}스카우트 추천 순서대로 뽑고, 잠재력 추정이 기준에 못 미치면 그 지명을 건너뜁니다. ${hiI(`KBO 규약상 지명권 패스는 라운드 제한이 없어 1·2라운드도 같은 기준입니다. 로스터가 한도(${ROSTER_MAX}명)에 차면 더 뽑지 않습니다. 기준을 채운 후보가 없고 미확인 후보가 남으면 자동 진행을 멈추고 직접 확인을 요청합니다. 진행 중에 '그만두고 직접 고르기'로 멈출 수 있습니다.`)}</p></div>`; }
+  return `<div class="drest drest-v"><div class="row between"><b>스카우트 추천으로 자동 지명</b><span class="small muted">${sub}</span></div><div class="row"><button class="btn small${on('cond',3)}" data-a="draftRest" data-v="cond:3">★2(1군 백업) 이상만</button><button class="btn small${on('cond',4)}" data-a="draftRest" data-v="cond:4">★3(주전감) 이상만</button><button class="btn small${on('board',3)}" data-a="draftRest" data-v="board:3" title="보드(관심 목록) 순서대로 남은 맨 위 후보를 지명합니다. 보드가 비면 ★2 이상 추천으로 이어 갑니다">우리 보드 순서대로</button>${pre?'<button class="btn small" data-a="draftRest" data-v="off">해제</button>':''}</div><p class="small">현재 후보 ${S.total}명 · ${pre?.min===3?'★2':'★3'} 이상 확인 ${S.fit}명 · 잠재력 미확인 ${S.unknown}명${S.full?' · 로스터 한도 도달: 자동 지명은 건너뜁니다':''}</p><p class="small muted">${pre?`드래프트가 열리면 '${pre.mode==='pass'?'남은 지명 건너뛰기':pre.mode==='board'?'우리 보드 순서대로':pre.min>=4?'★3 이상만':'★2 이상만'}' 기준으로 우리 지명을 자동 처리합니다. `:''}스카우트 추천 순서대로 뽑고, 잠재력 추정이 기준에 못 미치면 그 지명을 건너뜁니다. ${hiI(`KBO 규약상 지명권 패스는 라운드 제한이 없어 1·2라운드도 같은 기준입니다. 로스터가 한도(${ROSTER_MAX}명)에 차면 더 뽑지 않습니다. 기준을 채운 후보가 없고 미확인 후보가 남으면 자동 진행을 멈추고 직접 확인을 요청합니다. 진행 중에 '그만두고 직접 고르기'로 멈출 수 있습니다.`)}</p><div class="small drest-pass-row"><span class="muted">지명을 더 하지 않으려면</span> <button type="button" class="btn small text danger drest-pass${on('pass')}" data-a="draftRest" data-v="pass:0" title="남은 우리 지명을 모두 건너뜁니다. 확인 창을 거치며, 지명권은 되돌릴 수 없습니다">남은 지명 건너뛰기</button>${pre&&pre.mode==='pass'?' <b class="bad">(설정됨)</b>':''}</div></div>`; }
+/* 카페 11-19 드래프트 집중 모드: 드래프트가 열린 날(지명 순번이 살아 있는 동안) 영입·계약 하위 탭·시즌 안내 띠를 숨기고 제목을 '신인 드래프트'로. '← 영입·계약'으로 나가면 그 드래프트 동안 꺼진다 */
+function draftFocusKey(){ const d=G&&G.draft; return d&&!d.done?`${d.y||G.year}:${G.user}`:''; }
+function draftFocusOn(){ const d=G&&G.draft; return !!(d&&!d.done&&d.picks&&d.picks[d.cur]&&!G.unemp&&UI.tab==='transfer'&&curSub('transfer')==='draft'&&!UI.meet&&UI.dfocusOff!==draftFocusKey()); }
+function draftFocusBar(){ const d=G.draft, pk=d.picks[d.cur]; return `<nav class="subtabs dfocus-bar" aria-label="드래프트 집중 모드"><button type="button" class="btn small dfocus-x" data-a="dfocusOff" title="하위 탭·메뉴를 다시 펼칩니다">← 영입·계약</button><b class="dfocus-t">${d.y||G.year} 신인 드래프트</b><span class="small muted">${pk.rd}라운드 ${pk.no}순위${pk.tid===G.user?' · 우리 차례':''}</span></nav>`; }
+function draftFocusEnter(){ const d=G&&G.draft; if(!(d&&!d.done&&d.picks&&d.picks[d.cur])||G.unemp||UI.dfocusOff!==draftFocusKey())return ''; return `<nav class="subtabs dfocus-bar off" aria-label="드래프트 집중 모드"><button type="button" class="btn small" data-a="dfocusOn">드래프트 집중 모드</button><span class="small muted">하위 탭과 메뉴를 접고 후보 표를 넓게 봅니다.</span></nav>`; }
 /* 스카우트 추천 순위(#): 화면의 '스카우트 #n'과 같은 값(우리 스카우트 평가 draftVal 순). 숨은 실제 능력은 쓰지 않는다 */
 function draftRanked(pool){ return draftBoardRanked(pool); }
 /* 카페 11-18: 보드를 스카우트 추천순으로 한 번 정렬 · 되돌리기 · 자동 정렬 유지(기본 꺼짐). 보드에 없는 칸(현역 관심 선수 등)은 제자리 */
@@ -44779,7 +44806,7 @@ function draftBoard(){
   const lab=(k,opts)=>(opts.find(o=>o[0]===f[k])||[,''])[1];
   const filtM=fmOn()?filt:`<details class="card dfilt dfilt-d" data-k="draftFilters" ${UI.open?.draftFilters?'open':''}><summary class="small">필터 · ${[lab('pos',Object.entries(DPOS)),f.typ==='all'?'':lab('typ',[['hs','고졸'],['col','대졸']]),f.reg==='all'?'':f.reg,f.seg==='mine'?'내 보드 순서':lab('sort',[['rk','스카우트 순위'],['press','언론 순위'],['stat','아마 성적']])].filter(Boolean).join(' · ')} · ${list.length}/${f.seg==='mine'?(G.shortlist||[]).filter(id=>all.some(x=>x.p.id===id)).length:pool.length}명</summary>${filt.replace(/^<section class="card dfilt">|<\/section>$/g,'')}</details>`;
   const dvw=UI.dview||'list'; const pk2='dr'+f.seg+f.pos+f.typ+f.reg+f.sort+dvw; const PG=pager(pk2,list,dvw==='list'?15:(wide()?6:4));
-  const vt=`<div class="row between"><span></span>${wide()?`<span class="small muted">이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}</span>`:hiI(`목록 칸: 이름 · 아마 기록 · 평가 순위 · 잠재력 추정 · 관심${mine?' · 지명':''}`)}</div>`;
+  const vt=`<div class="row between dvt"><span></span>${hiI(`목록 칸: 선수(이름·포지션·나이) · 스카우트 순위(우리 평가) · 언론 순위 · 구분·학교·투타 · 아마 기록(학년 흐름 포함) · 잠재력 추정(스카우트 범위·위험) · 남을 확률(우리 차례까지) · 관찰 횟수 · ${mine?'지명':'관심'} 버튼`)}</div>`; /* 카페 11-19: 회색 안내 글 대신 ⓘ 도움말 */
   const empty=f.seg==='mine'&&!(G.shortlist||[]).some(id=>G.players[id]&&G.players[id].prospect)?'<p class="small muted">관심 선수가 없습니다. 후보 목록에서 ☆를 눌러 담으세요.</p>':'<p class="small muted">조건에 맞는 선수가 없습니다.</p>';
   return frame((f.seg==='mine'?myBoard(all,mine)+filtM+vt:`<div class="dtools">${filtM}${vt}</div>`)+(dvw==='list'?`<section class="card candidate-list draft-candidates" data-pg="${pk2}">${draftCandidateTable(PG.items,mine)}${PG.bar}</section>`:`<div class="tgrid dgrid" data-pg="${pk2}">${PG.items.map(x=>dcard(x.p,x.rp,x.rk,mine)).join('')||empty}</div>${PG.bar}`));
 }
@@ -44811,7 +44838,8 @@ function foFullNote(){ if(G.unemp)return ''; const n=rosterN(G.user)-(foreignOf(
 /* ---------- 영입·계약 ---------- */
 function transferView(){
   const s=curSub('transfer');
-  return subTabs('transfer')+({foreign:foreignView,fa:faCenter,free:freeWorkspace,tryout:tryView,contract:contractPage,agents:agentsView,draft:draftPage,kbo:kboView,moves:movesView}[s]||faCenter)();
+  const focus=s==='draft'&&draftFocusOn(); /* 카페 11-19 드래프트 집중 모드: 하위 탭 줄 대신 '← 영입·계약' 한 줄 */
+  return (focus?(fmOn()?'':draftFocusBar()):subTabs('transfer')+(s==='draft'?draftFocusEnter():''))+({foreign:foreignView,fa:faCenter,free:freeWorkspace,tryout:tryView,contract:contractPage,agents:agentsView,draft:draftPage,kbo:kboView,moves:movesView}[s]||faCenter)();
 }
 /* 외국인 후보 조사 단계: 추정 범위와 함께 한 칸에 */
 function fsPill(p,rp,f){ f=f||fScout(p,rp); return `<span class="pill fsp ${f.cls}" title="${esc(f.d+' 근거: '+f.why.join(', '))}">${f.l}</span>`; } /* 예상·범위는 카드 왼쪽 숫자에, 여기는 조사 단계만 */
@@ -47074,7 +47102,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   release(v){releasePlayer(+v);UI.sheet=null;UI.confirmRel=null;save();render();},
   advDraft(){ dliveStart('am'); },
   draftMore(){ UI.open=UI.open||{}; UI.open.draftMore=!UI.open.draftMore; render(); if(UI.open.draftMore)document.querySelector('.dhead-pop')?.scrollIntoView({block:'nearest'}); },
-  passPick(){passPick();save();render();},
+  passPick(){passPick();save();render();}, /* 확인 창은 41_guard_boot GUARD.passPick(카페 11-19) */
+  dfocusOff(){ UI.dfocusOff=draftFocusKey(); render(); }, dfocusOn(){ UI.dfocusOff=null; render(); }, /* 드래프트 집중 모드 나가기·다시 켜기 */
   draftRest(v){ if(v==='off'){ draftRestSet(null); save(); render(); return; } const [m,n]=String(v).split(':'); draftRestSet(m,+n||3); save(); if(G.draft&&!G.draft.done)dliveStart('am'); else render(); },
   dmove(v){ const [id,d]=v.split(':').map(Number); dbAutoApply(draftRanked()); const L=G.shortlist||[], on=new Set(draftPool().map(p=>p.id)); const i=L.indexOf(id); let j=i+d; while(j>=0&&j<L.length&&!on.has(L[j]))j+=d; /* 보드에 보이는 이웃과 바꾼다(사이의 현역 관심 선수는 제자리) */ if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; const S=dbSortOf(); if(S.auto){ S.auto=false; toast('직접 순서를 바꿔 자동 정렬 유지를 껐습니다.'); } save(); render(); },
   dbSort(){ const S=dbSortOf(), nx=dbRankOrder(draftRanked()); if(nx.join()===(G.shortlist||[]).join()){ toast('이미 스카우트 추천순입니다.'); return; } draftBoardRemember(S,G.shortlist||[]); G.shortlist=nx; toast('스카우트 추천순으로 정렬했습니다. 되돌리기로 이전 순서로 돌아갈 수 있습니다.'); save(); render(); },
@@ -47783,6 +47812,11 @@ function tradeDoc(tid,give,get,cash,pk){ cash=Math.round(cash||0); pk=pkNorm(pk)
   const sc=tradeSalChg(give,get); const cp0=capInfo(G.user).pay /* 겨울엔 다음 시즌 기준(cp1과 같게, 검수 11-09v) */, cp1=capPayAs(G.user,get,give), cap=capOf(sponSeason()); if(cash){ ra.after-=cash; } /* 얹는 현금도 예산 여유에서 나간다 */
   return {subj:`${tshort(tid)}와(과) 트레이드`,kind:'트레이드',lines:[`보내는 선수: ${give.map(pnm).join(', ')||'없음'}`,`받는 선수: ${get.map(pnm).join(', ')||'없음'}`,pk.give.length?`보내는 지명권: ${pk.give.map(pkName).join(', ')}`:'',pk.get.length?`받는 지명권: ${pk.get.map(pkName).join(', ')}`:'',`${cash>0?`현금 ${money(cash)} 얹음 · `:cash<0?`현금 ${money(-cash)} 받음 · `:''}${sc.nx?'다음 시즌 연봉':'연봉'} ${sc.d>=0?'+':''}${money(sc.d)}/년 · 예산 여유 ${money(ra.before)} → ${money(ra.after)}`,Math.abs(ra.dI)>=10?`예산 여유 변화 = 올해 지출 ${ra.dE>=0?'+':'-'}${money(Math.abs(ra.dE))}, 예상 수입 ${ra.dI>=0?'+':'-'}${money(Math.abs(ra.dI))} (전력이 바뀌면 관중·광고 수입 전망도 바뀝니다)`:'',tradeRosterTxt(give,get),cp1>cap&&cp1>cp0?`샐러리캡: 상위 40명 연봉 ${money(cp1)} / 상한 ${money(cap)} · ${capStateTxt(cp1)} (시즌 끝까지 넘으면 결산 때 냅니다)`:''],warn:'상대가 받아들이면 바로 성사되고 되돌릴 수 없습니다.',chk:()=>(G.trades||[]).length}; }
 const GUARD={
+  /* 카페 11-19: 지명 건너뛰기는 너무 쉽게 눌렸다. 이번 지명은 확인 창 1단계, 남은 지명 전부는 확인 버튼이 2초 뒤에 켜지는 확인 창. 저장·자동 진행 로직은 그대로(확인 뒤 원래 동작) */
+  passPick(){ const d=G.draft, pk=d&&!d.done&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return null; const left=d.picks.slice(d.cur).filter(x=>x.tid===G.user).length;
+    return {head:'신인 드래프트',kind:'드래프트',noMail:true,subj:`${pk.rd}라운드 ${pk.no}순위, 이번 지명을 건너뛸까요?`,ok:'이번 지명 건너뛰기',no:'취소',lines:[`우리 남은 지명 ${left}번 중 이번 1번을 건너뜁니다(그 뒤 ${left-1}번은 그대로).`,'건너뛴 순번은 다른 구단으로 넘어가지 않고 비어 있는 채 지나갑니다.'],warn:'지명권은 되돌릴 수 없습니다.'}; },
+  draftRest(v){ if(String(v).split(':')[0]!=='pass')return null; const d=G.draft, live=d&&!d.done; const left=live?d.picks.slice(d.cur).filter(x=>x.tid===G.user).length:(draftPlan()||[]).filter(k=>k.tid===G.user).length; if(!left)return null;
+    return {head:'신인 드래프트',kind:'드래프트',noMail:true,armMs:2000,subj:live?`남은 우리 지명 ${left}번을 모두 건너뛸까요?`:`드래프트가 열리면 우리 지명 ${left}번을 모두 건너뛰도록 정할까요?`,ok:`건너뛰기 ${left}번`,no:'취소',lines:[`${live?'지금부터 끝까지':'올해 드래프트에서'} 우리 순번 ${left}개를 모두 비웁니다. 신인은 한 명도 들어오지 않습니다.`,live?"진행 중에는 '그만두고 직접 고르기'로 멈출 수 있지만, 이미 지나간 순번은 되살릴 수 없습니다.":"드래프트 전에는 '해제'로 되돌릴 수 있습니다. 드래프트가 열리면 바로 적용됩니다."],warn:'지명권은 되돌릴 수 없습니다. 확인 버튼은 2초 뒤에 켜집니다.'}; },
   enlist(v){ const p=G.players[+v]; if(!p||!milFree(p))return null; const d=depth(G.user); const role=[...d.start].some(x=>x.id===p.id)?'주전':d.sp.some(x=>x.id===p.id)?'선발 로테이션':d.pen.slice(0,4).some(x=>x.id===p.id)?'필승조':p.e1?'1군 백업':'2군';
     const from=G.day+14, to=from+MIL_DAYS; return {subj:`${p.name} 현역 입대`,kind:'병역',lines:[`${posLabel(p)} · ${p.age}세 · 지금 ${role}`,`입대 ${dmd(from)} · 전역 예정 ${dmd(to)}(1년 6개월)`,'복무 중에는 로스터·연봉 총액에서 빠지고, 1군 기록이 없어 FA 연차로 치지 않습니다.','입대일 전까지는 병역 화면에서 예약을 취소할 수 있습니다.']}; },
   signFc(v){ const p=G.players[+v]; if(!p||foreignCheck(G.user,p))return null; const [a,b]=roomWith(()=>{ const t0=p.team,s0=p.sal; const S=G.sea&&G.sea.fspend; const f0=S?S[G.user]:undefined; p.team=G.user; p.sal=p.ask; if(S&&(period()==='season'||G.day>=G.cal.open))S[G.user]=(f0||0)+Math.round(p.ask*remainFrac()); return ()=>{p.team=t0;p.sal=s0; if(S){ if(f0===undefined)delete S[G.user]; else S[G.user]=f0; } }; }); const bb=budget();
@@ -47911,7 +47945,7 @@ function cfmFocusBack(){ const r=UI._cfmRet; UI._cfmRet=null; if(!r)return; setT
 function cfmRender(){ let el=document.getElementById('cfm'); if(!el){ el=document.createElement('div'); el.id='cfm'; document.body.appendChild(el); }
   const c=UI.cfm; if(!c){ const was=!!el.querySelector('[role="dialog"]'); el.innerHTML=''; if(was)cfmFocusBack(); return; } const d=c.doc; const fin=cfmFocusIn(el);
   el.innerHTML=`<div class="cfm-w"><div class="cfm" role="dialog" aria-modal="true" aria-labelledby="cfm-t" tabindex="-1"><div class="cfm-h"><span>${esc(d.head||'결재 요청')}</span><span>${d.head?'':'운영팀 · '}${dsh(G.day)}</span></div><h3 id="cfm-t">${esc(d.subj)}</h3><ul>${d.lines.filter(Boolean).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>${d.warn?`<p class="cfm-x">${esc(d.warn)}</p>`:''}<div class="cfm-b"><button class="btn" data-a="cfmNo">${esc(d.no||'취소')}</button><button class="btn primary" data-a="cfmOk">${esc(d.ok||'진행(결재)')}</button></div></div></div>`;
-  try{ josaFix(el); }catch(e){} fin(); }
+  try{ josaFix(el); }catch(e){} if(d.armMs){ const b=el.querySelector('[data-a="cfmOk"]'), t0=Date.now(), ok=d.ok||'진행(결재)'; b.disabled=true; b.setAttribute('aria-disabled','true'); const tick=()=>{ if(UI.cfm!==c||!b.isConnected)return; const left=Math.ceil((d.armMs-(Date.now()-t0))/1000); if(left>0){ b.textContent=`${ok} (${left}초)`; setTimeout(tick,200); } else { b.disabled=false; b.removeAttribute('aria-disabled'); b.textContent=ok; } }; tick(); } /* 되돌릴 수 없는 일괄 처리: 확인 버튼을 잠깐 잠근다(카페 11-19) */ fin(); }
 /* 길게 진행(플레이테스트 3: 시즌 한 번에 시리즈 단위 70번 클릭): 1주일 · 한 달 · 다음 주요 일정 전날까지. 중요한 소식·결정이 생기면 그 전에 멈춘다 */
 function advKeyList(){ const c=G.cal||{}, d=G.day, y=G.year, L=[]; const add=(n,t)=>{ if(Number.isFinite(n)&&n-1>d&&!L.some(x=>x[0]===n))L.push([n,t]); };
   try{ add(tradeDL(),'트레이드 마감'); }catch(e){} add(c.end,'정규시즌 종료'); add(c.draft,'신인 드래프트'); add(G.fa&&!G.fa.closed&&Number.isFinite(G.fa.openDay)?G.fa.openDay:KD(11,6),'FA 시장 개장'); add(c.camp>d+1?c.camp:dnum(y+1,1,25),'스프링캠프'); add(c.open,'개막');
@@ -49509,7 +49543,7 @@ function guideRoute(){ try{ return UI.tab+':'+(typeof curSub==='function'?curSub
 function guideEasyLine(){ if(typeof AUTO_AREAS==='undefined')return ''; const on=guideEasy();
   return `<div class="hw-easy${on?' on':''}"><span>${on?'<b>쉬운 진행</b> 켜짐 · 반복 업무는 비서와 팀장이 맡습니다':'<b>어렵다면</b> 반복 업무(연봉·재계약·일상 결정·감독 요청·스카우트 배치·코치 빈자리)를 비서에게'}</span><button class="btn small" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다. 설정 › 권한에서 하나씩 바꿀 수도 있습니다.':'드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다. 설정 › 권한에서 언제든 다시 가져옵니다.'}">${on?'끄기':'쉬운 진행 켜기'}</button></div>`; }
 /* '하기'로 간 화면 맨 위 한 줄 띠 */
-function guideBar(){ const g=UI.guide; if(!g||!guideOn()||UI.sheet!=null||UI.person||UI.teamSh!=null)return ''; if(g.route!==guideRoute())return '';
+function guideBar(){ const g=UI.guide; if(!g||!guideOn()||UI.sheet!=null||UI.person||UI.teamSh!=null)return ''; if(typeof draftFocusOn==='function'&&draftFocusOn())return ''; /* 드래프트 집중 모드(카페 11-19) */ if(g.route!==guideRoute())return '';
   const L=guideItems(), x=L.find(i=>i.k===g.k); if(!x)return ''; const next=L.find(i=>!i.ok&&i.k!==x.k);
   return `<div class="guide-bar" role="status" aria-label="이번 시즌 할 일"><b>이번 시즌 할 일</b><span>${x.ok?`<i class="good">✓</i> ${esc(x.t)} 끝`:`${esc(x.t)} · ${esc(x.why||'')}`}</span>${next?`<button type="button" class="btn text" data-a="guideGo" data-v="${esc(next.k)}">다음: ${esc(next.t)} ›</button>`:`<button type="button" class="btn text" data-a="tab" data-v="home">홈으로 ›</button>`}<button type="button" class="guide-x" data-a="guideClose" aria-label="안내 닫기">×</button></div>`; }
 function guideMount(){ if(typeof document==='undefined')return; document.querySelectorAll('#app .guide-bar').forEach(e=>e.remove()); const h=guideBar(); if(!h)return; const main=document.querySelector('#app main.content'); if(!main)return; main.insertAdjacentHTML('afterbegin',h); }
@@ -51900,6 +51934,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-19-draft-screen',d:'11월 19일',t:'신인 드래프트 화면: 집중 모드 · 건너뛰기 확인 창',items:[
+    "드래프트가 열린 날에는 영입·계약 화면이 '신인 드래프트' 집중 모드로 바뀝니다. 하위 탭 줄과 시즌 안내 띠가 숨고 왼쪽 메뉴가 접혀 후보 표가 넓게 나옵니다. '← 영입·계약'으로 언제든 나가고, 드래프트가 끝나면 원래대로 돌아옵니다.",
+    "'이번 지명 건너뛰기'는 확인 창을 거칩니다. '남은 지명 건너뛰기'는 자동 지명 버튼 묶음에서 빼 작은 보조 버튼으로 두었고, 남은 우리 지명 수와 되돌릴 수 없다는 안내가 있는 확인 창에서 2초 뒤에 켜지는 확인 버튼을 눌러야 실행됩니다.",
+    "후보 표 위 회색 안내 글을 ⓘ 도움말로 옮기고, 표 머리글의 '선수' 칸 배경을 다른 칸과 같게 맞췄습니다."]},
   {id:'2026-11-19-ui-cafe',d:'11월 19일',t:'주소창 없이 쓰기 · 플레잉코치 제안 찾기 · 잠재력으로 방출 후보 고르기 · 일정 일괄 취소',items:[
     '휴대폰에서 주소창 없이 쓰려면 브라우저 메뉴 › 홈 화면에 추가를 누르세요. 홈 화면에 생긴 프런트야구 아이콘으로 열면 주소창 없이 열립니다. 전체 화면 단추는 휴대폰 전체 메뉴 아래와 설정 › 게임 설정 › 표시에 있습니다.',
     "33세 이상 우리 국내 선수의 선수 화면에 '플레잉코치 제안'이 시즌 중에도 늘 보입니다. 지금 제안할 수 없으면 버튼을 눌렀을 때 이유(비시즌에만, 보조 코치 자리 없음 등)를 알려 줍니다.",

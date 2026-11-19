@@ -231,7 +231,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   release(v){releasePlayer(+v);UI.sheet=null;UI.confirmRel=null;save();render();},
   advDraft(){ dliveStart('am'); },
   draftMore(){ UI.open=UI.open||{}; UI.open.draftMore=!UI.open.draftMore; render(); if(UI.open.draftMore)document.querySelector('.dhead-pop')?.scrollIntoView({block:'nearest'}); },
-  passPick(){passPick();save();render();},
+  passPick(){passPick();save();render();}, /* 확인 창은 41_guard_boot GUARD.passPick(카페 11-19) */
+  dfocusOff(){ UI.dfocusOff=draftFocusKey(); render(); }, dfocusOn(){ UI.dfocusOff=null; render(); }, /* 드래프트 집중 모드 나가기·다시 켜기 */
   draftRest(v){ if(v==='off'){ draftRestSet(null); save(); render(); return; } const [m,n]=String(v).split(':'); draftRestSet(m,+n||3); save(); if(G.draft&&!G.draft.done)dliveStart('am'); else render(); },
   dmove(v){ const [id,d]=v.split(':').map(Number); dbAutoApply(draftRanked()); const L=G.shortlist||[], on=new Set(draftPool().map(p=>p.id)); const i=L.indexOf(id); let j=i+d; while(j>=0&&j<L.length&&!on.has(L[j]))j+=d; /* 보드에 보이는 이웃과 바꾼다(사이의 현역 관심 선수는 제자리) */ if(i<0||j<0||j>=L.length)return; [L[i],L[j]]=[L[j],L[i]]; const S=dbSortOf(); if(S.auto){ S.auto=false; toast('직접 순서를 바꿔 자동 정렬 유지를 껐습니다.'); } save(); render(); },
   dbSort(){ const S=dbSortOf(), nx=dbRankOrder(draftRanked()); if(nx.join()===(G.shortlist||[]).join()){ toast('이미 스카우트 추천순입니다.'); return; } draftBoardRemember(S,G.shortlist||[]); G.shortlist=nx; toast('스카우트 추천순으로 정렬했습니다. 되돌리기로 이전 순서로 돌아갈 수 있습니다.'); save(); render(); },
