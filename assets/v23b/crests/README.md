@@ -1,36 +1,31 @@
-# v23b 크레스트 — 1단계 시안
+# v23b 크레스트 — 1단계 revision 2
 
-**선택 대기 중입니다. 최종 승인본이 아닙니다.** 팀별 3개, 총 6개 시안입니다.
+**A는 사용자가 A1로 확정했습니다. B는 재검토 중입니다.** 840장 유니폼 교체는 B 선택 이후 시작합니다.
 
-| 팀 | 시안 | 구성 |
+[현재 선택판: A1 + 새 B 시안 3개](previews/candidates_expansion_b_revision2.png)
+
+| 선택 | 이름 | 변경 방향 |
 |---|---|---|
-| expansion_a / XI | A1 | 곡선 상단 방패, 중앙 야구공, 안쪽 월계수, 곡선 리본 |
-| expansion_a / XI | A2 | 넓은 방패, 큰 야구공과 XI, 사다리꼴 리본 |
-| expansion_a / XI | A3 | 세로 방패, 바깥 월계수, 곡선 리본 |
-| expansion_b / XII | B1 | 정형 홈플레이트, 왕관과 내야, 곡선 리본 |
-| expansion_b / XII | B2 | 넓은 홈플레이트 위로 돌출한 왕관, 큰 XII |
-| expansion_b / XII | B3 | 세로 홈플레이트, 큰 내야 다이아몬드, 곡선 리본 |
+| A1 확정 | CLASSIC LEAGUE | 기존 후보 원본을 그대로 보존 |
+| B4 후보 | CROWN & BALL | 프레임 없는 큰 왕관 + 공 |
+| B5 후보 | SWEEPING BASEBALL | 공과 곡선 중심, 작은 왕관, 프레임 없음 |
+| B6 후보 | CLASSIC CROWN SHIELD | 방패를 남기고 왕관·공으로 단순화 |
 
-- [전체 시안](previews/candidates_overview.png)
-- [11번째 구단: 밝은/어두운 배경](previews/candidates_expansion_a.png)
-- [12번째 구단: 밝은/어두운 배경](previews/candidates_expansion_b.png)
-- [기존 10구단 v2 비교 및 실제 크기](previews/compare_with_v2_dark_light.png)
+사용자 피드백에 따라 B의 내야 다이아몬드 격자와 교차 배트를 제거했습니다. B4/B5는 외곽 프레임도 제거했습니다. MLB 공식 모자 로고 6개를 살펴보고 큰 실루엣, 여백, 적은 수의 모티프를 참고했습니다. 실존 로고의 그림이나 글리프는 사용하지 않았습니다. 관찰 근거와 출처는 [MLB_REFERENCE_NOTES.md](MLB_REFERENCE_NOTES.md)에 있습니다.
 
-평면 SVG 원본은 4색입니다. 입체 SVG와 PNG에는 왼쪽 위 테두리 경사 한 단계, 면 위아래 두 톤, 아래로 6px 그림자만 적용했습니다. 외곽선은 512 기준 12px입니다. 워드마크는 기존 v2와 동일한 **Alfa Slab One Regular**를 HarfBuzz로 조판한 실제 글리프 외곽선입니다. 폰트 SHA-256도 v2와 같습니다. 글자는 리본의 XI/XII만 사용합니다.
+[기존 v2와 같은 크기의 밝은/어두운 배경 비교판](previews/compare_with_v2_dark_light.png)에는 A1과 B4/B5/B6, 기존 10구단이 들어 있습니다. 크레스트 128/64/32와 글자 없는 마크 32/20/16/14 실제 픽셀 크기도 포함했습니다. 이전 B1/B2/B3와 A2/A3 파일은 이력으로 남겨 두었으며 활성 후보가 아닙니다.
 
-작은 마크는 별도 벡터입니다. 리본과 글자를 제거하고, 월계수·실밥·내야의 세부를 줄였습니다. 32/20/16/14px 원본 크기는 비교판에 포함했습니다. 사진에 붙였을 때의 가독성 검수는 2단계에서 수행합니다.
+## 파일과 상태
 
-## 파일
+- `candidates/{id}/svg/primary.svg`, `mark.svg`: 평면 4색 벡터
+- 각 후보 `svg/relief/`: 짧은 아래 그림자·상단 테두리 하이라이트를 적용한 파생본
+- 각 후보 `png/crest/`: 512/256/128 RGBA
+- 각 후보 `png/mark/`: 128/64/32 및 검수용 20/16/14 RGBA
+- 워드마크: v2와 동일한 Alfa Slab One Regular를 HarfBuzz로 조판한 글리프 외곽선. XI/XII만 사용
+- `teams.json.selection`: A1 / null. `approved=false`, `phase2_started=false`
+- `typography.json`, `source_references.json`, `MLB_REFERENCE_NOTES.md`: 제작·참조 근거
+- `validation.json`, `a1_preservation.json`, `checksums.sha256`: 검수와 해시
 
-- `candidates/{A1,A2,A3,B1,B2,B3}/svg/primary.svg`, `mark.svg`: 평면 원본
-- 각 후보의 `svg/relief/`: 같은 도형에서 파생한 입체판
-- 각 후보의 `png/crest/`: 512/256/128 RGBA PNG
-- 각 후보의 `png/mark/`: 128/64/32 및 검수용 20/16/14 RGBA PNG
-- `teams.json`: v2 형식의 팀 경로 + 후보/선택 상태
-- `typography.json`, `source_references.json`: 글꼴·요청서·기존 v2 참조 근거
-- `validation.json`, `checksums.sha256`: 기술 검수와 전체 파일 해시
-- `licenses/`: 글꼴 라이선스
+**규정 경로 `svg/.../expansion_a.svg`, `png/.../expansion_a.png`는 확정된 A1입니다. B의 규정 경로는 B4의 검토용 사본입니다. B4가 선택되었다는 뜻이 아닙니다.** 사용자가 B를 고르면 선택본으로 해당 경로를 확정합니다.
 
-**규정 경로 `svg/primary/{key}.svg`, `svg/mark/{key}.svg`, `png/.../{key}.png`는 A1/B1의 검토용 사본입니다. 선택을 뜻하지 않습니다.** `selection`은 둘 다 null이고 `approved=false`입니다. 사용자가 고르면 해당 경로를 선택본으로 확정합니다.
-
-기존 v2, v23, 게임 코드는 수정하지 않았습니다. 리뷰 브랜치만 납품하며 main에 병합하지 않습니다. 840장 유니폼 교체는 아직 시작하지 않았습니다.
+기존 v2/v23와 게임 코드는 변경하지 않았습니다. `assets/v23b-review` 브랜치에서만 검토하며 main에 병합하지 않습니다. 실제 사진 배치와 ArcFace 검수는 2단계 작업으로 아직 수행하지 않았습니다.

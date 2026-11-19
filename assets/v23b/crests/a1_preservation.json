@@ -1,0 +1,19 @@
+{
+  "selected": "A1",
+  "unchanged": true,
+  "sha256": {
+    "candidates/A1/svg/mark.svg": "a7d6d7ab89d8c45a613eb491bb911f2e8b0a5311d84cf13532d2ae52ebced1ff",
+    "candidates/A1/svg/primary.svg": "6e1b985943deb7e7bd46fe3f251b01a274321e75b6216b43b6774b78a593cf9e",
+    "candidates/A1/png/mark/14.png": "846cdedb43d1d621b409a5624e4b34703456ed7c91c9032820a5c5b49daac3ba",
+    "candidates/A1/png/mark/16.png": "ae84c2b2bcb48f597671d6024cdf4b548d4ae2a2c89ff1ff37ada54876469ad0",
+    "candidates/A1/png/mark/20.png": "7c29bca445a292b5b91f4ac90ce7ae374b3340b546adf4a90c15d3e531dae20a",
+    "candidates/A1/png/mark/32.png": "aba38a03d8a4ffe00c3cf0f5e97fa8cafbfaaf1c18d081501bc21f8759442271",
+    "candidates/A1/png/mark/64.png": "f7c482549e376cd062630f5af6d04f6619f511340d138b2648a1473c43fb6f63",
+    "candidates/A1/png/mark/128.png": "5fc2687e48dcdec683e409888c06470b44828fee25d94a27bf484ec1df9ec573",
+    "candidates/A1/png/crest/128.png": "f3ba5f6d728403cf262fd7d70a32c220af64f6c524b956bb10857cb7af9494af",
+    "candidates/A1/png/crest/256.png": "46a45752edd1ab701a531a7d42983bd68d45b30c3be0493bb67ecc24c5e740e2",
+    "candidates/A1/png/crest/512.png": "e91583df35f6332198409ff2394d5a068e66bbe10060617b911caf03d4c0e3a6",
+    "candidates/A1/svg/relief/mark.svg": "c42b01d8a40cf1c891eae29c1bdc17b5a0e56f00b67b05bed710b2e43efb3270",
+    "candidates/A1/svg/relief/primary.svg": "cca34282e5d6b499623be039074d0068a278f6dad67e2e1c19b9ee19367445de"
+  }
+}

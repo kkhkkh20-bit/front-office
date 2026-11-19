@@ -175,6 +175,96 @@
       "outlined": true,
       "tracking_font_units": 60,
       "height": 54
+    },
+    {
+      "candidate": "B4",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
+    },
+    {
+      "candidate": "B4",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
+    },
+    {
+      "candidate": "B5",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
+    },
+    {
+      "candidate": "B5",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
+    },
+    {
+      "candidate": "B6",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
+    },
+    {
+      "candidate": "B6",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
     }
   ]
 }

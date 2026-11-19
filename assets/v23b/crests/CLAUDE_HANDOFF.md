@@ -1,20 +1,16 @@
-# Claude 인계 — v23b 1단계
+# Claude 인계 — v23b 1단계 revision 2
 
-납품 브랜치: `assets/v23b-review`.
-경로: `assets/v23b/crests/`.
-상태: **팀별 3개 시안 검토 대기. 사진 교체 및 게임 연결 금지.**
+브랜치: `assets/v23b-review`. 경로: `assets/v23b/crests/`.
 
-요청서 [3절](../../../docs/asset-requests/2026-11-19-codex-v23b-expansion-crests.md#3-진행-순서-2단계-1단계-승인-후-2단계)의 지시:
-> 2단계, 1단계 승인 후 2단계
-> 사용자가 고른 시안으로 최종본을 만듭니다.
+**A1은 사용자 선택으로 확정. B4/B5/B6은 선택 대기.** `teams.json.selection`은 `expansion_a: A1`, `expansion_b: null`입니다. A1 후보의 SVG/PNG 바이트는 이전 납품 그대로입니다. `a1_preservation.json`으로 확인합니다.
 
-사용자가 A1/A2/A3 하나, B1/B2/B3 하나를 선택해야 합니다. `teams.json.selection`은 아직 null입니다. 규격 경로의 A1/B1은 검토용 사본이므로 자동 선택하거나 게임에 연결하지 마세요.
+현재 선택판은 `previews/candidates_expansion_b_revision2.png`입니다. B1/B2/B3은 이력으로만 남았으며 `superseded`입니다. 사용자 피드백에 따라 내야 격자와 배트를 제거하고, B4/B5는 프레임도 뺐습니다. 공식 MLB 마크 조사 출처와 판단은 `MLB_REFERENCE_NOTES.md`에 있습니다.
 
-## 검토 경로
+규정 경로의 A는 확정된 A1이고, B는 **B4의 검토용 사본**입니다. B4가 선택된 것이 아니므로 연결·사진 교체를 시작하지 마세요.
 
-`previews/candidates_overview.png`에서 6개를 한 번에 비교합니다. `candidates_expansion_a.png`, `candidates_expansion_b.png`는 팀별 밝은/어두운 배경입니다. `compare_with_v2_dark_light.png`는 기존 v2 10개 원본과 후보 6개를 동일한 174px 캔버스로 비교하고, 크레스트 128/64/32와 마크 32/20/16/14 실제 픽셀 크기를 담습니다.
+요청서 [3절](../../../docs/asset-requests/2026-11-19-codex-v23b-expansion-crests.md#3-진행-순서-2단계-1단계-승인-후-2단계)의 “1단계 승인 후 2단계”, “사용자가 고른 시안으로 최종본” 지시를 따릅니다. 남은 선택은 B 하나입니다.
 
-기본 원본은 각 후보 `svg/primary.svg`, `svg/mark.svg`입니다. `svg/relief`와 PNG는 그 벡터의 파생본입니다. 모든 파일 경로는 `teams.json`의 path_base에 대한 상대 경로입니다. 후보의 마크 PNG는 128/64/32 외에 20/16/14도 제공합니다.
+평면 SVG와 파생 입체 SVG는 각 후보의 `svg/`, `svg/relief/`에 있습니다. PNG 크레스트 512/256/128, 마크 128/64/32/20/16/14입니다. `compare_with_v2_dark_light.png`는 기존 10개와 A1/B4/B5/B6을 같은 캔버스 크기로 비교하며 실제 픽셀 크기 줄도 포함합니다.
 
 ## 선택 이후에만 진행할 일
 

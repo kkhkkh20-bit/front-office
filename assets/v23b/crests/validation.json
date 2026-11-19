@@ -1,20 +1,80 @@
 {
-  "schema_version": "v23b-crests-stage1-validation-1",
+  "schema_version": "v23b-crests-stage1-validation-2",
+  "revision": 2,
   "technical_validation_passed": true,
-  "review_status": "awaiting_user_selection",
+  "selection": {
+    "expansion_a": "A1",
+    "expansion_b": null
+  },
   "approved": false,
   "phase2_started": false,
   "checks": [
     {
-      "check": "phase1_only",
+      "check": "selection_A1_B_pending",
       "passed": true
     },
     {
-      "check": "three_candidates_per_team",
+      "check": "active_B_candidates",
       "passed": true
     },
     {
-      "check": "v2_font_sha256",
+      "check": "A1_byte_identical_to_previous_delivery",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/svg/mark.svg",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/svg/primary.svg",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/14.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/16.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/20.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/32.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/64.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/128.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/crest/128.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/crest/256.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/crest/512.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/svg/relief/mark.svg",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/svg/relief/primary.svg",
+      "passed": true
+    },
+    {
+      "check": "v2_actual_font_hash",
       "passed": true
     },
     {
@@ -22,11 +82,11 @@
       "passed": true
     },
     {
-      "check": "A1:primary:outer_stroke",
+      "check": "A1:primary:unique_ids",
       "passed": true
     },
     {
-      "check": "A1:primary:four_color_palette",
+      "check": "A1:primary:palette",
       "passed": true
     },
     {
@@ -34,11 +94,11 @@
       "passed": true
     },
     {
-      "check": "A1:primary:real_glyph_X",
+      "check": "A1:primary:actual_font_glyph_X",
       "passed": true
     },
     {
-      "check": "A1:primary:real_glyph_I",
+      "check": "A1:primary:actual_font_glyph_I",
       "passed": true
     },
     {
@@ -46,11 +106,11 @@
       "passed": true
     },
     {
-      "check": "A1:relief_primary:outer_stroke",
+      "check": "A1:relief_primary:unique_ids",
       "passed": true
     },
     {
-      "check": "A1:relief_primary:four_color_palette",
+      "check": "A1:relief_primary:palette",
       "passed": true
     },
     {
@@ -58,19 +118,15 @@
       "passed": true
     },
     {
-      "check": "A1:relief_primary:real_glyph_X",
+      "check": "A1:relief_primary:actual_font_glyph_X",
       "passed": true
     },
     {
-      "check": "A1:relief_primary:real_glyph_I",
+      "check": "A1:relief_primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "A1:relief_primary:flat_geometry_preserved",
-      "passed": true
-    },
-    {
-      "check": "A1:relief_primary:one_bevel",
+      "check": "A1:relief_primary:flat_signature_preserved",
       "passed": true
     },
     {
@@ -78,11 +134,11 @@
       "passed": true
     },
     {
-      "check": "A1:mark:outer_stroke",
+      "check": "A1:mark:unique_ids",
       "passed": true
     },
     {
-      "check": "A1:mark:four_color_palette",
+      "check": "A1:mark:palette",
       "passed": true
     },
     {
@@ -94,11 +150,11 @@
       "passed": true
     },
     {
-      "check": "A1:relief_mark:outer_stroke",
+      "check": "A1:relief_mark:unique_ids",
       "passed": true
     },
     {
-      "check": "A1:relief_mark:four_color_palette",
+      "check": "A1:relief_mark:palette",
       "passed": true
     },
     {
@@ -106,1463 +162,971 @@
       "passed": true
     },
     {
-      "check": "A1:relief_mark:flat_geometry_preserved",
+      "check": "A1:relief_mark:flat_signature_preserved",
       "passed": true
     },
     {
-      "check": "A1:relief_mark:one_bevel",
-      "passed": true
-    },
-    {
-      "check": "A1:crest:512:rgba_size_visible_padding",
+      "check": "A1:crest512:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         24,
         43,
         488,
         480
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A1:crest:512:derived_from_relief",
+      "check": "A1:crest512:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A1:crest:256:rgba_size_visible_padding",
+      "check": "A1:crest256:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         12,
         21,
         244,
         240
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A1:crest:256:derived_from_relief",
+      "check": "A1:crest256:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A1:crest:128:rgba_size_visible_padding",
+      "check": "A1:crest128:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         6,
         10,
         122,
         120
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A1:crest:128:derived_from_relief",
+      "check": "A1:crest128:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A1:mark:128:rgba_size_visible_padding",
+      "check": "A1:mark128:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         23,
         10,
         105,
         120
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A1:mark:128:derived_from_relief",
+      "check": "A1:mark128:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A1:mark:64:rgba_size_visible_padding",
+      "check": "A1:mark64:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         11,
         5,
         53,
         60
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A1:mark:64:derived_from_relief",
+      "check": "A1:mark64:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A1:mark:32:rgba_size_visible_padding",
+      "check": "A1:mark32:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         5,
         2,
         27,
         30
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A1:mark:32:derived_from_relief",
+      "check": "A1:mark32:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A1:mark:20:rgba_size_visible_padding",
+      "check": "A1:mark20:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         3,
         1,
         17,
         19
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A1:mark:20:derived_from_relief",
+      "check": "A1:mark20:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A1:mark:16:rgba_size_visible_padding",
+      "check": "A1:mark16:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         2,
         1,
         14,
         15
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A1:mark:16:derived_from_relief",
+      "check": "A1:mark16:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A1:mark:14:rgba_size_visible_padding",
+      "check": "A1:mark14:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         2,
         1,
         12,
         13
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A1:mark:14:derived_from_relief",
+      "check": "A1:mark14:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A2:primary:native_vector",
+      "check": "B4:primary:native_vector",
       "passed": true
     },
     {
-      "check": "A2:primary:outer_stroke",
+      "check": "B4:primary:unique_ids",
       "passed": true
     },
     {
-      "check": "A2:primary:four_color_palette",
+      "check": "B4:primary:palette",
       "passed": true
     },
     {
-      "check": "A2:primary:wordmark",
+      "check": "B4:primary:wordmark",
       "passed": true
     },
     {
-      "check": "A2:primary:real_glyph_X",
+      "check": "B4:primary:actual_font_glyph_X",
       "passed": true
     },
     {
-      "check": "A2:primary:real_glyph_I",
+      "check": "B4:primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "A2:relief_primary:native_vector",
+      "check": "B4:primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "A2:relief_primary:outer_stroke",
+      "check": "B4:primary:removed_infield_and_bats",
       "passed": true
     },
     {
-      "check": "A2:relief_primary:four_color_palette",
+      "check": "B4:relief_primary:native_vector",
       "passed": true
     },
     {
-      "check": "A2:relief_primary:wordmark",
+      "check": "B4:relief_primary:unique_ids",
       "passed": true
     },
     {
-      "check": "A2:relief_primary:real_glyph_X",
+      "check": "B4:relief_primary:palette",
       "passed": true
     },
     {
-      "check": "A2:relief_primary:real_glyph_I",
+      "check": "B4:relief_primary:wordmark",
       "passed": true
     },
     {
-      "check": "A2:relief_primary:flat_geometry_preserved",
+      "check": "B4:relief_primary:actual_font_glyph_X",
       "passed": true
     },
     {
-      "check": "A2:relief_primary:one_bevel",
+      "check": "B4:relief_primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "A2:mark:native_vector",
+      "check": "B4:relief_primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "A2:mark:outer_stroke",
+      "check": "B4:relief_primary:flat_signature_preserved",
       "passed": true
     },
     {
-      "check": "A2:mark:four_color_palette",
+      "check": "B4:relief_primary:removed_infield_and_bats",
       "passed": true
     },
     {
-      "check": "A2:mark:no_wordmark",
+      "check": "B4:mark:native_vector",
       "passed": true
     },
     {
-      "check": "A2:relief_mark:native_vector",
+      "check": "B4:mark:unique_ids",
       "passed": true
     },
     {
-      "check": "A2:relief_mark:outer_stroke",
+      "check": "B4:mark:palette",
       "passed": true
     },
     {
-      "check": "A2:relief_mark:four_color_palette",
+      "check": "B4:mark:no_wordmark",
       "passed": true
     },
     {
-      "check": "A2:relief_mark:no_wordmark",
+      "check": "B4:mark:removed_infield_and_bats",
       "passed": true
     },
     {
-      "check": "A2:relief_mark:flat_geometry_preserved",
+      "check": "B4:relief_mark:native_vector",
       "passed": true
     },
     {
-      "check": "A2:relief_mark:one_bevel",
+      "check": "B4:relief_mark:unique_ids",
       "passed": true
     },
     {
-      "check": "A2:crest:512:rgba_size_visible_padding",
+      "check": "B4:relief_mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_mark:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B4:crest512:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         24,
-        67,
+        59,
         488,
-        474
+        437
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "A2:crest:512:derived_from_relief",
+      "check": "B4:crest512:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "A2:crest:256:rgba_size_visible_padding",
+      "check": "B4:crest256:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         12,
-        33,
-        244,
-        237
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A2:crest:256:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A2:crest:128:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        6,
-        16,
-        122,
-        119
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A2:crest:128:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A2:mark:128:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        17,
-        16,
-        111,
-        119
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A2:mark:128:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A2:mark:64:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        8,
-        8,
-        56,
-        59
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A2:mark:64:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A2:mark:32:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        4,
-        4,
-        28,
-        30
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A2:mark:32:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A2:mark:20:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        2,
-        2,
-        18,
-        19
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A2:mark:20:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A2:mark:16:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        2,
-        1,
-        14,
-        15
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A2:mark:16:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A2:mark:14:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        1,
-        1,
-        13,
-        13
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A2:mark:14:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A3:primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "A3:primary:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "A3:primary:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "A3:primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "A3:primary:real_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "A3:primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_primary:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_primary:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_primary:real_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_primary:flat_geometry_preserved",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_primary:one_bevel",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_mark:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_mark:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_mark:flat_geometry_preserved",
-      "passed": true
-    },
-    {
-      "check": "A3:relief_mark:one_bevel",
-      "passed": true
-    },
-    {
-      "check": "A3:crest:512:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        24,
-        41,
-        488,
-        480
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A3:crest:512:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A3:crest:256:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        12,
-        20,
-        244,
-        240
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A3:crest:256:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A3:crest:128:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        6,
-        10,
-        122,
-        120
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A3:crest:128:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:128:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        30,
-        10,
-        98,
-        120
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A3:mark:128:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:64:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        15,
-        5,
-        49,
-        60
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A3:mark:64:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:32:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        7,
-        2,
-        25,
-        30
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A3:mark:32:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:20:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        4,
-        1,
-        16,
-        19
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A3:mark:20:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:16:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        3,
-        1,
-        13,
-        15
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A3:mark:16:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "A3:mark:14:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        3,
-        1,
-        11,
-        13
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "A3:mark:14:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B1:primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B1:primary:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B1:primary:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B1:primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B1:primary:real_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B1:primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B1:primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_primary:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_primary:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_primary:real_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_primary:flat_geometry_preserved",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_primary:one_bevel",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_mark:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_mark:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_mark:flat_geometry_preserved",
-      "passed": true
-    },
-    {
-      "check": "B1:relief_mark:one_bevel",
-      "passed": true
-    },
-    {
-      "check": "B1:crest:512:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        24,
-        77,
-        488,
-        478
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B1:crest:512:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B1:crest:256:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        12,
-        38,
-        244,
-        239
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B1:crest:256:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B1:crest:128:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        6,
-        19,
-        122,
-        120
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B1:crest:128:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:128:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        21,
-        19,
-        107,
-        120
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B1:mark:128:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:64:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        10,
-        9,
-        54,
-        60
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B1:mark:64:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:32:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        5,
-        4,
-        27,
-        30
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B1:mark:32:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:20:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        3,
-        2,
-        17,
-        19
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B1:mark:20:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:16:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        2,
-        2,
-        14,
-        15
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B1:mark:16:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B1:mark:14:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        2,
-        1,
-        12,
-        13
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B1:mark:14:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B2:primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B2:primary:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B2:primary:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B2:primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B2:primary:real_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B2:primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B2:primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_primary:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_primary:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_primary:real_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_primary:flat_geometry_preserved",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_primary:one_bevel",
-      "passed": true
-    },
-    {
-      "check": "B2:mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B2:mark:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B2:mark:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B2:mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_mark:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_mark:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_mark:flat_geometry_preserved",
-      "passed": true
-    },
-    {
-      "check": "B2:relief_mark:one_bevel",
-      "passed": true
-    },
-    {
-      "check": "B2:crest:512:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        24,
-        113,
-        488,
-        474
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B2:crest:512:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B2:crest:256:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        12,
-        57,
-        244,
-        237
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B2:crest:256:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B2:crest:128:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        6,
-        28,
-        122,
-        119
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B2:crest:128:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B2:mark:128:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        15,
-        28,
-        113,
-        119
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B2:mark:128:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B2:mark:64:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        7,
-        14,
-        57,
-        59
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B2:mark:64:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B2:mark:32:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        3,
-        7,
         29,
-        30
+        244,
+        219
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B2:mark:32:derived_from_relief",
+      "check": "B4:crest256:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B2:mark:20:rgba_size_visible_padding",
+      "check": "B4:crest128:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
-        2,
-        4,
-        18,
-        19
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B2:mark:20:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B2:mark:16:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
-        1,
-        3,
+      "visible_bbox": [
+        6,
         15,
-        15
+        122,
+        110
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B2:mark:16:derived_from_relief",
+      "check": "B4:crest128:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B2:mark:14:rgba_size_visible_padding",
+      "check": "B4:mark128:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
-        1,
+      "visible_bbox": [
+        23,
+        15,
+        105,
+        98
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark64:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        11,
+        7,
+        53,
+        49
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark64:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark32:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        5,
         3,
-        13,
+        27,
+        25
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark32:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark20:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        3,
+        2,
+        17,
+        16
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark20:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark16:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        2,
+        14,
         13
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B2:mark:14:derived_from_relief",
+      "check": "B4:mark16:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B3:primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B3:primary:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B3:primary:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B3:primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B3:primary:real_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B3:primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B3:primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_primary:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_primary:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_primary:real_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_primary:real_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_primary:flat_geometry_preserved",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_primary:one_bevel",
-      "passed": true
-    },
-    {
-      "check": "B3:mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B3:mark:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B3:mark:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B3:mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_mark:outer_stroke",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_mark:four_color_palette",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_mark:flat_geometry_preserved",
-      "passed": true
-    },
-    {
-      "check": "B3:relief_mark:one_bevel",
-      "passed": true
-    },
-    {
-      "check": "B3:crest:512:rgba_size_visible_padding",
+      "check": "B4:mark14:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
-        24,
-        47,
-        488,
-        480
+      "visible_bbox": [
+        2,
+        1,
+        12,
+        11
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B3:crest:512:derived_from_relief",
+      "check": "B4:mark14:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B3:crest:256:rgba_size_visible_padding",
+      "check": "B5:primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B5:crest512:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
+        24,
+        46,
+        488,
+        437
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:crest512:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:crest256:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
         12,
         23,
         244,
-        240
+        219
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B3:crest:256:derived_from_relief",
+      "check": "B5:crest256:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B3:crest:128:rgba_size_visible_padding",
+      "check": "B5:crest128:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
+      "visible_bbox": [
         6,
         11,
         122,
-        120
+        110
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B3:crest:128:derived_from_relief",
+      "check": "B5:crest128:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B3:mark:128:rgba_size_visible_padding",
+      "check": "B5:mark128:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
-        29,
+      "visible_bbox": [
+        19,
         11,
-        99,
-        120
+        107,
+        100
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B3:mark:128:derived_from_relief",
+      "check": "B5:mark128:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B3:mark:64:rgba_size_visible_padding",
+      "check": "B5:mark64:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
-        14,
+      "visible_bbox": [
+        9,
         5,
-        50,
-        60
+        54,
+        50
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B3:mark:64:derived_from_relief",
+      "check": "B5:mark64:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B3:mark:32:rgba_size_visible_padding",
+      "check": "B5:mark32:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
-        7,
-        2,
-        25,
-        30
-      ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
-    },
-    {
-      "check": "B3:mark:32:derived_from_relief",
-      "passed": true
-    },
-    {
-      "check": "B3:mark:20:rgba_size_visible_padding",
-      "passed": true,
-      "bbox": [
+      "visible_bbox": [
         4,
-        1,
-        16,
-        19
+        3,
+        27,
+        25
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B3:mark:20:derived_from_relief",
+      "check": "B5:mark32:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B3:mark:16:rgba_size_visible_padding",
+      "check": "B5:mark20:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
-        3,
-        1,
-        13,
-        15
+      "visible_bbox": [
+        2,
+        2,
+        17,
+        16
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B3:mark:16:derived_from_relief",
+      "check": "B5:mark20:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B3:mark:14:rgba_size_visible_padding",
+      "check": "B5:mark16:RGBA_size_and_visible_padding",
       "passed": true,
-      "bbox": [
-        3,
+      "visible_bbox": [
+        2,
         1,
-        11,
+        14,
         13
       ],
-      "alpha_threshold": 8,
-      "threshold_reason": "Ignore Lanczos ringing at opacity <=8/255; evaluate visible geometry clipping."
+      "alpha_threshold": 8
     },
     {
-      "check": "B3:mark:14:derived_from_relief",
+      "check": "B5:mark16:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:primary",
+      "check": "B5:mark14:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        1,
+        12,
+        11
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:mark14:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:mark",
+      "check": "B6:primary:native_vector",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:relief_crest",
+      "check": "B6:primary:unique_ids",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:relief_mark",
+      "check": "B6:primary:palette",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:crest512",
+      "check": "B6:primary:wordmark",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:crest256",
+      "check": "B6:primary:actual_font_glyph_X",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:crest128",
+      "check": "B6:primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:mark128",
+      "check": "B6:primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:mark64",
+      "check": "B6:primary:removed_infield_and_bats",
       "passed": true
     },
     {
-      "check": "expansion_a:review_copy:mark32",
+      "check": "B6:relief_primary:native_vector",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:primary",
+      "check": "B6:relief_primary:unique_ids",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:mark",
+      "check": "B6:relief_primary:palette",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:relief_crest",
+      "check": "B6:relief_primary:wordmark",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:relief_mark",
+      "check": "B6:relief_primary:actual_font_glyph_X",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:crest512",
+      "check": "B6:relief_primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:crest256",
+      "check": "B6:relief_primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:crest128",
+      "check": "B6:relief_primary:flat_signature_preserved",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:mark128",
+      "check": "B6:relief_primary:removed_infield_and_bats",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:mark64",
+      "check": "B6:mark:native_vector",
       "passed": true
     },
     {
-      "check": "expansion_b:review_copy:mark32",
+      "check": "B6:mark:unique_ids",
       "passed": true
     },
     {
-      "check": "existing_tracked_files_unchanged",
+      "check": "B6:mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B6:mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B6:mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B6:crest512:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        24,
+        76,
+        488,
+        437
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:crest512:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:crest256:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        12,
+        38,
+        244,
+        219
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:crest256:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:crest128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        6,
+        19,
+        122,
+        110
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:crest128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        24,
+        19,
+        104,
+        110
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark64:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        12,
+        9,
+        52,
+        55
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark64:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark32:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        6,
+        4,
+        26,
+        27
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark32:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark20:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        3,
+        2,
+        17,
+        17
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark20:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark16:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        2,
+        14,
+        14
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark16:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark14:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        1,
+        12,
+        12
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark14:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_primary",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_mark",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_relief_crest",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_relief_mark",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_crest512",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_crest256",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_crest128",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_mark128",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_mark64",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_mark32",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_primary",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_mark",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_relief_crest",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_relief_mark",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_crest512",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_crest256",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_crest128",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_mark128",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_mark64",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_mark32",
+      "passed": true
+    },
+    {
+      "check": "only_v23b_crests_modified",
+      "passed": true
+    },
+    {
+      "check": "existing_v2_hashes_unchanged",
       "passed": true
     },
     {
@@ -1572,14 +1136,19 @@
   ],
   "visual_review": {
     "performed": true,
-    "basis": [
-      "all six candidates",
-      "existing ten v2 crests at matching 174px canvas size",
-      "dark and light backgrounds",
-      "full crest actual 128/64/32px",
-      "simplified mark actual 32/20/16/14px"
+    "active_candidates": [
+      "A1 selected",
+      "B4",
+      "B5",
+      "B6"
     ],
-    "assessment": "Frame and team color remain distinct at small sizes; fine stitch and base detail is intentionally absent from simplified marks. Aesthetic approval and real-uniform placement remain pending.",
+    "MLB_official_logos_inspected": 6,
+    "previews": [
+      "candidates_expansion_b_revision2.png",
+      "compare_with_v2_dark_light.png"
+    ],
+    "subjective_assessment": "B5 has the least dependence on a surrounding frame. B4 emphasizes a crown; B6 retains a shield. Fine stitches intentionally omitted in simplified marks. B aesthetic approval and real uniform placement remain pending.",
     "automated_recognizability_score": null
-  }
+  },
+  "phase2_face_validation": "not_started; no photos altered"
 }

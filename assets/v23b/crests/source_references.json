@@ -150,5 +150,47 @@
     "assets/badges/v2/teams.json": "be1d8ed6b0dc5fd1ff5d216b997e21aadba9a8fc829bb562e0082dc446edec94",
     "assets/badges/v2/typography.json": "06704309c584b0c54bb35dbf8e4b7fe51c4493b86d7285e33fc1cf9ee696dfc3",
     "assets/badges/v2/validation.json": "b36975accd924cf8c68f5b8724cc268b369f0750f49e636319180d239f47ca0a"
+  },
+  "revision2": {
+    "date": "2026-11-19",
+    "prior_delivery_commit": "62c5a502ff8dae36dcc09b9732b7818fea6ad09f",
+    "user_selection": {
+      "expansion_a": "A1",
+      "expansion_b": null
+    },
+    "official_MLB_references": [
+      {
+        "team": "Royals",
+        "url": "https://www.mlbstatic.com/team-logos/118.svg",
+        "status": 200
+      },
+      {
+        "team": "Brewers",
+        "url": "https://www.mlbstatic.com/team-logos/158.svg",
+        "status": 200
+      },
+      {
+        "team": "Yankees",
+        "url": "https://www.mlbstatic.com/team-logos/147.svg",
+        "status": 200
+      },
+      {
+        "team": "Dodgers",
+        "url": "https://www.mlbstatic.com/team-logos/119.svg",
+        "status": 200
+      },
+      {
+        "team": "Tigers",
+        "url": "https://www.mlbstatic.com/team-logos/116.svg",
+        "status": 200
+      },
+      {
+        "team": "Athletics",
+        "url": "https://www.mlbstatic.com/team-logos/133.svg",
+        "status": 200
+      }
+    ],
+    "local_visual_review_performed": true,
+    "MLB_artwork_in_delivery": false
   }
 }
