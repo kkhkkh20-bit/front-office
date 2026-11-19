@@ -29439,14 +29439,33 @@ function tripWatchDaily(d){ if(!amTodayOk(d)||!_amToday.L.length)return; const g
 /* 눈에 띈 경기: 투수 7탈삼진 이상·6이닝 무실점, 타자 3안타 이상·홈런 */
 function tripStand(b){ b=b||''; const k=/(\d+)탈삼진/.exec(b), h=/(\d+)안타/.exec(b); return !!(k&&+k[1]>=7||/^[6-9](\.\d)?이닝 0실점/.test(b)||h&&+h[1]>=3||/홈런/.test(b)); }
 /* 두 번째 의견: 우리(또는 그 구단) 스카우트 둘 이상이 본 선수 */
-function obsPersonEst(o,tid,s){const isP=!!(o.prospect?o.isP:o.P),skill=clamp(s.skill||1,0,5);let sd;if(o.prospect){const spec=s.spec&&((s.spec==='P')===isP)?1:0;sd=SCOUT_SD[clamp(skill+spec,0,5)]*staffScoutFactor(s,o,tid)*netSdM(o,tid)*obsF(obsCount(o,tid))*draftVis(o);}else sd=SCOUT_SD[skill]*(1.3-areaNet(tid,o.a)*.0055)*amObsM(o,tid)*(1+AM_YR_SD*Math.max(0,o.gy-G.year));const v=o.pot-(o.hidT||0)+hn('obsPerson'+tid+':'+s.id+':'+G.year,o.id)*sd;return {v,sd};}
+/* fz(저장된 의견 다시 계산, obsViewRows): 그 구단이 이 선수를 마지막으로 본 해(Y)와, 그 지역에서 마지막으로 관찰할 때의 정보망(net, G.obsNet)을 쓴다. 새 직원 배치·퇴사만으로 이미 본 사람의 의견이 바뀌지 않게 */
+function obsPersonEst(o,tid,s,fz){const isP=!!(o.prospect?o.isP:o.P),skill=clamp(s.skill||1,0,5),Y=fz?.y??G.year,net=k=>fz?.net?.[k]??areaNet(tid,k);let sd;if(o.prospect){const spec=s.spec&&((s.spec==='P')===isP)?1:0,k=areaOf(o),nm=k?(1.3-net(k)*.0055)*schSdM(o,tid)*amObsM(o,tid):1;sd=SCOUT_SD[clamp(skill+spec,0,5)]*staffScoutFactor(s,o,tid)*nm*obsF(obsCount(o,tid))*draftVis(o);}else sd=SCOUT_SD[skill]*(1.3-net(o.a)*.0055)*amObsM(o,tid)*(1+AM_YR_SD*Math.max(0,o.gy-Y));const v=o.pot-(o.hidT||0)+hn('obsPerson'+tid+':'+s.id+':'+Y,o.id)*sd;return {v,sd};}
 function obsStaffAt(tid,sid){return (tid===G.user&&!G.unemp?G.scouts||[]:G.lgStaff?.[tid]?.sc||[]).find(s=>String(s.id)===String(sid));}
-function obsViewRows(o,tid=G.user){return (o?.obsBy?.[tid]||[]).map(id=>{const v=o.obsView?.[tid]?.[id];if(v)return v;const s=obsStaffAt(tid,id);if(!s)return null;const sc={id:s.id,name:s.name,role:s.role||'am',region:s.region,spec:s.spec,skill:effSkill(s)};return {s:sc,...obsPersonEst(o,tid,sc)};}).filter(Boolean);}
+/* 관찰 의견 저장(11-19 저장 크기): 스카우트 사본(이름·능력·성향)은 G.obsSc[스카우트 번호]에 한 번만 두고, 선수에는 본 사람 번호(obsBy)만 남긴다.
+   의견(추정치·오차·등급)은 그 사본과 그 구단의 지금 관찰량으로 볼 때마다 계산한다(난수 없음, 우리·AI 같은 식). 본 사람·구단 구분은 그대로라 다른 구단 의견은 보이지 않고, 스카우트가 떠나도 사본이 남는다.
+   8d27c730은 선수 × 구단 × 스카우트마다 사본·추정치를 따로 저장해 저학년 저장이 0.19MB → 1.1MB가 됐다. 옛 행(o.obsView)은 불러올 때 obsViewMigrate가 사본 하나로 합치고 지운다 */
+function obsScSnap(src){return {id:src.id,name:src.name,role:src.role||'am',region:src.region,spec:src.spec,skill:effSkill(src),staff:JSON.parse(JSON.stringify(staffProfile(src,'scout')))};}
+function obsScOf(tid,sid){const S=G.obsSc?.[sid];if(S)return S;const s=obsStaffAt(tid,sid);return s?{id:s.id,name:s.name,role:s.role||'am',region:s.region,spec:s.spec,skill:effSkill(s)}:null;}
+function obsViewRows(o,tid=G.user){return (o?.obsBy?.[tid]||[]).map(id=>{const x=o.obsView?.[tid]?.[id];if(x&&x.s)return x; /* 불러오기 전 옛 행 */
+  const s=obsScOf(tid,id);if(!s)return null;const d=o.obsDT?.[tid]??(o.obsDTid===+tid&&o.obsD!=null?o.obsD:null),y=d!=null?dobj(d).y:null,e=obsPersonEst(o,tid,s,{y:y??G.year,net:G.obsNet?.[tid]});return {s,y,d,v:e.v,sd:e.sd,t:amTierOf(e.v)};}).filter(Boolean);}
 function obsScoutFor(o,tid=G.user){const L=obsViewRows(o,tid).slice().sort((a,b)=>a.sd-b.sd||String(a.s.id).localeCompare(String(b.s.id)));return L[0]?{...L[0].s,direct:true,viewD:L[0].d}:null;}
-function obsByAdd(o,tid,sid,staff){const source=staff||obsStaffAt(tid,sid);if(!source||String(source.id)!==String(sid))return;const B=o.obsBy=o.obsBy||{},L=B[tid]=B[tid]||[];if(!L.includes(source.id)){L.push(source.id);if(L.length>3)L.shift();}const s={id:source.id,name:source.name,role:source.role||'am',region:source.region,spec:source.spec,skill:effSkill(source),staff:JSON.parse(JSON.stringify(staffProfile(source,'scout')))},e=obsPersonEst(o,tid,s),V=o.obsView=o.obsView||{},by=V[tid]=V[tid]||{};by[source.id]={s,y:G.year,d:G.day,v:e.v,sd:e.sd,t:amTierOf(e.v)};for(const id of Object.keys(by))if(!L.some(k=>String(k)===id))delete by[id];}
-/* 관찰 의견(obsView: 스카우트 사본·추정치)은 후보(아마추어·신인 후보)일 때만 쓴다. 구단에 입단한 선수의 사본은 지운다: 오래 한 세이브에서 선수 데이터의 절반 가까이(수 MB)를 차지했다(성능 11-18). 관찰 기록(obsBy 번호)은 남긴다 */
-function obsViewTrim(){let n=0;for(const p of Object.values(G.players||{}))if(p&&p.obsView&&!p.prospect&&p.team!=null){delete p.obsView;n++;}return n;}
-function obsViewMigrate(){obsViewTrim();let n=0;for(const o of [...Object.values(G.amU?.L||{}),...Object.values(G.players||{}).filter(p=>p.prospect)])for(const tid in o.obsBy||{})for(const sid of [...o.obsBy[tid]])if(!o.obsView?.[tid]?.[sid]){const s=obsStaffAt(+tid,sid);if(s){obsByAdd(o,+tid,sid,s);const v=o.obsView[tid][s.id],d=o.obsDT?.[tid]??(o.obsDTid===+tid?o.obsD:null);v.legacy=true;v.d=d??null;v.y=d!=null?dobj(d).y:null;n++;}}return n;}
+function obsViewDrop(o,tid,keep){const V=o.obsView;if(!V)return;const T=V[tid];if(T)for(const id of Object.keys(T))if(!keep||!keep.some(k=>String(k)===id))delete T[id];if(T&&!Object.keys(T).length)delete V[tid];if(!Object.keys(V).length)delete o.obsView;}
+function obsByAdd(o,tid,sid,staff){const source=staff||obsStaffAt(tid,sid);if(!source||String(source.id)!==String(sid))return;const B=o.obsBy=o.obsBy||{},L=B[tid]=B[tid]||[];if(!L.includes(source.id)){L.push(source.id);if(L.length>3)L.shift();}
+  (G.obsSc=G.obsSc||{})[source.id]=obsScSnap(source);const k=o.prospect?areaOf(o):o.a;if(k){const N=(G.obsNet=G.obsNet||{})[tid]=G.obsNet[tid]||{};N[k]=areaNet(tid,k);}if(o.obsView)obsViewDrop(o,tid,L.filter(k=>String(k)!==String(source.id)));}
+/* 관찰 의견은 후보(아마추어·신인 후보)일 때만 쓴다. 구단에 입단한 선수의 옛 행은 지운다(성능 11-18). 관찰 기록(obsBy 번호)은 남긴다.
+   드래프트가 끝나면 아마추어·후보 누구의 관찰자도 아닌 스카우트 사본도 지운다 */
+function obsViewTrim(keepSc){let n=0;for(const p of Object.values(G.players||{}))if(p&&p.obsView&&!p.prospect&&p.team!=null){delete p.obsView;n++;}
+  if(!keepSc&&G.obsSc){const used=new Set();for(const o of obsViewOwners())for(const tid in o.obsBy||{})for(const id of o.obsBy[tid])used.add(String(id));for(const k of Object.keys(G.obsSc))if(!used.has(k))delete G.obsSc[k];}return n;}
+function obsViewOwners(){return [...Object.values(G.amU?.L||{}),...Object.values(G.players||{}).filter(p=>p&&p.prospect)];}
+/* 불러오기(멱등·난수 없음): ① 8d27c730 형식의 행은 스카우트마다 가장 최근에 본 사본 하나로 합치고 행을 지운다 ② 사본이 없는 옛 관찰자(그 전 저장)는 지금 직원 명단에서 사본을 만든다. 돌려주는 값은 ②로 되살린 관찰 수 */
+function obsViewMigrate(){obsViewTrim(true);const O=obsViewOwners(),had=new Set(Object.keys(G.obsSc||{})),best={};let n=0;
+  for(const o of O)for(const tid of Object.keys(o.obsView||{})){const T=o.obsView[tid];for(const sid of Object.keys(T)){const x=T[sid];if(!x||!x.s||had.has(sid))continue;const d=x.d??-Infinity;if(!best[sid]||d>best[sid].d)best[sid]={d,s:x.s};}}
+  for(const sid of Object.keys(best))(G.obsSc=G.obsSc||{})[sid]=best[sid].s;
+  const netFix=(o,tid)=>{const k=o.prospect?areaOf(o):o.a;if(k&&G.obsNet?.[tid]?.[k]==null){const N=(G.obsNet=G.obsNet||{})[tid]=G.obsNet[tid]||{};N[k]=areaNet(+tid,k);}};
+  for(const o of O){for(const tid of Object.keys(o.obsView||{})){netFix(o,tid);obsViewDrop(o,tid,null);}
+    for(const tid in o.obsBy||{})for(const sid of o.obsBy[tid])if(!had.has(String(sid))&&!best[sid]){const s=obsStaffAt(+tid,sid);if(s){if(!G.obsSc?.[s.id])(G.obsSc=G.obsSc||{})[s.id]=obsScSnap(s);netFix(o,tid);n++;}}}
+  return n;}
 const obsTwo=(o,tid)=>!!(o&&o.obsBy&&(o.obsBy[tid??G.user]||[]).length>=2);
 const obsTwoM=(o,tid)=>obsTwo(o,tid)?TRIP_TWO:1;
 /* 두 스카우트 의견(우리 화면): 같은 관찰을 각자 눈으로 본 등급 */
@@ -51739,6 +51758,9 @@ const PATCH=[
     '11구단은 숲 녹색·골드, 12구단은 퍼플·실버 홈 유니폼을 입습니다. 선수·감독·코치 사진이 다른 구단 유니폼을 빌려 입지 않고 자기 구단 유니폼으로 나옵니다. 얼굴은 예전과 같은 사람입니다.',
     '구단 색(화면 강조색·배지·중계 색)이 유니폼 색에 맞춰집니다. 이미 창단한 저장도 불러오면 바로 바뀝니다.',
     '신생 구단 배지(별·방패 문장)가 생겼습니다. 배지 디자인은 앞으로 다시 다듬을 예정입니다.'
+  ]},
+  {id:'2026-11-19-save-obs',d:'11월 19일',t:'저장 파일이 가벼워졌습니다(아마추어 관찰 의견)',items:[
+    '아마추어 관찰 의견: 스카우트 정보를 선수·구단마다 따로 저장하지 않고 한 번만 저장합니다. 시즌을 진행한 저장은 수 MB 줄어듭니다(옛 저장도 불러오면 자동으로 줄어듭니다). 누가 어떤 선수를 봤는지, 우리·다른 구단에 보이는 의견은 같습니다.'
   ]},
   {id:'2026-11-19-cafe-fix',d:'11월 19일',t:'20-80 표기 끝자리·단장 식사·상무 성장 폭을 바로잡았습니다',items:[
     '20-80 표기에서 스카우트 평가·수비 위치·성장 그래프처럼 5점 단위로 매기는 값이 끝자리 0·5로 보입니다(예전에는 3·8만 보였습니다). 확인된 능력은 예전처럼 1점 단위이고, 실제 능력과 계산은 같습니다.',
