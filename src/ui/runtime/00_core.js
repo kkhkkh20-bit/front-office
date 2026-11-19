@@ -388,7 +388,7 @@ if(typeof document!=='undefined')document.addEventListener('error',e=>{ const i=
 const tb=(tid,label)=>`<span class="tname">${badge(tid,18)}${label??tname(tid)}</span>`;
 /* 구단 고유색: 주색(헤더·강조), 밝은색(버튼·포인트), 어두운색(배경) */
 const TCOL=new Proxy({},{get:(o,code)=>{ const p=TPAL[code]; return p?[p[0],p[3],p[2]]:undefined; }});
-function setTeamVars(t){ const r=document.documentElement.style; const c=t&&(t.logo&&t.logo.c1?(P=>[P[0],P[3],P[2]])(tpal(t)):TCOL[t.code]); const h=t?t.hue:212;
+function setTeamVars(t){ const r=document.documentElement.style; const c=t&&(t.logo&&t.logo.c1?(P=>[P[0],P[3],P[2]])(tpal(t)):(P=>P&&[P[0],P[3],P[2]])(tpBase(t))); /* 신생 구단은 키트 색(expKit) */ const h=t?t.hue:212;
   r.setProperty('--team',c?c[0]:hslHex(h,52,34)); r.setProperty('--team-hi',c?c[1]:hslHex(h,60,50)); r.setProperty('--team-dk',c?c[2]:hslHex(h,42,16)); }
 const TITLE={cal:'캘린더',home:'홈',inbox:'소식함',roster:'선수단',trade:'트레이드',transfer:'영입·계약',scout:'스카우팅',train:'훈련',staff:'스태프·육성',cfg:'설정 · 권한',me:'단장 프로필',league:'리그',club:'구단·재정',uld:'래더'};
 /* 예산 여유 칩의 짧은 꼴(휴대폰·좁은 화면, 카페 11-18 "남은 예산이 늘 보이게"): 100억 이상은 정수 억, 그 아래는 소수 한 자리 억, 1억 미만은 만 */

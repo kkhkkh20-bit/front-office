@@ -71,7 +71,12 @@ const TEAM_DEF=[
    대전(오렌지), 광주(빨강·남색·금색), 대구(파랑), 부산(네이비), 창원(마린 블루·금색). 배지 바탕색을 주색으로 맞춘다(사용자 2026-11-02) */
 const TPAL={SC:['#A50034','#111111','#2b000e','#ff3f78'],SH:['#131230','#ED1C24','#09091a','#4b5fd6'],IS:['#CE0E2D','#ffffff','#34040c','#ff4a5c'],SS:['#141414','#ED1C24','#000000','#ff3c3c'],GS:['#570514','#ffffff','#1f0207','#c23a52'],
   DR:['#F37321','#282828','#3f1606','#ff8a45'],GB:['#EA0029','#091330','#3b0507','#ff4048'],DT:['#074CA1','#A1A0A4','#002340','#2e92ec'],BW:['#041E42','#ffffff','#020c1a','#3d72d9'],CA:['#1D467B','#C6A269','#0f1b2f','#5d8ad6']};
-function tpal(t){ if(t==null)return ['#4b5b6c','#e3e9ee','#26313c','#8a99aa']; if(typeof t==='number')t=(typeof G!=='undefined'&&G&&G.teams&&G.teams[t])||TEAM_DEF[t]; if(t&&t.logo&&t.logo.c1){ const b=(t&&TPAL[t.code])||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; const L=t.logo; return [L.c1||b[0],L.c2||b[1],L.c3||b[2],L.c4||L.c1||b[3]]; } return (t&&TPAL[t.code])||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; }
+/* 신생 구단 홈 유니폼 키트(v23 납품 assets/v23/expansion_kits, 카페 11-19): 창단 순서(구단 번호)로 고정한다. 11구단(번호 10)=expansion_a 숲 녹색·골드, 12구단(번호 11)=expansion_b 퍼플·실버.
+   구단 색(pal: 주색·보조색·어두운 바탕·밝은 강조)과 hue를 유니폼 사진·배지에 맞춘다(난수 없음). 사진 시트 = 00l_faces_v23_data.js(FACE23), 배지 = 00a2_badges_exp_data.js(BADGE_IMG 10·11) */
+const EXP_KIT=[{key:'expansion_a',hue:155,pal:['#0B5D3B','#C9A227','#04261a','#3fae78']},{key:'expansion_b',hue:265,pal:['#4B2A7B','#A7A9AC','#1d1033','#9a72d6']}];
+function expKit(t){ const id=t!=null&&typeof t==='object'?t.id:t; if(id==null||id===''||!Number.isInteger(+id))return null; const i=+id-TEAM_DEF.length; return i>=0&&i<EXP_KIT.length?EXP_KIT[i]:null; }
+function tpBase(t){ const k=expKit(t); return k?k.pal:(t&&TPAL[t.code])||null; } /* 구단 기본 색: 원년 구단은 TPAL(code), 신생 구단은 키트 색 */
+function tpal(t){ if(t==null)return ['#4b5b6c','#e3e9ee','#26313c','#8a99aa']; if(typeof t==='number')t=(typeof G!=='undefined'&&G&&G.teams&&G.teams[t])||TEAM_DEF[t]; if(t&&t.logo&&t.logo.c1){ const b=tpBase(t)||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; const L=t.logo; return [L.c1||b[0],L.c2||b[1],L.c3||b[2],L.c4||L.c1||b[3]]; } return tpBase(t)||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; }
 const OWNVOICE={win:'저는 가을야구를 기본으로 봅니다. 성적이 나면 지원은 아끼지 않겠습니다.',profit:'저는 적자를 가장 싫어합니다. 숫자로 보여 주세요.',pr:'관중이 꽉 찬 야구장을 보고 싶습니다. 화제가 되는 구단을 만들어 주세요.'};
 const OWNER={
   win:{label:'성적 우선',msg:'구단주는 가을야구를 기본으로 봅니다.',w:[1.4,1.3,.5,.5]},

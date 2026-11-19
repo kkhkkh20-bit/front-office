@@ -90,10 +90,14 @@ globalThis.__awardHistory1005UiSrc=()=>{const root=process.env.AWARD_HISTORY_UI_
 const results=[]; const T=(name,fn)=>results.push({name,fn});
 /* [얼굴 v18] 시나리오용: 화면 쪽 얼굴 번호표(FACE6, 사진 data URI는 빼고)와 배정 함수(face6Pool·face6Idx)를 엔진 안에서 direct eval로 읽는다. 엄격 모드라 끝 식으로 꺼낸다 */
 globalThis.__faceSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=fs.readFileSync(path.join(__dirname,'..','src','ui','assets','77_assets_ui.js'),'utf8');
-  return R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n;({FACE6,face6Pool,face6Idx,f6T,f6Mates})'; };
+  return R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+R('00l_faces_v23_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n;({FACE6,FACE23,face6Pool,face6Idx,f6T,f6A,f6Mates})'; };
 /* [카페 11-19 신생구단 얼굴] 감독·코치 배정 함수(face7Idx)와 FACE7·FACE8 번호표(사진 data URI는 빼고) */
 globalThis.__face7Src=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
-  return R('00e_staff_faces_data.js')+'\n'+R('00f_people_faces_data.js')+'\n'+ui.slice(ui.indexOf('function face8Role('),ui.indexOf('function gmAgeC('))+'\n;({FACE7,face7Idx})'; };
+  return R('00e_staff_faces_data.js')+'\n'+R('00f_people_faces_data.js')+'\n'+R('00l_faces_v23_data.js')+'\n'+ui.slice(ui.indexOf('function f23Key('),ui.indexOf('function f6A('))+'\n'+ui.slice(ui.indexOf('function face8Role('),ui.indexOf('function gmAgeC('))+'\n;({FACE7,FACE23,face7Idx})'; };
+/* [카페 11-19 신생구단 얼굴] v23 전용 시트: 얼굴 시트 목록(faceSheets·f23P·f23Fb)을 그림 없이(faceImg 대역: 주소만 적는다) 읽는다. 사진 data URI는 "x"(128px HTML 안 시트) */
+globalThis.__f23SheetSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
+  return R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+R('00e_staff_faces_data.js')+'\n'+R('00j2_face_centers_data.js')+'\n'+R('00l_faces_v23_data.js')+'\n'+ui.slice(ui.indexOf('function fcAt('),ui.indexOf('function fcWin('))+'\n'+ui.slice(ui.indexOf('function f23Key('),ui.indexOf('function face6Idx('))+'\n'
+    +'const IM={}; function faceImg(k,src,o){ return src?IM[k]=IM[k]||{k,src,pitch:o&&o.pitch}:null; }\n'+ui.slice(ui.indexOf('function faceSheets('),ui.indexOf('const faceKeyOf='))+'\n;({FACE6,FACE7,FACE23,FACECTR,IM,faceSheets,f6T,f6A,fcAt})'; };
 /* [얼굴 가운데] 시나리오용: 얼굴 칸별 머리 중심표(FACECTR)와 자르는 창 함수(fcAt·fcWin) */
 globalThis.__fcSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8'), ui=R('77_assets_ui.js'); return R('00j2_face_centers_data.js')+'\n'+ui.slice(ui.indexOf('function fcAt('),ui.indexOf('function face6Cut('))+'\n;({FACECTR,fcAt,fcWin})'; };
 /* [얼굴 아마추어] 시나리오용: FACE6 번호표와 배정 함수(face6Idx·amIdx). pre: 앞에 붙일 코드(시험용 FACE21 번호표) */
@@ -8102,19 +8106,39 @@ T('[얼굴 v18] FACE6 360명(v18 160~359)·새 신인은 어린 얼굴·기존 �
   const b6=JSON.stringify(G.f6), b6r=JSON.stringify(G.f6r), v=G.f6v; X.push(...tail); G=JSON.parse(JSON.stringify(G));
   for(const p of all())F.face6Idx(p); ok(G.f6v===v&&JSON.stringify(G.f6)===b6&&JSON.stringify(G.f6r)===b6r,'불러온 저장의 얼굴 배정이 바뀜');
   const q=all().filter(p=>!p.foreign&&p.age<=21).sort((a,b)=>a.age-b.age)[0]; delete G.f6r[q.team+':'+G.f6[q.id]]; delete G.f6[q.id]; const ni=F.face6Idx(q); ok(ni>=160&&X[ni].a<=24,'새로 배정하는 어린 선수가 v18 어린 얼굴을 못 받음 '+ni); ok(!dup(),'새 배정 뒤 한 구단에 같은 얼굴이 둘'); });
-T('[카페 11-19 신생구단 얼굴] 11·12구단 선수·코치·옮겨 온 선수도 실사 사진 시트(원년 구단 시트를 빌림)를 쓰고, 예전 저장 수리는 난수 없이 여러 번 해도 같다',()=>{
+T('[카페 11-19 신생구단 얼굴] 11·12구단 선수·코치는 v23 전용 유니폼 시트(11구단 expansion_a·12구단 expansion_b, 128·256)를 같은 사람 칸 그대로 쓰고, 못 받으면 원년 구단 시트를 빌린다·구단 색은 키트 색·예전 저장 수리는 난수 없이 여러 번 해도 같다',()=>{
   const tid=expNov(false,'청주'); ok(G.teams.length===11&&tid===10,'준비 실패: 11구단 창단 '+G.teams.length);
-  const F=eval(globalThis.__faceSrc()), st=faceTeamOf(tid); ok(Number.isInteger(st)&&st>=0&&st<TEAM_DEF.length&&F.FACE6.sheet[String(st)],'신생 구단 사진 시트 구단이 없음: '+st); ok(F.f6T(tid)===st&&F.f6T(3)===3,'시트 열쇠가 틀림');
+  const F=eval(globalThis.__faceSrc()), st=faceTeamOf(tid); ok(Number.isInteger(st)&&st>=0&&st<TEAM_DEF.length&&F.FACE6.sheet[String(st)],'신생 구단 대체(빌림) 시트 구단이 없음: '+st);
+  ok(F.FACE23.teams[String(tid)]==='expansion_a'&&F.FACE23.teams['11']==='expansion_b','11·12구단 키트 연결이 틀림: '+JSON.stringify(F.FACE23.teams));
+  ok(F.f6T(tid)===tid&&F.f6A(tid)===st&&F.f6T(3)===3&&F.f6A(3)===3,'시트 열쇠가 틀림(그림 = 전용 시트, 배정 = 빌린 시트 기준): '+F.f6T(tid)+'/'+F.f6A(tid));
   const mine=()=>Object.values(G.players).filter(p=>p.team===tid).sort((a,b)=>a.id-b.id); ok(mine().length>=20,'준비 실패: 신생 구단 선수 '+mine().length);
   const miss=mine().filter(p=>F.face6Idx(p)==null).map(p=>p.name); ok(!miss.length,'신생 구단 선수에게 사진 칸이 없음(그림 얼굴): '+miss.slice(0,5).join(','));
   const S=new Set(); for(const p of mine()){ const i=G.f6[p.id]; ok(!S.has(i),'신생 구단 안에 같은 얼굴 둘: '+i); S.add(i); }
   const mates=Object.values(G.players).filter(p=>p.team===st&&G.f6r[st+':'+G.f6[p.id]]===p.id); for(const p of mine())ok(!mates.some(q=>G.f6[q.id]===G.f6[p.id])||p.hist&&p.hist.some(h=>h.t===st),'시트를 빌려 준 구단 선수와 같은 사진(같은 유니폼)이 새로 배정됨: '+p.name);
   const q=Object.values(G.players).filter(p=>p.team===0&&!p.foreign).sort((a,b)=>a.id-b.id)[0]; const qi=F.face6Idx(q); ok(qi!=null,'준비 실패: 기존 구단 선수 사진'); q.team=tid; ok(F.face6Idx(q)===qi,'신생 구단으로 옮긴 선수가 사진을 잃거나 얼굴이 바뀜');
-  const C=eval(globalThis.__face7Src()); const m=G.mgr[tid]; const x=C.face7Idx({persona:'mgr',pid:m.id,team:tid,age:m.age}); ok(x&&x.k==='c'&&x.team===st&&C.FACE7.coach.sheet[String(x.team)],'신생 구단 감독 사진 시트가 없음: '+JSON.stringify(x));
-  const cs=coachesOf(tid), ck=Object.keys(cs).filter(k=>cs[k]&&cs[k].id!=null&&!cs[k].f); ok(ck.length>0,'준비 실패: 신생 구단 코치'); for(const k of ck){ const y=C.face7Idx({persona:'coach',pid:cs[k].id,team:tid,age:cs[k].age}); ok(y&&y.k==='c'&&y.team===st,'신생 구단 코치 사진 시트가 없음: '+k); }
-  const keep=JSON.stringify(G.faceT); delete G.faceT; const r0=__rngCalls(); const n1=faceTMigrate(), a1=JSON.stringify(G.faceT), n2=faceTMigrate(); ok(__rngCalls()===r0,'수리가 난수를 씀'); ok(n1===1&&n2===0&&a1===JSON.stringify(G.faceT)&&a1===keep,'예전 저장 수리가 같은 결과가 아님: '+a1+' / '+keep);
-  for(const t of G.teams)if(t.id<TEAM_DEF.length)ok(faceTeamOf(t.id)===t.id,'원년 구단의 시트가 바뀜'); ok(!Object.keys(G.faceT).some(k=>+k<TEAM_DEF.length),'원년 구단까지 빌린 시트로 적음');
-  const E=G.exp; E.stage='approved'; E.ay=G.year; E.city='전주'; const t12=expDraft(); ok(G.teams.length===12,'준비 실패: 12구단'); const s12=faceTeamOf(t12); ok(s12!==st&&F.FACE6.sheet[String(s12)],'12구단이 11구단과 같은 시트를 빌림: '+s12+'/'+st);
+  /* 그림: 신생 구단 선수(v6c·v13·v18)·감독·코치가 전용 시트에서 같은 칸(사람)을 자른다. 128 v6c·v13·staff는 HTML 안, 256·v18은 파일(?v=해시). 원년 구단은 예전 시트 그대로 */
+  const V=eval(globalThis.__f23SheetSrc()), src=L=>L.map(x=>x.im.src), base='assets/v23/expansion_kits/sheets/';
+  for(const [c,set,cell] of [[5,'v6c',5],[104,'v13',4],[200,'v18A',40],[333,'v18B',73]])for(const big of [false,true]){ const L=V.faceSheets({s:'p',t:tid,c},big), U=src(L);
+    ok(L.length>=1&&L.every(x=>x.cell===cell),'전용 시트 칸 번호가 원래 사람 칸이 아님: '+set+' '+c+' '+L.map(x=>x.cell));
+    ok(U.every(u=>u==='x'||u.startsWith(base+set+'/')&&u.includes('/expansion_a.webp?v=')),'11구단 '+set+' 사진이 전용 시트가 아님: '+U.join(','));
+    if(big||!set.startsWith('v18'))ok(L.some(x=>x.cs===256),set+' 256 시트가 없음(big='+big+')'); if(set!=='v18A'&&set!=='v18B')ok(L.some(x=>x.cs===128&&x.im.src==='x'),set+' 128 시트가 HTML 안에 없음'); ok(L.every(x=>x.im.pitch===(x.cs===128?144:272)),'전용 시트 칸 간격'); }
+  ok(src(V.faceSheets({s:'p',t:11,c:5},false)).some(u=>u.includes(base+'v6c/256/expansion_b.webp')),'12구단이 expansion_b 시트를 쓰지 않음');
+  ok(src(V.faceSheets({s:'p',t:3,c:5},false)).every(u=>!u.includes('v23')),'원년 구단이 v23 시트를 씀');
+  ok(['A10','A11','B10','B11'].every(k=>V.FACECTR.v18[k])&&V.FACECTR.v13['11'],'신생 구단 머리 중심표(FACECTR v18·v13)가 없음');
+  const L7=V.faceSheets({s:'f7c',t:tid,c:7},true); ok(L7.length===2&&L7.every(x=>x.cell===7)&&L7.some(x=>x.cs===256&&x.im.src.startsWith(base+'staff/256/expansion_a.webp?v='))&&L7.some(x=>x.cs===128&&x.im.src==='x'),'신생 구단 코치가 전용 staff 시트(128·256)가 아님: '+src(L7));
+  /* 대체: 전용 시트를 하나도 못 받으면(내려받은 HTML 등) 빌린 원년 구단 시트의 같은 칸 */
+  for(const k in V.IM)if(k.startsWith('23'))V.IM[k].bad=true; const Lb=V.faceSheets({s:'p',t:tid,c:5},false); ok(Lb.length&&Lb.every(x=>x.cell===5&&!x.im.src.includes('v23')),'전용 시트를 못 받았을 때 빌린 시트로 돌아가지 않음: '+src(Lb));
+  const L7b=V.faceSheets({s:'f7c',t:tid,c:7},false); ok(L7b.length===1&&L7b[0].im.k==='c7'+st,'코치 대체 시트가 빌린 구단 시트가 아님: '+L7b.map(x=>x.im.k));
+  const C=eval(globalThis.__face7Src()); const m=G.mgr[tid]; const x=C.face7Idx({persona:'mgr',pid:m.id,team:tid,age:m.age}); ok(x&&x.k==='c'&&x.team===tid&&C.FACE23.teams[String(x.team)]&&G.f7r['c'+st+':'+x.c]==='mgr:'+m.id,'신생 구단 감독이 전용 시트가 아니거나 배정 범위가 바뀜: '+JSON.stringify(x));
+  const cs=coachesOf(tid), ck=Object.keys(cs).filter(k=>cs[k]&&cs[k].id!=null&&!cs[k].f); ok(ck.length>0,'준비 실패: 신생 구단 코치'); for(const k of ck){ const y=C.face7Idx({persona:'coach',pid:cs[k].id,team:tid,age:cs[k].age}); ok(y&&y.k==='c'&&y.team===tid,'신생 구단 코치 사진 시트가 전용 시트가 아님: '+k); }
+  ok(C.face7Idx({persona:'mgr',pid:G.mgr[3].id,team:3,age:G.mgr[3].age}).team===3,'원년 구단 감독 시트가 바뀜');
+  /* 구단 색: 키트 색(난수 없음). 예전 저장(창단 때 정한 다른 hue)은 불러올 때 고친다 */
+  ok(tpal(tid)[0]==='#0B5D3B'&&tpal(tid)[1]==='#C9A227'&&G.teams[tid].hue===155,'11구단 색이 키트(숲 녹색·골드)가 아님: '+tpal(tid)+' hue '+G.teams[tid].hue);
+  const keep=JSON.stringify(G.faceT); delete G.faceT; G.teams[tid].hue=17; const r0=__rngCalls(); const k1=expKitMigrate(), n1=faceTMigrate(), a1=JSON.stringify(G.faceT), k2=expKitMigrate(), n2=faceTMigrate(); ok(__rngCalls()===r0,'수리가 난수를 씀');
+  ok(k1===1&&k2===0&&G.teams[tid].hue===155,'예전 저장 색 수리가 한 번만 고치지 않음: '+k1+'/'+k2); ok(n1===1&&n2===0&&a1===JSON.stringify(G.faceT)&&a1===keep,'예전 저장 수리가 같은 결과가 아님: '+a1+' / '+keep);
+  for(const t of G.teams)if(t.id<TEAM_DEF.length)ok(faceTeamOf(t.id)===t.id&&tpal(t.id)[0]===TPAL[t.code][0],'원년 구단의 시트·색이 바뀜'); ok(!Object.keys(G.faceT).some(k=>+k<TEAM_DEF.length),'원년 구단까지 빌린 시트로 적음');
+  const E=G.exp; E.stage='approved'; E.ay=G.year; E.city='전주'; const t12=expDraft(); ok(G.teams.length===12,'준비 실패: 12구단'); const s12=faceTeamOf(t12); ok(s12!==st&&F.FACE6.sheet[String(s12)],'12구단이 11구단과 같은 대체 시트를 빌림: '+s12+'/'+st);
+  ok(F.f6T(t12)===t12&&F.FACE23.teams[String(t12)]==='expansion_b','12구단이 전용 시트(expansion_b)가 아님'); ok(tpal(t12)[0]==='#4B2A7B'&&tpal(t12)[1]==='#A7A9AC'&&G.teams[t12].hue===265,'12구단 색이 키트(퍼플·실버)가 아님: '+tpal(t12));
   ok(Object.values(G.players).filter(p=>p.team===t12).every(p=>F.face6Idx(p)!=null),'12구단 선수에게 사진 칸이 없음'); });
 T('[얼굴 아마추어] v21 납품 전에는 고교·대학 선수에게 임시 사진을 주지 않고(예전과 같음), FACE21 번호표만 더하면 고정 배정·지명 뒤 같은 신원으로 이어진다',()=>{
   ok(globalThis.__amNoInterim(),'임시 아마추어 사진(번호표·시트)이 남아 있음');
