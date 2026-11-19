@@ -7,6 +7,10 @@ const ANA_SAL=[0,30,50,80,120,170], ANA_MAX=9;
 const ANA_CAR={opp:['전 프로 포수','전력분석팀 10년차','전 불펜 코치','기록원 출신'],trk:['통계학 석사','데이터 엔지니어 출신','트래킹 장비 회사 출신','바이오메카닉스 연구원'],vid:['방송 중계 PD 출신','전 프로 타자','영상 편집 전문','전 타격 코치']};
 function mkAnalyst(skill,role){ role=role||pick(Object.keys(AROLE)); return staffAttach({id:'a'+Math.floor(R()*1e9),name:genName(),age:ri(26,55),skill,role,sal:ANA_SAL[skill],since:G.day,car:pick(ANA_CAR[role])},'analyst'); }
 function anaList(){ if(!G.analysts){ const lv=G.data&&G.data.lv!=null?G.data.lv:1; G.analysts=[]; const add=(r,k)=>G.analysts.push(Object.assign(mkAnalyst(k,r),{since:-999})); if(lv>=1){ add('opp',lv>=3?4:lv>=2?3:2); add('trk',lv>=3?4:lv>=2?3:2); add('vid',lv>=3?3:2); } } return G.analysts; }
+/* 화면에 쓰는 역할별 인원 줄(11-19: '3/1 상대 전력분석'처럼 분모가 1로 박혀 있었다). 실제 규칙: 분석원은 모두 ANA_MAX(9)명까지, 역할마다 실력 상위 ANA_TOP(3)명만 100·60·30%로 반영하고 효과에는 상한이 있다(anaPow·anaEff) */
+const ANA_TOP=3;
+function anaRoleRow(role,L){ const n=(L||[]).filter(a=>a.role===role).length; return [Math.min(n,ANA_TOP),ANA_TOP,AROLE[role].l+(n>ANA_TOP?` (${n}명 중 상위 ${ANA_TOP}명만 반영)`:''),n>0?1:0]; }
+function anaRuleTxt(){ return `분석원은 모두 ${ANA_MAX}명까지 · 역할마다 실력 상위 ${ANA_TOP}명만 100·60·30%로 반영(효과 상한 있음)`; }
 const anaNow=a=>a.skill*(G.day-(a.since??-999)<30?.5:1); /* 새로 온 분석원은 30일 적응 기간(사람에게 붙는 상태: AI·유저 구단 같은 계산, 이직해도 재직 기간 인정) */
 function anaPow(role,tid){ if(tid==null)tid=G.user; if(tid!==G.user||G.unemp){ const v=G.lgStaff?stAnaPow(tid,role):null; return v!=null?v:2+(hn('ap'+role+(G.year>>1),tid)>.4?1:0); }
   const L=anaList().filter(a=>a.role===role).map(anaNow).sort((a,b)=>b-a); return (L[0]||0)+(L[1]||0)*.6+(L[2]||0)*.3; } /* 새로 온 분석원은 30일 적응 기간 */
