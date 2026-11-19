@@ -19498,7 +19498,7 @@ function ctText(p){ if(G.fa&&(G.fa.pool||[]).includes(p.id)&&!p.faC&&!p.ext&&(p.
 /* ===== 새 게임 ===== */
 function buildWorld(opts){ const lite=!!(opts&&opts.lite); /* lite: 지난 시즌(2025) 경기를 치르지 않은 가벼운 세계(대회·유저 래더 경기장용. 커리어는 쓰지 않음) */ const userTid=0; worldReset();
   G={ver:4,year:2026,day:0,user:userTid,teams:[],players:{},nextId:1,history:[],log:[],lg:{},lineup:{},mail:[],stops:[],games:[],offers:[],mgr:{},mmarket:[],med:{prev:1,hosp:'none'},spend:{scout:0,mgr:0,med:0,hosp:0,dev:0,intl:0,fac:0},intl:{us:1,la:0,jp:0,tw:0,au:0},fac:{lv:2,build:null},devProg:[],ovs:[],tut:{step:0,done:false},tutFlags:{},
-     scouts:[],scoutMarket:[],marketing:2000,draft:null,fa:null,trades:[],last:null,gameOver:null,contract:null,fmarket:[],live:null};
+     scouts:[],scoutMarket:[],marketing:2000,draft:null,fa:null,trades:[],last:null,gameOver:null,contract:null,fmarket:[],live:null}; syncMinSal(); /* 최저 연봉은 연도에 따른 전역 값: 2027년 이후 저장을 불러온 뒤 새 게임을 만들면 33(2027년 값)이 남아 2026년 세계의 연봉·생성이 달라졌다 */
   TEAM_DEF.forEach((d,i)=>G.teams.push(Object.assign({id:i,cash:4000,pop:1,trust:55,rel:50,owner:d.indie?'profit':pick(['win','profit','pr','win']),
     mode:'contend',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:ri(2,4)},d)));
   /* 플레이어가 정해 둔 구단 이름(설정 → 구단 이름 바꾸기, '새 게임에도 쓰기')이 있으면 처음부터 그 이름으로 만든다(화면 쪽 teamNamesPreset) */
