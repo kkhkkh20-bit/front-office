@@ -159,7 +159,7 @@ function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...a
     if(s.age>=66||(s.age>=60&&R()<.15)){ out.add(s); staffHistory(k==='sc'?'scout':'analyst',s,'은퇴',tid,`${s.age}세`); if(tid===ME()){ /* 무직이면 전 구단 명단은 lgStaff에 있다(검수 11-09zv #5) */ if(k==='sc')G.scouts=G.scouts.filter(x=>x!==s); else G.analysts=G.analysts.filter(x=>x!==s); gone.push(s.name); } else { const L=G.lgStaff[tid]; if(k==='sc')L.sc=L.sc.filter(x=>x!==s); else L.an=L.an.filter(x=>x!==s); } } }
   for(const tid in G.lgStaff)stSync(+tid);
   fell=fell.filter(([s])=>!out.has(s)).map(x=>x[1]); /* 같은 해 은퇴한 사람은 은퇴 줄에만 */
-  if(grew.length||gone.length||fell.length)mail('운영팀','스태프 연간 변동',`${[grew.length?`경험이 쌓여 실력이 오른 스태프: ${grew.join(', ')}`:'',fell.length?`나이·감각 저하로 실력이 내려간 스태프: ${fell.join(', ')}`:'',gone.length?`은퇴한 스태프: ${gone.join(', ')}`:''].filter(Boolean).join('\n')}${fell.length?'\n스태프는 나이가 들수록 실력이 떨어질 수 있습니다(52세부터 더 자주, 58세부터 크게).':''}\n\n오래 함께한 스태프일수록 충성도가 올라 다른 구단 제안에 잘 흔들리지 않습니다.`,{kind:'스태프'}); }
+  if(grew.length||gone.length||fell.length){ const m=mail('운영팀','스태프 연간 변동',`${[grew.length?`경험이 쌓여 실력이 오른 스태프: ${grew.join(', ')}`:'',fell.length?`나이·감각 저하로 실력이 내려간 스태프: ${fell.join(', ')}`:'',gone.length?`은퇴한 스태프: ${gone.join(', ')}${(()=>{ const gap=G.unemp?[]:REG.filter(r=>!G.scouts.some(x=>(x.role||'am')==='am'&&x.region===r)); return gap.length?`\n아마추어 담당이 없는 지역: ${gap.join(', ')}. 이 지역 고교·대학 후보는 관찰이 쌓이지 않아 잠재력을 판단하지 못합니다(드래프트 보드 '잠재력 ?'). 스태프 화면에서 스카우트를 영입하세요.`:''; })()}`:''].filter(Boolean).join('\n')}${fell.length?'\n스태프는 나이가 들수록 실력이 떨어질 수 있습니다(52세부터 더 자주, 58세부터 크게).':''}\n\n오래 함께한 스태프일수록 충성도가 올라 다른 구단 제안에 잘 흔들리지 않습니다.`,{kind:'스태프'}); if(gone.length&&!G.unemp&&scVacNeed()>0)scVacMail(m); } /* 스카우트가 빠져 정한 인원보다 적으면 '위임하기 · 스카우트 빈자리 보강' 버튼 */ }
 
 /* AI 구단 스태프 운영(매달 1일): 우리와 같은 시장(스카우트·분석원 영입 후보)에서 뽑는다. 좋은 후보를 먼저 데려가면 우리 몫이 줄어든다.
    목표 인원·수준은 구단 재정(보유 현금)·시장 규모·전략으로 정한다. 빈자리는 아무 달에나 채우고, 사람 바꾸기(약한 사람 내보내고 더 나은 사람)는 11~2월에.
@@ -174,11 +174,37 @@ function stAiFits(tid,sal,out){ const L=G.lgStaff&&G.lgStaff[tid], t=team(tid); 
 function stAiTopMonth(){ const o=dobj(G.day),m=o.y*100+o.m; if(!G.stAiTop||G.stAiTop.m!==m)G.stAiTop={m,n:0}; return G.stAiTop; }
 function stAiTopOk(s){ return s.skill<4||stAiTopMonth().n<1; }
 function stAiTopTake(s){ if(s.skill>=4)stAiTopMonth().n++; }
+/* 스태프 빈자리 후보(AI 월간 보강 stAiStaff와 맡긴 우리 구단 scVacUser가 같이 쓴다): 오기로 한 사람·경쟁 중·이달 상위 인력 한도·학교 재직은 빼고 능력 높은 순(같으면 연봉 낮은 순).
+   fillC는 그 가운데 연봉 여력(room) 안. 난수를 쓰지 않는다 */
+function stFillCands(mk,room){ const pickC=mk.filter(c=>!c.acc&&!(c.bid&&c.bid.exp>=G.day)&&stAiTopOk(c)&&!(typeof schMarketWhy==='function'&&schMarketWhy(c))).sort((a,b)=>b.skill-a.skill||(a.sal||0)-(b.sal||0));
+  return {pickC,fillC:pickC.filter(c=>(c.sal||0)<=room)}; }
+/* 스카우트 빈자리 보강(맡긴 우리 구단, 카페 11-19 '20시즌 넘으면 고교 황폐화'): 처음 받은 스카우트가 늙어 은퇴해도 우리 구단은 자동으로 다시 뽑히지 않아 그 지역 후보가 관찰 0회·잠재력 ?로 남았다.
+   AI 월간 보강(stAiStaff fill)과 같은 기준: 구단 형편으로 정한 인원(stAiPlan tSc, 우리 정원 scoutMax 안)보다 적으면, 같은 후보 목록(stFillCands)에서 스태프 연봉 여력(payMax) 안의 맨 앞(능력 높은 순·같으면 연봉 낮은 순)을 데려온다.
+   AI의 '이달 움직일지'(R()<.35/.75)·'둘째 후보 30%'는 운에 맡긴 AI의 머뭇거림이라 맡긴 우리 구단은 늘 맨 앞을 빈자리가 생긴 다음 날 채운다(코치 빈자리 위임과 같게).
+   계약은 단장이 직접 영입할 때와 같은 stSignOwn, 배치는 담당이 빈 아마추어 지역 → 해외 → 프로 순. 분석원은 범위 밖.
+   시장 새로고침(scoutMkt)은 본 난수를 쓰므로 여기서 하지 않고 지금 시장을 그대로 본다. 그 밖의 처리도 따로 씨앗을 둔 난수(withRng)라 본 난수 흐름을 바꾸지 않는다 */
+function scVacPost(){ const ld=scoutLoad(); for(const [r,keys] of [['am',REG],['intl',Object.keys(IREG)],['pro',REG]])for(const g of keys)if(!ld[r+':'+g])return [r,g]; return null; }
+/* 빈자리: 정한 인원(AI 기준)보다 적음, 또는 아마추어 담당이 없는 지역이 있음(제보 원인, 코디네이터 결정 11-19). 뒤의 경우는 우리 정원(scoutMax) 안에서만 */
+function scVacGap(){ return REG.filter(r=>!(G.scouts||[]).some(x=>(x.role||'am')==='am'&&x.region===r)); }
+function scVacNeed(){ const t=team(G.user); if(!t||G.unemp)return 0; const n=(G.scouts||[]).length, cap=scoutMax(); return Math.max(0,Math.min(stAiPlan(t).tSc,cap)-n,Math.min(scVacGap().length,cap-n)); }
+/* 담당 없는 지역이 있는데 정원이 가득: 뽑지 않고 알림만(같은 상황은 한 번만) */
+function scVacFullNote(){ const gap=scVacGap(), n=(G.scouts||[]).length, cap=scoutMax(); if(!gap.length||n<cap||G.unemp){ if(!gap.length)delete G.svacFull; return; } const key=G.year+':'+gap.join(','); if(G.svacFull===key)return; G.svacFull=key;
+  autoLogAdd('스카우트 빈자리 보강(운영팀)','정원 가득 · 영입 안 함',`담당 없는 지역: ${gap.join(', ')}`);
+  mail('운영팀','스카우트 빈자리: 담당 없는 지역 + 정원 가득',`아마추어 담당이 없는 지역: ${gap.join(', ')}. 이 지역 고교·대학 후보는 관찰이 쌓이지 않아 잠재력을 판단하지 못합니다(드래프트 보드 '잠재력 ?').\n스카우트 정원(${n}/${cap}명)이 가득 차 운영팀이 새로 뽑지 않았습니다. 다른 담당 스카우트를 이 지역으로 옮기거나 한 명을 내보내면 다음 날 채웁니다.`,{kind:'스태프',imp:true,acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]}); }
+function scVacUser(){ if(G.unemp)return []; if(!scVacNeed()){ scVacFullNote(); return []; } if(G.stAcc&&stAccBlock())return []; const got=[];
+  withRng(rngHash('svac',G.year,G.day,G.user,(G.scouts||[]).length),()=>{ const P=stAiPlan(team(G.user));
+    while(scVacNeed()>0){ const {fillC}=stFillCands(G.scoutMarket||[],P.payMax-stAiPay({sc:G.scouts||[],an:anaList()})); const c=fillC[0]; if(!c)break; stAttr(c);
+      const post=scVacPost(); if(post){ c.role=post[0]; c.region=post[1]; } else c.role=c.role||'am'; stSignOwn('sc',c,c.sal||SCOUT_SAL[c.skill]); if(!(G.scouts||[]).includes(c))break; got.push(c); } });
+  if(!got.length)return got; const ln=got.map(c=>`${SROLE[c.role||'am']} ${c.role==='intl'?IREG[c.region].l:c.region} 담당 ${c.name}(능력 ${c.skill} · ${c.age}세 · 연 ${money(c.sal)})`);
+  autoLogAdd('스카우트 빈자리 보강(운영팀)',`${got.length}명 영입`,ln.join(', '));
+  mail('운영팀',`스카우트 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 스카우트 빈자리를 스카우트 시장에서 채웠습니다.\n${ln.join('\n')}\n\nAI 구단과 같은 기준입니다. 구단 형편에 맞는 인원보다 적을 때, 연봉 여력 안에서 능력이 가장 높은 후보를 데려와 담당이 빈 아마추어 지역부터 맡겼습니다. 설정 > 권한에서 다시 가져올 수 있습니다.`,{kind:'스태프',acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]});
+  return got; }
+/* 스카우트 빈자리 소식: 받은편지함 '위임하기' 버튼(mailDelegOpts)이 이 업무로 이어지게 */
+function scVacMail(m){ if(m&&typeof m==='object'&&m.id)m.auto=[...new Set([...(m.auto||[]),'svac'])]; return m; }
 function stAiStaff(){ if(G.unemp&&G.user==null)return; const L=stInit(); try{ stBidSettle(); }catch(e){} const m=dobj(G.day).m, off=m>=11||m<=2; const ids=Object.keys(L).map(Number).sort(()=>R()-.5); const moved=[]; /* 능력 4 이상은 리그 전체에서 한 달에 한 명만 AI가 데려간다(우리에게도 기회가 남게) */
   for(const tid of ids){ const t=team(tid); if(!t||tid===G.user)continue; const S=L[tid]; const P=stAiPlan(t);
     const fill=(kind)=>{ const list=kind==='sc'?S.sc:S.an, tgt=kind==='sc'?P.tSc:P.tAn; const mk=kind==='sc'?scoutMkt():anaMarket(); if(!mk.length)return;
-      const room=P.payMax-stAiPay(S); const pickC=mk.filter(c=>!c.acc&&!(c.bid&&c.bid.exp>=G.day)&&stAiTopOk(c)&&!(typeof schMarketWhy==='function'&&schMarketWhy(c))).sort((a,b)=>b.skill-a.skill||(a.sal||0)-(b.sal||0));
-      const fillC=pickC.filter(c=>(c.sal||0)<=room); if(list.length<tgt&&fillC.length&&R()<(off?.75:.35)){ const c=fillC[R()<.7?0:Math.min(1,fillC.length-1)]; mk.splice(mk.indexOf(c),1); stAiTopTake(c); stAttr(c); c.loy=ri(20,45); c.since=G.day; list.push(c); if(typeof schStaffJoined==='function')schStaffJoined(c,tid); try{ obTaken(c.ob,c); }catch(e){} staffHistory(kind==='sc'?'scout':'analyst',c,'영입',tid,'구단 인력 보강'); moved.push(`${tshort(tid)} ${kind==='sc'?'스카우트':'분석원'} ${c.name}(능력 ${c.skill}) 영입`); if(c.skill>=4)try{ wire('스태프',`${tshort(tid)}, ${kind==='sc'?'스카우트':'전력분석원'} ${c.name}(능력 ${c.skill}) 영입`,{tid}); }catch(e){} return; }
+      const {pickC,fillC}=stFillCands(mk,P.payMax-stAiPay(S)); if(list.length<tgt&&fillC.length&&R()<(off?.75:.35)){ const c=fillC[R()<.7?0:Math.min(1,fillC.length-1)]; mk.splice(mk.indexOf(c),1); stAiTopTake(c); stAttr(c); c.loy=ri(20,45); c.since=G.day; list.push(c); if(typeof schStaffJoined==='function')schStaffJoined(c,tid); try{ obTaken(c.ob,c); }catch(e){} staffHistory(kind==='sc'?'scout':'analyst',c,'영입',tid,'구단 인력 보강'); moved.push(`${tshort(tid)} ${kind==='sc'?'스카우트':'분석원'} ${c.name}(능력 ${c.skill}) 영입`); if(c.skill>=4)try{ wire('스태프',`${tshort(tid)}, ${kind==='sc'?'스카우트':'전력분석원'} ${c.name}(능력 ${c.skill}) 영입`,{tid}); }catch(e){} return; }
       if(off&&list.length&&R()<.2){ const w=[...list].sort((a,b)=>a.skill-b.skill)[0]; const up=pickC.find(c=>c.skill>=w.skill+2&&stAiFits(tid,c.sal||0,w.sal||0)); if(up){ list.splice(list.indexOf(w),1); mk.splice(mk.indexOf(up),1); mk.push(w); /* 밀려난 직원은 시장으로(검수 11-07) */ stAiTopTake(up); stAttr(up); up.loy=ri(20,45); up.since=G.day; list.push(up); if(typeof schStaffJoined==='function')schStaffJoined(up,tid); try{ obTaken(up.ob,up); }catch(e){} staffHistory(kind==='sc'?'scout':'analyst',w,'계약 종료',tid,'전력 보강을 위한 교체'); staffHistory(kind==='sc'?'scout':'analyst',up,'영입',tid,'전력 보강을 위한 교체'); moved.push(`${tshort(tid)} ${kind==='sc'?'스카우트':'분석원'} 교체: ${w.name} → ${up.name}(능력 ${up.skill})`); } } };
     fill('sc'); fill('an');
     /* 비시즌 빼 오기: 부유한 구단이 다른 AI 구단의 능력 4 이상을 노린다 */
