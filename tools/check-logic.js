@@ -90,7 +90,10 @@ globalThis.__awardHistory1005UiSrc=()=>{const root=process.env.AWARD_HISTORY_UI_
 const results=[]; const T=(name,fn)=>results.push({name,fn});
 /* [얼굴 v18] 시나리오용: 화면 쪽 얼굴 번호표(FACE6, 사진 data URI는 빼고)와 배정 함수(face6Pool·face6Idx)를 엔진 안에서 direct eval로 읽는다. 엄격 모드라 끝 식으로 꺼낸다 */
 globalThis.__faceSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=fs.readFileSync(path.join(__dirname,'..','src','ui','assets','77_assets_ui.js'),'utf8');
-  return R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n;({FACE6,face6Pool,face6Idx})'; };
+  return R('00d_faces_data.js')+'\n'+R('00h_more_faces2_data.js')+'\n'+R('00j_faces_v18_data.js')+'\n'+ui.slice(ui.indexOf('function face6Pool('),ui.indexOf('function face6Cut('))+'\n;({FACE6,face6Pool,face6Idx,f6T,f6Mates})'; };
+/* [카페 11-19 신생구단 얼굴] 감독·코치 배정 함수(face7Idx)와 FACE7·FACE8 번호표(사진 data URI는 빼고) */
+globalThis.__face7Src=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8').replace(/"data:image\/[^"]*"/g,'"x"'), ui=R('77_assets_ui.js');
+  return R('00e_staff_faces_data.js')+'\n'+R('00f_people_faces_data.js')+'\n'+ui.slice(ui.indexOf('function face8Role('),ui.indexOf('function gmAgeC('))+'\n;({FACE7,face7Idx})'; };
 /* [얼굴 가운데] 시나리오용: 얼굴 칸별 머리 중심표(FACECTR)와 자르는 창 함수(fcAt·fcWin) */
 globalThis.__fcSrc=()=>{ const R=f=>fs.readFileSync(path.join(__dirname,'..','src','ui','assets',f),'utf8'), ui=R('77_assets_ui.js'); return R('00j2_face_centers_data.js')+'\n'+ui.slice(ui.indexOf('function fcAt('),ui.indexOf('function face6Cut('))+'\n;({FACECTR,fcAt,fcWin})'; };
 /* [얼굴 아마추어] 시나리오용: FACE6 번호표와 배정 함수(face6Idx·amIdx). pre: 앞에 붙일 코드(시험용 FACE21 번호표) */
@@ -8049,6 +8052,20 @@ T('[얼굴 v18] FACE6 360명(v18 160~359)·새 신인은 어린 얼굴·기존 �
   const b6=JSON.stringify(G.f6), b6r=JSON.stringify(G.f6r), v=G.f6v; X.push(...tail); G=JSON.parse(JSON.stringify(G));
   for(const p of all())F.face6Idx(p); ok(G.f6v===v&&JSON.stringify(G.f6)===b6&&JSON.stringify(G.f6r)===b6r,'불러온 저장의 얼굴 배정이 바뀜');
   const q=all().filter(p=>!p.foreign&&p.age<=21).sort((a,b)=>a.age-b.age)[0]; delete G.f6r[q.team+':'+G.f6[q.id]]; delete G.f6[q.id]; const ni=F.face6Idx(q); ok(ni>=160&&X[ni].a<=24,'새로 배정하는 어린 선수가 v18 어린 얼굴을 못 받음 '+ni); ok(!dup(),'새 배정 뒤 한 구단에 같은 얼굴이 둘'); });
+T('[카페 11-19 신생구단 얼굴] 11·12구단 선수·코치·옮겨 온 선수도 실사 사진 시트(원년 구단 시트를 빌림)를 쓰고, 예전 저장 수리는 난수 없이 여러 번 해도 같다',()=>{
+  const tid=expNov(false,'청주'); ok(G.teams.length===11&&tid===10,'준비 실패: 11구단 창단 '+G.teams.length);
+  const F=eval(globalThis.__faceSrc()), st=faceTeamOf(tid); ok(Number.isInteger(st)&&st>=0&&st<TEAM_DEF.length&&F.FACE6.sheet[String(st)],'신생 구단 사진 시트 구단이 없음: '+st); ok(F.f6T(tid)===st&&F.f6T(3)===3,'시트 열쇠가 틀림');
+  const mine=()=>Object.values(G.players).filter(p=>p.team===tid).sort((a,b)=>a.id-b.id); ok(mine().length>=20,'준비 실패: 신생 구단 선수 '+mine().length);
+  const miss=mine().filter(p=>F.face6Idx(p)==null).map(p=>p.name); ok(!miss.length,'신생 구단 선수에게 사진 칸이 없음(그림 얼굴): '+miss.slice(0,5).join(','));
+  const S=new Set(); for(const p of mine()){ const i=G.f6[p.id]; ok(!S.has(i),'신생 구단 안에 같은 얼굴 둘: '+i); S.add(i); }
+  const mates=Object.values(G.players).filter(p=>p.team===st&&G.f6r[st+':'+G.f6[p.id]]===p.id); for(const p of mine())ok(!mates.some(q=>G.f6[q.id]===G.f6[p.id])||p.hist&&p.hist.some(h=>h.t===st),'시트를 빌려 준 구단 선수와 같은 사진(같은 유니폼)이 새로 배정됨: '+p.name);
+  const q=Object.values(G.players).filter(p=>p.team===0&&!p.foreign).sort((a,b)=>a.id-b.id)[0]; const qi=F.face6Idx(q); ok(qi!=null,'준비 실패: 기존 구단 선수 사진'); q.team=tid; ok(F.face6Idx(q)===qi,'신생 구단으로 옮긴 선수가 사진을 잃거나 얼굴이 바뀜');
+  const C=eval(globalThis.__face7Src()); const m=G.mgr[tid]; const x=C.face7Idx({persona:'mgr',pid:m.id,team:tid,age:m.age}); ok(x&&x.k==='c'&&x.team===st&&C.FACE7.coach.sheet[String(x.team)],'신생 구단 감독 사진 시트가 없음: '+JSON.stringify(x));
+  const cs=coachesOf(tid), ck=Object.keys(cs).filter(k=>cs[k]&&cs[k].id!=null&&!cs[k].f); ok(ck.length>0,'준비 실패: 신생 구단 코치'); for(const k of ck){ const y=C.face7Idx({persona:'coach',pid:cs[k].id,team:tid,age:cs[k].age}); ok(y&&y.k==='c'&&y.team===st,'신생 구단 코치 사진 시트가 없음: '+k); }
+  const keep=JSON.stringify(G.faceT); delete G.faceT; const r0=__rngCalls(); const n1=faceTMigrate(), a1=JSON.stringify(G.faceT), n2=faceTMigrate(); ok(__rngCalls()===r0,'수리가 난수를 씀'); ok(n1===1&&n2===0&&a1===JSON.stringify(G.faceT)&&a1===keep,'예전 저장 수리가 같은 결과가 아님: '+a1+' / '+keep);
+  for(const t of G.teams)if(t.id<TEAM_DEF.length)ok(faceTeamOf(t.id)===t.id,'원년 구단의 시트가 바뀜'); ok(!Object.keys(G.faceT).some(k=>+k<TEAM_DEF.length),'원년 구단까지 빌린 시트로 적음');
+  const E=G.exp; E.stage='approved'; E.ay=G.year; E.city='전주'; const t12=expDraft(); ok(G.teams.length===12,'준비 실패: 12구단'); const s12=faceTeamOf(t12); ok(s12!==st&&F.FACE6.sheet[String(s12)],'12구단이 11구단과 같은 시트를 빌림: '+s12+'/'+st);
+  ok(Object.values(G.players).filter(p=>p.team===t12).every(p=>F.face6Idx(p)!=null),'12구단 선수에게 사진 칸이 없음'); });
 T('[얼굴 아마추어] v21 납품 전에는 고교·대학 선수에게 임시 사진을 주지 않고(예전과 같음), FACE21 번호표만 더하면 고정 배정·지명 뒤 같은 신원으로 이어진다',()=>{
   ok(globalThis.__amNoInterim(),'임시 아마추어 사진(번호표·시트)이 남아 있음');
   fresh(); if(!(G.draftClass||[]).length)makeDraftClass(); const am=G.draftClass.map(id=>G.players[id]).filter(p=>p&&!p.foreign); ok(am.length>=20,'드래프트 대상 부족 '+am.length);
@@ -10107,6 +10124,41 @@ T('[카페 11-19 상무 성장] 상무 복무 중 겨울 한 해 종합 성장�
   ok(capped>=3,'준비: 상한에 걸린 경우가 너무 적음 '+capped); ok(clubBig>=3,'구단 소속 성장까지 잘림(상무 전용이어야 함) '+clubBig);
   G.players[p0.id]=p0;
 });
+T('[피드백 11-19 캠프 연습상대] 강팀 위주는 강팀 경기에 나간 우리 선수의 잠재력 추정 범위를 실전 감각 위주보다 더 좁히고(섞어서 절반), 성장·난수는 그대로',()=>{ fresh(); G.day=G.cal.camp; sprcCampStart(); const P=G.scp.t[G.user];
+  const p=domestic(G.user).filter(q=>q.age<=24&&!q.prospect)[0]; ok(p,'준비 실패'); P.pgR=[1,2,3,4].map(i=>({d:G.cal.camp+i,o:'x',us:2,op:1,k:i<=2?'npb1':'kbo'})); P.sg={[p.id]:p.isP?[4,12,8,3,2,9]:[4,12,10,3,1,2,2,6]};
+  const sc=bestScout(); const sdOf=lv=>{ delete p.campEv; P.evY=0; P.pgLv=lv; const c0=__rngCalls(); sprcCampEval(G.user,P); ok(__rngCalls()===c0,'평가 효과가 난수를 씀'); return ownSd(p,sc); };
+  const e=sdOf('easy'), m=sdOf('mix'), h=sdOf('hard'); ok(!p.campEv||p.campEv.n===4,'강팀 4경기 출전 기록 '+JSON.stringify(p.campEv));
+  ok(e>1.5/.84+.01,'바닥값이라 비교 불가 '+e); ok(h<m&&m<e,'추정 범위 강팀 '+h+' 섞어서 '+m+' 실전 '+e); ok(Math.abs(h/e-.84)<.01&&Math.abs(m/e-.92)<.01,'좁아지는 비율 '+(h/e)+' '+(m/e));
+  ok(scoutReport(p).sd===h,'선수 평가 화면 오차에 반영 안 됨'); P.pgLv='hard'; const g1=sprcGrowMul(G.user); P.pgLv='easy'; ok(sprcGrowMul(G.user)===g1,'방침이 성장 배수를 바꿈');
+  p.campEv.y=G.year-1; ok(sprcEvalSdF(p,G.user)===1,'지난해 캠프 평가가 남음'); delete p.campEv; ok(sprcEvalSdF(p,G.user)===1,'옛 저장(기록 없음)');
+  P.pgR=P.pgR.map(r=>({d:r.d,o:r.o,us:r.us,op:r.op})); P.pg=[{d:G.cal.camp+1,k:'npb1'},{d:G.cal.camp+2,k:'kr2'}]; const old=sprcPgFx(P); ok(old.ns===1&&old.q===1,'옛 기록(상대 종류 없음)은 일정에서 상대를 찾아야 '+old.ns+' '+old.q);
+  delete P.pgLv; ok(sprcPgFx(P).lv==='mix','옛 저장 방침 기본값'); P.pgLv='??'; ok(sprcPgFx(P).lv==='mix','이상한 방침 값'); });
+T('[피드백 11-19 캠프 연습상대] 실전 감각 위주는 강팀 위주보다 개막 컨디션이 좋다(sprcCampEnd → sprcOpenCond)',()=>{ fresh(); G.day=G.cal.camp; campStart(); sprcCampStart(); const P=G.scp.t[G.user]; P.int='norm';
+  P.pgR=[1,2,3,4,5,6,7,8].map(i=>({d:G.cal.camp+i,o:'x',us:1,op:1,k:i<=3?'kbo':i<=5?'npb1':i<=7?'npb2':'kr2'}));
+  const condOf=lv=>{ P.pgLv=lv; G.day=G.cal.campEnd; sprcCampEnd(); return P.cond; }; const ch=condOf('hard'), cm=condOf('mix'), ce=condOf('easy');
+  ok(ce>cm&&cm>ch,'개막 컨디션 순서 실전 '+ce+' 섞어서 '+cm+' 강팀 '+ch); ok(Math.abs((ce-cm)-.06)<.011&&Math.abs((cm-ch)-(.085+.06))<.011,'컨디션 차이 크기 '+ce+' '+cm+' '+ch);
+  const ms=lv=>{ const snap=JSON.stringify(G); condOf(lv); delete G.scp.condY; __seed(5); G.day=G.cal.open-1; sprcOpenCond(); const L=playersOf(G.user).filter(p=>p.sf&&p.sf.y===G.year).map(p=>p.sf.m); G=JSON.parse(snap); return L.reduce((a,b)=>a+b,0)/Math.max(1,L.length); };
+  const mh=ms('hard'), me=ms('easy'); ok(me>mh,'개막 sf.m이 실전 감각 위주에서 높지 않음 '+me+' '+mh); });
+T('[피드백 11-19 캠프 연습상대] 캠프 사기 하락은 강팀에게 크게 졌을 때만(60% 이상·3패 이상), 강팀 위주 -2·섞어서 -1·실전 감각 위주 없음, 한 해 한 번',()=>{ fresh(); G.day=G.cal.camp; sprcCampStart(); const P=G.scp.t[G.user];
+  const ps=domestic(G.user).filter(q=>!q.prospect).slice(0,3), other=domestic(G.user).filter(q=>!q.prospect)[5]; P.sg=Object.fromEntries(ps.map(p=>[p.id,[3,9,8,2,0,1,2,3]]));
+  const run=(lv,loss,win)=>{ for(const p of ps.concat(other))p.mor=60; P.morY=0; P.pgLv=lv; P.pgR=[...Array(loss).fill(0).map((_,i)=>({d:G.cal.camp+i+1,o:'x',us:1,op:4,k:'npb1'})),...Array(win).fill(0).map((_,i)=>({d:G.cal.camp+i+20,o:'y',us:5,op:2,k:'kbo'})),{d:G.cal.camp+30,o:'z',us:0,op:9,k:'kr2'}]; sprcCampMorale(G.user,P); return ps.map(p=>p.mor).concat(other.mor); };
+  ok(run('hard',3,2).join()==='58,58,58,60','강팀 3패 2승(60%): 나간 선수만 -2 '+run('hard',3,2).join());
+  ok(run('hard',2,3).join()==='60,60,60,60','2패는 사기 하락 없음'); ok(run('hard',3,3).join()==='60,60,60,60','50% 패는 사기 하락 없음');
+  ok(run('mix',4,1).join()==='59,59,59,60','섞어서는 -1'); ok(run('easy',5,0).join()==='60,60,60,60','실전 감각 위주는 사기 효과 없음');
+  run('hard',4,0); sprcCampMorale(G.user,P); ok(ps[0].mor===58,'같은 해 두 번 깎임 '+ps[0].mor); ps[0].mor=1; P.morY=0; sprcCampMorale(G.user,P); ok(ps[0].mor===0,'사기 하한'); });
+T('[피드백 11-19 캠프 연습상대] AI 구단도 감독 성향으로 방침을 정하고, 실제 캠프 경기에서 같은 함수로 평가 기록·사기·컨디션을 받는다',()=>{ fresh(); G.day=dnum(G.year-1,12,1); const ai=G.teams.filter(t=>t.id!==G.user).slice(0,3);
+  G.mgr[ai[0].id].disc=80; G.mgr[ai[1].id].disc=20; G.mgr[ai[2].id].disc=50; for(const t of ai){ G.mgr[t.id].interim=false; }
+  sprcAiBook(true); ok(['hard','easy','mix'].every((lv,i)=>sprcPlan(ai[i].id).pgLv===lv),'AI 방침 '+ai.map(t=>sprcPlan(t.id).pgLv).join(','));
+  ok(sprcAiPgLv(G.mgr[ai[0].id])==='hard'&&sprcAiPgLv(null)==='mix','감독 없음·대행은 섞어서');
+  for(const t of G.teams){ const Q=sprcPlan(t.id); Q.s1='tw'; Q.s2='oki'; Q.pgN=8; Q.pgLv='hard'; }
+  G.day=G.cal.camp; sprcCampStart(); for(let d=G.cal.camp+1;d<G.cal.campEnd;d++){ G.day=d; sprcCampDay(d); }
+  let strongTeams=0; for(const t of G.teams){ const Q=G.scp.t[t.id], x=sprcPgFx(Q); if(!x.ns){ ok(!Object.keys(Q.sg||{}).length,'강팀 경기 없는데 기록'); continue; } strongTeams++; ok(Object.keys(Q.sg||{}).length>=9,'강팀 경기 출전 선수 기록 없음 '+t.id);
+    ok(Object.values(Q.sg).every(a=>a[0]>=1&&a[0]<=x.ns),'출전 경기 수가 강팀 경기 수를 넘음'); } ok(strongTeams>=5,'강팀 경기를 치른 구단이 적음 '+strongTeams);
+  const t0=G.teams.find(t=>t.id!==G.user&&sprcPgFx(G.scp.t[t.id]).ns>0), Q=G.scp.t[t0.id]; const id=Object.keys(Q.sg)[0], p=G.players[id];
+  Q.pgR=Q.pgR.filter(r=>!SPRC_STRONG[sprcPgKind(Q,r)]).concat([1,2,3].map(i=>({d:G.cal.campEnd-10+i,o:'x',us:0,op:5,k:'npb1'}))); const mor0=p.mor??60;
+  G.day=G.cal.campEnd; sprcCampEnd(); ok(p.campEv&&p.campEv.t===t0.id&&p.campEv.n===Q.sg[id][0],'AI 선수 평가 기록 '+JSON.stringify(p.campEv)); ok(sprcEvalSdF(p,G.user)===1,'AI 선수 평가가 우리 추정에 섞임');
+  ok(p.mor===clamp(mor0-2,0,100),'AI 크게 진 강팀 경기 사기 '+mor0+' '+p.mor); const E=G.scp.t[ai[1].id]; ok(E&&typeof E.cond==='number','AI 컨디션');
+  const c0=SPRC_INT[Q.int].cond-((SPRC1[Q.s1]||{}).tr||0)*.12-((SPRC2[Q.s2]||{}).tr||0)*.06+Math.min(8,Q.pgR.length)*.04+sprcPgFx(Q).c; ok(Math.abs(Q.cond-c0)<.011,'AI 개막 컨디션 같은 식 '+Q.cond+' '+c0); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

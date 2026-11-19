@@ -17704,7 +17704,7 @@ function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* �
   prInit(); if(!G.goals&&period()==='season')setGoals();
   if((period()==='season'||period()==='post')&&G.entryY!==G.year){ G.entryY=G.year; for(const t of G.teams)setEntry(t.id); }
   if(!G.intl)G.intl={us:1,la:0,jp:0,tw:0,au:0}; if(!G.data)G.data={lv:1}; if(G.spend&&G.spend.intl==null)G.spend.intl=0; if(!G.fac)G.fac={lv:2,build:null}; try{ facInit(); }catch(e){} if(G.spend.fac==null)G.spend.fac=0;
-  for(const t of G.teams)if(t.fac==null)t.fac=ri(2,4); try{ aiFacAll(); }catch(e){} try{ facOverdueFix(); }catch(e){} try{ facStateMigrate(); }catch(e){} try{ extStaleFix(); }catch(e){} try{ ovsPostFix(); }catch(e){} try{ ntLoadFix(); }catch(e){} /* 검수 11-17: WBC 해외파 포지션·모습, 상무 안내 표시 */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */try{ fanOpsFix(); }catch(e){} /* 팬 운영 구단 상태·응원단 단원 사진 키(검수 11-17) */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */try{ sponMigrate(); }catch(e){} /* 스폰서 옛 저장 수리(검수 11-17 #284·#287) */ try{ expMigrate(); }catch(e){ console.error(e); } /* 창단 단계·모기업·남은 제의(검수 11-17 #158·159·164) */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */
+  for(const t of G.teams)if(t.fac==null)t.fac=ri(2,4); try{ aiFacAll(); }catch(e){} try{ facOverdueFix(); }catch(e){} try{ facStateMigrate(); }catch(e){} try{ extStaleFix(); }catch(e){} try{ ovsPostFix(); }catch(e){} try{ ntLoadFix(); }catch(e){} /* 검수 11-17: WBC 해외파 포지션·모습, 상무 안내 표시 */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */try{ fanOpsFix(); }catch(e){} try{ faceTMigrate(); }catch(e){} /* 신생 구단 실사 얼굴 시트(카페 11-19) */ /* 팬 운영 구단 상태·응원단 단원 사진 키(검수 11-17) */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */try{ sponMigrate(); }catch(e){} /* 스폰서 옛 저장 수리(검수 11-17 #284·#287) */ try{ expMigrate(); }catch(e){ console.error(e); } /* 창단 단계·모기업·남은 제의(검수 11-17 #158·159·164) */ /* 카페 11-17: 포스팅 복귀 선수의 FA 연차·계약 수리 */
   for(const p of Object.values(G.players))playerLoadDefaults(p);
   if(G.formY!==G.year&&G.day>=G.cal.camp)formLoadFix();
   /* 외국인 후보 채우기는 다음 날짜 진행(07_daily)에 맡긴다: 같은 저장을 두 번 열면 후보가 달라졌다(검수 11-09zr #13) */
@@ -19936,7 +19936,7 @@ function scoutDeparture(p,from,to){if(from!==G.user||from===to||G.unemp||p.prosp
 function scoutFormerReport(p){if(p.team===G.user||p.prospect||p.foreign)return null;const s=p.proScoutPast?.[G.user],d=exOwnD(p),x=[...(p.tLog||[])].reverse().find(z=>z.f===G.user);if(d==null||!s||!s.r||s.d==null||x&&x.d!==s.d)return null;const r=JSON.parse(JSON.stringify(s.r));return {...r,who:`우리 팀 시절 자료 · ${dstr(s.d)} 당시 평가 보관 · 떠난 지 ${G.day-s.d}일`,historical:true,asOf:s.d};}
 function scoutDraftEstimate(p){if(p.dEst)return {...p.dEst,tid:p.dEst.tid??p.draft?.tid,y:p.dEst.y??p.draft?.y};if(!p.prospect&&p.acq?.k==='draft'&&p.acq.ep==null&&p.draft)return {ofp:null,sd:99,who:'지명 당시 잠재력 미확인',tid:p.acq.tid??p.draft.tid,y:p.draft.y,d:p.acq.d};return null;}
 function domesticScoutMigrate(){for(const p of Object.values(G.players||{})){const d=scoutDraftEstimate(p);if(!p.dEst&&d)p.dEst=d;if(p.proScoutPast)for(const [k,s] of Object.entries(p.proScoutPast))if(!s||!Number.isFinite(s.d)||!s.r||typeof s.r!=='object')delete p.proScoutPast[k];}}
-function ownSd(p,sc){ const b=sc?scSd(sc,p):SCOUT_SD[0]; const fw=p.gmFw&&p.gmFw.y===G.year&&p.gmFw.t===G.user?1-.06*Math.min(3,p.gmFw.n||0):1; /* 단장이 2군 경기에서 직접 본 선수 */ return clamp(b*anaEff(G.user).sdm*(1-Math.min(.45,ownObs(p)*.15))*fw,1.5,8); }
+function ownSd(p,sc){ const b=sc?scSd(sc,p):SCOUT_SD[0]; const fw=p.gmFw&&p.gmFw.y===G.year&&p.gmFw.t===G.user?1-.06*Math.min(3,p.gmFw.n||0):1; /* 단장이 2군 경기에서 직접 본 선수 */ return clamp(b*anaEff(G.user).sdm*(1-Math.min(.45,ownObs(p)*.15))*fw*sprcEvalSdF(p,G.user),1.5,8); } /* 스프링캠프 강팀 연습경기에 나간 선수(97_spring_camp.js sprcEvalSdF) */
 /* 겉 포장: 외국인은 1년 보고 뽑으므로 '장래'를 말하지 않고 올해 기량만 말한다. 갓 지명한 우리 신인은 첫 실전 전까지 지명 당시 스카우트 평가를 유지한다 */
 function scoutReport(p){ const past=scoutFormerReport(p);if(past)return past;let r=scoutReport1(p); if(!r)return r;
   if(p.foreign){ let c=r.cur; /* 계약 전 후보: 잠재력 칸이 현재 능력 추정보다 정확해 보이지 않게, 기록과 합치고 조사 전 흐림을 얹은 종합 추정을 쓴다(사용자 11-13: 잠재력만 봐도 실력이 드러나 관찰 명단을 쓸 이유가 없었다) */ if(p.team==null&&c!=null&&typeof fScout==='function'){ try{ const f=fScout(p,r); if(f&&f.raw!=null)c=clamp(Math.round(f.raw),20,80); }catch(e){} } r=Object.assign({},r,{ofp:c,role:c!=null?roleOf(c,p):null,tools:(r.tools||[]).map(t=>({...t,fut:t.cur})),notes:(r.notes||[]).filter(n=>!/다 자라지|더 자랄 여지|잠재력/.test(n)),eta:null,now1:true}); }
@@ -35285,11 +35285,19 @@ function expGmCancel(){ if(!expGmCanCancel())return '11월 20일 부임 뒤에�
   news('리그',`${tfull(E)}, 창단 단장 다시 찾는다`,`창단 단장으로 내정됐던 ${G.unemp?'야인 단장':tshort(G.user)+' 단장'}이(가) 수락을 거둬들였습니다. ${E.parent}은(는) "아쉽지만 존중한다"며 다른 후보를 찾습니다.`,1,{});
   mail(E.parent,'창단 단장 수락 취소 확인',`${tfull(E)} 창단 단장 수락을 취소했습니다. ${G.unemp?'야인으로 남아 다른 제의를 기다립니다.':`${tname(G.user)} 단장으로 그대로 남고, 지금 계약도 그대로입니다.`}\n\n${E.parent}: "아쉽지만 결정을 존중합니다. 창단 단장은 다른 분께 맡기겠습니다."`,{kind:'경력'});
   return `${tfull(E)} 창단 단장 수락을 취소했습니다. ${G.unemp?'야인으로 남습니다.':`${tshort(G.user)}에 그대로 남습니다.`}`; }
+/* 신생 구단 실사 얼굴(카페 11-19 댄싱고구마: 11구단 선수·코치가 전부 그림 얼굴). 얼굴 사진 시트는 구단 홈 유니폼으로 미리 합성돼 있어 원년 10구단(TEAM_DEF 0~9)만 있다.
+   신생 구단은 원년 구단 중 색(hue)이 가장 가까운 구단의 사진 시트를 빌려 쓴다. 다른 신생 구단이 이미 빌린 시트는 피한다. 난수 없이 정해 G.faceT[구단]=시트 구단으로 남긴다(한 번 정하면 그대로) */
+function faceTeamOf(tid){ if(tid==null||!Number.isInteger(+tid))return null; tid=+tid; const n=TEAM_DEF.length; if(tid>=0&&tid<n)return tid;
+  if(typeof G==='undefined'||!G||!G.teams||!G.teams[tid])return null; const M=G.faceT=G.faceT||{}; if(Number.isInteger(M[tid])&&M[tid]>=0&&M[tid]<n)return M[tid];
+  const used=new Set(Object.keys(M).filter(k=>+k!==tid).map(k=>M[k])), hu=x=>((+x||0)%360+360)%360, h=hu(G.teams[tid].hue), d=b=>{ const x=Math.abs(h-hu(TEAM_DEF[b].hue)); return Math.min(x,360-x); };
+  let C=TEAM_DEF.map((x,i)=>i).filter(i=>!used.has(i)); if(!C.length)C=TEAM_DEF.map((x,i)=>i); C.sort((a,b)=>d(a)-d(b)||a-b); return M[tid]=C[0]; }
+/* 예전 저장 수리(불러올 때, 여러 번 해도 같음·난수 없음): 시트 구단이 없는 신생 구단에 정해 준다 */
+function faceTMigrate(){ if(typeof G==='undefined'||!G||!G.teams)return 0; let n=0; for(let i=TEAM_DEF.length;i<G.teams.length;i++){ const had=G.faceT&&G.faceT[i]!=null; if(faceTeamOf(i)!=null&&!had)n++; } return n; }
 /* 새 구단 만들기 */
 function expAddTeam(){ const E=expInit(), id=G.teams.length; const t={id,city:E.city,nick:E.nick,code:E.city.slice(0,2),hue:Math.round(u01('expHue',id)*360),market:E.market||.88,region:E.region||'충청',cash:4000,pop:.9,trust:60,rel:50,owner:'pr',mode:'rebuild',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:2,born:G.year+1};
   G.teams.push(t); const S=stadOf(id); S.name=`${E.city} 야구장`; S.cap=17000; S.built=G.year-ri(5,25); S.dim={lf:98,cf:121,rf:98,wl:3,wc:3,wr:3};
   G.mgr[id]=mkMgr(); G.mgr[id].yrs=3; try{ coachInit(); }catch(e){} if(G.sea&&G.sea.rec&&!G.sea.rec[id])G.sea.rec[id]={w:0,l:0,t:0}; try{ ownershipInit(); }catch(e){} try{ if(G.lgStaff&&!G.lgStaff[id]){ G.lgStaff[id]=stMakeTeam(t); stSync(id); } }catch(e){} /* 스카우트·분석원 */
-  try{ chron('found',`${tfull(E)} 창단 · ${G.year+1}시즌 1군 진입`,null,id,{source:'found:'+id}); }catch(e){} return id; }
+  try{ faceTeamOf(id); }catch(e){} try{ chron('found',`${tfull(E)} 창단 · ${G.year+1}시즌 1군 진입`,null,id,{source:'found:'+id}); }catch(e){} return id; }
 /* 모기업은 창단 추진 기사에 나온 이름 하나로(검수 11-17 #159: 기사는 E.parent, 운영 화면은 ownershipParent(g=0)라 이름이 달랐다) */
 function expParentSync(){ const E=G.exp, O=G.ownership; if(!E||!O||!O.clubs)return; for(const h of E.hist||[]){ if(!h.ok||h.tid==null)continue; const nm=h.parent||(h.tid===E.tid?E.parent:null), s=O.clubs[h.tid], t=G.teams[h.tid];
     if(!nm||!s||!s.parent||!t||(s.generation||0)>0||s.parent.name===nm||s.parent.id!=='parent:'+h.tid+':0')continue; /* 인수로 바뀐 모기업은 그대로 */ s.parent={...s.parent,name:nm}; } }
@@ -36299,6 +36307,37 @@ const SPRC_PGN=[0,4,6,8,10,12];
 const SPRC_LV={hard:'강팀 위주(일본 1군)',mix:'섞어서',easy:'실전 감각 위주(2군·국내)'};
 /* 연습 상대 수준: 우리 타자·투수 기록에 주는 보정(음수면 상대가 강하다) */
 const SPRC_OPP={npb1:{l:'일본 프로 1군',b:-3},npb2:{l:'일본 프로 2군',b:2},cpbl:{l:'대만 프로 구단',b:1},aus:{l:'호주리그 팀',b:3},us:{l:'미국 대학·마이너 팀',b:2},kr2:{l:'국내 대학·실업 팀',b:4}};
+/* 연습경기 상대 방침 효과(구단주 결정 11-19). 성장 보너스는 없다. 실제로 치른 경기와 상대로 정하고 난수를 쓰지 않는다. 우리·AI 같은 함수.
+ - 개막 컨디션(sprcPgFx): cs=강한 상대(일본 1군·국내 구단) 1경기당, cp=약한 상대 1경기당(기존 경기당 +0.04에 더한다). 강팀은 6경기, 약한 상대는 8경기까지만 센다.
+ - 평가(sprcCampEval): 강한 상대 경기에 실제로 나간 선수는 그 경기 수 × ev만큼 잠재력 추정 범위가 좁아진다(17_scouting ownSd, 우리 선수 추정 오차).
+   AI 구단은 자기 선수 잠재력을 그대로 알므로(16_trade potSeenD) 좁힐 추정이 없다. 같은 기록(p.campEv)을 남기지만 효과는 사기 쪽만 받는다.
+ - 사기(sprcCampMorale): 강한 상대에게 60% 이상, 3번 이상 졌으면 그 경기에 나간 선수 사기 -2(섞어서 -1, 한 해 한 번). 오르는 쪽은 없다. */
+const SPRC_PGFX={hard:{cs:-.017,cp:0,ev:1,d:'선수 평가가 정확해집니다(강팀 경기에 나간 선수의 능력 추정 범위가 좁아짐). 강팀에게 많이 지면 사기가 조금 떨어지고, 경기가 힘들어 개막 컨디션이 약간 늦게 올라옵니다.'},mix:{cs:0,cp:.02,ev:.5,d:'중간입니다. 평가가 정확해지는 효과와 개막 컨디션이 좋아지는 효과를 반씩 받습니다.'},easy:{cs:0,cp:.04,ev:0,d:'개막 컨디션이 좋아집니다(약한 상대와 치른 경기마다).'}};
+const SPRC_STRONG={npb1:1,kbo:1};
+const sprcPgLvOf=P=>P&&SPRC_PGFX[P.pgLv]?P.pgLv:'mix'; /* 옛 저장·이상한 값은 섞어서 */
+const sprcPgKind=(P,r)=>r.k||((P.pg||[]).find(g=>g.d===r.d)||{}).k; /* 옛 기록은 일정에서 상대를 찾는다 */
+function sprcPgFx(P){ const lv=sprcPgLvOf(P),F=SPRC_PGFX[lv]; let s=0,q=0,sl=0; if(P)for(const r of P.pgR||[]){ const k=sprcPgKind(P,r); if(!k)continue; if(SPRC_STRONG[k]){ s++; if(r.us<r.op)sl++; } else q++; }
+  const ns=s; s=Math.min(6,s); q=Math.min(8,q); return {lv,s,q,ns,sl,ev:F.ev,c:Math.round((F.cs*s+F.cp*q)*100)/100}; }
+/* 강한 상대 경기에 나간 선수와 그 경기 기록(P.sg: 선수별 강팀 상대 합계). lightSide가 쌓는 기록의 앞뒤 차이로 구한다(난수 없음) */
+function sprcStrongTrack(P,tid,store,fn){ const L0=(store._teams||{})[tid]||{}, before={}; for(const id in L0)before[id]=L0[id].slice(); const out=fn(); const L=(store._teams||{})[tid]||{}, SG=P.sg=P.sg||{};
+  for(const id in L){ const a=L[id], b=before[id]; if(b&&b[0]===a[0])continue; const d=a.map((v,i)=>v-(b?b[i]||0:0)), c=SG[id]; SG[id]=c&&c.length===d.length?c.map((v,i)=>v+d[i]):d; } return out; }
+/* 강팀 상대 출전 n경기 × 방침 비율(ev): 우리 선수 잠재력 추정 오차가 경기당 4%씩, 최대 24% 좁아진다 */
+const sprcEvalN=(p,tid)=>{ const e=p&&p.campEv; return e&&e.y===G.year&&e.t===tid?e.n||0:0; };
+const sprcEvalSdF=(p,tid)=>1-.04*Math.min(6,sprcEvalN(p,tid));
+function sprcCampEval(tid,P){ const x=sprcPgFx(P); if(!P||P.evY===G.year)return x; P.evY=G.year; if(!x.ev)return x;
+  for(const id in P.sg||{}){ const p=G.players[id]; if(!p||p.team!==tid)continue; const n=Math.round((P.sg[id][0]||0)*x.ev*10)/10; if(n>0)p.campEv={y:G.year,t:tid,n}; } return x; }
+function sprcCampMorale(tid,P){ const x=sprcPgFx(P); if(!P||P.morY===G.year||!x.ev||x.sl<3||x.sl<x.ns*.6)return 0; P.morY=G.year; const dm=Math.round(2*x.ev); let n=0; /* 강팀 위주 -2, 섞어서 -1 */
+  for(const id in P.sg||{}){ const p=G.players[id]; if(!p||p.team!==tid)continue; p.mor=clamp((p.mor??60)-dm,0,100); n++; } return n; }
+/* 총평 메일 판정: 강팀 상대 기록 + 실제 능력. 아는 만큼만(우리 추정 오차 sd가 작을수록 실제 능력을, 클수록 연습경기 기록을 더 믿는다). 주전은 빼고 경쟁 중인 선수만 */
+function sprcVerdicts(tid,P){ const d=depth(tid), reg=new Set([...d.start,...d.sp].map(p=>p.id)), sc=typeof bestScout==='function'?bestScout():null, out=[];
+  for(const id in P.sg||{}){ const p=G.players[id], a=P.sg[id]; if(!p||p.team!==tid||reg.has(p.id))continue; const isP=a.length===6; if(isP?a[1]<6:a[1]<5)continue;
+    const perf=isP?50+(4.5-exhEra(a))*2.5:50+(exhOps(a)-.7)*35, sd=tid===G.user?ownSd(p,sc):3, k=clamp((8-sd)/6.5,0,1), est=k*ovr(p)+(1-k)*clamp(perf,35,65);
+    const g=est>=50, v=g?'1군에서 통할 선수':est<46?'아직 부족한 선수':null; if(v)out.push({p,v,g,est,t:isP?`강팀 상대 ${Math.floor(a[1]/3)}${a[1]%3?'.'+a[1]%3:''}이닝 평균자책 ${exhEra(a).toFixed(2)}`:`강팀 상대 ${a[1]}타석 OPS ${exhF3(exhOps(a))}`}); }
+  const up=out.filter(x=>x.g).sort((a,b)=>b.est-a.est).slice(0,3), dn=out.filter(x=>!x.g).sort((a,b)=>a.est-b.est).slice(0,3); return up.concat(dn); }
+/* 캠프 화면·총평 메일 안내: 실제 치른 경기 기준 효과 */
+function sprcPgFxText(P){ const x=sprcPgFx(P); return `연습 상대 ${SPRC_LV[x.lv]}: 강팀 ${x.ns}경기(${x.sl}패) · 약한 상대 ${x.q}경기 → 개막 컨디션 ${x.c>0?'+'+x.c.toFixed(2):x.c<0?x.c.toFixed(2):'변화 없음'}${x.ev?`, 강팀 경기에 나간 선수 평가 정확도 ${x.ev<1?'절반 효과':'상승'}`:''}`; }
+/* AI 구단의 연습 상대 방침: 감독 성향(규율)에서 정한다. 빡센 캠프를 원하는 감독은 강팀 위주, 자율파는 실전 감각 위주 */
+const sprcAiPgLv=m=>({hard:'hard',easy:'easy'})[sprcMgrPref(m)]||'mix';
 /* 감독이 원하는 강도(규율 성향) */
 function sprcMgrPref(m){ if(!m||m.interim)return 'norm'; const d=m.disc??45; return d>=62?'hard':d<=38?'easy':'norm'; }
 const sprcYear=()=>dobj(G.day).y===G.year&&dobj(G.day).m>=11&&G.last&&G.last.y===G.year?G.year+1:G.year;
@@ -36333,7 +36372,7 @@ function sprcAiPick(t,lvl){ const T=lvl===1?SPRC1:SPRC2; const S=sprcInit(); con
   let best=null, bs=-9; for(const k in T){ const D=T[k],o=sprcOdds(t.id,lvl,k); if(sprcTaken(lvl,k)>=D.sl&&!o.sb||Math.max(0,spendable(t.id))<o.c)continue; const s=D.ap+hn('sprc'+lvl+k,t.id)*.15+N(0,.08)+(pv&&pv[lvl===1?'s1':'s2']===k?.35:0)+(o.sb?.3:0)-(D.c>=500?(rich?-.05:poor?.5:.15):0); if(s>bs){ bs=s; best=k; } } return best; }
 function sprcAiBook(force){ const m=dobj(G.day).m; const pr=force?1:m===11?.03:m===12?.07:.22;
   for(const t of G.teams){ if(t.id===G.user&&!G.unemp)continue; const P=sprcPlan(t.id); if(P.s1&&P.s2)continue; if(R()>=pr)continue;
-    for(const lvl of [1,2])if(!P['s'+lvl]){ const k=sprcAiPick(t,lvl); if(k)sprcCharge(t.id,P,lvl,k,sprcOdds(t.id,lvl,k).c); } P.int=sprcMgrPref(G.mgr[t.id]); P.pgN=Math.min(SPRC2[P.s2]&&SPRC2[P.s2].pg>=3?8:4,sprcPgCap(P)); } }
+    for(const lvl of [1,2])if(!P['s'+lvl]){ const k=sprcAiPick(t,lvl); if(k)sprcCharge(t.id,P,lvl,k,sprcOdds(t.id,lvl,k).c); } P.int=sprcMgrPref(G.mgr[t.id]); P.pgLv=sprcAiPgLv(G.mgr[t.id]); P.pgN=Math.min(SPRC2[P.s2]&&SPRC2[P.s2].pg>=3?8:4,sprcPgCap(P)); } }
 /* 우리 구단이 끝까지 안 정하면 운영팀이 남은 곳 중 싼 곳으로 잡는다 */
 function sprcAutoUser(){ if(G.unemp)return; const P=sprcPlan(G.user); const L=[]; for(const lvl of [1,2]){ const key=lvl===1?'s1':'s2'; if(P[key])continue; const T=lvl===1?SPRC1:SPRC2; const k=Object.keys(T).filter(x=>(sprcTaken(lvl,x)<T[x].sl||sisSite(G.user,lvl,x))&&sprcOdds(G.user,lvl,x).c<=Math.max(0,spendable(G.user))).sort((a,b)=>T[a].c-T[b].c||T[b].fq-T[a].fq)[0]; if(!k)continue; sprcCharge(G.user,P,lvl,k,sprcOdds(G.user,lvl,k).c); L.push(`${lvl}차 ${T[k].l}`); }
   if(L.length)mail('운영팀','스프링캠프 장소를 운영팀이 정했습니다',`캠프 출국 전까지 장소가 정해지지 않아 남은 곳 중 비용이 적은 곳으로 잡았습니다: ${L.join(', ')}.\n\n좋은 장소는 다른 구단이 먼저 채웁니다. 다음 해에는 11~12월에 미리 예약하세요.`,{kind:'캠프',acts:[{l:'캠프 계획',a:'goWork',v:'스프링캠프'}]}); }
@@ -36411,19 +36450,20 @@ function sprcCampDay(day){ const c=G.cal; const len=Math.max(20,c.campEnd-c.camp
   for(const t of G.teams){ const P=G.scp&&G.scp.t[t.id]; if(!P||!P.int)continue; const rate=(SPRC_INT[P.int].inj+((SPRC1[P.s1]||{}).tr||0)*.002)/len;
     campInjuryDay(t.id,rate,day); }
   const S=G.scp;if(!S||S.y!==G.year)return; for(const t of G.teams){const P=S.t[t.id];if(!P||(P.pgR||[]).some(r=>r.d===day))continue;const g=(P.pg||[]).find(x=>x.d===day);if(!g)continue;
-    const me=lightSide(t.id,g.k==='kbo'?0:SPRC_OPP[g.k].b,6,'pg',S.pgS);let them;
-    if(g.k==='kbo')them=lightSide(g.tid,0,6,'pg',S.pgS);else{const b=SPRC_OPP[g.k].b;them={r:Math.max(0,4.4-b*.35+N(0,1.6)),er:Math.max(0,4.4-b*.35+N(0,1.6))};}
-    const us=lightRuns(me,them),op=lightRuns(them,me),nm=sprcOppName(g);(P.pgR=P.pgR||[]).push({d:day,o:nm,us,op});if(g.cid)sisAdd(t.id,g.cid,2);
-    if(g.k==='kbo'){const Q=S.t[g.tid];if(Q)(Q.pgR=Q.pgR||[]).push({d:day,o:tshort(t.id),us:op,op:us});}
+    const strong=!!SPRC_STRONG[g.k], side=(P0,tid,b)=>strong&&P0?sprcStrongTrack(P0,tid,S.pgS,()=>lightSide(tid,b,6,'pg',S.pgS)):lightSide(tid,b,6,'pg',S.pgS); /* 강팀 경기 출전 선수 기록(평가·사기) */
+    const me=side(P,t.id,g.k==='kbo'?0:SPRC_OPP[g.k].b);let them;
+    if(g.k==='kbo')them=side(S.t[g.tid],g.tid,0);else{const b=SPRC_OPP[g.k].b;them={r:Math.max(0,4.4-b*.35+N(0,1.6)),er:Math.max(0,4.4-b*.35+N(0,1.6))};}
+    const us=lightRuns(me,them),op=lightRuns(them,me),nm=sprcOppName(g);(P.pgR=P.pgR||[]).push({d:day,o:nm,us,op,k:g.k});if(g.cid)sisAdd(t.id,g.cid,2);
+    if(g.k==='kbo'){const Q=S.t[g.tid];if(Q)(Q.pgR=Q.pgR||[]).push({d:day,o:tshort(t.id),us:op,op:us,k:'kbo'});}
     if(!G.unemp&&(t.id===G.user||g.k==='kbo'&&g.tid===G.user)){const mine=t.id===G.user;addLog(`연습경기 ${mine?nm:tshort(t.id)}전 ${mine?us:op}:${mine?op:us} ${(mine?us>op:op>us)?'승':us===op?'무':'패'}`);}
   } }
 /* 캠프 끝: 개막 컨디션(강도·이동·실전 수) 반영, 감독의 캠프 총평 */
 function sprcCampEnd(){ const S=G.scp; if(!S||S.y!==G.year)return;
-  for(const t of G.teams){ const P=S.t[t.id]; if(!P||!P.int)continue; const nPg=(P.pgR||[]).length; const cond=SPRC_INT[P.int].cond-((SPRC1[P.s1]||{}).tr||0)*.12-((SPRC2[P.s2]||{}).tr||0)*.06+Math.min(8,nPg)*.04;
-    P.cond=Math.round(cond*100)/100; }
+  for(const t of G.teams){ const P=S.t[t.id]; if(!P||!P.int)continue; const nPg=(P.pgR||[]).length; const cond=SPRC_INT[P.int].cond-((SPRC1[P.s1]||{}).tr||0)*.12-((SPRC2[P.s2]||{}).tr||0)*.06+Math.min(8,nPg)*.04+sprcPgFx(P).c; /* 연습 상대 방침: 실전 감각 위주면 더 좋고 강팀 위주면 약간 늦다 */
+    P.cond=Math.round(cond*100)/100; sprcCampEval(t.id,P); sprcCampMorale(t.id,P); } /* 강팀 위주: 평가 정확도·많이 졌을 때 사기(우리·AI 같은 함수) */
   const P=S.t[G.user], m=G.mgr[G.user]; if(G.unemp||!P||!m||m.interim)return; const R0=P.pgR||[]; const w=R0.filter(x=>x.us>x.op).length, l=R0.filter(x=>x.us<x.op).length;
   const top=exhLeaders(S.pgS,G.user,8,9); const cd=P.cond>=.2?'몸이 일찍 올라왔습니다. 개막 초반 컨디션이 좋을 겁니다.':P.cond<=-.3?'훈련량이 많았고 이동도 길어 선수들 몸이 무겁습니다. 4월 초반엔 감이 늦게 올라올 수 있습니다.':'개막에 맞춰 몸 상태는 무난합니다.';
-  mail(`${m.name} 감독`,`캠프 총평: 연습경기 ${w}승 ${l}패${R0.length-w-l?` ${R0.length-w-l}무`:''}`,`${sprcSiteLabel(P,1)} · ${sprcSiteLabel(P,2)} 캠프를 마쳤습니다. 훈련 강도 ${SPRC_INT[P.int].l}.\n${cd}\n\n${R0.length?`연습경기\n${R0.map(x=>`${dmd(x.d)} ${x.o} ${x.us}:${x.op}`).join('\n')}\n\n`:'연습경기는 없었습니다.\n\n'}${top.b.length?`방망이가 좋았던 선수: ${top.b.map(x=>`${x.p.name}(${x.t})`).join(', ')}\n`:''}${top.p.length?`공이 좋았던 투수: ${top.p.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:''}`,{kind:'감독',acts:[{l:'캠프·시범경기',a:'goWork',v:'스프링캠프'}]}); }
+  mail(`${m.name} 감독`,`캠프 총평: 연습경기 ${w}승 ${l}패${R0.length-w-l?` ${R0.length-w-l}무`:''}`,`${sprcSiteLabel(P,1)} · ${sprcSiteLabel(P,2)} 캠프를 마쳤습니다. 훈련 강도 ${SPRC_INT[P.int].l}.\n${cd}\n${sprcPgFxText(P)}.${P.morY===G.year?' 강팀에게 많이 져서 나간 선수들 사기가 조금 떨어졌습니다.':''}\n${(()=>{ const V=sprcVerdicts(G.user,P); return V.length?`\n강팀 상대 평가\n${V.map(x=>`${x.p.name}(${posLabel(x.p)}): ${x.v} · ${x.t}`).join('\n')}\n`:''; })()}\n${R0.length?`연습경기\n${R0.map(x=>`${dmd(x.d)} ${x.o} ${x.us}:${x.op}`).join('\n')}\n\n`:'연습경기는 없었습니다.\n\n'}${top.b.length?`방망이가 좋았던 선수: ${top.b.map(x=>`${x.p.name}(${x.t})`).join(', ')}\n`:''}${top.p.length?`공이 좋았던 투수: ${top.p.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:''}`,{kind:'감독',acts:[{l:'캠프·시범경기',a:'goWork',v:'스프링캠프'}]}); }
 /* 개막 전날: 캠프에서 만든 몸 상태를 개막 컨디션(주간 기세 sf.m)에 싣는다. 몇 주 지나면 원래대로 돌아온다 */
 function sprcOpenCond(){ const S=G.scp; if(!S||S.y!==G.year||S.condY===G.year)return; S.condY=G.year; for(const t of G.teams){ const P=S.t[t.id]; if(!P||P.cond==null)continue; for(const p of playersOf(t.id))if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)+P.cond+N(0,.2),-2.5,2.5); } }
 /* 기록 정리: 타자 [경기,타석,타수,안타,홈런,볼넷,삼진,루타], 투수 [경기,아웃,피안타,자책,볼넷,삼진] */
@@ -51226,8 +51266,8 @@ document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.matches||
 const COSM_PG=40, COSM_FACE_N=36;
 /* 그 선수가 고를 수 있는 템플릿 사진 묶음: {k:'6'|'17'|'21', tid, L:[번호]} 또는 null */
 function cosmFace(p){ if(!p||p.persona||p.id==null||!G||G.f6off||!G.players[p.id]||typeof FACE6==='undefined'||typeof face6Pool!=='function')return null;
-  if(p.team!=null){ if(!FACE6.sheet||!FACE6.sheet[String(p.team)])return null; const res=new Set(); for(const k in G.f6s||{}){ const [t,i]=k.split(':'); if(G.f6s[k]&&t===String(p.team))res.add(+i); } /* 선수 출신 지도자가 쓰는 얼굴은 뺀다 */
-    return {k:'6',tid:p.team,L:face6Pool(p).filter(i=>!res.has(i))}; }
+  if(p.team!=null){ if(!FACE6.sheet||typeof f6T!=='function'||f6T(p.team)==null)return null; const res=new Set(); for(const k in G.f6s||{}){ const [t,i]=k.split(':'); if(G.f6s[k]&&t===String(p.team))res.add(+i); } /* 선수 출신 지도자가 쓰는 얼굴은 뺀다 */
+    return {k:'6',tid:f6T(p.team),L:face6Pool(p).filter(i=>!res.has(i))}; }
   if(p.foreign){ if(typeof FACE17==='undefined'||!FACE17.ids)return null; const q=p.foreign==='아시아'?1:0; return {k:'17',L:FACE17.ids.map((x,i)=>i).filter(i=>FACE17.ids[i].q===q)}; }
   if(typeof FACE21!=='undefined'&&FACE21.ids&&FACE21.ids.length&&typeof amFaceOn==='function'&&amFaceOn(p))return {k:'21',L:FACE21.ids.map((x,i)=>i)};
   return null; }
@@ -51540,6 +51580,16 @@ const PATCH=[
     '20-80 표기에서 스카우트 평가·수비 위치·성장 그래프처럼 5점 단위로 매기는 값이 끝자리 0·5로 보입니다(예전에는 3·8만 보였습니다). 확인된 능력은 예전처럼 1점 단위이고, 실제 능력과 계산은 같습니다.',
     '트레이드 > 상대 단장의 식사(1천만 원)는 다른 구단 운영 지출과 같이 보유 현금과 구단주 지원 예산 여유를 합쳐 판단합니다. 예산 여유가 있는데 \'식사 운영비 부족\'으로 막히던 문제가 없어졌습니다.',
     '상무 복무 중 한 해 성장 폭에 상한을 두었습니다(우리·AI 구단 같음). 이미 자란 선수의 능력은 그대로입니다.'
+  ]},
+  {id:'2026-11-19-expansion-faces',d:'11월 19일',t:'신생 구단(11·12구단) 선수·코치도 실사 사진으로 나옵니다',items:[
+    '리그 확장으로 생긴 11·12구단의 선수·감독·코치(창단 뒤 영입한 선수 포함)가 그림 얼굴 대신 다른 구단처럼 실사 사진으로 나옵니다. 신생 구단 전용 유니폼 사진이 아직 없어, 원년 구단 중 구단 색이 가장 가까운 구단의 유니폼 사진을 씁니다.',
+    '이미 창단한 저장도 불러오면 바로 사진으로 바뀝니다. 다른 구단에서 옮겨 온 선수는 원래 얼굴 그대로입니다.'
+  ]},
+  {id:'2026-11-19-camp-pg-fx',d:'11월 19일',t:'스프링캠프 연습경기 상대 방침이 선수 평가·사기·개막 컨디션에 영향을 줍니다',items:[
+    '강팀 위주(일본 1군): 강한 상대(일본 1군·국내 구단)와의 경기에 나간 선수는 나간 경기 수만큼 잠재력 추정 범위가 좁아집니다(평가가 정확해짐). 감독 캠프 총평에 \'1군에서 통할 선수 / 아직 부족한 선수\' 판정이 붙습니다.',
+    '강팀 위주로 가서 강팀에게 많이 지면(강팀 경기 60% 이상, 3패 이상) 그 경기에 나간 선수들 사기가 조금 떨어집니다. 경기가 힘들어 개막 컨디션도 약간 늦게 올라옵니다.',
+    '실전 감각 위주(2군·국내): 약한 상대와 치른 경기마다 개막 컨디션이 더 좋아집니다. 섞어서는 두 쪽 효과를 반씩 받습니다. 캠프 성장에는 영향이 없습니다.',
+    '효과는 실제로 치른 연습경기 수와 상대로 정해지고, 캠프 화면과 캠프 총평 메일에 나옵니다. 다른 구단도 감독 성향(규율)에 따라 방침을 정하고 같은 규칙을 받습니다.'
   ]},
   {id:'2026-11-19-world-players',d:'11월 19일',t:'해외 리그에 구단마다 주목 선수가 생겼고, 스카우트 지식만큼 보입니다',items:[
     '해외 리그 > 세계 선수 탭: MLB·트리플A·NPB·CPBL·멕시코리그 구단마다 눈여겨볼 선수 3~6명(전체 약 400~450명)이 있습니다. 해마다 기록을 쌓고 나이를 먹으며 은퇴·승격·강등·이적합니다. 노장·유망주·부상·부상 후 부진·부진 꼬리표와 알려진 계약(남은 해·연봉)도 보입니다.',
@@ -53771,14 +53821,19 @@ function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.
    선수 출신 지도자가 쓰는 얼굴(G.f6s)은 리그에 있는 동안 잡아 둔다: 화면에 나온 해(G.f6sY)를 적고, F6OB시즌 넘게 안 보이면 떠난 것으로 보고 그 해부터 쉰다 */
 const F6CD=20, F6OB=3;
 function f6Gone(id){ if(typeof G==='undefined'||!G||!G.f6r)return; const R=G.f6r; let cd=null; for(const k in R)if(R[k]===id){ (cd=cd||(G.f6cd=G.f6cd||{}))[k]=G.year; delete R[k]; } }
-function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team==null||typeof FACE6==='undefined'||!FACE6.sheet[String(p.team)])return null;
+/* 신생 구단(11·12구단)은 사진 시트가 없어 원년 구단 시트를 빌린다(faceTeamOf: 89_league_expansion.js, 카페 11-19). f6T: 구단 → 사진 시트 열쇠(없으면 null).
+   f6Mates: 같은 시트를 쓰는 다른 구단들. 새 얼굴을 고를 때 이 구단들이 쓰는 칸은 피한다(같은 유니폼·같은 얼굴이 두 구단에 보이지 않게). 원년 10구단만 있으면 빈 목록이라 배정은 예전과 같다 */
+function f6T(tid){ if(tid==null||typeof FACE6==='undefined')return null; const t=typeof faceTeamOf==='function'?faceTeamOf(tid):tid; return t!=null&&FACE6.sheet[String(t)]?t:null; }
+function f6Mates(tid){ const st=f6T(tid); if(st==null||!G||!G.teams||G.teams.length<=TEAM_DEF.length)return []; const L=[]; for(let i=0;i<G.teams.length;i++)if(i!==+tid&&f6T(i)===st)L.push(i); return L; }
+function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team==null||typeof FACE6==='undefined'||f6T(p.team)==null)return null;
   const fv=FACE6.v==='6c'?3:2; if(G.f6v!==fv){ G.f6={}; G.f6r={}; G.f6s={}; G.f6cd={}; G.f6v=fv; } /* 얼굴 세트가 바뀌면(v6b→v6c) 배정을 새로 */
   const M=G.f6, Rv=G.f6r, t=p.team, key=i=>t+':'+i; const cur=M[p.id]; if(cur!=null&&Rv[key(cur)]===p.id)return cur;
   const Y=G.year||0;
   const free=i=>{ if(G.f6s&&G.f6s[key(i)]){ const sy=G.f6sY=G.f6sY||{}, y=sy[key(i)]; if(y==null)sy[key(i)]=Y; if(y==null||Y-y<=F6OB)return false; (G.f6cd=G.f6cd||{})[key(i)]=y; delete G.f6s[key(i)]; delete sy[key(i)]; return true; } /* 선수 출신 지도자가 쓰는 얼굴: 화면에 나온 지 F6OB시즌 안이면 잡아 두고, 그보다 오래 안 보이면(리그를 떠남) 그때부터 쉰다 */ const o=Rv[key(i)]; if(o==null||o===p.id)return true; const q=G.players[o]; if(!q||q.team==null&&q.retY!=null){ (G.f6cd=G.f6cd||{})[key(i)]=q?Math.min(q.retY,Y):Y; delete Rv[key(i)]; return true; } /* 기록 없이 떠난 선수(예전 저장)는 지금을, 은퇴했지만 기록만 남은 선수(외국인 은퇴)는 은퇴한 해를 떠난 해로 적고 쉬게 한다 */ return q.team!==t; };
   const own=k=>{ Rv[k]=p.id; if(G.f6cd)delete G.f6cd[k]; };
   if(cur!=null&&face6Pool(p).includes(cur)){ if(free(cur))own(key(cur)); return cur; } /* 이적해도 같은 얼굴(유니폼만 바뀜). 새 구단에 같은 얼굴이 있어도 바꾸지 않는다(사용자 11-14: 트레이드되면 얼굴이 바뀜) */
-  const B=face6Pool(p).filter(free); if(!B.length)return null;
+  const mt=f6Mates(t), clash=i=>mt.some(g=>{ const o=Rv[g+':'+i], q=o!=null&&o!==p.id&&G.players[o]; return !!q&&q.team===g; });
+  const B=face6Pool(p).filter(i=>free(i)&&!clash(i)); if(!B.length)return null;
   const cdY=i=>{ const y=G.f6cd&&G.f6cd[key(i)]; return y!=null&&Y-y<F6CD?y:-Infinity; };
   let C=B.filter(i=>cdY(i)===-Infinity); if(!C.length){ const m=Math.min(...B.map(cdY)); C=B.filter(i=>cdY(i)===m); } /* 모두 쉬는 중이면 가장 오래 쉰 칸 */
   /* 리그 전체에서 덜 쓰인 얼굴부터(사용자 11-08: 외국인 얼굴이 늘 같다) — 같은 구단 안 중복은 위 free가 막는다 */
@@ -53817,7 +53872,7 @@ function amIdx(p){ if(typeof FACE21==='undefined'||!FACE21.ids||!FACE21.ids.leng
   const ad=c=>Math.round(Math.abs(FACE21.ids[c].a-(p.age||19))/3); const C=FACE21.ids.map((x,i)=>i).sort((a,b)=>(U[a]||0)-(U[b]||0)||ad(a)-ad(b)||hn('fam'+a,p.id)-hn('fam'+b,p.id));
   return M[p.id]={k:'21',c:C[0]}; }
 /* 시트 한 장: A·B × 128·256·384 × 변형(고교 hs_home, 대학 univ, 구단 열쇠) */
-function amVar(p){ if(p.team==null)return p.college?'univ':'hs_home'; const T=FACE21.teams||FACE6.v18&&FACE6.v18.teams||{}; return T[String(p.team)]||null; }
+function amVar(p){ if(p.team==null)return p.college?'univ':'hs_home'; const T=FACE21.teams||FACE6.v18&&FACE6.v18.teams||{}; return T[String(typeof faceTeamOf==='function'?faceTeamOf(p.team)??p.team:p.team)]||null; } /* 신생 구단은 빌린 시트 구단의 유니폼 */
 /* ===== v7 감독·코치·단장·구단주·직원 실사 얼굴(시범 126명, 00e_staff_faces_data.js의 FACE7) =====
  - 감독·코치(mgr·coach): 구단 홈 유니폼 시트에서, 같은 구단 안에서는 겹치지 않게. 여성 인물은 그림 얼굴(사진 없음)
  - 다른 구단 단장(gm)·구단주(own)·직원(staff): 성별 맞춰 리그 전체에서 겹치지 않게. 우리 단장이 고른 사진(G.gmP.face='p7:칸')은 다른 단장에게 쓰지 않는다
@@ -53838,7 +53893,7 @@ function face7Idx(o){ if(!o||o.pid==null||(G&&G.f6off))return null; const pid=St
   if(o.persona==='staff'&&pid.startsWith('p8:'))return typeof FACE8==='undefined'||!FACE8.ids[+pid.slice(3)]?null:{k:'8',c:+pid.slice(3)}; /* v9·v10 단장 사진을 고른 경우 */ /* 우리 단장이 고른 사진(새 게임 전 단장 소개 화면에서도) */
   if(!G)return null;
   if(o.persona==='staff'&&/^gm/.test(pid))return null; /* 그림 얼굴 후보 */
-  const pl=face7Pool(o); if(!pl||!pl.ids.length)return null; const team=pl.k==='c'?(o.team??G.user):'L'; const scope=pl.k+team+(pl.k==='8'?face8Role(o):'');
+  const pl=face7Pool(o); if(!pl||!pl.ids.length)return null; const team=pl.k==='c'?(()=>{ const t0=o.team??G.user, ft=typeof faceTeamOf==='function'?faceTeamOf(t0):t0; return ft??t0; })():'L'; /* 감독·코치 사진도 구단 유니폼 시트: 신생 구단은 빌린 시트(그 구단 코치와 겹치지 않게 같은 범위) */ const scope=pl.k+team+(pl.k==='8'?face8Role(o):'');
   const M=G.f7=G.f7||{}, Rv=G.f7r=G.f7r||{}, key=o.persona+':'+pid; const mf=String((G.gmP&&G.gmP.face)||''), mine=/^p[78]:/.test(mf)?+mf.slice(3):-1, mk=mf.startsWith('p8:')?'8':'v';
   const cur=M[key]; if(cur!=null&&Rv[scope+':'+cur]===key&&!(pl.k===mk&&cur===mine))return {k:pl.k,c:cur,team};
   const free=x=>{ const h=Rv[scope+':'+x.c]; return (h==null||h===key)&&!(pl.k===mk&&x.c===mine); };
@@ -53869,7 +53924,7 @@ Object.assign(A,{ secPh(v){ if(!G)return; const s=String(v), i=s.lastIndexOf('|'
    나이 단계 사진이 없어 지도자도 선수 시절 얼굴이다. 고른 칸은 G.f6s[구단:칸]에 남겨 같은 구단 새 선수에게 같은 얼굴을 주지 않는다(face6Idx free) */
 function obPhotoSrc(o){ if(!G||G.f6off||!o||o.pid==null||typeof FACE6==='undefined'||!/^(coach|mgr|gm|staff|agent)$/.test(o.persona||''))return null; const fid=G.obFace&&G.obFace[o.pid]; if(fid==null||typeof fid==='string'&&!/^\d+$/.test(fid))return null;
   const i=G.f6&&G.f6[fid]; if(i==null)return null; const p=G.players[fid], h=p&&(p.hist||[]).filter(x=>x.t!=null), ob=(G.ob||[]).find(x=>String(x.fid)===String(fid));
-  const ok=t=>t!=null&&FACE6.sheet[String(t)]; const tid=ok(o.team)?o.team:ok(p&&p.team)?p.team:ok(ob&&ob.team)?ob.team:h&&h.length&&ok(h[h.length-1].t)?h[h.length-1].t:null; if(tid==null)return null;
+  const ok=t=>f6T(t)!=null; const tid=ok(o.team)?o.team:ok(p&&p.team)?p.team:ok(ob&&ob.team)?ob.team:h&&h.length&&ok(h[h.length-1].t)?h[h.length-1].t:null; if(tid==null)return null;
   const S=G.f6s=G.f6s||{}, mk=o.persona+':'+o.pid; for(const k in S)if(S[k]===mk&&k!==tid+':'+i)delete S[k]; S[tid+':'+i]=mk; (G.f6sY=G.f6sY||{})[tid+':'+i]=G.year; if(G.f6cd)delete G.f6cd[tid+':'+i]; return face6At(tid,i); }
 /* ===== 얼굴 사진 한 길: 주소 → 시트 → 자르기 → 캐시 (사용자 11-17 얼굴 처리 통합) =====
  - 얼굴 주소 {s:묶음, t:시트 열쇠(구단·변형), c:묶음 안 번호, v:'a' 원정 유니폼}. 배정(누가 어느 얼굴)은 위 함수들(G.f6·G.f7·G.f17·G.f19s·G.fam·G.obFace·G.f6s)이 정하고, 여기서는 그림만 만든다
@@ -53917,7 +53972,7 @@ function face6Src(o){ if(o&&o.foreign&&o.id!=null&&(o.team==null||(G&&G.f17&&G.f
   if(typeof FACE21!=='undefined'&&o&&o.id!=null&&!o.foreign&&!o.persona&&(amFaceOn(o)||G&&G.fam&&G.fam[o.id])){ const x=amIdx(o), vk=x&&amVar(o); const u=vk?faceCut({s:'am',t:vk,c:x.c}):null; if(u)return u; }
   const i=face6Idx(o); if(i==null)return null; return face6At(o.team,i); }
 /* 구단 tid 유니폼의 FACE6 칸 i(선수 사진, 은퇴 후 지도자 사진도 같은 길). 원정 경기 중계 중에는 원정 유니폼(v6c 100명만) */
-function face6At(tid,i){ let aw=false; if(i<100)try{ const c=UI.cast, g=c&&G.games[c.g]; aw=!!(g&&g.away===tid&&g.home!==tid&&FACE6.away); }catch(e){} return faceCut(aw?{s:'p',t:tid,c:i,v:'a'}:{s:'p',t:tid,c:i}); }
+function face6At(tid,i){ let aw=false; if(i<100)try{ const c=UI.cast, g=c&&G.games[c.g]; aw=!!(g&&g.away===tid&&g.home!==tid&&FACE6.away); }catch(e){} const st=f6T(tid)??tid; /* 신생 구단은 빌린 시트 */ return faceCut(aw?{s:'p',t:st,c:i,v:'a'}:{s:'p',t:st,c:i}); }
 function face8Src(c){ return faceCut({s:'f8',c}); }
 /* 비서 v19 작은 자리. undefined = 시트를 못 받음(v8 비서 사진으로 돌아감) */
 function face19Src(c){ if(typeof FACE19==='undefined')return undefined; const u=faceCut({s:'f19',c}); return u==null?undefined:u; }
@@ -53986,12 +54041,14 @@ function sprcView(){ if(G.unemp)return csec('스프링캠프','<p class="small m
       ${m&&!m.interim?`<div class="mop"><b>${esc(m.name)} 감독</b><span>"${pref==='hard'?'캠프는 빡세게 가야 시즌을 버팁니다.':pref==='easy'?'선수들이 알아서 몸을 만들게 두는 게 맞습니다.':'정해진 일정대로 무리 없이 가겠습니다.'}"</span>${P.int!==pref?`<span class="small warn">감독 희망과 다릅니다. 캠프 시작 때 감독 관계가 깎이고 캠프 효과도 조금 줄어듭니다.</span>`:''}</div>`:''}
       <div class="eyebrow">연습경기</div><div class="talk">${[...new Set(SPRC_PGN.concat(cap))].sort((a,b)=>a-b).map(n=>`<button class="btn small ${P.pgN===n?'on':''}" data-a="sprcPg" data-v="${n}:" ${!P.s1||!P.s2||n>cap?`disabled title="${esc(!P.s1||!P.s2?'1차·2차 캠프 장소를 먼저 정하세요':sprcPgWhy(P,cap))}"`:''}>${n}경기</button>`).join('')}</div>${P.s1&&P.s2&&SPRC_PGN.some(n=>n>cap)?`<p class="small warn">${esc(sprcPgWhy(P,cap))}</p>`:!P.s1||!P.s2?'<p class="small warn">1차·2차 캠프 장소를 먼저 정해야 연습경기 수를 고를 수 있습니다.</p>':''}
       <div class="talk">${Object.entries(SPRC_LV).map(([k,l])=>`<button class="btn small ${P.pgLv===k?'on':''}" data-a="sprcPg" data-v=":${k}">${l}</button>`).join('')}</div>
-      <p class="small muted">${P.s1&&P.s2?`지금 장소로 잡을 수 있는 연습경기는 최대 ${cap}경기입니다.`:'장소를 정하면 잡을 수 있는 연습경기 수가 나옵니다.'} 상대 구단 사정에 따라 몇 경기는 못 잡을 수 있습니다. 일본 1군 상대는 2차가 일본일 때만 잡힙니다.</p>
+      <ul class="small sprc-pgfx" style="margin:4px 0;padding-left:18px">${Object.entries(SPRC_LV).map(([k,l])=>`<li class="${sprcPgLvOf(P)===k?'':'muted'}"><b>${esc(l)}</b>: ${esc(SPRC_PGFX[k].d)}</li>`).join('')}</ul>
+      <p class="small muted">효과는 실제로 치른 경기 수와 상대로 정해집니다(일본 1군·국내 구단은 강팀, 일본 2군·대만·호주·미국·국내 대학은 약한 상대). ${P.s1&&P.s2?`지금 장소로 잡을 수 있는 연습경기는 최대 ${cap}경기입니다.`:'장소를 정하면 잡을 수 있는 연습경기 수가 나옵니다.'} 상대 구단 사정에 따라 몇 경기는 못 잡을 수 있습니다. 일본 1군 상대는 2차가 일본일 때만 잡힙니다.</p>
       <p class="small">${left>0?`예약 마감까지 ${left}일`:'오늘 예약 마감'} · ${c.y}년 캠프 추가 비용 ${money((P.c1||0)+(P.c2||0))}</p>`));
     out.push(csec('다른 구단 예약 현황',`<div class="list">${[...Object.entries(SPRC1).map(([k,D])=>[1,k,D]),...Object.entries(SPRC2).map(([k,D])=>[2,k,D])].map(([lvl,k,D])=>{ const L=G.teams.filter(t=>(S.t[t.id]||{})[lvl===1?'s1':'s2']===k).map(t=>tshort(t.id)); return L.length?`<div class="small"><b>${lvl}차 ${esc(D.l)}</b> ${esc(L.join(', '))} (${L.length}/${D.sl})</div>`:''; }).join('')||'<p class="small muted">아직 예약한 구단이 없습니다.</p>'}</div>`)); }
   if(!pre&&G.scp&&G.scp.y===G.year&&G.scp.t[G.user]&&(G.scp.t[G.user].s1||G.scp.t[G.user].dom1||G.scp.t[G.user].dom2)){ const Q=G.scp.t[G.user],a=SPRC1[Q.s1],b=SPRC2[Q.s2]; const R0=Q.pgR||[]; const w=R0.filter(x=>x.us>x.op).length, l=R0.filter(x=>x.us<x.op).length;
     const wx=v=>v>=1.04?'맑고 따뜻함':v>=.97?'무난함':'쌀쌀하고 비가 잦음';
     out.push((inCamp?campCard():'')+csec(`${G.year} 스프링캠프`,`<dl class="tsum"><div><dt>1차</dt><dd>${esc(sprcSiteLabel(Q,1))}${a&&Q.wx1?` · ${wx(Q.wx1/a.wx)}`:''}</dd></div><div><dt>2차</dt><dd>${esc(sprcSiteLabel(Q,2))}${b&&Q.wx2?` · ${wx(Q.wx2/b.wx)}`:''}</dd></div><div><dt>훈련 강도</dt><dd>${SPRC_INT[Q.int].l}${Q.gap?' · 감독과 이견':''}</dd></div><div><dt>연습경기</dt><dd>${w}승 ${l}패${R0.length-w-l?` ${R0.length-w-l}무`:''} · ${R0.length}/${(Q.pg||[]).length}경기</dd></div></dl>
+      <p class="small">${esc(sprcPgFxText(Q))}${inCamp?' (지금까지 치른 경기 기준)':''}</p>
       ${Q.dom1||Q.dom2?'<p class="small warn">예약 가능한 장소와 예산을 확보하지 못한 차수는 국내에서 일반 훈련합니다. 해외 캠프 추가 효과·비용·해당 차수 연습경기는 없습니다.</p>':''}
       ${(Q.pg||[]).length?`<div class="list">${Q.pg.map(g=>{ const r=R0.find(x=>x.d===g.d); const nm=sprcOppName(g); return `<div class="small">${dmd(g.d)} ${esc(nm)} ${r?`<b>${r.us}:${r.op}</b> ${r.us>r.op?'승':r.us<r.op?'패':'무'}`:'<span class="muted">예정</span>'}</div>`; }).join('')}</div>`:'<p class="small muted">잡힌 연습경기가 없습니다.</p>'}
       ${sprcStatTable(G.scp.pgS,false)}${sprcStatTable(G.scp.pgS,true)}`)); }
