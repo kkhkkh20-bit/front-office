@@ -16062,7 +16062,9 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
   /* 교체 판단 여유: 보통은 한계에서 6구까지 더 본다. 혹사 금지(95구)면 다음 타자를 맞기 전 88구에서 끊어 타석이 길어져도 95구를 넘지 않게(검수 11-08) */
   const armM=fs=>fs.curIsSP&&armDirOn(fs.tid)?-8:6;
   function needChange(fs){ const x=fs.box.get(fs.cur.id); const mm=mgrOf(fs.tid);
-    if(fs.curIsSP){ const hook=!mm.interim&&(mm.pen>=62||mgrPush(fs.tid)>=72)&&x.bf>=18&&x.er>=3; /* 선발 쪼개기: 세 번째 타순에 흔들리면 바로 내린다 */ return x.pc>=lim(fs)+Math.min(0,armM(fs))||x.er>=6||(x.er>=4&&x.pc>=lim(fs)-25)||hook; }
+    /* 감독은 기록원의 자책 판정이 아니라 마운드에서 내준 실점(x.r: 그 투수 책임 주자의 득점)을 보고 바꾼다(11-19). 자책점은 실책을 뺀 가상 이닝이 끝나야 정해지는 기록이라(검수 762~785 재구성)
+       교체 판단을 자책점에 묶어 두면 기록 규칙을 고칠 때마다 경기 운영·난수 흐름이 같이 바뀌었다(#202 뒤 타자 능력 균형 시드 표본이 흔들린 원인). 실책 뒤 실점에도 똑같이 반응한다 */
+    if(fs.curIsSP){ const ra=x.r||0, hook=!mm.interim&&(mm.pen>=62||mgrPush(fs.tid)>=72)&&x.bf>=18&&ra>=3; /* 선발 쪼개기: 세 번째 타순에 흔들리면 바로 내린다 */ return x.pc>=lim(fs)+Math.min(0,armM(fs))||ra>=6||(ra>=4&&x.pc>=lim(fs)-25)||hook; }
     return x.outs>=(fs.multi&&fs.multi[fs.cur.id]?6:3)||x.pc>=lim(fs); }
   function bringIn(fs,inn,lead,half,nr){
     const registered=fs.farm?[]:actOf(fs.tid).filter(p=>p.isP),roster=fs.farm?(fs.pitchPool||new Set([fs.sp,...fs.pen,...(fs.spAll||[])].filter(Boolean).map(p=>p.id))):new Set(registered.map(p=>p.id));
@@ -51900,6 +51902,9 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-19-starter-pull',d:'11월 19일',t:'선발 교체 기준이 자책점에서 실점으로 바뀝니다',items:[
+    '감독이 선발을 내리는 기준(난타·조기 교체)을 기록상 자책점이 아니라 그 투수가 내준 실점으로 봅니다(우리·AI 구단 같음).'
+  ]},
   {id:'2026-11-19-ui-cafe',d:'11월 19일',t:'주소창 없이 쓰기 · 플레잉코치 제안 찾기 · 잠재력으로 방출 후보 고르기 · 일정 일괄 취소',items:[
     '휴대폰에서 주소창 없이 쓰려면 브라우저 메뉴 › 홈 화면에 추가를 누르세요. 홈 화면에 생긴 프런트야구 아이콘으로 열면 주소창 없이 열립니다. 전체 화면 단추는 휴대폰 전체 메뉴 아래와 설정 › 게임 설정 › 표시에 있습니다.',
     "33세 이상 우리 국내 선수의 선수 화면에 '플레잉코치 제안'이 시즌 중에도 늘 보입니다. 지금 제안할 수 없으면 버튼을 눌렀을 때 이유(비시즌에만, 보조 코치 자리 없음 등)를 알려 줍니다.",
