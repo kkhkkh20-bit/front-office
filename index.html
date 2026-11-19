@@ -15964,9 +15964,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
   /* 교체 판단 여유: 보통은 한계에서 6구까지 더 본다. 혹사 금지(95구)면 다음 타자를 맞기 전 88구에서 끊어 타석이 길어져도 95구를 넘지 않게(검수 11-08) */
   const armM=fs=>fs.curIsSP&&armDirOn(fs.tid)?-8:6;
   function needChange(fs){ const x=fs.box.get(fs.cur.id); const mm=mgrOf(fs.tid);
-    /* 감독은 기록원의 자책 판정이 아니라 마운드에서 내준 실점(x.r: 그 투수 책임 주자의 득점)을 보고 바꾼다(11-19). 자책점은 실책을 뺀 가상 이닝이 끝나야 정해지는 기록이라(검수 762~785 재구성)
-       교체 판단을 자책점에 묶어 두면 기록 규칙을 고칠 때마다 경기 운영·난수 흐름이 같이 바뀌었다(#202 뒤 타자 능력 균형 시드 표본이 흔들린 원인). 실책 뒤 실점에도 똑같이 반응한다 */
-    if(fs.curIsSP){ const ra=x.r||0, hook=!mm.interim&&(mm.pen>=62||mgrPush(fs.tid)>=72)&&x.bf>=18&&ra>=3; /* 선발 쪼개기: 세 번째 타순에 흔들리면 바로 내린다 */ return x.pc>=lim(fs)+Math.min(0,armM(fs))||ra>=6||(ra>=4&&x.pc>=lim(fs)-25)||hook; }
+    if(fs.curIsSP){ const hook=!mm.interim&&(mm.pen>=62||mgrPush(fs.tid)>=72)&&x.bf>=18&&x.er>=3; /* 선발 쪼개기: 세 번째 타순에 흔들리면 바로 내린다 */ return x.pc>=lim(fs)+Math.min(0,armM(fs))||x.er>=6||(x.er>=4&&x.pc>=lim(fs)-25)||hook; }
     return x.outs>=(fs.multi&&fs.multi[fs.cur.id]?6:3)||x.pc>=lim(fs); }
   function bringIn(fs,inn,lead,half,nr){
     const registered=fs.farm?[]:actOf(fs.tid).filter(p=>p.isP),roster=fs.farm?(fs.pitchPool||new Set([fs.sp,...fs.pen,...(fs.spAll||[])].filter(Boolean).map(p=>p.id))):new Set(registered.map(p=>p.id));
@@ -51611,9 +51609,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
-  {id:'2026-11-19-save-hook',d:'11월 19일',t:'저장 파일이 가벼워지고, 선발 교체는 내준 실점을 보고 정합니다',items:[
-    '아마추어 관찰 의견: 스카우트 정보를 선수·구단마다 따로 저장하지 않고 한 번만 저장합니다. 저학년이 많은 시기 저장 파일이 수 MB 줄어듭니다(옛 저장도 불러오면 자동으로 줄어듭니다). 누가 어떤 선수를 봤는지, 우리·다른 구단에 보이는 의견은 같습니다.',
-    '감독이 선발을 내리는 기준(난타·조기 교체)을 기록상 자책점이 아니라 그 투수가 내준 실점으로 봅니다(우리·AI 구단 같음). 실책 뒤에 점수를 줘도 똑같이 교체를 고민합니다.'
+  {id:'2026-11-19-save-obs',d:'11월 19일',t:'저장 파일이 가벼워졌습니다(아마추어 관찰 의견)',items:[
+    '아마추어 관찰 의견: 스카우트 정보를 선수·구단마다 따로 저장하지 않고 한 번만 저장합니다. 시즌을 진행한 저장은 수 MB 줄어듭니다(옛 저장도 불러오면 자동으로 줄어듭니다). 누가 어떤 선수를 봤는지, 우리·다른 구단에 보이는 의견은 같습니다.'
   ]},
   {id:'2026-11-19-cafe-fix',d:'11월 19일',t:'20-80 표기 끝자리·단장 식사·상무 성장 폭을 바로잡았습니다',items:[
     '20-80 표기에서 스카우트 평가·수비 위치·성장 그래프처럼 5점 단위로 매기는 값이 끝자리 0·5로 보입니다(예전에는 3·8만 보였습니다). 확인된 능력은 예전처럼 1점 단위이고, 실제 능력과 계산은 같습니다.',

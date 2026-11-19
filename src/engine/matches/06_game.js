@@ -150,9 +150,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
   /* 교체 판단 여유: 보통은 한계에서 6구까지 더 본다. 혹사 금지(95구)면 다음 타자를 맞기 전 88구에서 끊어 타석이 길어져도 95구를 넘지 않게(검수 11-08) */
   const armM=fs=>fs.curIsSP&&armDirOn(fs.tid)?-8:6;
   function needChange(fs){ const x=fs.box.get(fs.cur.id); const mm=mgrOf(fs.tid);
-    /* 감독은 기록원의 자책 판정이 아니라 마운드에서 내준 실점(x.r: 그 투수 책임 주자의 득점)을 보고 바꾼다(11-19). 자책점은 실책을 뺀 가상 이닝이 끝나야 정해지는 기록이라(검수 762~785 재구성)
-       교체 판단을 자책점에 묶어 두면 기록 규칙을 고칠 때마다 경기 운영·난수 흐름이 같이 바뀌었다(#202 뒤 타자 능력 균형 시드 표본이 흔들린 원인). 실책 뒤 실점에도 똑같이 반응한다 */
-    if(fs.curIsSP){ const ra=x.r||0, hook=!mm.interim&&(mm.pen>=62||mgrPush(fs.tid)>=72)&&x.bf>=18&&ra>=3; /* 선발 쪼개기: 세 번째 타순에 흔들리면 바로 내린다 */ return x.pc>=lim(fs)+Math.min(0,armM(fs))||ra>=6||(ra>=4&&x.pc>=lim(fs)-25)||hook; }
+    if(fs.curIsSP){ const hook=!mm.interim&&(mm.pen>=62||mgrPush(fs.tid)>=72)&&x.bf>=18&&x.er>=3; /* 선발 쪼개기: 세 번째 타순에 흔들리면 바로 내린다 */ return x.pc>=lim(fs)+Math.min(0,armM(fs))||x.er>=6||(x.er>=4&&x.pc>=lim(fs)-25)||hook; }
     return x.outs>=(fs.multi&&fs.multi[fs.cur.id]?6:3)||x.pc>=lim(fs); }
   function bringIn(fs,inn,lead,half,nr){
     const registered=fs.farm?[]:actOf(fs.tid).filter(p=>p.isP),roster=fs.farm?(fs.pitchPool||new Set([fs.sp,...fs.pen,...(fs.spAll||[])].filter(Boolean).map(p=>p.id))):new Set(registered.map(p=>p.id));
