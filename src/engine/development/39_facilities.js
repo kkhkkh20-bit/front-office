@@ -25,7 +25,7 @@ function facRecalc(){ const it=G.fac.it; const avg=sum(FACK.map(k=>it[k]))/FACK.
 function facUpkeep(){ const bu=BUS[busLv()].up; if(!G.fac||!G.fac.it)return FAC_UPKEEP[facLv(G.user)]+bu; return sum(FACK.map(k=>FACI[k].up[G.fac.it[k]]))+bu+(typeof facCityUp==='function'?facCityUp(team(G.user)):0); } /* 지자체 약속(지역 채용) 몫 포함 */ /* 버스 운영비 포함 */
 function facOf(k){ return G.fac&&G.fac.it?G.fac.it[k]||0:1; }
 /* 성장·노화 배수: 모든 구단이 세부 시설을 쓴다(다른 구단 시설은 team.fi, 66_fac_ai.js) */
-function facEff(p){ if(p.team==null)return FAC[2]; let S=null; try{ S=facSt(p.team); }catch(e){ S=null; } if(!S||!S.it)return FAC[facLv(p.team)];
+function facEff(p){ if(p.team==null)return FAC[2]; let S=null; try{ S=p.team===G.user?G.fac:facSt(p.team); }catch(e){ S=null; } /* 어느 구단 시설 상태를 읽을지만 다르다(우리 구단은 G.fac, 다른 구단은 team.fi). 계산식은 아래 하나 */ if(!S||!S.it)return FAC[facLv(p.team)];
   const fo=k=>Math.max(0,facImpact(S.it[k]||0)-facDis(S,k)); /* 공사 중인 시설은 훈련 효율이 잠시 떨어진다(57_club_econ) */
   const young=p.age<=23; const futP=(()=>{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,G.year,'퓨처스'); return f&&(!a||(p.isP?(f.outs||0)>(a.outs||0):(f.pa||0)>(a.pa||0))); })();
   /* 모든 구단 같은 식(11-19 성장 점검, 구단주 원칙: 사용자 = AI). 예전에는 다른 구단만 세부 시설 평균으로 계산해(.94+평균×.03, 숙소·2군 구장은 평균과의 차이만) 같은 단계에서 젊은 2군 선수가 우리 구단에서 4~6% 더 컸다.
