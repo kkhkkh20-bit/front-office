@@ -1,0 +1,180 @@
+{
+  "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+  "matches_existing_v2_font": true,
+  "runs": [
+    {
+      "candidate": "A1",
+      "wordmark": "XI",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
+    },
+    {
+      "candidate": "A1",
+      "wordmark": "XI",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
+    },
+    {
+      "candidate": "A2",
+      "wordmark": "XI",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 66
+    },
+    {
+      "candidate": "A2",
+      "wordmark": "XI",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 66
+    },
+    {
+      "candidate": "A3",
+      "wordmark": "XI",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 54
+    },
+    {
+      "candidate": "A3",
+      "wordmark": "XI",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 54
+    },
+    {
+      "candidate": "B1",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
+    },
+    {
+      "candidate": "B1",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 52
+    },
+    {
+      "candidate": "B2",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 66
+    },
+    {
+      "candidate": "B2",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 66
+    },
+    {
+      "candidate": "B3",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 54
+    },
+    {
+      "candidate": "B3",
+      "wordmark": "XII",
+      "font": "Alfa Slab One Regular",
+      "font_sha256": "28664afa698a3393bd5a29eec750230a0645c5301d62200e5f2d3a027fb2299d",
+      "shaping": "HarfBuzz kern=true liga=false",
+      "glyph_names": [
+        "X",
+        "I",
+        "I"
+      ],
+      "outlined": true,
+      "tracking_font_units": 60,
+      "height": 54
+    }
+  ]
+}

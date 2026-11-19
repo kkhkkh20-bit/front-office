@@ -1,0 +1,332 @@
+{
+  "version": "23b",
+  "revision": "stage1-candidates-1",
+  "path_base": "assets/v23b/crests/",
+  "request": "docs/asset-requests/2026-11-19-codex-v23b-expansion-crests.md",
+  "phase": 1,
+  "review_status": "awaiting_user_selection",
+  "production_complete": false,
+  "approved": false,
+  "phase2_started": false,
+  "selection": {
+    "expansion_a": null,
+    "expansion_b": null
+  },
+  "review_default_note": "Canonical paths contain A1/B1 REVIEW COPIES only. They are not approved or selected. Do not use them to start uniform replacement.",
+  "teams": [
+    {
+      "key": "expansion_a",
+      "name": "확장11",
+      "wordmark": "XI",
+      "design_palette": {
+        "background": "#0B5D3B",
+        "symbol": "#F4F5F7",
+        "ring": "#C9A227"
+      },
+      "crest_palette": {
+        "primary": "#0B5D3B",
+        "metal": "#C9A227",
+        "ink": "#062C20",
+        "white": "#F4F5F7"
+      },
+      "selected_candidate": null,
+      "review_default_candidate": "A1",
+      "candidates": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/expansion_a.png",
+          "256": "png/crest/256/expansion_a.png",
+          "128": "png/crest/128/expansion_a.png"
+        },
+        "mark": {
+          "128": "png/mark/128/expansion_a.png",
+          "64": "png/mark/64/expansion_a.png",
+          "32": "png/mark/32/expansion_a.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/expansion_a.svg",
+        "mark": "svg/mark/expansion_a.svg",
+        "relief_crest": "svg/relief/primary/expansion_a.svg",
+        "relief_mark": "svg/relief/mark/expansion_a.svg"
+      },
+      "wordmark_font": {
+        "family": "Alfa Slab One",
+        "style": "Regular",
+        "outlined": true,
+        "shaping": "HarfBuzz kern on"
+      }
+    },
+    {
+      "key": "expansion_b",
+      "name": "확장12",
+      "wordmark": "XII",
+      "design_palette": {
+        "background": "#4B2A7B",
+        "symbol": "#F4F5F7",
+        "ring": "#A7A9AC"
+      },
+      "crest_palette": {
+        "primary": "#4B2A7B",
+        "metal": "#A7A9AC",
+        "ink": "#24123D",
+        "white": "#F4F5F7"
+      },
+      "selected_candidate": null,
+      "review_default_candidate": "B1",
+      "candidates": [
+        "B1",
+        "B2",
+        "B3"
+      ],
+      "assets": {
+        "crest": {
+          "512": "png/crest/512/expansion_b.png",
+          "256": "png/crest/256/expansion_b.png",
+          "128": "png/crest/128/expansion_b.png"
+        },
+        "mark": {
+          "128": "png/mark/128/expansion_b.png",
+          "64": "png/mark/64/expansion_b.png",
+          "32": "png/mark/32/expansion_b.png"
+        }
+      },
+      "svg": {
+        "primary": "svg/primary/expansion_b.svg",
+        "mark": "svg/mark/expansion_b.svg",
+        "relief_crest": "svg/relief/primary/expansion_b.svg",
+        "relief_mark": "svg/relief/mark/expansion_b.svg"
+      },
+      "wordmark_font": {
+        "family": "Alfa Slab One",
+        "style": "Regular",
+        "outlined": true,
+        "shaping": "HarfBuzz kern on"
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "id": "A1",
+      "key": "expansion_a",
+      "name": "클래식 리그 실드",
+      "name_en": "CLASSIC LEAGUE",
+      "wordmark": "XI",
+      "frame": "heater shield",
+      "design_palette": {
+        "primary": "#0B5D3B",
+        "metal": "#C9A227",
+        "ink": "#062C20",
+        "white": "#F4F5F7"
+      },
+      "svg": {
+        "primary": "candidates/A1/svg/primary.svg",
+        "relief_primary": "candidates/A1/svg/relief/primary.svg",
+        "mark": "candidates/A1/svg/mark.svg",
+        "relief_mark": "candidates/A1/svg/relief/mark.svg"
+      },
+      "assets": {
+        "crest": {
+          "512": "candidates/A1/png/crest/512.png",
+          "256": "candidates/A1/png/crest/256.png",
+          "128": "candidates/A1/png/crest/128.png"
+        },
+        "mark": {
+          "128": "candidates/A1/png/mark/128.png",
+          "64": "candidates/A1/png/mark/64.png",
+          "32": "candidates/A1/png/mark/32.png",
+          "20": "candidates/A1/png/mark/20.png",
+          "16": "candidates/A1/png/mark/16.png",
+          "14": "candidates/A1/png/mark/14.png"
+        }
+      },
+      "status": "awaiting_user_selection"
+    },
+    {
+      "id": "A2",
+      "key": "expansion_a",
+      "name": "와이드 애슬레틱",
+      "name_en": "ATHLETIC SHIELD",
+      "wordmark": "XI",
+      "frame": "heater shield",
+      "design_palette": {
+        "primary": "#0B5D3B",
+        "metal": "#C9A227",
+        "ink": "#062C20",
+        "white": "#F4F5F7"
+      },
+      "svg": {
+        "primary": "candidates/A2/svg/primary.svg",
+        "relief_primary": "candidates/A2/svg/relief/primary.svg",
+        "mark": "candidates/A2/svg/mark.svg",
+        "relief_mark": "candidates/A2/svg/relief/mark.svg"
+      },
+      "assets": {
+        "crest": {
+          "512": "candidates/A2/png/crest/512.png",
+          "256": "candidates/A2/png/crest/256.png",
+          "128": "candidates/A2/png/crest/128.png"
+        },
+        "mark": {
+          "128": "candidates/A2/png/mark/128.png",
+          "64": "candidates/A2/png/mark/64.png",
+          "32": "candidates/A2/png/mark/32.png",
+          "20": "candidates/A2/png/mark/20.png",
+          "16": "candidates/A2/png/mark/16.png",
+          "14": "candidates/A2/png/mark/14.png"
+        }
+      },
+      "status": "awaiting_user_selection"
+    },
+    {
+      "id": "A3",
+      "key": "expansion_a",
+      "name": "세로형 헤리티지",
+      "name_en": "HERITAGE XI",
+      "wordmark": "XI",
+      "frame": "heater shield",
+      "design_palette": {
+        "primary": "#0B5D3B",
+        "metal": "#C9A227",
+        "ink": "#062C20",
+        "white": "#F4F5F7"
+      },
+      "svg": {
+        "primary": "candidates/A3/svg/primary.svg",
+        "relief_primary": "candidates/A3/svg/relief/primary.svg",
+        "mark": "candidates/A3/svg/mark.svg",
+        "relief_mark": "candidates/A3/svg/relief/mark.svg"
+      },
+      "assets": {
+        "crest": {
+          "512": "candidates/A3/png/crest/512.png",
+          "256": "candidates/A3/png/crest/256.png",
+          "128": "candidates/A3/png/crest/128.png"
+        },
+        "mark": {
+          "128": "candidates/A3/png/mark/128.png",
+          "64": "candidates/A3/png/mark/64.png",
+          "32": "candidates/A3/png/mark/32.png",
+          "20": "candidates/A3/png/mark/20.png",
+          "16": "candidates/A3/png/mark/16.png",
+          "14": "candidates/A3/png/mark/14.png"
+        }
+      },
+      "status": "awaiting_user_selection"
+    },
+    {
+      "id": "B1",
+      "key": "expansion_b",
+      "name": "로열 다이아몬드",
+      "name_en": "ROYAL DIAMOND",
+      "wordmark": "XII",
+      "frame": "baseball home plate",
+      "design_palette": {
+        "primary": "#4B2A7B",
+        "metal": "#A7A9AC",
+        "ink": "#24123D",
+        "white": "#F4F5F7"
+      },
+      "svg": {
+        "primary": "candidates/B1/svg/primary.svg",
+        "relief_primary": "candidates/B1/svg/relief/primary.svg",
+        "mark": "candidates/B1/svg/mark.svg",
+        "relief_mark": "candidates/B1/svg/relief/mark.svg"
+      },
+      "assets": {
+        "crest": {
+          "512": "candidates/B1/png/crest/512.png",
+          "256": "candidates/B1/png/crest/256.png",
+          "128": "candidates/B1/png/crest/128.png"
+        },
+        "mark": {
+          "128": "candidates/B1/png/mark/128.png",
+          "64": "candidates/B1/png/mark/64.png",
+          "32": "candidates/B1/png/mark/32.png",
+          "20": "candidates/B1/png/mark/20.png",
+          "16": "candidates/B1/png/mark/16.png",
+          "14": "candidates/B1/png/mark/14.png"
+        }
+      },
+      "status": "awaiting_user_selection"
+    },
+    {
+      "id": "B2",
+      "key": "expansion_b",
+      "name": "와이드 크라운",
+      "name_en": "CROWN PLATE",
+      "wordmark": "XII",
+      "frame": "baseball home plate",
+      "design_palette": {
+        "primary": "#4B2A7B",
+        "metal": "#A7A9AC",
+        "ink": "#24123D",
+        "white": "#F4F5F7"
+      },
+      "svg": {
+        "primary": "candidates/B2/svg/primary.svg",
+        "relief_primary": "candidates/B2/svg/relief/primary.svg",
+        "mark": "candidates/B2/svg/mark.svg",
+        "relief_mark": "candidates/B2/svg/relief/mark.svg"
+      },
+      "assets": {
+        "crest": {
+          "512": "candidates/B2/png/crest/512.png",
+          "256": "candidates/B2/png/crest/256.png",
+          "128": "candidates/B2/png/crest/128.png"
+        },
+        "mark": {
+          "128": "candidates/B2/png/mark/128.png",
+          "64": "candidates/B2/png/mark/64.png",
+          "32": "candidates/B2/png/mark/32.png",
+          "20": "candidates/B2/png/mark/20.png",
+          "16": "candidates/B2/png/mark/16.png",
+          "14": "candidates/B2/png/mark/14.png"
+        }
+      },
+      "status": "awaiting_user_selection"
+    },
+    {
+      "id": "B3",
+      "key": "expansion_b",
+      "name": "세로형 클럽 플레이트",
+      "name_en": "HERITAGE XII",
+      "wordmark": "XII",
+      "frame": "baseball home plate",
+      "design_palette": {
+        "primary": "#4B2A7B",
+        "metal": "#A7A9AC",
+        "ink": "#24123D",
+        "white": "#F4F5F7"
+      },
+      "svg": {
+        "primary": "candidates/B3/svg/primary.svg",
+        "relief_primary": "candidates/B3/svg/relief/primary.svg",
+        "mark": "candidates/B3/svg/mark.svg",
+        "relief_mark": "candidates/B3/svg/relief/mark.svg"
+      },
+      "assets": {
+        "crest": {
+          "512": "candidates/B3/png/crest/512.png",
+          "256": "candidates/B3/png/crest/256.png",
+          "128": "candidates/B3/png/crest/128.png"
+        },
+        "mark": {
+          "128": "candidates/B3/png/mark/128.png",
+          "64": "candidates/B3/png/mark/64.png",
+          "32": "candidates/B3/png/mark/32.png",
+          "20": "candidates/B3/png/mark/20.png",
+          "16": "candidates/B3/png/mark/16.png",
+          "14": "candidates/B3/png/mark/14.png"
+        }
+      },
+      "status": "awaiting_user_selection"
+    }
+  ],
+  "source_commit": "4e65d6ba4bbe1c6601f060ab4ec312bad85af7ec",
+  "delivery_branch": "assets/v23b-review"
+}
