@@ -69,13 +69,15 @@ dbTest('덱 구경: 한 팀의 공개 덱만, 숨김·덱 없음·틀린 id는 �
   noSecrets(d, [a, b], '덱 구경'); assert.ok(!JSON.stringify(d).includes('몰래')); assert.ok(!JSON.stringify(d).includes('cd'.repeat(16)), '기기 표식');
   /* 로그인 없이 공개로 읽는다. 캐시 머리글 */
   const raw = await H('GET', '/api/v1/ladder/deck/' + a.id); assert.equal(raw.status, 200); assert.match(raw.headers.get('Cache-Control'), /public.*s-maxage=120/);
-  /* 리그를 안 마친 유저의 덱: 마친 리그 0 */
-  const d2 = await J('GET', '/api/v1/ladder/deck/' + b.id); assert.equal(d2._s, 200); assert.equal(d2.name, '비숍팀'); assert.equal(d2.entry.leagues, 0);
+  /* 리그를 안 마친 유저: 순위표에 없다 → 덱도 못 본다(404 not_top). 리그를 하나 마치면 순위표에 올라 보인다 */
+  { const d0 = await J('GET', '/api/v1/ladder/deck/' + b.id); assert.equal(d0._s, 404); assert.equal(d0.error, 'not_top'); assert.match(d0.message, /상위 50위 안의 팀만/); assert.ok(!d0.e && !d0.nickname && !d0.name, '못 보는 응답에 덱·이름 없음'); noSecrets(d0, [a, b], '순위 밖 응답'); }
+  await result(J, b, 'LGX-b', 6);
+  const d2 = await J('GET', '/api/v1/ladder/deck/' + b.id); assert.equal(d2._s, 200); assert.equal(d2.name, '비숍팀'); assert.equal(d2.entry.leagues, 1);
   /* 못 보는 경우 */
-  assert.equal((await J('GET', '/api/v1/ladder/deck/' + c.id))._s, 404, '덱이 없는 플레이어'); assert.equal((await J('GET', '/api/v1/ladder/deck/p0000000000000000'))._s, 404, '없는 플레이어');
+  { const n = await J('GET', '/api/v1/ladder/deck/' + c.id); assert.equal(n._s, 404, '덱이 없는 플레이어'); assert.equal(n.error, 'not_found'); } assert.equal((await J('GET', '/api/v1/ladder/deck/p0000000000000000'))._s, 404, '없는 플레이어');
   for (const bad of ['abc', a.wid, a.token, "p1' OR 1=1 --", '%E0%A4%A']) assert.equal((await J('GET', '/api/v1/ladder/deck/' + encodeURIComponent(bad)))._s, 400, '틀린 id ' + bad);
   assert.equal((await J('PUT', '/api/v1/admin/hide', { pid: a.id, hide: 1 }, AK))._s, 200); (await LD)._genReset();
-  assert.equal((await J('GET', '/api/v1/ladder/deck/' + a.id))._s, 404, '숨긴 플레이어의 덱');
+  { const h = await J('GET', '/api/v1/ladder/deck/' + a.id); assert.equal(h._s, 404, '숨긴 플레이어의 덱'); assert.equal(h.error, 'not_found', '숨김은 순위 밖과 구분되지 않게 not_found'); }
   assert.equal((await J('PUT', '/api/v1/admin/hide', { pid: a.id, hide: 0 }, AK))._s, 200); (await LD)._genReset(); assert.equal((await J('GET', '/api/v1/ladder/deck/' + a.id))._s, 200);
   /* 자동 참가를 끄면 서버 덱이 지워진다 → 덱 구경도 404 */
   assert.equal((await J('PUT', '/api/v1/ladder/auto', { on: false }, b.A))._s, 200); assert.equal((await J('GET', '/api/v1/ladder/deck/' + b.id))._s, 404, '자동 참가를 끈 유저');
@@ -85,7 +87,32 @@ dbTest('덱 구경: 한 팀의 공개 덱만, 숨김·덱 없음·틀린 id는 �
 });
 
 dbTest('덱 구경은 요청 제한(read)에 든다', async () => {
-  const { H, mk, J } = await setup(); const a = await mk('제한', '10.4.0.1'); await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '제한팀' }), tier: 0 }, a.A);
+  const { H, mk, J } = await setup(); const a = await mk('제한', '10.4.0.1'); await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '제한팀' }), tier: 0 }, a.A); await result(J, a, 'LGX-rl', 5);
   let s429 = 0, s200 = 0; for (let i = 0; i < 400; i++) { const r = await H('GET', '/api/v1/ladder/deck/' + a.id, null, { 'CF-Connecting-IP': '198.51.100.9' }); if (r.status === 429) { s429++; break; } if (r.status === 200) s200++; }
   assert.ok(s200 > 0 && s429 === 1, `같은 주소에서 계속 부르면 429 (200 ${s200}번)`);
+});
+
+dbTest('덱 구경은 자기 단계 상위 50위까지: 50위는 보이고 51위·숨긴 플레이어는 안 보인다(순위표와 같은 기준)', async () => {
+  const { J, mk, AK } = await setup(), { BOARD_N, boardTop } = await LD; assert.equal(BOARD_N, 50); assert.equal(typeof boardTop, 'function');
+  const P = [];
+  for (let i = 1; i <= 53; i++) { const wid = 'w' + String(i).padStart(16, '0'), p = await mk('유저' + i, '10.5.' + (i >> 4) + '.' + (i & 15), wid); P.push(p);
+    assert.equal((await J('PUT', '/api/v1/ladder/deck', { e: deck({ name: '팀' + i }), tier: 2, wid, auto: 1 }, p.A))._s, 200); await result(J, p, 'LGT-' + i, 5); }
+  const board = async () => (await J('GET', '/api/v1/ladder/leaderboard?tier=2')).rows, see = async p => J('GET', '/api/v1/ladder/deck/' + p.id);
+  let lb = await board(); assert.equal(lb.length, 50); assert.equal(lb[49].pid, P[49].id, '50위 = 유저50');
+  const d50 = await see(P[49]); assert.equal(d50._s, 200, '50위 덱은 보인다'); assert.equal(d50.name, '팀50'); assert.equal(d50.nickname, '유저50');
+  const d51 = await see(P[50]); assert.equal(d51._s, 404, '51위 덱은 안 보인다'); assert.equal(d51.error, 'not_top'); assert.match(d51.message, /상위 50위 안의 팀만 볼 수 있습니다/);
+  assert.deepEqual(Object.keys(d51).filter(k => k !== '_s').sort(), ['error', 'message', 'ok'], '못 보는 응답은 이유뿐'); noSecrets(d51, P, '51위 응답');
+  assert.equal((await see(P[52]))._s, 404, '53위');
+  /* 순위표의 모든 줄은 보이고, 순위표에 없는 플레이어는 하나도 안 보인다(둘이 어긋나지 않는다) */
+  const inb = new Set(lb.map(x => x.pid)); for (const p of [P[0], P[24], P[48], P[49], P[50], P[51], P[52]]) assert.equal((await see(p))._s, inb.has(p.id) ? 200 : 404, '순위표와 덱 구경 자격이 같다');
+  /* 숨긴 플레이어(1위): 덱은 not_found, 순위표에서 빠지고 51위가 50위로 올라와 보인다 */
+  assert.equal((await J('PUT', '/api/v1/admin/hide', { pid: P[0].id, hide: 1 }, AK))._s, 200); (await LD)._genReset();
+  { const h = await see(P[0]); assert.equal(h._s, 404, '숨긴 플레이어'); assert.equal(h.error, 'not_found'); }
+  lb = await board(); assert.ok(!lb.some(x => x.pid === P[0].id)); assert.equal(lb[49].pid, P[50].id, '숨김 뒤 50위 = 유저51');
+  assert.equal((await see(P[50]))._s, 200, '50위로 올라온 유저51'); assert.equal((await see(P[51]))._s, 404, '이제 51위인 유저52');
+  assert.equal((await J('PUT', '/api/v1/admin/hide', { pid: P[0].id, hide: 0 }, AK))._s, 200); (await LD)._genReset();
+  /* 다른 단계로 올라가면 그 단계 순위표 기준: 유저53이 우승 → 승격한 단계에서 1위 → 보인다 */
+  await result(J, P[52], 'LGT-53-b', 1); const up = await see(P[52]); assert.equal(up._s, 200, '승격한 단계 1위'); assert.equal(up.entry.points, 42);
+  /* 로그인해도 같다(내 덱이라도 이 길로는 순위 밖이면 못 본다. 내 덱은 덱 화면에서 본다) */
+  assert.equal((await J('GET', '/api/v1/ladder/deck/' + P[51].id, null, P[51].A))._s, 404);
 });

@@ -7741,6 +7741,9 @@ header.ibm-h>.ph-w>.av{width:76px;height:76px;border-radius:10px}
 /* 순위표 50위 · 덱 구경(구단주 11-19): 이름 칸은 줄바꿈, 표는 칸 안에서만 옆으로 밀린다. 덱 구경은 순위표 자리에 그대로 */
 .ulx .ul-lbw{max-width:100%;overflow-x:auto;scrollbar-width:thin}.ulx .ul-lb .ul-lbn{white-space:normal;overflow-wrap:anywhere;min-width:0}.ulx .ul-lb th small{font-weight:500}.ulx .ul-lb .ul-bdn{color:var(--acc,#3d8bfd);text-decoration:underline;text-underline-offset:2px}.ulx .ul-lb tr.me .ul-bdn{color:inherit}
 .ulx .ul-lb .ul-bdn:focus-visible{outline:2px solid var(--acc,#3d8bfd);outline-offset:2px;border-radius:3px}
+/* 닉네임 권유(구단주 11-19): 한 줄 안내 + 단추 둘. 좁으면 단추가 아래로 내려간다. 내 순위표 줄의 작은 단추 */
+.ulx .ul-nkn{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 8px;min-width:0;border-left-color:var(--accent,#3b7dd8)}.ulx .ul-nkn-t{flex:1 1 200px;min-width:0;overflow-wrap:anywhere}.ulx .ul-nkn-b{display:flex;flex-wrap:wrap;gap:6px;flex:none}
+.ulx .ul-lb .ul-nkb{font-size:11px;color:var(--accent,#3b7dd8);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
 .ulx .ul-dv{display:grid;gap:6px;min-width:0}.ulx .ul-dv .btns{margin:0}.ulx .ul-dv-s{margin:0}.ulx .ul-dv-h{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap;margin:0}.ulx .ul-dv-h b{font-size:17px;overflow-wrap:anywhere}.ulx .ul-dv-sc{margin:0}.ulx .ul-dv .dk-t{margin:4px 0 0}.ulx .ul-dv .ulp-s{overflow-wrap:anywhere}
 /* 래더 v2(사용자 11-17): 주 메뉴 '래더' 다섯 페이지. 어두운 화면·팀 색(--team)·기존 카드/표 그대로, PC는 칸 안에서만 스크롤 */
 .ulx .ul-emb{flex:none;display:inline-block;vertical-align:middle;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
@@ -51599,7 +51602,9 @@ const PATCH=[
   {id:'2026-11-19-ladder-ranks',d:'11월 19일',t:'래더 순위표가 50위까지 보이고, 순위에 오른 팀의 덱을 볼 수 있습니다',items:[
     '래더 > 순위의 순위표가 단계마다 상위 50명까지 보입니다(예전 20명). 팀 능력(OVR)과 우승 수도 함께 나옵니다.',
     '순위표에서 유저 이름을 누르면 그 팀이 래더에 올린 덱(타순·선발·불펜·벤치, 선수 능력)을 볼 수 있습니다. 보기만 할 수 있습니다.',
-    '내 단계에서 50위 밖이면 순위표 아래에 내 순위 위·아래 유저가 따로 나옵니다.'
+    '내 단계에서 50위 밖이면 순위표 아래에 내 순위 위·아래 유저가 따로 나옵니다.',
+    '덱은 자기 단계 상위 50위 안의 팀만 볼 수 있습니다.',
+    '래더 닉네임이 아직 자동 이름(구단명#숫자)이면 래더 로비·순위 화면에서 닉네임 정하기를 안내합니다. 나중에를 누르면 그 방문 동안은 다시 나오지 않습니다.'
   ]},
   {id:'2026-11-19-cafe-fix',d:'11월 19일',t:'20-80 표기 끝자리·단장 식사·상무 성장 폭을 바로잡았습니다',items:[
     '20-80 표기에서 스카우트 평가·수비 위치·성장 그래프처럼 5점 단위로 매기는 값이 끝자리 0·5로 보입니다(예전에는 3·8만 보였습니다). 확인된 능력은 예전처럼 1점 단위이고, 실제 능력과 계산은 같습니다.',
@@ -55049,13 +55054,13 @@ function ulSvFeed(){ const S=UL.sv; if(S.feedSt)return; S.feedSt='loading'; ulNe
 function ulSvH2h(pid){ const S=UL.sv; if(!pid||S.h2h[pid]||!ulNet().signedIn())return; S.h2h[pid]={st:'loading'}; ulNet().h2h(pid).then(r=>{ S.h2h[pid]=r.ok?Object.assign({st:'ok'},r.data):{st:'err'}; },()=>{ S.h2h[pid]={st:'err'}; }).finally(()=>{ try{ render(); }catch(e){} }); }
 function ulSvStale(){ Object.assign(UL.sv,{meSt:'',board:{},feedSt:'',h2h:{},near:null,dk:{}}); }
 /* 덱 구경(구단주 11-19 "랭킹에 뜬 상위 팀들 덱도 관전"): 순위표에서 고른 한 팀의 덱을 그때 한 번 받는다(서버 120초 캐시). 이 화면에서는 최근 UL_DK_MAX팀만 들고 있는다.
-   예전 서버(덱 구경 없음)는 404·401 → '받지 못했습니다' 안내. 덱을 내렸거나 숨긴 유저도 404 */
+   예전 서버(덱 구경 없음)는 404·401 → '받지 못했습니다' 안내. 덱을 내렸거나 숨긴 유저도 404(not_found). 자기 단계 상위 50위 밖이면 404 not_top(구단주 11-19) */
 const UL_DK_MAX=6;
 function ulSvDeck(pid){ const S=UL.sv, D=S.dk||(S.dk={}); if(!pid||D[pid])return; const ks=Object.keys(D); if(ks.length>=UL_DK_MAX)delete D[ks[0]]; D[pid]={st:'loading'}; const tk=ulTok();
-  ulNet().deckOf(pid).then(r=>{ if(!ulSame(tk))return; const d=r.ok&&r.data; D[pid]=d&&d.e&&Array.isArray(d.e.P)?Object.assign({st:'ok'},d):{st:'err',code:r.offline||!r.status?'off':r.status===404?(r.data&&r.data.error==='not_found'?'none':'old'):r.status===429?'busy':r.ok||r.status===401||r.status===405?'old':'err'}; },()=>{ if(ulSame(tk))D[pid]={st:'err',code:'off'}; }).finally(()=>{ if(ulSame(tk))try{ render(); }catch(e){} }); }
+  ulNet().deckOf(pid).then(r=>{ if(!ulSame(tk))return; const d=r.ok&&r.data; D[pid]=d&&d.e&&Array.isArray(d.e.P)?Object.assign({st:'ok'},d):{st:'err',code:r.offline||!r.status?'off':r.status===404?(r.data&&r.data.error==='not_found'?'none':r.data&&r.data.error==='not_top'?'top':'old'):r.status===429?'busy':r.ok||r.status===401||r.status===405?'old':'err'}; },()=>{ if(ulSame(tk))D[pid]={st:'err',code:'off'}; }).finally(()=>{ if(ulSame(tk))try{ render(); }catch(e){} }); }
 /* 내 순위 둘레: 내 단계 순위표(상위)에 내가 없을 때만 한 번 받는다. 예전 서버는 404 → 아무것도 안 보인다 */
 function ulSvNear(){ const S=UL.sv; if(S.near||!ulNet().signedIn())return; S.near={st:'loading'}; const tk=ulTok(); ulNet().near().then(r=>{ if(!ulSame(tk))return; S.near=r.ok&&r.data&&Array.isArray(r.data.rows)?Object.assign({st:'ok'},r.data):{st:'err'}; },()=>{ if(ulSame(tk))S.near={st:'err'}; }).finally(()=>{ if(ulSame(tk))try{ render(); }catch(e){} }); }
-const UL_DK_ERR={off:'연결이 끊겨 덱을 받지 못했습니다. 연결을 확인한 뒤 다시 눌러 주세요.',none:'이 팀은 지금 서버에 덱이 없습니다. 덱을 내렸거나 자동 참가를 끈 유저입니다.',old:'서버가 아직 덱 구경을 지원하지 않습니다. 잠시 뒤 새로 고친 다음 다시 눌러 주세요.',busy:'요청이 잦습니다. 잠시 뒤 다시 눌러 주세요.',err:'덱을 받지 못했습니다. 잠시 뒤 다시 눌러 주세요.'};
+const UL_DK_ERR={top:'상위 50위 안의 팀만 볼 수 있습니다. 이 팀은 지금 자기 단계 순위표(상위 50명) 밖입니다.',off:'연결이 끊겨 덱을 받지 못했습니다. 연결을 확인한 뒤 다시 눌러 주세요.',none:'이 팀은 지금 서버에 덱이 없습니다. 덱을 내렸거나 자동 참가를 끈 유저입니다.',old:'서버가 아직 덱 구경을 지원하지 않습니다. 잠시 뒤 새로 고친 다음 다시 눌러 주세요.',busy:'요청이 잦습니다. 잠시 뒤 다시 눌러 주세요.',err:'덱을 받지 못했습니다. 잠시 뒤 다시 눌러 주세요.'};
 /* 덱 구경 칸: 닉네임·팀·단계·시즌 기록·OVR + 타순·선발·불펜·벤치(내 덱 화면과 같은 두 줄 칸 .ulp: 이름·OVR / 나이·손·주요 능력). 보기만 한다.
    nolink: 남의 덱 선수 이름이 내 세계의 같은 이름 선수 카드로 이어지지 않게(이름 자동 연결 끔) */
 function ulBdDeckHtml(pid){ const C=FrontOfficeCore, S=UL.sv, D=(S.dk||{})[pid], back='<button class="btn small" data-a="ulBdDeck" data-v="">← 순위표로</button>';
@@ -55239,14 +55244,16 @@ function ulRankHtml(U,msg){ const C=FrontOfficeCore, S=UL.sv; msg=ulSvDelPendHtm
     <div class="btns"><button class="btn small" data-a="ulSvRe">새로고침</button>${N.signedIn()?`<button class="btn small" data-a="ulSvDel"${UL.busy?' disabled':''}>서버 기록 지우기</button>`:''}</div></section>`;
   const B=S.board[bt], rows=B&&B.st==='ok'?B.rows||[]:null, cap=(B&&B.cap)|0||20; /* cap: 서버가 주는 순위표 길이(예전 서버는 20) */
   const ch=[...C.UL_TIERS.map((n,i)=>[i,n]),['all','전체'],['prev','지난 시즌']];
-  const brow=x=>`<tr class="${x.pid===mypid?'me':''}"><td class="num">${x.rank}</td>${multi?`<td>${ulEmblem(x.tier,18)}</td>`:''}<td class="ul-lbn">${x.team&&x.pid?`<button class="lnk ul-bdn" data-a="ulBdDeck" data-v="${esc(x.pid)}" title="이 팀 덱 보기"><b>${esc(x.nickname)}</b></button>`:`<b>${esc(x.nickname)}</b>`}${x.pid===mypid?' <span class="ul-k ul-k-me">나</span>':''} <span class="small muted">${esc(x.team||'덱 없음')}${x.ovr?` · OVR ${x.ovr|0}`:''}${!multi&&x.best_tier>bt?` · 최고 ${C.ulTierName(x.best_tier)}`:''}</span></td><td class="num">${x.points}</td><td class="num">${x.leagues}</td><td class="num">${x.wins|0}</td></tr>`;
-  const bhead=`<tr><th>순위</th>${multi?'<th>단계</th>':''}<th class="ul-lbn">유저 · 팀 <small class="muted">이름을 누르면 덱</small></th><th>포인트</th><th>리그</th><th>우승</th></tr>`;
+  const nkd=typeof ulNickDefault==='function'&&ulNickDefault(); /* 내 닉네임이 아직 자동 이름: 내 줄에 '닉네임 정하기'(05_uladder_auto.js) */
+  /* 덱 보기 단추는 지금 시즌 순위표의 상위 cap위 안만(서버도 그 밖은 404 not_top). 내 순위 둘레의 cap위 밖·지난 시즌 줄은 그냥 글자 */
+  const brow=x=>`<tr class="${x.pid===mypid?'me':''}"><td class="num">${x.rank}</td>${multi?`<td>${ulEmblem(x.tier,18)}</td>`:''}<td class="ul-lbn">${x.team&&x.pid&&bt!=='prev'&&x.rank<=cap?`<button class="lnk ul-bdn" data-a="ulBdDeck" data-v="${esc(x.pid)}" title="이 팀 덱 보기"><b>${esc(x.nickname)}</b></button>`:`<b>${esc(x.nickname)}</b>`}${x.pid===mypid?` <span class="ul-k ul-k-me">나</span>${nkd?' <button class="lnk ul-nkb" data-a="ulNickGo" title="순위표에 보일 닉네임을 정합니다">닉네임 정하기</button>':''}`:''} <span class="small muted">${esc(x.team||'덱 없음')}${x.ovr?` · OVR ${x.ovr|0}`:''}${!multi&&x.best_tier>bt?` · 최고 ${C.ulTierName(x.best_tier)}`:''}</span></td><td class="num">${x.points}</td><td class="num">${x.leagues}</td><td class="num">${x.wins|0}</td></tr>`;
+  const bhead=`<tr><th>순위</th>${multi?'<th>단계</th>':''}<th class="ul-lbn">유저 · 팀${bt==='prev'?'':' <small class="muted">이름을 누르면 덱</small>'}</th><th>포인트</th><th>리그</th><th>우승</th></tr>`;
   /* 내 순위 둘레: 내 단계 순위표가 꽉 찼는데 내가 없으면(상위 밖) 내 위·아래 유저를 따로 보여 준다 */
-  let nearH=''; if(rows&&!multi&&E&&E.rank&&bt===(E.tier|0)&&rows.length>=cap&&!rows.some(x=>x.pid===mypid)){ ulSvNear(); const NR=S.near; if(NR&&NR.st==='ok'&&NR.rows.length&&(NR.tier|0)===bt)nearH=`<p class="dk-t">내 순위 둘레</p><table class="ul-st ul-lb">${bhead}${NR.rows.map(brow).join('')}</table>`; }
+  let nearH=''; if(rows&&!multi&&E&&E.rank&&bt===(E.tier|0)&&rows.length>=cap&&!rows.some(x=>x.pid===mypid)){ ulSvNear(); const NR=S.near; if(NR&&NR.st==='ok'&&NR.rows.length&&(NR.tier|0)===bt)nearH=`<p class="dk-t">내 순위 둘레 <small class="muted">덱은 상위 ${cap}위까지</small></p><table class="ul-st ul-lb">${bhead}${NR.rows.map(brow).join('')}</table>`; }
   const list=rows?rows.length?`<div class="ul-lbw"><table class="ul-st ul-lb">${bhead}${rows.map(brow).join('')}</table></div>${nearH}${rows.length<5&&bt!=='prev'?'<p class="small muted">아직 순위에 오른 유저가 적습니다. 리그를 하나 마치면 순위표에 오릅니다.</p>':''}`:`<p class="small muted">${bt==='prev'?'지난 시즌 기록이 없습니다.':'이번 시즌 여기에서 리그를 마친 유저가 아직 없습니다.'}</p>`:B&&B.st==='err'?'<div class="note bad">순위표를 받지 못했습니다. 연결을 확인한 뒤 새로고침을 눌러 주세요.</div><div class="btns"><button class="btn small" data-a="ulSvRe">새로고침</button></div>':'<p class="small">순위표를 받는 중입니다.</p>';
   const board=`<section class="card ul-bd"><h2 class="sec">순위표${S.dv?' <small>덱 구경</small>':''}</h2>${S.dv?ulBdDeckHtml(S.dv):`<div class="chips ul-bt">${ch.map(([k,n])=>`<button data-a="ulBoardT" data-v="${k}" class="${k===bt?'on':''}" aria-pressed="${k===bt}">${n}</button>`).join('')}</div>
     ${list}
-    <p class="small muted">${bt==='all'?`이번 시즌 전체 상위 ${cap}명(높은 단계 먼저, 같은 단계는 포인트 순).`:bt==='prev'?`지난 시즌 최종 상위 ${cap}명.`:`이번 시즌 ${C.ulTierName(bt)} 단계 상위 ${cap}명(시즌 포인트 순).`} 유저 이름을 누르면 그 팀의 덱을 봅니다.</p>`}</section>`;
+    <p class="small muted">${bt==='all'?`이번 시즌 전체 상위 ${cap}명(높은 단계 먼저, 같은 단계는 포인트 순).`:bt==='prev'?`지난 시즌 최종 상위 ${cap}명.`:`이번 시즌 ${C.ulTierName(bt)} 단계 상위 ${cap}명(시즌 포인트 순).`}${bt==='prev'?'':` 유저 이름을 누르면 그 팀의 덱을 봅니다. 덱은 자기 단계 상위 ${cap}위 안의 팀만 볼 수 있습니다.`}</p>`}</section>`;
   const F=S.feed;
   const feed=`<section class="card"><h2 class="sec">최근 소식</h2>${F?F.length?`<div class="ul-news">${F.map(x=>`<p class="small"><b>${esc(x.nickname)}</b> ${x.kind==='season_top'?`시즌 ${x.season} ${esc(C.ulTierName(x.tier_to))} ${(x.info&&x.info.rank)||''}위`:x.kind==='crown'?'레전드 리그 우승!':`${esc(C.ulTierName(x.tier_from))} → <b class="ul-up">${esc(C.ulTierName(x.tier_to))}</b> 승격`} <span class="muted">${ulAgo(x.at)}</span></p>`).join('')}</div>`:'<p class="small muted">아직 소식이 없습니다.</p>':`<p class="small muted">${S.feedSt==='err'?'소식을 받지 못했습니다.':'소식을 받는 중입니다.'}</p>`}
     <p class="small muted">승격·레전드 우승·시즌 상위 소식입니다.</p></section>`;
@@ -55497,6 +55504,7 @@ function ulRankPage(U){ const h=ulRankHtml(U,ulMsgHtml()), C=FrontOfficeCore, L=
 function ulView(){ if(!G)return ''; ulProbe(); const U=ulDisplayState(uld()), pg=ulPage(); let cols, wide=false;
   if(pg==='lobby')cols=ulLobby(U); else if(pg==='league')cols=ulLeaguePage(U); else if(pg==='deck')cols=ulDeckPage(U); else if(pg==='data'){ cols=ulDataPage(U); wide=true; } else if(pg==='rec')cols=ulRecPage(U); else cols=ulRankPage(U);
   { const ed=ulEdited(); if(ed&&cols&&cols.length)cols[0]=`<div class="note bad ul-edited" role="status">${esc(ed)}</div>`+(cols[0]||''); } /* 편집된 저장: 래더 등록을 막은 이유(22d_edited). 편집 안 한 저장에는 아무것도 보이지 않는다 */
+  if((pg==='lobby'||pg==='rank')&&cols&&cols.length&&typeof ulNickNudge==='function'){ const nk=ulNickNudge(); if(nk)cols[0]=nk+(cols[0]||''); } /* 닉네임 권유(구단주 11-19): 자동 이름 그대로일 때만, 로비·순위 */
   const top=fmOn()?'':subTabs('uld'), body=wide?`<div class="setc ul-c2">${cols[0]}</div><div class="setc">${cols[1]||''}</div>`:cols.map(c=>`<div class="setc">${c||''}</div>`).join('');
   return `${top}${pg==='data'?UL._dbar:''}<div class="setx ws-own ulx ul-p-${pg}${wide?' ul-wide2':''}">${body}</div>`; }
 Object.assign(A,{
@@ -55766,6 +55774,14 @@ function ulTag(){ let t=ulLs(UL_TAG_K); if(t&&/^\d{4}$/.test(t))return t; try{ c
 function ulClubName(){ try{ return G&&!G.unemp&&G.user!=null&&team(G.user)?tfull(G.user):''; }catch(e){ return ''; } }
 function ulAutoNick(){ return FrontOfficeCore.ulAutoName(ulClubName(),ulTag()); }
 const ulNickSet=()=>ulLs(UL_NICK_K)==='set';
+/* 닉네임 권유(구단주 11-19): 내 서버 닉네임이 아직 자동 이름('구단명#4자리')이면 래더 로비·순위 화면에 한 줄로 권한다. 강제 아님 · 자동으로 바꾸지 않음.
+   판별은 이 기기에서만: 서버에는 '자동 이름' 칸이 없다 → 직접 정한 표시(UL_NICK_K='set')가 없고 내 닉네임이 '#숫자 4자리'로 끝나면 자동 이름으로 본다(남의 닉네임은 보지 않는다).
+   '나중에'를 누르면 이 방문(탭) 동안 다시 나오지 않는다(sessionStorage). 다음 방문에 닉네임이 그대로면 다시 나온다 */
+const UL_NICK_X='fo_ul_nick_x', UL_NICK_AUTO_RE=/#\d{4}$/;
+function ulNickDefault(){ try{ const N=ulNet(); if(!xfAvail()||!N.signedIn()||ulNickSet())return false; const p=N.player()||{}; return UL_NICK_AUTO_RE.test(String(p.nickname||'')); }catch(e){ return false; } }
+function ulNickNudgeOff(){ if(ULA.nickX)return true; try{ return sessionStorage.getItem(UL_NICK_X)==='1'; }catch(e){ return false; } }
+function ulNickNudge(){ if(!ulNickDefault()||ulNickNudgeOff())return ''; const p=ulNet().player()||{};
+  return `<div class="note ul-nkn nolink" role="status"><span class="ul-nkn-t">순위표에 보이는 내 닉네임이 아직 자동 이름 <b>${esc(p.nickname)}</b>입니다. 나만의 닉네임을 정해 보세요.</span><span class="ul-nkn-b"><button class="btn small" data-a="ulNickGo">닉네임 정하기</button><button class="btn small" data-a="ulNickLater" title="이번 방문 동안 다시 보지 않습니다">나중에</button></span></div>`; }
 function ulAutoSay(m,bad){ ULA.msg=m||''; ULA.bad=!!bad; try{ render(); }catch(e){} }
 /* 예전 플레이어(단장 이름으로 만든 것)를 처음 한 번 자동 이름으로. 직접 정한 닉네임은 그대로 */
 async function ulAutoRename(){ const N=ulNet(); if(!N.signedIn()||ulNickSet())return; const want=ulAutoNick(), p=N.player()||{}, now=Date.now();
@@ -55865,6 +55881,9 @@ Object.assign(A,{
     if(!ok)return ulAutoSay('자동 참가 켜기를 예약했습니다. 서버에 연결되면 참가 설정을 확인한 뒤 덱을 올립니다.');
     if(U&&U.ar)U.ar.h=''; const r=await ulAutoTick(true); if(!ulSame(tk)||key!==ulAutoIntentKey())return;
     return ulAutoSay(r==='reject'&&U&&U.ar&&U.ar.manualReject?'자동 참가를 켰습니다. 서버 덱 등록은 보류합니다: '+U.ar.manualReject.msg:r==='ok'?'자동 참가를 켰습니다. 등록한 덱을 서버에 올렸습니다.':ulAutoPending()?'자동 참가를 켰습니다. 서버에 연결되면 등록한 덱을 올립니다.':'자동 참가를 켰습니다.'); },
+  /* 닉네임 권유 → 이미 있는 닉네임 바꾸기(설정 › 래더의 '래더 닉네임' 칸)로 */
+  ulNickGo(){ A.go('cfg:uld'); try{ setTimeout(()=>{ const el=document.getElementById('ulNickIn'); if(el){ el.scrollIntoView({block:'center'}); el.focus({preventScroll:true}); } },60); }catch(e){} },
+  ulNickLater(){ ULA.nickX=true; try{ sessionStorage.setItem(UL_NICK_X,'1'); }catch(e){} render(); },
   async ulNickSave(){ if(ULA.busy)return; const el=document.getElementById('ulNickIn'), C=FrontOfficeCore, n=C.cupName((el&&el.value)||'');
     if([...n].length<2||C.cupBadName(n))return ulAutoSay('닉네임은 2~12자, 쓸 수 없는 말 없이 적어 주세요.',true);
     if(!xfAvail())return ulAutoSay('내려받은 게임에서는 서버 닉네임을 바꿀 수 없습니다.',true);
