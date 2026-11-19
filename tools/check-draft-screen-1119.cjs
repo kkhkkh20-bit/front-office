@@ -37,8 +37,10 @@ const assert=require('node:assert/strict'),path=require('node:path'),fs=require(
  const s2=await state();log('취소하면 그대로',!(await dialog())&&s2.cur===s0.cur&&!s2.pass);
  log('A.passPick 직접 호출도 확인 창부터',await page.evaluate(()=>{A.passPick();const d=!!document.querySelector('#cfm [role="dialog"]');const c=G.draft.cur;A.cfmNo();return d&&c===G.draft.cur;}));
  const rng=await page.evaluate(()=>{let n=0;const r0=FO_RNG;FO_RNG=()=>{n++;return r0();};try{A.passPick();A.cfmNo();}finally{FO_RNG=r0;}return n;});log('확인 창은 난수를 쓰지 않음',rng===0,String(rng));
+ /* 확인 직후 상태는 그 순간에 남긴다: 우리 차례가 끝나면 다른 구단 지명이 0.8초 뒤 저절로 흘러(dliveBox) 느린 러너에선 200ms 대기 사이에 cur가 더 움직인다 */
+ await page.evaluate(()=>{const f=window.passPick;window.__pp=null;window.passPick=function(){const r=f.apply(this,arguments);window.__pp={passed:!!G.draft.picks.find((x,i)=>x.tid===G.user&&x.pass),cur:G.draft.cur};return r;};window.__ppRestore=()=>{window.passPick=f;};});
  await page.locator('[data-a="passPick"]').first().click();await page.waitForTimeout(100);await page.locator('[data-a="cfmOk"]').click();await page.waitForTimeout(200);
- const s3=await page.evaluate(()=>({passed:!!G.draft.picks.find((x,i)=>x.tid===G.user&&x.pass),cur:G.draft.cur}));
+ const s3=await page.evaluate(()=>{const r=window.__pp||{passed:false,cur:G.draft.cur,hook:'확인 뒤 passPick 호출 없음'};window.__ppRestore();return r;});
  log('확인 뒤에는 이번 지명을 건너뜀(기존 저장·진행 로직)',s3.passed&&s3.cur===s0.cur+1,JSON.stringify(s3));
  /* 남은 지명 건너뛰기: 확인 버튼이 2초 뒤에 켜진다. 다음 우리 차례로 옮겨 다시 */
  await page.evaluate(()=>{G.draft.cur=G.draft.picks.findIndex((x,i)=>i>G.draft.cur&&x.tid===G.user);render();});
