@@ -15435,8 +15435,18 @@ function makeLineup(tid,pool){
     for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){ const a=P[i], b=P[j], x=ln[a], y=ln[b]; if(sc(y,a)+sc(x,b)>sc(x,a)+sc(y,b)+.3){ ln[a]=y; ln[b]=x; better=true; } }
     for(const pos of P){ const x=ln[pos]; for(const q of bats){ if(used.has(q.id))continue; if(sc(q,pos)>sc(x,pos)+.3){ used.delete(x.id); used.add(q.id); ln[pos]=q; better=true; break; } } }
     if(!better)break; }
+  promFloor(tid,ln,bats,used,sc);
   return ln;
 }
+/* 출전 기회 약속(사용자 제보 11-07): 약속 기간에는 가산(promB)만으로는 능력 차이가 큰 선수가 끝내 못 나간다.
+   약속한 타석(타자 25)을 기간에 고르게 나눈 속도보다 뒤처지면 그날은 그 선수의 가장 맞는 자리에 선발로 넣는다(따라잡을 때까지).
+   모든 구단 같은 규칙, 난수 없음, 저장 항목 없음. 이미 채웠거나 기간이 지난 약속·옛 약속(기준 없음)은 건드리지 않는다 */
+function promFloor(tid,ln,bats,used,sc){ if(typeof playPromBase!=='function')return;
+  for(const q of bats){ if(used.has(q.id)||q.isP)continue; const P=q.promise; if(!P||!P.b||!(P.until>=G.day)||(P.tid??q.team)!==tid||!(P.d<=G.day))continue;
+    const b=playPromBase(q,P), now=playPromNow(q,b.y,b.tid), got=(now.pa||0)-(b.pa||0); if(got>=25)continue;
+    const span=Math.max(1,P.until-P.d), pace=25*clamp((G.day-P.d+1)/span,0,1); if(got>=pace)continue;
+    let bp=null,bs=-1e9; for(const pos of ORDER){ const x=ln[pos]; if(!x||x.id===q.id)continue; if(pos==='C'&&q.pos!=='C')continue; if(x.promise&&x.promise.until>=G.day&&(x.promise.tid??x.team)===tid)continue; const v=sc(q,pos)-sc(x,pos); if(v>bs){bs=v;bp=pos;} }
+    if(!bp)continue; used.delete(ln[bp].id); ln[bp]=q; used.add(q.id); } }
 function entryLimit(){ const per=period(); if(per==='post')return ENTRY_BASE+1; if(per!=='season')return ENTRY_BASE; const agY=typeof NT_EV!=='undefined'&&NT_EV.ag.yr(G.year), ag=agY&&G.cal&&G.cal.asg&&G.day>G.cal.asg?1:0; return ENTRY_BASE+ag+(G.day>=(agY?KD(8,25):KD(9,1))?ENTRY_EXP-ag:0); } /* 확대 엔트리: 평년 9월 1일 5명, 아시안게임 해는 8월 25일 4명(최대 34명, KBO 2026 제3차 실행위원회) */ /* 포스트시즌 30명(KBO 2026), AG 해 후반기 30명이면 확대 뒤 34명 */ /* KBO 2026: 아시안게임 해에는 올스타 휴식기 뒤 30명(대표 차출 대비), 8월 25일부터 4명 확대 */
 function entryOn(){ if(!G.cal||G.entryY!==G.year)return false; const per=period(); return per==='season'||per==='post'||(per==='pre'&&G.day>=G.cal.open-1); }
 function actOf(tid){ const ps=playersOf(tid).filter(p=>psOk(p)); return entryOn()?ps.filter(p=>p.e1):ps.filter(p=>!p.ys&&!(p.isP&&rpPlanOf(tid,p)==='sp2')); } /* 포스트시즌 자격 없는 선수는 라인업·마운드에 오르지 않는다(검수 11-07) */
