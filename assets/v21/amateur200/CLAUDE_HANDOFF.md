@@ -1,19 +1,50 @@
-# v21 — 미완료 중간 결과
+# v21b 시트 A — Claude 연결 안내
 
-목표는 새 아마추어 200명, 13종 2,600장, 최종 RGB WebP 아틀라스 78장입니다. 현재 작업은 검토용이며 `production_complete=false`, `asset_validation_passed=false`입니다. 게임 코드는 수정하지 않았고 main에 병합하지 않습니다.
+리뷰 브랜치: `assets/v21-review`  
+기준 경로: `assets/v21/amateur200/`
 
-`family_review_manifest.json`에는 새로 제작한 가족별 사진·생성 원본·크롭·세 크기 내보내기와 SHA256이 있습니다. 인물 ID와 설계 나이는 임시값이며 게임에 고정 배정하지 마세요. `previews/family_cohort_*_13variants.png`와 `previews/all_review_families_hs_home_256.png`에서 확인합니다. 사진 없는 칸은 아직 제작 전입니다.
+시트 A100명,12변형,3크기의 정식 시트36장을 납품합니다. 고교60명·대학40명, 안경11명입니다. 수치 검수는 통과했으며 사람의 나이 확인은 `pending`입니다. 시트 B100명은 다음 단계이므로 `production_complete`는 `false`입니다.
 
-최신 인원·사진 수와 보류 건수는 `validation.json`, 세부 수치는 `validation/families/production_audit.json`을 봅니다. 같은 인물의 존재하는 모든 변형 쌍, 다른 인물의 모든 존재하는 사진 조합, 기존 486명 기준 원본과 세 크기를 원시 ArcFace 코사인으로 비교했습니다. 기존 384 비교 기준은 기존 세트의 256 원본입니다. 임계값은 같은 인물 >=0.60, 다른 인물 <0.40이며 v20b의 예외는 적용하지 않습니다.
+## 런타임 입력
 
-`review/partial_atlases/`는 선택된 일부 인물만 채운 39장 실험판입니다. 빈칸이 많고 정식 `sheets/`가 아닙니다. 이 실험판을 실제 디코딩한 사진의 별도 측정은 `validation/families/atlas_audit.json`입니다. 개별 WebP가 통과해도 판 압축 후 수치가 달라질 수 있으므로, 최종 200명 78장을 만든 뒤 반드시 다시 측정해야 합니다. 다른 인물과 충돌하는 경우 얼굴을 바꾸어 강제로 맞추지 말고 보류 또는 새 인물 선별로 처리합니다.
+`manifest.json`의 `schema_version`은 `v21-amateur-1`이고 `identities`에는 이번100명만 들어 있습니다. `sheets_ready`는 `["A"]`입니다. `id`, `age`, `sheet`, `index`를 저장 파일의 고정 배정에 사용하고 납품 뒤 번호나 설계 나이를 바꾸지 않습니다. 번호·나이 잠금 SHA256: `a3fbff50ddc24bdb8ab5bb0943c629011a2c3d4de5ebdef51d6f71f9179ee437`.
 
-연령 목표는 성인 직전의 골격에 앳된 인상이 남은 고교 후반, 그리고 대학 초반입니다. 어린아이처럼 보이는 시드는 제외했습니다. 모자는 깊이 쓰고 정상 비율·약한 미소·자연스러운 피부를 유지합니다. 보조 시각 검수는 실제 사람의 연령 승인으로 대체하지 않으며 전원 사람 검수 대기입니다.
+`variants[variant_key].sheets["384"|"256"|"128"]`의 `path`와 `rect`를 그대로 읽으세요. 크기별 시트는 `sheets/A/{size}/{variant_key}.webp`입니다. 각 시트는10×10칸, 사진 둘레8px입니다.
 
-앞서 올린 `review_manifest.json`의 230명 단일 사진 후보와 당시 84명 임시 선택·117명 상한 증명은 별도 초기 스냅샷입니다. 이후 추가 사진이나 새 원본에 그 상한을 적용하지 않습니다. 당시 생성 도구 한도 보고도 과거 기록입니다. 새 생성 원본은 전역 `/workspace/generated_images`에 모두 보존했고, 일부 원본 복사본은 `native/`에 있습니다. 이후 원본은 전역 생성 폴더에 그대로 보존하며, 저장소 밖 원본은 사진별 `native_storage`, `native_original_filename`, SHA256으로 표시했습니다. `verify_native_exports.py`는 원본 폴더를 `V21_NATIVE_ORIGINALS_DIR`로 지정해 전체 사진의 직접 축소를 검증합니다. 128px 확대나 얼굴·몸 합성은 사용하지 않았습니다.
+```js
+const localIndex = identity.index % 100;
+const pitch = size + 16;
+const rect = [
+  (localIndex % 10) * pitch + 8,
+  Math.floor(localIndex / 10) * pitch + 8,
+  size, size
+];
+```
 
-재개 시에는 충돌 보류 인물을 교체하고 나머지 새 인물/13종 사진을 확충한 뒤, 고교 약60%·대학 약40%·안경 약10%를 맞추세요. 최종 아틀라스 규격은 `REQUEST.md`와 `validation/protocol.json`을 따릅니다. 최종 200명 사람 검수, manifest, 최종 미리보기, 전체 수치 검수, checksums가 끝나기 전 게임에 연결하지 마세요. 브랜치는 `assets/v21-review`입니다. 기준 main의 77_assets_ui.js에서는 요청서의 amIdx/amSrc/FACE21을 확인하지 못했으므로 Claude가 통합 대상 코드를 별도로 확인해야 합니다.
+384px 시트는4000×4000(q89),256px는2720×2720(q88),128px는1440×1440(q85)입니다. 모두 RGB 손실 WebP입니다. 고해상도 카드에는384px 시트를 사용합니다.
 
-요청서 5절은 다른 인물의 비교 사진 조합을 명시하지 않습니다. 현재 보수적으로 모든 유니폼 사진끼리 비교하며, 대표 얼굴끼리인지 전체 13종끼리인지 사용자에게 범위 확인을 요청했습니다. 답변 전에는 범위나 임계값을 바꾸지 않습니다. 128판은 같은 q85의 lossy RGB WebP 안에서 method0/segments1/SNS0/filter0/sharpYUV로 출력 안정성을 높였습니다. 256판도 q88의 같은 고정 인코더 설정으로 출력하고, 384판은 q89/method6입니다. 실제 디코딩 픽셀을 모두 확인했으며, 이전 측정 벡터 재사용은 픽셀 SHA256이 완전히 같은 크기에만 허용합니다. 원본과 ArcFace 모델·정렬·정규화·임계값은 바꾸지 않습니다. 최종 판을 다시 만들면 반드시 다시 검사합니다.
+변형 순서: `hs_home`, `univ`, `seoul_comets`, `seoul_hounds`, `incheon_seagulls`, `suwon_sparks`, `goyang_storm`, `daejeon_redfox`, `gwangju_blazes`, `daegu_thunders`, `busan_waves`, `changwon_anchors`. 고교는 `hs_home`, 대학은 `univ`, 지명 후에는 구단 키를 사용합니다. `hs_away`는 런타임 변형에서 제외했습니다. 기존 후보·실험판 자료는 제작 기록이며 런타임 번호표는 이번 `manifest.json`입니다.
 
-이번 보완: 110명·13종1,430장 후보를 보존했습니다. 선택된32명·416장은 현재 압축판의 모든 수치 기준을 통과하지만 사람 나이 승인은 대기입니다. 초기 균등 행 크롭이 생성 원본의 불균등 행 경계와 달랐던 문제를 찾아73장은 원본 안에서 다시 자르고, 실제 칸이384px보다 작은56장은503px 이상 새 완전 사진으로 재생성했습니다. `validation/families/native_geometry_review.json` 및 `visual_review_notes.json`에 범위·보류 사유가 있습니다. 다른 보류 후보까지 사진 경계 검수를 완료한 것은 아닙니다. 앞으로 새 격자 원본은 실제 칸 경계로 잘라야 합니다. 수치 통과를 나이·외형 승인으로 해석하지 마세요.
+## 검수
+
+| 크기 | 같은 인물 최저값 | 대표 사진끼리 최고값 | 기존486명과 최고값 |
+|---|---:|---:|---:|
+| 128 | 0.614290 | 0.398272 | 0.379359 |
+| 256 | 0.640446 | 0.394158 | 0.392079 |
+| 384 | 0.649693 | 0.396785 | 0.384992 |
+
+같은 인물은12변형의 모든66쌍을 검사했습니다. 다른 인물은 `hs_home` 대표 사진끼리, 그리고 기존 v6c100·v1360·v18200·v7126명 총486명의 대표 사진과 비교했습니다.384 비교의 기존 갤러리는256px입니다. 같은 인물 기준은0.60 이상, 다른 인물은0.40 미만입니다.
+
+최종 WebP에서 실제로 잘라낸3600개 RGB 셀을 확인했습니다. 측정본과 디코딩 RGB SHA256이 같은 경우에만 원시 벡터를 재사용하고, 달라진 셀은 최종 시트에서 다시 측정했습니다. ArcFace 모델·5점 정렬·L2 정규화·코사인 기준은 `validation/protocol.json`에 기록했습니다.
+
+얼굴 중심은5점 랜드마크의 산술평균이며, v18 `seoul_comets`200명의 중앙값을 기준점으로 삼았습니다.256px 기준 좌표는 `[130.98235626,118.22048492]`, 최대 축 편차는1.327020px입니다(허용±4px). 원본 사진의 보존된 최소 변은384px 이상이며 작은 사진을 확대한 납품물은 없습니다. 원본 PNG와 잘라낸 위치·프레임 정보는 `native/`와 `validation/stage_a/photo_provenance.json`에 보관했습니다.
+
+## 구단주 나이 확인
+
+`previews/age_review_A_256.png`는 최종 WebP의 고교 사진100명을256px 그대로10×10으로 놓고, 사진 바깥에 `A017 · 18` 형식으로 번호와 설계 나이를 표시했습니다. 나이 들어 보이거나 지나치게 어려 보이는 번호를 받으면 그 인물의 사진을 교체하고 수치 검수를 다시 합니다. ID와 설계 나이는 유지합니다. 현재 사람의 나이 확인은0/100명, `human_age_review: "pending"`입니다.
+
+추가 확인 자료: `previews/all100_hs_home_256.png`, `previews/random10_variants_A_256.png`(고정 난수로 고른10명의12변형).
+
+## 연결 범위
+
+이 브랜치는 에셋 납품용입니다. Claude가 `FACE21` 번호표 모듈과 기존 `amVar` 연결에 이번100명을 사용하면 됩니다. B가 추가되기 전에는 `FACE21.ids`100명으로 연결합니다. 시트 B가 준비되면 기존 A의 ID와 나이를 유지하며100명을 더합니다.

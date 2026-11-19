@@ -34,14 +34,9 @@
   ],
   "feature_normalization": "L2 only",
   "comparison": "raw dot product of L2 normalized ArcFace vectors; no whitening, scaling or threshold adjustments",
-  "delivered_pixel_measurements": "candidate_measurements.json",
-  "measurement_scope": "Individual hs_home candidate exports, not final 78 runtime atlases.",
+  "delivered_pixel_measurements": "stage_a/photo_measurements.json",
+  "measurement_scope": "Stage A100 identities,12 variants,3 sizes; all3600 exact final runtime RGB crops verified. Recognition vectors are reused only for identical decoded RGB SHA256, otherwise inferred from final runtime crops.",
   "reference_resolution_384": "Existing canonical gallery has128/256 only; compare candidate384 against canonical256, stated explicitly in validation.json.",
-  "additional_family_measurements": {
-    "individual_reviews": "families/production_photo_measurements.json",
-    "decoded_partial_atlas_pixels": "families/atlas_photo_measurements.json",
-    "scope": "all existing variant pairs per person, all different-person variant-photo combinations, and486 canonical reference identities; final200 sheets and human age approval still pending"
-  },
   "atlas_encoding": {
     "128": {
       "format": "lossy RGB WebP",
@@ -64,12 +59,23 @@
       "sharp_yuv": true
     },
     "384": {
-      "format": "RGB WebP",
+      "format": "lossy RGB WebP",
       "quality": 89,
       "libwebp_version": "1.6.0",
-      "method": 6
+      "method": 0,
+      "segments": 1,
+      "sns_strength": 0,
+      "filter_strength": 0,
+      "sharp_yuv": true
     }
   },
   "feature_cache_policy": "Reuse measured vectors only when the exact decoded RGB pixel SHA256 is identical. A selective-versus-fresh inference fixture matched exactly at all3 sizes. No score or vector transforms.",
-  "atlas_encoding_note": "128 and256 fixed method0 reduce unrelated tile changes at the required lossy q85/q88. 384 remains method6 q89. All actual decoded atlas pixels are measured; thresholds and model unchanged."
+  "atlas_encoding_note": "One fixed encoder preset is applied uniformly to all sheets. All actual runtime RGB cells are checked against measured RGB hashes; any mismatches receive fresh inference. Thresholds and recognition protocol are unchanged.",
+  "different_identity_scope": "hs_home representatives only: all4950 within-stage pairs and48600 stage-to-existing canonical comparisons per resolution.",
+  "same_identity_scope": "All66 pairs of12 variants for each of100 people at each resolution; raw cosine>=0.60.",
+  "historical_family_measurements": {
+    "individual_reviews": "families/production_photo_measurements.json",
+    "decoded_partial_atlas_pixels": "families/atlas_photo_measurements.json",
+    "scope": "all existing variant pairs per person, all different-person variant-photo combinations, and486 canonical reference identities; final200 sheets and human age approval still pending"
+  }
 }

@@ -1,0 +1,114 @@
+{
+  "scope": "Stage A; all 66 same-person variant pairs per person; different-person comparisons only hs_home representatives; exact decoded final lossy runtime atlas pixels",
+  "photo_count": 1200,
+  "expected_photo_count": 1200,
+  "measurement_errors": [],
+  "resolutions": {
+    "128": {
+      "same_identity_all_pairs": {
+        "comparison_count": 6600,
+        "minimum": 0.6142896413803101,
+        "worst_pair": [
+          "c004_p08__univ",
+          "c004_p08__suwon_sparks"
+        ],
+        "passed": true
+      },
+      "different_representatives": {
+        "comparison_count": 4950,
+        "maximum": 0.39827150106430054,
+        "nearest_pair": [
+          "c004_p02__hs_home",
+          "c009_p01__hs_home"
+        ],
+        "passed": true
+      },
+      "existing_representatives": {
+        "gallery_count": 486,
+        "comparison_count": 48600,
+        "gallery_resolution": 128,
+        "maximum": 0.37935882806777954,
+        "nearest_pair": [
+          "c011_p05__hs_home",
+          "v6d60_051"
+        ],
+        "passed": true
+      }
+    },
+    "256": {
+      "same_identity_all_pairs": {
+        "comparison_count": 6600,
+        "minimum": 0.6404463052749634,
+        "worst_pair": [
+          "c001_p02__hs_home",
+          "c001_p02__daejeon_redfox"
+        ],
+        "passed": true
+      },
+      "different_representatives": {
+        "comparison_count": 4950,
+        "maximum": 0.394157737493515,
+        "nearest_pair": [
+          "c001_p05__hs_home",
+          "c003_p07__hs_home"
+        ],
+        "passed": true
+      },
+      "existing_representatives": {
+        "gallery_count": 486,
+        "comparison_count": 48600,
+        "gallery_resolution": 256,
+        "maximum": 0.3920787572860718,
+        "nearest_pair": [
+          "c010_p02__hs_home",
+          "v18_176"
+        ],
+        "passed": true
+      }
+    },
+    "384": {
+      "same_identity_all_pairs": {
+        "comparison_count": 6600,
+        "minimum": 0.6496931910514832,
+        "worst_pair": [
+          "c004_p08__univ",
+          "c004_p08__seoul_comets"
+        ],
+        "passed": true
+      },
+      "different_representatives": {
+        "comparison_count": 4950,
+        "maximum": 0.3967851996421814,
+        "nearest_pair": [
+          "c002_p05__hs_home",
+          "c003_p04__hs_home"
+        ],
+        "passed": true
+      },
+      "existing_representatives": {
+        "gallery_count": 486,
+        "comparison_count": 48600,
+        "gallery_resolution": 256,
+        "maximum": 0.3849916458129883,
+        "nearest_pair": [
+          "c011_p05__hs_home",
+          "v6c100_051"
+        ],
+        "passed": true
+      }
+    }
+  },
+  "face_center": {
+    "definition": "arithmetic mean of five detected landmarks; maximum absolute deviation per axis, converted to 256px coordinates",
+    "anchor_source": "v18 production200 canonical seoul_comets 200-person median",
+    "anchor_256": [
+      130.98235626,
+      118.22048492
+    ],
+    "threshold_256_px": 4,
+    "maximum_deviation_256_px": 1.3270202679882743,
+    "failed_measurements": 0
+  },
+  "failures": [],
+  "passed": true
+}
