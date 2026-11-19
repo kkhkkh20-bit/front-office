@@ -139,6 +139,26 @@ const simTo=cond=>{ let n=0; while(n++<800&&!cond()){ G.live=null; G.res=null; G
   (G.comp||[]).forEach(c=>{ try{ if(c.stage!=='done')compAuto(c); }catch(x){} }); try{ if(rosterN(G.user)>ROSTER_MAX)trimRoster(G.user,ROSTER_MAX); }catch(x){} const d0=G.day; try{ advance('day'); }catch(e){ throw new Error('simTo: '+dmd(G.day)+' 하루 진행 중 오류 — '+e.message); } if(G.day===d0&&!cond()&&n>=799)break; }
   if(!cond())throw new Error('simTo: 목표 조건에 도달하지 못함(멈춘 날 '+dmd(G.day)+(blocker&&blocker()?' · 진행 막힘: '+String(blocker()).slice(0,80):'')+')'); }; /* 예외를 날짜만 넘겨 숨기지 않고, 조건에 못 가면 실패(거짓 통과 방지) */
 
+T('[제보 11-19 FA 최고 금액] 다른 구단 최고 조건보다 나은 우리 제안은 요구에 못 미쳐도 거절·결렬되지 않고 더 낮은 금액의 다른 구단에 지지 않으며, 돈이 앞서고도 지면 까닭(무엇이 몇 %)과 필요했던 연봉을 알려 준다',()=>{ fresh(); simTo(()=>{ const u=team(G.user); if(u&&!G.unemp&&(u.trust??50)<40)u.trust=40; return G.fa&&!G.fa.closed&&G.day>=G.fa.openDay+1; }); const F=G.fa, t=team(G.user), U=G.user;
+  while(faRosterFull(U))toFree(domestic(U).sort((x,y)=>ovr(x)-ovr(y))[0],'테스트'); t.cash=Math.max(t.cash,300000); F.cap=3; F.outN=F.outN||{}; F.outN[U]=0; const co=capOwnerCheck; capOwnerCheck=()=>null; /* 상한 결재는 이 시나리오의 대상이 아니다 */
+  try{ const L=F.pool.map(id=>G.players[id]).filter(q=>q&&q.team==null&&q.faFrom!=null&&q.faFrom!==U&&q.ask&&!q.foreign&&q.age<=33&&ovr(q)>=45&&!(F.neg&&F.neg[q.id])).sort((a,b)=>ovr(b)-ovr(a));
+    /* 1) 요구의 절반쯤인 AI 제안 하나, 우리는 그보다 40% 높게(그래도 요구의 75% 미만) */
+    let A=null; for(const p of L){ for(const b of G.teams){ if(b.id===U||b.id===p.faFrom)continue; const ao={annual:round5(p.ask.annual*.45),years:p.ask.years}; F.ai[p.id]={[b.id]:ao}; if(!faAiOk(b.id,p,ao))continue; const o={annual:round5(ao.annual*1.4),years:ao.years};
+        if(offScore(o)<faWantFor(p,U)*.97*.74&&faScore(p,{tid:U,...o})>=faScore(p,{tid:b.id,...ao})*1.1&&!faUserBlock(p,{tid:U,...o})){ A={p,b:b.id,ao,o}; break; } } if(A)break; F.ai[p.id]={}; } ok(A,'준비 실패: 요구 미달 AI 제안보다 높은 우리 제안을 만들 선수 없음');
+    { const {p,b,ao,o}=A; const m0=negOf(p.id).mood; const P=faPreview(p.id,o); ok(P&&P.st==='counter'&&!P.brk&&!P.warn,'제안 전 경고가 다른 구단보다 나은 제안을 결렬 위험으로 봄: '+JSON.stringify(P));
+      const r=faNegotiate(p.id,{...o}); const n=F.neg[p.id]; ok(F.offers[p.id]&&!F.offers[p.id].rej,'AI 제안(연 '+ao.annual+')보다 높은 우리 제안(연 '+o.annual+')을 거절 딱지로 뺌: '+r.msg); ok(!n.closed&&n.mood>=m0-8,'다른 구단보다 나은 제안에 분위기 급락·결렬: '+m0+' → '+n.mood+' '+r.msg); ok(r.st==='counter'&&r.msg.includes('다른 구단 조건보다는 낫습니다'),'응답이 사실과 다름: '+r.st+' '+r.msg); ok(faOfferLive(p.id),'우리 제안이 살아 있지 않음');
+      faSign(p,[{tid:b,...ao},{tid:U,...F.offers[p.id]}]); ok(p.team===U,'우리 연 '+o.annual+'을 두고 더 낮은 '+tname(p.team)+' 연 '+ao.annual+'과 계약'); }
+    /* 2) 원소속 구단이 조금 낮은 금액으로 이기는 경우: 까닭을 알린다 */
+    let B=null; for(const p of L){ if(p.team!=null)continue; const h=p.faFrom; for(const k of [.6,.8,1]){ const ao={annual:round5(p.ask.annual*k),years:p.ask.years}; F.ai[p.id]={[h]:ao}; if(!faAiOk(h,p,ao))continue; const o={annual:round5(ao.annual*1.04),years:ao.years}; F.neg[p.id]={rounds:0,mood:50,log:[],counter:null,closed:false,warned:false};
+        if(o.annual>ao.annual&&faScore(p,{tid:h,...ao})>=faScore(p,{tid:U,...o})*1.1&&!faUserBlock(p,{tid:U,...o})){ B={p,h,ao,o}; break; } delete F.neg[p.id]; } if(B)break; F.ai[p.id]={}; } ok(B,'준비 실패: 원소속 구단이 낮은 금액으로 앞서는 선수 없음');
+    { const {p,h,ao,o}=B; for(const x of [{tid:U,...o},{tid:h,...ao}]){ const X=faScoreParts(p,x), pr=X.money*X.home*X.neg*X.rel*X.deal*X.appeal*X.dom*X.hard, sc=faScore(p,x); ok(Math.abs(pr-sc)<=sc*1e-9,'항목별 값의 곱이 선수 평가 점수와 다름: '+pr+' / '+sc); }
+      const now=faLostWhy(p,{tid:U,...o},{tid:h,...ao},true); ok(now.includes('금액은 단장님 제안이 더 높지만')&&now.includes('원소속 구단에 남고 싶은 마음')&&now.includes('이상이어야 앞섭니다'),'시장 보고용 까닭이 비어 있음: '+now);
+      F.offers[p.id]={...o}; const rs=__rngState(); const w=faLostWhy(p,{tid:U,...o},{tid:h,...ao}); ok(__rngState()===rs,'까닭 계산이 난수를 씀'); ok(w.includes('년 계약이면 연 ')&&w.includes('이상이어야 앞섰습니다'),'필요했던 연봉이 없음: '+w);
+      faSign(p,[{tid:h,...ao},{tid:U,...o}]); ok(p.team===h,'준비 실패: 원소속 구단과 계약하지 않음'); const M=G.mail.find(x=>x.ref===p.id&&x.body.includes('잡았습니다')); ok(M,'계약 소식 없음');
+      ok(M.body.includes('금액으로는 더 좋았지만')&&M.body.includes('원소속 구단에 남고 싶은 마음(')&&M.body.includes('이상이어야 앞섰습니다')&&!M.body.includes('우리 제안은 밀렸습니다.'),'돈이 앞서고도 진 까닭을 알리지 않음: '+M.body);
+      if(p.ctB&&p.ctB.b>0){ const st=(p.story||[]).filter(x=>x.t.startsWith('FA 잔류')).pop(); ok(st&&st.t.includes('총액')&&st.t.includes('계약금'),'계약금으로 나눈 계약의 이력에 총액·계약금이 없음(연봉만 적으면 훨씬 싸게 간 것처럼 보인다): '+(st&&st.t)); } }
+  }finally{ capOwnerCheck=co; } });
+
 T('[제보 11-19 FA 거절 제안] 다른 구단 제안이 없는 FA는 요구가 내려와 거절했던 우리 제안을 채우면 그 제안을 다시 보고, 마감 때도 걸어 둔 제안보다 나쁜 원소속 헐값 계약으로 가지 않는다',()=>{ fresh(); simTo(()=>{ const u=team(G.user); if(u&&!G.unemp&&(u.trust??50)<40)u.trust=40; return G.fa&&!G.fa.closed&&G.day>=G.fa.openDay+1; }); const F=G.fa, t=team(G.user);
   while(faRosterFull(G.user))toFree(domestic(G.user).sort((x,y)=>ovr(x)-ovr(y))[0],'테스트'); t.cash=Math.max(t.cash,60000); F.cap=3; F.outN=F.outN||{}; F.outN[G.user]=0;
   const L=F.pool.map(id=>G.players[id]).filter(q=>q&&q.team==null&&q.faFrom!=null&&q.faFrom!==G.user&&q.ask&&!q.foreign&&agShopN(q)===0&&q.age<=33&&ovr(q)>=45&&!(F.neg&&F.neg[q.id])).sort((a,b)=>ovr(b)-ovr(a)); ok(L.length>=2,'준비 실패: 시장 보고 없는 다른 구단 FA 2명 없음');
