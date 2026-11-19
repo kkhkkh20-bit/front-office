@@ -50,7 +50,7 @@ function budgetCards(){ const b=budget(); const t=team(G.user); const m=G.mgr[G.
     <div class="bud-bar">${segs.map(([k,v,l])=>v>0?`<span class="sg ${k}" style="width:${w(v)}" title="${l} ${money(v)}"></span>`:'').join('')}<span class="mk" style="left:${w(b.E)}"><i>예상 지출 ${money(b.E)}</i></span></div>
     <div class="bud-lg">${segs.map(([k,v,l])=>v>0?`<span><i class="${k}"></i>${l} ${money(v)}</span>`:'').join('')}</div>
     <div class="bud-t"><div><span>예상 수입</span><b>${money(b.I)}</b></div><div><span>예상 지출</span><b>${money(b.E)}</b></div><div><span>모기업 지원 예상</span><b class="${!b.indie&&b.support>b.goalSup?'bad':''}">${b.indie?'없음':money(b.support)}</b>${b.indie?'':`<em>한도 ${money(b.cap)}${(()=>{ const a=austOn(team(G.user)); return a&&a.d?` · ${austTxt(a)}(${a.y1}년까지)`:''; })()}</em>`}</div><div><span>결산 후 예상 현금</span><b class="${b.endCash<0?'bad':''}">${money(b.endCash)}</b></div></div>
-    ${finReturnRows(b).length?`<div class="bud-t">${finReturnRows(b).map(([l,v])=>`<div><span>${l}</span><b>${money(v)}</b></div>`).join('')}</div>`:''}
+    ${finReturnRows(b).length?`<div class="bud-t">${finReturnRows(b).map(([l,v])=>`<div><span>${l}</span><b>${money(v)}</b></div>`).join('')}</div><p class="small muted">${FIN_RET_NOTE}</p>`:''}
     <p class="small expl">${roomFormula(b)}</p>
     <p class="small expl">${supTxt}</p>
     <p class="small expl"><b>시즌 예산은 ${b.lockD!=null?dsh(b.lockD):'시즌 시작 때'} 확정됐습니다.</b> 구단주 지원과 예상 수입(입장·중계·광고·스폰서)을 그때 기준으로 정해 두고, 시즌 중에 성적이 좋아 신뢰나 수입이 늘어도 예산 여유는 늘지 않습니다. 더 쓰려면 구단주에게 추가 지원을 받아야 합니다(구단 → 구단주).${b.extra>0?` 지금까지 예상보다 수입이 <b class="ok">${money(b.extra)}</b> 더 들어왔습니다. 이 돈은 구단 몫이고, 구단주에게 요청할 때 근거가 됩니다(승인 가능성이 오릅니다).`:b.extra<0?` 수입이 예상보다 ${money(-b.extra)} 덜 들어오고 있습니다(결산 때 적자 보전이 그만큼 늘어납니다).`:''}</p>

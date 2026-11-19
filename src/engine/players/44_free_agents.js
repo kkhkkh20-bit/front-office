@@ -30,7 +30,7 @@ function freeAsk(p){ const rm=p.retMin&&p.retMin.until>=G.day?p.retMin.sal:0; /*
 function freeOpen(){ return period()!=='post'&&!preSettle(); } /* 국내 무적 선수는 정규시즌 종료일까지. 외국인 마감일과 PS 신규 등록 제한은 별개다. */
 /* 국내 신규 계약은 현재 정원과 다음 개막의 입단 예정·군 복귀를 함께 확인한다. */
 function domesticRegN(tid,nextOnly=false){ return nextOnly?rosterProj(tid):Math.max(rosterN(tid),rosterProj(tid)); }
-function domesticRosterWhy(tid,nextOnly=false){ const now=rosterN(tid), next=rosterProj(tid); return (nextOnly?next:Math.max(now,next))>=ROSTER_MAX?`정식 선수 자리가 없습니다(현재 ${now}명 · 다음 개막 ${next}명 / ${ROSTER_MAX}명, 입단 예정·전역 복귀 포함). 먼저 한 명을 정리하세요.`:''; }
+function domesticRosterWhy(tid,nextOnly=false){ return rosterFullMsg(tid,nextOnly); } /* 내역은 rosterFullMsg(지금 + 합류 예정 = 다음 개막, 카페 11-20) */
 /* 같은 금액·적용 시즌의 상한 검사를 화면·직접 계약·AI 후보 선정이 함께 사용한다. 조회는 결재 효과를 적용하지 않는다. */
 function domesticCapCheck(p,tid,sal,key,s=sponSeason()){ const after=capPayWith(tid,p.id,sal,s).tot, before=capPayWith(tid,null,null,s).tot; return tid===ME()?capOwnerCheck(after,before,s,key):aiCapTake(tid,after,before,s); }
 function domesticCapWhy(c){ return c&&(c.hard||c.ok===false)?(c.msg||'구단주 허용 한도를 넘거나 긴축 중이라 이 연봉으로 계약할 수 없습니다.'):''; }
