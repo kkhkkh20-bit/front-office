@@ -276,7 +276,7 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
  .match-dashboard[data-view="field"][data-lineups="closed"]:has(.cs-stage.has-3d) .md-layout>.md-team-panel{display:none}
 }
 .match-dashboard.md-ended .cs-stage>.cs-lineup-view{visibility:hidden}
-/* 하이라이트 장면 카드·오프닝(.cs-bn, 경기장 전체를 덮음. 이닝 시작 배너는 11-19에 뺐다)이 '전광판 보기'·'라인업' 버튼을 흐리게 덮지 않게 버튼을 위로 */
+/* 이닝 시작 표시(.cs-bn, 경기장 전체를 덮음)가 '전광판 보기'·'라인업' 버튼을 흐리게 덮지 않게 버튼을 위로 */
 .cs-stage>.cs-board-view,.cs-stage>.cs-lineup-view{z-index:10}
 /* 태블릿(701~1000px) 경기 전 라인업: 표 이름이 한 글자씩 줄바꿈되고 선발투수 칸·점수판이 겹치던 문제(플레이테스트 4 #6) */
 .match-dashboard:has(#cs-3d[data-pre]) :is(.md-bug,.cs-stage>.md-count-panel){visibility:hidden}
