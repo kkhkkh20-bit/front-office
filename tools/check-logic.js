@@ -6155,7 +6155,7 @@ T('[피드백 11-09k] 후보 선수 트레이드 요청: 선택지마다 효과�
   let r=go('list'); ok(b.listed&&b.treq.done&&r.dm===6,'명단 올리기: 명단 '+b.listed+' 기분 '+r.dm);
   const rel0=m.rel; r=go('promise'); ok(b.promise&&r.dm===4&&m.rel===Math.max(0,rel0-1),'기회 건의: 약속 '+!!b.promise+' 기분 '+r.dm); const f=G.evf.find(x=>x.k==='treq'&&x.data.c==='promise'); ok(f&&f.day===G.day+32,'후속 예약 없음');
   EVH.treq.follow(f.data,G.user); ok(G.evf.some(x=>x.k==='treq'&&x.day===G.day+7&&x!==f),'약속 판정 전인데 미루지 않음'); G.evf=[]; delete b.promise;
-  const nE=G.evs.length; EVH.treq.follow({...f.data,b:{y:G.year,pa:-30,outs:-30,g:-10}},G.user); ok(G.evs.length===nE,'기회를 얻었는데 다시 요청');
+  const nE=G.evs.length; const gotH={y:G.year,lvl:'1군',t:G.user,pa:30,outs:30,g:10}; b.hist=(b.hist||[]).concat([gotH]); EVH.treq.follow(f.data,G.user); b.hist=b.hist.filter(h=>h!==gotH); ok(G.evs.length===nE,'기회를 얻었는데 다시 요청'); /* 약속 뒤 우리 구단 1군 30타석(투수 30아웃·10경기)을 실제 기록으로 더한다. 기준을 음수로 두던 옛 방식은 #744·#747(21833c1f) 뒤 기준이 0 아래로 내려가지 않아 쓸 수 없다 */
   EVH.treq.follow(f.data,G.user); const h=G.evs[G.evs.length-1]; ok(G.evs.length===nE+1&&h.data.hard&&/두 번째/.test(h.title)&&/달라진 게 없었습니다/.test(h.sit),'기회를 못 얻었는데 다시 요청하지 않음');
   b.mor=50; r=go('wait'); ok(r.dm===-5&&b.treq.done&&b.treqNo===1,'거절 기분 '+r.dm); const o=playersOf(G.user).find(q=>q!==b&&!isRegular(q)&&!q.foreign); initPers(o); o.pers.amb=15; o.mor=50; b.mor=50; r=go('wait',{hard:true}); ok(r.dm===-9,'두 번째 강한 요청 거절 '+r.dm); ok(o.mor===48,'거듭 거절해도 다른 후보 동요 없음 '+o.mor);
   const w=G.evf.filter(x=>x.k==='treq'&&x.data.c==='wait'); ok(w.length===2,'거절 후속 없음'); b.mor=60; const nw=(G.news||[]).length; EVH.treq.follow(w[0].data,G.user); ok((G.news||[]).length===nw,'기분이 풀렸는데 기사');
