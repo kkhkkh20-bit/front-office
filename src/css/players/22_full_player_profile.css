@@ -387,9 +387,9 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-key .pf-rg-s{display:inline;margin-left:3px;font-size:11px}
   /* 올해 성적: 이름과 숫자를 한 줄로 */
   #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-stats>div{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 4px;padding:3px 2px}
-  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-stats b{font-size:15px;line-height:1.2}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-stats b{font-size:16px;line-height:1.2} /* 공통 글꼴 단계(12·13·16·20·24, UI 3단계)에 맞춤 */
   /* 역할·장래 예상·학력: 한 문단(가운데 점으로 잇기) */
-  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-role{display:block;line-height:1.35;font-size:11.5px}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-role{display:block;line-height:1.35;font-size:12px}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-role>*{display:inline}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-role>span::before{content:" · "}
   /* 연봉·계약·비교에 담기: 한 줄(좁으면 두 줄) */
