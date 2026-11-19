@@ -83,7 +83,10 @@ function gmContactMigrate(){if(!G?.gmc)return;for(const [tid,c] of Object.entrie
 function gmLastContact(t){ const c=gmContactView(t.id); let d=Math.max(c.call??-1e9,c.meal??-1e9); const pc=G.personal&&G.personal.contacts&&G.personal.contacts['gm:'+t.id]; if(pc&&t.gm&&pc.person===t.gm.id)d=Math.max(d,plContactLast(pc)); return d; }
 function gmRelYear(){ const uLong=G.gmSinceD!=null&&G.day-G.gmSinceD>=3*365; for(const t of G.teams){ if(t.id===G.user||t.rel==null)continue; t.rel=Math.round(50+(t.rel-50)*relYearK(plIdle(gmLastContact(t)))); const g=t.gm; if(uLong&&g&&!g.interim&&G.year-(g.since??G.year)>=3&&t.rel>=45)t.rel=Math.max(t.rel,Math.min(80,t.rel+3)); } } /* 세 해 넘게 마주한 두 단장은 조금씩 가까워진다 */
 /* 연락 자격 조회는 인물·개인 지갑·예산을 생성하지 않는다. */
-function gmMealFunds(tid){const t=team(tid);return t?(t.cash||0)-(tid===ME()?(G.spend?.etc||0):0):0;}
+/* 식사비(1천만 원)를 낼 수 있는 돈. AI 구단은 현금. 우리 구단은 다른 구단 운영 지출과 같은 기준(spendable: 보유 현금 + 구단주 지원 예산 여유).
+   모기업 구단의 단장 결정 지출(etc)은 결산 때 구단주 지원이 메우므로 현금에서 빼지 않는다(카페 11-19 국사왕: 예산 여유 191억인데 '식사 운영비 부족'. 현금−etc가 10 미만이면 막히던 문제, 검수 11-18 #921에서 생김).
+   독립구단은 모기업이 없어 현금에서 아직 정산 안 된 etc를 뺀다(예전 식 그대로). 조회는 저장·난수를 바꾸지 않는다 */
+function gmMealFunds(tid){const t=team(tid);if(!t)return 0;if(tid!==ME())return t.cash||0;if(t.indie)return (t.cash||0)-(G.spend?.etc||0);return spendable(tid);}
 function gmContactWhy(tid,kind){const t=team(tid),g=t&&t.gm;if(G.unemp)return '구단을 맡고 있지 않습니다.';if(!t||tid===G.user||!g||g.interim||!relKeyOf(g,'gm'))return '다른 구단의 현재 정식 단장을 선택하세요.';if(kind!=='call'&&kind!=='meal')return '연락 방법을 다시 선택하세요.';const away=personalAway();if(away)return away;const c=gmContactView(tid);if(kind==='call'&&c.call!=null&&c.call>G.day-14)return `${g.name} 단장과는 ${dmd(c.call+14)}부터 다시 연락할 수 있습니다.`;if(kind==='meal'&&c.meal!=null&&c.meal>G.day-30)return `식사 자리는 한 달에 한 번입니다(${dmd(c.meal+30)}부터).`;if(kind==='meal'&&gmMealFunds(G.user)<10)return '식사 운영비 1천만 원이 부족합니다.';return '';}
 function gmContact(tid,kind){const why=gmContactWhy(tid,kind);if(why)return {ok:false,msg:why};const t=team(tid),g=t.gm,r0=t.rel??50,c=gmContactView(tid);
   if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return {msg:`${g.name} 단장과는 ${dmd(c.call+14)}부터 다시 연락할 수 있습니다.`};

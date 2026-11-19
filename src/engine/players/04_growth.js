@@ -26,10 +26,15 @@ function staUseF(p){ try{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,
 /* 실현율 불발 몫(11-17 드래프트 보정): 30%·0.3~0.6 → 38%·0.25~0.6. 지명 순번과 무관하게 모든 신인에게 같다.
    KCI 논문(신인 드래프트 이후 프로야구선수의 1군 지위 성취가능성과 프로 지위 유지가능성 분석, 2010~2013 지명 320명 8년 추적): 8년째 프로에 남은 선수 약 50% */
 const REALK_LO=.38, BLUE_FLOOR_P=.35, BLOOM_P=.035;
+/* 상무 복무 중 한 해(겨울 develop) 종합 성장 상한(원래 능력 단위, 카페 11-19 꺼끼꺼: 상무 25세 선발 62→78).
+   점검(시드 7, 22~25세 유망주): 상무 복무와 구단 소속이 같은 성장 함수를 한 번씩만 탄다(겨울 develop → 분기 devQ, 상무는 캠프·기본 훈련 제외). 중복 적용은 없었다.
+   다만 복무 중에는 구단 성장 잡음(평균 -0.25)·출전 비중이 빠져 develop 평균이 0.4 높고 꼬리(p99 5.4, 최대 7.6)도 구단(p99 5.1)보다 길어, 구단 p99 수준인 5에서 자른다. 우리·AI 같은 식 */
+const MIL_GROW_CAP=5;
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; initPers(p); const pg=persGrowF(p); /* 외국인도 국내 선수와 같은 성장 규칙(사용자 11-11) */ const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
   const svc=p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day?p.mil.unit:null;
+  const r0=svc==='상무'?{...p.r}:null; /* 상무 한 해 성장 상한(MIL_GROW_CAP)용 시작 능력 */
   /* 군 복무 중에는 우리 구단 시설·코치·감독이 아니라 상무 야구단(또는 군) 환경에서 지낸다. 현역은 야구 훈련을 하지 못한다 */
   const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
   const club=p.team!=null&&!svc; const ti=club&&p.trI&&p.trI.n&&(p.trI.y===G.year||p.trI.y===G.year-1)?p.trI.s/p.trI.n:1; delete p.trI; /* 그 시즌 평균 훈련 강도(76_dev_plan) */ const devMgr=club&&G.mgr?mgrOf(p.team):null,yf=devMgr?1+(devMgr.youth-50)/150:1;
@@ -85,6 +90,7 @@ function develop(p){
   if(svc==='현역')for(const k in p.r)p.r[k]=clamp(p.r[k]-rnd(.5,2.2),20,80);
   roundR(p);
   if(ovr(p)>potCap()+.05)setOvr(p,potCap()); /* 잠재력 돌파는 없다 */
+  if(r0){ const g=ovr(p)-o; if(g>MIL_GROW_CAP){ const f=MIL_GROW_CAP/g; for(const k in p.r)if(r0[k]!=null)p.r[k]=clamp(r0[k]+(p.r[k]-r0[k])*f,20,80); roundR(p); p.devLog.reasons.push('military-cap'); } } /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
   const no=ovr(p);
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
   if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0));
