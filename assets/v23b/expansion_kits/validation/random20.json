@@ -1,0 +1,27 @@
+{
+  "seed": 20261119,
+  "sampling": "Random5 per source group, chosen without viewing output; both team variants shown",
+  "identities": [
+    "v6c100_062",
+    "v6c100_091",
+    "v6c100_067",
+    "v6c100_092",
+    "v6c100_099",
+    "v6d60_040",
+    "v6d60_014",
+    "v6d60_055",
+    "v6d60_002",
+    "v6d60_017",
+    "v18_145",
+    "v18_178",
+    "v18_114",
+    "v18_093",
+    "v18_015",
+    "v7_staff01_coach_018",
+    "v7_staff01_coach_039",
+    "v7_staff01_coach_004",
+    "v7_staff01_coach_044",
+    "v7_staff01_coach_043"
+  ],
+  "variants": 40
+}

@@ -1149,6 +1149,8 @@
     "subjective_assessment": "A1 and B7 selected by user. Real uniform placement and face validation remain phase2 work.",
     "automated_recognizability_score": null
   },
-  "phase2_face_validation": "not_started; no photos altered",
-  "review_status": "selected_crests_approved_uniform_work_in_progress"
+  "phase2_face_validation": "completed; see ../expansion_kits/validation.json",
+  "review_status": "selected_crests_approved_uniform_work_in_progress",
+  "phase2_complete": true,
+  "phase2_validation_path": "../expansion_kits/validation.json"
 }

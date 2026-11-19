@@ -1,0 +1,127 @@
+{
+  "source_v23_commit": "c925da12450d72c5e64840ab1649e85d85331b62",
+  "source_v23_manifest_sha256": "67b586c2af3d6c04e3578c186f7c7d194a0edb7d0a7d03626cb4753fd506a312",
+  "programmatic_composition_authorized": true,
+  "authorization": "User answered 응 to emblem-only programmatic compositing on2026-11-19",
+  "selected_crests": {
+    "expansion_a": "A1",
+    "expansion_b": "B7"
+  },
+  "selected_svg_sha256": {
+    "expansion_a": "a7d6d7ab89d8c45a613eb491bb911f2e8b0a5311d84cf13532d2ae52ebced1ff",
+    "expansion_b": "4dfc3e2de75a140b4e06b84a1b2e0127969ba5d758222e76e0ec9b4628a8886f"
+  },
+  "algorithm": {
+    "source_cells": "Decode original v23 native128 and256 cells independently; do not upscale128 reference or resample a whole portrait.",
+    "repair": "OpenCV INPAINT_TELEA, expanded old emblem bounding rectangle2px plus1px dilation, radius2 at128 /3 at256. Only mask pixels repaired.",
+    "mark": "CairoSVG native selected flat mark SVG, alpha crop, preserve aspect, longest side20px players /18px staff at256, Lanczos resample, old emblem bounding-box center retained.",
+    "surface": "Multiply mark RGB by .89+.10*(median surrounding luminance/255) and clamped .96..1.04 local high-frequency cloth light. No mark/face geometry warp.",
+    "packing": "Same v23 manifest cell paths/rects:10x10,8px padding, pitch n+16, RGB lossy WebP q80. Method6 except v18A/128/expansion_a method0, selected solely to stabilize a detector bbox; no working atlas or face edits for this correction.",
+    "face_processing": "None. No face generation, paste, retouch, enhancement, registration, translation or warp.",
+    "codec": "Runtime is lossy. Precodec unchanged-pixel assertions and final decoded face measurements are separate."
+  },
+  "excluded_pilot": "image_gen four-image trial is not used in final production cells or sheets. Original generated files remain untouched.",
+  "source_runtime_sha256": {
+    "sheets/v6c/128/expansion_a.webp": "0b8019f3203c7cc13c13e003311cae64ef98056e4a29d521157d81ff7055896c",
+    "sheets/v6c/256/expansion_a.webp": "2313122656b7ed0afeb5b17e463bf6b9c4e41eb67961bcb1550d981d41e5ce9c",
+    "sheets/v6c/128/expansion_b.webp": "4cba1e65a502d0d3944fc3c8cf848fa2cbeeaceaae0e93a7ffc226f5691b5c89",
+    "sheets/v6c/256/expansion_b.webp": "e6548d81a76a80123fec7c5525368847c8d4fe7cfeb66f83a5201aadb9f52bef",
+    "sheets/v13/128/expansion_a.webp": "f8c05d9433cd0f7d7c8b019abf286fb6f9cdf8a2e4fecf311310e48d57a88929",
+    "sheets/v13/256/expansion_a.webp": "dd70c1fc33b62cf1d99286411e385ae7eb27ba612f81f2ce009d2bdcfed76c2e",
+    "sheets/v13/128/expansion_b.webp": "01d01141cd004fc698b16ea1753e85578b43f8f328ed516826ecc2faf272ed0a",
+    "sheets/v13/256/expansion_b.webp": "d881bcd5c2d7a8ba59c1d409fa892a368d9fcaa6491f0eead7f50bb53a427f13",
+    "sheets/v18A/128/expansion_a.webp": "fde6d8cae579f1b992afb62446af1701e08ce2c4dc37d669b65f5fa8f9eb80f2",
+    "sheets/v18A/256/expansion_a.webp": "2398df45414e345071fc8bff87d8ac3e31e376f7544a268349dcd832b8fdbccd",
+    "sheets/v18A/128/expansion_b.webp": "9f738a4330360314cb441c22ed417adf9e9996a298d212f02ecd6708c9636422",
+    "sheets/v18A/256/expansion_b.webp": "b2936775392f7860cc5234b5a97da38579fcb0e2a8ecd3ca4bbbfaebdd8249eb",
+    "sheets/v18B/128/expansion_a.webp": "2d047e19722e919c44f1aab9513232c87c429862b559705279f7b9e4606d844c",
+    "sheets/v18B/256/expansion_a.webp": "2d43108074de3d6535bc56e5976044525d636e4058438ad38026cfd2cca242a2",
+    "sheets/v18B/128/expansion_b.webp": "658c1537e45a03637ba3d3f9b873462876f410952237bf2b7a989faaf4ba09e7",
+    "sheets/v18B/256/expansion_b.webp": "7b42618aaa4f27ac779f7e1dbb5ffa85435d51f1a6f2866a49dc503f4a07db63",
+    "sheets/staff/128/expansion_a.webp": "fc7dbfd6573d137499e4a431499121f5c596cc3ca5e4557b00eb01cfce07a35f",
+    "sheets/staff/256/expansion_a.webp": "772738739fb14793a60c87a3229e0c1a02ce0164cfb0adcad61843a2565b96f3",
+    "sheets/staff/128/expansion_b.webp": "fd12a8a7883dd2675d947611787b0469dbdc487cd23ee160437c137f191cf70d",
+    "sheets/staff/256/expansion_b.webp": "6d982c9d7cf2bb07960e362952bacecbbcbd64cabb5e3bb29b18fe347e0829bc"
+  },
+  "source_badge_absent_variants": [
+    {
+      "id": "v6d60_054",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v6d60_055",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v6d60_056",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v6d60_057",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v6d60_058",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v6d60_059",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_002",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_003",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_004",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_005",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_007",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_008",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_009",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_010",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_104",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_104",
+      "team": "expansion_b"
+    },
+    {
+      "id": "v18_182",
+      "team": "expansion_a"
+    },
+    {
+      "id": "v18_182",
+      "team": "expansion_b"
+    }
+  ],
+  "generated_at_utc": "2026-11-19T08:26:37.208360+00:00",
+  "encoder_exception": {
+    "path": "sheets/v18A/128/expansion_a.webp",
+    "quality": 80,
+    "method": 0,
+    "reason": "One bbox-center false positive stabilized by encoder settings only. No face, badge or framing pixel changes in the working atlas."
+  }
+}

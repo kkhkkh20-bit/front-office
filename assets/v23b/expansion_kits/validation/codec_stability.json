@@ -1,0 +1,120 @@
+{
+  "initial_issue": {
+    "id": "v18_063",
+    "team": "expansion_a",
+    "resolution": 128,
+    "face_landmark_center_error_px256": 0.184417724609375,
+    "bbox_center_error_px256": 5.333885192871094
+  },
+  "correction": "Encoder method6->0 at unchanged quality80; exact same working atlas, no portrait or badge changes.",
+  "source_working_cell_hashes_asserted_equal": 100,
+  "changed_final_sheet": "sheets/v18A/128/expansion_a.webp",
+  "previous_sheet_sha256": "860f845557090c8d031ba7fe9bd7f7b64c83407d17ef1ca560c2a6d2904f542f",
+  "final_sheet_sha256": "2c2406b9af9897b9229739560fba9df1a57b27b08f77e651876e245294f6c860",
+  "remeasured_final_cells": 100,
+  "unchanged_sheet_measurements_reused": 1580,
+  "method_probes": [
+    {
+      "quality": 80,
+      "method": 0,
+      "path": "/dev/shm/v23b-work/phase2/codec_probe/v18A_a_128_m0.webp",
+      "error_px256": 3.265594482421875,
+      "fivepoint_delta": [
+        0.39121246337890625,
+        0.15813446044921875
+      ],
+      "bbox_delta": [
+        -0.8382492065429688,
+        -3.265594482421875
+      ],
+      "passed": true
+    }
+  ],
+  "quality_probes": [
+    {
+      "quality": 79,
+      "path": "/dev/shm/v23b-work/phase2/codec_probe/v18A_a_128_q79.webp",
+      "error_px256": 5.399345397949219,
+      "fivepoint_delta": [
+        0.2323760986328125,
+        0.102813720703125
+      ],
+      "bbox_delta": [
+        -1.0316390991210938,
+        -5.399345397949219
+      ],
+      "passed": false
+    },
+    {
+      "quality": 78,
+      "path": "/dev/shm/v23b-work/phase2/codec_probe/v18A_a_128_q78.webp",
+      "error_px256": 4.58184814453125,
+      "fivepoint_delta": [
+        -0.0455169677734375,
+        0.35074615478515625
+      ],
+      "bbox_delta": [
+        -0.8519668579101562,
+        -4.58184814453125
+      ],
+      "passed": false
+    },
+    {
+      "quality": 77,
+      "path": "/dev/shm/v23b-work/phase2/codec_probe/v18A_a_128_q77.webp",
+      "error_px256": 4.8280029296875,
+      "fivepoint_delta": [
+        0.306121826171875,
+        0.101959228515625
+      ],
+      "bbox_delta": [
+        -0.6716537475585938,
+        -4.8280029296875
+      ],
+      "passed": false
+    },
+    {
+      "quality": 76,
+      "path": "/dev/shm/v23b-work/phase2/codec_probe/v18A_a_128_q76.webp",
+      "error_px256": 5.193428039550781,
+      "fivepoint_delta": [
+        0.4701080322265625,
+        0.28520965576171875
+      ],
+      "bbox_delta": [
+        -0.6070556640625,
+        -5.193428039550781
+      ],
+      "passed": false
+    },
+    {
+      "quality": 74,
+      "path": "/dev/shm/v23b-work/phase2/codec_probe/v18A_a_128_q74.webp",
+      "error_px256": 5.208168029785156,
+      "fivepoint_delta": [
+        -0.20105743408203125,
+        0.36162567138671875
+      ],
+      "bbox_delta": [
+        -0.69464111328125,
+        -5.208168029785156
+      ],
+      "passed": false
+    },
+    {
+      "quality": 72,
+      "path": "/dev/shm/v23b-work/phase2/codec_probe/v18A_a_128_q72.webp",
+      "error_px256": 4.850929260253906,
+      "fivepoint_delta": [
+        -0.33997344970703125,
+        0.07323455810546875
+      ],
+      "bbox_delta": [
+        -0.6086578369140625,
+        -4.850929260253906
+      ],
+      "passed": false
+    }
+  ],
+  "updated_at_utc": "2026-11-19T08:37:00.307977+00:00"
+}

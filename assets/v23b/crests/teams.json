@@ -4,8 +4,8 @@
   "path_base": "assets/v23b/crests/",
   "request": "docs/asset-requests/2026-11-19-codex-v23b-expansion-crests.md",
   "phase": 1,
-  "review_status": "approved_for_uniform_emblem_replacement",
-  "production_complete": false,
+  "review_status": "selected_final_assets_delivered",
+  "production_complete": true,
   "approved": true,
   "phase2_started": true,
   "selection": {
@@ -562,5 +562,7 @@
       "date": "2026-11-19",
       "basis": "User: 7로"
     }
-  }
+  },
+  "phase2_complete": true,
+  "phase2_validation_path": "../expansion_kits/validation.json"
 }
