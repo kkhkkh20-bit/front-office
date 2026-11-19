@@ -27,7 +27,7 @@ function posStarters(list,ev){ ev=ev||new Map(list.map(p=>[p.id,scoutReport(p).c
     for(const c of C[k]){ if(used.has(c.p.id))continue; any=true; used.add(c.p.id); cur[k]=c.p; go(i+1,s+c.v); used.delete(c.p.id); } delete cur[k]; go(i+1,s-30); /* 자리를 채울 선수가 없으면 비운다 */ };
   go(0,0); const who={}, val={}; for(const k of FIELDK){ const p=best.pick&&best.pick[k]; who[k]=p||null; val[k]=p?ev.get(p.id)-(p.pos===k?0:2):null; } return {who,val}; }
 /* 야수 주전 변화 글: 자리마다 빠지는 주전과 대신 들어가는 선수 */
-function posSwapTxt(before,after){ const A=posStarters(before), B=posStarters(after); const v=p=>dv(Math.round(scoutReport(p).cur)); const L=[];
+function posSwapTxt(before,after){ const A=posStarters(before), B=posStarters(after); const v=p=>dvRep(scoutReport(p)); const L=[];
   for(const k of FIELDK){ const a=A.who[k], b=B.who[k]; if(a===b)continue; L.push(`${POSS[k]}: ${a?`${a.name}(${v(a)}) 빠짐`:'빈자리'} → ${b?`${b.name}(${v(b)})${b.pos!==k?', 포지션 이동':''} 들어감`:'채울 선수 없음'}`); }
   return L.length?`야수 예상 주전: ${L.join(' · ')}`:'야수 예상 주전 그대로'; }
 /* 포지션별 활용 가능 자원(겹침 허용): 자리마다 할 수 있는 선수 상위 3명과 우리 평가 */
