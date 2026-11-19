@@ -25523,8 +25523,8 @@ function stadXpAI(t){ const S=stadOf(t.id); if(S.xq||S.proj)return; if(planOf(t)
   const k=['of','up'].find(x=>stadXpAIOk(t,x)); if(!k||R()>(pr?.75:t.owner==='win'?.45:.6))return; if(stadXpTalk(t.id,k))return; const c=stadXpCost(k).club; t.cash-=c; S.xq.esc=c; } /* AI는 제안할 때 부담분을 떼어 둔다(겨울 FA·시설 지출에 써 버려 합의가 무산되지 않게). 결렬·만료면 돌려받는다 */
 /* ===== 다른 구단 코치 빼 오기 ===== */
 const PROMO={fp:'pc',fb:'bc',fm:'hc',pc:'hc',bc:'hc',cc:'hc',rc:'hc',dc:'hc',bp:'pc',ab:'bc',fd:'dc',fc:'cc',r1:'rc',rs:'fp',rb:'fb'};
-function poachOff(){ const per=period(); return per!=='season'&&per!=='post'; }
-/* 코치 빼 오기 한도(공략 방지): 비시즌(sponSeason 단위)마다 구단당 성공 2건, 시즌·포스트시즌 중에는 못 한다. 우리·AI 같은 한도 */
+function poachOff(){ return staffMoveOpen(); } /* 계약 정리 기간(89d_coach_rules): 포스트시즌이 끝난 날~12월 31일. 예전에는 1~3월 시즌 준비 기간도 열려 있었다 */
+/* 코치 빼 오기 한도(공략 방지): 비시즌(sponSeason 단위)마다 구단당 성공 2건, 계약 정리 기간(poachOff) 밖에서는 못 한다. 우리·AI 같은 한도 */
 const POACH_MAX=2;
 function poachN(tid){ const P=G.poachN||{}, k=sponSeason(); /* 읽기만: 거절 판정이 저장 상태를 만들지 않게(check-feedback-staff-market #89) */ const x=P[tid]; return x&&x.k===k?x.n:0; }
 function poachAdd(tid){ const P=G.poachN=G.poachN||{}, k=sponSeason(); const x=P[tid]&&P[tid].k===k?P[tid]:(P[tid]={k,n:0}); x.n++; }
@@ -25535,7 +25535,7 @@ function poachTerms(tid,role,toRole){ const c=G.coach&&G.coach[tid]&&G.coach[tid
   if(team(tid).rel<35)ch-=.1; stAttr(c); ch+=(clubPrestige(G.user)-clubPrestige(tid))*.004-(loyalty-20)*.002; /* 구단 위상 차이와 충성도(11-08c) */
   const X=cmCtrOf(c); if(X&&X.tid===tid&&X.by===G.user&&X.to===toRole)return {c,sal:X.need,comp,promo,clan,chance:1,toRole,ctr:true,loyalty,loyaltyBonus}; /* 안내한 역제안 조건을 기한 안에 맞추면 확정 수락(#504) */
   return {c,sal,comp,promo,clan,chance:clamp(ch,.05,.9),toRole,loyalty,loyaltyBonus}; }
-function poachCoach(tid,role,toRole){ if(!G.coach||tid===G.user)return '대상이 아닙니다.'; if(!poachOff())return '시즌 중에는 다른 구단 코치를 데려올 수 없습니다. 시즌이 끝난 뒤 제의하세요.'; if(poachN(G.user)>=POACH_MAX)return `이번 겨울에는 이미 코치 ${POACH_MAX}명을 데려왔습니다. 다음 비시즌에 다시 제의할 수 있습니다.`; const target=G.coach[tid]&&G.coach[tid][role]; if(staffPending(target))return '아직 합류 전인 코치에게는 영입을 제의할 수 없습니다.'; if(target){ const why=coachHireWhy(G.user,target,{from:tid,to:toRole}); if(why)return why; } /* 재계약 1년 보호 등 AI 빼 오기와 같은 규칙(검수 11-17 #260) */ const T=poachTerms(tid,role,toRole); if(!T)return '그 자리에 코치가 없습니다.'; const c=T.c; G.poachCd=G.poachCd||{};
+function poachCoach(tid,role,toRole){ if(!G.coach||tid===G.user)return '대상이 아닙니다.'; if(!poachOff())return STAFF_MOVE_WHY; if(poachN(G.user)>=POACH_MAX)return `이번 겨울에는 이미 코치 ${POACH_MAX}명을 데려왔습니다. 다음 비시즌에 다시 제의할 수 있습니다.`; const target=G.coach[tid]&&G.coach[tid][role]; if(staffPending(target))return '아직 합류 전인 코치에게는 영입을 제의할 수 없습니다.'; if(target){ const why=coachHireWhy(G.user,target,{from:tid,to:toRole}); if(why)return why; } /* 재계약 1년 보호 등 AI 빼 오기와 같은 규칙(검수 11-17 #260) */ const T=poachTerms(tid,role,toRole); if(!T)return '그 자리에 코치가 없습니다.'; const c=T.c; G.poachCd=G.poachCd||{};
   if(G.poachCd[c.id]>G.day)return `${c.name} 코치는 ${dmd(G.poachCd[c.id])}까지 다시 만나 주지 않습니다.`; const t=team(tid);
   const draw=R(); if(!T.ctr&&draw>=T.chance){ G.poachCd[c.id]=G.day+30; t.rel=clamp(t.rel-1,0,100); return `${c.name} 코치가 제의를 거절했습니다. "${T.clan?`${G.mgr[tid].name} 감독님을 두고 갈 수 없습니다`:'지금 팀에서 하던 일을 마무리하고 싶습니다'}." (${tshort(tid)} 단장 친분 조금 하락)`; } /* 확정 수락도 기존 난수 한 번은 소비 */
   if(T.ctr)delete G.poachCtr[c.id]; else { const ct=cmCounter(tid,c,T); if(ct)return ct; } /* 원 소속 구단의 역제안 */
@@ -26890,7 +26890,7 @@ function migrateMoveContracts(){ for(const p of Object.values(G.players)){
    비시즌(11~1월)에는 다른 구단 스태프를 데려올 수 있고, 다른 구단도 우리 스태프에게 손을 뻗는다.
    스태프는 해마다 경험이 쌓여 성장하고(젊을수록), 오래 일하면 충성도가 올라 잘 떠나지 않는다 */
 /* 실제 인사 완료 시점에 구단 기록으로 남긴다. 제안·후보 조회에는 호출하지 않는다. */
-function staffHistory(kind,s,action,tid,detail){ if(!s||tid==null)return; relMgrTenure(kind,s,action,tid); personNetworkTrace(kind,s,action,tid,detail); try{ relCareer(kind,s,action,tid,detail); }catch(e){} /* 인물 관계(84b_person_rels) */ const role=kind==='mgr'?'감독':kind==='coach'?(CROLE[s.role]?.l||'코치'):kind==='scout'?'스카우트':'전력분석원'; chron(kind,`${s.name} ${role} ${action}${detail?` (${detail})`:''}`,null,tid); }
+function staffHistory(kind,s,action,tid,detail){ if(!s||tid==null)return; if(kind==='coach'&&(action==='영입'||action==='재계약'||action==='잔류 계약'))s.sgD=G.day; /* sgD: 계약한 날. 코치 영입·재계약은 모두 이 기록을 지난다. 올해 계약한 코치는 그해 계약 정리 기간에도 다른 구단이 접촉하지 않는다(89d staffSignedThisYear) */ relMgrTenure(kind,s,action,tid); personNetworkTrace(kind,s,action,tid,detail); try{ relCareer(kind,s,action,tid,detail); }catch(e){} /* 인물 관계(84b_person_rels) */ const role=kind==='mgr'?'감독':kind==='coach'?(CROLE[s.role]?.l||'코치'):kind==='scout'?'스카우트':'전력분석원'; chron(kind,`${s.name} ${role} ${action}${detail?` (${detail})`:''}`,null,tid); }
 const ST_SC_N=[4,7], ST_AN_N=[2,ANA_MAX];
 function stAttr(s){ if(s.amb==null)s.amb=Math.round(clamp(50+hn('stamb',s.id)*20,5,95)); if(s.loy==null)s.loy=20; if(s.age==null)s.age=Math.round(clamp(44+hn('stage',s.id)*7,30,58)); return s; } /* 후보 카드를 볼 때도 불리므로 난수를 쓰지 않는다(검수 11-09zw #28) */
 function stInit(){ if(G.lgStaff)return G.lgStaff; const L=G.lgStaff={}; for(const t of G.teams){ if(t.id===ME())continue; L[t.id]=stMakeTeam(t); stSync(t.id); }
@@ -26990,10 +26990,10 @@ function stAiMonthly(){ stInit(); try{ stBidSettle(); }catch(e){} const off=peri
 /* 비시즌: 다른 구단 스태프 빼오기(연봉 인상 필요). 구단당 한 번, 비시즌 3번까지 */
 /* 겨울 회차(11~1월) 기준: 결산을 지나도 같은 겨울이면 이어서 센다 */
 function stPoNow(){ const o=dobj(G.day), w=o.m>=11?o.y:o.y-1; return G.stPo&&G.stPo.w===w?G.stPo:{w,n:0,t:[]}; }
-function stPoachOpen(){ const o=dobj(G.day); return o.m>=11||o.m<=1; }
-function stPoach(kind,tid,id,raise){ stInit(); if(!stPoachOpen())return '다른 구단 스태프는 11월~1월에만 데려올 수 있습니다.'; const P=G.stPo=stPoNow();
+function stPoachOpen(){ return staffMoveOpen(); } /* 코치와 같은 계약 정리 기간(89d): 포스트시즌 뒤~12월 31일. 예전 11~1월 */
+function stPoach(kind,tid,id,raise){ stInit(); if(!stPoachOpen())return STAFF_MOVE_WHY_ST; const P=G.stPo=stPoNow();
   if(P.n>=3)return '이번 비시즌에는 더 이상 영입 시도를 할 수 없습니다(3번).'; if(P.t.includes(tid))return `${tshort(tid)} 스태프에게는 이미 한 번 접촉했습니다.`;
-  const L=G.lgStaff[tid]; const list=kind==='sc'?L.sc:L.an; const s=list.find(x=>x.id===id); if(!s)return '대상이 없습니다.';
+  const L=G.lgStaff[tid]; const list=kind==='sc'?L.sc:L.an; const s=list.find(x=>x.id===id); if(!s)return '대상이 없습니다.'; if(staffSignedThisYear(s))return STAFF_NEW_WHY(s);
   if(G.stAcc&&stAccBlock())return stAccBlock();
   P.n++; P.t.push(tid); const sal=round5(s.sal*(1+raise)); const go=stScore(s,G.user,sal,false), stay=stScore(s,tid,s.sal*1.05,true);
   const t=team(tid); t.rel=clamp((t.rel??50)-3,0,100);
@@ -27004,7 +27004,7 @@ function stPoach(kind,tid,id,raise){ stInit(); if(!stPoachOpen())return '다른 
 function stPoachDone(kind,tid,s,sal){ s.sal=sal; s.since=G.day; s.loy=15; delete s.acc; stPlaceOwn(kind,s);
   staffHistory(kind==='sc'?'scout':'analyst',s,'이적',tid,`${tshort(G.user)} 영입`); staffHistory(kind==='sc'?'scout':'analyst',s,'영입',G.user,`${tshort(tid)}에서 이적 · 연 ${money(sal)}`); wire('스태프',`${tshort(G.user)}, ${tshort(tid)} ${kind==='sc'?'스카우트':'전력분석원'} ${s.name} 영입`,{tid:G.user}); addLog(`${tshort(tid)}의 ${kind==='sc'?'스카우트':'분석원'} ${s.name}(능력 ${s.skill})을(를) 연 ${money(sal)}에 데려왔습니다.`); }
 /* 다른 구단이 우리 스태프를 노린다: 11월 15일·12월 15일 */
-function stRaid(){ stInit(); const mine=[...G.scouts.map(s=>['sc',s]),...anaList().map(a=>['an',a])].map(([k,s])=>[k,stAttr(s)]).filter(([,s])=>s.skill>=3&&R()<(s.skill-2)*.09*(s.amb/60)*(1-s.loy/150));
+function stRaid(){ stInit(); if(!staffMoveOpen())return; /* 계약 정리 기간에만, 올해 합류한 사람은 빼고(89d) */ const mine=[...G.scouts.map(s=>['sc',s]),...anaList().map(a=>['an',a])].map(([k,s])=>[k,stAttr(s)]).filter(([,s])=>s.skill>=3&&!staffSignedThisYear(s)&&R()<(s.skill-2)*.09*(s.amb/60)*(1-s.loy/150));
   for(const [k,s] of mine.slice(0,2)){ const offer=round5(s.sal*rnd(1.15,1.4)), ok=t=>t.id!==G.user&&stAiFits(t.id,offer); /* 예산이 남는 구단만 제안한다(검수 11-09zw #26) */ const cands=G.teams.filter(t=>ok(t)&&clubPrestige(t.id)>=clubPrestige(G.user)-5); const t=pick(cands.length?cands:G.teams.filter(ok)); if(!t)continue; (G.stRaid=G.stRaid||[]).push({k,id:s.id,tid:t.id,sal:offer,exp:G.day+7});
     if(!autoOn('raid'))mail('운영팀',`${tshort(t.id)}, 우리 ${k==='sc'?'스카우트':'분석원'} ${s.name}에게 영입 제안`,`${tname(t.id)}이(가) ${s.name}(능력 ${s.skill})에게 연 ${money(offer)}을 제시했습니다(현재 ${money(s.sal)}). 구단 위상: 우리 ${clubPrestige(G.user)} · ${tshort(t.id)} ${clubPrestige(t.id)}. ${staffLoyWord(s.loy)}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,{imp:true,kind:'스태프',acts:[{l:`맞춰서 붙잡기(연 ${money(offer)})`,a:'stKeep',v:s.id+':1'},{l:'조금 올려 설득(+10%)',a:'stKeep',v:s.id+':0'},{l:'보내 주기',a:'stLet',v:s.id}]}); if(!autoOn('raid')&&G.mail[0])G.mail[0].auto=['raid']; } }
 /* 단장이 떠나기 전에 걸린 다른 구단의 영입 제안은 그 자리에서 결론 낸다(떠나면 제안이 사라져 원구단에 남던 문제, 검수 11-08) */
@@ -27068,7 +27068,7 @@ function stAiStaff(){ if(G.unemp&&G.user==null)return; const L=stInit(); try{ st
       if(off&&list.length&&R()<.2){ const w=[...list].sort((a,b)=>a.skill-b.skill)[0]; const up=pickC.find(c=>c.skill>=w.skill+2&&stAiFits(tid,c.sal||0,w.sal||0)); if(up){ list.splice(list.indexOf(w),1); mk.splice(mk.indexOf(up),1); mk.push(w); /* 밀려난 직원은 시장으로(검수 11-07) */ stAiTopTake(up); stAttr(up); up.loy=ri(20,45); up.since=G.day; list.push(up); if(typeof schStaffJoined==='function')schStaffJoined(up,tid); try{ obTaken(up.ob,up); }catch(e){} staffHistory(kind==='sc'?'scout':'analyst',w,'계약 종료',tid,'전력 보강을 위한 교체'); staffHistory(kind==='sc'?'scout':'analyst',up,'영입',tid,'전력 보강을 위한 교체'); moved.push(`${tshort(tid)} ${kind==='sc'?'스카우트':'분석원'} 교체: ${w.name} → ${up.name}(능력 ${up.skill})`); } } };
     fill('sc'); fill('an');
     /* 비시즌 빼 오기: 부유한 구단이 다른 AI 구단의 능력 4 이상을 노린다 */
-    if((m>=11||m<=1)&&P.rich>.4&&R()<.12){ const pool=[]; for(const o in L){ if(+o===tid)continue; for(const x of L[o].sc)if(x.skill>=4&&!x.acc&&stAiTopOk(x))pool.push([+o,x]); } const tg=pick(pool);
+    if((m>=11||m<=1)&&P.rich>.4&&R()<.12){ const pool=[]; if(staffMoveOpen())for(const o in L){ if(+o===tid)continue; for(const x of L[o].sc)if(x.skill>=4&&!x.acc&&!staffSignedThisYear(x)&&stAiTopOk(x))pool.push([+o,x]); } /* 계약 정리 기간에만, 올해 합류한 사람은 빼고(89d). 기간 밖(1월 1일)에는 후보가 비어 아무도 움직이지 않는다 */ const tg=pick(pool);
       if(tg&&S.sc.length<8){ const [o,x]=tg; const sal=round5(x.sal*1.3); if(stAiPay(S)+sal<=P.payMax&&stScore(x,tid,sal,false)>stScore(x,o,x.sal*1.05,true)){ L[o].sc.splice(L[o].sc.indexOf(x),1); x.sal=sal; x.loy=15; x.since=G.day; S.sc.push(x); stAiTopTake(x); staffHistory('scout',x,'이적',o,`${tshort(tid)} 영입`); staffHistory('scout',x,'영입',tid,`${tshort(o)}에서 이적 · 연 ${money(sal)}`); stSync(o); moved.push(`${tshort(tid)}, ${tshort(o)} 스카우트 ${x.name} 영입`); try{ wire('스태프',`${tshort(tid)}, ${tshort(o)} 스카우트 ${x.name} 영입`,{tid}); }catch(e){} } } }
     stSync(tid); }
   return moved; }
@@ -33398,7 +33398,7 @@ function aiRift(t){ if(t.riftY===G.year)return; const r=G.sea.rec[t.id]; if(!r||
 /* ===== 코치 시장 경쟁 (사용자 11-08c: 스태프 경쟁과 뺏고 뺏기는 시장) =====
    1) AI 구단도 매달 1일 코치 시장에서 사람을 데려간다. 구단 위상(명성)과 돈(재정·시장 규모)이 좋은 구단이 좋은 코치를 먼저 잡는다.
       그래서 좋은 후보에는 '노리는 구단'이 붙고, 다음 달 1일 전에 잡지 않으면 그쪽으로 갈 수 있다.
-   2) 비시즌(11~1월)에는 부유한 AI 구단이 다른 AI 구단 코치를 승격 조건으로 빼 간다.
+   2) 계약 정리 기간(포스트시즌 뒤~12월 31일, 89d staffMoveOpen)에는 부유한 AI 구단이 다른 AI 구단 코치를 승격 조건으로 빼 간다. 그 밖의 때는 계약 중인 코치가 움직이지 않는다(구단주 11-19).
    3) 11월 20일·12월 20일, 다른 구단이 우리 좋은 코치에게 영입 제안을 한다. 7일 안에 붙잡을지(연봉 맞추기·설득) 보낼지 정한다.
    4) 우리가 다른 구단 코치를 빼 오려 할 때 원 소속 구단이 역제안으로 붙잡을 수 있다. 며칠 안에 더 높은 조건으로 다시 제의하면 데려온다.
    눈에 띄는 이동은 리그 소식(wire)에 남는다 */
@@ -33439,7 +33439,7 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
     /* 같은 코치를 데려갈 수 있는 다른 구단(이번 달 아직 영입하지 않은 구단)이 있으면 코치가 고른다: 우리 제안 때와 같은 cmContest */
     const riv=ids.filter(o=>o!==tid&&!took.has(o)&&G.coach[o]&&cmMarketCanHire(o,c,G.coach[o][c.role],off)); const win=riv.length?cmContest(c,[tid,...riv]).win:tid; took.add(win);
     const txt=cmAiTake(win,c,G.coach[win][c.role]); tid=win; moved.push(txt); if(c.star||cmVal(c)>=122)try{ wire('코치',txt,{tid}); }catch(e){} }
-  /* 비시즌: 부유한 구단이 다른 AI 구단 코치를 한 단계 높은 자리로 빼 간다 */
+  /* 계약 정리 기간: 부유한 구단이 다른 AI 구단 코치를 한 단계 높은 자리로 빼 간다. 1월 1일은 기간 밖이라 coachCanHire(from)가 모두 막는다(주 난수 자리는 그대로) */
   if(m>=11||m<=1)for(const tid of ids){ const t=team(tid), P=stAiPlan(t); if(poachN(tid)>=POACH_MAX||R()>(P.rich>=.4?.2:P.rich>=0?.1:.04))continue; /* 비시즌 2건 한도(우리와 같게) */ /* 우리와 같은 조건: 돈이 적어도 승격 자리를 내걸면 빼 갈 수 있다 */ const C=G.coach[tid]; const pool=[];
     for(const o of ids){ if(o===tid)continue; const OC=G.coach[o]; if(!OC)continue; for(const k in OC){ const c=OC[k]; const to=PROMO[k]; if(!c||!to||!coachCanHire(tid,c,{from:o,to})||(c.clan&&G.mgr[o]&&c.clan===G.mgr[o].id))continue; /* 재계약 보호·합류 전·은퇴 나이: 우리 빼 오기와 같은 규칙(89d) */ /* 막 계약해 아직 합류 전인 코치는 빼 가지 않는다 */ if(cmVal(c)>=cmVal(C[to])+6)pool.push([o,k,to,c]); } }
     const tg=pool.sort((a,b)=>cmVal(b[3])-cmVal(a[3]))[0]; if(!tg)continue; const [o,k,to,c]=tg; const sal=round5(c.sal*1.2);
@@ -33450,9 +33450,9 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
   try{ for(const tid of ids)aiAsstMonthly(tid,off); }catch(e){} /* 보조 코치 자리도 우리와 같은 정원(시설 4단계 이상)으로 채운다(99_ai_parity) */
   return moved; }
 /* 다른 구단이 우리 코치를 노린다(11월 20일·12월 20일). 감독 사단 코치는 감독 곁에 남는다 */
-const CM_RAID_M=[11,12,1,2], CM_RAID_K=.5;
-function cmRaid(){ if(G.unemp||!G.coach||!G.coach[G.user])return []; const C=G.coach[G.user], um=G.mgr[G.user]; G.cmRaid=G.cmRaid||[]; const out=[];
-  const L=CKEYS.map(k=>[k,C[k]]).filter(([k,c])=>c&&!(c.raidSafe>G.day)&&!staffPending(c)&&cmVal(c)>=104&&!(um&&c.clan&&c.clan===um.id)&&!G.cmRaid.some(r=>r.id===c.id)).filter(([k,c])=>{ stAttr(c); return R()<clamp((cmVal(c)-98)/70,0,.45)*(c.amb/55)*(1-coachLoyalty(c,G.user)/150)*CM_RAID_K; }); /* 비시즌 매달(11~2월 네 번)로 늘린 만큼 한 번 확률은 절반: 해마다 1~3건 안팎 그대로 */ /* 사용자 11-13: 타 구단에 코치도 뺏겨야 한다. 코치 값 104 이상부터 노리는 구단이 생기고, 확률은 (값-98)/70(최대 45%)에 야망·충성도를 곱한다(전에는 112·연 0.3~0.9건) */
+const CM_RAID_M=[11,12], CM_RAID_K=.5; /* 구단주 11-19: 계약 정리 기간(포스트시즌 뒤~12월 31일)의 11월 20일·12월 20일 두 번만. 1·2월 제안은 없앴다(확률은 그대로라 한 해 건수는 절반쯤) */
+function cmRaid(){ if(G.unemp||!G.coach||!G.coach[G.user]||!staffMoveOpen())return []; /* 계약 정리 기간에만(89d) */ const C=G.coach[G.user], um=G.mgr[G.user]; G.cmRaid=G.cmRaid||[]; const out=[];
+  const L=CKEYS.map(k=>[k,C[k]]).filter(([k,c])=>c&&!(c.raidSafe>G.day)&&!staffPending(c)&&!staffSignedThisYear(c)&&cmVal(c)>=104&&!(um&&c.clan&&c.clan===um.id)&&!G.cmRaid.some(r=>r.id===c.id)).filter(([k,c])=>{ stAttr(c); return R()<clamp((cmVal(c)-98)/70,0,.45)*(c.amb/55)*(1-coachLoyalty(c,G.user)/150)*CM_RAID_K; }); /* 비시즌 매달(11~2월 네 번)로 늘린 만큼 한 번 확률은 절반: 해마다 1~3건 안팎 그대로 */ /* 사용자 11-13: 타 구단에 코치도 뺏겨야 한다. 코치 값 104 이상부터 노리는 구단이 생기고, 확률은 (값-98)/70(최대 45%)에 야망·충성도를 곱한다(전에는 112·연 0.3~0.9건) */
   for(const [k,c] of L.sort(()=>R()-.5).slice(0,3)){ const opts=[]; for(const t of G.teams){ if(t.id===G.user)continue; const TC=G.coach[t.id]; if(!TC)continue; const to=PROMO[k]&&cmVal(TC[PROMO[k]])<cmVal(c)?PROMO[k]:k; if(to===k&&cmVal(TC[k])>=cmVal(c))continue; if(clubPrestige(t.id)<clubPrestige(G.user)-12&&to===k)continue; if(poachN(t.id)>=POACH_MAX||G.cmRaid.some(r=>r.tid===t.id)||staffPending(TC[to]))continue; opts.push({t,to}); }
     if(!opts.length)continue; const {t,to}=pick(opts); const sal=round5(c.sal*(to!==k?1.2:rnd(1.25,1.4))); if(!coachCanHire(t.id,c,{from:G.user,to,years:coachContractYears(c,2),sal,auto:true}))continue; const r={key:'cr'+(G.cmRaidSeq=(G.cmRaidSeq||0)+1),id:c.id,role:k,tid:t.id,to,sal,exp:G.day+7,from:G.user,occ:coachSeatId(t.id,to)}; /* occ: 제안 때 그 자리 코치. 바뀌면 제안은 없던 일(검수 11-17 #263) */ G.cmRaid.push(r); out.push(r);
     mail('운영팀',`${tshort(t.id)}, 우리 ${CROLE[k].l} ${c.name}에게 영입 제안`,`${tname(t.id)}이(가) ${c.name}(기본 지도 ${dv(c.sk)} · 기본 육성 ${dv(c.dv)})에게 ${to!==k?`${CROLE[to].l} 자리(승격)와 `:''}연 ${money(sal)}을 제시했습니다(현재 ${money(c.sal)}).\n${(()=>{ const d=clubPrestige(t.id)-clubPrestige(G.user); return d>=8?`${tshort(t.id)}의 위상이 우리보다 높습니다.`:d<=-8?`위상은 우리가 더 높습니다.`:'두 구단 위상은 비슷합니다.'; })()} ${staffLoyWord(coachLoyalty(c,G.user))}${coachSupportView(c,G.user).bonus>0?', 구단 연수 지원 인연도 있습니다':''}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,
@@ -33491,6 +33491,7 @@ function coachDedupe(){ if(!G.coach)return 0; const seen=new Map(); let n=0; con
 function cmDaily(){ try{ coachDedupe(); }catch(e){} try{ pcDaily(); }catch(e){} /* 플레잉코치(99c_playing_coach) */ try{ mgrReqDaily(); }catch(e){} try{ ownReqDaily(); }catch(e){} try{ schDaily(); }catch(e){} if(!G.coach)return; const o=dobj(G.day);
   if(o.d===1)try{ cmAiMonthly(); }catch(e){}
   if(CM_RAID_M.includes(o.m)&&o.d===20&&poachOff())try{ cmRaid(); }catch(e){} /* 비시즌 매달(공략 방지: 11·12월 두 번만 피하면 끝나던 것) */
+  try{ staffMoveClean(); }catch(e){} /* 계약 정리 기간이 끝나면 걸려 있던 제안은 없던 일(89d) */
   for(const r of (G.cmRaid||[]).filter(r=>r.exp<G.day)){ const c=cmMine(r); if(!c){ G.cmRaid=G.cmRaid.filter(x=>x!==r); continue; } const mine=cmOurs(r); /* 단장이 떠나도 제안은 그 구단에서 기한에 본인이 정한다(검수 11-09zv #14) */
     if(cmScore(c,r.from??G.user,c.sal,r.role,true)>=cmScore(c,r.tid,r.sal,r.to,false)){ G.cmRaid=G.cmRaid.filter(x=>x!==r); if(mine)note('코치',`${c.name} 코치는 고민 끝에 남기로 했습니다.`); } else { const s=cmLeave(r); if(mine)note('코치',s); } }
   if(G.poachCtr)for(const k in G.poachCtr)if(G.poachCtr[k].exp<G.day)delete G.poachCtr[k]; }
@@ -33711,6 +33712,22 @@ function cvacMail(m){ if(m&&typeof m==='object'&&m.id)m.auto=[...new Set([...(m.
     - 자동 결정(AI·위임·제안 수락): 그 자리에 다음 시즌 합류할 코치가 이미 계약돼 있으면 밀어내지 않고, AI는 시장과 같은 연봉 여력(cmCanPay) 안에서만
  2) coachRelease·coachCompPay: 자리를 비우는 정산(잔여 연봉 절반)과 빼 오기 보상금(데려가는 구단 → 원 소속 구단). 누가 누구에게서 데려가든 같은 금액.
  난수를 쓰지 않는다 */
+/* ===== 계약 정리 기간(구단주 11-19: "코치 중간 제안 없애고, 계약 마무리 하는 연말에는 옮기게 하자") =====
+ 카페 제보: 다른 구단이 우리 코치에게 너무 자주 제안하고, 올해 계약한 코치에게도 바로 온다. 예전에는 11~2월 네 번(매달 20일) 제안이 왔고,
+ 1~3월(시즌 준비)에도 서로 빼 올 수 있어 겨울에 계약한 코치가 해가 바뀌자마자 대상이 됐다.
+ 한 가지 규칙(우리·AI 같음, 코치·스카우트·전력분석원 같음):
+ - 다른 구단과 계약 중인 사람에게 접촉·제안·영입할 수 있는 때는 계약 정리 기간뿐이다: 포스트시즌이 끝난 날부터 그해 12월 31일까지(period()==='off').
+   새해 1월 1일부터 다음 포스트시즌이 끝날 때까지는 어떤 길로도 안 된다(우리 빼 오기·AI 빼 오기·다른 구단의 제안·기한이 남은 옛 제안).
+ - 올해 계약(영입·재계약)한 사람은 그해 계약 정리 기간에도 대상이 아니다(staffSignedThisYear).
+ - 기간 안에서 계약이 남은 코치는 예전 규칙 그대로: 원 소속 구단 보상금(coachPoachComp)·붙잡기(cmKeep)·역제안(cmCounter)·재계약 1년 보호·구단당 2건.
+ - 계약이 끝난 코치는 결산(coachYear) 때 시장으로 나와 누구든 데려간다. 시장(무소속) 후보 영입과 빈자리 보강은 언제나 된다.
+ 난수를 쓰지 않는다 */
+function staffMoveOpen(){ try{ return period()==='off'; }catch(e){ return false; } }
+const STAFF_MOVE_WHY='다른 구단과 계약 중인 코치는 시즌이 끝난 뒤 계약 정리 기간에 영입할 수 있습니다.';
+const STAFF_MOVE_WHY_ST='다른 구단과 계약 중인 스태프는 시즌이 끝난 뒤 계약 정리 기간에 영입할 수 있습니다.';
+/* 올해 계약한 사람인가: 코치는 계약한 날(sgD, staffHistory의 영입·재계약 기록), 스카우트·분석원은 합류한 날(since) */
+function staffSignedThisYear(x){ if(!x)return false; const d=x.sgD!=null?x.sgD:x.since; return Number.isFinite(d)&&d>=0&&dobj(d).y===G.year; }
+const STAFF_NEW_WHY=x=>`${(x&&x.name)||'그'} ${x&&x.role&&CKEYS.includes(x.role)?'코치':'스태프'}는 올해 계약해 다음 계약 정리 기간부터 영입을 제의할 수 있습니다.`;
 const COACH_OLD_AGE=64; /* 이 나이부터 새 계약·연장은 1년만(coachExtTerms와 같은 기준) */
 const coachMaxYrs=c=>(c&&(c.age||0)>=COACH_OLD_AGE)?1:4;
 /* 자동 결정은 먼저 예전과 같은 계약 연수 난수를 뽑은 뒤 나이 제한만 적용한다. */
@@ -33720,7 +33737,8 @@ function coachHireWhy(tid,c,o){ o=o||{}; if(!c||typeof c!=='object')return '후�
   if((c.age||0)>=STAFF_RET_AGE)return `${nm} 코치(${c.age}세)는 은퇴 나이라 새 계약을 맺지 않습니다.`;
   if(o.years!=null&&o.years>coachMaxYrs(c))return `${nm} 코치(${c.age}세)는 은퇴를 앞둬 1년 계약만 맺습니다.`;
   if(o.from==null&&c.res!=null&&c.res!==tid)return `${nm} 코치는 ${team(c.res)?tshort(c.res):'다른 구단'}이(가) 우선 협상권을 가진 후보입니다.`;
-  if(o.from!=null){ if(staffPending(c))return '아직 합류 전인 코치에게는 영입을 제의할 수 없습니다.';
+  if(o.from!=null){ if(!staffMoveOpen())return STAFF_MOVE_WHY; /* 계약 정리 기간 밖: 우리·AI 어느 길로도 안 된다 */ if(staffPending(c))return '아직 합류 전인 코치에게는 영입을 제의할 수 없습니다.';
+    if(staffSignedThisYear(c))return STAFF_NEW_WHY(c);
     if(c.raidSafe>G.day)return `${nm} 코치는 ${dmd(c.raidSafe)}까지 재계약 보호 기간이라 영입을 제의할 수 없습니다.`;
     if(poachN(tid)>=POACH_MAX)return `${team(tid)?tshort(tid):'그 구단'}은(는) 이번 겨울에 이미 코치 ${POACH_MAX}명을 데려왔습니다.`; }
   const C=G.coach&&G.coach[tid], cur=o.cur!==undefined?o.cur:C?C[to]:null;
@@ -33745,7 +33763,11 @@ function cmRaidStale(r,c){ const TC=G.coach&&G.coach[r.tid]; if(!TC||!c)return '
 /* 옛 저장 정리(불러올 때, 여러 번 해도 같음): 떠난 코치를 가리키는 감독대행, 자리 정보가 없는 열린 제안 */
 function coachRulesMigrate(){ if(!G||!G.coach||!G.mgr)return;
   for(const t of G.teams||[]){ if(t.id===G.user&&G.unemp)continue; interimRefresh(t.id); }
-  for(const r of G.cmRaid||[]){ if(r.occ!==undefined)continue; r.occUnknown=true; } } /* 제안 당시의 현직을 모르면 지금 현직을 끼워 넣지 않는다(#503). 수락 때 무효 처리. */
+  for(const r of G.cmRaid||[]){ if(r.occ!==undefined)continue; r.occUnknown=true; }
+  staffMoveClean(); }
+/* 계약 정리 기간 밖에 걸려 있는 제안은 조용히 없던 일로(옛 저장의 1·2월 제안·역제안, 매일도 부른다). 여러 번 해도 같고 난수를 쓰지 않는다 */
+function staffMoveClean(){ if(!G||!G.cal||staffMoveOpen())return 0; let n=0; if(G.cmRaid&&G.cmRaid.length){ n+=G.cmRaid.length; G.cmRaid=[]; } if(G.stRaid&&G.stRaid.length){ n+=G.stRaid.length; G.stRaid=[]; }
+  if(G.poachCtr)for(const k in G.poachCtr){ delete G.poachCtr[k]; n++; } return n; } /* 제안 당시의 현직을 모르면 지금 현직을 끼워 넣지 않는다(#503). 수락 때 무효 처리. */
 /* ===== 단장 레거시: 오래 한 단장에게 남는 것 (피드백 11-09p) =====
  실제 KBO에는 단장을 구단 레전드로 기리는 공식 제도가 뚜렷하지 않다. 그래서 과장하지 않고 '구단이 공로를 기리는' 정도로만 둔다.
  - G.gmRec: 리그 역대 단장 재임 요약. 사람·구단마다 한 줄 {k:사람, n:이름, t:구단, y0, y1, s:시즌, w, l, c:우승, u:내 계보}. 시즌 결산 때 그해 단장에게 한 시즌을 더한다.
@@ -44946,14 +44968,14 @@ function chanceTxt(p){ return p>=.65?'응할 가능성 큼':p>=.45?'반반':p>=.
 function coachOther(role,srt){ const C=coachesOf(G.user); const SF={tot:c=>-(c.sk+c.dv),sk:c=>-c.sk,dv:c=>-c.dv,sal:c=>c.sal};
   const L=[]; for(const t of G.teams){ if(t.id===G.user)continue; const TC=G.coach&&G.coach[t.id]; if(!TC)continue; for(const k of CKEYS){ const c=TC[k]; if(c&&(role==='all'||k===role)&&(!UI.cmkQ||c.name.includes(UI.cmkQ)))L.push({t,k,c}); } }
   L.sort((a,b)=>SF[srt](a.c)-SF[srt](b.c));
-  const card=({t,k,c})=>{ const cur=C[k]; const diff=cur?Object.fromEntries(['sk','dv'].map(k=>[k,dv(effC({...c,clan:null},G.user,k,1))-dv(effC(cur,G.user,k,1))])):null; const T1=poachTerms(t.id,k,k); const pr=PROMO[k]; const T2=pr?poachTerms(t.id,k,pr):null; const cd=G.poachCd&&G.poachCd[c.id]>G.day; const pending=staffPending(c);
+  const card=({t,k,c})=>{ const cur=C[k]; const diff=cur?Object.fromEntries(['sk','dv'].map(k=>[k,dv(effC({...c,clan:null},G.user,k,1))-dv(effC(cur,G.user,k,1))])):null; const T1=poachTerms(t.id,k,k); const pr=PROMO[k]; const T2=pr?poachTerms(t.id,k,pr):null; const cd=G.poachCd&&G.poachCd[c.id]>G.day; const pending=staffPending(c); const why=pending?'':coachHireWhy(G.user,c,{from:t.id,to:k}); /* 계약 정리 기간 밖·올해 계약·재계약 보호·한도: 엔진과 같은 이유로 버튼을 막고 이유를 보여 준다(89d) */
     const m=G.mgr[t.id]; const clan=c.clan&&m&&c.clan===m.id;
-    const b=(T,l)=>`<button class="btn small ${T.promo?'':'primary'}" data-a="poach" data-v="${t.id}:${k}:${T.toRole}" ${cd||pending?'disabled':''}>${T.ctr?'역제안 넘어 다시 제의':l}<i class="pc-s">연 ${money(T.sal)}${T.comp?` · 보상 ${money(T.comp)}`:''} · ${chanceTxt(T.chance)}</i></button>`;
+    const b=(T,l)=>`<button class="btn small ${T.promo?'':'primary'}" data-a="poach" data-v="${t.id}:${k}:${T.toRole}" ${cd||pending||why?'disabled':''}>${T.ctr?'역제안 넘어 다시 제의':l}<i class="pc-s">연 ${money(T.sal)}${T.comp?` · 보상 ${money(T.comp)}`:''} · ${chanceTxt(T.chance)}</i></button>`;
     return `<div class="csl" data-role="${k}" data-selected="${UI.cslot===k}"><div class="csl-h"><b>${badge(t.id,14)} ${esc(tfull(t))} ${CROLE[k].l}</b>${cur?`<span class="small muted">우리 ${esc(cur.name)} 대비 지도 ${diff.sk>0?'+':''}${diff.sk} · 육성 ${diff.dv>0?'+':''}${diff.dv}</span>`:'<span class="pill bad">우리 빈자리</span>'}</div>
       <div class="csl-n">${avImg({persona:'coach',pid:c.id,name:c.name,age:c.age,team:t.id})}${esc(c.name)} <span class="small muted">${c.age}세</span>${c.star?' <span class="pill acc">스타 코치</span>':''}${obTag(c.ob)}${clan?` <span class="pill warn">${esc(m.name)} 감독 사단</span>`:''}</div><div class="csl-s">${coachStats({...c,clan:null},G.user)}</div>
       <div class="small muted">${esc(c.car)} · 현재 연 ${money(c.sal)} · ${ctLeftTxt(c)}</div>
-      ${coachAbBox(c)}${staffBioBox(c,'coach',t.id)}<div class="pcb">${b(T1,'같은 자리로 영입')}${T2?b(T2,`${CROLE[pr].l}(으)로 승격 제의`):''}${pending?'<p class="small muted keep csl-note">아직 합류 전인 코치는 합류 시즌부터 영입을 제의할 수 있습니다.</p>':''}${cd?`<p class="small muted keep csl-note">${dmd(G.poachCd[c.id])}까지 다시 만나 주지 않습니다.</p>`:''}</div></div>`; };
-  return `<p class="small muted tipme">다른 구단 코치는 연봉을 올려 주거나 한 단계 높은 자리를 주면 옮겨 옵니다. 높은 자리 제안이 더 잘 통합니다. ${poachOff()?'지금은 비시즌이라 계약이 1년 이하 남은 코치는 보상금 없이 데려올 수 있습니다.':'시즌 중에는 남은 계약에 대한 보상금을 원 소속 구단에 냅니다.'} 감독 사단 코치는 감독 곁을 잘 떠나지 않고, 우리 구단 출신은 잘 돌아옵니다. 빼 오면 그 구단 단장과 친분이 떨어집니다. 거절당하면 30일 동안 다시 제의할 수 없습니다.</p>
+      ${coachAbBox(c)}${staffBioBox(c,'coach',t.id)}<div class="pcb">${b(T1,'같은 자리로 영입')}${T2?b(T2,`${CROLE[pr].l}(으)로 승격 제의`):''}${pending?'<p class="small muted keep csl-note">아직 합류 전인 코치는 합류 시즌부터 영입을 제의할 수 있습니다.</p>':''}${why?`<p class="small muted keep csl-note">${esc(why)}</p>`:''}${cd?`<p class="small muted keep csl-note">${dmd(G.poachCd[c.id])}까지 다시 만나 주지 않습니다.</p>`:''}</div></div>`; };
+  return `<p class="small muted tipme">다른 구단 코치는 연봉을 올려 주거나 한 단계 높은 자리를 주면 옮겨 옵니다. 높은 자리 제안이 더 잘 통합니다. ${poachOff()?'지금은 계약 정리 기간(포스트시즌이 끝난 날~12월 31일)이라 제의할 수 있습니다. 계약이 1년 이하 남은 코치는 보상금 없이 데려오고, 올해 계약한 코치에게는 제의할 수 없습니다.':esc(STAFF_MOVE_WHY)+' 기간은 포스트시즌이 끝난 날부터 12월 31일까지이고, 다른 구단도 그때만 우리 코치에게 제안합니다. 무소속 채용 후보는 언제든 영입할 수 있습니다.'} 감독 사단 코치는 감독 곁을 잘 떠나지 않고, 우리 구단 출신은 잘 돌아옵니다. 빼 오면 그 구단 단장과 친분이 떨어집니다. 거절당하면 30일 동안 다시 제의할 수 없습니다.</p>
     ${(()=>{ const P=pager('cpo',L.slice(0,40),cardPageSize()); return `<div class="cgrid" data-pg="cpo">${P.items.map(card).join('')}</div>${P.bar}`; })()}`; }
 /* 코치 시장 후보 목록(보직·이름·정렬). 비교 표는 이 목록을 CMK_ROWS명씩 쪽으로 나눠 보여 준다(순서는 그대로) */
 const CMK_ROWS=20, CMK_SF={tot:c=>-(c.sk+c.dv),sk:c=>-c.sk,dv:c=>-c.dv,sal:c=>c.sal};
@@ -48625,8 +48647,8 @@ function stOtherView(kind){ stInit(); const open=stPoachOpen(); const P=stPoNow(
   const L=[]; for(const tid in G.lgStaff){ for(const s of (kind==='sc'?G.lgStaff[tid].sc:G.lgStaff[tid].an))if(s.skill>=3)L.push({s,tid:+tid}); }
   L.sort((a,b)=>b.s.skill-a.s.skill||a.s.loy-b.s.loy);
   return `<div class="eyebrow" style="margin-top:14px">다른 구단 ${kind==='sc'?'스카우트':'분석원'} (능력 3 이상)</div>
-    <p class="small muted">${open?`비시즌(11~1월)에는 연봉을 25%나 50% 올려 데려올 수 있습니다. 구단당 한 번, 비시즌 ${3-P.n}번 남음. 시도하면 그 구단과 사이가 조금 나빠집니다.`:'다른 구단 스태프는 11월~1월에만 데려올 수 있습니다.'} 충성도가 높거나 위상이 높은 구단에 있는 사람은 잘 움직이지 않습니다.</p>
-    <div class="tgrid staff-other-cards">${L.slice(0,14).map(({s,tid})=>`<div class="tcard" style="cursor:default"><div class="tc-top">${avImg({persona:'staff',role:kind==='sc'?'scout':'ana',pid:s.id,name:s.name,age:s.age,team:tid})}<div class="tc-id"><b>${esc(s.name)}</b><span>${badge(tid,14)} ${esc(tshort(tid))} · ${s.age}세</span><span>${esc(staffRoleLabel(kind==='sc'?'scout':'analyst',s.role||'am'))} · 연 ${money(s.sal)}</span>${kind==='sc'&&typeof scHomeTxt==='function'?`<span class="small">고향 ${esc(scHomeTxt(s))}${s.region&&(s.role||'am')==='am'?` · ${esc(s.region)} 담당${scHomeReg(s)===s.region?' · 고향 권역 일치':''}`:''}</span>`:''}</div></div><p class="small muted">능력 ${'★'.repeat(s.skill)} · ${staffLoyWord(s.loy)}</p>${staffBioBox(s,kind==='sc'?'scout':'analyst',tid)}<div class="row"><button class="tc-i" data-a="person" data-v="ost:${kind}:${tid}:${s.id}">인물 카드</button>${open&&!P.t.includes(tid)&&P.n<3?`<button class="btn small" data-a="stPo" data-v="${kind}:${tid}:${s.id}:0.25">+25% · ${money(round5(s.sal*1.25))}</button><button class="btn small" data-a="stPo" data-v="${kind}:${tid}:${s.id}:0.5">+50% · ${money(round5(s.sal*1.5))}</button>`:''}</div></div>`).join('')||'<p class="small muted">조건에 맞는 직원이 없습니다.</p>'}</div>`; }
+    <p class="small muted">${open?`계약 정리 기간(포스트시즌이 끝난 날~12월 31일)에는 연봉을 25%나 50% 올려 데려올 수 있습니다. 올해 합류한 사람은 대상이 아닙니다. 구단당 한 번, 비시즌 ${3-P.n}번 남음. 시도하면 그 구단과 사이가 조금 나빠집니다.`:esc(STAFF_MOVE_WHY_ST)+' 무소속 후보는 언제든 영입할 수 있습니다.'} 충성도가 높거나 위상이 높은 구단에 있는 사람은 잘 움직이지 않습니다.</p>
+    <div class="tgrid staff-other-cards">${L.slice(0,14).map(({s,tid})=>`<div class="tcard" style="cursor:default"><div class="tc-top">${avImg({persona:'staff',role:kind==='sc'?'scout':'ana',pid:s.id,name:s.name,age:s.age,team:tid})}<div class="tc-id"><b>${esc(s.name)}</b><span>${badge(tid,14)} ${esc(tshort(tid))} · ${s.age}세</span><span>${esc(staffRoleLabel(kind==='sc'?'scout':'analyst',s.role||'am'))} · 연 ${money(s.sal)}</span>${kind==='sc'&&typeof scHomeTxt==='function'?`<span class="small">고향 ${esc(scHomeTxt(s))}${s.region&&(s.role||'am')==='am'?` · ${esc(s.region)} 담당${scHomeReg(s)===s.region?' · 고향 권역 일치':''}`:''}</span>`:''}</div></div><p class="small muted">능력 ${'★'.repeat(s.skill)} · ${staffLoyWord(s.loy)}</p>${staffBioBox(s,kind==='sc'?'scout':'analyst',tid)}<div class="row"><button class="tc-i" data-a="person" data-v="ost:${kind}:${tid}:${s.id}">인물 카드</button>${open&&!staffSignedThisYear(s)&&!P.t.includes(tid)&&P.n<3?`<button class="btn small" data-a="stPo" data-v="${kind}:${tid}:${s.id}:0.25">+25% · ${money(round5(s.sal*1.25))}</button><button class="btn small" data-a="stPo" data-v="${kind}:${tid}:${s.id}:0.5">+50% · ${money(round5(s.sal*1.5))}</button>`:''}</div></div>`).join('')||'<p class="small muted">조건에 맞는 직원이 없습니다.</p>'}</div>`; }
 /* 코치·스카우트·데이터 직원이 공유하는 인물 카드. 표시값은 실제 계산에서 읽는다. */
 function staffRoleLabel(kind,role){return kind==='coach'?(role==='mgr'?'1군 감독':CROLE[role]?.l||role):kind==='scout'?SROLE[role]||role:AROLE[role]?.l||role;}
 function staffScore(v){return `<b class="trait-w">${staffTraitWord(v)}</b>`;}
@@ -51754,6 +51776,7 @@ const PATCH=[
     '메이저리그에 국내 선수가 이미 6명 이상 가 있으면, 스타가 아닌 경계선 선수는 계약 제안을 받기 어려워집니다. 스타는 그대로 도전합니다. 포스팅 예상 화면도 같은 값을 보여 줍니다.',
     '수비 코치와 상대 전력분석이 실점을 줄이는 효과를 낮추고 상한을 뒀습니다(모든 구단 같음).',
     '코치 영입: 다른 구단이 노리는 코치에게 제안하면 코치가 구단을 고릅니다. 다른 구단을 택하면 어느 구단을 왜 골랐는지 알려 줍니다. 다른 구단끼리도 같은 규칙으로 경쟁합니다.',
+    '코치·스태프 이적 시기: 다른 구단과 계약 중인 코치·스카우트·분석원은 포스트시즌이 끝난 날부터 12월 31일까지(계약 정리 기간)에만 옮길 수 있습니다. 1·2월에 오던 다른 구단의 영입 제안과 1~3월 빼 오기를 없앴고, 올해 계약한 사람은 그해에는 제안 대상이 아닙니다. 우리·다른 구단 같은 규칙이며, 무소속 후보 영입과 빈자리 채우기는 언제든 됩니다.',
     '감독이 선발을 내리는 기준(난타·조기 교체)을 기록상 자책점이 아니라 그 투수가 내준 실점으로 봅니다(우리·AI 구단 같음).',
     '스태프 화면의 분석원 줄이 실제 규칙대로 나옵니다: 분석원은 모두 9명까지, 역할마다 실력 상위 3명만 100·60·30%로 반영됩니다.'
   ]},

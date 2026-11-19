@@ -1,7 +1,7 @@
 /* ===== 코치 시장 경쟁 (사용자 11-08c: 스태프 경쟁과 뺏고 뺏기는 시장) =====
    1) AI 구단도 매달 1일 코치 시장에서 사람을 데려간다. 구단 위상(명성)과 돈(재정·시장 규모)이 좋은 구단이 좋은 코치를 먼저 잡는다.
       그래서 좋은 후보에는 '노리는 구단'이 붙고, 다음 달 1일 전에 잡지 않으면 그쪽으로 갈 수 있다.
-   2) 비시즌(11~1월)에는 부유한 AI 구단이 다른 AI 구단 코치를 승격 조건으로 빼 간다.
+   2) 계약 정리 기간(포스트시즌 뒤~12월 31일, 89d staffMoveOpen)에는 부유한 AI 구단이 다른 AI 구단 코치를 승격 조건으로 빼 간다. 그 밖의 때는 계약 중인 코치가 움직이지 않는다(구단주 11-19).
    3) 11월 20일·12월 20일, 다른 구단이 우리 좋은 코치에게 영입 제안을 한다. 7일 안에 붙잡을지(연봉 맞추기·설득) 보낼지 정한다.
    4) 우리가 다른 구단 코치를 빼 오려 할 때 원 소속 구단이 역제안으로 붙잡을 수 있다. 며칠 안에 더 높은 조건으로 다시 제의하면 데려온다.
    눈에 띄는 이동은 리그 소식(wire)에 남는다 */
@@ -42,7 +42,7 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
     /* 같은 코치를 데려갈 수 있는 다른 구단(이번 달 아직 영입하지 않은 구단)이 있으면 코치가 고른다: 우리 제안 때와 같은 cmContest */
     const riv=ids.filter(o=>o!==tid&&!took.has(o)&&G.coach[o]&&cmMarketCanHire(o,c,G.coach[o][c.role],off)); const win=riv.length?cmContest(c,[tid,...riv]).win:tid; took.add(win);
     const txt=cmAiTake(win,c,G.coach[win][c.role]); tid=win; moved.push(txt); if(c.star||cmVal(c)>=122)try{ wire('코치',txt,{tid}); }catch(e){} }
-  /* 비시즌: 부유한 구단이 다른 AI 구단 코치를 한 단계 높은 자리로 빼 간다 */
+  /* 계약 정리 기간: 부유한 구단이 다른 AI 구단 코치를 한 단계 높은 자리로 빼 간다. 1월 1일은 기간 밖이라 coachCanHire(from)가 모두 막는다(주 난수 자리는 그대로) */
   if(m>=11||m<=1)for(const tid of ids){ const t=team(tid), P=stAiPlan(t); if(poachN(tid)>=POACH_MAX||R()>(P.rich>=.4?.2:P.rich>=0?.1:.04))continue; /* 비시즌 2건 한도(우리와 같게) */ /* 우리와 같은 조건: 돈이 적어도 승격 자리를 내걸면 빼 갈 수 있다 */ const C=G.coach[tid]; const pool=[];
     for(const o of ids){ if(o===tid)continue; const OC=G.coach[o]; if(!OC)continue; for(const k in OC){ const c=OC[k]; const to=PROMO[k]; if(!c||!to||!coachCanHire(tid,c,{from:o,to})||(c.clan&&G.mgr[o]&&c.clan===G.mgr[o].id))continue; /* 재계약 보호·합류 전·은퇴 나이: 우리 빼 오기와 같은 규칙(89d) */ /* 막 계약해 아직 합류 전인 코치는 빼 가지 않는다 */ if(cmVal(c)>=cmVal(C[to])+6)pool.push([o,k,to,c]); } }
     const tg=pool.sort((a,b)=>cmVal(b[3])-cmVal(a[3]))[0]; if(!tg)continue; const [o,k,to,c]=tg; const sal=round5(c.sal*1.2);
@@ -53,9 +53,9 @@ function cmAiMonthly(){ if(!G.coach||!G.cmarket)return []; const m=dobj(G.day).m
   try{ for(const tid of ids)aiAsstMonthly(tid,off); }catch(e){} /* 보조 코치 자리도 우리와 같은 정원(시설 4단계 이상)으로 채운다(99_ai_parity) */
   return moved; }
 /* 다른 구단이 우리 코치를 노린다(11월 20일·12월 20일). 감독 사단 코치는 감독 곁에 남는다 */
-const CM_RAID_M=[11,12,1,2], CM_RAID_K=.5;
-function cmRaid(){ if(G.unemp||!G.coach||!G.coach[G.user])return []; const C=G.coach[G.user], um=G.mgr[G.user]; G.cmRaid=G.cmRaid||[]; const out=[];
-  const L=CKEYS.map(k=>[k,C[k]]).filter(([k,c])=>c&&!(c.raidSafe>G.day)&&!staffPending(c)&&cmVal(c)>=104&&!(um&&c.clan&&c.clan===um.id)&&!G.cmRaid.some(r=>r.id===c.id)).filter(([k,c])=>{ stAttr(c); return R()<clamp((cmVal(c)-98)/70,0,.45)*(c.amb/55)*(1-coachLoyalty(c,G.user)/150)*CM_RAID_K; }); /* 비시즌 매달(11~2월 네 번)로 늘린 만큼 한 번 확률은 절반: 해마다 1~3건 안팎 그대로 */ /* 사용자 11-13: 타 구단에 코치도 뺏겨야 한다. 코치 값 104 이상부터 노리는 구단이 생기고, 확률은 (값-98)/70(최대 45%)에 야망·충성도를 곱한다(전에는 112·연 0.3~0.9건) */
+const CM_RAID_M=[11,12], CM_RAID_K=.5; /* 구단주 11-19: 계약 정리 기간(포스트시즌 뒤~12월 31일)의 11월 20일·12월 20일 두 번만. 1·2월 제안은 없앴다(확률은 그대로라 한 해 건수는 절반쯤) */
+function cmRaid(){ if(G.unemp||!G.coach||!G.coach[G.user]||!staffMoveOpen())return []; /* 계약 정리 기간에만(89d) */ const C=G.coach[G.user], um=G.mgr[G.user]; G.cmRaid=G.cmRaid||[]; const out=[];
+  const L=CKEYS.map(k=>[k,C[k]]).filter(([k,c])=>c&&!(c.raidSafe>G.day)&&!staffPending(c)&&!staffSignedThisYear(c)&&cmVal(c)>=104&&!(um&&c.clan&&c.clan===um.id)&&!G.cmRaid.some(r=>r.id===c.id)).filter(([k,c])=>{ stAttr(c); return R()<clamp((cmVal(c)-98)/70,0,.45)*(c.amb/55)*(1-coachLoyalty(c,G.user)/150)*CM_RAID_K; }); /* 비시즌 매달(11~2월 네 번)로 늘린 만큼 한 번 확률은 절반: 해마다 1~3건 안팎 그대로 */ /* 사용자 11-13: 타 구단에 코치도 뺏겨야 한다. 코치 값 104 이상부터 노리는 구단이 생기고, 확률은 (값-98)/70(최대 45%)에 야망·충성도를 곱한다(전에는 112·연 0.3~0.9건) */
   for(const [k,c] of L.sort(()=>R()-.5).slice(0,3)){ const opts=[]; for(const t of G.teams){ if(t.id===G.user)continue; const TC=G.coach[t.id]; if(!TC)continue; const to=PROMO[k]&&cmVal(TC[PROMO[k]])<cmVal(c)?PROMO[k]:k; if(to===k&&cmVal(TC[k])>=cmVal(c))continue; if(clubPrestige(t.id)<clubPrestige(G.user)-12&&to===k)continue; if(poachN(t.id)>=POACH_MAX||G.cmRaid.some(r=>r.tid===t.id)||staffPending(TC[to]))continue; opts.push({t,to}); }
     if(!opts.length)continue; const {t,to}=pick(opts); const sal=round5(c.sal*(to!==k?1.2:rnd(1.25,1.4))); if(!coachCanHire(t.id,c,{from:G.user,to,years:coachContractYears(c,2),sal,auto:true}))continue; const r={key:'cr'+(G.cmRaidSeq=(G.cmRaidSeq||0)+1),id:c.id,role:k,tid:t.id,to,sal,exp:G.day+7,from:G.user,occ:coachSeatId(t.id,to)}; /* occ: 제안 때 그 자리 코치. 바뀌면 제안은 없던 일(검수 11-17 #263) */ G.cmRaid.push(r); out.push(r);
     mail('운영팀',`${tshort(t.id)}, 우리 ${CROLE[k].l} ${c.name}에게 영입 제안`,`${tname(t.id)}이(가) ${c.name}(기본 지도 ${dv(c.sk)} · 기본 육성 ${dv(c.dv)})에게 ${to!==k?`${CROLE[to].l} 자리(승격)와 `:''}연 ${money(sal)}을 제시했습니다(현재 ${money(c.sal)}).\n${(()=>{ const d=clubPrestige(t.id)-clubPrestige(G.user); return d>=8?`${tshort(t.id)}의 위상이 우리보다 높습니다.`:d<=-8?`위상은 우리가 더 높습니다.`:'두 구단 위상은 비슷합니다.'; })()} ${staffLoyWord(coachLoyalty(c,G.user))}${coachSupportView(c,G.user).bonus>0?', 구단 연수 지원 인연도 있습니다':''}.\n\n7일 안에 답하지 않으면 본인이 결정합니다.`,
@@ -94,6 +94,7 @@ function coachDedupe(){ if(!G.coach)return 0; const seen=new Map(); let n=0; con
 function cmDaily(){ try{ coachDedupe(); }catch(e){} try{ pcDaily(); }catch(e){} /* 플레잉코치(99c_playing_coach) */ try{ mgrReqDaily(); }catch(e){} try{ ownReqDaily(); }catch(e){} try{ schDaily(); }catch(e){} if(!G.coach)return; const o=dobj(G.day);
   if(o.d===1)try{ cmAiMonthly(); }catch(e){}
   if(CM_RAID_M.includes(o.m)&&o.d===20&&poachOff())try{ cmRaid(); }catch(e){} /* 비시즌 매달(공략 방지: 11·12월 두 번만 피하면 끝나던 것) */
+  try{ staffMoveClean(); }catch(e){} /* 계약 정리 기간이 끝나면 걸려 있던 제안은 없던 일(89d) */
   for(const r of (G.cmRaid||[]).filter(r=>r.exp<G.day)){ const c=cmMine(r); if(!c){ G.cmRaid=G.cmRaid.filter(x=>x!==r); continue; } const mine=cmOurs(r); /* 단장이 떠나도 제안은 그 구단에서 기한에 본인이 정한다(검수 11-09zv #14) */
     if(cmScore(c,r.from??G.user,c.sal,r.role,true)>=cmScore(c,r.tid,r.sal,r.to,false)){ G.cmRaid=G.cmRaid.filter(x=>x!==r); if(mine)note('코치',`${c.name} 코치는 고민 끝에 남기로 했습니다.`); } else { const s=cmLeave(r); if(mine)note('코치',s); } }
   if(G.poachCtr)for(const k in G.poachCtr)if(G.poachCtr[k].exp<G.day)delete G.poachCtr[k]; }
