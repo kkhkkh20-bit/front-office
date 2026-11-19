@@ -106,6 +106,10 @@ const INET=[{l:'에이전트 자료',c:0,sd:9.5,d:'에이전트가 보낸 영상
   {l:'현지 사무소',c:320,sd:3,d:'현지 사무소와 구단 네트워크로 거의 정확하게 봅니다. 숨은 후보를 가장 먼저, 가장 많이 확보합니다.'}];
 const origOf=p=>p.orig||({'미국':'us','도미니카공화국':'la','베네수엘라':'la','일본':'jp','대만':'tw','호주':'au'}[p.nat]||'us');
 const intlLv=r=>Math.min(3,((G.intl&&G.intl[r])||0)+(G&&G.scouts&&G.scouts.some(s=>s.role==='intl'&&s.region===r&&G.day-(s.since??-999)>=30)?1:0)); /* 파견 스카우트는 30일 적응 뒤부터 해외망 단계에 더한다(검수 11-07) */
+/* 단장이 정한 투자 단계(0~3, 파견 스카우트 몫 제외). 비용은 이 단계로만 낸다: 스카우트 파견 +1단계는 스카우트 연봉으로 이미 낸다.
+   예전에는 비용·선택 버튼이 파견 몫을 더한 단계(intlLv)를 써서, 파견 지역은 0단계를 골라도 1단계로 보이고 1단계 비용이 계속 나갔다(카페 제보 11-19) */
+const intlNet=r=>clamp(Math.round(+((G&&G.intl&&G.intl[r])||0)),0,3);
+const intlCost=()=>sum(Object.keys(IREG).map(r=>INET[intlNet(r)].c));
 
 /* 국내 이름: 현역·은퇴 선수(OB) 이름과 겹치지 않게(하루 단위로 이름 목록을 모아 둔다) */
 let _nmSet=null, _nmDay=null;

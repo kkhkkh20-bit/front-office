@@ -11,7 +11,7 @@
      KBO 몸값으로 닿을 만한 사람만 고른다(wkTarget). 영입 경로(P4)는 아직 없어 관찰만 권한다. */
 const WK={reg:{MLB:'us',AAA:'us',NPB:'jp',CPBL:'tw',LMB:'la'},fame:{MLB:20,AAA:0,NPB:10,CPBL:-5,LMB:-5},base:10,net:18,dayK:6,dayMax:30,rough:45,tight:70,watchWk:5,rcN:3,rcGap:365,rcYr:12};
 /* 구단이 그 리그를 보는 값(우리: 해외망·파견 스카우트 / AI: 스카우트진 수준을 망 단계로) */
-function wkIn(tid,lg){ const r=WK.reg[lg]; if(tid==null||tid===G.user){ const s=intlScoutFor(r); return {lg,r,net:(G.intl&&G.intl[r])||0,days:s?Math.max(0,G.day-(s.since??G.day)):0,sk:s?effSkill(s):0,isc:s||null,tag:''}; }
+function wkIn(tid,lg){ const r=WK.reg[lg]; if(tid==null||tid===G.user){ const s=intlScoutFor(r); return {lg,r,net:intlNet(r),days:s?Math.max(0,G.day-(s.since??G.day)):0,sk:s?effSkill(s):0,isc:s||null,tag:''}; }
   return {lg,r,net:Math.min(2,Math.floor(fScoutLv(tid)||0)),days:0,sk:0,isc:null,tag:'t'+tid}; }
 /* 지식 % (우리와 AI 같은 식) */
 function wkPctOf(I){ const sc=I.days>0?Math.min(WK.dayMax,I.days/WK.dayK)*(.7+.1*I.sk):0; return clamp(Math.round(WK.base+I.net*WK.net+(WK.fame[I.lg]||0)+sc),0,100); }

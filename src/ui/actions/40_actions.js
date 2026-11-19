@@ -145,7 +145,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   sub(v){ A.go(v); },
   menu(){ UI.sheet=null;UI.mail=null;UI.game=null;UI.posSheet=null; UI.menu=true; renderSheet(); },
   ffset(v){ const [k,x]=v.split(':'); UI.ff=Object.assign({t:'yb',r:'all',s:'cur'},UI.ff||{}); UI.ff[k]=x; if(k==='t'){ UI.ff.r='all'; const on=document.querySelector('[data-a="itab"][data-v^="fview:"].on'); if(on)(UI.it=UI.it||{}).fview=on.dataset.v.split(':')[1]; } /* 외국인↔아시아쿼터를 바꿔도 보던 탭(후보·우리 선수 등)을 그대로(카페 11-09b) */ UI.fmsg2=''; render(); },
-  setIntl(v){ const [r,l]=v.split(':'); G.intl[r]=+l; addLog(`${IREG[r].l} 스카우트망을 ${INET[+l].l} 단계로 조정했습니다.`); save(); render(); },
+  setIntl(v){ const [r,l]=String(v).split(':'); if(!IREG[r]||!(+l>=0&&+l<=3))return; const n=Math.round(+l); G.intl=G.intl||{}; G.intl[r]=n; addLog(`${IREG[r].l} 스카우트망을 ${n}단계(${INET[n].l})로 조정했습니다.${intlLv(r)!==n?` 파견 스카우트 몫을 더한 정보 수준은 ${intlLv(r)}단계입니다.`:''}`); save(); render(); }, /* 0단계(에이전트 자료)도 고를 수 있고 비용은 투자 단계로만 낸다(카페 제보 11-19) */
   tutSkip(){ tutSkip(); save(); render(); },
   hireMgr(v){ const [id,y,c]=v.split(':'); { const blk=mgrHireBlk(); if(blk){ UI.mgrMsg=blk; toast(blk); render(); return; } } /* 현 감독 경질을 뜻하는 선임은 구단주 동의가 먼저(검수 11-17 #244) */ const err=hireMgr(id,+y,c==='1',UI.mplSel||[]); if(err){ UI.mgrMsg=err; toast(err); render(); return; } UI.mplSel=[]; UI.mgrCandidate=null; UI.confirmFire=false; save(); render(); const m=G.mgr[G.user]; if(m&&m.id===id&&!m.interim)meetOpen('mgr',null,{first:true}); },
   fireAsk(){ const r=mgrFireAsk(); if(r.k==='ok')UI.confirmFire=true; else { UI.confirmFire=false; try{ toast(r.msg); }catch(e){} } save(); render(); }, fireCancel(){ UI.confirmFire=false; render(); }, /* 감독 경질은 구단주 동의가 먼저(11-12) */

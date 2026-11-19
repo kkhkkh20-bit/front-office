@@ -146,7 +146,7 @@ function scoutFM(){ const S=G.scouts||[], ch=scoutChief(), sel=UI.scSel&&S.find(
     <table class="sf-t scn-t"><thead><tr><th>외국인 관찰 명단</th><th>나라</th><th>관찰 보고 누적</th><th></th></tr></thead><tbody>${FW.map(({w,p})=>`<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${w.auto?' <span class="pill">스카우트 추천</span>':''}<span class="scn-s">${esc(posLabel(p))} · ${p.age}세${p.prevLvl?` · ${esc(p.prevLvl)}`:''}</span></td><td>${esc(IREG[origOf(p)].l)}</td><td><span class="scn-pg"><i class="scn-k"><u style="width:${w.k}%"></u></i>${w.k}%</span></td><td><button class="btn small" data-a="fwatch" data-v="${p.id}">빼기</button></td></tr>`).join('')||'<tr><td colspan="4" class="muted">관찰 중인 후보가 없습니다.</td></tr>'}</tbody></table></div></section>`; /* 타 구단 관심 선수는 같은 관심 명단 칸 안에서 스크롤(카페 11-11 알중식: 별도 칸이 붙어 3×2 배치가 깨지고 스카우트 보고 칸이 커졌다) */
   /* 예산 + 리그 비교 */
   const Lg=stInit(), tids=G.teams.map(t=>t.id), scOf=t=>t===G.user?S:((Lg[t]||{}).sc||[]), sk=a=>a.length?avg(a.map(s=>s.skill||0)):0;
-  const sal=sum(S.map(s=>s.sal||0)), net=sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c));
+  const sal=sum(S.map(s=>s.sal||0)), net=intlCost();
   const bud=`<section class="card scn-bud"><h3>스카우팅 예산</h3><div class="scn-st"><div><span>스카우트 연봉</span><b>${money(sal)}</b></div><div><span>해외 정보망</span><b>${money(net)}</b></div><div><span>연간 합계</span><b>${money(sal+net)}</b></div><div><span>지난 결산 이후 지출</span><b>${money(scoutSpent()+((G.spend&&G.spend.intl)||0))}</b></div></div>
     ${sfChart(`스카우트 비교 · 리그 ${G.teams.length}개 구단`,[{l:'스카우트 수',v:S.length,all:tids.map(t=>scOf(t).length)},{l:'평균 능력',v:sk(S),all:tids.map(t=>sk(scOf(t)))}],0,6,v=>(Math.round(v*10)/10).toString())}</section>`;
   /* 스카우트 보고(소식함의 스카우트 소식) */

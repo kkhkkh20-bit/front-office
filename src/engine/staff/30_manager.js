@@ -63,8 +63,9 @@ function mgrSevSettle(tid,m){ const r=mgrSevPay(m); if(r.pay>0){ if(ledger(tid,'
 /* 대행마다 id가 달라 직원 관계(staffRel 'mgr:'+id)가 새로 시작한다(검수 11-09zw #29) */
 function mkInterim(tid){ tid=tid??G.user; const C=(G.coach&&G.coach[tid])||{}; const c=[C.hc,C.fm,...Object.values(C)].find(coachActiveNow); if(G.policy&&tid===G.user)G.policy={k:G.policy.k,day:-99,follow:.9}; /* 운영 방침은 우리 구단 것: AI 구단 대행(coachInterimLeft)은 건드리지 않는다 */ return {id:`interim:${c?c.id:'-'}:${G.day}`,cid:c?c.id:null,name:c?`${c.name}(감독대행)`:'감독대행',age:c?c.age:50,small:50,pen:50,youth:50,disc:42,tac:45,sal:c?0:150,yrs:1,career:'감독대행',interim:true}; }
 function hireMgr(id,years,withClan,pl){ if(G.unemp)return '구단을 맡고 있지 않습니다.'; years=Math.round(+years); if(!(years>=1&&years<=5))return '계약 기간은 1~5년입니다.';
-  const m=(G.mmarket||[]).find(x=>x.id===id); if(!m)return '후보가 없습니다.';
+  const m=mgrCandOf(id); if(!m)return '후보가 없습니다.'; /* 외부 시장 + 우리 수석코치·2군 감독 내부 승격(74_internal_promo) */
   if(pl&&pl.length){ if(pl.some(k=>mplStance(m,k)==='no'))return mplApply(m,pl); }
+  const ip=m._ipFrom?{role:m.ipMine,pref:m.ipPref}:null; if(ip){ ipMgrTaken(team(G.user),m); for(const k in G.ipMy||{})if(G.ipMy[k].m===m)delete G.ipMy[k]; delete m.ipMine; delete m.ipPref; } /* 내부 승격: 코치 자리를 먼저 비운다(현 감독 사단으로 함께 떠나는 일이 없게) */
   const cur=G.mgr[G.user]; if(G.coach&&cur&&!cur.interim){ const gone=clanLeave(cur,G.user,'fire'); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); }
   if(cur&&!cur.interim){ try{ meInc('mgrFire'); }catch(e){} try{ exMgrAdd(cur,G.user); }catch(e){} staffHistory('mgr',cur,'경질',G.user,'단장 결정'); /* 새 감독을 바로 앉혀도 경질로 센다(검수 11-07) */ const {pay,brk,n}=mgrSevSettle(G.user,cur); addLog(`${cur.name} 감독을 경질했습니다. 잔여 연봉 ${money(pay)}${brk?`(약속 위반 ${n}회로 계약 위반 조항 적용, 절반)`:''}.`); }
   if(cur&&cur.interim)staffHistory('mgr',cur,'감독대행 임무 종료',G.user,'정식 감독 선임'); delete m.pl; if(pl&&pl.length)mplApply(m,pl);
@@ -75,7 +76,8 @@ function hireMgr(id,years,withClan,pl){ if(G.unemp)return '구단을 맡고 있�
   wire('감독',`${tname(G.user)}, ${m.name} 감독 선임`,{tid:G.user,x:{mid:m.id,hire:1}});
   try{ ivRequest('mgr_hire',{mid:m.id}); }catch(e){}
   mgrFix(m); m.rel=60; if(G.gmP&&G.gmP.bg==='player'&&!G.unemp)m.rel=65; /* 선수 출신 단장: 감독과 말이 통한다(기본 60을 정한 뒤 +5) */ applyPersonRelation(m,'mgr'); G.policy=null; try{ obHireBonus(m.ob,'감독'); }catch(e){} if(m.fame>=70){ const t=team(G.user); t.pop=clamp(t.pop+(m.fame-60)/400,0,1.5); note('감독',`스타 감독 ${m.name} 선임 소식에 팬들의 관심이 커졌습니다. 구단 인기가 올랐습니다.`); }
-  for(const p of playersOf(G.user)){ initPers(p); p.mor=clamp(p.mor+(m.disc-50)/10+(m.fame>=70?3:0),0,100); }
+  for(const p of playersOf(G.user)){ initPers(p); p.mor=clamp(p.mor+(m.disc-50)/10+(m.fame>=70?3:0)+(ip&&ip.pref?1:0),0,100); }
+  if(ip&&ip.pref){ m.rel=clamp(m.rel+6,0,100); note('감독',`${m.name} 감독은 오래 바라던 1군 감독을 맡게 되어 의욕이 큽니다. 단장과의 관계가 조금 좋아졌고, 선수단 분위기도 조금 밝아졌습니다.`); } /* 희망 보직이 1군 감독이던 코치(내부 승격): 관계 +6·선수단 기분 +1 */
   return '';
 }
 function fireMgr(){ if(G.unemp)return; const cur=G.mgr[G.user]; if(!cur||cur.interim)return; try{ meInc('mgrFire'); }catch(e){} try{ exMgrAdd(cur,G.user); }catch(e){} if(G.coach){ const gone=clanLeave(cur,G.user,'fire'); if(gone.length)addLog(`${cur.name} 감독 사단이 함께 떠났습니다: ${gone.join(', ')}`); } const {pay,brk,n}=mgrSevSettle(G.user,cur);
