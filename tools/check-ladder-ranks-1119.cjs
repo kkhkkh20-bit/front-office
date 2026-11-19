@@ -31,7 +31,7 @@ const { chromium } = require('playwright');
   let b; try {
     b = await chromium.launch({ executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium' }); const p = await b.newPage(); await p.setViewportSize({ width: 1440, height: 900 });
     const errs = []; p.on('pageerror', e => errs.push(String(e))); p.on('dialog', d => d.accept());
-    await p.goto(url); await p.waitForFunction(() => typeof newGame === 'function' && UI.title === true, null, { timeout: 90000 });
+    await p.goto(url); await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(() => typeof newGame === 'function' && UI.title === true, null, { timeout: 90000 });
     await p.evaluate(() => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; A.go('uld:deck'); });
     /* 다른 유저 56명: 이 게임의 다른 구단 덱(진짜 명단)으로 루키 단계에 등록하고 리그를 하나씩 마친다. 먼저 마친 유저가 위(같은 점수) */
     const decks = await p.evaluate(() => [1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => { let e = cupEntryNow({ tid: (G.user + k) % 10, name: '구단' + k }); { const C = FrontOfficeCore, sg = C.ulCapSuggest(e, 0); if (sg.ids.length) { e = C.ulCapDrop(e, sg.ids).e; e.ovr = cupOvr(e); e.h = C.cupEntryHash(e); } } e.payRef = Math.max(e.payRef, Math.ceil(e.pay / 1.4)); return e; }));
@@ -111,7 +111,7 @@ const { chromium } = require('playwright');
     /* 휴대폰 390: 같은 플레이어. 새 방문이라 닉네임 권유가 다시 나온다 */
     const ctx2 = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }); const p2 = await ctx2.newPage(); p2.on('pageerror', e => errs.push(String(e)));
     await p2.addInitScript(ls => { try { for (const k in ls) localStorage.setItem(k, ls[k]); } catch (e) {} }, me.ls);
-    await p2.goto(url); await p2.waitForFunction(() => typeof newGame === 'function' && UI.title === true, null, { timeout: 90000 });
+    await p2.goto(url); await p2.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p2.waitForFunction(() => typeof newGame === 'function' && UI.title === true, null, { timeout: 90000 });
     await p2.evaluate(s => { DEMO.on = false; G = JSON.parse(s); UI.title = false; A.go('uld:rank'); }, await p.evaluate(() => JSON.stringify(G)));
     await p2.waitForFunction(() => document.querySelectorAll('.ul-bd .ul-lb tr').length >= 51, null, { timeout: 30000 });
     const over = () => p2.evaluate(() => { const w = innerWidth, bad = [...document.querySelectorAll('.ul-bd, .ul-bd *')].filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && (r.right > w + 1 || r.left < -1) && !e.closest('.ul-lbw'); }).map(e => e.className || e.tagName).slice(0, 5); return { sw: document.documentElement.scrollWidth, w, bad, lbw: (() => { const e = document.querySelector('.ul-lbw'); return e ? e.scrollWidth - e.clientWidth : 0; })() }; });

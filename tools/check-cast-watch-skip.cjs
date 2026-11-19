@@ -17,7 +17,7 @@ const shot=async(page,name)=>{if(process.env.CAPTURE)await page.screenshot({path
   /* 3D 프로그램 파일은 늘 404: 실제 3D 그리기 없이 '못 받음 → 기본 중계' 길만 본다 */
   await page.route('**/assets/app/match3d.*.js*',r=>{if(r.request().resourceType()==='script')bundle.push(new URL(r.request().url()).pathname+new URL(r.request().url()).search);return r.fulfill({status:404,body:'missing'});});
   if(setup)await setup(page);
-  await page.goto(server.url);await page.waitForFunction(()=>typeof newGame==='function'&&typeof A!=='undefined',{},{timeout:120000});
+  await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await page.waitForFunction(()=>typeof newGame==='function'&&typeof A!=='undefined',{},{timeout:120000});
   await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open+2;G.fOkY=G.year;for(const t of G.teams)setEntry(t.id);G.entryY=G.year;G.res=null;G.stops=[];G.evs=[];G.offers=[];G.noRain=true;
    /* 실제 경기 계산은 그대로 쓰고, 무작위 업무 중단만 없앤다(check-match-entry와 같은 방식) */
    const base=processDay;processDay=function(){base();G.stops=[];for(const e of G.evs||[])e.done=true;G.offers=[];};UI.title=false;UI.tab='home';render();});

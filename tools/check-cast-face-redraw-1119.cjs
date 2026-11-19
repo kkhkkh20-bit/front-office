@@ -33,7 +33,7 @@ try{for(const [W,H] of [[1440,900],[390,844]]){const pc=W>=1100,tag=`${W}x${H}`,
   const release=async()=>{gate=false;const n=held.length;for(const r of held.splice(0))await r.continue();return n;};
   const fit=async what=>{const r=await p.evaluate(()=>({v:document.scrollingElement.scrollHeight-innerHeight,h:document.documentElement.scrollWidth-innerWidth}));assert.ok(r.h<=1,`${tag} ${what}: 가로 넘침 ${r.h}`);if(pc)assert.ok(r.v<=1,`${tag} ${what}: 화면 세로 스크롤 ${r.v}`);};
   const settle=async()=>{let f;for(let i=0;i<50;i++){await p.waitForTimeout(200);f=await p.evaluate(FACES);if(!f.all[1]&&!f.broken)break;}return f;};
-  await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function'&&typeof DEMO!=='undefined');await p.waitForTimeout(1800);/* 앱 비동기 부팅이 끝난 뒤 새 게임 */
+  await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function'&&typeof DEMO!=='undefined');await p.waitForTimeout(1800);/* 앱 비동기 부팅이 끝난 뒤 새 게임 */
   await p.evaluate(BOOT);
 
   /* 1. 멈춘 중계 */
