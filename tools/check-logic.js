@@ -7426,11 +7426,11 @@ T('[공략 방지] 4 방출: 그 시즌 남은 연봉 전액·남은 보장 80%,
   const f=P[1]; f.faC=true; f.yrs=3; f.sal=1000; ok(relCost(f).tot===1000+1600,'FA 3년 남은 계약 정산이 틀림 '+relCost(f).tot);
   const n0=capDeadA(G.user,sponSeason()).length; releasePlayer(p.id); ok(capDeadA(G.user,sponSeason()).length===n0+1,'개막 전 방출이 상한 산정에 안 남음');
   simTo(()=>period()==='season'&&G.day>=G.cal.open+20); const q=domestic(G.user).find(x=>!x.ys&&!x.foreign&&!x.faC&&!x.extNext); const fr=tradeYrFrac(); ok(relCost(q).tot===Math.round(q.sal*fr)&&fr>0&&fr<1,'시즌 중 남은 연봉을 정산하지 않음'); });
-T('[공략 방지] 5 코치 빼 오기: 시즌 중 불가·비시즌 2명까지, 좋은 코치는 원 소속이 자주 붙잡고, 우리 코치 노리기는 비시즌 매달',()=>{ fresh(); G.day=KD(12,1); /* 11-19 계약 정리 기간: 다른 구단 코치 빼 오기는 포스트시즌 뒤~12월 31일에만 열린다. 비시즌 한도는 그 기간 안에서 본다 */ const a=G.teams.find(x=>x.id!==G.user&&G.coach[x.id]);
+T('[공략 방지] 5 코치 빼 오기: 시즌 중 불가·비시즌 2명까지, 좋은 코치는 원 소속이 자주 붙잡고, 우리 코치 노리기는 계약 정리 기간(11·12월)에만',()=>{ fresh(); G.day=KD(12,1); /* 11-19 계약 정리 기간: 다른 구단 코치 빼 오기는 포스트시즌 뒤~12월 31일에만 열린다. 비시즌 한도는 그 기간 안에서 본다 */ const a=G.teams.find(x=>x.id!==G.user&&G.coach[x.id]);
   G.poachN={}; G.poachN[G.user]={k:sponSeason(),n:POACH_MAX}; const role=CKEYS.find(k=>G.coach[a.id][k]); const r=poachCoach(a.id,role,role); ok(/이미 코치/.test(r),'비시즌 한도를 넘어 제의 '+r);
-  ok(CM_RAID_M.length===4&&CM_RAID_M.includes(1)&&CM_RAID_K<1,'AI 코치 노리기 달력이 비시즌 매달이 아님');
+  ok(CM_RAID_M.length===2&&CM_RAID_M.includes(11)&&CM_RAID_M.includes(12)&&CM_RAID_K<1,'AI 코치 노리기 달력이 계약 정리 기간(11·12월)이 아님'); /* 구단주 11-19: 1·2월 제안 없앰 */
   const t=G.teams.find(x=>x.id!==G.user&&G.coach[x.id]&&stAiPlan(x).rich>=-.3); ok(t,'준비 실패'); const c=G.coach[t.id][CKEYS.find(k=>G.coach[t.id][k])]; c.sk=70; c.dv=70; const s0=c.sal; let n=0; for(let i=0;i<300;i++){ c.sal=s0; if(G.poachCtr)delete G.poachCtr[c.id]; if(cmCounter(t.id,c,{sal:s0,toRole:c.role}))n++; } c.sal=s0; ok(n/300>=.4&&n/300<=.85,'좋은 코치 역제안 확률이 .5~.8 밖 '+n/300);
-  simTo(()=>period()==='season'); G.poachN={}; ok(/시즌 중/.test(poachCoach(a.id,role,role)),'시즌 중에 코치를 빼 옴'); });
+  simTo(()=>period()==='season'); G.poachN={}; { const why=poachCoach(a.id,role,role); ok(why===STAFF_MOVE_WHY,'시즌 중에 코치를 빼 옴: '+why); } });
 T('[공략 방지] 6 육성: 아주 강하게는 튼튼해도 위험 하한 .4, AI 튼튼한 젊은 선수는 어느 방침이든 강하게, 아카데미 연 제휴비, 연수 잠재력 상승은 한 번',()=>{ fresh(); const a=G.teams.find(x=>x.id!==G.user&&trnCn(x.id)>=55); ok(a,'준비: 컨디셔닝 지도력 55 이상 AI 구단');
   const p=domestic(a.id).find(x=>!x.ys&&!x.foreign&&!x.isP); p.r.vit=95; ok(Math.abs(trnIF(p,3)/trnIF(p,2)-4)<1e-6,'아주 강하게 위험 하한이 .4가 아님 '+trnIF(p,3)+'/'+trnIF(p,2));
   a.trnPol='rec'; p.age=22; p.injOut=0; p.injHist=[]; p.fat=0; ok(trnIAuto(p).i===3,'회복 방침 AI의 튼튼한 젊은 선수가 강하게 못 함 '+trnIAuto(p).i); p.age=29; ok(trnIAuto(p).i<=1,'회복 방침인데 일반 선수가 강하게');
