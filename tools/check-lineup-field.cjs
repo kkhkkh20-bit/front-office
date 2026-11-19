@@ -5,7 +5,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),{chromium}=
 const POS=['C','1B','2B','3B','SS','LF','CF','RF','DH','P'];
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let b;const errors=[];try{
  b=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await b.newPage({viewport:{width:1366,height:768}});p.on('pageerror',e=>errors.push(e.message));
- await p.goto(server.url);await p.waitForSelector('[data-a="tsGo"][data-v="mode"]');
+ await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForSelector('[data-a="tsGo"][data-v="mode"]');
  await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open+2;for(const t of G.teams)setEntry(t.id);const op=G.teams.find(t=>t.id!==G.user).id;G.games=[];const g=simGame(G.day,G.user,op,false);G.games.push(gameRecord(G.day,G.user,op,g,''));UI.title=false;UI.tab='home';render();
   /* 경기 전 화면을 붙잡아 둔다: 3D 준비·늦은 3D 대체로 경기가 시작되지 않게(검사 전용) */ cPrepDone=function(){};castStart2D=function(){};A.castStart=function(){};if(typeof Match3D!=="undefined")window.Match3D=Object.assign({},Match3D,{mount:()=>new Promise(()=>{})}); /* 3D 로딩 중 상태 유지 */});
  /* 보드 하나 검사: 10자리·이름·OVR(공개 범위)·카드가 보드 안 */

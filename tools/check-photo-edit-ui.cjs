@@ -16,7 +16,7 @@ const holdImage=()=>{ const I=window.Image; window.__phHeld=[]; window.__phHold=
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/opt/pw-browsers/chromium'});
  const ctx=await browser.newContext({viewport:{width:1366,height:768}}),p=await ctx.newPage(),errors=[];p.on('filechooser',()=>{}); /* 파일 고르기 가로채기를 처음부터 켜 둔다(waitForEvent와 키 누르기가 겨루면 놓친다) */p.setDefaultTimeout(15000);p.on('pageerror',e=>errors.push(e.message));
- await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.addInitScript(holdImage);await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+ await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.addInitScript(holdImage);await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
  await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;UI.patchClosed=true;A.go('home');A.player(domestic(G.user).find(p=>!p.isP).id);});
  const key=await p.evaluate(()=>'p:'+UI.sheet), pen=()=>p.locator(`[data-a="phMenu"][data-v="${key}"]:visible`).first();
  const held=()=>p.evaluate(()=>window.__phHeld.length), release=async()=>{ const n=await p.evaluate(()=>window.__phRelease()); await p.waitForTimeout(300); return n; };

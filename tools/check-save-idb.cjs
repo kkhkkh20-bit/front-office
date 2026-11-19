@@ -2,7 +2,7 @@
 const {chromium}=require('playwright');const {startHtmlServer}=require('./lib/ui-server.cjs');
 const ok=(c,m)=>{ console.log((c?'통과':'실패')+' '+m); if(!c)process.exitCode=1; };
 (async()=>{const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});const ctx=await b.newContext({viewport:{width:1366,height:800}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.route(/fonts\.g/,r=>r.abort());
-await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
 // 1) 새 게임 두 개(슬롯 1, 2) 저장
 await p.evaluate(()=>{ localStorage.clear(); DEMO.on=false; newGame(6); try{hireMgr(G.mmarket[0].id,3);}catch(e){} G.tut={done:true,step:99}; G.medSet=true; UI.title=false; CUR_SLOT=1; SLOT_REV=0; SLOT_NEW=true; saveNow(); });
 const s1=await p.evaluate(()=>({has:slotHas(1),ls:sbLsGet(1)!=null,day:G.day}));ok(s1.has&&s1.ls,'평소 저장은 localStorage');
@@ -15,7 +15,7 @@ ok(r2.okSave&&!r2.err,'가득 찬 상태에서도 저장 성공 '+JSON.stringify
 const r3=await p.evaluate(async()=>{ await new Promise(r=>setTimeout(r,1500)); const m=meta(); return {f2:!!(m.slots[2]&&m.slots[2].idb),ls2:sbLsGet(2)!=null}; });
 ok(r3.f2&&!r3.ls2,'다른 슬롯도 IndexedDB로 옮겨 공간 확보 '+JSON.stringify(r3));
 // 3) 새로고침 뒤 이어하기
-await p.reload();await p.waitForFunction(()=>typeof G!=='undefined'&&G&&G.memoTest!==undefined,null,{timeout:15000}).catch(()=>{});
+await p.reload();await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof G!=='undefined'&&G&&G.memoTest!==undefined,null,{timeout:15000}).catch(()=>{});
 const r4=await p.evaluate(()=>({g:!!G,memo:G&&G.memoTest,slot:curSlot(),has2:slotHas(2),size1:slotSize(1)}));ok(r4.g&&r4.memo==='after-full'&&r4.slot===1,'새로고침 뒤 IndexedDB 본문으로 이어하기 '+JSON.stringify(r4));ok(r4.has2,'슬롯 2도 목록에 남음');
 // 4) 슬롯 2 열기 → 저장 → 다시 슬롯 1
 await p.evaluate(async()=>{ UI.title=false; await A.slotLoad(2); });await p.waitForTimeout(800);

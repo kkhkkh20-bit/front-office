@@ -2,7 +2,7 @@
    협상할 수 없는 선수는 이유를 보인다. PC 1366 세로 스크롤 없음 · 폰 390 가로 넘침 없음 */
 const assert=require('node:assert/strict'),path=require('node:path'),{chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
-const p=await browser.newPage({viewport:{width:1366,height:768}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(server.url);
+const p=await browser.newPage({viewport:{width:1366,height:768}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
 await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;
   G.day=G.cal.open+40;const L=domestic(G.user).filter(canExtend).sort((a,b)=>ovr(b)-ovr(a));const q=L[0];q.svc=faSvc(q)-1;q.faC=false;q.yrs=1;q.age=30;delete q.agentY;window._pid=q.id;render();});
 const noOverflow=async(tag)=>{const o=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,w:innerWidth}));assert.ok(o.sw<=o.w+1,`${tag}: 가로 넘침 ${o.sw}>${o.w}`);};

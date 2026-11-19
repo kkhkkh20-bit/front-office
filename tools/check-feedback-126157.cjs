@@ -18,7 +18,7 @@ const batters=U=>playersOf(U).filter(p=>!p.isP);
 const h1=(o)=>({...bz(),lvl:'1군',...o});
 
 /* ===== 결산·시상·단장 교체 ===== */
-test(126,()=>{const U=U0(),y=Y();const T=achT();T.seasons=9;T.psRun=4;T.psBest=4;seas({tid:U,w:90,l:54,ch:2});G.ps={seeds:[U]};G.last=lastFor(y,{w:{[U]:90},l:{[U]:54},runner:U});
+test(126,()=>{const U=U0(),y=Y();const T=achT();T.seasons=9;T.psRun=4;T.psBest=4;T.seaY=y-1; /* 검수 #577(0dbf5977)부터 연속 가을야구는 바로 앞 해를 판정했을 때만 이어 센다: 앞선 4년이 작년까지 이어졌음을 둔다 */seas({tid:U,w:90,l:54,ch:2});G.ps={seeds:[U]};G.last=lastFor(y,{w:{[U]:90},l:{[U]:54},runner:U});
   G.unemp={y,msg:'경질',since:G.day,from:U,k:'fired'}; /* 결산에서 경질된 뒤 결산 후크가 돈다 */
   achCheck({k:'season'});assert.equal(T.seasons,10);assert.ok(has('s10'),'10시즌');assert.ok(has('ps5'),'5년 연속 가을야구');});
 test(127,()=>{const U=U0(),B=other(),y=Y();seas({tid:U,w:80,l:64,ch:1});G.user=B;G.gmJoin={y,tid:B,w:70,l:70,t:0,psDone:true};G.ps={seeds:[U]};G.last=lastFor(y,{champ:U,runner:B});

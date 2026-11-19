@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),path=require('node:path'),{chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;try{
  browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const page=await browser.newPage();
- await page.goto(server.url);await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;});
+ await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;});
  const results=await page.evaluate(()=>{const out=[],test=(n,f)=>{try{if(!f())throw Error('기대와 다른 표시');out.push([n,true]);}catch(e){out.push([n,false,e.message]);}};
  const b=G.teams.find(t=>t.id!==G.user).id,a=domestic(G.user)[0],p=domestic(b)[0],offer=()=>({id:'uirev',from:b,give:[p.id],get:[a.id],exp:G.day+3});
  test('#344 받은 제안 결재서 현금 조건',()=>{const o=offer();o.cash=-200;G.offers=[o];const d=GUARD.offerYes(o.id);return d.lines.some(x=>x.includes('현금')&&x.includes(money(200)));});

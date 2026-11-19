@@ -71,7 +71,12 @@ const TEAM_DEF=[
    대전(오렌지), 광주(빨강·남색·금색), 대구(파랑), 부산(네이비), 창원(마린 블루·금색). 배지 바탕색을 주색으로 맞춘다(사용자 2026-11-02) */
 const TPAL={SC:['#A50034','#111111','#2b000e','#ff3f78'],SH:['#131230','#ED1C24','#09091a','#4b5fd6'],IS:['#CE0E2D','#ffffff','#34040c','#ff4a5c'],SS:['#141414','#ED1C24','#000000','#ff3c3c'],GS:['#570514','#ffffff','#1f0207','#c23a52'],
   DR:['#F37321','#282828','#3f1606','#ff8a45'],GB:['#EA0029','#091330','#3b0507','#ff4048'],DT:['#074CA1','#A1A0A4','#002340','#2e92ec'],BW:['#041E42','#ffffff','#020c1a','#3d72d9'],CA:['#1D467B','#C6A269','#0f1b2f','#5d8ad6']};
-function tpal(t){ if(t==null)return ['#4b5b6c','#e3e9ee','#26313c','#8a99aa']; if(typeof t==='number')t=(typeof G!=='undefined'&&G&&G.teams&&G.teams[t])||TEAM_DEF[t]; if(t&&t.logo&&t.logo.c1){ const b=(t&&TPAL[t.code])||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; const L=t.logo; return [L.c1||b[0],L.c2||b[1],L.c3||b[2],L.c4||L.c1||b[3]]; } return (t&&TPAL[t.code])||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; }
+/* 신생 구단 홈 유니폼 키트(v23 납품 assets/v23/expansion_kits, 카페 11-19): 창단 순서(구단 번호)로 고정한다. 11구단(번호 10)=expansion_a 숲 녹색·골드, 12구단(번호 11)=expansion_b 퍼플·실버.
+   구단 색(pal: 주색·보조색·어두운 바탕·밝은 강조)과 hue를 유니폼 사진·배지에 맞춘다(난수 없음). 사진 시트 = 00l_faces_v23_data.js(FACE23), 배지 = 00a2_badges_exp_data.js(BADGE_IMG 10·11) */
+const EXP_KIT=[{key:'expansion_a',hue:155,pal:['#0B5D3B','#C9A227','#04261a','#3fae78']},{key:'expansion_b',hue:265,pal:['#4B2A7B','#A7A9AC','#1d1033','#9a72d6']}];
+function expKit(t){ const id=t!=null&&typeof t==='object'?t.id:t; if(id==null||id===''||!Number.isInteger(+id))return null; const i=+id-TEAM_DEF.length; return i>=0&&i<EXP_KIT.length?EXP_KIT[i]:null; }
+function tpBase(t){ const k=expKit(t); return k?k.pal:(t&&TPAL[t.code])||null; } /* 구단 기본 색: 원년 구단은 TPAL(code), 신생 구단은 키트 색 */
+function tpal(t){ if(t==null)return ['#4b5b6c','#e3e9ee','#26313c','#8a99aa']; if(typeof t==='number')t=(typeof G!=='undefined'&&G&&G.teams&&G.teams[t])||TEAM_DEF[t]; if(t&&t.logo&&t.logo.c1){ const b=tpBase(t)||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; const L=t.logo; return [L.c1||b[0],L.c2||b[1],L.c3||b[2],L.c4||L.c1||b[3]]; } return tpBase(t)||[hslHex(t.hue,58,40),hslHex(t.hue,62,62),hslHex(t.hue,45,18),hslHex(t.hue,62,55)]; }
 const OWNVOICE={win:'저는 가을야구를 기본으로 봅니다. 성적이 나면 지원은 아끼지 않겠습니다.',profit:'저는 적자를 가장 싫어합니다. 숫자로 보여 주세요.',pr:'관중이 꽉 찬 야구장을 보고 싶습니다. 화제가 되는 구단을 만들어 주세요.'};
 const OWNER={
   win:{label:'성적 우선',msg:'구단주는 가을야구를 기본으로 봅니다.',w:[1.4,1.3,.5,.5]},
@@ -106,6 +111,10 @@ const INET=[{l:'에이전트 자료',c:0,sd:9.5,d:'에이전트가 보낸 영상
   {l:'현지 사무소',c:320,sd:3,d:'현지 사무소와 구단 네트워크로 거의 정확하게 봅니다. 숨은 후보를 가장 먼저, 가장 많이 확보합니다.'}];
 const origOf=p=>p.orig||({'미국':'us','도미니카공화국':'la','베네수엘라':'la','일본':'jp','대만':'tw','호주':'au'}[p.nat]||'us');
 const intlLv=r=>Math.min(3,((G.intl&&G.intl[r])||0)+(G&&G.scouts&&G.scouts.some(s=>s.role==='intl'&&s.region===r&&G.day-(s.since??-999)>=30)?1:0)); /* 파견 스카우트는 30일 적응 뒤부터 해외망 단계에 더한다(검수 11-07) */
+/* 단장이 정한 투자 단계(0~3, 파견 스카우트 몫 제외). 비용은 이 단계로만 낸다: 스카우트 파견 +1단계는 스카우트 연봉으로 이미 낸다.
+   예전에는 비용·선택 버튼이 파견 몫을 더한 단계(intlLv)를 써서, 파견 지역은 0단계를 골라도 1단계로 보이고 1단계 비용이 계속 나갔다(카페 제보 11-19) */
+const intlNet=r=>clamp(Math.round(+((G&&G.intl&&G.intl[r])||0)),0,3);
+const intlCost=()=>sum(Object.keys(IREG).map(r=>INET[intlNet(r)].c));
 
 /* 국내 이름: 현역·은퇴 선수(OB) 이름과 겹치지 않게(하루 단위로 이름 목록을 모아 둔다) */
 let _nmSet=null, _nmDay=null;
@@ -229,10 +238,18 @@ function capPayAs0(tid,inIds,outIds){ const y=sponSeason(), nx=y>G.year||preSeas
 function capPayNext(tid){ const y=sponSeason(), fid=franId(tid,null,null,p=>salNext(p)+capBAt(p,y),y); const s=domPayNext(tid,y).filter(p=>!(p.draft&&p.draft.y===y-1)).map(p=>capAmt(p,tid,salNext(p)+capBAt(p,y),fid)).concat(capDeadA(tid,y)).sort((a,b)=>b-a).slice(0,40); return sum(s); }
 /* 계약 하나를 바꿨을 때의 상한 합계: 실제 샐러리캡과 같은 방식(선수별 금액 정렬 → 상위 40명). s는 계약이 적용되는 시즌.
    지금 시즌(sponSeason)이면 지금 연봉 기준, 그 뒤 시즌이면 다음 시즌 기준(합의한 다음 시즌 계약·재계약 중 금액, 그 시즌까지 남는 계약금 상한 반영) */
-function capPayWith(tid,pid,amt,s){ const y0=sponSeason(); s=s??y0; const nxt=s>y0||preSeason(s); const cb=q=>q.capB&&q.ctT===q.team&&q.capB.until>=G.year?q.capB.a:0; const fid=franId(tid,null,pid!=null?[pid]:null,q=>q.id===pid&&amt!=null?amt /* 새 계약 금액에 이미 새 계약금 반영액이 들어 있다: 옛 계약금은 새 계약이 대신한다(검수 11-09zzb) */:nxt?salNext(q)+capBAt(q,s):q.sal+cb(q),nxt?s:null); /* 예외 선수는 바뀐 금액(계약금 연 반영액 포함)으로 다시 고른다(검수 11-09s·11-09y) */ /* 개막 전이면 합의한 인상분까지 */ const L=[];
-  for(const p of (nxt?domPayNext(tid,s):domPayOf(tid))){ if(p.id===pid)continue; if(nxt){ if(p.draft&&p.draft.y===s-1)continue; L.push(capAmt(p,tid,salNext(p)+capBAt(p,s),fid)); } else { if(isRookie(p))continue; L.push(capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)); } }
+function capPayWith(tid,pid,amt,s,skip){ const y0=sponSeason(); s=s??y0; const nxt=s>y0||preSeason(s); const cb=q=>q.capB&&q.ctT===q.team&&q.capB.until>=G.year?q.capB.a:0; const fid=franId(tid,skip&&skip.size?[...skip]:null,pid!=null?[pid]:null,q=>q.id===pid&&amt!=null?amt /* 새 계약 금액에 이미 새 계약금 반영액이 들어 있다: 옛 계약금은 새 계약이 대신한다(검수 11-09zzb) */:nxt?salNext(q)+capBAt(q,s):q.sal+cb(q),nxt?s:null); /* 예외 선수는 바뀐 금액(계약금 연 반영액 포함)으로 다시 고른다(검수 11-09s·11-09y) */ /* 개막 전이면 합의한 인상분까지 */ const L=[];
+  for(const p of (nxt?domPayNext(tid,s):domPayOf(tid))){ if(p.id===pid||skip&&skip.has(p.id))continue; if(nxt){ if(p.draft&&p.draft.y===s-1)continue; L.push(capAmt(p,tid,salNext(p)+capBAt(p,s),fid)); } else { if(isRookie(p))continue; L.push(capAmt(p,tid,p.sal+(p.capB&&p.ctT===p.team&&p.capB.until>=G.year?p.capB.a:0),fid)); } }
   L.push(...capDeadA(tid,nxt?s:G.year)); /* 방출·계약금 남은 몫(capPay와 같게) */
   const so=[...L].sort((a,b)=>b-a); const base=sum(so.slice(0,40)), k40=so.length>=40?so[39]:0; const pp=pid!=null?G.players[pid]:null; if(amt!=null&&!(pp&&!nxt&&isRookie(pp))&&!(pp&&nxt&&pp.draft&&pp.draft.y===s-1)&&!(pp&&(nxt?milCapOut(pp,s):milServing(pp)))) /* 복무 선수는 기존 합계와 같은 기준으로(검수 11-09zk) */L.push(pid!=null&&pid===fid?amt*.5:amt); /* 예외 선수가 없을 때(null===null) 외부 선수가 반값으로 잡혔다(검수 11-09zzb) */ /* 신인 제외 조건은 바꾸려는 선수에게도 똑같이(검수 11-06) */ const tot=sum(L.sort((a,b)=>b-a).slice(0,40)); const room0=capOf(s)-base+k40; return {tot,base,cap:capOf(s),s,room:pid!=null&&pid===fid?room0*2:room0}; } /* 프랜차이즈 예외 선수는 보수의 절반만 들어가니 쓸 수 있는 연봉은 두 배(검수 11-06) */ /* room: 이 선수 금액으로 쓸 수 있는 최대(40번째 선수를 밀어내는 몫 포함) */
+/* 포스팅 신청이 걸려 있는(결과 발표 전) 선수: FA 영입 결재의 상한 합계에서는 떠날 선수로 본다(구단주 승인, 카페 11-19 천국의다리: 11월 초 FA가 열리는데 포스팅 결과는 12월 중순이라, 그 사이 영입 결재가 모두 막혔다). 사용자·AI 같은 규칙.
+   돌아오면(무산) 그 시즌 그만큼의 초과는 경쟁균형세·구단주 제재에서 뺀다(capPostAllow) */
+function postPendOn(p){ return !!p&&p.team!=null&&(G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.done&&!x.void&&x.tid===p.team); }
+function postCapOut(tid,s){ const y0=sponSeason(); s=s??y0; const nxt=s>y0||preSeason(s), cb=q=>q.capB&&q.ctT===q.team&&q.capB.until>=G.year?q.capB.a:0; const L=(G.posting||[]).length?(nxt?domPayNext(tid,s):domPayOf(tid)).filter(postPendOn):[];
+  const list=L.map(q=>[q.id,Math.round(nxt?salNext(q)+capBAt(q,s):q.sal+cb(q)),G.year]); /* [선수, 그 시즌 상한 반영액(안내용), 포스팅 신청 해] */ return {s,ids:new Set(list.map(x=>x[0])),list,amt:sum(list.map(x=>x[1])),names:L.map(q=>q.name)}; }
+function postCapTxt(X){ return X&&X.amt>0?`포스팅 신청 선수 연봉(${X.names.join('·')} ${money(X.amt)})은 이적 예상으로 한도에서 제외했습니다.`:''; }
+/* 포스팅이 무산돼 돌아온 선수 몫의 상한 초과 면제: 그 선수를 뺀 결재로 FA를 데려온 구단, 그 시즌만 */
+function capPostAllow(tid,y){ return sum((G.capPostA||[]).filter(a=>a.tid===tid&&a.s===y).map(a=>a.amt||0)); }
 /* 프랜차이즈 예외(KBO판 '래리 버드 룰', 2025-09 이사회 의결, 2026시즌부터): 구단마다 해마다 1명, 그 구단 소속으로 7시즌 이상 등록한 국내 선수를 예외 선수로 지정하면
    그 선수 보수(연봉+계약금 연 반영액)의 50%를 상한 산정(상위 40명 합계)에서 뺀다.
    지정(카페 11-17 수딧): 구단이 직접 고른다(G.franSel[구단]=[{y 적용 시작 시즌, pid}]). 지정이 없거나 지정 선수가 떠났거나 자격이 없으면 가장 많이 받는 대상자로 본다.

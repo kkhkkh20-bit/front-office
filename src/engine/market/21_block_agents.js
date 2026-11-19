@@ -2,7 +2,7 @@
 const WANT={any:'가장 좋은 제안',prospect:'유망주',p:'투수',b:'야수',sal:'연봉 절감'};
 function blockAdd(id,want){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||hasNtc(p))return; if(p.noTrade)delete p.noTrade; /* 매물로 올리면 트레이드 불가 지정은 풀린다 */ if(!p.listed)delete p.urgent; /* 새로 올리면 일반 매물(지난 급매 설정이 남지 않게, 검수 11-09w) */ p.listed=true; p.lw=want||p.lw||'any'; }
 function blockRemove(id){ const p=G.players[id]; if(!p)return; delete p.listed; delete p.lw; delete p.urgent; G.offers=(G.offers||[]).filter(o=>{ if(!(o.blk&&o.get.includes(id)))return true; offerMailDone(o.id); return false; }); }
-function corePool(tid){ const t=team(tid); const ds=domestic(tid).filter(p=>tradeEligible(p,{foreign:false,joinY:false,healthy:false,recent:false})); /* 거부권 선수는 트레이드 카드로 내놓지 않는다 */ const core=new Set(ds.map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id)); return ds.filter(p=>!core.has(p.id)); }
+function corePool(tid,ntcTo){ const t=team(tid); const ds=domestic(tid).filter(p=>tradeEligible(p,{foreign:false,joinY:false,healthy:false,recent:false,ntc:ntcTo!=null?false:true})&&(ntcTo==null||ntcAskable(p,ntcTo))); /* 거부권 선수는 트레이드 카드로 내놓지 않는다. AI끼리 거래(ntcTo: 받을 구단)는 우리처럼 동의를 물을 수 있는 선수까지(AI 규칙 동등 11-19) */ const core=new Set(ds.map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id)); return ds.filter(p=>!core.has(p.id)); }
 function pickPackage(tid,budget,want,exclude){ const t=team(tid); exclude=exclude||[];
   let pool=corePool(tid).filter(p=>!exclude.includes(p.id)&&healthy(p)).map(p=>({p,v:tval(t,p,'out')*(p.aiListed?.85:1),u:tval(team(G.user),p,'in')})).filter(x=>x.v>0.3&&x.u>0.3);
   if(want==='prospect')pool=pool.filter(x=>x.p.age<=24&&x.p.pot-ovr(x.p)>=6); else if(want==='p')pool=pool.filter(x=>x.p.isP); else if(want==='b')pool=pool.filter(x=>!x.p.isP);
@@ -92,7 +92,7 @@ function faPreviewTxt(P){ if(!P)return ''; if(P.st==='closed')return '협상 결
 function faReopenOk(id){ const F=G.fa, n=F&&F.neg&&F.neg[id], p=G.players[id]; if(!n||!p||F.closed||p.team!=null)return false; return (n.closed||n.rounds>=agRoundsMax(p))&&G.day-F.openDay>=45&&G.day-(n.lastD??-999)>=14; }
 function faReopenDay(id){ const F=G.fa, n=F&&F.neg&&F.neg[id]; if(!n)return null; return Math.max(G.day+1,F.openDay+45,(n.lastD??G.day)+14); }
 /* FA 계약의 상한 결재(13_roster capOwnerCheck): 계약금은 연평균으로 상한에 들어간다 */
-function faCapCheck(p,o){ if(!p||!o)return null; const T=o.terms; const a=T?T.annual+Math.round((T.bonus||0)/Math.max(1,T.years||o.years||1)):o.annual; const s=sponSeason(); const cc=capOwnerCheck(capPayWith(G.user,p.id,a,s).tot,capPayWith(G.user,null,null,s).tot,s,'fa'+p.id); if(cc&&!cc.ok&&!cc.hard&&faGrantOpen(p.id)>0)return {...cc,ok:true,p:1,grant:true,msg:''}; /* 구단주가 영입 자금까지 낸 선수는 상한 초과 결재도 승인한다(절대 한도는 그대로, 피드백 11-18) */ return cc; }
+function faCapCheck(p,o){ if(!p||!o)return null; const T=o.terms; const a=T?T.annual+Math.round((T.bonus||0)/Math.max(1,T.years||o.years||1)):o.annual; const s=sponSeason(), X=postCapOut(G.user,s), sk=X.ids.size?X.ids:null; const cc=capOwnerCheck(capPayWith(G.user,p.id,a,s,sk).tot,capPayWith(G.user,null,null,s,sk).tot,s,'fa'+p.id); if(cc&&X.amt>0){ cc.postOut=X.amt; cc.postTxt=postCapTxt(X); if(cc.msg)cc.msg+=' '+cc.postTxt; } /* 포스팅 신청 선수는 떠날 선수로 본다(구단주 승인 11-19) */ if(cc&&!cc.ok&&!cc.hard&&faGrantOpen(p.id)>0)return {...cc,ok:true,p:1,grant:true,msg:''}; /* 구단주가 영입 자금까지 낸 선수는 상한 초과 결재도 승인한다(절대 한도는 그대로, 피드백 11-18) */ return cc; }
 /* FA 요구 기준(환산 점수): 구단마다 그 구단과의 에이전트 친분으로 달라진다(사용자·AI 같은 식) */
 function faWantFor(p,tid){ const ag=agNeg(p); const ai=Object.entries((G.fa&&G.fa.ai&&G.fa.ai[p.id])||{}).filter(([k,o])=>o&&faAiOk(+k,p,o)).length; return offScore(p.ask)*agWantMul(ag,tid)*(1+.03*ai)*(p.faFrom===tid?.95:1); }
 /* FA 마감일(1월 24일) */
@@ -103,6 +103,7 @@ function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; if(!F||F.closed
   const lk=Array.isArray(o.lock)?o.lock.filter(k=>typeof k==='string').slice(0,8):[];
   const T=o.terms?{...o.terms}:null; if(T)delete T.ov; const D=T?termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}):null; if(T)o={annual:Math.round(termsVal(T,D)),years:T.years,terms:T};
   if(faOutBlocked(G.user,p))return {msg:`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(${ASSOC.s} 규약 제173조). 이미 ${faOutN(G.user)}명을 데려왔습니다.`};
+  if(faRosterFull(G.user))return {msg:`정식 선수와 입단 예정 선수가 ${ROSTER_MAX}명으로 꽉 차 ${p.name}에게 제안할 수 없습니다. 먼저 한 명을 정리하세요.`}; /* 역제안 수락·사인 관문과 같은 정원 검사(제보 11-19) */
   { const cc=faCapCheck(p,o); if(cc&&!cc.ok)return {msg:cc.msg,owner:true}; } /* 구단주 결재가 안 나면 에이전트에게 내밀지 못한다(협상 횟수·분위기 그대로) */
   { const cc=faFundsCheck(p,o); if(cc)return {msg:cc.msg,owner:true,funds:true}; }
   const RM=agRoundsMax(p); /* 오래 팀을 찾지 못한 FA(시장 개장 45일 뒤, 마지막 협상 14일 뒤): 에이전트가 협상을 다시 연다(요구액도 그동안 내려갔다) */

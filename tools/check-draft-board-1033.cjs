@@ -12,7 +12,7 @@ const root=path.resolve(__dirname,'..'),out=process.env.SHOT_DIR;
   browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
   for(const width of [390,1366]){
    const context=await browser.newContext({viewport:{width,height:width===390?844:900}}),page=await context.newPage(),errors=[];
-   page.on('pageerror',e=>errors.push(e.message));await page.goto(server.url);
+   page.on('pageerror',e=>errors.push(e.message));await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
    await page.waitForFunction(()=>typeof newGame==='function'&&UI.title===true);
    await page.evaluate(()=>{localStorage.clear();DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;window.__draftBase=JSON.stringify(G);});
    const reset=()=>page.evaluate(()=>{G=JSON.parse(__draftBase);worldReset();closeSheets();UI.drv=null;UI.dview='list';UI.open={draftFilters:true,draftRest:true,dmock:false};UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'mine',more:20};G.shortlist=[];G.amFw={};delete G.dbSort;window.__ids=draftRanked().slice(0,3).map(x=>x.p.id);for(const id of __ids.slice().reverse())amFollow(id,true);A.go('transfer:draft');});

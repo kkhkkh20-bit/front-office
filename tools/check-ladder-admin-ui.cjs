@@ -43,7 +43,7 @@ function deck(o = {}) { const P = []; const POS = ['C', '1B', '2B', '3B', 'SS', 
     b = await chromium.launch({ executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium' });
     const errs = [];
     const open = async (w, h, nodb) => { const ctx = await b.newContext({ viewport: { width: w, height: h }, extraHTTPHeaders: nodb ? { 'x-test-nodb': '1' } : {} }); const p = await ctx.newPage(); p.on('pageerror', e => errs.push(String(e)));
-      await p.addInitScript(() => { try { localStorage.setItem('fo-cup-admin', 'test-admin'); } catch (e) {} }); await p.goto(url);
+      await p.addInitScript(() => { try { localStorage.setItem('fo-cup-admin', 'test-admin'); } catch (e) {} }); await p.goto(url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
       await p.waitForFunction(() => typeof A === 'object' && typeof ADM === 'object', null, { timeout: 30000 });
       await p.evaluate(() => { ADM.chk = ''; admCheck(); }); await p.waitForFunction(() => ADM.chk === 'ok', null, { timeout: 10000 });
       await p.evaluate(() => { A.admOpen(); }); await p.waitForSelector('[data-a="admTab"][data-v="ld"]', { timeout: 10000 }); await p.click('[data-a="admTab"][data-v="ld"]'); await p.evaluate(() => A.ldxTab('ops')); /* 예전 래더 현황 화면 = 대시보드의 '운영' 탭(구단주 11-18) */ return p; };

@@ -7,7 +7,7 @@ let engine=require('./build.cjs').build({root,write:false}).engine;
 if(baseline){const media='src/engine/media/80_media_day.js';engine=engine.replace(fs.readFileSync(path.join(root,media),'utf8'),fs.readFileSync(process.argv[3],'utf8'));}
 engine=engine.replace('createRandom(Math.random)','createRandom(()=>Math.random())').replace('const FO_RNG0=Math.random;','const FO_RNG0=()=>Math.random();'); /* 엔진이 매번 현재 Math.random을 부르게: 아래 시나리오가 Math.random을 0으로 고정해 감독 수락을 재현한다 */
 new Function('assert','baseline',engine+`
-DEMO.on=false; newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);for(const t of G.teams)depth(t.id);
+DEMO.on=false; newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);for(const t of G.teams)depth(t.id);captainReconcileAll(true,true); /* 실제 진행은 스프링캠프 시작(campStart)에서 주장을 뽑는다. 21833c1f(검수 731~761)부터 미디어데이는 주장을 새로 뽑지 않으므로 캠프를 건너뛴 이 준비에서도 주장을 세운다 */
 const base=JSON.stringify(G), reset=()=>{G=JSON.parse(base);worldReset();G.day=G.cal.open-9;mdPlan();};
 const pass=(id,ok)=>{console.log('#'+id+': '+(ok?'PASS':'REPRODUCED'));assert.equal(!!ok,!baseline,'미디어데이 #'+id);};
 reset();let c=G.players[G.md.cap];c.susp=G.cal.open+5;G.day=G.cal.open-2;mdRun();pass(29,G.md.out.cap!==c.id);

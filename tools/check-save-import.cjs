@@ -2,7 +2,7 @@
    사용: bash build.sh 뒤 node tools/check-save-import.cjs */
 const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{ const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));let b;try{ b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{}); const pg=await (await b.newContext({viewport:{width:390,height:844}})).newPage(); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
- await pg.goto(server.url); await pg.waitForTimeout(800);
+ await pg.goto(server.url);await pg.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await pg.waitForTimeout(800);
  await pg.click('[data-a="tsGo"][data-v="mode"]'); await pg.click('[data-a="smode"][data-v="take"]',{timeout:120000}); await pg.waitForSelector('.tmk',{timeout:120000}); await pg.click('.tmk [data-a="start"].btn'); await pg.fill('#gp-name','점검'); await pg.click('[data-a="gpStart"]'); await pg.waitForTimeout(1500);
  const bad=await pg.evaluate(async()=>{ const bad=[], LS=Storage.prototype, si=LS.setItem; const IDB0=window.indexedDB; const block=f=>{ LS.setItem=function(k,v){ if(f(k))throw new Error('quota'); return si.call(this,k,v); }; Object.defineProperty(window,'indexedDB',{value:undefined,configurable:true}); }, unblock=()=>{ LS.setItem=si; Object.defineProperty(window,'indexedDB',{value:IDB0,configurable:true}); }; /* 쓰기 막힘 = localStorage와 보조 저장소(IndexedDB) 모두 못 쓰는 경우. IndexedDB로 넘어가는 경우는 check-save-idb.cjs */
   if(!saveNow())bad.push('준비: 첫 저장 실패');

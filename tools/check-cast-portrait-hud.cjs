@@ -10,7 +10,7 @@ const SHOTS=process.env.CAST_HUD_SHOTS||'';
  try{for(const mode of modes){browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium',args:mode.args});
   for(const vp of [{width:390,height:844},{width:844,height:390}]){
    const p=await browser.newPage({viewport:vp,isMobile:true,hasTouch:true});const errs=[];p.on('pageerror',e=>errs.push(String(e)));
-   await p.route('https://**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+   await p.route('https://**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
    await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open+2;for(const t of G.teams)setEntry(t.id);const op=G.teams.find(t=>t.id!==G.user).id;G.games=[];G.day++;const g=simGame(G.day,G.user,op,false);applyGame(G.day,G.user,op,g,false);G.games.unshift(gameRecord(G.day,G.user,op,g,''));UI.title=false;UI.tab='home';render();A.cast(0);UI.cast.play=false;castJump(1,false);});
    const want=mode.name==='3d'?'ready':'fallback';
    await p.waitForFunction(w=>document.querySelector('#cs-3d')?.dataset.state===w,want,{timeout:mode.name==='3d'?180000:30000}).catch(()=>fails.push(`${mode.name} ${vp.width}: 3D 상태가 ${want}가 아님`));

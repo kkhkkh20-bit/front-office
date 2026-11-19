@@ -4,7 +4,7 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
 for(const [width,height,touch] of [[1366,768,false],[768,1024,true],[390,664,true],[568,320,true]]){
- const ctx=await browser.newContext({viewport:{width,height},isMobile:touch,hasTouch:touch}),p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+ const ctx=await browser.newContext({viewport:{width,height},isMobile:touch,hasTouch:touch}),p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
  await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;A.go('club:rel');A.itab('relv:코치·스카우트·데이터팀');});
  const press=async locator=>{if(touch)await locator.tap();else await locator.click();},nav=()=>p.locator('#sheet .detail-navigation .ps-nav'),step=d=>nav().locator('[data-a="peopleStep"][data-v="'+d+'"]');
  const listed=await p.locator('.rpg [data-a="person"]').evaluateAll(es=>es.map(e=>e.dataset.v));const coach=listed.find(k=>k.startsWith('c:'));assert.ok(coach);

@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),path=require('node:path');
 const {chromium}=require('playwright'),{buildSite}=require('./build-site.cjs'),{startSiteServer}=require('./lib/site-server.cjs');
 (async()=>{const root=process.env.REVIEW_ROOT||path.resolve(__dirname,'..');buildSite({root});const server=await startSiteServer(path.join(root,'site'));let browser;
-try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await browser.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await browser.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
  const setup=()=>p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;
    const o=G.teams.find(t=>t.id!==G.user).id; const me=domestic(G.user).find(x=>!x.ys&&!x.foreign); window._pkO=o; window._pkMe=me.id; A.go('trade:table'); return {o,y:pkYear()};});
  const info=await setup(); await p.waitForTimeout(800);

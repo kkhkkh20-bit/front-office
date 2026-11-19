@@ -19,7 +19,7 @@ const FACE=()=>{const im=[...document.querySelectorAll('#sheet .pf-fm-face>img.a
   return {w,h,nw,nh,sc:1/s,dpr:devicePixelRatio,card:!!card,iw:card?card.clientWidth:0,cx:cb?Math.abs((r.left+r.width/2)-(cb.left+cb.width/2)):0,ok:im.complete};};
 (async()=>{fs.mkdirSync(OUT,{recursive:true});const server=await serve(),browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
 try{for(const [W,H,dpr] of [[1366,768,1],[1600,900,1],[1600,900,1.5],[1920,1080,1],[390,844,3]]){const pc=W>=1100,c=await browser.newContext({viewport:{width:W,height:H},deviceScaleFactor:dpr,isMobile:!pc,hasTouch:!pc}),p=await c.newPage(),errors=[];
-  p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+  p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
   await p.waitForFunction(()=>typeof newGame==='function'&&typeof DEMO!=='undefined',null,{timeout:30000});await p.waitForTimeout(1800);/* 앱 비동기 부팅이 끝난 뒤 새 게임(느린 컨테이너에서 BOOT가 부팅과 겹치면 G가 비워진다) */await p.evaluate(BOOT);
   const tag=`${W}x${H}@${dpr}`,fit=async what=>{const r=await p.evaluate(()=>({v:document.scrollingElement.scrollHeight-innerHeight,h:document.documentElement.scrollWidth-innerWidth}));assert.ok(r.h<=1,`${tag} ${what}: 가로 넘침 ${r.h}`);if(pc)assert.ok(r.v<=1,`${tag} ${what}: PC 화면 전체 세로 스크롤 ${r.v}`);};
   /* 얼굴 묶음마다 한 명(v6c 0~99 · v13 100~159 · v18 160~): 시트가 달라 크기·선명도가 다를 수 있다 */

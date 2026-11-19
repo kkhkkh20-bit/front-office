@@ -12,11 +12,13 @@ function ledger(tid,key,amt,o){ const me=o&&o.me!=null?!!o.me:tid===ME();
 /* 지금 단장이 맡은 구단의 결산 장부에만 적는 일회성 지출·수입(이벤트 비용 등). 호출부가 이미 우리 구단 일로 정한 곳 */
 function ledgerMe(key,amt){ return ledger(G.user,key,amt,{me:true}); }
 /* 공사·보수처럼 그 자리에서 치르는 지출: 우리 구단은 현금에서 낼 수 있는 만큼(spendPay)만 그 항목에 적고 모자란 몫은 spendPay가 기타 지출로 넘긴다.
- AI 구단은 현금에서 전액. 돌려주는 값: 현금에서 낸 몫(AI는 전액) */
+ AI 구단은 현금에서 전액. 돌려주는 값: 현금에서 낸 몫(AI는 전액)
+ key는 이미 낸 돈 항목(SPEND_PAID)만: 결산·이직 정산(spendHandOff)이 다시 빼지 않고 예산표에 따로 보인다. 결산 때 낼 항목(fac·etc 등)에 적으면 두 번 빠진다(원장 검수 11-19) */
+const SPEND_PAID={stad:'구장 공사비',facB:'시설 투자',opsP:'보유 현금에서 바로 낸 지출'}; /* opsP: 보조금·후원금 반환, 지역 야구 교실, 거부권 포기 대가처럼 현금에서 바로 낸 운영 지출 */
 function ledgerPay(tid,key,amt,o){ const me=o&&o.me!=null?!!o.me:tid===ME(); if(me){ const k0=spendPay(amt); ledger(tid,key,k0,{me:true}); return k0; } ledger(tid,key,amt,Object.assign({},o,{me:false})); return amt; }
 /* 트레이드 현금(from이 to에게 amt): 낸 구단은 기타 지출(우리 구단이면 트레이드 약정 현금 trC에도), 받은 구단은 트레이드 수입(tradeIn).
  우리 구단 거래·받은 제안 수락·AI끼리 거래가 같은 함수를 쓴다 */
-function tradeCashPay(from,to,amt){ if(!amt)return; if(ledger(from,'etc',amt))ledgerMe('trC',amt); ledger(to,'tradeIn',amt,{inc:true}); }
+function tradeCashPay(from,to,amt){ if(!amt)return; if(ledger(from,'etc',amt))ledgerMe('trC',amt); ledger(to,'tradeIn',amt,{inc:true}); try{ aiRoomCash(from,amt); aiRoomCash(to,-amt); }catch(e){} } /* AI 구단 예산 여유(16_trade aiTradeRoom)에도 */
 /* ===== 올해 예산(다음 결산까지 연간 예상) ===== */
 function finYearEnd(){ const y=(G.last&&G.last.y>=G.year)?G.year+1:G.year; if(y===G.year&&G.ps&&G.ps.finDay!=null)return G.ps.finDay; if(y===G.year&&G.cal&&G.cal.end)return Math.min(dnum(y,11,5),G.cal.end+30); return dnum(y,11,5); } /* 결산은 한국시리즈 이틀 뒤: 알면 그날, 모르면 정규시즌 끝 +30일로 어림 */
 /* 이미 현금에 반영한 인수 출자는 영업 흑자·지원 필요액과 구분한다. 결산과 예산 전망이 같은 회수 식을 쓴다. */
@@ -34,7 +36,7 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
   const settled=G.last&&G.last.y>=G.year; const HO=G.hoL&&G.hoL[fyNow()+':'+G.user], cash=t.cash-(HO?HO.net:0); /* 같은 해 떠났다 돌아온 구단: 이직 때 정산한 수입·지출도 결산처럼 올해 예산표에(현금은 그 정산 전 기준으로, 검수 11-09x) */ const SPj=stadProj(G.user,settled); const CT=G.contract, fRe=p=>CT&&!CT.done&&(CT.foreignEnd||[]).includes(p.id)&&p.newSal!=null; /* 재계약 협상 중인 외국인은 합의(제시) 연봉으로(재계약 한도 화면과 같게, 검수 11-09x) */ const fsNow=sum(forPayOf(G.user).filter(p=>!fDropIds(G.user).includes(p.id)).map(p=>fRe(p)?p.newSal:p.sal))+fDeadOf(G.user,sponSeason()); /* 개막 전 방출 선수의 보장 연봉 포함 */
   const fs=!settled&&G.sea&&G.sea.fspend&&G.sea.fspend[G.user]!=null?G.sea.fspend[G.user]:fsNow;
   const fR=settled?fNextReserve(fRe):(G.cal&&G.day>=G.cal.open&&G.sea&&G.sea.y===G.year)?0:fReserve(); const fsB=Math.max(fs,fR);
-  const intlA=sum(Object.keys(IREG).map(r=>INET[intlLv(r)].c));
+  const intlA=intlCost(); /* 투자 단계 기준(파견 스카우트 몫은 비용 없음) */
   const tax=ci.over>0?Math.round(ci.over*capRate((t.capOver||0)+1)):0; const flo=sponSeason()>=2027&&ci.floor>ci.pay?Math.round((ci.floor-ci.pay)*floorRate((t.floorUnder||0)+1)):0;
   const exp=[['국내 선수 연봉',ci.all,'pay'],[fR>fs?'외국인 선수 연봉(배정 예산)':'외국인 선수 연봉',fsB,'for'],['감독 연봉',settled&&m&&(m.interim||(G.rolled===G.year&&m.yrs<=0))?Math.round((S.mgr||0)+(m.sal||0)*Math.max(0,dnum(G.year+1,1,1)-G.day)/365):acc(S.mgr,m&&!(m.cs!=null&&m.cs>EY)?m.sal:0),'mgr'] /* 다음 시즌부터 일하는 감독은 올해 전망에 넣지 않는다(검수 11-08). 계약이 끝난 감독·대행은 연말까지만(검수 11-09x) */,['코치진 연봉',acc(S.coach,G.coach?coachSal(G.user,!settled):0),'mgr'] /* 결산 전에는 다음 시즌부터인 코치를 빼고(검수 11-09x) */,['단장 연봉',(()=>{ const C=G.unemp?null:myCInit(); return myCSalaryAt(C,EY)+gmSeasonAIPay(G.user,EY); })(),'mgr'], /* 결산 때 한 해 치를 낸다(myCPay) */
     ['구단 운영비',Math.round((t.indie?19000:24000)*ecoIdx(EY))-gmSeasonAIPay(G.user,EY),'ops'],['스카우트 운영',Math.round(scoutSpent()+sum(G.scouts.map(s=>s.sal))*rem)+600,'ops'] /* 이미 쌓인 몫 + 남은 기간 */,['마케팅',G.marketing,'ops'],

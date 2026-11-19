@@ -8,7 +8,7 @@ const ok=(c,m)=>{ console.log((c?'통과':'실패')+' '+m); if(!c)process.exitCo
 (async()=>{const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));
 const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});
 const p=await (await b.newContext({viewport:{width:1280,height:900}})).newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.route(/fonts\.g/,r=>r.abort());
-await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
 const r=await p.evaluate(async()=>{ localStorage.clear(); DEMO.on=false; newGame(4); try{ fdStart(); fdAdvance(false); let n=0; while(G.fd&&!G.fd.done&&n++<400)fdAdvance(true); }catch(e){} UI.title=false; CUR_SLOT=1; SLOT_REV=0; SLOT_NEW=true; saveNow(); render();
   const wait=ms=>new Promise(r=>setTimeout(r,ms)); let n=0; const s0=window.saveStoreAsync; window.saveStoreAsync=function(){ n++; return s0.apply(this,arguments); };
   for(let i=0;i<12;i++){ G.perfMark=i; save(); await wait(80); } await wait(4500); window.saveStoreAsync=s0;

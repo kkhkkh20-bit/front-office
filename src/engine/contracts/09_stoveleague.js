@@ -208,6 +208,13 @@ function faInterest(t,p){
   const dB=t.id!==ME()&&t.id!==p.faFrom&&domFaMul(t,p)>1?.15:0; /* 독주 구단 FA·노리는 FA에 경쟁 구단이 달려든다 */
   return compF*clamp(.12+low+stB+plB+dB+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(rosterN(t.id)>=ROSTER_MAX-1?.25:0)+(tg?.35:0),0,1)*debt;
 }
+/* 요구액이 내려와 예전에 거절한 우리 제안이 이제 요구를 채우면, 선수가 그 제안을 다시 받아들인다(제보 11-19: 다른 구단 제안이 끝내 없었는데 걸어 둔 제안을 끝까지 거절하고 마감 때 원소속 구단과 그 절반도 안 되는 조건에 계약).
+   요구를 채운 제안은 협상실에서 바로 낸 제안과 같게 본다(faNegotiate r>=1: hot) */
+function faRejRevive(p){ const F=G.fa, o=F&&F.offers&&F.offers[p.id]; if(!o||!o.rej||G.unemp||p.team!=null)return false; const n=F.neg&&F.neg[p.id]; if(n&&n.closed)return false;
+  const meets=offScore(o)>=faWantFor(p,G.user)*.97; let beats=false; if(!meets){ const L=Object.entries((F.ai&&F.ai[p.id])||{}).filter(([k,x])=>x&&faAiOk(+k,p,x)).map(([k,x])=>({tid:+k,annual:x.annual,years:x.years})), rv=faBestOf(p,L); beats=!!rv&&faScore(p,{tid:G.user,...o})>=faScore(p,rv); } /* 요구에 못 미쳐도 다른 구단이 낸 조건보다 나으면 더 나쁜 조건으로 가지 않는다: AI 제안은 요구 미달이어도 유효하므로 같은 규칙 */
+  if(!meets&&!beats)return false; delete o.rej; const W=agNeg(p).self?'선수':'에이전트', why=meets?'요구 조건을 낮췄습니다.':'다른 구단 제안보다 단장님 제안이 낫습니다.';
+  if(n){ n.hot=true; n.counter=null; (n.log=n.log||[]).push({d:G.day,w:W,t:`${why} 걸어 두신 제안을 다시 보겠습니다.`}); }
+  mail(agNeg(p).self?p.name:`${(agentOf(p)||{}).name||''} 에이전트`,`${p.name} 건: 걸어 두신 제안을 다시 봅니다`,`${p.name} 측: ${why} 지난번에 거절했던 단장님 제안(${o.terms?termsTxt(o.terms):`${o.years}년 연 ${money(o.annual)}`})을 다시 비교 대상에 넣었습니다. 다른 구단보다 나으면 그 조건으로 사인합니다.`,{kind:'FA',ref:p.id,acts:[{l:'협상실 열기',a:'faOpen',v:p.id}]}); return true; }
 function faDay(day){ _faPC={k:null,g:null,pay:new Map(),dep:new Map()}; try{ faDayRun(day); }finally{ _faPC=null; } } /* 입찰 캐시는 하루 입찰 동안만(01_rules faPC) */
 function faDayRun(day){
   const F=G.fa; const since=day-F.openDay;
@@ -231,6 +238,7 @@ function faDayRun(day){
       /* 애매한 선수는 원소속 구단도 서두르지 않는다: 시장 반응을 본 뒤(협상 50일 이후) 낮춰 부른다 */
       if(own&&po<50&&since<50)continue;
       let it=faInterest(t,p); if(!own)it*=po<52?.35:.7; const tg=faTgt(t,p); if(it>0&&R()<it*(tg?.3:.1)){ const w=faWorth(t,p)*(own&&po<50?.65:1); const bid=w*(tg?rnd(.92,1):rnd(.8,.95)); /* 구단은 자기 평가액으로 부른다. 요구액은 하한일 뿐(평가가 요구보다 높으면 더 낸다) */ ai[t.id]={annual:round5(Math.max(bid,Math.min(p.ask.annual*(tg?rnd(1.02,1.2):rnd(.92,1.15)),w))),years:own&&po<50?(p.age<=30?2:1):clamp(p.ask.years+ri(-1,0)+(p.age<=28&&po>=62&&R()<.3?1:0)+(p.age<=29&&po>=64&&(tg||own)&&R()<.5?1:0),p.age<=31?2:1,p.age<=29&&po>=64?6:p.age<=28&&po>=62?5:4)}; { const B=ai[t.id], ag=agentOf(p), r=offScore(B)/(faWantFor(p,t.id)*.97); agOfferRel(ag,r,t.id,p.name,p.id); if(r<1){ B.rounds=1; B.d0=day; } } /* AI 입찰도 사용자 제안과 같은 표로 친분이 오르내리고, 요구에 못 미치면 1라운드로 센다(계약 1단계) */ } } /* 서른 안팎까지는 보통 2년 이상 보장한다(1+1 포함) */
+    if(!G.unemp&&F.offers[id]&&F.offers[id].rej)faRejRevive(p); /* 거절했던 우리 제안이 지금 요구를 채우거나 다른 구단 조건보다 나으면 다시 비교한다(제보 11-19) */
     const live=faOfferLive(id);
     if(p.faFrom!==G.user&&!G.unemp&&!live&&!F.warned[id]&&((G.shortlist||[]).includes(id)||mreqOpen('fa').some(r=>r.data&&r.data.pid===id))&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`관심 FA ${p.name}에게 ${tname(+k0)}이(가) 제안했습니다(연 ${money(ai[k0].annual)} · ${ai[k0].years}년). 잡으려면 서둘러 조건을 제시하세요.`,id); }
     if(p.faFrom===ME()&&!live&&!F.warned[id]&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`우리 FA ${p.name}에게 ${tname(+k0)}이(가) 먼저 제안했습니다. 잡으려면 FA 시장에서 조건을 제시하세요.`,id); }
@@ -268,7 +276,7 @@ function faCompReserve(tid){ return sum((G.comp||[]).filter(c=>c.to===tid&&c.sta
 function faRosterFull(tid){ return rosterN(tid)>=ROSTER_MAX||rosterProj(tid)>=ROSTER_MAX; }
 /* 구단주 FA 자금은 지금 실제로 계약할 수 있는 선수에게만 요청한다. 후보·직접 보고·재설득이 같은 자격을 쓴다. */
 function faSupportTargetWhy(p,tid=G.user){ if(tid===G.user&&G.unemp)return '단장으로 재임 중일 때 요청할 수 있습니다.'; if(!(G.fa&&G.fa.open&&!G.fa.closed)||G.day>grantFaEnd())return 'FA 시장이 열려 있을 때만 요청할 수 있습니다.'; if(!p||p.team!=null||!p.ask||!(G.fa.pool||[]).includes(p.id))return '지금 계약할 수 있는 FA 선수가 아닙니다.'; if(tid!==p.faFrom&&faOutN(tid)>=faCapLimit())return '이번 겨울 외부 FA 영입 한도를 모두 썼습니다.'; if(faRosterFull(tid))return '정식 선수와 입단 예정 선수의 정원이 가득 찼습니다. 먼저 한 명을 정리하세요.'; return ''; }
-function faSupportCap(p,annual=p.ask.annual,tid=G.user){ const s=sponSeason(),c=capPayWith(tid,p.id,annual,s); return {s,cap:c.cap,pay:c.tot,room:c.room,ok:c.tot<=c.cap}; }
+function faSupportCap(p,annual=p.ask.annual,tid=G.user){ const s=sponSeason(),X=postCapOut(tid,s),c=capPayWith(tid,p.id,annual,s,X.ids.size?X.ids:null); return {s,cap:c.cap,pay:c.tot,room:c.room,ok:c.tot<=c.cap,postOut:X.amt}; }
 function faFundsCheck(p,o,tid=G.user){ const t=team(tid); if(!t||!p||!o||tid!==ME()&&!t.indie)return null; const bonus=o.terms?(o.terms.bonus||0):tid!==ME()?aiFaSplit(p,o).bonus:0; const comp=tid!==p.faFrom?Math.round((p.faPrevSal??p.sal??0)*((COMP[p.faGrade]||{}).cash||0)):0; const need=bonus+comp; const ear=tid===ME()&&!t.indie?faGrantGap(p.id):0, cash=spendable(tid)+ear+(p.faFrom!==tid&&typeof champFundReserve==='function'?champFundReserve(tid):0); if(need<=0||cash>=need)return null; /* 구단주가 이 선수 몫으로 낸 영입 자금은 전액 이 선수에게 쓸 수 있다: 예산 여유가 마이너스면 지원 한도에 더한 돈이 그 구멍에 먼저 묻혀 가용자금이 반만 늘었다(피드백 11-18) */
   const gr=tid===ME()?faGrantOpen(p.id):0; return {ok:false,funds:true,need,cash,msg:`FA 계약 자금 부족 · 계약금 ${money(bonus)}과 보상금 ${money(comp)}(최대 현금 보상)에 ${money(need)}이 필요하지만 가용자금은 ${money(cash)}입니다${gr?`(구단주 영입 자금 ${money(gr)} 포함)`:''}. 계약금을 줄이고 연봉으로 돌리면 당장 필요한 돈이 줄어듭니다. 미결 보상금은 정산될 때까지 유보합니다.`}; }
 /* 이 선수 몫으로 받은 구단주 FA 영입 자금(주문·요청 승인, 아직 목적 미달성) */
@@ -277,7 +285,7 @@ function faGrantOpen(pid,tid=G.user){ if(G.unemp)return 0; const sy=sponSeason()
 function faGrantGap(pid){ const e=faGrantOpen(pid); if(!(e>0))return 0; const b=budget(), rg=b.roomGoal, rc=b.roomCap; const got=(Math.max(0,rg)-Math.max(0,rg-e))+(Math.min(0,rc)-Math.min(0,rc-e)); return Math.max(0,Math.round(e-got)); }
 /* 구단주 FA 영입 자금 액수: 연봉 기준(base)에 더해, 요구 조건(계약금 + 최대 현금 보상금)을 지금 가용자금으로 못 내는 만큼까지(연봉 기준의 두 배까지). 주문해 놓고 계약금을 못 내 결재가 막히던 문제(피드백 11-18) */
 function faGrantAmt(p,base){ let short=0; try{ const comp=p.faFrom!==G.user?Math.round((p.faPrevSal??p.sal??0)*((COMP[p.faGrade]||{}).cash||0)):0; short=faBonusDemand(p,p.ask.annual,p.ask.years)+comp-spendable(G.user); }catch(e){} return round5(clamp(Math.max(base,short),base,base*2)); }
-function faAiCapOk(tid,p,o){ if(!o)return true; const B=o.terms?{annual:o.terms.annual,bonus:o.terms.bonus||0}:aiFaSplit(p,o), a=B.annual+Math.round(B.bonus/Math.max(1,o.years||1)), s=sponSeason(); const c=aiCapTake(tid,capPayWith(tid,p.id,a,s).tot,capPayWith(tid,null,null,s).tot); return !c||!c.hard; }
+function faAiCapOk(tid,p,o){ if(!o)return true; const B=o.terms?{annual:o.terms.annual,bonus:o.terms.bonus||0}:aiFaSplit(p,o), a=B.annual+Math.round(B.bonus/Math.max(1,o.years||1)), s=sponSeason(), X=postCapOut(tid,s), sk=X.ids.size?X.ids:null; const c=aiCapTake(tid,capPayWith(tid,p.id,a,s,sk).tot,capPayWith(tid,null,null,s,sk).tot); return !c||!c.hard; } /* 포스팅 신청 선수는 떠날 선수로 본다: 사용자 faCapCheck와 같은 규칙(구단주 승인 11-19) */
 /* FA 보상 기준 연봉: 직전 연봉 협상에서 요구액을 넘겨 올려 준 몫은 빼고(41_salary_talks salCompCap) */
 function faCompBase(p){ return p.salCompCap&&p.salCompCap.y===G.year?Math.min(p.sal,p.salCompCap.a):p.sal; }
 const FA_SIGN_RETRY=new WeakMap();
@@ -286,7 +294,11 @@ function faSign(p,offers){if(!p||!G.fa||!(G.fa.pool||[]).includes(p.id))return;c
   try{const r=faSignRun(p,offers),rec=(G.fa.results||[]).find(x=>x.id===p.id&&x.to===p.team);if(rec&&!(G.fa.pool||[]).includes(p.id)&&typeof champFundUse==='function')champFundUse(rec.to);book.delete(p.id);if(!book.size)FA_SIGN_RETRY.delete(game);return r;}
   catch(e){undo();worldReset();_chronGame=null;_chronIds=null;_chronSources=null;book.set(p.id,{market:G.fa,source,signature,values});FA_SIGN_RETRY.set(game,book);throw e;}
   finally{FO_RNG=source;if(C){C.k=null;_faPC=C;}}}  /* 계약 중에는 입찰 캐시를 끄고, 끝나면 비운다 */
+/* 우리 제안이 지금 실제로 계약까지 갈 수 있는지: 사인 관문(faSignRun)과 같은 검사(외부 FA 한도·정원·계약 자금). 막히면 그 이유, 아니면 ''.
+   시장 보고·우선 제안·라스트 룩·사인 관문이 같은 판정을 쓴다(제보 11-19: 보고는 '가장 좋다'인데 관문에서 말없이 빠져 계약도 안내도 없었다) */
+function faUserBlock(p,o){ if(!p||!o||G.unemp)return ''; if(faOutBlocked(G.user,p))return `외부 FA 영입 한도(${faCapN()}명)를 채웠습니다.`; if(faRosterFull(G.user))return `정식 선수와 입단 예정 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`; const f=faFundsCheck(p,o,G.user); if(f)return f.msg; const cc=faCapCheck(p,o); return cc&&!cc.ok?cc.msg:''; } /* 상한 결재까지 같은 판정(사인 관문의 faCapCheck): 제안 뒤 연봉 합계가 늘면 보고에서도 막힌 제안으로 본다 */
 function faSignRun(p,offers){
+  { const uo=G.unemp?null:offers.find(o=>o.tid===G.user), why=uo?faUserBlock(p,uo):''; if(why){ offers=offers.filter(o=>o!==uo); if(G.fa.offers[p.id]){ delete G.fa.offers[p.id]; stop('FA',`${p.name} 측이 계약을 결정하는 날 우리 제안은 계약할 수 없는 상태여서 비교에서 빠졌고, 제안을 거둬들였습니다. ${why} 사정이 풀리면 협상실에서 다시 제안할 수 있습니다.`,p.id); } } } /* 막힌 우리 제안을 말없이 빼면 선수가 '제시함'으로 남아 기다리다 계약 실패로 끝났다(제보 11-19). AI 제안은 faPruneAi가 같은 검사로 정리한다 */
   offers=offers.filter(o=>!faOutBlocked(o.tid,p)&&!faRosterFull(o.tid)&&!faFundsCheck(p,o,o.tid)&&(o.tid===ME()||faAiCapOk(o.tid,p,o))); if(!offers.length)return; /* 정식 선수가 꽉 찬 구단은 계약할 수 없다(검수 11-09r) */
   let capC=null; { const uo=G.unemp?null:offers.find(o=>o.tid===G.user); if(uo){ capC=faCapCheck(p,uo); if(capC&&!capC.ok){ offers=offers.filter(o=>o!==uo); delete G.fa.offers[p.id]; stop('FA',`${p.name} 측이 우리 조건에 사인하려 했지만 구단주 결재가 나지 않아 제안을 거둬들였습니다. ${capC.msg}`,p.id); capC=null; if(!offers.length)return; } } } /* 사인 직전에 구단주가 그때 연봉 합계로 다시 본다: 여러 FA에게 동시에 낸 제안이 하나씩은 통과해도 합치면 한도를 넘는다(사용자 11-13) */
   let best=null,bs=-1; const shop=agShopN(p)>0; const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id]; const U=ME(); /* 야인이면 G.user는 전 구단(이제 AI) 번호: 사용자 몫 처리·소식은 ME() 기준(검수 11-14) */
@@ -294,6 +306,7 @@ function faSignRun(p,offers){
   if(!best)best=offers.find(o=>o.tid!==U); if(!best)return; /* 우리와 협상을 접은 선수는 우리 제안만 남아 있어도 사인하지 않는다 */
   try{ agDealAdd(p,best.tid,best.annual); if(p.ask0&&best.annual<p.ask0*.8)p.agBad=G.year; const ag=agentOf(p); agRelAdd(ag,5,`${p.name} 계약`,best.tid); agMemSet(ag,best.tid,'ok',p.id); for(const o of offers)if(o.tid!==best.tid)agRelAdd(ag,1,`${p.name} 끝까지 경쟁`,o.tid); }catch(e){} /* 계약한 구단 +5, 끝까지 제안한 구단 +1: 사용자·AI 같은 규칙 */
   try{ const L=domLead(); if(L&&best.tid!==L.tid&&(p.faFrom===L.tid||offers.some(o=>o.tid===L.tid))&&domFaMul(team(best.tid),p)>1)domLog('outbid',p.id); }catch(e){} /* 독주 구단의 FA·노린 FA를 경쟁 구단이 가져감 */
+  { const X=postCapOut(best.tid,sponSeason()); if(X.amt>0)(G.capPostX=G.capPostX||[]).push({tid:best.tid,s:X.s,pid:p.id,pend:X.list}); } /* 포스팅 신청 선수를 뺀 결재로 데려온 FA: 무산되면 그 시즌 초과 면제(capPostAllow) */
   let ht=null; try{ ht=homeTie(p,best.tid); }catch(e){} const from=p.faFrom; p.team=best.tid; p.sal=Math.max(MIN_SAL,best.annual); p.yrs=best.years; p.cyrs=best.years; p.faC=true; p.ext=false; p.faN=faPriorN(p)+1; p.lastFA=stoveY(); /* 같은 겨울 계약은 1월에 해도 그 시즌 회차 */ p.faPrevGrade=p.faGrade;
   termsClear(p); { const per=period(); p.faTrY=per==='season'||per==='post'?G.year+1:sponSeason(); } /* 다음 시즌 개막까지 트레이드 금지(faSignLock) */ const BT=best.tid===U&&best.terms?best.terms:null; if(BT){ p.sal=Math.max(MIN_SAL,BT.annual); termsApply(p,BT,'fa',ctSeason()); } else if(best.tid!==U)aiFaBonus(p,best); /* 야인 때 전 구단 계약도 AI처럼 계약금으로 나눈다 */
   const rec={id:p.id,name:p.name,from,to:best.tid,annual:BT?BT.annual+Math.round((BT.bonus||0)/best.years):best.annual,years:best.years,grade:p.faGrade,kind:p.ask0&&best.annual<p.ask0*.6?'cheap':'sign',day:G.day,ask0:p.ask0||null,...(BT?{terms:BT}:{})};
@@ -330,10 +343,10 @@ function faClose(){
   for(const id of F.pool)faPruneAi(id);
   for(const id of [...F.pool]){ const p=G.players[id]; if(!p||p.team!=null)continue;
     faPruneAi(id); /* 앞선 계약으로 정원이 찬 구단의 제안은 선수마다 다시 정리(검수 11-09r) */ const ai=F.ai[id]||{}; const offers=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).filter(o=>!faOutBlocked(o.tid,p));
-    if(!G.unemp&&F.offers[id]&&!F.offers[id].rej&&!faOutBlocked(G.user,p))offers.push(Object.assign({tid:G.user},F.offers[id])); /* 선수가 거절한 조건·한도에 걸린 제안은 마감 때도 계약되지 않는다 */
+    const from=p.faFrom, t=team(from); const low=round5(Math.max(MIN_SAL,Math.min((p.faPrevSal||p.sal)*.5,marketSal(ovr(p))*.45)));
+    { const uo=G.unemp?null:F.offers[id]; if(uo&&!faOutBlocked(G.user,p)&&(!uo.rej||faScore(p,{tid:G.user,...uo})>=faScore(p,{tid:from,annual:low,years:p.age<=28?2:1})))offers.push(Object.assign({tid:G.user},uo)); } /* 선수가 거절한 조건은 마감 때도 계약되지 않는다. 다만 원소속 구단 헐값 계약(아래)보다 나은 제안을 두고 더 나쁜 조건으로 가지는 않는다(제보 11-19) */
     const mk=agMk(p); const ready=!mk||mk.done||mk.round>=mk.need&&(!mk.ll||G.day>mk.ll.until); if(mk&&ready)mk.done=true;
     if(ready&&offers.length){ faSign(p,offers); if(p.team!=null)continue; } /* 정원·결재 등으로 계약하지 못하면 미계약 후속 처리까지 진행한다. */
-    const from=p.faFrom, t=team(from); const low=round5(Math.max(MIN_SAL,Math.min((p.faPrevSal||p.sal)*.5,marketSal(ovr(p))*.45)));
     /* 원소속 AI 구단이 쓸모를 인정하면 헐값 계약으로 붙잡는다(실제 2025년 하주석 1년 1억1천만원 등). 20대는 1+1처럼 2년으로 묶는 경우가 많다 */
     if(ready&&from!==ME()&&t&&p.age<=35&&aiVal(t,p)>=1&&capPay(from)+low<=capOf(sponSeason())&&rosterN(from)<ROSTER_MAX){ faSign(p,[{tid:from,annual:low,years:p.age<=28?2:1}]); if(p.team===from){ const r=F.results[0]; if(r&&r.id===p.id){ r.kind='cheap'; } cheap++; wire('FA',`${p.name}, 원소속 ${tname(from)}와(과) ${p.yrs}년 연 ${money(low)} 헐값 계약`,{tid:from,ref:p.id}); continue; } }
     /* 연봉 하한에 못 미치는 구단은 남은 FA로 채운다 */

@@ -8,7 +8,7 @@ const SHOT=process.env.GUIDE_SHOTS||'';
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;const errors=[];
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||(fs.existsSync('/opt/pw-browsers/chromium')?'/opt/pw-browsers/chromium':'/usr/bin/chromium')});
  for(const [w,h] of [[1366,768],[390,844]]){const p=await browser.newPage({viewport:{width:w,height:h}});p.on('pageerror',e=>errors.push(e.message));
-  await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+  await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
   await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.medSet=true;UI.title=false;UI.tab='home';UI.homePage=0;save();render();});
   const card=()=>p.evaluate(()=>{const c=document.querySelector('#app .hw-start');const sc=document.scrollingElement;if(!c)return {none:true,pageScroll:sc.scrollHeight>innerHeight+2};const now=c.querySelector('li.now');
    return {title:c.querySelector('h2').textContent,now:now&&now.querySelector('b').textContent,why:now&&!!now.querySelector('.hw-ck-why'),deleg:now&&!!now.querySelector('[data-a="guideDeleg"]'),go:c.querySelectorAll('[data-a="guideGo"]').length,easy:!!c.querySelector('header [data-a="easyMode"]')&&!!c.querySelector('.hw-easy'),inView:c.getBoundingClientRect().top<innerHeight-40,fits:c.scrollHeight<=c.clientHeight+2||/(auto|scroll)/.test(getComputedStyle(c).overflowY),pageScroll:sc.scrollHeight>innerHeight+2};});
@@ -41,7 +41,7 @@ try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABL
   await go(()=>{G.year++;G.cal=buildCalendar(G.year);G.day=G.cal.camp+1;});c=await card();assert.ok(c.none,w+' 둘째 해에는 카드 없음');const n0=await p.evaluate(()=>G.mail.length);await go(()=>{G.day=G.cal.open+1;});assert.equal(await p.evaluate(()=>G.mail.length),n0,w+' 둘째 해에는 안내 소식 없음');
   console.log('첫 시즌 단계 안내',w,h,'준비·시즌·포스트·스토브·쉬운 진행·둘째 해 통과');await p.close();}
  /* 숨기면 소식도 없음 · 단장 취임(창단 드래프트 없음)도 첫해만 */
- {const p=await browser.newPage({viewport:{width:1366,height:768}});p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+ {const p=await browser.newPage({viewport:{width:1366,height:768}});p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
   const r=await p.evaluate(()=>{DEMO.on=false;newGame(3);G.guideY=G.year;UI.title=false;UI.tab='home';G.cfg=G.cfg||{};G.cfg.guideOff=true;G.day=G.cal.open+1;save();render();const a=G.mail.filter(m=>/이렇게 보내시면/.test(m.subj)).length;
    G.cfg.guideOff=false;save();render();const b=G.mail.filter(m=>/이렇게 보내시면/.test(m.subj)).length;G.year++;G.cal=buildCalendar(G.year);G.day=G.cal.camp+2;render();return {a,b,card:!!document.querySelector('#app .hw-start'),on:guideOn()};});
   assert.equal(r.a,0,'숨기면 안내 소식 없음');assert.equal(r.b,1,'다시 켜면 그 단계 소식');assert.equal(r.card,false,'단장 취임 둘째 해 카드 없음');assert.equal(r.on,false);await p.close();}

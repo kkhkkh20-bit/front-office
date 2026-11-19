@@ -10,7 +10,7 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
   const ctx=await b.newContext({viewport:{width:390,height:844}}), pg=await ctx.newPage(), errs=[]; pg.on('pageerror',e=>errs.push(e.message));
   await pg.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));
   /* 1) API 없음(지금의 정적 호스팅처럼 404): 버튼 없이 짧은 안내만 */
-  await pg.goto(server.url); await pg.waitForTimeout(500);
+  await pg.goto(server.url);await pg.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await pg.waitForTimeout(500);
   await pg.click('[data-a="tsGo"][data-v="slots"]'); await pg.waitForSelector('.xf');
   assert.match(await pg.locator('.xf').innerText(),/쓸 수 없습니다/); assert.equal(await pg.locator('[data-a="xfGet"],[data-a="xfUp"],#xfIn').count(),0,'API가 없으면 입력·버튼 없음');
   console.log('API 없음(404): 기기 옮기기 감춤·짧은 안내 통과');
@@ -18,7 +18,7 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
   const env={SAVE_KV:fakeKV()}, calls=[];
   await pg.route('**/api/transfer**',async route=>{ const r=route.request(); const h=Object.assign({},r.headers(),{'cf-connecting-ip':'203.0.113.1'}); const body=r.method()==='POST'?r.postDataBuffer():undefined;
    const res=await handle(new Request(r.url(),{method:r.method(),headers:h,body}),env); calls.push(r.method()+' '+new URL(r.url()).pathname+' '+res.status); await route.fulfill({status:res.status,headers:Object.fromEntries(res.headers),body:Buffer.from(await res.arrayBuffer())}); });
-  await pg.goto(server.url); await pg.waitForTimeout(500);
+  await pg.goto(server.url);await pg.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await pg.waitForTimeout(500);
   await pg.click('[data-a="tsGo"][data-v="mode"]'); await pg.click('[data-a="smode"][data-v="take"]',{timeout:120000}); await pg.waitForSelector('.tmk',{timeout:120000}); await pg.click('.tmk [data-a="start"].btn'); await pg.fill('#gp-name','점검'); await pg.click('[data-a="gpStart"]'); await pg.waitForTimeout(1500);
   const before=await pg.evaluate(()=>{ saveNow(); G.tut={done:true,step:99}; closeSheets(); A.go('cfg:save'); /* 설정 › 저장·기기(사용자 11-17) */ return {slot:curSlot(),user:G.user,day:G.day,year:G.year,n:Object.keys(G.players).length,used:SLOT_IDS.filter(n=>slotUsed(n,meta())).length}; });
   await pg.waitForSelector('[data-a="xfUp"]'); await pg.click('[data-a="xfUp"]'); await pg.waitForSelector('.xf-code');
@@ -54,6 +54,6 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
   console.log('게임 중 옮겨 오기(빈 슬롯)·코드 지우기 통과', calls.length,'번 요청');
   assert.deepEqual(errs,[]);
   /* 6) 내려받은 index.html(file://): 카드 자체가 없다 */
-  const p2=await ctx.newPage(); await p2.goto('file://'+path.join(root,'index.html')); await p2.waitForTimeout(800); await p2.click('[data-a="tsGo"][data-v="slots"]'); await p2.waitForSelector('[data-a="expFile"],[data-a="impFile"]',{state:'attached'});
+  const p2=await ctx.newPage(); await p2.goto('file://'+path.join(root,'index.html'));await p2.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await p2.waitForTimeout(800); await p2.click('[data-a="tsGo"][data-v="slots"]'); await p2.waitForSelector('[data-a="expFile"],[data-a="impFile"]',{state:'attached'});
   assert.equal(await p2.locator('.xf').count(),0,'file://에서는 기기 옮기기 숨김'); console.log('file:// 단독 파일: 기기 옮기기 숨김 통과');
  }finally{ await b?.close(); await server.close(); } })().catch(e=>{ console.error(e.stack||e); process.exitCode=1; });

@@ -6,7 +6,7 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;const errors=[];
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
  for(const [w,h] of [[390,844],[1366,768]]){const p=await browser.newPage({viewport:{width:w,height:h}});p.on('pageerror',e=>errors.push(e.message));
-  await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+  await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
   await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);UI.title=false;UI.tab='home';UI.homePage=0;render();});await p.waitForTimeout(200);
   const card=await p.evaluate(()=>{const c=document.querySelector('#app .hw-start');if(!c)return null;const panels=[...document.querySelectorAll('#app .home-workspace .hw-panel')].filter(e=>e.getClientRects().length);const ov=getComputedStyle(c).overflowY;
    return {first:panels[0]===c,title:c.querySelector('h2').textContent,fits:c.scrollHeight<=c.clientHeight+2,scrolls:/(auto|scroll)/.test(ov),inView:c.getBoundingClientRect().bottom<=innerHeight+1,todo:c.querySelectorAll('[data-a="guideGo"]').length,promo:/카페|홍보|이벤트/.test(c.textContent)};});

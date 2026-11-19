@@ -8,7 +8,7 @@ const BOOT=()=>{DEMO.on=false;newGame(6);G.tut={done:true,step:99};G.medSet=true
 (async()=>{const out=process.env.UIFB2_OUT||'/tmp/uifb2-1117';fs.mkdirSync(out,{recursive:true});
 const server=await startHtmlServer(process.env.UIFB_HTML||path.join(__dirname,'../index.html')),browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
 try{for(const [W,H] of [[1920,1080],[1440,900],[1366,768],[390,844]]){const pc=W>=1100,c=await browser.newContext({viewport:{width:W,height:H},isMobile:!pc,hasTouch:!pc}),p=await c.newPage(),errors=[];
-  p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.evaluate(BOOT);
+  p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.evaluate(BOOT);
   const shot=n=>p.screenshot({path:path.join(out,`${W}-${n}.png`)});
   const fit=async(what)=>{const r=await p.evaluate(()=>({v:document.scrollingElement.scrollHeight-innerHeight,h:document.documentElement.scrollWidth-innerWidth}));assert.ok(r.h<=1,`${W} ${what}: 가로 넘침 ${r.h}`);if(pc)assert.ok(r.v<=1,`${W} ${what}: PC 화면 전체 세로 스크롤 ${r.v}`);};
   /* 1. 전력 구성: 육성선수 한 명을 두고(2군 투수 한 명을 육성으로) 묶음 탭 이름·순서와 2군 선수가 모두 2군 묶음에 있는지 */
