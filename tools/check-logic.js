@@ -147,6 +147,10 @@ T('[구단주 11-19 시장가] FA 요구액은 수요·공급 청산값(비슷�
   ok(s1===1,'비슷한 FA를 뺐는데 공급 '+s1); ok(v1>=v0,'비슷한 FA가 빠졌는데 값이 내려감 '+v0+' → '+v1+' (공급 '+s0+'→'+s1+')');
   ok(mktClear([3000,2500,2000,1500],1)===2500&&mktClear([3000,2500,2000,1500],3)===1500&&mktClear([3000,2500],3)===round5(2500*.7)&&mktClear([],2)===MIN_SAL,'청산 규칙');
   const r0=__rngCalls(); for(const q of L){ faAsk(q); mktPrice(q); } for(const q of domestic(G.user).slice(0,10)){ extDemand(q,4); } ok(__rngCalls()===r0,'시장가 계산이 본게임 난수를 씀 '+(__rngCalls()-r0)); });
+T('[구단주 11-19 유보가] 공급 과잉으로 청산값이 꺼져도 유보가(대체재가 없을 때 값×나이별 기다림 할인, 직전 연봉 75% 중 큰 쪽, 대체재 없을 때 값 이하) 아래로는 값이 내려가지 않고 1년 계약 관문이 걸린다',()=>{
+  ok(mktResv({age:29},1000,0)===700&&mktResv({age:31},1000,0)===620&&mktResv({age:34},1000,0)===520&&mktResv({age:36},1000,0)===420,'나이별 기다림 할인');
+  ok(mktResv({age:29},1000,2000)===1000,'유보가가 대체재 없을 때 값을 넘음'); ok(mktResv({age:36},1000,800)===600,'직전 연봉 75%가 반영 안 됨'); ok(mktResv({age:36},20,0)===MIN_SAL,'최저 연봉 아래');
+  const g=faProveGate({ask:{annual:1000,years:1,prove:true}}); ok(g&&g.min===900&&g.multi===1150,'1년 재평가 관문 '+JSON.stringify(g)); ok(faProveGate({ask:{annual:1000,years:4}})===null,'보통 요구에 관문이 걸림'); });
 T('[구단주 11-19 시장가] 초특급 비FA 다년계약 요구는 시장 분위기를 두 번 곱하지 않고 FA 시장가의 110%·리그 상한 25%를 넘지 않는다(상한 330억 과열 시장에서 연 120억을 부르던 문제)',()=>{ fresh(); const s=sponSeason(); G.capY=G.capY||{}; G.capY[s]=33000; G.capY[G.year]=33000; G.faMkt=G.faMkt||{}; G.faMkt[G.year]=1.18;
   const p=domestic(G.user).filter(q=>!q.foreign).sort((a,b)=>ovr(b)-ovr(a))[0]; p.age=29; p.svc=faSvc(p)-1; p.pot=Math.max(p.pot||0,ovr(p)); for(const k in p.r)p.r[k]=Math.max(p.r[k],92); ok(ovr(p)>=65,'준비 실패: 초특급 아님 '+ovr(p));
   const x=extParts(p,4); ok(x.elite&&x.disc===1.04,'초특급 웃돈에 분위기를 또 더함 '+x.disc); const d=extDemand(p,4), fa=faAsk(p).annual; ok(d<=Math.round(Math.max(MIN_SAL,fa)*1.1)+5,'초특급 요구가 FA 시장가의 110%를 넘음 '+d+' / '+fa); ok(extDemandAll(p,4,G.user)<=Math.max(extFloor(p),salCeil()),'에이전트 웃돈까지 넣은 요구가 리그 상한 25% 초과');

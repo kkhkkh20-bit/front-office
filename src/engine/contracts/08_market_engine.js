@@ -33,7 +33,17 @@ function mktBidOk(t,p,fa){ if(t.id===ME()||(t.cash||0)<=-3000)return false; cons
 function mktCompCost(p){ if(!p.faGrade)return 0; const ps=p.faPrevSal??p.sal??0; return p.faGrade==='A'?ps*2:p.faGrade==='B'?ps:ps*1.5; }
 function mktBid(t,p,fa){ let w=mktWTP(t,p)*(typeof planFaMul==='function'?planFaMul(t,p):1); return w; } /* 보상 부담은 입찰 여부(faInterest의 compF)에만 반영한다. 실제 입찰가는 보상을 빼지 않으므로 시장가에서도 빼지 않는다(11-14) */
 function mktPrice(p){ const k=mktKey(); if(_mkP.k!==k||_mkP.g!==G)_mkP={k,g:G,m:{}}; if(_mkP.m[p.id]!=null)return _mkP.m[p.id];
-  const fa=p.team==null&&p.faFrom!=null; return _mkP.m[p.id]=mktClear(mktBids(p,fa),fa?mktSupply(p):1); }
+  const fa=p.team==null&&p.faFrom!=null; return _mkP.m[p.id]=fa?mktFa(p).price:mktClear(mktBids(p,false),1); }
+/* 유보가(구단주 검수 11-19: 비슷한 내야 FA 3명 겨울에 연 8.65억 → 2.1억, 방향은 맞지만 낙폭이 비현실적). 공급에도 유보가가 있다:
+   선수에게는 '1년만 계약하고 내년에 다시 시장에 나가는' 길이 있으므로, 대체재가 없을 때의 값(solo: 같은 구단들의 지불 의사에서 공급 1로 청산한 값)에
+   나이별 기다림 할인(29세 이하 70%, 32세 이하 62%, 34세 이하 52%, 그 위 42%)을 곱한 값과 직전 연봉의 75% 가운데 큰 쪽 아래로는 계약하지 않는다.
+   유보가는 solo를 넘지 않는다(혼자 나와도 그 값을 못 받는 선수에게 직전 연봉은 대안이 아니다). 능력표는 쓰지 않는다: 모두 구단 지불 의사에서 나온다.
+   청산값이 유보가보다 낮으면(prove) 값은 유보가에서 멈추고 수량이 줄어든다: FA 신청을 미루거나(faDeclWhy), 1년 계약을 하거나(faAsk·faSignRun), 더 오래 미계약으로 남는다 */
+let _mkF={k:null,m:{}};
+function mktResv(p,solo,prev){ const w=p.age<=29?.7:p.age<=32?.62:p.age<=34?.52:.42; return round5(Math.max(MIN_SAL,Math.min(solo,Math.max((prev||0)*.75,solo*w)))); }
+function mktFa(p){ const k=mktKey(); if(_mkF.k!==k||_mkF.g!==G)_mkF={k,g:G,m:{}}; if(_mkF.m[p.id])return _mkF.m[p.id];
+  const L=mktBids(p,true), m=mktSupply(p), clear=mktClear(L,m), solo=m>1?mktClear(L,1):clear, res=m>1?mktResv(p,solo,p.faPrevSal??p.sal):clear, prove=clear<res;
+  return _mkF.m[p.id]={clear,solo,res,m,prove,price:prove?res:clear}; }
 function mktBids(p,fa){ return G.teams.filter(t=>mktBidOk(t,p,fa)).map(t=>mktBid(t,p,fa)).sort((a,b)=>b-a); }
 function mktClear(L,m){ m=Math.max(1,m|0);
   /* 수요·공급 청산(구단주 원칙 11-19): 비슷한 FA가 m명이면 그 자리를 사려는 구단 가운데 (m+1)번째 지불 의사가 값이 된다(m=1이면 예전처럼 두 번째).
