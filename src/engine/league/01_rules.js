@@ -136,7 +136,8 @@ const FIELD=['C','1B','2B','3B','SS','LF','CF','RF'];
 const isSPr=p=>p.isP&&(p.role?p.role==='SP':isSP(p));
 const posLabel=p=>p.isP?(p.team==null||p.fdPool||p.prospect||!p.role?'투수':(p.role==='SP'?'선발':'불펜')):POSK[p.pos];
 /* 선발 체력 문턱(커뮤니티 11-12): 표시 체력(100점) 60 이상 선발, 50~59는 5선발·대체 선발, 50 미만은 선발이 모자랄 때만. 단장이 '선발'로 요청한 투수는 요청을 따른다 */
-function staGate(tid,p){ if(rpPlanOf(tid,p)==='sp')return 0; const d=FrontOfficeCore.dv(p.r.sta); return d>=60?0:d>=50?-6:-40; }
+function staGate0(p){ const d=FrontOfficeCore.dv(p.r.sta); return d>=60?0:d>=50?-6:-40; }
+function staGate(tid,p){ return rpPlanOf(tid,p)==='sp'?0:staGate0(p); }
 function roleBias(tid,p){ const thr=rpThr(tid); return clamp((p.r.sta-thr)*.9,-14,8)+(p.rAdj||0)+rpBias(tid,p)+staGate(tid,p); } /* 체력 기준은 감독 성향(불펜 의존·스몰볼), 보직 계획(신인 계투 시작·단장 요청)은 77_pitch_role.js */
 const team=id=>G.teams[id];
 /* 구단 표시 이름(마인2 11-16: 실제 구단명처럼 '삼성 라이온즈'로 쓰고 싶은데 앞에 연고지가 붙음): t.disp(플레이어가 붙인 전체 이름, 14자)이 있으면 '연고지 별칭' 대신 그것.

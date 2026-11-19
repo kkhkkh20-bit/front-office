@@ -1,15 +1,26 @@
 /* ---------- 구단주·목표, 언론·여론 ---------- */
 function gauge(v,lo,hi){ const c=v>=hi?'var(--good)':v<=lo?'var(--bad)':'var(--warn)'; return `<span class="gauge"><i style="width:${clamp(v,0,100)}%;background:${c}"></i></span>`; }
+/* 병역 자료와 카드 한 장(병역 탭 milView · 전력 구성 '병역 현황' milPanel 공용, 카페 11-19) */
+function milData(){ const mine=domPayOf(G.user) /* 대표팀 차출 중인 선수도 지원 대상(검수 11-09zk) */; const free=mine.filter(p=>milFree(p)).sort((a,b)=>b.age-a.age); const serving=awayOf(G.user).filter(milServing);
+  const pending=Object.values(G.players).filter(p=>p.team===G.user&&p.mil&&p.mil.until&&p.mil.from>G.day); return {free,serving,pending}; }
+const MIL_ADV={last:['bad','마지막 기회'],go:['good','상무 추천'],hold:['warn','보류 의견'],wait:['','여유 있음'],next:['','접수 대기'],applied:['','지원 결과 대기']};
+function milFreeCard(p){ const MA=MIL_ADV, a=milFree(p)?milAdvice(p):null; const t=a&&MA[a.k]; return pcard(p,{sub:`${p.age}세 · ${esc(milText(p))}`,tags:(p.age>=27&&milFree(p)?'<span class="pill bad">올해 입대해야 함</span>':'')+(t&&a.k!=='last'?`<span class="pill ${t[0]}" title="${esc(a.who+': '+a.why)}">${t[1]}</span>`:''),stat:a&&a.why?`<span class="small muted">${esc(a.who)}: ${esc(a.why)}</span>`:undefined,foot:`${rosterFoot(p)}${milFree(p)?`<div class="devpick">${sangmuCanApply(p)?`<button class="tc-i go" data-a="sangmu" data-v="${p.id}">상무 지원</button>`:''}<button class="tc-i" data-a="enlist" data-v="${p.id}">현역 입대</button></div>`:''}`}); }
+const milUnitPill=p=>`<span class="pill ${p.mil.unit==='상무'?'good':'warn'}">${p.mil.unit}</span>`;
+function milServCard(p){ return pcard(p,{sub:`${p.age}세`,tags:milUnitPill(p),stat:esc(milText(p)),foot:rosterFoot(p)+(p.mil.byGM&&p.mil.from>G.day?`<button class="tc-i" data-a="enlistCancel" data-v="${p.id}">입대 취소</button>`:'')}); }
+/* 전력 구성 오른쪽 칸 아래 '병역 현황': 복무 중(전역이 가까운 순) · 입대 예정(입대가 가까운 순) · 올해 입대해야 하는 미필.
+   자료(milData)·부대 꼬리표·날짜 글(milText)은 병역 탭과 같고, 칸이 좁아 카드 대신 한 줄로 적는다. 지원·입대 결정은 병역 탭에서 */
+function milPanel(){ const D=milData(), serving=[...D.serving].sort((a,b)=>a.mil.until-b.mil.until), pending=[...D.pending].sort((a,b)=>a.mil.from-b.mil.from), must=D.free.filter(p=>p.age>=27);
+  const row=(p,pill)=>`<div class="item milp-r" style="cursor:default"><button class="nm lnk" data-a="player" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="sub">${pill} ${esc(milText(p))}</span></div>`;
+  const grp=(l,L,f)=>L.length?`<div class="eyebrow">${l} ${L.length}명</div>${L.map(p=>row(p,f(p))).join('')}`:'';
+  return `<div class="milp" data-milp><div class="row between milp-h"><h2 class="sec">병역 현황</h2><button class="tc-i" data-a="itab" data-v="roster:mil">병역 탭 ›</button></div><p class="small muted milp-sum">복무 중 ${serving.length}명 · 입대 예정 ${pending.length}명 · 미필 ${D.free.length}명</p>${grp('복무 중 · 전역 빠른 순',serving,milUnitPill)+grp('입대 예정',pending,milUnitPill)+grp('올해 입대해야 함',must,()=>'<span class="pill bad">올해 입대해야 함</span>')||'<p class="small muted">복무 중이거나 입대가 잡힌 선수가 없습니다.</p>'}</div>`; }
 function milView(){
-  const mine=domPayOf(G.user) /* 대표팀 차출 중인 선수도 지원 대상(검수 11-09zk) */; const free=mine.filter(p=>milFree(p)).sort((a,b)=>b.age-a.age); const serving=awayOf(G.user).filter(milServing);
-  const pending=Object.values(G.players).filter(p=>p.team===G.user&&p.mil&&p.mil.until&&p.mil.from>G.day);
+  const {free,serving,pending}=milData();
   const W=sangmuPeriod(),w=W.open?W.wave:null;
-  const MA={last:['bad','마지막 기회'],go:['good','상무 추천'],hold:['warn','보류 의견'],wait:['','여유 있음'],next:['','접수 대기'],applied:['','지원 결과 대기']};
-  const card=p=>{ const a=milFree(p)?milAdvice(p):null; const t=a&&MA[a.k]; return pcard(p,{sub:`${p.age}세 · ${esc(milText(p))}`,tags:(p.age>=27&&milFree(p)?'<span class="pill bad">올해 입대해야 함</span>':'')+(t&&a.k!=='last'?`<span class="pill ${t[0]}" title="${esc(a.who+': '+a.why)}">${t[1]}</span>`:''),stat:a&&a.why?`<span class="small muted">${esc(a.who)}: ${esc(a.why)}</span>`:undefined,foot:`${rosterFoot(p)}${milFree(p)?`<div class="devpick">${sangmuCanApply(p)?`<button class="tc-i go" data-a="sangmu" data-v="${p.id}">상무 지원</button>`:''}<button class="tc-i" data-a="enlist" data-v="${p.id}">현역 입대</button></div>`:''}`}); };
+  const card=milFreeCard;
   return csec('병역 관리',`<p class="small muted">국내 선수는 군 복무를 해야 합니다. 상무(국군체육부대)는 1년 6개월 동안 퓨처스리그에서 뛰며 기량을 유지하고, 현역은 야구를 거의 못 해 기량이 떨어집니다. 상무 접수는 3월 1일~4월 14일, 9월 1일~10월 14일이며 입대 연도에 27세까지 지원할 수 있습니다. 상무는 지원자 중 기량 순으로 한 번에 ${SANGMU_SLOTS}명만 합격합니다. 28세가 되는 해까지 입대하지 않으면 현역으로 갑니다. 복무 중인 선수는 로스터에서 빠졌다가 전역하면 돌아옵니다.</p>
     <dl class="tsum"><div><dt>미필</dt><dd class="num">${free.length}명</dd></div><div><dt>복무 중</dt><dd class="num">${serving.length}명</dd></div><div><dt>상무 지원</dt><dd>${w?(w==='dec'?'지금 가능 · 12월 입대':'지금 가능 · 6월 입대'):'접수 종료·대기 · 3/1~4/14, 9/1~10/14'}</dd></div></dl>
     ${UI.milMsg&&UI.milMsgD===G.day?`<div class="note">${esc(UI.milMsg)}</div>`:""}`)
-   +(serving.length||pending.length?csec('복무 중 · 입대 예정',`<div class="tgrid">${serving.concat(pending).map(p=>pcard(p,{sub:`${p.age}세`,tags:`<span class="pill ${p.mil.unit==='상무'?'good':'warn'}">${p.mil.unit}</span>`,stat:esc(milText(p)),foot:rosterFoot(p)+(p.mil.byGM&&p.mil.from>G.day?`<button class="tc-i" data-a="enlistCancel" data-v="${p.id}">입대 취소</button>`:'')})).join('')}</div>`):'')
+   +(serving.length||pending.length?csec('복무 중 · 입대 예정',`<div class="tgrid">${serving.concat(pending).map(milServCard).join('')}</div>`):'')
    +csec('미필 선수',free.length?`<div class="tgrid">${(UI.milAll?free:free.slice(0,8)).map(card).join('')}</div>${free.length>8?`<button class="btn block" data-a="milAll" style="margin-top:8px">${UI.milAll?'접기':`나머지 ${free.length-8}명 더 보기 (나이 어린 순)`}</button>`:''}`:'<p class="small muted">미필 선수가 없습니다.</p>')
    +csec('국가대표',`<p class="small muted">${G.agExOff?`올림픽 3위 이내면 대표팀의 미필 선수는 병역 특례를 받습니다(아시안게임 금메달 특례는 ${G.agExOff}년 병역법 개정으로 폐지).`:'아시안게임 금메달·올림픽 3위 이내면 대표팀의 미필 선수는 병역 특례를 받습니다.'}</p><button class="btn small" data-a="go" data-v="league:nt">국가대표 보기</button>`);
 }

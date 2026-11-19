@@ -14,7 +14,7 @@ function salAsk(p,off){ const b=salBasis(p); initPers(p); const amb=p.pers.amb;
   const want=b.enough&&b.war>=1?.03+b.war*.045+(amb-12)*.007:(amb-12)*.003;
   /* 예비 FA는 시장을 알고 있어 조금 더 부른다 */
   const pf=preFA(p)&&b.war>=1?.05:0;
-  const lim=!p.faC&&!p.ext&&(p.svc||0)<faSvc(p)?Math.max(off,preCap(p)):Infinity; return round5(Math.min(lim,Math.max(off,off*(1+clamp(want+pf,0,.45))*agSalMul(p,p.team??G.user)))); } /* 에이전트 친분·기억은 그 선수 구단 기준(AI 연봉 협상도 같은 요구, 계약 2단계) */
+  const lim=Math.min(!p.faC&&!p.ext&&(p.svc||0)<faSvc(p)?Math.max(off,preCap(p)):Infinity,Math.max(off,p.foreign?Infinity:faAsk(p).annual)); /* 연봉 협상 요구도 시장가(구단들의 지불 의사)를 넘지 않는다(구단 제시액 아래로는 내려가지 않음) */ return round5(Math.min(lim,Math.max(off,off*(1+clamp(want+pf,0,.45))*agSalMul(p,p.team??G.user)))); } /* 에이전트 친분·기억은 그 선수 구단 기준(AI 연봉 협상도 같은 요구, 계약 2단계) */
 function salMilLocked(p){ const m=p&&p.mil, C=G.contract; const y=(C&&C.y!=null?C.y:dobj(G.day).m<=2?G.year-1:G.year)+1; return !!(m&&m.until&&!m.done&&!m.exempt&&m.until>Math.max(G.day,payWin(y)[0])); }
 function salMilFix(){ const C=G.contract; if(!C||!C.neg)return; for(const [id,n] of Object.entries(C.neg)){ const p=G.players[id]; if(p&&n.mil&&!salMilLocked(p))milNegBack(p,p.mil); } }
 function salTalkInit(){ const C=G.contract; if(!C)return; if(C.neg){ salMilFix(); return; } if(C.y==null)C.y=dobj(G.day).m<=2?G.year-1:G.year; C.neg={};

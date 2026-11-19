@@ -95,7 +95,7 @@ function tradeCenter(){faCelebrate();const s=curSub('trade'),BODY={block:blockCe
  const tools=s==='block'?`<details class="trade-extra"><summary>거래 기록·시장 소식</summary><button class="btn small" data-a="go" data-v="trade:report">거래 기록</button><button class="btn small" data-a="tradeNews">시장 소식</button></details>`:'';
  return `<div class="trade-workspace" data-route="${s}">${subTabs('trade')}${extra}${s==='table'?deadlineBanner():''}${(BODY[s]||tcMarket)()}${tools}</div>`;
 }
-function stampView(){ const s=UI.stamp; return `<div class="stamp-w" data-a="stampOff"><div class="stamp"><b>${esc(s.title||'거래 성사')}</b><span>${esc(s.msg)}</span>${s.grade?`<div class="sg">언론 평점 <i class="grade g${s.grade}">${s.grade}</i></div>`:''}${s.fans&&s.fans.length?fanLinesHtml(s.fans,'팬 게시판 반응'):''}<em>눌러서 닫기</em></div></div>`; }
+function stampView(){ const s=UI.stamp; return `<div class="stamp-w" data-a="stampOff"><div class="stamp"><b>${esc(s.title||'거래 성사')}</b><span>${esc(s.msg)}</span>${s.extra?`<div class="sg st-extra">종합 ${s.extra}</div>`:''}${s.grade?`<div class="sg">언론 평점 <i class="grade g${s.grade}">${s.grade}</i></div>`:''}${s.fans&&s.fans.length?fanLinesHtml(s.fans,'팬 게시판 반응'):''}<em>눌러서 닫기</em></div></div>`; }
 function unempView(){ const J=(G.jobs||[]).filter(j=>!j.done); const U=G.unemp; const days=G.day-(U.since??G.day); const mo=Math.floor(days/30);
   const odds=G.rep>=70?'자주':G.rep>=50?'가끔':G.rep>=30?'드물게':'거의 오지 않음';
   return `<section class="card hero"><div class="eyebrow">야인 · ${mo?`${mo}개월째`:`${days}일째`}</div><h2 class="sec">${esc(tname(U.from??G.user))} 단장에서 물러났습니다</h2><p class="small">${esc(U.msg)}</p>

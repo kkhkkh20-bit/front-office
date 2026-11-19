@@ -68,7 +68,13 @@ const mailNeeds=m=>ibMust(m);
  - 접기는 단장만 한다. 시간이 지났다고 저절로 접거나 읽음 처리하지 않는다. 접힌 날짜에 안 읽은 소식이 있으면 머리에 표시된다.
  - 저절로 소식을 골라 열지 않는다(고른 것만 읽음). 날짜가 바뀌어도 보던 위치를 지킨다.
  - 스페이스바(와 '계속' 버튼): 화면 위에서부터 안 읽은 소식을 연다(확인할 소식 먼저). 다 읽었으면 진행한다. */
-function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
+/* 보낸이·읽지 않음 필터(카페 11-19): 분류 탭 아래 칩. 화면 상태(UI)로만 두고 저장하지 않는다. 보낸이 칩은 지금 분류에 있는 보낸이를 많은 순으로 */
+function ibFromList(f){ const n={}; for(const m of mailFilter(f))n[m.from]=(n[m.from]||0)+1; return Object.keys(n).sort((a,b)=>n[b]-n[a]||a.localeCompare(b,'ko')).map(k=>[k,n[k]]); }
+function ibSub(f,list){ const F=UI.mfFrom; if(F&&list.length&&!list.some(m=>m.from===F))UI.mfFrom=null; /* 분류를 바꿔 그 보낸이가 없으면 필터를 푼다 */
+  return list.filter(m=>(!UI.mfFrom||m.from===UI.mfFrom)&&(!UI.mfUnread||!m.read)); }
+function ibFromChips(f){ const L=ibFromList(f); if(!L.length)return ''; const top=L.slice(0,10), cur=UI.mfFrom;
+  return `<div class="chips ibx-from" role="group" aria-label="보낸이·읽음 필터"><button data-a="mfFrom" data-v="" class="${cur?'':'on'}">모든 보낸이</button>${top.map(([k,n])=>`<button data-a="mfFrom" data-v="${esc(k)}" class="${cur===k?'on':''}">${esc(k)}<i>${n}</i></button>`).join('')}${cur&&!top.some(x=>x[0]===cur)?`<button data-a="mfFrom" data-v="${esc(cur)}" class="on">${esc(cur)}</button>`:''}<span class="ibx-fsep"></span><button data-a="mfUnread" class="ibx-unread-only ${UI.mfUnread?'on':''}" aria-pressed="${!!UI.mfUnread}">읽지 않음만</button></div>`; }
+function ibList(f){ let list=ibSub(f,mailFilter(f)); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
   list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep||ibDecide(m)||(m.acts&&m.acts.length&&!mailDone(m)))return true; /* 진행 중인 일은 같은 제목이어도 따로(검수 11-07) */ const k=m.from+'|'+m.subj+'|'+m.body; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
@@ -109,12 +115,12 @@ function inboxView(){
   /* PC: 분류 탭은 맨 위 줄(inboxSubRow, 사용자 11-17 "한단계위로") */
   let bar=`<div class="ibx-bar">${fmOn()?'':`<div class="ibx-tabs" role="tablist">${ibTabBtns(f,cnt)}</div>`}
     <div class="ibx-meta">${ibBday()}${W0?'':unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${(()=>{ const D=ibDecideList(); return D.length?`<button class="lnk ibx-need" data-a="ibDecideGo" title="읽었어도 아직 답하지 않은 일(마감 빠른 순)">결정할 일 ${D.length}건${ibDue(D[0])!=null?` · ${W0?'가장 빠른 마감 ':''}D-${Math.max(0,ibDue(D[0])-G.day)}`:''}</button>`:''; })()}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · ↑/↓ 또는 K/J: 이전/다음">↑↓ 소식 이동 · Space 다음 소식·진행</span>':''}</div></div>`;
-  const lad=ibPsLadder(); if(lad)bar+=lad;
-  if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'확인할 소식이 없습니다.':'소식이 없습니다.'}</p></section>`;
+  bar+=ibFromChips(f); const lad=ibPsLadder(); if(lad)bar+=lad;
+  if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${UI.mfFrom||UI.mfUnread?'조건에 맞는 소식이 없습니다. 보낸이·읽지 않음 필터를 풀어 보세요.':f==='task'?'확인할 소식이 없습니다.':'소식이 없습니다.'}</p></section>`;
   const pin=ibPinned(list); const pinS=new Set(pin.map(m=>m.id)); const rest=list.filter(m=>!pinS.has(m.id));
   const all0=pin.concat(rest).map(m=>m.id); const W=wide();
   let sel=[UI.mailFocus,UI.ibSel].find(v=>v&&all0.includes(v));
-  if(UI.mailFocus&&!sel&&G.mail.some(m=>m.id===UI.mailFocus&&!ibSpoiled(m))){ UI.mf='all'; return inboxView(); }
+  if(UI.mailFocus&&!sel&&G.mail.some(m=>m.id===UI.mailFocus&&!ibSpoiled(m))){ UI.mf='all'; UI.mfFrom=null; UI.mfUnread=false; return inboxView(); }
   if(UI.mailFocus&&sel&&!W)UI.ibOpen=sel; UI.ibSel=sel||null;
   /* 지난 소식은 최근 lim건까지(고른 소식이 그보다 뒤면 거기까지), 나머지는 맨 아래 '더 보기' */
   const lim=UI.ibN||80; const ri=sel?rest.findIndex(m=>m.id===sel):-1; const cut=Math.max(lim,ri+1); const shown=rest.slice(0,cut);
@@ -179,7 +185,7 @@ function inboxWire(){ ibFit();cssVarSet(document.documentElement,'--ibtop',(ibTo
 function ibStep(d){ const rows=[...document.querySelectorAll('.ibx-list .ibr')],visible=new Set(rows.map(el=>el.dataset.mid)); const ids=(UI._ibOrder||ibList(UI.mf||'all').map(m=>m.id)).filter(id=>!rows.length||visible.has(String(id))||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
 /* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
 function ibSpace(){ if(UI._spT&&Date.now()-UI._spT<500)return; UI._spT=Date.now(); /* 스페이스바: 안 읽은 소식이 있으면 차례로 연다(확인할 소식 먼저, 그다음 나머지, 오래된 것부터). 다 읽었으면 진행 */
-  const u=ibUnreadOrder(); if(u.length){ let m=u[0]; if(UI.tab==='inbox'){ const L=document.querySelector('.ibx-list'); const R=L?[...L.querySelectorAll('.ibr.unread[data-mid]')].map(e=>G.mail.find(x=>x.id===e.dataset.mid)).filter(x=>x&&!x.read):[]; const M=R.filter(ibMust); if(R.length)m=(M.length?M:R)[(M.length?M:R).length-1]; } /* 화면에 보이는 목록에서 아래부터 위로: 확인할 소식이 있으면 그중 맨 아래, 없으면 안 읽은 소식 맨 아래(사용자 제보 11-14: 소식이 많으면 위아래로 오감). 접힌 날짜·숨은 중복은 목록 순서로 */ UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
+  const u=ibUnreadOrder(); if(u.length){ let m=u[0]; if(UI.tab==='inbox'){ const L=document.querySelector('.ibx-list'); const R=L?[...L.querySelectorAll('.ibr.unread[data-mid]')].map(e=>G.mail.find(x=>x.id===e.dataset.mid)).filter(x=>x&&!x.read):[]; const M=R.filter(ibMust); if(R.length)m=(M.length?M:R)[(M.length?M:R).length-1]; } /* 화면에 보이는 목록에서 아래부터 위로: 확인할 소식이 있으면 그중 맨 아래, 없으면 안 읽은 소식 맨 아래(사용자 제보 11-14: 소식이 많으면 위아래로 오감). 접힌 날짜·숨은 중복은 목록 순서로 */ UI.mf='all'; UI.mfFrom=null; UI.mfUnread=false; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
   if(G.live){ toast('경기를 먼저 끝까지 보세요.'); return; } const bl=blocker(); if(bl&&!G.res){ toast(bl); UI.tab='home'; render(); return; }
   const b=document.querySelector('button.continue:not([disabled])')||document.querySelector('button.continue'); const v=b?b.dataset.v:'next';
   /* 특별한 소식(남은 결정·제안·중요 소식)이 없으면 묻지 않고 바로 진행한다. 설정에서 '진행 전에 묻기'를 켜면 매번 묻는다 */

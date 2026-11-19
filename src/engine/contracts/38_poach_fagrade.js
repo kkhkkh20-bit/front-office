@@ -1,7 +1,7 @@
 /* ===== 다른 구단 코치 빼 오기 ===== */
 const PROMO={fp:'pc',fb:'bc',fm:'hc',pc:'hc',bc:'hc',cc:'hc',rc:'hc',dc:'hc',bp:'pc',ab:'bc',fd:'dc',fc:'cc',r1:'rc',rs:'fp',rb:'fb'};
-function poachOff(){ const per=period(); return per!=='season'&&per!=='post'; }
-/* 코치 빼 오기 한도(공략 방지): 비시즌(sponSeason 단위)마다 구단당 성공 2건, 시즌·포스트시즌 중에는 못 한다. 우리·AI 같은 한도 */
+function poachOff(){ return staffMoveOpen(); } /* 계약 정리 기간(89d_coach_rules): 포스트시즌이 끝난 날~12월 31일. 예전에는 1~3월 시즌 준비 기간도 열려 있었다 */
+/* 코치 빼 오기 한도(공략 방지): 비시즌(sponSeason 단위)마다 구단당 성공 2건, 계약 정리 기간(poachOff) 밖에서는 못 한다. 우리·AI 같은 한도 */
 const POACH_MAX=2;
 function poachN(tid){ const P=G.poachN||{}, k=sponSeason(); /* 읽기만: 거절 판정이 저장 상태를 만들지 않게(check-feedback-staff-market #89) */ const x=P[tid]; return x&&x.k===k?x.n:0; }
 function poachAdd(tid){ const P=G.poachN=G.poachN||{}, k=sponSeason(); const x=P[tid]&&P[tid].k===k?P[tid]:(P[tid]={k,n:0}); x.n++; }
@@ -12,7 +12,7 @@ function poachTerms(tid,role,toRole){ const c=G.coach&&G.coach[tid]&&G.coach[tid
   if(team(tid).rel<35)ch-=.1; stAttr(c); ch+=(clubPrestige(G.user)-clubPrestige(tid))*.004-(loyalty-20)*.002; /* 구단 위상 차이와 충성도(11-08c) */
   const X=cmCtrOf(c); if(X&&X.tid===tid&&X.by===G.user&&X.to===toRole)return {c,sal:X.need,comp,promo,clan,chance:1,toRole,ctr:true,loyalty,loyaltyBonus}; /* 안내한 역제안 조건을 기한 안에 맞추면 확정 수락(#504) */
   return {c,sal,comp,promo,clan,chance:clamp(ch,.05,.9),toRole,loyalty,loyaltyBonus}; }
-function poachCoach(tid,role,toRole){ if(!G.coach||tid===G.user)return '대상이 아닙니다.'; if(!poachOff())return '시즌 중에는 다른 구단 코치를 데려올 수 없습니다. 시즌이 끝난 뒤 제의하세요.'; if(poachN(G.user)>=POACH_MAX)return `이번 겨울에는 이미 코치 ${POACH_MAX}명을 데려왔습니다. 다음 비시즌에 다시 제의할 수 있습니다.`; const target=G.coach[tid]&&G.coach[tid][role]; if(staffPending(target))return '아직 합류 전인 코치에게는 영입을 제의할 수 없습니다.'; if(target){ const why=coachHireWhy(G.user,target,{from:tid,to:toRole}); if(why)return why; } /* 재계약 1년 보호 등 AI 빼 오기와 같은 규칙(검수 11-17 #260) */ const T=poachTerms(tid,role,toRole); if(!T)return '그 자리에 코치가 없습니다.'; const c=T.c; G.poachCd=G.poachCd||{};
+function poachCoach(tid,role,toRole){ if(!G.coach||tid===G.user)return '대상이 아닙니다.'; if(!poachOff())return STAFF_MOVE_WHY; if(poachN(G.user)>=POACH_MAX)return `이번 겨울에는 이미 코치 ${POACH_MAX}명을 데려왔습니다. 다음 비시즌에 다시 제의할 수 있습니다.`; const target=G.coach[tid]&&G.coach[tid][role]; if(staffPending(target))return '아직 합류 전인 코치에게는 영입을 제의할 수 없습니다.'; if(target){ const why=coachHireWhy(G.user,target,{from:tid,to:toRole}); if(why)return why; } /* 재계약 1년 보호 등 AI 빼 오기와 같은 규칙(검수 11-17 #260) */ const T=poachTerms(tid,role,toRole); if(!T)return '그 자리에 코치가 없습니다.'; const c=T.c; G.poachCd=G.poachCd||{};
   if(G.poachCd[c.id]>G.day)return `${c.name} 코치는 ${dmd(G.poachCd[c.id])}까지 다시 만나 주지 않습니다.`; const t=team(tid);
   const draw=R(); if(!T.ctr&&draw>=T.chance){ G.poachCd[c.id]=G.day+30; t.rel=clamp(t.rel-1,0,100); return `${c.name} 코치가 제의를 거절했습니다. "${T.clan?`${G.mgr[tid].name} 감독님을 두고 갈 수 없습니다`:'지금 팀에서 하던 일을 마무리하고 싶습니다'}." (${tshort(tid)} 단장 친분 조금 하락)`; } /* 확정 수락도 기존 난수 한 번은 소비 */
   if(T.ctr)delete G.poachCtr[c.id]; else { const ct=cmCounter(tid,c,T); if(ct)return ct; } /* 원 소속 구단의 역제안 */

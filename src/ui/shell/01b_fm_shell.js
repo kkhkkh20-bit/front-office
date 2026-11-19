@@ -40,14 +40,15 @@ function fmFwd(){ const H=UI.navH||[]; if(UI.navI==null||UI.navI>=H.length-1)ret
 function fmCols(h){ return fmOn()?`<div class="fmcols">${h}</div>`:h; }
 const FM_SUBROW={roster:()=>rosterSubRow(),inbox:()=>inboxSubRow()};
 function fmSubRow(){ if(UI.meet)return `<button class="fm-ib" data-a="meetClose">‹ 이전 화면으로</button><span class="fm-ttl">${esc(meetWho(UI.meet)?.place||'면담')} · 대화</span>`;if(UI.cast)return '<span class="fm-ttl">경기 중계</span>'; /* 중계 중에는 홈 하위 탭(눌러도 중계가 그대로)을 숨긴다 */ const tab=UI.tab; if(tab==='club'&&UI.clubInspect!=null)return '<span class="fm-ttl">'+esc(tname(UI.clubInspect))+' · 공개 구단 기록</span>'; const back=UI.fromMail&&tab!=='inbox'?'<button class="fm-ib" data-a="ibReturn">◀ 소식함으로</button>':'';
+  if(draftFocusOn()){ const d=G.draft, pk=d.picks[d.cur]; return back+`<button class="fm-ib dfocus-x" data-a="dfocusOff" title="영입·계약 하위 탭과 왼쪽 메뉴를 다시 펼칩니다">← 영입·계약</button><span class="fm-ttl">${d.y||G.year} 신인 드래프트 · ${pk.rd}라운드 ${pk.no}순위${pk.tid===G.user?' · 우리 차례':''}</span>`; } /* 드래프트 집중 모드(카페 11-19) */
   if(SUBS[tab])return back+subTabsRaw(tab);
   { const f=FM_SUBROW[tab], h=f&&f(); if(h)return back+h; } /* 화면이 자기 하위 탭(UI.it)을 이 줄에 건다(사용자 11-17: 선수단 탭이 본문 아래에 묻혔다) */
   return back+`<span class="fm-ttl">${esc(TITLE[tab]||'')}</span>`; }
 function fmShell(t,per,unread,b){ const ic=i=>ICO[i]||ICO2[i]; const H=UI.navH||[];
-  const location=UI.cast?'경기 중계':UI.tab==='club'&&UI.clubInspect!=null?tname(UI.clubInspect)+' · 공개 구단 기록':TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
+  const location=UI.cast?'경기 중계':UI.tab==='club'&&UI.clubInspect!=null?tname(UI.clubInspect)+' · 공개 구단 기록':draftFocusOn()?'신인 드래프트':TITLE[UI.tab]||NAV.find(x=>x[0]===UI.tab)?.[1]||'단장실';
   const ico=(a,v,i,l,on,n)=>`<button class="fm-i${on?' on':''}" data-a="${a}"${v?` data-v="${v}"`:''} aria-label="${l}" title="${l}">${ic(i)}${n?`<i>${n>99?'99+':n}</i>`:''}</button>`;
   const d=dobj(G.day);
-  return `<div class="shell fmsh${UI.tab==='home'&&!UI.meet&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
+  return `<div class="shell fmsh${draftFocusOn()?' dfocus':''}${UI.tab==='home'&&!UI.meet&&!G.unemp&&!G.gameOver&&!G.demoEnd&&!G.live?' fm-home':''}">
   <header class="fmtop"><div class="fm1">
     <div class="fm-nav"><button class="fm-a" data-a="fmBack" ${UI.meet||UI.navI>0?'':'disabled'} aria-label="뒤로">‹</button><button class="fm-a" data-a="fmFwd" ${UI.navI!=null&&UI.navI<H.length-1?'':'disabled'} aria-label="앞으로">›</button></div>
     <button class="fm-club" ${G.unemp?'':'data-a="tab" data-v="home" title="홈으로" aria-label="홈으로"'}>${G.unemp?'<span class="tdi">야</span>':badge(G.user,36)}</button>

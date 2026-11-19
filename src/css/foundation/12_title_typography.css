@@ -58,6 +58,15 @@ table.box tr.cold{opacity:.72}table.box td.bhl{color:#ffd24d;font-weight:700}tab
 .tstrip.grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));overflow:visible!important;mask-image:none!important;-webkit-mask-image:none!important}.tstrip.grid>button{min-width:0;width:auto}
 .tw .sqt tbody tr:nth-child(even) td:first-child,.tw .rt tbody tr:nth-child(even) td:first-child{background:linear-gradient(#ffffff04,#ffffff04),var(--panel)}.tw .sqt tbody tr:hover td:first-child,.tw .rt tbody tr:hover td:first-child{background:linear-gradient(#ffffff0a,#ffffff0a),var(--panel)}
 .fld .fbs{width:66px;padding:3px 2px}
+/* 능력 칸 자리 나눔(카페 11-19): 꼬리표 34px · 컨디션 16px · 증감 30px. 증감이 없는 줄도 자리는 남아 꼬리표가 세로로 한 줄 */
+.abc{display:inline-grid;grid-template-columns:34px 16px 30px;column-gap:2px;align-items:center;justify-items:center;vertical-align:middle;white-space:nowrap}.abc.abc-solo{grid-template-columns:34px}
+.abc>span{display:flex;align-items:center;justify-content:center;min-width:0;width:100%}.abc>.abc-d{justify-content:flex-start}
+.abc .cnd.ca{margin:0;position:static;transform:none}.abc .ovd.pf-dl{margin:0;font:700 12px var(--f-num)}
+td.abtd{white-space:nowrap}.abp{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;white-space:nowrap}
+.ent-r>.nm{display:inline-flex;align-items:center;flex-wrap:wrap;gap:2px 8px;text-align:left}.ent-r .ent-n{min-width:11em}
+td.try-c{white-space:nowrap;vertical-align:middle}.try-ct{display:inline-flex;gap:4px;align-items:center}.try-why{margin-top:2px;max-width:260px;white-space:normal;line-height:1.3}td.try-est{white-space:nowrap}td.try-est .abc,td.try-est .ptier{margin-right:4px}
+tr.st-sum>td{font-weight:700;background:rgba(127,140,155,.14);box-shadow:inset 0 1px 0 var(--line2)}tr.st-sum>td:nth-child(2){white-space:nowrap}
+.milp{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}.milp-h{margin-bottom:2px}.milp .milp-sum{margin:0 0 6px}.milp .eyebrow{margin:8px 0 4px}
 td.ovc{text-align:left;padding-right:26px!important;white-space:nowrap}.ovw{position:relative;display:inline-block}.ovw .cnd{position:absolute;left:100%;top:50%;transform:translateY(-50%);white-space:nowrap}
 .fsq em.fsqb{overflow:visible;display:block;line-height:0;margin-top:2px}@media (max-width:420px){.fsq em.fsqb{display:block}}
 .tc-bt{display:inline-flex;gap:6px;margin-left:auto;flex:none}.tc-bt .tc-i{margin-left:0!important}
