@@ -137,8 +137,8 @@ function cTrail(from,to,arc,ms,cls){ const sv=document.getElementById('cs-trail'
   const len=p.getTotalLength?p.getTotalLength():60; p.style.strokeDasharray=len; p.style.strokeDashoffset=len;
   p.animate([{strokeDashoffset:len},{strokeDashoffset:0}],{duration:ms/cSpd(),fill:'forwards'}); setTimeout(()=>{ p.style.transition='opacity .6s'; p.style.opacity=0; setTimeout(()=>p.remove(),700); },(ms+700)/cSpd()); }
 function cTrailClear(){ const sv=document.getElementById('cs-trail'); if(sv)sv.innerHTML=''; }
-/* 이닝 시작 배너(경기장 전체를 어둡게 덮고 '○회초 · ○○ 공격'을 1초 띄우던 화면)는 뺐다(사용자 11-19: 이닝마다 검게 덮이는 화면). 이닝·공격 팀은 점수판에 늘 보인다. 공수 교대 소리만 남긴다 */
-function cHalfCue(){ sfx('bong',.55); }
+async function cBanner(g,half){ const el=document.getElementById('cs-bn'); if(!el)return; const at=half%2?g.home:g.away;
+  el.innerHTML=`<div>${badge(at,40)}<b>${cHalfTxt(half)}</b><span>${esc(tname(at))} 공격</span></div>`; el.className='cs-bn on'; sfx('bong',.55); try{ await cSleep(850); }finally{ el.className='cs-bn'; } /* 멈춤·넘기기로 대기가 끊겨도 이닝 배너가 화면에 남지 않게 */ await cSleep(150); }
 /* 볼 수 있는 장면 고르기 */
 /* 하이라이트 편성(사용자 11-17: 실제 야구 하이라이트처럼). 방송 하이라이트처럼 경기 전체에서 장면을 골라 순서대로 잇는다.
    장면 고르기는 기록의 승리 확률 변화(wpaDeltas)로 한다: 많이 흔든 장면일수록 먼저.
@@ -191,23 +191,17 @@ function cKeep(g,k,mode){ if((g.incidents||[]).some(e=>e.k===k))return true;if(m
   if(mode==='risp')return risp; return x[6]>0||['HR','3B','2B','DP','HBP'].includes(x[3])||(x[3]==='K'&&risp)||k===L.length-1||(x[4]>=3&&b.half>=16&&Math.abs(x[7]-x[8])<=1); }
 /* 상황별 수비 위치(사용자 11-17: 실제 야구 수비처럼). 기록은 바꾸지 않는 화면 연출. 반환: 포지션→자리(기본은 CFP) */
 function cAlign(g,st,oT){ const A={}, b=st.bases||[0,0,0], outs=st.outs||0, half=st.half||0, top=half%2===0, defLead=top?(st.sh||0)-(st.sa||0):(st.sa||0)-(st.sh||0), late=half>=12, small=typeof mgrOf==='function'?(mgrOf(oT)||{}).small??50:50;
-  if(b[2]&&outs<2&&late&&Math.abs(defLead)<=2){ A['3B']=[31,71]; A.SS=[40,60]; A['2B']=[60,60]; A['1B']=[69,71]; A._k='in'; return A; } /* 전진 수비: 3루 주자를 홈에서 막는다 */
-  if(outs===0&&(b[0]||b[1])&&!b[2]&&small>=60){ A['3B']=[35.5,74]; A['1B']=[64.5,74]; A._k='bunt'; } /* 11-19: 예전 자리([31,76]·[69,76])는 파울 라인 바깥이었다. 베이스 앞 잔디, 라인 안쪽 2m */ /* 번트 수비: 작전을 즐기는 감독(공격 팀)이면 1·3루수가 앞으로 */
+  if(b[2]&&outs<2&&late&&Math.abs(defLead)<=2){ A['3B']=[29,71]; A.SS=[40,60]; A['2B']=[60,60]; A['1B']=[71,71]; A._k='in'; return A; } /* 전진 수비: 3루 주자를 홈에서 막는다 */
+  if(outs===0&&(b[0]||b[1])&&!b[2]&&small>=60){ A['3B']=[31,76]; A['1B']=[69,76]; A._k='bunt'; } /* 번트 수비: 작전을 즐기는 감독(공격 팀)이면 1·3루수가 앞으로 */
   else if(b[0]&&!b[1]){ A['1B']=[67,71]; A._k='hold'; } /* 1루 주자 견제: 1루수가 베이스에 붙는다 */
   if(b[0]&&outs<2){ A.SS=[42,54]; A['2B']=[58,54]; if(A._k!=='bunt')A._k='dp'; } /* 병살 수비: 키스톤이 2루 쪽으로 */
   if(half>=16&&defLead>=1&&defLead<=3){ A.LF=[15,27]; A.CF=[50,13]; A.RF=[85,27]; A._k=A._k||'deep'; } /* 장타 방지: 9회 이후 근소하게 앞설 때 외야가 물러난다 */
   return A; }
-/* 야수가 타구 전에 실제로 서 있는 자리(칸 좌표). 3D에서는 2루수·유격수의 수비 위치 이동(병살 수비 등)을 m로 옮긴다:
-   칸 좌표 [58,54]를 그대로 쓰면 3D 좌표 식의 경계(y=56) 뒤라 기본 자리보다 10m 뒤 외야 잔디에 서게 된다(사용자 11-19) */
-const CIF=['P','1B','2B','3B','SS'];
-function cFieldStart(g,st,pos,scene3d,AL){ AL=AL||cAlign(g,st,(st.half||0)%2===0?g.away:g.home); const base=CFP[pos], pt=(pos!=='P'&&pos!=='C'&&AL[pos])||base;
-  if(!scene3d||pt===base||pt[1]>56||!['2B','SS'].includes(pos))return pt; const m=FrontOfficeCore.fieldMetres(base), q=FrontOfficeCore.fieldMetres([50+(pt[0]-base[0])*.5,89-(pt[1]-base[1])*.5+.0001]); /* 기본 자리에서 옮긴 칸 수의 절반을 내야 축척의 m로: 칸 그림은 2루수·유격수를 실제보다 깊게 그려 그대로 옮기면 주루선 바로 뒤가 된다. 병살 수비는 2루 쪽으로 2m·앞으로 2m 남짓 */
-  return FrontOfficeCore.fieldCoord(m[0]+q[0],m[1]-q[1]); }
 function cTargets(g,k,st){ const L=g.pbp; const half=st.half; const top=half%2===0; const dT=top?g.home:g.away, oT=top?g.away:g.home;
   const dc=cTeamCol(dT), oc=cTeamCol(oT); const T=[]; const dU=cUni(g,dT), oU=cUni(g,oT);
   const gl=id=>{ const q=mdPlayer(g,id); return q&&q.th==='좌'?'R':'L'; };
   const AL=cAlign(g,st,oT);
-  for(const f of cFielders(g,half,k))T.push({k:'d'+f.id,id:f.id,pt:cFieldStart(g,st,f.pos,c3DActive(),AL),cls:'df'+(f.pos==='C'?' ctch':''),lab:POSS[f.pos],col:dc,u:{...dU,glove:gl(f.id)},rot:f.pos==='C'?-90:cAng(CFP[f.pos],CHM)});
+  for(const f of cFielders(g,half,k))T.push({k:'d'+f.id,id:f.id,pt:AL[f.pos]||CFP[f.pos],cls:'df'+(f.pos==='C'?' ctch':''),lab:POSS[f.pos],col:dc,u:{...dU,glove:gl(f.id)},rot:f.pos==='C'?-90:cAng(CFP[f.pos],CHM)});
   const pid=cPit(g,k); const pp=pid&&mdPlayer(g,pid); if(pid)T.push({k:'d'+pid,id:pid,pt:CFP.P,cls:'df pit'+(pp&&pp.th==='좌'?' lhp':''),lab:pp&&pp.th==='좌'?'좌투':'우투',col:dc,u:{...dU,glove:gl(pid),pose:'set'},rot:90});
   st.bases.forEach((id,i)=>{ if(id)T.push({k:'o'+id,id,pt:CBS[i],cls:'of run',lab:['1루','2루','3루'][i],col:oc,u:{...oU,helm:oU.H},rot:cAng(CBS[i],CPATH[i+2])}); });
   const x=L[k]; if(x&&typeof x[1]==='number'&&x[0]===half){ const bp=mdPlayer(g,x[1]); const side=bSide(bp,pp); T.push({k:'o'+x[1],id:x[1],pt:side==='L'?CBATL:CBAT,cls:'of bat '+(side==='L'?'lhb':'rhb'),lab:side==='L'?'좌타':'우타',col:oc,u:{...oU,helm:oU.H,bat:side},rot:0}); }
@@ -286,18 +280,12 @@ function cContactPlan(g,k,b,scene3d0=false){
  else if(['1B','2B','3B'].includes(o)){
   const bp=G.players[x[1]],inf=o==='1B'&&!f.bipType&&!f.fielder&&bp&&bp.r.spd>=64&&pcH(g,k,'if')<.25;
   if(inf){opos=pcPick(g,k,'ip',['SS','3B','2B']);const v=CFP[opos],j=pcH(g,k,'ifj')*2-1;spot=[v[0]*.62+50*.38+j*2,v[1]*.62+89*.38];gb=true;infHit=true;kind='내야 안타';}
-  else{const hs=hitShape(g,k,o);spot=cPolar(hs.th,hs.r);arc=hs.arc;gb=hs.gb;opos=['LF','CF','RF'].reduce((q,a)=>!q||cDist(CFP[a],spot)<cDist(CFP[q],spot)?a:q,null); /* 내야를 빠져나간 안타는 그 자리에 가장 가까운 외야수가 잡는다(사용자 11-19). 기록의 타구 방향이 내야수 쪽(2루수 쪽 땅볼 안타)이어도 2루수가 외야까지 쫓아가지 않는다 */kind=o==='1B'?'안타':o==='2B'?'2루타':'3루타';}flight=o==='3B'?900:o==='2B'?800:650;
+  else{const hs=hitShape(g,k,o);spot=cPolar(hs.th,hs.r);arc=hs.arc;gb=hs.gb;opos=CFP[f.fielder]?f.fielder:null;kind=o==='1B'?'안타':o==='2B'?'2루타':'3루타';}flight=o==='3B'?900:o==='2B'?800:650;
  }
  else if(['OUT','DP'].includes(o)){
   opos=o==='DP'?pcDpPat(g,k).start:CFP[f.fielder]?f.fielder:f.error?pcErrPos(g,k)||'SS':'SS';
   const typ=o==='DP'||f.fc?'GB':f.bipType||(f.sf?'FB':'GB'),v=CFP[opos]||CFP.SS;
-  arc=['FB','PU'].includes(typ);gb=typ==='GB';errPos=f.error?opos:null;flight=arc?950:typ==='LD'?380:560;
-  /* 내야 타구 자리(사용자 11-19): 야수가 서 있던 자리에서 m로 정한다. 땅볼은 옆으로 움직이거나 앞으로 달려 나와 잡고(물러나지 않는다), 직선타는 제자리에서 한두 걸음,
-     물러나며 잡는 공은 높이 뜬 내야 뜬공뿐이다. 예전에는 기본 자리 주변 칸 좌표로 잡아 3D에서 2루수·유격수 뒤 15m 외야 잔디가 되었다 */
-  const r1=rnd(),r2=rnd();if(CIF.includes(opos)){const s3=scene3d0,U=1.15,toM=s3?FrontOfficeCore.fieldMetres:p=>[(50-p[0])*U,(89-p[1])*U],toC=s3?FrontOfficeCore.fieldCoord:(X,Z)=>[50-X/U,89-Z/U],m=toM(cFieldStart(g,b,opos,s3)),d=Math.hypot(m[0],m[1])||1,ux=m[0]/d,uz=m[1]/d,side=r1*2-1,
-    lat=side*(gb?(opos==='P'?2.4:4.2):arc?4.2:2.3),fwd=gb?(opos==='P'?r2*2:.3+r2*3.2):arc?(1-r2*2)*4.2:(r2-.5)*.8; /* fwd: 홈 쪽으로 나오는 거리(m), 뜬공만 음수(뒤로) */
-   spot=toC(m[0]-uz*lat-ux*fwd,m[1]+ux*lat-uz*fwd);}
-  else spot=[v[0]+r1*6-3,v[1]+r2*5-2.5];
+  spot=[v[0]+rnd()*6-3,v[1]+rnd()*5-2.5];arc=['FB','PU'].includes(typ);gb=typ==='GB';errPos=f.error?opos:null;flight=arc?950:typ==='LD'?380:560;
   kind=f.error?'실책':f.fc?'야수선택 · 포스아웃':o==='DP'?'병살타':f.sf?'희생플라이':typ==='LD'?'직선타 아웃':arc?'뜬공 아웃':f.bipType?'땅볼 아웃':'아웃';
  }
  return {spot:spot?cFair(spot):null,arc,flight,kind,opos,gb,errPos,infHit};
@@ -382,8 +370,8 @@ async function castLoop(){ const host=document.getElementById('cs-3d');if(CT.run
   try{ while(UI.cast&&UI.cast.play&&my===CT.tok){ const c=UI.cast; const g=G.games[c.g]; const L=g.pbp; if(c.k>=L.length){ c.play=false; cDraw(c.k,300); sndStop('amb',1.8); sndStop('chant',.5); /* 경기 종료 효과음(사이렌·함성·오르간)은 뺐다(사용자 11-08) */ break; }
       const x=L[c.k]; const md=c.mode||'all'; if(md!=='all'&&!cKeep(g,c.k,md)){ c.k++; continue; }
       cDraw(c.k,md==='all'?300:0); await cSleep(md==='all'?260:200);
-      if(md!=='all'){ const P=cHlSegs(g), sg=P.start.get(c.k); if(!c.hlOpen){ c.hlOpen=1; if(c.k<=(P.scenes[0]?.s??0))await cHlOpen(g,P.scenes.length); } if(sg){ c.lastHalf=x[0]; c3DWipe(); await cHlCard(g,sg,P.scenes.length); } else if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; cHalfCue(); } }
-      else if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; cHalfCue(); await cDefense(g,c.k,x[0]); }
+      if(md!=='all'){ const P=cHlSegs(g), sg=P.start.get(c.k); if(!c.hlOpen){ c.hlOpen=1; if(c.k<=(P.scenes[0]?.s??0))await cHlOpen(g,P.scenes.length); } if(sg){ c.lastHalf=x[0]; c3DWipe(); await cHlCard(g,sg,P.scenes.length); } else if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); } }
+      else if(c.lastHalf!==x[0]){ c.lastHalf=x[0]; await cBanner(g,x[0]); await cDefense(g,c.k,x[0]); }
       await cAnim(c.k); c.k++; } }
   catch(e){if(e!=='stop')console.error('중계 재생 오류',e);} finally{ if(my===CT.tok)CT.run=false; } }
 function castMount(){ const c=UI.cast; if(!c)return; CT.tok++; CT.run=false; setTimeout(()=>castStart2D(c),12000); requestAnimationFrame(async()=>{if(UI.cast!==c)return; cDraw(c.k,0); const host=document.getElementById('cs-3d'); const ok=host&&typeof Match3D!=='undefined'&&await Match3D.mount(host,{day:[0,6].includes(dobj(G.games[c.g].day).w)}); if(UI.cast!==c||!host?.isConnected)return; cPrepDone(ok); cDraw(c.k,0); if(c.play&&!CT.run){castResumePitch();castLoop();} }); }
