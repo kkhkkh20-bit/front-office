@@ -27,6 +27,37 @@ const SPRC_PGN=[0,4,6,8,10,12];
 const SPRC_LV={hard:'강팀 위주(일본 1군)',mix:'섞어서',easy:'실전 감각 위주(2군·국내)'};
 /* 연습 상대 수준: 우리 타자·투수 기록에 주는 보정(음수면 상대가 강하다) */
 const SPRC_OPP={npb1:{l:'일본 프로 1군',b:-3},npb2:{l:'일본 프로 2군',b:2},cpbl:{l:'대만 프로 구단',b:1},aus:{l:'호주리그 팀',b:3},us:{l:'미국 대학·마이너 팀',b:2},kr2:{l:'국내 대학·실업 팀',b:4}};
+/* 연습경기 상대 방침 효과(구단주 결정 11-19). 성장 보너스는 없다. 실제로 치른 경기와 상대로 정하고 난수를 쓰지 않는다. 우리·AI 같은 함수.
+ - 개막 컨디션(sprcPgFx): cs=강한 상대(일본 1군·국내 구단) 1경기당, cp=약한 상대 1경기당(기존 경기당 +0.04에 더한다). 강팀은 6경기, 약한 상대는 8경기까지만 센다.
+ - 평가(sprcCampEval): 강한 상대 경기에 실제로 나간 선수는 그 경기 수 × ev만큼 잠재력 추정 범위가 좁아진다(17_scouting ownSd, 우리 선수 추정 오차).
+   AI 구단은 자기 선수 잠재력을 그대로 알므로(16_trade potSeenD) 좁힐 추정이 없다. 같은 기록(p.campEv)을 남기지만 효과는 사기 쪽만 받는다.
+ - 사기(sprcCampMorale): 강한 상대에게 60% 이상, 3번 이상 졌으면 그 경기에 나간 선수 사기 -2(섞어서 -1, 한 해 한 번). 오르는 쪽은 없다. */
+const SPRC_PGFX={hard:{cs:-.017,cp:0,ev:1,d:'선수 평가가 정확해집니다(강팀 경기에 나간 선수의 능력 추정 범위가 좁아짐). 강팀에게 많이 지면 사기가 조금 떨어지고, 경기가 힘들어 개막 컨디션이 약간 늦게 올라옵니다.'},mix:{cs:0,cp:.02,ev:.5,d:'중간입니다. 평가가 정확해지는 효과와 개막 컨디션이 좋아지는 효과를 반씩 받습니다.'},easy:{cs:0,cp:.04,ev:0,d:'개막 컨디션이 좋아집니다(약한 상대와 치른 경기마다).'}};
+const SPRC_STRONG={npb1:1,kbo:1};
+const sprcPgLvOf=P=>P&&SPRC_PGFX[P.pgLv]?P.pgLv:'mix'; /* 옛 저장·이상한 값은 섞어서 */
+const sprcPgKind=(P,r)=>r.k||((P.pg||[]).find(g=>g.d===r.d)||{}).k; /* 옛 기록은 일정에서 상대를 찾는다 */
+function sprcPgFx(P){ const lv=sprcPgLvOf(P),F=SPRC_PGFX[lv]; let s=0,q=0,sl=0; if(P)for(const r of P.pgR||[]){ const k=sprcPgKind(P,r); if(!k)continue; if(SPRC_STRONG[k]){ s++; if(r.us<r.op)sl++; } else q++; }
+  const ns=s; s=Math.min(6,s); q=Math.min(8,q); return {lv,s,q,ns,sl,ev:F.ev,c:Math.round((F.cs*s+F.cp*q)*100)/100}; }
+/* 강한 상대 경기에 나간 선수와 그 경기 기록(P.sg: 선수별 강팀 상대 합계). lightSide가 쌓는 기록의 앞뒤 차이로 구한다(난수 없음) */
+function sprcStrongTrack(P,tid,store,fn){ const L0=(store._teams||{})[tid]||{}, before={}; for(const id in L0)before[id]=L0[id].slice(); const out=fn(); const L=(store._teams||{})[tid]||{}, SG=P.sg=P.sg||{};
+  for(const id in L){ const a=L[id], b=before[id]; if(b&&b[0]===a[0])continue; const d=a.map((v,i)=>v-(b?b[i]||0:0)), c=SG[id]; SG[id]=c&&c.length===d.length?c.map((v,i)=>v+d[i]):d; } return out; }
+/* 강팀 상대 출전 n경기 × 방침 비율(ev): 우리 선수 잠재력 추정 오차가 경기당 4%씩, 최대 24% 좁아진다 */
+const sprcEvalN=(p,tid)=>{ const e=p&&p.campEv; return e&&e.y===G.year&&e.t===tid?e.n||0:0; };
+const sprcEvalSdF=(p,tid)=>1-.04*Math.min(6,sprcEvalN(p,tid));
+function sprcCampEval(tid,P){ const x=sprcPgFx(P); if(!P||P.evY===G.year)return x; P.evY=G.year; if(!x.ev)return x;
+  for(const id in P.sg||{}){ const p=G.players[id]; if(!p||p.team!==tid)continue; const n=Math.round((P.sg[id][0]||0)*x.ev*10)/10; if(n>0)p.campEv={y:G.year,t:tid,n}; } return x; }
+function sprcCampMorale(tid,P){ const x=sprcPgFx(P); if(!P||P.morY===G.year||!x.ev||x.sl<3||x.sl<x.ns*.6)return 0; P.morY=G.year; const dm=Math.round(2*x.ev); let n=0; /* 강팀 위주 -2, 섞어서 -1 */
+  for(const id in P.sg||{}){ const p=G.players[id]; if(!p||p.team!==tid)continue; p.mor=clamp((p.mor??60)-dm,0,100); n++; } return n; }
+/* 총평 메일 판정: 강팀 상대 기록 + 실제 능력. 아는 만큼만(우리 추정 오차 sd가 작을수록 실제 능력을, 클수록 연습경기 기록을 더 믿는다). 주전은 빼고 경쟁 중인 선수만 */
+function sprcVerdicts(tid,P){ const d=depth(tid), reg=new Set([...d.start,...d.sp].map(p=>p.id)), sc=typeof bestScout==='function'?bestScout():null, out=[];
+  for(const id in P.sg||{}){ const p=G.players[id], a=P.sg[id]; if(!p||p.team!==tid||reg.has(p.id))continue; const isP=a.length===6; if(isP?a[1]<6:a[1]<5)continue;
+    const perf=isP?50+(4.5-exhEra(a))*2.5:50+(exhOps(a)-.7)*35, sd=tid===G.user?ownSd(p,sc):3, k=clamp((8-sd)/6.5,0,1), est=k*ovr(p)+(1-k)*clamp(perf,35,65);
+    const g=est>=50, v=g?'1군에서 통할 선수':est<46?'아직 부족한 선수':null; if(v)out.push({p,v,g,est,t:isP?`강팀 상대 ${Math.floor(a[1]/3)}${a[1]%3?'.'+a[1]%3:''}이닝 평균자책 ${exhEra(a).toFixed(2)}`:`강팀 상대 ${a[1]}타석 OPS ${exhF3(exhOps(a))}`}); }
+  const up=out.filter(x=>x.g).sort((a,b)=>b.est-a.est).slice(0,3), dn=out.filter(x=>!x.g).sort((a,b)=>a.est-b.est).slice(0,3); return up.concat(dn); }
+/* 캠프 화면·총평 메일 안내: 실제 치른 경기 기준 효과 */
+function sprcPgFxText(P){ const x=sprcPgFx(P); return `연습 상대 ${SPRC_LV[x.lv]}: 강팀 ${x.ns}경기(${x.sl}패) · 약한 상대 ${x.q}경기 → 개막 컨디션 ${x.c>0?'+'+x.c.toFixed(2):x.c<0?x.c.toFixed(2):'변화 없음'}${x.ev?`, 강팀 경기에 나간 선수 평가 정확도 ${x.ev<1?'절반 효과':'상승'}`:''}`; }
+/* AI 구단의 연습 상대 방침: 감독 성향(규율)에서 정한다. 빡센 캠프를 원하는 감독은 강팀 위주, 자율파는 실전 감각 위주 */
+const sprcAiPgLv=m=>({hard:'hard',easy:'easy'})[sprcMgrPref(m)]||'mix';
 /* 감독이 원하는 강도(규율 성향) */
 function sprcMgrPref(m){ if(!m||m.interim)return 'norm'; const d=m.disc??45; return d>=62?'hard':d<=38?'easy':'norm'; }
 const sprcYear=()=>dobj(G.day).y===G.year&&dobj(G.day).m>=11&&G.last&&G.last.y===G.year?G.year+1:G.year;
@@ -61,7 +92,7 @@ function sprcAiPick(t,lvl){ const T=lvl===1?SPRC1:SPRC2; const S=sprcInit(); con
   let best=null, bs=-9; for(const k in T){ const D=T[k],o=sprcOdds(t.id,lvl,k); if(sprcTaken(lvl,k)>=D.sl&&!o.sb||Math.max(0,spendable(t.id))<o.c)continue; const s=D.ap+hn('sprc'+lvl+k,t.id)*.15+N(0,.08)+(pv&&pv[lvl===1?'s1':'s2']===k?.35:0)+(o.sb?.3:0)-(D.c>=500?(rich?-.05:poor?.5:.15):0); if(s>bs){ bs=s; best=k; } } return best; }
 function sprcAiBook(force){ const m=dobj(G.day).m; const pr=force?1:m===11?.03:m===12?.07:.22;
   for(const t of G.teams){ if(t.id===G.user&&!G.unemp)continue; const P=sprcPlan(t.id); if(P.s1&&P.s2)continue; if(R()>=pr)continue;
-    for(const lvl of [1,2])if(!P['s'+lvl]){ const k=sprcAiPick(t,lvl); if(k)sprcCharge(t.id,P,lvl,k,sprcOdds(t.id,lvl,k).c); } P.int=sprcMgrPref(G.mgr[t.id]); P.pgN=Math.min(SPRC2[P.s2]&&SPRC2[P.s2].pg>=3?8:4,sprcPgCap(P)); } }
+    for(const lvl of [1,2])if(!P['s'+lvl]){ const k=sprcAiPick(t,lvl); if(k)sprcCharge(t.id,P,lvl,k,sprcOdds(t.id,lvl,k).c); } P.int=sprcMgrPref(G.mgr[t.id]); P.pgLv=sprcAiPgLv(G.mgr[t.id]); P.pgN=Math.min(SPRC2[P.s2]&&SPRC2[P.s2].pg>=3?8:4,sprcPgCap(P)); } }
 /* 우리 구단이 끝까지 안 정하면 운영팀이 남은 곳 중 싼 곳으로 잡는다 */
 function sprcAutoUser(){ if(G.unemp)return; const P=sprcPlan(G.user); const L=[]; for(const lvl of [1,2]){ const key=lvl===1?'s1':'s2'; if(P[key])continue; const T=lvl===1?SPRC1:SPRC2; const k=Object.keys(T).filter(x=>(sprcTaken(lvl,x)<T[x].sl||sisSite(G.user,lvl,x))&&sprcOdds(G.user,lvl,x).c<=Math.max(0,spendable(G.user))).sort((a,b)=>T[a].c-T[b].c||T[b].fq-T[a].fq)[0]; if(!k)continue; sprcCharge(G.user,P,lvl,k,sprcOdds(G.user,lvl,k).c); L.push(`${lvl}차 ${T[k].l}`); }
   if(L.length)mail('운영팀','스프링캠프 장소를 운영팀이 정했습니다',`캠프 출국 전까지 장소가 정해지지 않아 남은 곳 중 비용이 적은 곳으로 잡았습니다: ${L.join(', ')}.\n\n좋은 장소는 다른 구단이 먼저 채웁니다. 다음 해에는 11~12월에 미리 예약하세요.`,{kind:'캠프',acts:[{l:'캠프 계획',a:'goWork',v:'스프링캠프'}]}); }
@@ -139,19 +170,20 @@ function sprcCampDay(day){ const c=G.cal; const len=Math.max(20,c.campEnd-c.camp
   for(const t of G.teams){ const P=G.scp&&G.scp.t[t.id]; if(!P||!P.int)continue; const rate=(SPRC_INT[P.int].inj+((SPRC1[P.s1]||{}).tr||0)*.002)/len;
     campInjuryDay(t.id,rate,day); }
   const S=G.scp;if(!S||S.y!==G.year)return; for(const t of G.teams){const P=S.t[t.id];if(!P||(P.pgR||[]).some(r=>r.d===day))continue;const g=(P.pg||[]).find(x=>x.d===day);if(!g)continue;
-    const me=lightSide(t.id,g.k==='kbo'?0:SPRC_OPP[g.k].b,6,'pg',S.pgS);let them;
-    if(g.k==='kbo')them=lightSide(g.tid,0,6,'pg',S.pgS);else{const b=SPRC_OPP[g.k].b;them={r:Math.max(0,4.4-b*.35+N(0,1.6)),er:Math.max(0,4.4-b*.35+N(0,1.6))};}
-    const us=lightRuns(me,them),op=lightRuns(them,me),nm=sprcOppName(g);(P.pgR=P.pgR||[]).push({d:day,o:nm,us,op});if(g.cid)sisAdd(t.id,g.cid,2);
-    if(g.k==='kbo'){const Q=S.t[g.tid];if(Q)(Q.pgR=Q.pgR||[]).push({d:day,o:tshort(t.id),us:op,op:us});}
+    const strong=!!SPRC_STRONG[g.k], side=(P0,tid,b)=>strong&&P0?sprcStrongTrack(P0,tid,S.pgS,()=>lightSide(tid,b,6,'pg',S.pgS)):lightSide(tid,b,6,'pg',S.pgS); /* 강팀 경기 출전 선수 기록(평가·사기) */
+    const me=side(P,t.id,g.k==='kbo'?0:SPRC_OPP[g.k].b);let them;
+    if(g.k==='kbo')them=side(S.t[g.tid],g.tid,0);else{const b=SPRC_OPP[g.k].b;them={r:Math.max(0,4.4-b*.35+N(0,1.6)),er:Math.max(0,4.4-b*.35+N(0,1.6))};}
+    const us=lightRuns(me,them),op=lightRuns(them,me),nm=sprcOppName(g);(P.pgR=P.pgR||[]).push({d:day,o:nm,us,op,k:g.k});if(g.cid)sisAdd(t.id,g.cid,2);
+    if(g.k==='kbo'){const Q=S.t[g.tid];if(Q)(Q.pgR=Q.pgR||[]).push({d:day,o:tshort(t.id),us:op,op:us,k:'kbo'});}
     if(!G.unemp&&(t.id===G.user||g.k==='kbo'&&g.tid===G.user)){const mine=t.id===G.user;addLog(`연습경기 ${mine?nm:tshort(t.id)}전 ${mine?us:op}:${mine?op:us} ${(mine?us>op:op>us)?'승':us===op?'무':'패'}`);}
   } }
 /* 캠프 끝: 개막 컨디션(강도·이동·실전 수) 반영, 감독의 캠프 총평 */
 function sprcCampEnd(){ const S=G.scp; if(!S||S.y!==G.year)return;
-  for(const t of G.teams){ const P=S.t[t.id]; if(!P||!P.int)continue; const nPg=(P.pgR||[]).length; const cond=SPRC_INT[P.int].cond-((SPRC1[P.s1]||{}).tr||0)*.12-((SPRC2[P.s2]||{}).tr||0)*.06+Math.min(8,nPg)*.04;
-    P.cond=Math.round(cond*100)/100; }
+  for(const t of G.teams){ const P=S.t[t.id]; if(!P||!P.int)continue; const nPg=(P.pgR||[]).length; const cond=SPRC_INT[P.int].cond-((SPRC1[P.s1]||{}).tr||0)*.12-((SPRC2[P.s2]||{}).tr||0)*.06+Math.min(8,nPg)*.04+sprcPgFx(P).c; /* 연습 상대 방침: 실전 감각 위주면 더 좋고 강팀 위주면 약간 늦다 */
+    P.cond=Math.round(cond*100)/100; sprcCampEval(t.id,P); sprcCampMorale(t.id,P); } /* 강팀 위주: 평가 정확도·많이 졌을 때 사기(우리·AI 같은 함수) */
   const P=S.t[G.user], m=G.mgr[G.user]; if(G.unemp||!P||!m||m.interim)return; const R0=P.pgR||[]; const w=R0.filter(x=>x.us>x.op).length, l=R0.filter(x=>x.us<x.op).length;
   const top=exhLeaders(S.pgS,G.user,8,9); const cd=P.cond>=.2?'몸이 일찍 올라왔습니다. 개막 초반 컨디션이 좋을 겁니다.':P.cond<=-.3?'훈련량이 많았고 이동도 길어 선수들 몸이 무겁습니다. 4월 초반엔 감이 늦게 올라올 수 있습니다.':'개막에 맞춰 몸 상태는 무난합니다.';
-  mail(`${m.name} 감독`,`캠프 총평: 연습경기 ${w}승 ${l}패${R0.length-w-l?` ${R0.length-w-l}무`:''}`,`${sprcSiteLabel(P,1)} · ${sprcSiteLabel(P,2)} 캠프를 마쳤습니다. 훈련 강도 ${SPRC_INT[P.int].l}.\n${cd}\n\n${R0.length?`연습경기\n${R0.map(x=>`${dmd(x.d)} ${x.o} ${x.us}:${x.op}`).join('\n')}\n\n`:'연습경기는 없었습니다.\n\n'}${top.b.length?`방망이가 좋았던 선수: ${top.b.map(x=>`${x.p.name}(${x.t})`).join(', ')}\n`:''}${top.p.length?`공이 좋았던 투수: ${top.p.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:''}`,{kind:'감독',acts:[{l:'캠프·시범경기',a:'goWork',v:'스프링캠프'}]}); }
+  mail(`${m.name} 감독`,`캠프 총평: 연습경기 ${w}승 ${l}패${R0.length-w-l?` ${R0.length-w-l}무`:''}`,`${sprcSiteLabel(P,1)} · ${sprcSiteLabel(P,2)} 캠프를 마쳤습니다. 훈련 강도 ${SPRC_INT[P.int].l}.\n${cd}\n${sprcPgFxText(P)}.${P.morY===G.year?' 강팀에게 많이 져서 나간 선수들 사기가 조금 떨어졌습니다.':''}\n${(()=>{ const V=sprcVerdicts(G.user,P); return V.length?`\n강팀 상대 평가\n${V.map(x=>`${x.p.name}(${posLabel(x.p)}): ${x.v} · ${x.t}`).join('\n')}\n`:''; })()}\n${R0.length?`연습경기\n${R0.map(x=>`${dmd(x.d)} ${x.o} ${x.us}:${x.op}`).join('\n')}\n\n`:'연습경기는 없었습니다.\n\n'}${top.b.length?`방망이가 좋았던 선수: ${top.b.map(x=>`${x.p.name}(${x.t})`).join(', ')}\n`:''}${top.p.length?`공이 좋았던 투수: ${top.p.map(x=>`${x.p.name}(${x.t})`).join(', ')}`:''}`,{kind:'감독',acts:[{l:'캠프·시범경기',a:'goWork',v:'스프링캠프'}]}); }
 /* 개막 전날: 캠프에서 만든 몸 상태를 개막 컨디션(주간 기세 sf.m)에 싣는다. 몇 주 지나면 원래대로 돌아온다 */
 function sprcOpenCond(){ const S=G.scp; if(!S||S.y!==G.year||S.condY===G.year)return; S.condY=G.year; for(const t of G.teams){ const P=S.t[t.id]; if(!P||P.cond==null)continue; for(const p of playersOf(t.id))if(p.sf&&p.sf.y===G.year)p.sf.m=clamp((p.sf.m||0)+P.cond+N(0,.2),-2.5,2.5); } }
 /* 기록 정리: 타자 [경기,타석,타수,안타,홈런,볼넷,삼진,루타], 투수 [경기,아웃,피안타,자책,볼넷,삼진] */
