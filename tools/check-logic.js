@@ -132,6 +132,15 @@ const simTo=cond=>{ let n=0; while(n++<800&&!cond()){ G.live=null; G.res=null; G
   (G.comp||[]).forEach(c=>{ try{ if(c.stage!=='done')compAuto(c); }catch(x){} }); try{ if(rosterN(G.user)>ROSTER_MAX)trimRoster(G.user,ROSTER_MAX); }catch(x){} const d0=G.day; try{ advance('day'); }catch(e){ throw new Error('simTo: '+dmd(G.day)+' 하루 진행 중 오류 — '+e.message); } if(G.day===d0&&!cond()&&n>=799)break; }
   if(!cond())throw new Error('simTo: 목표 조건에 도달하지 못함(멈춘 날 '+dmd(G.day)+(blocker&&blocker()?' · 진행 막힘: '+String(blocker()).slice(0,80):'')+')'); }; /* 예외를 날짜만 넘겨 숨기지 않고, 조건에 못 가면 실패(거짓 통과 방지) */
 
+T('[제보 11-19 FA 거절 제안] 다른 구단 제안이 없는 FA는 요구가 내려와 거절했던 우리 제안을 채우면 그 제안을 다시 보고, 마감 때도 걸어 둔 제안보다 나쁜 원소속 헐값 계약으로 가지 않는다',()=>{ fresh(); simTo(()=>{ const u=team(G.user); if(u&&!G.unemp&&(u.trust??50)<40)u.trust=40; return G.fa&&!G.fa.closed&&G.day>=G.fa.openDay+1; }); const F=G.fa, t=team(G.user);
+  while(faRosterFull(G.user))toFree(domestic(G.user).sort((x,y)=>ovr(x)-ovr(y))[0],'테스트'); t.cash=Math.max(t.cash,60000); F.cap=3; F.outN=F.outN||{}; F.outN[G.user]=0;
+  const L=F.pool.map(id=>G.players[id]).filter(q=>q&&q.team==null&&q.faFrom!=null&&q.faFrom!==G.user&&q.ask&&!q.foreign&&agShopN(q)===0&&q.age<=33&&ovr(q)>=45&&!(F.neg&&F.neg[q.id])).sort((a,b)=>ovr(b)-ovr(a)); ok(L.length>=2,'준비 실패: 시장 보고 없는 다른 구단 FA 2명 없음');
+  const lowball=p=>{ F.ai[p.id]={}; const o={annual:round5(faWantA(p)*.85),years:p.ask.years}; const r=faNegotiate(p.id,o); const n=F.neg[p.id]; ok(F.offers[p.id]&&F.offers[p.id].rej&&!n.closed,'준비 실패: 거절된 채 남은 제안이 아님 '+r.msg); return {...F.offers[p.id]}; };
+  const p1=L[0], p2=L[1], o1=lowball(p1), o2=lowball(p2);
+  p1.ask.annual=round5(p1.ask.annual*.7); F.ai[p1.id]={}; faRejRevive(p1); ok(F.offers[p1.id]&&!F.offers[p1.id].rej,'요구가 내려와 우리 제안이 요구를 채우는데 계속 거절: 요구 '+p1.ask.annual+' 제안 '+o1.annual); ok(faOfferLive(p1.id),'다시 본 제안이 살아 있지 않음'); faSign(p1,[{tid:G.user,...F.offers[p1.id]}]);
+  if(p2.team==null){ const from=p2.faFrom, low=round5(Math.max(MIN_SAL,Math.min((p2.faPrevSal||p2.sal)*.5,marketSal(ovr(p2))*.45))); ok(faScore(p2,{tid:G.user,...F.offers[p2.id]})>=faScore(p2,{tid:from,annual:low,years:p2.age<=28?2:1}),'준비 실패: 우리 제안이 원소속 헐값보다 낮음');
+    F.ai[p2.id]={}; faClose(); ok(p2.team===G.user,'걸어 둔 제안('+o2.years+'년 연 '+o2.annual+')을 두고 '+(p2.team==null?'미계약':tname(p2.team)+' '+p2.yrs+'년 연 '+p2.sal)+'으로 감'); }
+  ok(p1.team===G.user,'요구를 채운 우리 제안으로 계약되지 않음: '+p1.team); });
 T('[제보 11-19 FA 사인 관문] 시장 보고·우선 제안·사인 관문이 같은 계약 가능 판정을 쓴다: 막힌 우리 제안을 가장 좋다고 보고하거나 말없이 빼지 않고, 이유를 알리고 거둬들인다. 막힘이 없으면 그대로 계약한다',()=>{ fresh(); simTo(()=>{ const u=team(G.user); if(u&&!G.unemp&&(u.trust??50)<40)u.trust=40; return G.fa&&!G.fa.closed&&G.day>=G.fa.openDay; }); const F=G.fa, t=team(G.user);
   const p=F.pool.map(id=>G.players[id]).find(q=>q&&q.team==null&&q.faFrom!==G.user&&q.ask&&!q.foreign&&agentOf(q)&&agShopN(q)>0); ok(p,'준비 실패: 시장 보고를 하는 다른 구단 FA 없음'); ok(!faOutBlocked(G.user,p),'준비 실패: 외부 FA 한도');
   while(faRosterFull(G.user))toFree(domestic(G.user).sort((x,y)=>ovr(x)-ovr(y))[0],'테스트');

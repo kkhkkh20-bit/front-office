@@ -208,6 +208,13 @@ function faInterest(t,p){
   const dB=t.id!==ME()&&t.id!==p.faFrom&&domFaMul(t,p)>1?.15:0; /* 독주 구단 FA·노리는 FA에 경쟁 구단이 달려든다 */
   return compF*clamp(.12+low+stB+plB+dB+agDealBonus(agentOf(p),t.id)+(po-50)*.03+(t.mode==='contend'?.12:0)+needScore(t.id,p)*.18+(t.id===p.faFrom?.45:0)-(t.id!==p.faFrom&&p.faGrade==='A'?.12:0)-(rosterN(t.id)>=ROSTER_MAX-1?.25:0)+(tg?.35:0),0,1)*debt;
 }
+/* 요구액이 내려와 예전에 거절한 우리 제안이 이제 요구를 채우면, 선수가 그 제안을 다시 받아들인다(제보 11-19: 다른 구단 제안이 끝내 없었는데 걸어 둔 제안을 끝까지 거절하고 마감 때 원소속 구단과 그 절반도 안 되는 조건에 계약).
+   요구를 채운 제안은 협상실에서 바로 낸 제안과 같게 본다(faNegotiate r>=1: hot) */
+function faRejRevive(p){ const F=G.fa, o=F&&F.offers&&F.offers[p.id]; if(!o||!o.rej||G.unemp||p.team!=null)return false; const n=F.neg&&F.neg[p.id]; if(n&&n.closed)return false;
+  const meets=offScore(o)>=faWantFor(p,G.user)*.97; let beats=false; if(!meets){ const L=Object.entries((F.ai&&F.ai[p.id])||{}).filter(([k,x])=>x&&faAiOk(+k,p,x)).map(([k,x])=>({tid:+k,annual:x.annual,years:x.years})), rv=faBestOf(p,L); beats=!!rv&&faScore(p,{tid:G.user,...o})>=faScore(p,rv); } /* 요구에 못 미쳐도 다른 구단이 낸 조건보다 나으면 더 나쁜 조건으로 가지 않는다: AI 제안은 요구 미달이어도 유효하므로 같은 규칙 */
+  if(!meets&&!beats)return false; delete o.rej; const W=agNeg(p).self?'선수':'에이전트', why=meets?'요구 조건을 낮췄습니다.':'다른 구단 제안보다 단장님 제안이 낫습니다.';
+  if(n){ n.hot=true; n.counter=null; (n.log=n.log||[]).push({d:G.day,w:W,t:`${why} 걸어 두신 제안을 다시 보겠습니다.`}); }
+  mail(agNeg(p).self?p.name:`${(agentOf(p)||{}).name||''} 에이전트`,`${p.name} 건: 걸어 두신 제안을 다시 봅니다`,`${p.name} 측: ${why} 지난번에 거절했던 단장님 제안(${o.terms?termsTxt(o.terms):`${o.years}년 연 ${money(o.annual)}`})을 다시 비교 대상에 넣었습니다. 다른 구단보다 나으면 그 조건으로 사인합니다.`,{kind:'FA',ref:p.id,acts:[{l:'협상실 열기',a:'faOpen',v:p.id}]}); return true; }
 function faDay(day){ _faPC={k:null,g:null,pay:new Map(),dep:new Map()}; try{ faDayRun(day); }finally{ _faPC=null; } } /* 입찰 캐시는 하루 입찰 동안만(01_rules faPC) */
 function faDayRun(day){
   const F=G.fa; const since=day-F.openDay;
@@ -231,6 +238,7 @@ function faDayRun(day){
       /* 애매한 선수는 원소속 구단도 서두르지 않는다: 시장 반응을 본 뒤(협상 50일 이후) 낮춰 부른다 */
       if(own&&po<50&&since<50)continue;
       let it=faInterest(t,p); if(!own)it*=po<52?.35:.7; const tg=faTgt(t,p); if(it>0&&R()<it*(tg?.3:.1)){ const w=faWorth(t,p)*(own&&po<50?.65:1); const bid=w*(tg?rnd(.92,1):rnd(.8,.95)); /* 구단은 자기 평가액으로 부른다. 요구액은 하한일 뿐(평가가 요구보다 높으면 더 낸다) */ ai[t.id]={annual:round5(Math.max(bid,Math.min(p.ask.annual*(tg?rnd(1.02,1.2):rnd(.92,1.15)),w))),years:own&&po<50?(p.age<=30?2:1):clamp(p.ask.years+ri(-1,0)+(p.age<=28&&po>=62&&R()<.3?1:0)+(p.age<=29&&po>=64&&(tg||own)&&R()<.5?1:0),p.age<=31?2:1,p.age<=29&&po>=64?6:p.age<=28&&po>=62?5:4)}; { const B=ai[t.id], ag=agentOf(p), r=offScore(B)/(faWantFor(p,t.id)*.97); agOfferRel(ag,r,t.id,p.name,p.id); if(r<1){ B.rounds=1; B.d0=day; } } /* AI 입찰도 사용자 제안과 같은 표로 친분이 오르내리고, 요구에 못 미치면 1라운드로 센다(계약 1단계) */ } } /* 서른 안팎까지는 보통 2년 이상 보장한다(1+1 포함) */
+    if(!G.unemp&&F.offers[id]&&F.offers[id].rej)faRejRevive(p); /* 거절했던 우리 제안이 지금 요구를 채우거나 다른 구단 조건보다 나으면 다시 비교한다(제보 11-19) */
     const live=faOfferLive(id);
     if(p.faFrom!==G.user&&!G.unemp&&!live&&!F.warned[id]&&((G.shortlist||[]).includes(id)||mreqOpen('fa').some(r=>r.data&&r.data.pid===id))&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`관심 FA ${p.name}에게 ${tname(+k0)}이(가) 제안했습니다(연 ${money(ai[k0].annual)} · ${ai[k0].years}년). 잡으려면 서둘러 조건을 제시하세요.`,id); }
     if(p.faFrom===ME()&&!live&&!F.warned[id]&&Object.keys(ai).some(k=>+k!==G.user)){ F.warned[id]=1; const k0=Object.keys(ai).find(k=>+k!==G.user); stop('FA',`우리 FA ${p.name}에게 ${tname(+k0)}이(가) 먼저 제안했습니다. 잡으려면 FA 시장에서 조건을 제시하세요.`,id); }
@@ -334,10 +342,10 @@ function faClose(){
   for(const id of F.pool)faPruneAi(id);
   for(const id of [...F.pool]){ const p=G.players[id]; if(!p||p.team!=null)continue;
     faPruneAi(id); /* 앞선 계약으로 정원이 찬 구단의 제안은 선수마다 다시 정리(검수 11-09r) */ const ai=F.ai[id]||{}; const offers=Object.entries(ai).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).filter(o=>!faOutBlocked(o.tid,p));
-    if(!G.unemp&&F.offers[id]&&!F.offers[id].rej&&!faOutBlocked(G.user,p))offers.push(Object.assign({tid:G.user},F.offers[id])); /* 선수가 거절한 조건·한도에 걸린 제안은 마감 때도 계약되지 않는다 */
+    const from=p.faFrom, t=team(from); const low=round5(Math.max(MIN_SAL,Math.min((p.faPrevSal||p.sal)*.5,marketSal(ovr(p))*.45)));
+    { const uo=G.unemp?null:F.offers[id]; if(uo&&!faOutBlocked(G.user,p)&&(!uo.rej||faScore(p,{tid:G.user,...uo})>=faScore(p,{tid:from,annual:low,years:p.age<=28?2:1})))offers.push(Object.assign({tid:G.user},uo)); } /* 선수가 거절한 조건은 마감 때도 계약되지 않는다. 다만 원소속 구단 헐값 계약(아래)보다 나은 제안을 두고 더 나쁜 조건으로 가지는 않는다(제보 11-19) */
     const mk=agMk(p); const ready=!mk||mk.done||mk.round>=mk.need&&(!mk.ll||G.day>mk.ll.until); if(mk&&ready)mk.done=true;
     if(ready&&offers.length){ faSign(p,offers); if(p.team!=null)continue; } /* 정원·결재 등으로 계약하지 못하면 미계약 후속 처리까지 진행한다. */
-    const from=p.faFrom, t=team(from); const low=round5(Math.max(MIN_SAL,Math.min((p.faPrevSal||p.sal)*.5,marketSal(ovr(p))*.45)));
     /* 원소속 AI 구단이 쓸모를 인정하면 헐값 계약으로 붙잡는다(실제 2025년 하주석 1년 1억1천만원 등). 20대는 1+1처럼 2년으로 묶는 경우가 많다 */
     if(ready&&from!==ME()&&t&&p.age<=35&&aiVal(t,p)>=1&&capPay(from)+low<=capOf(sponSeason())&&rosterN(from)<ROSTER_MAX){ faSign(p,[{tid:from,annual:low,years:p.age<=28?2:1}]); if(p.team===from){ const r=F.results[0]; if(r&&r.id===p.id){ r.kind='cheap'; } cheap++; wire('FA',`${p.name}, 원소속 ${tname(from)}와(과) ${p.yrs}년 연 ${money(low)} 헐값 계약`,{tid:from,ref:p.id}); continue; } }
     /* 연봉 하한에 못 미치는 구단은 남은 FA로 채운다 */
