@@ -258,6 +258,12 @@ function ntcAskOdds(p,tid,bonus){ initPers(p); const s=p.pers; let x=.3-(s.loy-1
   const pr=p.grv&&p.grv.prom||0; if(pr>0){ x-=Math.min(.2,pr*.02); why.push('지켜지지 않은 약속'); }
   if(bonus){ x+=.2; why.push('포기 대가'); }
   return {p:clamp(x,.03,.92),why}; }
+/* AI 구단도 우리와 같은 동의 절차(AI 규칙 동등 11-19): 자기 선수에게 그 구단행 동의를 묻는다. 같은 확률(ntcAskOdds, 포기 대가 없음)·같은 30일 재질문 간격·같은 14일 동의, 거절하면 같은 기분 하락.
+   추첨은 선수·구단·날짜로 정한 따로 된 난수(본 난수 순서 그대로) */
+const ntcAskWait=(p,tid)=>{ const A=p.ntcAsk; return !!(A&&A[tid]!=null&&G.day-A[tid]<30); };
+const ntcAskable=(p,tid)=>!ntcFor(p,tid)||!ntcAskWait(p,tid); /* 동의가 있거나 아직 물어볼 수 있다 */
+function ntcAskAI(p,tid){ if(!p||!ntcFor(p,tid))return true; if(p.team===ME()||ntcAskWait(p,tid))return false; const A=p.ntcAsk=p.ntcAsk||{}; A[tid]=G.day;
+  const yes=withRng(rngHash('ntcAI',p.id,tid,G.year,G.day),()=>R()<ntcAskOdds(p,tid,false).p); if(yes)p.ntcOk={tid,until:G.day+14}; else p.mor=clamp((p.mor??60)-3,0,100); return yes; }
 function ntcAsk(id,tid,bonus){ const p=G.players[+id]; tid=+tid; if(!p||p.team!==G.user||G.unemp)return '우리 선수가 아닙니다.'; if(!hasNtc(p))return `${p.name}은(는) 거부권이 없습니다.`; if(!team(tid)||tid===G.user)return '상대 구단을 먼저 고르세요.';
   if(!ntcFor(p,tid))return `${p.name}은(는) 이미 ${tshort(tid)}행에 동의했습니다(${dmd(p.ntcOk.until)}까지).`;
   const A=p.ntcAsk=p.ntcAsk||{}; if(A[tid]!=null&&G.day-A[tid]<30)return `${p.name}에게는 ${tshort(tid)}행을 ${dmd(A[tid])}에 이미 물었습니다. 30일 뒤에 다시 물을 수 있습니다.`;

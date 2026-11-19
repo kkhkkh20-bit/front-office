@@ -18,7 +18,7 @@ const SPEND_PAID={stad:'구장 공사비',facB:'시설 투자',opsP:'보유 현�
 function ledgerPay(tid,key,amt,o){ const me=o&&o.me!=null?!!o.me:tid===ME(); if(me){ const k0=spendPay(amt); ledger(tid,key,k0,{me:true}); return k0; } ledger(tid,key,amt,Object.assign({},o,{me:false})); return amt; }
 /* 트레이드 현금(from이 to에게 amt): 낸 구단은 기타 지출(우리 구단이면 트레이드 약정 현금 trC에도), 받은 구단은 트레이드 수입(tradeIn).
  우리 구단 거래·받은 제안 수락·AI끼리 거래가 같은 함수를 쓴다 */
-function tradeCashPay(from,to,amt){ if(!amt)return; if(ledger(from,'etc',amt))ledgerMe('trC',amt); ledger(to,'tradeIn',amt,{inc:true}); }
+function tradeCashPay(from,to,amt){ if(!amt)return; if(ledger(from,'etc',amt))ledgerMe('trC',amt); ledger(to,'tradeIn',amt,{inc:true}); try{ aiRoomCash(from,amt); aiRoomCash(to,-amt); }catch(e){} } /* AI 구단 예산 여유(16_trade aiTradeRoom)에도 */
 /* ===== 올해 예산(다음 결산까지 연간 예상) ===== */
 function finYearEnd(){ const y=(G.last&&G.last.y>=G.year)?G.year+1:G.year; if(y===G.year&&G.ps&&G.ps.finDay!=null)return G.ps.finDay; if(y===G.year&&G.cal&&G.cal.end)return Math.min(dnum(y,11,5),G.cal.end+30); return dnum(y,11,5); } /* 결산은 한국시리즈 이틀 뒤: 알면 그날, 모르면 정규시즌 끝 +30일로 어림 */
 /* 이미 현금에 반영한 인수 출자는 영업 흑자·지원 필요액과 구분한다. 결산과 예산 전망이 같은 회수 식을 쓴다. */
