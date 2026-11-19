@@ -8117,7 +8117,7 @@ T('[카페 11-19 신생구단 얼굴] 11·12구단 선수·코치는 v23 전용 
   const mates=Object.values(G.players).filter(p=>p.team===st&&G.f6r[st+':'+G.f6[p.id]]===p.id); for(const p of mine())ok(!mates.some(q=>G.f6[q.id]===G.f6[p.id])||p.hist&&p.hist.some(h=>h.t===st),'시트를 빌려 준 구단 선수와 같은 사진(같은 유니폼)이 새로 배정됨: '+p.name);
   const q=Object.values(G.players).filter(p=>p.team===0&&!p.foreign).sort((a,b)=>a.id-b.id)[0]; const qi=F.face6Idx(q); ok(qi!=null,'준비 실패: 기존 구단 선수 사진'); q.team=tid; ok(F.face6Idx(q)===qi,'신생 구단으로 옮긴 선수가 사진을 잃거나 얼굴이 바뀜');
   /* 그림: 신생 구단 선수(v6c·v13·v18)·감독·코치가 전용 시트에서 같은 칸(사람)을 자른다. 128 v6c·v13·staff는 HTML 안, 256·v18은 파일(?v=해시). 원년 구단은 예전 시트 그대로 */
-  const V=eval(globalThis.__f23SheetSrc()), src=L=>L.map(x=>x.im.src), base='assets/v23/expansion_kits/sheets/';
+  const V=eval(globalThis.__f23SheetSrc()), src=L=>L.map(x=>x.im.src), base='assets/v23b/expansion_kits/sheets/'; ok(V.FACE23.base===base&&V.FACE23.v==='23b','신생 구단 시트가 v23b(새 엠블럼) 판이 아님: '+V.FACE23.base);
   for(const [c,set,cell] of [[5,'v6c',5],[104,'v13',4],[200,'v18A',40],[333,'v18B',73]])for(const big of [false,true]){ const L=V.faceSheets({s:'p',t:tid,c},big), U=src(L);
     ok(L.length>=1&&L.every(x=>x.cell===cell),'전용 시트 칸 번호가 원래 사람 칸이 아님: '+set+' '+c+' '+L.map(x=>x.cell));
     ok(U.every(u=>u==='x'||u.startsWith(base+set+'/')&&u.includes('/expansion_a.webp?v=')),'11구단 '+set+' 사진이 전용 시트가 아님: '+U.join(','));
