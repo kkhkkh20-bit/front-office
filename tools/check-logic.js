@@ -10095,6 +10095,18 @@ T('[카페 11-19 식사 운영비] 모기업 구단은 보유 현금보다 단�
   t.cash=9; ok(gmMealFunds(t.id)===9&&relMeet(t,o,'meal')===0,'AI 구단은 현금 9로 식사하면 안 됨');
   /* 쓸 수 있는 돈이 정말 없으면 여전히 막는다 */ const sp0=spendable; spendable=()=>5; try{ G.day+=31; ok(gmContactWhy(t.id,'meal')==='식사 운영비 1천만 원이 부족합니다.','쓸 돈 5인데 식사 허용'); } finally { spendable=sp0; }
 });
+T('[카페 11-19 상무 성장] 상무 복무 중 겨울 한 해 종합 성장은 MIL_GROW_CAP(5)을 넘지 않고 능력별 변화 비율은 유지하며, 구단 소속은 그대로이고 같은 시드면 주 난수 사용 횟수가 같다(우리·AI 같은 식)',()=>{ fresh();
+  const p0=Object.values(G.players).find(p=>p.team!=null&&!p.foreign&&!p.prospect&&p.isP&&p.age<=24); ok(p0,'준비: 젊은 투수');
+  const prep=(mil)=>{ const p=JSON.parse(JSON.stringify(p0)); G.players[p.id]=p; setOvr(p,40); p.age=23; p.dt='early'; p.pot=78; p.potB=40; p.realK=1; p.bloomY=G.year; p.pers={pro:18,amb:18,loy:10,temp:6}; p.mil=mil?{unit:'상무',from:G.day-30,until:G.day+500}:{done:true}; return p; };
+  let capped=0, clubBig=0;
+  for(let i=0;i<12;i++){ const run=mil=>{ const p=prep(mil); const o=ovr(p), r0={...p.r}; const c0=__rngCalls(); withRng(rngHash('mil1119',i),()=>develop(p)); return {p,g:ovr(p)-o,r0,calls:__rngCalls()-c0}; };
+    const m=run(true), c=run(false);
+    ok(m.g<=MIL_GROW_CAP+.06,'상무 한 해 성장 '+m.g.toFixed(2)+' > 상한 '+MIL_GROW_CAP);
+    if(m.p.devLog.reasons.includes('military-cap')){ capped++; const up=Object.keys(m.p.r).filter(k=>m.p.r[k]-m.r0[k]>.3); ok(up.length>=3,'상한 뒤 능력별 성장이 한쪽으로 쏠림'); }
+    if(c.g>MIL_GROW_CAP+.06)clubBig++; ok(m.calls===0&&c.calls===0,'withRng 밖 주 난수 사용'); }
+  ok(capped>=3,'준비: 상한에 걸린 경우가 너무 적음 '+capped); ok(clubBig>=3,'구단 소속 성장까지 잘림(상무 전용이어야 함) '+clubBig);
+  G.players[p0.id]=p0;
+});
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

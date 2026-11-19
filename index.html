@@ -15646,10 +15646,15 @@ function staUseF(p){ try{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,
 /* 실현율 불발 몫(11-17 드래프트 보정): 30%·0.3~0.6 → 38%·0.25~0.6. 지명 순번과 무관하게 모든 신인에게 같다.
    KCI 논문(신인 드래프트 이후 프로야구선수의 1군 지위 성취가능성과 프로 지위 유지가능성 분석, 2010~2013 지명 320명 8년 추적): 8년째 프로에 남은 선수 약 50% */
 const REALK_LO=.38, BLUE_FLOOR_P=.35, BLOOM_P=.035;
+/* 상무 복무 중 한 해(겨울 develop) 종합 성장 상한(원래 능력 단위, 카페 11-19 꺼끼꺼: 상무 25세 선발 62→78).
+   점검(시드 7, 22~25세 유망주): 상무 복무와 구단 소속이 같은 성장 함수를 한 번씩만 탄다(겨울 develop → 분기 devQ, 상무는 캠프·기본 훈련 제외). 중복 적용은 없었다.
+   다만 복무 중에는 구단 성장 잡음(평균 -0.25)·출전 비중이 빠져 develop 평균이 0.4 높고 꼬리(p99 5.4, 최대 7.6)도 구단(p99 5.1)보다 길어, 구단 p99 수준인 5에서 자른다. 우리·AI 같은 식 */
+const MIL_GROW_CAP=5;
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; initPers(p); const pg=persGrowF(p); /* 외국인도 국내 선수와 같은 성장 규칙(사용자 11-11) */ const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
   const svc=p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day?p.mil.unit:null;
+  const r0=svc==='상무'?{...p.r}:null; /* 상무 한 해 성장 상한(MIL_GROW_CAP)용 시작 능력 */
   /* 군 복무 중에는 우리 구단 시설·코치·감독이 아니라 상무 야구단(또는 군) 환경에서 지낸다. 현역은 야구 훈련을 하지 못한다 */
   const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
   const club=p.team!=null&&!svc; const ti=club&&p.trI&&p.trI.n&&(p.trI.y===G.year||p.trI.y===G.year-1)?p.trI.s/p.trI.n:1; delete p.trI; /* 그 시즌 평균 훈련 강도(76_dev_plan) */ const devMgr=club&&G.mgr?mgrOf(p.team):null,yf=devMgr?1+(devMgr.youth-50)/150:1;
@@ -15705,6 +15710,7 @@ function develop(p){
   if(svc==='현역')for(const k in p.r)p.r[k]=clamp(p.r[k]-rnd(.5,2.2),20,80);
   roundR(p);
   if(ovr(p)>potCap()+.05)setOvr(p,potCap()); /* 잠재력 돌파는 없다 */
+  if(r0){ const g=ovr(p)-o; if(g>MIL_GROW_CAP){ const f=MIL_GROW_CAP/g; for(const k in p.r)if(r0[k]!=null)p.r[k]=clamp(r0[k]+(p.r[k]-r0[k])*f,20,80); roundR(p); p.devLog.reasons.push('military-cap'); } } /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
   const no=ovr(p);
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
   if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0));
@@ -21884,7 +21890,10 @@ function gmContactMigrate(){if(!G?.gmc)return;for(const [tid,c] of Object.entrie
 function gmLastContact(t){ const c=gmContactView(t.id); let d=Math.max(c.call??-1e9,c.meal??-1e9); const pc=G.personal&&G.personal.contacts&&G.personal.contacts['gm:'+t.id]; if(pc&&t.gm&&pc.person===t.gm.id)d=Math.max(d,plContactLast(pc)); return d; }
 function gmRelYear(){ const uLong=G.gmSinceD!=null&&G.day-G.gmSinceD>=3*365; for(const t of G.teams){ if(t.id===G.user||t.rel==null)continue; t.rel=Math.round(50+(t.rel-50)*relYearK(plIdle(gmLastContact(t)))); const g=t.gm; if(uLong&&g&&!g.interim&&G.year-(g.since??G.year)>=3&&t.rel>=45)t.rel=Math.max(t.rel,Math.min(80,t.rel+3)); } } /* 세 해 넘게 마주한 두 단장은 조금씩 가까워진다 */
 /* 연락 자격 조회는 인물·개인 지갑·예산을 생성하지 않는다. */
-function gmMealFunds(tid){const t=team(tid);return t?(t.cash||0)-(tid===ME()?(G.spend?.etc||0):0):0;}
+/* 식사비(1천만 원)를 낼 수 있는 돈. AI 구단은 현금. 우리 구단은 다른 구단 운영 지출과 같은 기준(spendable: 보유 현금 + 구단주 지원 예산 여유).
+   모기업 구단의 단장 결정 지출(etc)은 결산 때 구단주 지원이 메우므로 현금에서 빼지 않는다(카페 11-19 국사왕: 예산 여유 191억인데 '식사 운영비 부족'. 현금−etc가 10 미만이면 막히던 문제, 검수 11-18 #921에서 생김).
+   독립구단은 모기업이 없어 현금에서 아직 정산 안 된 etc를 뺀다(예전 식 그대로). 조회는 저장·난수를 바꾸지 않는다 */
+function gmMealFunds(tid){const t=team(tid);if(!t)return 0;if(tid!==ME())return t.cash||0;if(t.indie)return (t.cash||0)-(G.spend?.etc||0);return spendable(tid);}
 function gmContactWhy(tid,kind){const t=team(tid),g=t&&t.gm;if(G.unemp)return '구단을 맡고 있지 않습니다.';if(!t||tid===G.user||!g||g.interim||!relKeyOf(g,'gm'))return '다른 구단의 현재 정식 단장을 선택하세요.';if(kind!=='call'&&kind!=='meal')return '연락 방법을 다시 선택하세요.';const away=personalAway();if(away)return away;const c=gmContactView(tid);if(kind==='call'&&c.call!=null&&c.call>G.day-14)return `${g.name} 단장과는 ${dmd(c.call+14)}부터 다시 연락할 수 있습니다.`;if(kind==='meal'&&c.meal!=null&&c.meal>G.day-30)return `식사 자리는 한 달에 한 번입니다(${dmd(c.meal+30)}부터).`;if(kind==='meal'&&gmMealFunds(G.user)<10)return '식사 운영비 1천만 원이 부족합니다.';return '';}
 function gmContact(tid,kind){const why=gmContactWhy(tid,kind);if(why)return {ok:false,msg:why};const t=team(tid),g=t.gm,r0=t.rel??50,c=gmContactView(tid);
   if(kind==='call'){ if(c.call!=null&&c.call>G.day-14)return {msg:`${g.name} 단장과는 ${dmd(c.call+14)}부터 다시 연락할 수 있습니다.`};
@@ -51527,6 +51536,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-19-cafe-fix',d:'11월 19일',t:'20-80 표기 끝자리·단장 식사·상무 성장 폭을 바로잡았습니다',items:[
+    '20-80 표기에서 스카우트 평가·수비 위치·성장 그래프처럼 5점 단위로 매기는 값이 끝자리 0·5로 보입니다(예전에는 3·8만 보였습니다). 확인된 능력은 예전처럼 1점 단위이고, 실제 능력과 계산은 같습니다.',
+    '트레이드 > 상대 단장의 식사(1천만 원)는 다른 구단 운영 지출과 같이 보유 현금과 구단주 지원 예산 여유를 합쳐 판단합니다. 예산 여유가 있는데 \'식사 운영비 부족\'으로 막히던 문제가 없어졌습니다.',
+    '상무 복무 중 한 해 성장 폭에 상한을 두었습니다(우리·AI 구단 같음). 이미 자란 선수의 능력은 그대로입니다.'
+  ]},
   {id:'2026-11-19-world-players',d:'11월 19일',t:'해외 리그에 구단마다 주목 선수가 생겼고, 스카우트 지식만큼 보입니다',items:[
     '해외 리그 > 세계 선수 탭: MLB·트리플A·NPB·CPBL·멕시코리그 구단마다 눈여겨볼 선수 3~6명(전체 약 400~450명)이 있습니다. 해마다 기록을 쌓고 나이를 먹으며 은퇴·승격·강등·이적합니다. 노장·유망주·부상·부상 후 부진·부진 꼬리표와 알려진 계약(남은 해·연봉)도 보입니다.',
     '보이는 정도는 리그마다 스카우트 지식 %로 정합니다. 해외망 단계, 그 지역에 파견한 스카우트가 머문 날, 리그가 얼마나 알려졌는지로 오릅니다. 낮으면 이름난 선수만 기록으로 보이고, 45% 이상이면 대략적인 능력(넓은 범위), 70% 이상이면 좁은 범위와 심층 보고서가 열립니다. 다른 구단도 같은 식으로 봅니다.',
