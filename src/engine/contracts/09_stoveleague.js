@@ -47,7 +47,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
     const elig=p.svc>=faSvc(p)&&(p.lastFA==null||G.year-p.lastFA>=4||p.ctFree===G.year); /* KBO는 FA 나이 제한이 없다(신청 여부는 아래 선수 판단). 옵트아웃·구단 옵션 포기로 나온 선수는 재자격 기간과 상관없이 FA */
     /* 자격이 있어도 신청은 선수 몫: 시장 가치가 낮거나 나이가 많으면 신청하지 않고 남는다 */
     const dp=faDeclP(p,declCtx);
-    if(elig&&p.ctFree!==G.year&&R()>=dp){ p.faSkip=G.year; if(p.team===ME()){ const w=faDeclWhy(p,declCtx).L; (G._faSkip=G._faSkip||[]).push(p.name+(w.length?`(${w.join(', ')})`:'')); } continue; }
+    if(elig&&p.ctFree!==G.year&&R()>=dp){ p.faSkip=G.year; if(p.team===ME()){ const w=faSkipWhy(p,declCtx); (G._faSkip=G._faSkip||[]).push(p.name+(w.length?`(${w.join(', ')})`:'')); } continue; }
     if(elig){ delete p.faSkip; const grade=faGradeOf(p,all,gSnap);
       p.faFrom=p.team; p.faGrade=grade; p.faPrevSal=faCompBase(p); delete p.salCompCap; /* 보상 기준 연봉: 요구액을 넘긴 인상분은 빼고 */ faMktFix(G.year); termsClear(p); /* 끝난 계약의 계약금 상한 반영·옵션은 FA가 되면 정리(AI FA도 계약금이 생겼다) */ p.team=null; pool.push(p.id);
       for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k];
@@ -85,7 +85,13 @@ function faSvcOk(p){ if(G.regTrk===G.year){ const n=regN(p); return n>=145||((p.
 /* 불러오기 수리(구단주 11-19 수요·공급 시장가): 열린 FA 시장의 요구액을 새 시장가로 한 번 다시 매긴다(난수 없음, 두 번 불러도 같다). 그 겨울 분위기는 이미 정해져 있다 */
 function faAskMigrate(){ const F=G.fa; if(!F||F.closed||F.askV===2||!Array.isArray(F.pool))return 0; G.faMkt=G.faMkt||{}; if(F.y0!=null&&G.faMkt[F.y0]==null){ F.askV=2; return 0; } /* 분위기가 아직 없으면(공시 전) 공시 때 새 식으로 매긴다 */
   _mkD.k=null; _mkP.k=null; _mkS.k=null; let n=0; for(const id of F.pool){ const p=G.players[id]; if(!p||p.team!=null||!p.ask)continue; const a=faAsk(p).annual; p.ask={...p.ask,annual:a}; p.ask0=a; n++; } F.askV=2; return n; }
-function faDeclP(p,ctx){ const o2=ovr(p)+pvShift(p); let dp=o2>=58?.97:o2>=52?.8:o2>=48?.34:o2>=44?.1:.03; if(p.age>=35)dp*=.5; if(p.faSkip)dp+=.1; if(!ctx)return dp; const why=faDeclWhy(p,ctx); return why.k*dp; }
+/* 신청 확률(구단주 11-19 정정): 주전급(종합 52 이상)은 성적이 보통·좋으면 반드시 신청한다(확률 1: 호출부의 R() 한 번은 그대로 두고 문턱만 확정). 미루는 것은 본인 성적이 떨어진 해뿐(faDeclWhy).
+   주전급 아래(종합 52 미만)는 미루기가 아니라 '잔류 선택'이다: 시장에 나가도 계약을 얻기 어려워 FA를 신청하지 않고 원소속 구단 보류 선수로 남는다(faStayP: 종합 48+ 34%, 44+ 10%, 그 아래 3% 신청, 35세 이상은 절반, 작년에도 남았으면 +10%p). 예전에는 이 표가 주전급에도 걸려(52~58은 80%, 35세 이상 절반) 멀쩡한 주전이 FA를 건너뛰었다 */
+const FA_REG_O=52;
+function faStayP(p){ const o2=ovr(p)+pvShift(p); if(o2>=FA_REG_O)return 1; let dp=o2>=48?.34:o2>=44?.1:.03; if(p.age>=35)dp*=.5; if(p.faSkip)dp+=.1; return dp; }
+function faDeclP(p,ctx){ const dp=faStayP(p); if(!ctx)return dp; return faDeclWhy(p,ctx).k*dp; }
+/* 우리 선수가 신청하지 않았을 때 알릴 까닭: 성적 하락으로 미룸 / 주전급 아래의 잔류 선택 */
+function faSkipWhy(p,ctx){ const L=[...faDeclWhy(p,ctx).L]; if(faStayP(p)<1)L.push('시장에서 계약을 얻기 어렵다고 보고 잔류를 택함'); return L; }
 /* FA 신청 미루기(구단주 11-19 정정: "본인 성적이 나쁘지 않으면 미루지 않는다. 나이만 먹기 때문이다. 경쟁 상황은 선수가 미리 알 수 없다"):
    본인 성적만 본다. 올해 성적이 3년 수준보다 뚜렷이 낮은(-2 이상) 선수만 한 해 미루기도 하고, 나이가 많을수록 덜 미룬다(29세 이하 신청 55%, 32세 이하 68%, 34세 이하 85%, 35세부터는 미루지 않음).
    공개된 지난겨울 시장 분위기가 차가웠으면 이 경우에만 조금 더 미룬다(최대 -6%p 안팎). 보통·좋은 성적의 선수는 시장·경쟁자 수와 상관없이 그대로 신청한다.
