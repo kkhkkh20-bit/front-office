@@ -9677,7 +9677,7 @@ T('[카페 11-18 지명권 트레이드] 1순위 지명권도 필요한 자리�
   ok(acc,'필요한 자리 특급(연봉 4억)을 줘도 1순위를 안 줌: 후보 '+L.length);
   const D=draftOrders(), o3=D.r1[2]===G.user?D.r1[3]:D.r1[2], t3=team(o3); const A=Object.values(G.players).filter(q=>q.team!=null&&q.team!==o3&&q.team!==G.user&&!q.foreign&&pkGrade(q)>=1);
   const nn=A.find(q=>pk1118Move(q,()=>!pkNeedFor(t3,q))); ok(nn,'준비 실패: 자리가 필요 없는 A급'); const e3=pk1118Move(nn,()=>evalTrade(o3,[nn.id],[],0,{get:['1:'+o3]})); ok(!e3.ok&&String(e3.pkGate).includes('급하지 않습니다'),'자리가 필요 없는 A급에 3순위를 줌 '+e3.pkGate);
-  const B=G.teams.find(x=>x.id!==G.user&&x.id!==top); const q=domestic(B.id).filter(x=>!x.ys&&healthy(x)&&!pkAce(x)&&!hasNtc(x)&&!faLock(x)).sort((a,b)=>ovr(b)-ovr(a))[0];
+  const B=G.teams.find(x=>x.id!==G.user&&x.id!==top&&!tradeCool(top,[],0,null,x.id)); /* 준비: 창단 보강으로 이미 거래 간격·한도에 걸린 구단은 빼고(AI끼리도 같은 tradeCool, AI 규칙 동등 11-19) */ const q=domestic(B.id).filter(x=>!x.ys&&healthy(x)&&!pkAce(x)&&!hasNtc(x)&&!faLock(x)).sort((a,b)=>ovr(b)-ovr(a))[0];
   const z=aiTradePackage(B,t,[q.id],[],0,{y:pkYear(),give:[],get:[k]}); ok(!z.ok&&z.b&&z.b.pkGate,'AI끼리는 1순위 지명권 기준선이 없음'); });
 T('[카페 11-18 지명권 트레이드] 1라운드 7순번 + 3라운드는 22세 주전 내야수와 바꾼다(2024 김휘집 사례), 순번 곡선은 가파르고 2라운드는 1라운드 끝보다 싸다',()=>{ fresh(); const D=draftOrders(), U=G.user; const o7=D.r1[6]===U?D.r1[7]:D.r1[6], t=team(o7); aiPlanSet(t,'win','',true); t.mode='contend'; _tcC.k=null;
   ok(!pkTopSlot('1:'+o7),'7순번이 관문에 걸림'); const S=new Set(); for(const x of G.teams)for(const id of startersOf(x.id))S.add(id);
