@@ -10085,6 +10085,41 @@ T('[캠프1075 미상저장] 시작 스냅숏과 입단일이 없으면 과거 �
 
 T('[캠프1075 정상골든] 전기간 건강한 두 국내 선수의 봄·가을 성장23회와 실제능력 해시를 보존한다',()=>{const main=__rngState();withRng(1071082,()=>{DEMO.on=false;_achMem=achMetaFix(null);_achChamp0={};newGame(6);});worldReset();G.mail=[];G.ovs=[];G.ovsAi=null;G.fallT={};G.ps=null;G.day=G.cal.camp;const b=caPlayer(10901),p=caPlayer(10902,{isP:true,pos:'P'});caOnly([b,p]);withRng(11030,()=>campStart());G.day=G.cal.campEnd;let spring;withRng(10903,()=>{const source=FO_RNG;let calls=0;FO_RNG=()=>{calls++;return source();};const ev=campGrowAll('spring','skill');spring={calls,b:{...b.r},p:{...p.r},ev:[...ev]};});ok(spring.calls===23&&rngHash(JSON.stringify(spring))===2166118340,'정상봄성장R/능력골든변경 '+spring.calls+'/'+rngHash(JSON.stringify(spring)));G.day=KD(11,5);fcampStart();G.day=KD(11,25);let fall;withRng(10904,()=>{const source=FO_RNG;let calls=0;FO_RNG=()=>{calls++;return source();};fcampEnd();fall={calls,b:b.r,p:p.r};});ok(fall.calls===23&&rngHash(JSON.stringify(fall))===3635930093,'정상가을성장R/능력골든변경 '+fall.calls+'/'+rngHash(JSON.stringify(fall)));ok(__rngState()===main,'정상골든검사가외부난수변경');});
 
+T('[피드백 11-19 캠프 연습상대] 강팀 위주는 강팀 경기에 나간 우리 선수의 잠재력 추정 범위를 실전 감각 위주보다 더 좁히고(섞어서 절반), 성장·난수는 그대로',()=>{ fresh(); G.day=G.cal.camp; sprcCampStart(); const P=G.scp.t[G.user];
+  const p=domestic(G.user).filter(q=>q.age<=24&&!q.prospect)[0]; ok(p,'준비 실패'); P.pgR=[1,2,3,4].map(i=>({d:G.cal.camp+i,o:'x',us:2,op:1,k:i<=2?'npb1':'kbo'})); P.sg={[p.id]:p.isP?[4,12,8,3,2,9]:[4,12,10,3,1,2,2,6]};
+  const sc=bestScout(); const sdOf=lv=>{ delete p.campEv; P.evY=0; P.pgLv=lv; const c0=__rngCalls(); sprcCampEval(G.user,P); ok(__rngCalls()===c0,'평가 효과가 난수를 씀'); return ownSd(p,sc); };
+  const e=sdOf('easy'), m=sdOf('mix'), h=sdOf('hard'); ok(!p.campEv||p.campEv.n===4,'강팀 4경기 출전 기록 '+JSON.stringify(p.campEv));
+  ok(e>1.5/.84+.01,'바닥값이라 비교 불가 '+e); ok(h<m&&m<e,'추정 범위 강팀 '+h+' 섞어서 '+m+' 실전 '+e); ok(Math.abs(h/e-.84)<.01&&Math.abs(m/e-.92)<.01,'좁아지는 비율 '+(h/e)+' '+(m/e));
+  ok(scoutReport(p).sd===h,'선수 평가 화면 오차에 반영 안 됨'); P.pgLv='hard'; const g1=sprcGrowMul(G.user); P.pgLv='easy'; ok(sprcGrowMul(G.user)===g1,'방침이 성장 배수를 바꿈');
+  p.campEv.y=G.year-1; ok(sprcEvalSdF(p,G.user)===1,'지난해 캠프 평가가 남음'); delete p.campEv; ok(sprcEvalSdF(p,G.user)===1,'옛 저장(기록 없음)');
+  P.pgR=P.pgR.map(r=>({d:r.d,o:r.o,us:r.us,op:r.op})); P.pg=[{d:G.cal.camp+1,k:'npb1'},{d:G.cal.camp+2,k:'kr2'}]; const old=sprcPgFx(P); ok(old.ns===1&&old.q===1,'옛 기록(상대 종류 없음)은 일정에서 상대를 찾아야 '+old.ns+' '+old.q);
+  delete P.pgLv; ok(sprcPgFx(P).lv==='mix','옛 저장 방침 기본값'); P.pgLv='??'; ok(sprcPgFx(P).lv==='mix','이상한 방침 값'); });
+T('[피드백 11-19 캠프 연습상대] 실전 감각 위주는 강팀 위주보다 개막 컨디션이 좋다(sprcCampEnd → sprcOpenCond)',()=>{ fresh(); G.day=G.cal.camp; campStart(); sprcCampStart(); const P=G.scp.t[G.user]; P.int='norm';
+  P.pgR=[1,2,3,4,5,6,7,8].map(i=>({d:G.cal.camp+i,o:'x',us:1,op:1,k:i<=3?'kbo':i<=5?'npb1':i<=7?'npb2':'kr2'}));
+  const condOf=lv=>{ P.pgLv=lv; G.day=G.cal.campEnd; sprcCampEnd(); return P.cond; }; const ch=condOf('hard'), cm=condOf('mix'), ce=condOf('easy');
+  ok(ce>cm&&cm>ch,'개막 컨디션 순서 실전 '+ce+' 섞어서 '+cm+' 강팀 '+ch); ok(Math.abs((ce-cm)-.06)<.011&&Math.abs((cm-ch)-(.085+.06))<.011,'컨디션 차이 크기 '+ce+' '+cm+' '+ch);
+  const ms=lv=>{ const snap=JSON.stringify(G); condOf(lv); delete G.scp.condY; __seed(5); G.day=G.cal.open-1; sprcOpenCond(); const L=playersOf(G.user).filter(p=>p.sf&&p.sf.y===G.year).map(p=>p.sf.m); G=JSON.parse(snap); return L.reduce((a,b)=>a+b,0)/Math.max(1,L.length); };
+  const mh=ms('hard'), me=ms('easy'); ok(me>mh,'개막 sf.m이 실전 감각 위주에서 높지 않음 '+me+' '+mh); });
+T('[피드백 11-19 캠프 연습상대] 캠프 사기 하락은 강팀에게 크게 졌을 때만(60% 이상·3패 이상), 강팀 위주 -2·섞어서 -1·실전 감각 위주 없음, 한 해 한 번',()=>{ fresh(); G.day=G.cal.camp; sprcCampStart(); const P=G.scp.t[G.user];
+  const ps=domestic(G.user).filter(q=>!q.prospect).slice(0,3), other=domestic(G.user).filter(q=>!q.prospect)[5]; P.sg=Object.fromEntries(ps.map(p=>[p.id,[3,9,8,2,0,1,2,3]]));
+  const run=(lv,loss,win)=>{ for(const p of ps.concat(other))p.mor=60; P.morY=0; P.pgLv=lv; P.pgR=[...Array(loss).fill(0).map((_,i)=>({d:G.cal.camp+i+1,o:'x',us:1,op:4,k:'npb1'})),...Array(win).fill(0).map((_,i)=>({d:G.cal.camp+i+20,o:'y',us:5,op:2,k:'kbo'})),{d:G.cal.camp+30,o:'z',us:0,op:9,k:'kr2'}]; sprcCampMorale(G.user,P); return ps.map(p=>p.mor).concat(other.mor); };
+  ok(run('hard',3,2).join()==='58,58,58,60','강팀 3패 2승(60%): 나간 선수만 -2 '+run('hard',3,2).join());
+  ok(run('hard',2,3).join()==='60,60,60,60','2패는 사기 하락 없음'); ok(run('hard',3,3).join()==='60,60,60,60','50% 패는 사기 하락 없음');
+  ok(run('mix',4,1).join()==='59,59,59,60','섞어서는 -1'); ok(run('easy',5,0).join()==='60,60,60,60','실전 감각 위주는 사기 효과 없음');
+  run('hard',4,0); sprcCampMorale(G.user,P); ok(ps[0].mor===58,'같은 해 두 번 깎임 '+ps[0].mor); ps[0].mor=1; P.morY=0; sprcCampMorale(G.user,P); ok(ps[0].mor===0,'사기 하한'); });
+T('[피드백 11-19 캠프 연습상대] AI 구단도 감독 성향으로 방침을 정하고, 실제 캠프 경기에서 같은 함수로 평가 기록·사기·컨디션을 받는다',()=>{ fresh(); G.day=dnum(G.year-1,12,1); const ai=G.teams.filter(t=>t.id!==G.user).slice(0,3);
+  G.mgr[ai[0].id].disc=80; G.mgr[ai[1].id].disc=20; G.mgr[ai[2].id].disc=50; for(const t of ai){ G.mgr[t.id].interim=false; }
+  sprcAiBook(true); ok(['hard','easy','mix'].every((lv,i)=>sprcPlan(ai[i].id).pgLv===lv),'AI 방침 '+ai.map(t=>sprcPlan(t.id).pgLv).join(','));
+  ok(sprcAiPgLv(G.mgr[ai[0].id])==='hard'&&sprcAiPgLv(null)==='mix','감독 없음·대행은 섞어서');
+  for(const t of G.teams){ const Q=sprcPlan(t.id); Q.s1='tw'; Q.s2='oki'; Q.pgN=8; Q.pgLv='hard'; }
+  G.day=G.cal.camp; sprcCampStart(); for(let d=G.cal.camp+1;d<G.cal.campEnd;d++){ G.day=d; sprcCampDay(d); }
+  let strongTeams=0; for(const t of G.teams){ const Q=G.scp.t[t.id], x=sprcPgFx(Q); if(!x.ns){ ok(!Object.keys(Q.sg||{}).length,'강팀 경기 없는데 기록'); continue; } strongTeams++; ok(Object.keys(Q.sg||{}).length>=9,'강팀 경기 출전 선수 기록 없음 '+t.id);
+    ok(Object.values(Q.sg).every(a=>a[0]>=1&&a[0]<=x.ns),'출전 경기 수가 강팀 경기 수를 넘음'); } ok(strongTeams>=5,'강팀 경기를 치른 구단이 적음 '+strongTeams);
+  const t0=G.teams.find(t=>t.id!==G.user&&sprcPgFx(G.scp.t[t.id]).ns>0), Q=G.scp.t[t0.id]; const id=Object.keys(Q.sg)[0], p=G.players[id];
+  Q.pgR=Q.pgR.filter(r=>!SPRC_STRONG[sprcPgKind(Q,r)]).concat([1,2,3].map(i=>({d:G.cal.campEnd-10+i,o:'x',us:0,op:5,k:'npb1'}))); const mor0=p.mor??60;
+  G.day=G.cal.campEnd; sprcCampEnd(); ok(p.campEv&&p.campEv.t===t0.id&&p.campEv.n===Q.sg[id][0],'AI 선수 평가 기록 '+JSON.stringify(p.campEv)); ok(sprcEvalSdF(p,G.user)===1,'AI 선수 평가가 우리 추정에 섞임');
+  ok(p.mor===clamp(mor0-2,0,100),'AI 크게 진 강팀 경기 사기 '+mor0+' '+p.mor); const E=G.scp.t[ai[1].id]; ok(E&&typeof E.cond==='number','AI 컨디션');
+  const c0=SPRC_INT[Q.int].cond-((SPRC1[Q.s1]||{}).tr||0)*.12-((SPRC2[Q.s2]||{}).tr||0)*.06+Math.min(8,Q.pgR.length)*.04+sprcPgFx(Q).c; ok(Math.abs(Q.cond-c0)<.011,'AI 개막 컨디션 같은 식 '+Q.cond+' '+c0); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
