@@ -49,7 +49,7 @@ function scoutReport(p){ const past=scoutFormerReport(p);if(past)return past;let
   else if(scoutDraftEstimate(p)){const d=scoutDraftEstimate(p),date=d.d!=null?dstr(d.d):d.y!=null?`${d.y}년 지명 당시`:'지명 시점 미상',source=d.tid!=null?tname(d.tid):'지명 구단 미상';r={...r,draftEstimate:d};
     const original=p.team===G.user&&d.tid===G.user&&ownObs(p)===0&&p.age<29&&(!p.acq||p.acq.k==='draft'||p.acq.k==='fd');
     if(original){const known=Number.isFinite(d.ofp)&&d.sd<50,o=known?Math.max(r.cur??0,d.ofp):null,c0=r.cur??Math.round(ovr(p));r={...r,ofp:o,sd:known?d.sd:99,conf:known?sdConf(d.sd):'미확인',who:`${d.who||'평가자 미상'} · ${source} ${date} 평가(현재 관찰과 구분)`,role:known?roleOf(o,p):null,risk:known?r.risk:'판단 불가',tools:(r.tools||[]).map(t=>({...t,fut:known&&p.age<=26?clamp(Math.round(t.cur+(o-c0)*.9),t.cur,80):t.cur})),notes:[...(r.notes||[]).filter(n=>!/다 자라지|자랄 여지/.test(n)),...(known&&p.age<=26&&o-c0>=10?[`지명 당시에는 ${roleOf(o,p)}까지 기대했습니다. 실전 기록이 쌓이면 코치진이 다시 평가합니다.`]:[])]};}
-    else r={...r,notes:[...(r.notes||[]),`과거 지명 평가 · ${source} · ${date} · ${d.who||'평가자 미상'} · 잠재력 추정 ${dv(d.ofp)}점. 당시 자료이며 현재 구단의 관찰 판단과 다릅니다.`]};
+    else r={...r,notes:[...(r.notes||[]),`과거 지명 평가 · ${source} · ${date} · ${d.who||'평가자 미상'} · 잠재력 추정 ${dvG(d.ofp)}점. 당시 자료이며 현재 구단의 관찰 판단과 다릅니다.`]};
   }
   return r; }
 function scoutReport1(p){ // KBO 소속 선수는 현재 능력(오버롤)을 정확히 보여 준다. 잠재력은 우리 선수, 또는 프로 담당 스카우트가 있는 지역 구단 선수만

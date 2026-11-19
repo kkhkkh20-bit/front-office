@@ -37,6 +37,11 @@ const dv20=()=>typeof G!=='undefined'&&!!G&&!!G.cfg&&G.cfg.scale==='2080';
 const DV_K=52; /* 측정(11-18, 시드 3·5·11): 주전 평균 개막 전 50.4~52.1, 시즌 중 51.7~53.9(시드 평균 약 52.5). 52면 시즌 중 리그 주전 평균이 50~51로 보인다 */
 const dvKbo=x=>Math.max(20,Math.min(80,Math.round(50+x-DV_K)));
 const dv=x=>dv20()?(typeof x==='number'&&isFinite(x)?dvKbo(x):x):FrontOfficeCore.dv(x);
+/* 5점 단위 평가 값(스카우트 리포트 r5·수비 카드·성장 그래프)의 화면 표시(카페 11-19 국사왕: 20-80에서 끝자리가 3·8만 나옴).
+   P1의 KBO 기준 이동(−(DV_K−50))을 5점 눈금 값에 그대로 빼면 55→53처럼 눈금이 어긋난다. 20-80이면 먼저 옮기고 5점 단위로 반올림해 고전 20-80 눈금(끝자리 0·5)에 놓는다.
+   exact(확인된 능력: KBO 소속 선수 리포트의 Math.round 값 등)면 dv 그대로, 눈금 밖 값도 dv 그대로. 100점 척도는 dv 그대로. 표시 전용(저장 값·계산 불변) */
+const dvG=(x,exact)=>!exact&&dv20()&&typeof x==='number'&&Number.isInteger(x)&&x%5===0?Math.max(20,Math.min(80,r5(50+x-DV_K))):dv(x);
+const dvRep=rp=>rp&&rp.cur!=null?dvG(rp.cur,rp.exact):'-'; /* 스카우트 리포트 종합: 확인된 능력(exact)은 dv 그대로 */
 /* 엔진 판단 두 곳(외국인 시장 새 후보 다시 뽑기·라이벌 이적 소식)이 예전부터 화면 표기에 따라 기준이 달랐다(20-80이면 내부 값 그대로 비교).
    P1은 난수·밸런스를 바꾸지 않으므로 그 두 곳만 예전 식 그대로 둔다. 표기와 무관한 FrontOfficeCore.dv로 바꾸는 일은 따로(20-80 사용자 난수 흐름이 바뀐다) */
 const dvLegacy=x=>dv20()?(typeof x==='number'&&isFinite(x)?Math.round(x):x):FrontOfficeCore.dv(x);

@@ -1580,7 +1580,7 @@ T('[인물연락검수] [검수 11-18 #920] 인물 키가 없는 단장대행은
 T('[인물연락검수] [검수 11-18 #921] AI 월간 식사는 운영 현금 400만원 구단의 잔액을 음수로 만들지 않는다',()=>{pc917World();for(const t of G.teams)if(t.id!==G.user){t.cash=4;t.gm.trait='loyal';}const rng=__rngState();relNetMonth();ok(G.teams.filter(t=>t.id!==G.user).every(t=>t.cash>=0),'AI 월간 식사 후 음수 현금 '+JSON.stringify(G.teams.map(t=>[t.id,t.cash])));ok(__rngState()===rng,'월간 관계 교류가 주 난수 소비');});
 T('[인물연락검수] [검수 11-18 #921 정상] 충분한 현금의 AI 식사는 천만원 한 번만 지출하고 30일 제한을 지킨다',()=>{pc917World();const L=G.teams.filter(t=>t.id!==G.user),t=L[0],o=L[1];t.cash=10;const rng=__rngState();relMeet(t,o,'meal');ok(t.cash===0,'식사비 10 정확 청구');const state=JSON.stringify(G);ok(relMeet(t,o,'meal')===0&&JSON.stringify(G)===state&&__rngState()===rng,'30일 중복 식사 또는 난수 변경');});
 T('[인물연락검수] [검수 11-18 #932] 효과 0인 AI 첫 통화도 연락일을 기록해 다음 날 반복 통화를 막는다',()=>{pc917World();const L=G.teams.filter(t=>t.id!==G.user),t=L[0],o=L[1];o.gm.trait='hard';let d=G.day;while(relU('rcall'+d,t.id*19+o.id)>=.5)d++;G.day=d;const rng=__rngState(),a=relKeyOf(t.gm,'gm'),b=relKeyOf(o.gm,'gm');ok(relMeet(t,o,'call')===0,'0효과 AI 통화 준비');const e=G.rels[relPK(a,b)];ok(e&&e.c===d,'0효과 첫 통화 연락일 누락');G.day=d+1;const state=JSON.stringify(G);ok(relMeet(t,o,'call')===0&&JSON.stringify(G)===state&&__rngState()===rng,'다음 날 통화 제한 누락 또는 주 난수 변경');});
-T('[인물연락검수] [검수 11-18 #921 자금공통] 사용자 미지급 운영비는 한 번만 반영하고 약정 트레이드 현금은 중복 차감하지 않으며 자금 거절은 순수하다',()=>{const t=pc917World(),U=team(G.user),L=G.teams.filter(t=>t.id!==G.user),o=L.find(x=>x!==t);U.cash=14;G.spend.etc=5;G.spend.trC=100;G.rels={};t.cash=9;const state=JSON.stringify(G),rng=__rngState();ok(!gmContact(t.id,'meal').ok&&relMeet(t,o,'meal')===0,'동일 실제 잔액9에서 사용자/AI 식사 허용');ok(JSON.stringify(G)===state&&__rngState()===rng,'자금 거절이 저장·timestamp·난수 변경');U.cash=14;G.spend.etc=4;t.cash=10;ok(gmMealFunds(G.user)===10&&gmMealFunds(t.id)===10,'약정 trC 중복 차감 또는 실제 자금 불일치');ok(gmContact(t.id,'meal').ok,'정확한 10 현금 사용자 식사 거절');relMeet(t,o,'meal');ok(gmMealFunds(G.user)===0&&t.cash===0,'같은 운영 현금10 식사비 지출 불일치');});
+T('[인물연락검수] [검수 11-18 #921 자금공통] 사용자 미지급 운영비는 한 번만 반영하고 약정 트레이드 현금은 중복 차감하지 않으며 자금 거절은 순수하다(독립구단: 현금 기준. 모기업 구단은 아래 카페 11-19 시나리오)',()=>{const t=pc917World(),U=team(G.user),L=G.teams.filter(t=>t.id!==G.user),o=L.find(x=>x!==t);U.indie=true;U.cash=14;G.spend.etc=5;G.spend.trC=100;G.rels={};t.cash=9;const state=JSON.stringify(G),rng=__rngState();ok(!gmContact(t.id,'meal').ok&&relMeet(t,o,'meal')===0,'동일 실제 잔액9에서 사용자/AI 식사 허용');ok(JSON.stringify(G)===state&&__rngState()===rng,'자금 거절이 저장·timestamp·난수 변경');U.cash=14;G.spend.etc=4;t.cash=10;ok(gmMealFunds(G.user)===10&&gmMealFunds(t.id)===10,'약정 trC 중복 차감 또는 실제 자금 불일치');ok(gmContact(t.id,'meal').ok,'정확한 10 현금 사용자 식사 거절');relMeet(t,o,'meal');ok(gmMealFunds(G.user)===0&&t.cash===0,'같은 운영 현금10 식사비 지출 불일치');});
 T('[인물연락검수] [검수 11-18 #917 기간경계] 통화14일·식사30일의 직전은 거절하고 경계일에 다시 허용하며 조회는 순수하다',()=>{const t=pc917World(),d=G.day;gmContactStamp(t.id,'call');gmContactStamp(t.id,'meal');G.day=d+13;let state=JSON.stringify(G),rng=__rngState();ok(gmContactWhy(t.id,'call')&&gmContactWhy(t.id,'meal'),'기간 직전 연락 허용');ok(JSON.stringify(G)===state&&__rngState()===rng,'기간 조회 저장 변경');G.day=d+14;ok(!gmContactWhy(t.id,'call'),'14일 경계 통화 차단');G.day=d+29;ok(gmContactWhy(t.id,'meal'),'29일 경계 식사 허용');G.day=d+30;state=JSON.stringify(G);rng=__rngState();ok(!gmContactWhy(t.id,'meal')&&JSON.stringify(G)===state&&__rngState()===rng,'30일 경계 식사 차단 또는 조회 변이');});
 T('[인물연락검수] [검수 11-18 #919 정상난수] 정상 통화·식사는 기준 main의 친분·비용·접촉일·주 난수 결과를 그대로 보존한다',()=>{__seed(917900);const t=pc917World();t.rel=50;t.gm.trait='loyal';G.spend.etc=0;__seed(917901);const c=gmContact(t.id,'call'),r1=t.rel;G.day+=14;const m=gmContact(t.id,'meal'),v={call:r1,meal:t.rel,etc:G.spend.etc,c:gmContactView(t.id),rng:__rngState(),ok:c.ok&&m.ok};ok(v.call===52&&v.meal===60&&v.etc===10&&v.c.call===847&&v.c.meal===861&&v.rng===-630917769&&v.ok,'기준 main 정상 연락 결과/RNG 변경 '+JSON.stringify(v));});
 
@@ -10110,6 +10110,45 @@ T('[캠프1075 미상저장] 시작 스냅숏과 입단일이 없으면 과거 �
 
 T('[캠프1075 정상골든] 전기간 건강한 두 국내 선수의 봄·가을 성장23회와 실제능력 해시를 보존한다',()=>{const main=__rngState();withRng(1071082,()=>{DEMO.on=false;_achMem=achMetaFix(null);_achChamp0={};newGame(6);});worldReset();G.mail=[];G.ovs=[];G.ovsAi=null;G.fallT={};G.ps=null;G.day=G.cal.camp;const b=caPlayer(10901),p=caPlayer(10902,{isP:true,pos:'P'});caOnly([b,p]);withRng(11030,()=>campStart());G.day=G.cal.campEnd;let spring;withRng(10903,()=>{const source=FO_RNG;let calls=0;FO_RNG=()=>{calls++;return source();};const ev=campGrowAll('spring','skill');spring={calls,b:{...b.r},p:{...p.r},ev:[...ev]};});ok(spring.calls===23&&rngHash(JSON.stringify(spring))===2166118340,'정상봄성장R/능력골든변경 '+spring.calls+'/'+rngHash(JSON.stringify(spring)));G.day=KD(11,5);fcampStart();G.day=KD(11,25);let fall;withRng(10904,()=>{const source=FO_RNG;let calls=0;FO_RNG=()=>{calls++;return source();};fcampEnd();fall={calls,b:b.r,p:p.r};});ok(fall.calls===23&&rngHash(JSON.stringify(fall))===3635930093,'정상가을성장R/능력골든변경 '+fall.calls+'/'+rngHash(JSON.stringify(fall)));ok(__rngState()===main,'정상골든검사가외부난수변경');});
 
+
+/* ===== 카페 11-19 수정 묶음(20-80 끝자리·식사 운영비·상무 성장) ===== */
+T('[카페 11-19 20-80 끝자리] 20-80 표기: 5점 단위 스카우트 평가는 KBO 기준으로 옮긴 뒤 5점 단위(끝자리 0·5), 확인된 능력은 정수 이동 그대로, 100점 척도·dvLegacy·저장 능력은 그대로',()=>{ fresh(); G.cfg=G.cfg||{};
+  G.cfg.scale='100'; for(let x=20;x<=80;x+=5)ok(dvG(x)===dv(x)&&dvG(x,true)===dv(x),'100점 척도가 바뀜 '+x);
+  G.cfg.scale='2080';
+  for(let x=20;x<=80;x+=5){ const v=dvG(x); ok(v%5===0&&v>=20&&v<=80&&Math.abs(v-(50+x-DV_K))<=2.5,'5점 평가 '+x+'의 화면 값 '+v+'(끝자리 0·5, 이동량 반영)'); }
+  ok(dv(55)===50+55-DV_K&&dvG(55,true)===dv(55),'확인된 능력(정수)은 정수 이동 그대로');
+  ok(dvG(54.6)===dv(54.6)&&dvG(57)===dv(57),'5점 눈금 밖 값은 dv 그대로');
+  ok(dvLegacy(55)===55&&dvLegacy(61.4)===61,'엔진 판단용 dvLegacy가 바뀜');
+  const F=(G.fmarket||[]).map(id=>G.players[id]).filter(p=>p&&p.team==null&&p.foreign); ok(F.length>0,'외국인 후보 준비');
+  const before=JSON.stringify(F.map(p=>p.r)), rng=__rngState(); let n=0;
+  for(const p of F){ const rp=scoutReport(p); if(rp.exact||!rp.tools)continue; for(const t of rp.tools){ ok(t.cur%5===0,'준비: 평가 툴이 5점 단위가 아님'); const v=dvG(t.cur,rp.exact); ok(v%5===0,p.name+' '+t.k+' 평가 '+t.cur+' → 화면 '+v+'(예전 '+dv(t.cur)+')'); n++; } }
+  ok(n>=10,'평가 툴 표본 부족 '+n);
+  const K=domestic(G.user).find(p=>!p.prospect&&!p.ys); const kr=scoutReport(K); ok(kr.exact,'준비: KBO 선수는 확인된 능력');
+  ok(dvG(kr.cur,kr.exact)===dv(kr.cur)&&dvRep(kr)===dv(kr.cur),'KBO 선수 종합이 5점 단위로 바뀜');
+  ok(JSON.stringify(F.map(p=>p.r))===before&&__rngState()===rng,'표시가 저장 능력이나 난수를 바꿈');
+});
+T('[카페 11-19 식사 운영비] 모기업 구단은 보유 현금보다 단장 결정 지출이 많아도 예산 여유 안에서 상대 단장과 식사할 수 있고(장부 1천만 원 한 번), 조회는 순수하며 AI는 현금 기준 그대로',()=>{ const t=pc917World(),U=team(G.user),o=G.teams.find(x=>x.id!==G.user&&x!==t);
+  U.indie=false; U.cash=800; G.spend.etc=(G.spend.etc||0)+900; const room=spendable(G.user); ok(room>=10,'준비: 예산 여유 '+room);
+  ok(U.cash-G.spend.etc<10,'준비: 예전 식(현금-결정 지출)이면 막히는 상태');
+  let s=JSON.stringify(G), rng=__rngState(); const why=gmContactWhy(t.id,'meal'); ok(JSON.stringify(G)===s&&__rngState()===rng,'식사 조회가 저장·난수를 바꿈');
+  ok(why==='','쓸 수 있는 돈 '+money(room)+'인데 식사 거절: '+why);
+  const e0=G.spend.etc, c0=U.cash; const r=gmContact(t.id,'meal'); ok(r.ok,'식사 실패: '+r.msg); ok(G.spend.etc===e0+10&&U.cash===c0,'식사비가 결정 지출 장부에 1천만 원 한 번이 아님');
+  ok(gmMealFunds(G.user)===spendable(G.user),'다른 구단 운영 지출(spendable)과 기준이 다름');
+  t.cash=9; ok(gmMealFunds(t.id)===9&&relMeet(t,o,'meal')===0,'AI 구단은 현금 9로 식사하면 안 됨');
+  /* 쓸 수 있는 돈이 정말 없으면 여전히 막는다 */ const sp0=spendable; spendable=()=>5; try{ G.day+=31; ok(gmContactWhy(t.id,'meal')==='식사 운영비 1천만 원이 부족합니다.','쓸 돈 5인데 식사 허용'); } finally { spendable=sp0; }
+});
+T('[카페 11-19 상무 성장] 상무 복무 중 겨울 한 해 종합 성장은 MIL_GROW_CAP(5)을 넘지 않고 능력별 변화 비율은 유지하며, 구단 소속은 그대로이고 같은 시드면 주 난수 사용 횟수가 같다(우리·AI 같은 식)',()=>{ fresh();
+  const p0=Object.values(G.players).find(p=>p.team!=null&&!p.foreign&&!p.prospect&&p.isP&&p.age<=24); ok(p0,'준비: 젊은 투수');
+  const prep=(mil)=>{ const p=JSON.parse(JSON.stringify(p0)); G.players[p.id]=p; setOvr(p,40); p.age=23; p.dt='early'; p.pot=78; p.potB=40; p.realK=1; p.bloomY=G.year; p.pers={pro:18,amb:18,loy:10,temp:6}; p.mil=mil?{unit:'상무',from:G.day-30,until:G.day+500}:{done:true}; return p; };
+  let capped=0, clubBig=0;
+  for(let i=0;i<12;i++){ const run=mil=>{ const p=prep(mil); const o=ovr(p), r0={...p.r}; const c0=__rngCalls(); withRng(rngHash('mil1119',i),()=>develop(p)); return {p,g:ovr(p)-o,r0,calls:__rngCalls()-c0}; };
+    const m=run(true), c=run(false);
+    ok(m.g<=MIL_GROW_CAP+.06,'상무 한 해 성장 '+m.g.toFixed(2)+' > 상한 '+MIL_GROW_CAP);
+    if(m.p.devLog.reasons.includes('military-cap')){ capped++; const up=Object.keys(m.p.r).filter(k=>m.p.r[k]-m.r0[k]>.3); ok(up.length>=3,'상한 뒤 능력별 성장이 한쪽으로 쏠림'); }
+    if(c.g>MIL_GROW_CAP+.06)clubBig++; ok(m.calls===0&&c.calls===0,'withRng 밖 주 난수 사용'); }
+  ok(capped>=3,'준비: 상한에 걸린 경우가 너무 적음 '+capped); ok(clubBig>=3,'구단 소속 성장까지 잘림(상무 전용이어야 함) '+clubBig);
+  G.players[p0.id]=p0;
+});
 T('[AI 규칙 동등 11-19 A1] 감독 경질 정산은 우리·AI 모두 mgrSevSettle 하나: 남은 지급분(staffLeft)·약속 위반 2회면 절반, AI는 그 구단 현금에서 [재정]',()=>{ fresh(); const a=team(otherT()), m=G.mgr[a.id]; delete m.interim; m.sal=300; m.yrs=3; m.plv=[]; const pay=Math.round(300*staffLeft(m)); const c0=a.cash, s0=JSON.stringify(G.spend||{}); const r=mgrSevSettle(a.id,m); ok(r.pay===pay&&c0-a.cash===pay,'AI 정산 '+r.pay+'/'+(c0-a.cash)+' ≠ '+pay); ok(JSON.stringify(G.spend||{})===s0,'AI 정산이 우리 장부에 적힘');
   m.plv=[{y:G.year,d:1,k:'listen',t:'a'},{y:G.year,d:2,k:'youth',t:'b'}]; const c1=a.cash, r2=mgrSevSettle(a.id,m); ok(r2.brk&&c1-a.cash===Math.round(300*staffLeft(m)*.5),'AI 위반 2회 절반 아님');
   const um=G.mgr[G.user]; um.sal=200; um.yrs=2; um.plv=[]; const u0=team(G.user).cash, m0=G.spend.mgr||0, v0=G.spend.sev||0, up=mgrSevPay(um).pay; mgrSevSettle(G.user,um); ok((G.spend.mgr||0)-m0===up&&(G.spend.sev||0)-v0===up&&team(G.user).cash===u0,'우리 구단 정산은 결산 장부(감독 연봉·경질 정산금)로');
