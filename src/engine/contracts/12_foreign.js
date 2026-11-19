@@ -81,7 +81,7 @@ const fRelL=lg=>{ const e=lgEnv(lg)??2; return e<=1?'믿을 만함':e<=1.5?'보�
 /* 조사 단계(스카우트가 얼마나 봤나)와 종합 추정(스카우트 평가 + 기록 해석). 종합 추정은 두 정보를 믿을 만한 만큼 섞는다.
    예상 능력순은 종합 추정 그대로 줄 세운다(화면에 보이는 숫자와 순서가 같게). 얼마나 믿을지는 조사 단계와 범위로 본다 */
 /* 화면에 보여 줄 종합 능력: 계약 전 외국인 후보는 목록·상세·협상 창 모두 같은 '예상'(스카우트+기록 종합)과 범위를 쓴다 */
-function curView(p,rp){ rp=rp||scoutReport(p); if(p&&p.foreign&&p.team==null){ const f=fScout(p,rp); if(f.raw!=null)return {v:f.raw,est:true,lo:f.lo,hi:f.hi,sd:f.ms}; } return {v:rp?rp.cur:null,est:false,sd:rp&&!rp.exact?rp.sd:0}; }
+function curView(p,rp){ rp=rp||scoutReport(p); if(p&&p.foreign&&p.team==null){ const f=fScout(p,rp); if(f.raw!=null)return {v:f.raw,est:true,lo:f.lo,hi:f.hi,sd:f.ms}; } return {v:rp?rp.cur:null,est:false,ex:!!(rp&&rp.exact),sd:rp&&!rp.exact?rp.sd:0}; }
 /* 종합 평가 신뢰도: 스카우트 평가와 기록을 합친 최종 범위의 폭으로(관찰 진행률과 별개) */
 function fRel(f){ const b=f&&f.band; return b==null?'판단 불가':b<=5?'매우 높음':b<=7?'높음':b<=10?'보통':'낮음'; }
 function fUnknown(p,f){ const L=[]; if(f.n<3)L.push('실전 감각(현지 경기 감각)'); const lv=intlLv(origOf(p)); if(lv<2||p.adapt==null)L.push('한국 생활·리그 적응'); if(!p.prev)L.push('지난 리그 기록'); return L; }
@@ -117,14 +117,14 @@ function fScout(p,rp){ rp=rp||scoutReport(p); const sd=rp.sd||0; const n=sd>=8?0
   why.push(`스카우트: ${IREG[r].l} ${INET[lv].l}${isc?` · ${isc.name} 파견`:''}${fwatchOn(p.id)?` · 관찰 파악도 ${k}%`:''}${mine?' · 직접 발굴':''}`);
   let tip=''; if(n<3){ if(!fwatchOn(p.id))tip='관찰 명단에 올리면 매주 보고가 쌓여 범위가 좁아집니다.'; else if(k<100)tip=`관찰 중입니다. 파악도가 오를수록 범위가 좁아집니다.`; if(lv<3)tip+=(tip?' ':'')+`${IREG[r].l} 스카우트망을 넓히거나 스카우트를 파견해도 정확해집니다.`; }
   return {n,l:S.l,cls:S.cls,d:S.d,mid,lo:mid==null?null:Math.max(20,mid-band),hi:mid==null?null:Math.min(100,mid+band),band,why,tip,
-    sc:sc==null?null:dv(sc),rec:rc?dv(rc.m):null,raw:m,m0,ms,score:m==null?-99:m}; }
+    sc:sc==null?null:dvG(sc),rec:rc?dv(rc.m):null,raw:m,m0,ms,score:m==null?-99:m}; }
 /* 관찰을 다 마쳐도(파악도 100%) 남는 종합 범위 폭(±): 지금 스카우트망·파견 스카우트 그대로 파악도만 100%로 놓고 같은 식으로 계산한다(표시용, 계산식은 그대로).
    툴로는 안 보이는 실전 감각(KBO 적응)과 기록 해석 오차가 남아서다(리아네트 11-16: 100% 찍어도 범위가 보임) */
 function fResid(p){ const I=Object.assign({},fInfo(G.user,p),{k:100}), sd=fCandSd(p,I), x=fCandMix(p,I,sd,fCandCur(p,I,sd)); return x.m==null?null:dvSd(x.m,x.ms*1.3); }
 /* 화면에 보일 평가 숫자(선수 정보·소식함 공통, 리아네트 11-16: 소식함은 스카우트 평가만 범위 없이 보여 선수 정보와 숫자가 달랐다).
    우리 선수는 확인된 능력. 그 밖은 스카우트 추정: 외국인 후보 종합은 fScout(스카우트 평가+기록 종합) 중앙값과 범위, 툴과 그 밖의 종합은 스카우트 오차(sd×0.9) 범위 */
 function scoutShow(p,rp){ rp=rp||scoutReport(p); const fc=p.foreign&&p.team==null?fScout(p,rp):null, rsd=rp.exact?0:(rp.sd||0)*.9;
-  const rg=v=>{ if(v==null)return null; const mid=dv(v), b=rsd>=1.5?dvSd(v,rsd):0; return b>=2?{v,mid,lo:Math.max(20,mid-b),hi:Math.min(100,mid+b)}:{v,mid}; };
+  const rg=v=>{ if(v==null)return null; const mid=dvG(v,rp.exact), b=rsd>=1.5?dvSd(v,rsd):0; return b>=2?{v,mid,lo:Math.max(20,mid-b),hi:Math.min(100,mid+b)}:{v,mid}; };
   const cur=fc&&fc.mid!=null?{v:fc.raw,mid:fc.mid,lo:fc.lo,hi:fc.hi}:rg(rp.cur);
   const tools=(rp.tools||[]).map(t=>Object.assign({k:t.k,fut:t.fut},rg(rp.exact?p.r[t.k]:t.cur)));
   return {cur,tools,fc,exact:!!rp.exact,rg}; }

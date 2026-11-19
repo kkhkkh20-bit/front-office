@@ -252,7 +252,7 @@ function cIntro(g,k){ try{ const x=g.pbp[k], p=G.players[x[1]]; if(!p)return nul
 /* 수비 배치 보기(사용자 11-16, OOTP 참고): 이닝이 바뀔 때 2.6초 동안 위에서 내려다보며 수비수마다 번호·이름·포지션·수비·어깨. 능력치는 선수 상세 화면과 같은 값(스카우트 평가) */
 function cDefCards(g,half,k){ const cards={}; const fs=[...cFielders(g,half,k)]; const pid=cPit(g,k); if(pid)fs.push({id:pid,pos:'P'});
   for(const f of fs){ const p=G.players[f.id]; if(!p)continue; let line=f.pos==='P'?(p.th==='좌'?'좌완 투수':'우완 투수'):POSK[f.pos]||f.pos;
-    if(f.pos!=='P'){ try{ const grp=(detailOf(p,scoutReport(p)).groups||[]).find(x=>x[0]==='수비'); if(grp){ const v=n=>{ const it=grp[1].find(r=>n.test(r[0])); return it?it[1]:null; }, d=v(/수비 범위/), a=v(/송구/); const sh=n=>typeof dv==='function'?dv(Math.round(n)):Math.round(n); line+=(d!=null?` · 수비 ${sh(d)}`:'')+(a!=null?` · 어깨 ${sh(a)}`:''); /* 다른 화면과 같은 표시 척도(20~80을 화면 설정에 맞춰) */ } }catch(e){} }
+    if(f.pos!=='P'){ try{ const D=detailOf(p,scoutReport(p)), grp=(D.groups||[]).find(x=>x[0]==='수비'); if(grp){ const v=n=>{ const it=grp[1].find(r=>n.test(r[0])); return it?it[1]:null; }, d=v(/수비 범위/), a=v(/송구/); const sh=n=>typeof dvG==='function'?dvG(n,D.exact):Math.round(n); line+=(d!=null?` · 수비 ${sh(d)}`:'')+(a!=null?` · 어깨 ${sh(a)}`:''); /* 다른 화면과 같은 표시 척도(20~80을 화면 설정에 맞춰) */ } }catch(e){} }
     const no=typeof jno==='function'?jno(p):null; cards['d'+f.id]={title:(no!=null?'#'+no+' ':'')+p.name,line}; }
   return cards; }
 async function cDefense(g,k,half){ if(!c3DActive()||typeof Match3D.defenseView!=='function')return; const x=g.pbp[k]; if(!x||typeof x[1]!=='number')return; if(!Match3D.defenseView(cDefCards(g,half,k),2600/cSpd()))return; try{ await cSleep(2600); }finally{ Match3D.endDefenseView(); } }
