@@ -27140,8 +27140,14 @@ function stFillCands(mk,room){ const pickC=mk.filter(c=>!c.acc&&!(c.bid&&c.bid.e
    계약은 단장이 직접 영입할 때와 같은 stSignOwn, 배치는 담당이 빈 아마추어 지역 → 해외 → 프로 순. 분석원은 범위 밖.
    시장 새로고침(scoutMkt)은 본 난수를 쓰므로 여기서 하지 않고 지금 시장을 그대로 본다. 그 밖의 처리도 따로 씨앗을 둔 난수(withRng)라 본 난수 흐름을 바꾸지 않는다 */
 function scVacPost(){ const ld=scoutLoad(); for(const [r,keys] of [['am',REG],['intl',Object.keys(IREG)],['pro',REG]])for(const g of keys)if(!ld[r+':'+g])return [r,g]; return null; }
-function scVacNeed(){ const t=team(G.user); if(!t||G.unemp)return 0; return Math.max(0,Math.min(stAiPlan(t).tSc,scoutMax())-(G.scouts||[]).length); }
-function scVacUser(){ if(G.unemp||!scVacNeed()||(G.stAcc&&stAccBlock()))return []; const got=[];
+/* 빈자리: 정한 인원(AI 기준)보다 적음, 또는 아마추어 담당이 없는 지역이 있음(제보 원인, 코디네이터 결정 11-19). 뒤의 경우는 우리 정원(scoutMax) 안에서만 */
+function scVacGap(){ return REG.filter(r=>!(G.scouts||[]).some(x=>(x.role||'am')==='am'&&x.region===r)); }
+function scVacNeed(){ const t=team(G.user); if(!t||G.unemp)return 0; const n=(G.scouts||[]).length, cap=scoutMax(); return Math.max(0,Math.min(stAiPlan(t).tSc,cap)-n,Math.min(scVacGap().length,cap-n)); }
+/* 담당 없는 지역이 있는데 정원이 가득: 뽑지 않고 알림만(같은 상황은 한 번만) */
+function scVacFullNote(){ const gap=scVacGap(), n=(G.scouts||[]).length, cap=scoutMax(); if(!gap.length||n<cap||G.unemp){ if(!gap.length)delete G.svacFull; return; } const key=G.year+':'+gap.join(','); if(G.svacFull===key)return; G.svacFull=key;
+  autoLogAdd('스카우트 빈자리 보강(운영팀)','정원 가득 · 영입 안 함',`담당 없는 지역: ${gap.join(', ')}`);
+  mail('운영팀','스카우트 빈자리: 담당 없는 지역 + 정원 가득',`아마추어 담당이 없는 지역: ${gap.join(', ')}. 이 지역 고교·대학 후보는 관찰이 쌓이지 않아 잠재력을 판단하지 못합니다(드래프트 보드 '잠재력 ?').\n스카우트 정원(${n}/${cap}명)이 가득 차 운영팀이 새로 뽑지 않았습니다. 다른 담당 스카우트를 이 지역으로 옮기거나 한 명을 내보내면 다음 날 채웁니다.`,{kind:'스태프',imp:true,acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]}); }
+function scVacUser(){ if(G.unemp)return []; if(!scVacNeed()){ scVacFullNote(); return []; } if(G.stAcc&&stAccBlock())return []; const got=[];
   withRng(rngHash('svac',G.year,G.day,G.user,(G.scouts||[]).length),()=>{ const P=stAiPlan(team(G.user));
     while(scVacNeed()>0){ const {fillC}=stFillCands(G.scoutMarket||[],P.payMax-stAiPay({sc:G.scouts||[],an:anaList()})); const c=fillC[0]; if(!c)break; stAttr(c);
       const post=scVacPost(); if(post){ c.role=post[0]; c.region=post[1]; } else c.role=c.role||'am'; stSignOwn('sc',c,c.sal||SCOUT_SAL[c.skill]); if(!(G.scouts||[]).includes(c))break; got.push(c); } });
@@ -31082,7 +31088,7 @@ const AUTO_AREAS=[
   ['scout','스카우트 배치','스카우트팀장이 시기에 맞게 배치하고, 매주 월요일 출장(주말리그·전국대회·학교 방문)도 정해 보냅니다. 출장 안 메일은 오지 않고 일요일 현장 보고만 옵니다.'], /* 출장도 함께(사용자 11-17) */
   ['tro','받은 트레이드 제안','부단장이 검토해 정중히 거절합니다. 모두 거절하거나, 고른 기준(우리 평가 손익·필요한 자리·지킬 선수·늘어나는 연봉·기조, 기본은 손해 1 이내)에 맞는 제안만 올립니다. 주간 요약에 남깁니다.'],
   ['cvac','코치 빈자리 보강','운영팀이 빈 코치 자리를 코치 시장에서 채웁니다. AI 구단과 같은 기준으로, 그 자리 후보 가운데 연봉 여력 안에서 종합(지도+육성)이 가장 높은 코치와 1~3년 계약합니다. 맞는 후보가 없으면 새 후보를 데려옵니다. 지금 있는 코치를 바꾸거나 다른 구단 코치를 빼 오지는 않습니다.'], /* 구단주 승인 11-17(검수 §5): AI는 빈자리를 바로 채우는데 맡기기에는 코치 영입이 없었다 */
-  ['svac','스카우트 빈자리 보강','운영팀이 스카우트가 은퇴하거나 떠나 구단 형편에 맞는 인원(AI 구단과 같은 기준: 재정·시장 규모로 4~8명)에 못 미치면 스카우트 시장에서 채웁니다. 연봉 여력 안에서 능력이 가장 높은 후보를 데려와 담당이 빈 아마추어 지역, 해외, 프로 순으로 맡깁니다. 지금 있는 스카우트를 바꾸거나 전력분석원을 뽑지는 않습니다.'], /* 카페 11-19 '20시즌 넘으면 고교 황폐화': 처음 스카우트가 은퇴해도 우리는 다시 뽑히지 않았다(AI는 매달 채움). 예전 저장은 설정이 없어 꺼진 채 */
+  ['svac','스카우트 빈자리 보강','운영팀이 스카우트가 은퇴하거나 떠나 구단 형편에 맞는 인원(AI 구단과 같은 기준: 재정·시장 규모로 4~8명)에 못 미치거나 아마추어 담당이 없는 지역이 생기면 스카우트 시장에서 채웁니다. 정원이 가득하면 뽑지 않고 알립니다. 연봉 여력 안에서 능력이 가장 높은 후보를 데려와 담당이 빈 아마추어 지역, 해외, 프로 순으로 맡깁니다. 지금 있는 스카우트를 바꾸거나 전력분석원을 뽑지는 않습니다.'], /* 카페 11-19 '20시즌 넘으면 고교 황폐화': 처음 스카우트가 은퇴해도 우리는 다시 뽑히지 않았다(AI는 매달 채움). 예전 저장은 설정이 없어 꺼진 채 */
   ['raid','스태프 빼가기 대응','별 4개 이상(★★★★, 5개 만점) 스카우트·분석원은 상대 제시액에 맞춰 붙잡고, 그 아래는 보내 줍니다. 상대 제시액이 지금 연봉의 1.5배를 넘으면 붙잡기 전에 단장 승인을 받습니다.'],
   ['schg','고교 야구부 후원','고른 권역에서 올해 후원하지 않은 학교를 매주 월요일 후원합니다. 학교마다 한 해 한 번, 곳당 1,000만 원으로 직접 할 때와 같습니다. 권역은 스카우트 > 지역 정보망에서 고릅니다.'],
   ['sisv','자매구단 교류 방문단','고른 나라에서 다시 보낼 수 있는 구단에 매주 월요일 방문단을 보냅니다. 구단마다 60일에 한 번, 곳당 2,000만 원으로 직접 할 때와 같습니다. 나라는 스카우트 > 해외 네트워크에서 고릅니다.'],
@@ -31210,7 +31216,7 @@ function autoNow(k){ const C=G.contract; const out=[];
   if(k==='tro'){ for(const o of [...(G.offers||[])])autoTradeOffer(o); out.push('받은 트레이드 제안을 정리했습니다'); }
   if(k==='raid'){ autoRaid(); out.push('스태프 영입 제안에 대응했습니다'); }
   if(k==='cvac'){ const L=coachVacUser('코치진 공백 보강(위임)'); out.push(L.length?`빈 코치 자리 ${L.length}곳을 채웠습니다(${L.map(c=>`${CROLE[c.role].l} ${c.name}`).join(', ')})`:'지금은 빈 코치 자리가 없습니다'); }
-  if(k==='svac'){ const L=scVacUser(); out.push(L.length?`스카우트 ${L.length}명을 데려왔습니다(${L.map(c=>`${c.name} · ${SROLE[c.role||'am']} ${c.role==='intl'?IREG[c.region].l:c.region}`).join(', ')})`:scVacNeed()?'지금 시장에 연봉 여력 안의 스카우트 후보가 없어 다음 날부터 다시 찾습니다':'지금은 스카우트 빈자리가 없습니다'); }
+  if(k==='svac'){ const L=scVacUser(); out.push(L.length?`스카우트 ${L.length}명을 데려왔습니다(${L.map(c=>`${c.name} · ${SROLE[c.role||'am']} ${c.role==='intl'?IREG[c.region].l:c.region}`).join(', ')})`:scVacNeed()?'지금 시장에 연봉 여력 안의 스카우트 후보가 없어 다음 날부터 다시 찾습니다':scVacGap().length?`아마추어 담당이 없는 지역(${scVacGap().join(', ')})이 있지만 스카우트 정원이 가득 차 뽑지 않았습니다`:'지금은 스카우트 빈자리가 없습니다'); }
   if(AUTO_OPTIN.has(k)){ const r=autoRoutine([k]); out.push(r?'오늘 '+r:'오늘은 처리할 대상이 없습니다'); }
   if(k==='scout'){ out.push(G._scErr?`스카우트 배치는 맡았지만 지금 배치 조정에 실패했습니다(${G._scErr.slice(0,40)}). 다음 달 다시 시도합니다`:'스카우트 배치와 출장을 맡았습니다. 이번 주 출장은 팀장 안대로 보냈고, 다음 주부터 출장 안 메일 없이 팀장이 정합니다'); } /* 실제 결과대로 안내(검수 11-07) */
   if(k==='ev'||k==='mgr'||k==='inv'){ let nd=0,nv=0; for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&!evOwn(e)&&EV_NAME[e.k]&&evDelegOn(e.k))||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))||(e.k==='gmInv'&&autoOn('inv'))){ e.deleg=true; evPick(e.id,e.k==='gmInv'&&G.auto&&G.auto.inv==='yes'?0:evAutoIdx(e),true); if(e.void)nv++; else if(e.done)nd++; } } out.push(nd||!nv?`걸려 있던 결정 ${nd}건을 기본안으로 처리했습니다`:''); if(nv)out.push(`${nv}건은 대상이 떠나 효력을 잃어 처리하지 않았습니다`); }

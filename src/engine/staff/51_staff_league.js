@@ -184,8 +184,14 @@ function stFillCands(mk,room){ const pickC=mk.filter(c=>!c.acc&&!(c.bid&&c.bid.e
    계약은 단장이 직접 영입할 때와 같은 stSignOwn, 배치는 담당이 빈 아마추어 지역 → 해외 → 프로 순. 분석원은 범위 밖.
    시장 새로고침(scoutMkt)은 본 난수를 쓰므로 여기서 하지 않고 지금 시장을 그대로 본다. 그 밖의 처리도 따로 씨앗을 둔 난수(withRng)라 본 난수 흐름을 바꾸지 않는다 */
 function scVacPost(){ const ld=scoutLoad(); for(const [r,keys] of [['am',REG],['intl',Object.keys(IREG)],['pro',REG]])for(const g of keys)if(!ld[r+':'+g])return [r,g]; return null; }
-function scVacNeed(){ const t=team(G.user); if(!t||G.unemp)return 0; return Math.max(0,Math.min(stAiPlan(t).tSc,scoutMax())-(G.scouts||[]).length); }
-function scVacUser(){ if(G.unemp||!scVacNeed()||(G.stAcc&&stAccBlock()))return []; const got=[];
+/* 빈자리: 정한 인원(AI 기준)보다 적음, 또는 아마추어 담당이 없는 지역이 있음(제보 원인, 코디네이터 결정 11-19). 뒤의 경우는 우리 정원(scoutMax) 안에서만 */
+function scVacGap(){ return REG.filter(r=>!(G.scouts||[]).some(x=>(x.role||'am')==='am'&&x.region===r)); }
+function scVacNeed(){ const t=team(G.user); if(!t||G.unemp)return 0; const n=(G.scouts||[]).length, cap=scoutMax(); return Math.max(0,Math.min(stAiPlan(t).tSc,cap)-n,Math.min(scVacGap().length,cap-n)); }
+/* 담당 없는 지역이 있는데 정원이 가득: 뽑지 않고 알림만(같은 상황은 한 번만) */
+function scVacFullNote(){ const gap=scVacGap(), n=(G.scouts||[]).length, cap=scoutMax(); if(!gap.length||n<cap||G.unemp){ if(!gap.length)delete G.svacFull; return; } const key=G.year+':'+gap.join(','); if(G.svacFull===key)return; G.svacFull=key;
+  autoLogAdd('스카우트 빈자리 보강(운영팀)','정원 가득 · 영입 안 함',`담당 없는 지역: ${gap.join(', ')}`);
+  mail('운영팀','스카우트 빈자리: 담당 없는 지역 + 정원 가득',`아마추어 담당이 없는 지역: ${gap.join(', ')}. 이 지역 고교·대학 후보는 관찰이 쌓이지 않아 잠재력을 판단하지 못합니다(드래프트 보드 '잠재력 ?').\n스카우트 정원(${n}/${cap}명)이 가득 차 운영팀이 새로 뽑지 않았습니다. 다른 담당 스카우트를 이 지역으로 옮기거나 한 명을 내보내면 다음 날 채웁니다.`,{kind:'스태프',imp:true,acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]}); }
+function scVacUser(){ if(G.unemp)return []; if(!scVacNeed()){ scVacFullNote(); return []; } if(G.stAcc&&stAccBlock())return []; const got=[];
   withRng(rngHash('svac',G.year,G.day,G.user,(G.scouts||[]).length),()=>{ const P=stAiPlan(team(G.user));
     while(scVacNeed()>0){ const {fillC}=stFillCands(G.scoutMarket||[],P.payMax-stAiPay({sc:G.scouts||[],an:anaList()})); const c=fillC[0]; if(!c)break; stAttr(c);
       const post=scVacPost(); if(post){ c.role=post[0]; c.region=post[1]; } else c.role=c.role||'am'; stSignOwn('sc',c,c.sal||SCOUT_SAL[c.skill]); if(!(G.scouts||[]).includes(c))break; got.push(c); } });
