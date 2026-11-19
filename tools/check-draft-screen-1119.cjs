@@ -77,6 +77,16 @@ const assert=require('node:assert/strict'),path=require('node:path'),fs=require(
  const picked=await page.evaluate(()=>{const L=draftRanked().filter(x=>G.players[x.p.id].team==null);const x=L.find(x=>x.rp.ofp!=null)||L[0];const id=x.p.id;const pot0=dpotChip(scoutReport(G.players[id]));A.pick(String(id));const q=G.players[id];const pot1=dpotChip(scoutReport(q));const row=[...document.querySelectorAll('.drf-my tbody tr')].find(tr=>tr.textContent.includes(q.name));return {ours:q.team===G.user,row:row?row.innerHTML:'',stamp:document.querySelector('.stamp .st-extra')?.innerHTML||'',hide:hideOvr(q),potSame:pot0===pot1,hasPot:scoutReport(q).ofp!=null};});
  log('우리 지명 직후 우리 지명 칸에 종합 숫자(색 꼬리표)·잠재력 별',picked.ours&&!picked.hide&&/class="rc"/.test(picked.row)&&/\d/.test((picked.row.match(/<b class="rc"[^>]*>([^<]*)<\/b>/)||[])[1]||'')&&(!picked.hasPot||/pst/.test(picked.row))&&picked.potSame,JSON.stringify({ours:picked.ours,hide:picked.hide,hasPot:picked.hasPot,potSame:picked.potSame,rc:(picked.row.match(/<b class="rc"[^>]*>[^<]*<\/b>/)||[])[0]}));
  log('지명 알림(도장)에도 종합 숫자·별',/class="rc"/.test(picked.stamp)&&(!picked.hasPot||/pst/.test(picked.stamp)),picked.stamp.slice(0,120));
+ /* 3차(구단주 11-19): 지명 직후 선수 창·우리 지명 칸은 우리 기존 선수와 같은 꼴. 아마추어 평가 문구(확신·위험도·관찰 N회·지명 당시 평가·추정 범위) 없음 */
+ const v3=await page.evaluate(()=>{const q=Object.values(G.players).find(p=>p.team===G.user&&p.acq&&p.acq.k==='draft'&&p.acq.y===G.year);const own=Object.values(G.players).find(p=>p.team===G.user&&!p.prospect&&!(p.joinY>G.year)&&!p.foreign&&p.age<=25);
+  const scan=id=>{UI.sheet=id;renderSheet();let h='';for(const t of ['abil','sum']){try{A.ptab(t);}catch(e){}h+=document.querySelector('#sheet').innerHTML;}const T=h.replace(/<[^>]+>/g,' ');return {bad:['현재 관찰과 구분','지명 당시','확신도','위험도','관찰 의견','성장 전망','확인된 기록','스카우트 추정:','관찰 전 임시'].filter(k=>T.includes(k)),rc:/class="rc"/.test(h),pst:/class="pst"/.test(h),who:(T.match(/전력분석팀[^·]*·[^·]*합동/)||[])[0]||''};};
+  const a=scan(q.id),b=scan(own.id);UI.sheet=null;renderSheet();
+  const row=[...document.querySelectorAll('.drf-my tbody tr')].find(tr=>tr.textContent.includes(q.name));const tip=row?.querySelector('.ptier')?.getAttribute('data-tip')||'';
+  return {name:q.name,joinY:q.joinY,a,b,rowChip:!!row?.querySelector('.ptier'),tipAm:/^스카우트 추정:/.test(tip),rpWho:scoutReport(q).who};});
+ log('지명 직후 선수 창: 아마추어 평가 문구 없음',v3.a.bad.length===0,JSON.stringify(v3.a));
+ log('지명 직후 선수 창: 종합(색 꼬리표)·잠재력 별이 기존 우리 선수와 같은 형식',v3.a.rc===v3.b.rc&&v3.a.pst===v3.b.pst&&v3.a.rc&&!!v3.a.who&&!!v3.b.who,JSON.stringify({a:v3.a,b:v3.b}));
+ log("우리 지명 칸 잠재력 칩은 우리 선수용(아마추어 '스카우트 추정' 말풍선 아님)",v3.rowChip&&!v3.tipAm,JSON.stringify({rowChip:v3.rowChip,tipAm:v3.tipAm}));
+ log('값은 기존 규칙 그대로(scoutReport의 지명 당시 평가 유지)',/현재 관찰과 구분|미확인/.test(v3.rpWho),v3.rpWho);
  await page.evaluate(()=>{UI.stamp=null;if(UI.dl)dliveStop();});
  await shot('v2-1440');
  log('페이지 오류 없음',errors.length===0,errors.join(' | '));
