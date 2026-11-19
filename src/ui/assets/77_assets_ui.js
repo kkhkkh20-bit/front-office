@@ -47,7 +47,10 @@ function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img sr
 const F6IMG={}, F6C=new Map(), F6B=new Map(); const F6WAIT='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#2b3442"/><circle cx="32" cy="25" r="11" fill="#4d5a6c"/><path d="M11 64c2-14 10-22 21-22s19 8 21 22z" fill="#4d5a6c"/></svg>'); /* 사진을 받는 동안: 빈 칸 대신 실루엣(UI 3단계 3-6). 다른 얼굴이 잠깐 보였다 바뀌지 않게 그림 얼굴은 쓰지 않는다 */
 /* 사진 시트를 받다가 실패하면(통신 끊김·배포 순간) 세 번까지 다시 받고, 그래도 안 되면 빈 칸 대신 그림 얼굴로 보여 준다(펨코 11-13: 선수 사진이 전부 빈 화면).
    예전에는 한 번 실패하면 새로 고칠 때까지 계속 빈 칸이었다 */
-function f6Retry(im){ im.onerror=()=>{ im._n=(im._n||0)+1; if(im._n<=3){ const base=im._src||(im._src=im.getAttribute('src')); setTimeout(()=>{ try{ im.src=!base||base.startsWith('data:')?base:base+(base.includes('?')?'&':'?')+'r='+im._n; }catch(e){} },1200*im._n); } else { im.bad=true; const redraw=()=>{ if(typeof CT!=='undefined'&&CT.run&&UI.cast){ setTimeout(redraw,1500); return; } /* 중계가 재생 중이면 끝난 뒤에 다시 그린다: 사진 한 장이 안 읽혔다고 화면 전체를 다시 그리면 재생 중인 장면이 끊겼다(11-13) */ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} }; redraw(); } }; return im; }
+/* 중계 화면은 render()로 다시 그려지지 않는다(renderSheet가 재생을 끊지 않으려고 열린 중계 DOM을 그대로 둔다). 그래서 시트가 늦게 오면 실루엣이 남았다(11-19).
+   시트가 도착하면(여러 장은 faceImg의 30ms 묶음으로 한 번) 중계 화면의 얼굴 그림만 바꾼다: castFaceRefresh(23_match_dashboard.js) */
+function faceCastRefresh(){ try{ if(typeof castFaceRefresh==='function')castFaceRefresh(); }catch(e){} }
+function f6Retry(im){ im.onerror=()=>{ im._n=(im._n||0)+1; if(im._n<=3){ const base=im._src||(im._src=im.getAttribute('src')); setTimeout(()=>{ try{ im.src=!base||base.startsWith('data:')?base:base+(base.includes('?')?'&':'?')+'r='+im._n; }catch(e){} },1200*im._n); } else { im.bad=true; faceCastRefresh(); /* 중계 화면은 얼굴만 바꾸므로 재생 중에도 바로(대신 그릴 시트·그림 얼굴로) */ const redraw=()=>{ if(typeof CT!=='undefined'&&CT.run&&UI.cast){ setTimeout(redraw,1500); return; } /* 중계가 재생 중이면 끝난 뒤에 다시 그린다: 사진 한 장이 안 읽혔다고 화면 전체를 다시 그리면 재생 중인 장면이 끊겼다(11-13) */ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} }; redraw(); } }; return im; }
 function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.ids[i]; if(x.x)return false; /* x: 새 배정에서 뺀 얼굴(v18 흰 배경 4명, tools/gen-faces-v18.py SKIP) */ if(!p.foreign)return !x.f; if(!x.f)return false; const asia=/Japanese|Taiwanese|Filipino|Australian/.test(x.e); /* 아시아쿼터: 아시아 국가·호주(v13 필리핀·호주 포함) */ return p.foreign==='아시아'?asia:!asia; }); }
 /* 모든 구단 선수(사용자 11-05): 얼굴 100명을 구단마다 겹치지 않게 나눠 쓴다(리그 전체에서는 같은 얼굴이 여러 구단에 있을 수 있음). G.f6 선수→칸, G.f6r '구단:칸'→선수 */
 /* 얼굴 재사용 쉬는 기간(사용자 11-17): 은퇴하거나 KBO를 떠난 선수의 얼굴(구단:칸)은 그 구단 새 선수에게 20시즌 동안 주지 않는다.
@@ -175,7 +178,7 @@ function obPhotoSrc(o){ if(!G||G.f6off||!o||o.pid==null||typeof FACE6==='undefin
    더 선명한 시트를 아직 받는 중이면 결과를 캐시하지 않고, 받으면 다시 그린다(소식함 큰 사진이 128px를 늘린 채로 남지 않게). 아무 시트도 아직 없으면 작은 자리는 실루엣(F6WAIT), 큰 자리는 null(작은 사진을 그대로)
  - 작은 자리 결과는 F6B(그림 → 주소)에 남겨, 큰 자리(faceBust: 32_people.js)가 같은 주소의 흉상을 찾는다 */
 function faceImg(k,src,o){ if(F6IMG[k])return F6IMG[k]; if(!src)return null; const im=new Image(); F6IMG[k]=im; f6Retry(im); if(o&&o.f6)im.f6=true; if(o&&o.pitch){ im.pitch=o.pitch; im.off=8; }
-  im.onload=()=>{ im.ok=true; clearTimeout(faceImg.t); /* 캐시는 어느 시트로 잘랐는지 함께 적어 두므로(faceCut) 더 선명한 시트가 오면 그 얼굴만 다시 자른다: 전부 지우지 않는다(성능 11-18) */ faceImg.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=src; return im; }
+  im.onload=()=>{ im.ok=true; clearTimeout(faceImg.t); /* 캐시는 어느 시트로 잘랐는지 함께 적어 두므로(faceCut) 더 선명한 시트가 오면 그 얼굴만 다시 자른다: 전부 지우지 않는다(성능 11-18) */ faceImg.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} faceCastRefresh(); },30); }; im.src=src; return im; }
 function faceSheets(a,b){ const L=[], add=(im,cs,cell,x,y,w,o,pad,fc)=>{ if(im)L.push({im,cs,cell,cr:[x,y,w,o,pad||0],fc:fc??null}); }, s=a.s, c=a.c;
   if(s==='p'){ const tid=a.t, T=String(tid);
     if(f23Key(tid)){ f23P(a,b,add); return L.length&&!L.every(x=>x.im.bad)?L:f23Fb(a,b,L); } /* 신생 구단 전용 시트(v23) */

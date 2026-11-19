@@ -29,6 +29,14 @@ function ulTag(){ let t=ulLs(UL_TAG_K); if(t&&/^\d{4}$/.test(t))return t; try{ c
 function ulClubName(){ try{ return G&&!G.unemp&&G.user!=null&&team(G.user)?tfull(G.user):''; }catch(e){ return ''; } }
 function ulAutoNick(){ return FrontOfficeCore.ulAutoName(ulClubName(),ulTag()); }
 const ulNickSet=()=>ulLs(UL_NICK_K)==='set';
+/* 닉네임 권유(구단주 11-19): 내 서버 닉네임이 아직 자동 이름('구단명#4자리')이면 래더 로비·순위 화면에 한 줄로 권한다. 강제 아님 · 자동으로 바꾸지 않음.
+   판별은 이 기기에서만: 서버에는 '자동 이름' 칸이 없다 → 직접 정한 표시(UL_NICK_K='set')가 없고 내 닉네임이 '#숫자 4자리'로 끝나면 자동 이름으로 본다(남의 닉네임은 보지 않는다).
+   '나중에'를 누르면 이 방문(탭) 동안 다시 나오지 않는다(sessionStorage). 다음 방문에 닉네임이 그대로면 다시 나온다 */
+const UL_NICK_X='fo_ul_nick_x', UL_NICK_AUTO_RE=/#\d{4}$/;
+function ulNickDefault(){ try{ const N=ulNet(); if(!xfAvail()||!N.signedIn()||ulNickSet())return false; const p=N.player()||{}; return UL_NICK_AUTO_RE.test(String(p.nickname||'')); }catch(e){ return false; } }
+function ulNickNudgeOff(){ if(ULA.nickX)return true; try{ return sessionStorage.getItem(UL_NICK_X)==='1'; }catch(e){ return false; } }
+function ulNickNudge(){ if(!ulNickDefault()||ulNickNudgeOff())return ''; const p=ulNet().player()||{};
+  return `<div class="note ul-nkn nolink" role="status"><span class="ul-nkn-t">순위표에 보이는 내 닉네임이 아직 자동 이름 <b>${esc(p.nickname)}</b>입니다. 나만의 닉네임을 정해 보세요.</span><span class="ul-nkn-b"><button class="btn small" data-a="ulNickGo">닉네임 정하기</button><button class="btn small" data-a="ulNickLater" title="이번 방문 동안 다시 보지 않습니다">나중에</button></span></div>`; }
 function ulAutoSay(m,bad){ ULA.msg=m||''; ULA.bad=!!bad; try{ render(); }catch(e){} }
 /* 예전 플레이어(단장 이름으로 만든 것)를 처음 한 번 자동 이름으로. 직접 정한 닉네임은 그대로 */
 async function ulAutoRename(){ const N=ulNet(); if(!N.signedIn()||ulNickSet())return; const want=ulAutoNick(), p=N.player()||{}, now=Date.now();
@@ -128,6 +136,9 @@ Object.assign(A,{
     if(!ok)return ulAutoSay('자동 참가 켜기를 예약했습니다. 서버에 연결되면 참가 설정을 확인한 뒤 덱을 올립니다.');
     if(U&&U.ar)U.ar.h=''; const r=await ulAutoTick(true); if(!ulSame(tk)||key!==ulAutoIntentKey())return;
     return ulAutoSay(r==='reject'&&U&&U.ar&&U.ar.manualReject?'자동 참가를 켰습니다. 서버 덱 등록은 보류합니다: '+U.ar.manualReject.msg:r==='ok'?'자동 참가를 켰습니다. 등록한 덱을 서버에 올렸습니다.':ulAutoPending()?'자동 참가를 켰습니다. 서버에 연결되면 등록한 덱을 올립니다.':'자동 참가를 켰습니다.'); },
+  /* 닉네임 권유 → 이미 있는 닉네임 바꾸기(설정 › 래더의 '래더 닉네임' 칸)로 */
+  ulNickGo(){ A.go('cfg:uld'); try{ setTimeout(()=>{ const el=document.getElementById('ulNickIn'); if(el){ el.scrollIntoView({block:'center'}); el.focus({preventScroll:true}); } },60); }catch(e){} },
+  ulNickLater(){ ULA.nickX=true; try{ sessionStorage.setItem(UL_NICK_X,'1'); }catch(e){} render(); },
   async ulNickSave(){ if(ULA.busy)return; const el=document.getElementById('ulNickIn'), C=FrontOfficeCore, n=C.cupName((el&&el.value)||'');
     if([...n].length<2||C.cupBadName(n))return ulAutoSay('닉네임은 2~12자, 쓸 수 없는 말 없이 적어 주세요.',true);
     if(!xfAvail())return ulAutoSay('내려받은 게임에서는 서버 닉네임을 바꿀 수 없습니다.',true);

@@ -11,7 +11,7 @@ function wpsEstH(v){ if(!v||v.s==='stat')return '<span class="wps-est muted" tit
 function wpsDeepH(e,v){ if(!v||v.s!=='tight')return ''; let p=null; try{ p=wpsExpand(e); }catch(x){} if(!p)return ''; let ar=''; try{ if(p.isP)ar=arsenal(p,p.r.stf).map(x=>x[0]).join('·'); }catch(x){}
   return `<p class="small">심층 보고서 · ${esc(p.th||'우')}투 ${esc(p.bt||'우')}타${ar?` · 구종 ${esc(ar)}`:''}</p>`; }
 function wpsRowH(e,v,K){ const L=wpsLines(e), last=L[L.length-1], w=(G.ovw||[]).find(x=>String(x.id)===String(e.i)), on=!!w;
-  const sum=`<summary><span class="wps-nm"><b>${esc(e.n)}</b><i>${e.a}세 · ${esc(wpsPos(e))} · ${esc(e.na||'')}</i></span><span class="wps-fl">${wpsFlagH(e)}</span><span class="wps-last small">${last?`${last.y}${last.live?'(진행)':''} ${lineTxt(last,!!e.P)}`:''}</span>${wpsEstH(v)}</summary>`;
+  const sum=`<summary><span class="wps-nm"><b>${esc(e.n)}</b><i><span title="생년월일 ${bdText(e)}">${e.a}세</span> · ${esc(wpsPos(e))} · ${esc(e.na||'')}</i></span><span class="wps-fl">${wpsFlagH(e)}</span><span class="wps-last small">${last?`${last.y}${last.live?'(진행)':''} ${lineTxt(last,!!e.P)}`:''}</span>${wpsEstH(v)}</summary>`;
   const ai=v.s==='stat'?'':` · 같은 수준으로 파악한 다른 KBO 구단 ${wkClubs(e)}곳`;
   const why=v.s==='stat'?'능력은 아직 모릅니다. 이 지역 해외망을 넓히거나 스카우트를 파견하면 추정이 열립니다.':`예상 능력 ${v.mid}(범위 ${v.lo}~${v.hi})${v.k?` · 관찰 파악도 ${v.k}%`:''}`;
   const btn=G.unemp?'':`<button class="tc-i ovq-b${on?' on':''}" data-a="ovwT" data-v="${esc(String(e.i))}" aria-pressed="${on}">${on?'관찰 해제':'관찰 등록'}</button>`;
