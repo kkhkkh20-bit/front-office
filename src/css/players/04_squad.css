@@ -127,3 +127,24 @@ textarea.code{width:100%;min-height:80px;background:#0b1014;color:var(--ink);bor
 table.rt.rt :is(th,td).rta-c{text-align:center}
 table.rt.rt :is(th,td).rta-l{text-align:left}
 table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}
+/* 정원 패널(카페 11-20): 지금 정식 · 다음 개막 / 한도와 내역. 마우스 없이도 보이고, 내역 숫자를 누르면 이름이 펼쳐진다 */
+.rcnt{display:grid;gap:4px;padding:5px 10px;margin:0;flex:0 0 auto;border:1px solid var(--line,#ffffff1f);border-radius:6px;background:var(--panel2,#ffffff08);font-size:13px;line-height:1.35;min-width:0}
+.rcnt-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}.rcnt-top b{font:700 15px var(--f-num,inherit)}.rcnt-top b.bad{color:var(--bad)}.rcnt-top b.warn{color:var(--warn)}
+.rcnt-h{font-weight:700;color:var(--muted);font-size:12px;padding:1px 6px;border:1px solid currentColor;border-radius:3px}.rcnt-dot{color:var(--muted)}
+.rcnt-parts{display:flex;flex-wrap:wrap;gap:4px 6px;min-width:0}
+.rcnt-i{position:relative;color:var(--ink,inherit);min-width:0}.rcnt-i.zero{color:var(--muted);padding:2px 6px}
+.rcnt-i>summary{list-style:none;cursor:pointer;padding:2px 8px;border:1px solid var(--line,#ffffff2e);border-radius:12px;background:#ffffff0a;white-space:nowrap;display:inline-flex;align-items:center}.rcnt-i>summary::-webkit-details-marker{display:none}
+.rcnt-i>summary:hover,.rcnt-i[open]>summary{border-color:var(--team-hi,#7fb3ff)}.rcnt-c{font-size:10px;color:var(--muted)}
+.rcnt-i.ex>summary{border-style:dashed;color:var(--muted)}
+.rcnt-pop{position:absolute;left:0;top:calc(100% + 4px);z-index:40;display:grid;gap:2px;min-width:200px;max-width:min(320px,calc(100vw - 32px));max-height:260px;overflow:auto;padding:6px;border:1px solid var(--line,#ffffff2e);border-radius:6px;background:var(--panel,#141b22);box-shadow:0 6px 20px #0008}
+.rcnt-pop .rcnt-n{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;padding:3px 4px;min-height:0;height:auto;margin:0;line-height:1.3}.rcnt-n i{font-style:normal;color:var(--muted);font-size:12px;white-space:nowrap}
+.rcnt-warn{margin:0;color:var(--bad);font-size:12.5px}
+.ros-sum{margin:2px 0;font-size:13px}.ros-sum.bad{color:var(--bad)}.ros-sum.warn{color:var(--warn)}.ros-sum .muted{font-weight:400}#app .ros-sum span{font-size:inherit}.ros-sum .ros-x{font-weight:700}
+@media(max-width:699px){
+ .rcnt{padding:6px 8px}.rcnt-parts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px}
+ .rcnt-i>summary{min-height:44px;width:100%;box-sizing:border-box;white-space:normal;border-radius:6px;padding:4px 8px}.rcnt-i.zero{min-height:30px;display:flex;align-items:center}
+ .rcnt-i.ex{grid-column:1/-1}.rcnt-parts.rcnt-none{display:block;font-size:12px}
+ .rcnt-pop{position:static;max-width:none;min-width:0;margin-top:4px;box-shadow:none}.rcnt-pop .rcnt-n{min-height:40px}
+}
+.rcnt-i[open]{grid-column:1/-1}
+#app main.ws-up .rcnt>:is(.rcnt-parts,.rcnt-warn){display:none} /* 목록을 내려 보는 동안엔 한 줄(지금·다음 개막/한도)만 */
