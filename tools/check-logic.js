@@ -10251,6 +10251,28 @@ T('[카페 11-19 상무 성장] 상무 복무 중 겨울 한 해 종합 성장�
   ok(capped>=3,'준비: 상한에 걸린 경우가 너무 적음 '+capped); ok(clubBig>=3,'구단 소속 성장까지 잘림(상무 전용이어야 함) '+clubBig);
   G.players[p0.id]=p0;
 });
+T('[성장 11-19 겨울 상한] 성장 구간 마지막 해에 남은 잠재력이 커도 겨울 한 해 종합 +6(WIN_GROW_CAP)·능력 하나 +9(WIN_SUB_CAP)를 넘지 않고, 잘린 몫은 p.gcar와 잠재력에 남아 다음 겨울에 상한 안에서 이어 크며, 우리·AI 구단이 같은 상한이고 주 난수를 쓰지 않는다',()=>{ fresh();
+  const p0=Object.values(G.players).find(p=>p.team===G.user&&!p.foreign&&!p.prospect&&!p.isP&&!p.mil); ok(p0,'준비: 우리 야수'); const ai=otherT();
+  const prep=tid=>{ const p=JSON.parse(JSON.stringify(p0)); G.players[p.id]=p; p.team=tid; setOvr(p,40); p.dt='norm'; p.pers={pro:18,amb:18,loy:10,temp:8}; p.age=dtSpan(p).grow; p.pot=80; p.potB=40; p.realK=1; delete p.bloomY; delete p.gcar; delete p.mil; delete p.trD; delete p.trI; return p; };
+  let capped=0, car2=0, g2sum=0, n2=0;
+  for(let i=0;i<12;i++)for(const tid of [G.user,ai]){ const p=prep(tid); const o=ovr(p), r0={...p.r}; const c0=__rngCalls(); withRng(rngHash('wcap1119',i),()=>develop(p)); const g=ovr(p)-o;
+    ok(__rngCalls()===c0,'withRng 밖 주 난수 사용'); ok(g<=WIN_GROW_CAP+.06,(tid===G.user?'우리':'AI')+' 겨울 한 해 성장 '+g.toFixed(2)+' > 상한 '+WIN_GROW_CAP);
+    for(const k in p.r)ok(p.r[k]-r0[k]<=WIN_SUB_CAP+.06,'능력 하나('+k+') 성장 '+(p.r[k]-r0[k]).toFixed(1)+' > '+WIN_SUB_CAP);
+    if(p.devLog.reasons.includes('winter-cap')){ capped++; ok(p.gcar>0&&p.gcar<=GROW_CARRY_MAX,'잘린 몫이 남지 않음 '+p.gcar); ok(p.pot>=ovr(p)+p.gcar-.11,'잘린 몫만큼 잠재력이 남지 않음 '+p.pot+' < '+(ovr(p)+p.gcar)); const up=Object.keys(p.r).filter(k=>p.r[k]-r0[k]>.3); ok(up.length>=3,'상한 뒤 능력별 성장이 한쪽으로 쏠림');
+      const c=p.gcar, o1=ovr(p); withRng(rngHash('wcap1119b',i),()=>develop(p)); const g2=ovr(p)-o1; ok(g2<=WIN_GROW_CAP+.06,'이듬해 성장 '+g2.toFixed(2)+' > 상한'); ok(p.devLog.reasons.includes('carry'),'이듬해 이월 성장 표시 없음'); g2sum+=g2; n2++; if(p.gcar>0)car2++; } }
+  ok(capped>=8,'준비: 상한에 걸린 경우가 너무 적음 '+capped); ok(n2&&g2sum/n2>=2,'이듬해 이어 크는 폭이 너무 작음 '+(g2sum/Math.max(1,n2)).toFixed(2)); ok(car2>=1,'준비: 두 해 넘게 이어지는 사례 없음');
+  { const p=prep(G.user); p.age=22; setOvr(p,50); p.pot=58; p.potB=50; const o=ovr(p); withRng(rngHash('wcap1119c',1),()=>develop(p)); ok(!p.devLog.reasons.includes('winter-cap')&&p.gcar==null,'평범한 성장까지 상한에 걸림 '+(ovr(p)-o).toFixed(2)); }
+  G.players[p0.id]=p0;
+});
+T('[성장 11-19 환경 배수 상한] 곱해진 환경 배수(출전×시설×감독×코치×지목×성격×훈련 강도)는 GROW_ENV_CAP까지만 겨울 성장에 반영되고, 성장률 천장은 GROW_RATE_HI(성장 구간 마지막 해와 그 전해가 같은 천장)',()=>{ fresh();
+  const p0=Object.values(G.players).find(p=>p.team===G.user&&!p.foreign&&!p.prospect&&!p.isP&&!p.mil); ok(p0,'준비');
+  const prep=(pro,ti)=>{ const p=JSON.parse(JSON.stringify(p0)); G.players[p.id]=p; setOvr(p,45); p.dt='norm'; p.pers={pro,amb:pro,loy:10,temp:8}; p.age=21; p.pot=75; p.potB=45; p.realK=1; delete p.bloomY; delete p.gcar; delete p.mil; delete p.trD; p.trI={y:G.year,s:ti,n:1}; return p; };
+  const m0=mpickMult, y0=playShare; let hi=0, top=0, n=0; try{ mpickMult=()=>1.3; playShare=()=>1.15;
+    for(let i=0;i<10;i++){ const a=prep(20,1.6), b=prep(20,3.2); const oa=ovr(a), ob=ovr(b); withRng(rngHash('env1119',i),()=>develop(a)); withRng(rngHash('env1119',i),()=>develop(b)); ok(a.devLog.env>GROW_ENV_CAP&&b.devLog.env>a.devLog.env*1.8,'준비: 환경 배수가 상한을 넘지 않음 '+a.devLog.env+' '+b.devLog.env); ok(a.devLog.reasons.includes('env-cap'),'상한 표시 없음');
+      ok(Math.abs((ovr(a)-oa)-(ovr(b)-ob))<.06,'상한을 넘는 환경 배수가 성장에 그대로 반영됨 '+(ovr(a)-oa).toFixed(2)+' / '+(ovr(b)-ob).toFixed(2)); hi+=ovr(a)-oa; n++; }
+  } finally { mpickMult=m0; playShare=y0; }
+  ok(GROW_RATE_HI<=.4&&GROW_ENV_CAP<=2.5,'상수가 느슨함'); G.players[p0.id]=p0;
+});
 T('[AI 규칙 동등 11-19 A1] 감독 경질 정산은 우리·AI 모두 mgrSevSettle 하나: 남은 지급분(staffLeft)·약속 위반 2회면 절반, AI는 그 구단 현금에서 [재정]',()=>{ fresh(); const a=team(otherT()), m=G.mgr[a.id]; delete m.interim; m.sal=300; m.yrs=3; m.plv=[]; const pay=Math.round(300*staffLeft(m)); const c0=a.cash, s0=JSON.stringify(G.spend||{}); const r=mgrSevSettle(a.id,m); ok(r.pay===pay&&c0-a.cash===pay,'AI 정산 '+r.pay+'/'+(c0-a.cash)+' ≠ '+pay); ok(JSON.stringify(G.spend||{})===s0,'AI 정산이 우리 장부에 적힘');
   m.plv=[{y:G.year,d:1,k:'listen',t:'a'},{y:G.year,d:2,k:'youth',t:'b'}]; const c1=a.cash, r2=mgrSevSettle(a.id,m); ok(r2.brk&&c1-a.cash===Math.round(300*staffLeft(m)*.5),'AI 위반 2회 절반 아님');
   const um=G.mgr[G.user]; um.sal=200; um.yrs=2; um.plv=[]; const u0=team(G.user).cash, m0=G.spend.mgr||0, v0=G.spend.sev||0, up=mgrSevPay(um).pay; mgrSevSettle(G.user,um); ok((G.spend.mgr||0)-m0===up&&(G.spend.sev||0)-v0===up&&team(G.user).cash===u0,'우리 구단 정산은 결산 장부(감독 연봉·경질 정산금)로');
