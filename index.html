@@ -16448,7 +16448,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   try{ injDaily(); loadDaily(); if(o.w===1&&G.day>G.cal.open)loadWeekly(); }catch(e){}
   const c=G.cal;
   if(day===KD(2,1)||day===KD(6,1))try{ posPlanAll(); }catch(e){}
-  if(day===KD(2,1))for(const t of G.teams)if(t.id!==ME()){aiForeignFill(t.id,false);aiForeignFill(t.id,false);aiForeignFill(t.id,false);aiForeignFill(t.id,false);}
+  if(day===KD(2,1))for(const t of G.teams)if(t.id!==ME()){aiForeignFill(t.id,false);aiForeignFill(t.id,false);aiForeignFill(t.id,false);aiForeignFill(t.id,false);} /* 안전망: AI 구단은 시장이 열린 날부터 예정일대로 채운다(12_foreign fWinDue). 그래도 비어 있는 자리만 여기서 채운다 */
   if(day===KD(1,10))faUnsignedNote();
   if(day===KD(1,25)&&G.fa&&!G.fa.closed)faClose();
   if(day===KD(1,31)&&G.contract&&!G.contract.done){ { let g=0; while(fReCapInfo().over>0&&g++<4){ const C=G.contract; const k=C.foreignEnd.map(id=>G.players[id]).filter(p=>p&&p.foreign==='용병'&&!C.foreignDrop.includes(p.id)).sort((a,b)=>b.newSal-a.newSal)[0]; if(!k)break; C.foreignDrop.push(k.id); (G._fDropAuto=G._fDropAuto||[]).push(k.name); } } confirmContracts(true); { const L=G._fDropAuto||[]; delete G._fDropAuto; if(L.length)mail('운영팀','연봉 마감: 외국인 총액 한도로 결별',`외국인 재계약 합계가 총액 한도를 넘어 연봉이 가장 높은 선수부터 결별했습니다: ${L.join(', ')}. 나머지 선수는 합의한 조건으로 계약했습니다.`,{imp:true,kind:'연봉'}); } { const h=Object.values(G.players).filter(p=>p.hold&&p.team===G.user).length; stop('연봉',`연봉 계약 마감일입니다. 남은 선수는 제시안대로 계약했습니다.${h?` 요구액과 차이가 큰 ${h}명은 사인하지 않아 미계약입니다.`:''}`); } }
@@ -19053,9 +19053,22 @@ function fTop3(tid,nd,q){ const L=(G.fmarket||[]).map(id=>G.players[id]).filter(
 function aiForeignPick(tid){ const nd=fNeed(tid); return nd&&fTop3(tid,nd)[0]||null; }
 function fInterest(q){ return !q||q.team!=null?0:foRivalTeams(q).length; } /* 보류권으로 다른 구단이 못 데려가는 선수는 관심도 0이라 몸값이 오르지 않는다 */
 function aiForeignSign(tid,q,why,T){ const c=q.fneg&&q.fneg.cut, nd=fNeed(tid); const up=c&&c.tid===tid?foUp(tid,q):nd&&nd.up&&fAiEst(tid,q)>=nd.upO+6?nd.up:null; /* 끼어들기를 일으킨 구단은 그때 바꾸려던 선수를 내보낸다(검수 11-09zl) */ if(up&&G.players[up]){ const w=G.players[up]; { const a0=q.ask; if(T)q.ask=T.g+T.i; const e=foreignCheck(tid,q,w.id); q.ask=a0; if(e)return e; } /* 교체 계약이 성립하는지(총액 한도 등) 먼저 보고 나서 기존 선수를 내보낸다(검수 11-06) */ releaseForeign(w.id); wire('외국인',`${tshort(tid)}, 외국인 ${w.name} 대신 ${q.name} 영입 추진`,{tid,ref:q.id}); } const err=T?signForeignT(tid,q.id,T.g,T.i):signForeign(tid,q.id); /* T: 경쟁 구단이 실제로 제시한 보장·인센티브(검수 11-05: 협상을 압박한 조건과 실제 계약이 달랐다) */ if(err)return err; if(fwatchOn(q.id)&&!G._foNegSign)mail('스카우트팀장',`관찰 후보 ${q.name}, ${tshort(tid)}와(과) 계약`,`관찰 명단에 있던 ${q.name}(${posLabel(q)})을(를) ${tname(tid)}이(가) ${T?`보장 ${money(T.g)}${T.i?` + 인센티브 ${money(T.i)}`:''}`:`연 ${money(q.sal)}`}에 먼저 데려갔습니다.${why||''}`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); else if(ovr(q)>=60)wire('외국인',`${tshort(tid)}, 외국인 ${posLabel(q)} ${q.name} 영입 (${money(q.sal)})`,{tid,ref:q.id}); }
+/* 겨울 시장 같은 출발(구단주 11-19: 우리 = AI 같은 규칙·같은 시기). 겨울 외국인 시장은 12월 1일(재계약 대상 확정·시장 새로 채움, 창단 첫해는 1월 1일)에 모든 구단에 함께 열린다.
+   예전에는 AI 구단이 12월 하루 6%·1~2월 하루 12% 확률로만 움직여, 시장이 열린 날 우리가 상위 후보를 먼저 다 고르고 AI는 2월 1일 일괄 보강(aiForeignFill)까지 빈자리로 남는 일이 흔했다.
+   이제 빈자리가 있는 AI 구단은 시장이 열린 이튿날부터 움직이고, 구단마다 정해진 날까지는 다음 한 명과 계약한다(그 전에 예전 확률로 먼저 움직일 수도 있다). 평가(fAiEst)·몸값(q.ask)·총액 한도·자리 수(foreignCheck)·후보 목록(G.fmarket)은 그대로다.
+   - 첫 계약: 시장이 열린 날 + 1~6일. 이번 겨울 채울 자리가 둘 이상이면 하루 먼저, 현금이 많을수록(AI 구단 순위 3등분, 0~2일) 먼저 움직이고 구단·겨울 해시로 0~2일 어긋난다.
+   - 다음 계약: 앞 계약 예정일에서 3~8일 뒤(구단·겨울·몇 번째 계약인지의 해시). 네 자리를 다 비운 구단도 시장이 열리고 30일 안에 끝난다.
+   저장에 남기는 값이 없다(오늘 명단·입단일 fjD·현금으로 매번 다시 계산). 예전 저장을 겨울 도중에 불러오면 예정일이 지난 구단이 하루 한 명씩 따라잡고, 2월 1일 일괄 보강은 안전망으로 남는다. 본 난수는 쓰지 않는다(해시 씨앗 withRng) */
+const F_WIN={first:6,gap:[3,8]};
+function fWinOpen(){ const per=period(); if(per==='season'||per==='post')return null; const o=dobj(G.day); if(o.m===12)return dnum(o.y,12,1); if(o.m>3)return null; return G.startY===o.y?dnum(o.y,1,1):dnum(o.y-1,12,1); }
+function fWinDue(tid){ const w0=fWinOpen(); if(w0==null||G.day<w0)return null;
+  const fs=fStayOf(tid), k=fs.filter(x=>x.fjD>=w0).length, e=Math.max(0,fMaxYB(tid)-fs.filter(x=>x.foreign==='용병').length)+(fs.some(x=>x.foreign==='아시아')?0:1); if(!e)return null;
+  const ai=G.teams.filter(t=>t.id!==ME()).sort((a,b)=>(b.cash||0)-(a.cash||0)||a.id-b.id), rk=Math.max(0,ai.findIndex(t=>t.id===tid)), lag=Math.min(2,Math.floor(rk*3/Math.max(1,ai.length)));
+  const h=(j,n)=>withRng(rngHash('fWin',w0,tid,j),()=>Math.floor(R()*n));
+  let d=w0+Math.min(F_WIN.first,1+(e+k>=2?0:1)+lag+h('a',3)); for(let j=0;j<k;j++)d+=F_WIN.gap[0]+h(j,F_WIN.gap[1]-F_WIN.gap[0]+1); return d; }
 /* 스토브리그·캠프 기간: 구단들이 하루하루 시장에서 데려간다. 인기 선수는 몸값이 오른다 */
 function aiForeignDaily(){ if(!foreignOpen()||period()==='season')return; const o=dobj(G.day); const pr=G.startY===G.year&&o.m===1?.45:o.m===1||o.m===2?.12:.06; /* 창단 첫 1월: 모든 구단이 외국인 선수단을 새로 꾸리므로 각 구단이 자기 판단으로 바로 움직인다(순번 없이). 평소 겨울은 띄엄띄엄 */
-  for(const t of G.teams){ if(t.id===ME()||!fNeed(t.id))continue; const q=aiForeignPick(t.id); if(q&&R()<pr&&!foCutIn(t.id,q)){ if(fwatchOn(q.id)&&!G.unemp){ const w=q.fwarn; if(!w||w.tid!==t.id||w.y!==G.year){ q.fwarn={tid:t.id,d:G.day,y:G.year}; stop('외국인',`${tname(t.id)}이(가) 우리가 관찰 중인 외국인 후보 ${q.name}(${posLabel(q)})과(와) 협상에 들어갔습니다. 3일쯤 뒤 계약할 것으로 보입니다. 잡으려면 외국인 시장에서 먼저 제안하세요.`); continue; } if(G.day-w.d<3)continue; } aiForeignSign(t.id,q); } } } /* 관찰 중인 후보: 다른 구단이 움직이면 먼저 알리고 3일 여유를 준다(커뮤니티 11-12: 관찰을 시키자마자 다음 날 다른 구단과 계약). 관찰한다고 AI가 서두르지는 않는다(해외 활성화 1-2) */
+  for(const t of G.teams){ if(t.id===ME())continue; const nd=fNeed(t.id); if(!nd)continue; const q=aiForeignPick(t.id); if(!q)continue; const hit=R()<pr; /* 본 난수는 예전과 같은 자리에서 한 번(후보가 있는 구단마다) */ let due=false; if(!nd.up){ const dd=fWinDue(t.id); due=dd!=null&&G.day>=dd; } /* 빈자리 채우기만 예정일을 따른다. 겨울 교체(nd.up)는 예전처럼 확률로 */ if((hit||due)&&!foCutIn(t.id,q)){ if(fwatchOn(q.id)&&!G.unemp){ const w=q.fwarn; if(!w||w.tid!==t.id||w.y!==G.year){ q.fwarn={tid:t.id,d:G.day,y:G.year}; stop('외국인',`${tname(t.id)}이(가) 우리가 관찰 중인 외국인 후보 ${q.name}(${posLabel(q)})과(와) 협상에 들어갔습니다. 3일쯤 뒤 계약할 것으로 보입니다. 잡으려면 외국인 시장에서 먼저 제안하세요.`); continue; } if(G.day-w.d<3)continue; } aiForeignSign(t.id,q); } } } /* 관찰 중인 후보: 다른 구단이 움직이면 먼저 알리고 3일 여유를 준다(커뮤니티 11-12: 관찰을 시키자마자 다음 날 다른 구단과 계약). 관찰한다고 AI가 서두르지는 않는다(해외 활성화 1-2) */
 /* 트리플A 옵트아웃 후보(해외 활성화 2-2): 6월 1일~7월 10일 매주 2~3명. 실제로 MLB 경력 베테랑의 마이너 계약에는 6월 1일·7월 1일 옵트아웃이 흔하고(노사협약 XX(B) 선수는 6월 1일, 날짜는 계약마다 달라 불확실),
    KBO 시즌 중 교체 외국인이 이 무렵에 몰린다. 올해 트리플A 기록(p.now)을 그 주까지 채워서 낸다. 같은 시장이라 AI 교체 판단(aiForeignReview)도 같은 후보를 본다 */
 const F_OPT={d0:[6,1],d1:[7,10],max:24};
@@ -51859,6 +51872,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-19-foreign-parity',d:'11월 19일',t:'다른 구단도 외국인 시장이 열린 날부터 움직입니다',items:[
+    '겨울 외국인 시장(12월 1일, 창단 첫해는 1월)이 열리면 빈자리가 있는 다른 구단도 이튿날부터 후보와 계약하기 시작합니다. 구단마다 빈자리 수와 자금 사정에 따라 정해진 날까지 한 명씩 채워, 대부분 2~3주(늦어도 한 달) 안에 외국인 구성을 마칩니다. 예전에는 천천히 움직여 좋은 후보가 오래 남아 있었습니다.',
+    '후보 평가(구단마다 자기 스카우트 추정), 요구액, 총액 한도, 자리 수는 우리와 같은 규칙 그대로입니다. 관찰 명단 후보는 지금처럼 사흘 전에 먼저 알려 줍니다.'
+  ]},
   {id:'2026-11-19-fa-sign-gate',d:'11월 19일',t:'FA 시장 보고와 우선 제안이 실제로 계약할 수 있는지까지 알려 줍니다',items:[
     '시장 보고: 우리 제안이 지금 그대로는 계약할 수 없으면(계약 자금 부족·정원 초과·외부 FA 한도) 가장 좋은 제안으로 보지 않고, 보고에 그 이유를 적습니다.',
     '선수가 결정하는 날 우리 제안이 계약할 수 없는 상태면, 이유를 알리고 제안을 거둬들입니다. 사정이 풀리면 협상실에서 다시 제안할 수 있습니다.',
