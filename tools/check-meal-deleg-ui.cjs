@@ -15,7 +15,7 @@ const OUT=process.env.MEAL_OUT||'';
     const ctx=await browser.newContext({viewport:{width:w,height:h},isMobile:mob,hasTouch:mob}), page=await ctx.newPage(), errors=[];
     page.setDefaultTimeout(15000); page.on('pageerror',e=>errors.push(e.message));
     await page.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));
-    await page.goto(server.url); await page.waitForFunction(()=>typeof newGame==='function');
+    await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await page.waitForFunction(()=>typeof newGame==='function');
     await page.evaluate(()=>{ DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let n=0; while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true); G.tut={done:true,step:99}; hireMgr(G.mmarket[0].id,3); G.medSet=true; UI.title=false; UI.patchClosed=true; G.auto=G.auto||{}; delete G.auto.inv; G.deleg={}; A.go('cfg:auth'); render(); });
     /* 1) 업무 권한 줄 */
     const row=page.locator('.authi',{hasText:'식사·모임 초대'});

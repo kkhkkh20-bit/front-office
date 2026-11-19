@@ -2,8 +2,9 @@
  다섯 경로가 선수 자격(tradeEligible)과 거래 적법성(tradeLegal)을 여기서 함께 쓴다.
   우리 제안·역제안·추천(16_trade tradePreflight, tradeCtrOk), 받은 제안 수락·AI 제안 만들기(09_stoveleague offerBlockMsg, 21_block_agents 매물 제안),
   AI끼리 거래(27_other_gms aiTradePackage), 후보·매물 고르기(26_trade_ai, 21_block_agents, 27_other_gms).
- 경로마다 쓰는 검사 목록은 TRADE_RULES에 모아 둔다. 지금은 경로마다 예전 검사를 그대로 고른다(결과·난수 흐름 동일).
- AI끼리 거래(ai)에는 거래 간격(tradeCool)·구단주 승인(tradeOwnerCheck)·연봉 상한 결재(tradeCapCheck)·거부권 동의(ntcFor)가 없다. */
+ 경로마다 쓰는 검사 목록은 TRADE_RULES에 모아 둔다.
+ AI끼리 거래(ai)도 우리 구단과 같은 관문을 같은 함수로 지난다(AI 규칙 동등 11-19): 지명권 적법성(pkCheck)·거래 간격과 같은 구단 한도(tradeCool)·거부권 동의(ntcFor, 동의는 ntcAskAI)·
+ 구단주 예산 승인(tradeOwnerCheck)·연봉 상한 결재(tradeCapCheck). 결재는 사는 쪽·파는 쪽 모두 자기 구단주에게 받는다(우리 구단도 제안할 때·받은 제안을 수락할 때 모두 받는다). */
 
 /* 선수 자격. ctx로 경로가 지금 쓰는 검사만 켠다(생략하면 켬).
  tid: 그 구단 소속이어야 한다 / foreign·ys(육성)·joinY(입단 예정)·healthy·faLock(FA 잠금): 개별 검사
@@ -30,7 +31,7 @@ function tradeRosterFits(tid,nOut,nIn){ return rosterN(tid)-nOut+nIn<=ROSTER_MAX
 const TRADE_RULES={
   user:['recent','open','empty','faLock','own','ntcOut','ntcIn','cashMax','cashInNoGive','cashTheirs','cashOutNoGet','cashMine','foreign','pk','cool','budget','owner','cap'],
   offer:['recentOffer','coolOffer','faLock','ntcOut','ntcIn','exists','own','cashParse','cashInt','cashMine','cashTheirs','pk','eval','size','capHard','value'],
-  ai:['distinct','eligible','cashMax','cashAi','evalTo','evalFrom']
+  ai:['distinct','eligible','cashMax','cashAi','pkAi','coolAi','ntcAi','evalTo','ownerAi','capAi','evalFrom']
 };
 const TRADE_RULE={
   recent:d=>{ const msg=tradeRecentMsg([...d.give,...d.get]); if(msg)return {ok:false,msg}; },
@@ -65,10 +66,17 @@ const TRADE_RULE={
   capHard:(d,c,x)=>{ if(x.ev.capT&&x.ev.capT.hard)return {ok:false,msg:`${tfull(team(d.to))} 단장: 그사이 연봉 사정이 바뀌어 구단주가 허락하는 한도를 넘게 됐습니다. 이 제안을 지킬 수 없습니다.`}; }, /* 소프트캡(13_roster aiCapTake): 한도 안이면 세금만큼 값으로 따진다(evalTrade) */
   value:(d,c,x)=>{ const ev=x.ev, tol=c.strict?0:Math.max(1.5,ev.outV)*.15; if(!ev.ok&&((ev.dom&&ev.dom.refuse)||ev.gain<ev.need-tol))return {ok:false,msg:`${tfull(team(d.to))} 단장: 다시 따져 보니 이 조건으로는 어렵겠습니다.`}; }, /* 공략 방지: AI 제안도 직접 협상과 같은 값(evalTrade)으로 판정. strict: 제안을 만들 때는 evalTrade가 받아들이는 조건만, 수락할 때는 역제안과 같은 여유(.15) */
   distinct:d=>{ if(d.from===d.to||new Set(d.give).size!==d.give.length||new Set(d.get).size!==d.get.length)return {ok:false}; },
-  eligible:d=>{ const ok=(ids,tid)=>ids.every(id=>tradeEligible(G.players[id],{tid})); if(!ok(d.give,d.from)||!ok(d.get,d.to))return {ok:false}; },
+  eligible:d=>{ const ok=(ids,tid)=>ids.every(id=>tradeEligible(G.players[id],{tid,ntc:false})); if(!ok(d.give,d.from)||!ok(d.get,d.to))return {ok:false}; }, /* 거부권은 아래 ntcAi(우리와 같은 동의 절차) */
+  pkAi:(d,c,x)=>{ if(pkCheck(d.to,d.give,d.get,x.pk,d.from))return {ok:false}; },
+  coolAi:(d,c,x)=>{ if(tradeCool(d.to,d.get,x.cash,x.pk,d.from))return {ok:false}; }, /* 거래 간격·같은 구단 한도: 우리 구단과 같은 함수(사는 쪽 기준, 급매 예외·맞대결 예외도 같게) */
+  ntcAi:(d,c)=>{ const bad=(ids,to)=>ids.some(id=>{ const p=G.players[id]; return c.ntcAsk?!ntcAskable(p,to):ntcFor(p,to); }); if(bad(d.give,d.to)||bad(d.get,d.from))return {ok:false}; }, /* 후보를 고를 때(ntcAsk)는 물어볼 수 있는 선수까지, 최종 확인은 동의가 있어야 */
+  ownerAi:(d,c,x)=>{ const oA=tradeOwnerCheck(d.give,d.get,x.cash,false,d.from), oB=tradeOwnerCheck(d.get,d.give,-x.cash,false,d.to); if((oA&&!oA.ok)||(oB&&!oB.ok))return {ok:false,b:x.b}; x.ocA=oA; x.ocB=oB; },
+  capAi:(d,c,x)=>{ const cA=tradeCapCheck(d.give,d.get,d.from), cB=tradeCapCheck(d.get,d.give,d.to); if((cA&&!cA.ok)||(cB&&!cB.ok))return {ok:false,b:x.b}; x.ccA=cA; x.ccB=cB; },
   evalTo:(d,c,x)=>{ const b=evalTrade(d.to,d.give,d.get,x.cash,x.pk,d.from); x.b=b; if(!b.ok||!tradeSizeOk(b))return {ok:false,b}; },
-  evalFrom:(d,c,x)=>{ const a=evalTrade(d.from,d.get,d.give,-x.cash,{y:x.pk.y,give:x.pk.get,get:x.pk.give},d.to); return {ok:!!(a.ok&&tradeSizeOk(a)),a,b:x.b}; }
+  evalFrom:(d,c,x)=>{ const a=evalTrade(d.from,d.get,d.give,-x.cash,{y:x.pk.y,give:x.pk.get,get:x.pk.give},d.to); return {ok:!!(a.ok&&tradeSizeOk(a)),a,b:x.b,ocA:x.ocA,ocB:x.ocB,ccA:x.ccA,ccB:x.ccB}; }
 };
+/* AI끼리 거래가 성사되면 결재 대가를 우리 구단과 같게(예산 초과 승인 신뢰 -2, 상한 초과 결재 신뢰 -1~3) */
+function tradeApproveAI(e,A,B){ if(!e)return; if(e.ocA&&e.ocA.ok&&e.ocA.over>0)tradeOwnerOk(e.ocA,A); if(e.ocB&&e.ocB.ok&&e.ocB.over>0)tradeOwnerOk(e.ocB,B); if(e.ccA&&e.ccA.ok)capOwnerOk(e.ccA,'트레이드',A); if(e.ccB&&e.ccB.ok)capOwnerOk(e.ccB,'트레이드',B); }
 function tradeLegal(deal,ctx){ const c=ctx||{}, x={cash:deal.cash,pk:deal.pk,res:{ok:true}};
   for(const k of TRADE_RULES[c.path]){ const r=TRADE_RULE[k](deal,c,x); if(r)return r; }
   return x.res; }

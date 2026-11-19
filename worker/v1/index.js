@@ -7,7 +7,7 @@
      POST   /api/v1/player/link  {provider, ticket|code}   POST /api/v1/player/login {provider, ticket|code, platform} → 새 기기 토큰
      PUT    /api/v1/ladder/deck  {e, tier?, wid?, auto?, man?, dev?}  PUT /api/v1/ladder/auto {on}  POST /api/v1/ladder/live {key, tier, round, post, teams, st} (래더 v4: worker/v1/ladauto.js)  GET /api/v1/ladder/opponents?tier=&ovr=&n=9
      POST   /api/v1/ladder/result {key, rank, teams, w, l, d, opps:[{pid,w,l,d}], ps?, rec?}
-     GET    /api/v1/ladder/leaderboard?tier=|all&season=   GET /api/v1/ladder/feed   GET /api/v1/ladder/meta?tier=|all (덱 구성 집계, 10분 캐시)   GET /api/v1/ladder/records?season=&tier=|all (기록실: 시즌 개인·팀 순위·우승 벽, 120초 캐시)   GET /api/v1/ladder/me   GET /api/v1/ladder/rivals   GET /api/v1/ladder/h2h/PID
+     GET    /api/v1/ladder/leaderboard?tier=|all&season= (상위 50)   GET /api/v1/ladder/deck/PID (덱 구경: 한 팀 명단, 공개, 120초 캐시)   GET /api/v1/ladder/near (내 순위 위·아래 3명, 로그인)   GET /api/v1/ladder/feed   GET /api/v1/ladder/meta?tier=|all (덱 구성 집계, 10분 캐시)   GET /api/v1/ladder/records?season=&tier=|all (기록실: 시즌 개인·팀 순위·우승 벽, 120초 캐시)   GET /api/v1/ladder/me   GET /api/v1/ladder/rivals   GET /api/v1/ladder/h2h/PID
      클라우드 저장(R2 env.SAVES, 없으면 503 not_configured): GET cloud · GET/PUT/DELETE saves[/SLOT] · POST player/link-code[/redeem] · POST player/recovery[/redeem] · GET player/devices · PUT player/devices/me · DELETE player/devices/ID (worker/v1/cloud.js)
      관리자: GET admin/stats · GET admin/export?kind=decks|results&n=&cursor=&from=&to= (CSV용 줄, 페이지) · GET admin/players?q= · PUT admin/hide {pid, hide} · DELETE admin/player/PID · DELETE admin/deck/PID · POST admin/season/roll · POST admin/migrate · GET admin/dash · GET admin/decks?q=&tier= · GET admin/league?id=|live= (래더 v4 한눈 보기)
    계정 연결과 기기 토큰(srv2 #64): 연결(POST player/link)은 지금 플레이어에 계정을 붙일 뿐 토큰을 바꾸지 않는다. 그래서 연결 전의 익명 기기 토큰과
@@ -18,7 +18,7 @@ import { json, err, readJson, cors, originOk } from './http.js';
 import { authPlayer, isAdmin, issueDevice, newPid, nickOk, platformOf, profile, PLATFORMS } from './auth.js';
 import { limited, ipKey } from './ratelimit.js';
 import { currentSeason, rollSeason } from './season.js';
-import { putDeck, opponents, postResult, leaderboard, feed, meView, rivals, h2hWith, meta } from './ladder.js';
+import { putDeck, opponents, postResult, leaderboard, feed, meView, rivals, h2hWith, meta, near, deckView } from './ladder.js';
 import { handleAdmin, deletePlayer, deleteDeck, migrate } from './admin.js';
 import { PROVIDERS, linkReady, verify } from './link.js';
 import { countDB, statStmts, takeUsage } from './usage.js';
@@ -62,6 +62,8 @@ async function route(req, env, url, now) {
       if (rest === 'ladder/records') return await records(url, db, now, await currentSeason(db, now), await cacheGen(db, now)); /* 래더 기록실(사용자 11-18) */
       return rest === 'ladder/feed' ? await feed(url, db, now) : rest === 'ladder/meta' ? await meta(url, db, now) : await leaderboard(url, db, now);
     }
+    { const dm = req.method === 'GET' && rest.match(/^ladder\/deck\/([^/]+)$/); /* 덱 구경(구단주 11-19): 순위표에서 고른 한 팀의 덱. 공개 읽기 · 120초 캐시 */
+      if (dm) { if (await limited(env, 'read', await ipKey(req, env), now)) return err(429, 'rate_limited'); let pid = ''; try { pid = decodeURIComponent(dm[1]); } catch (e) {} return await deckView(url, db, now, pid); } }
     if (rest === 'player' && req.method === 'POST') return await postPlayer(req, env, db, now);
     if (rest === 'player/login' && req.method === 'POST') return await login(req, env, db, now);
     { const c = await cloudPublic(rest, req, env, db, now); if (c) return c; } /* 클라우드 저장: 기능 확인·코드로 기기 연결(로그인 없이) */
@@ -81,6 +83,7 @@ async function route(req, env, url, now) {
     if (rest === 'ladder/opponents' && req.method === 'GET') return await opponents(url, db, me, now, env);
     if (rest === 'ladder/result' && req.method === 'POST') return await postResult(req, db, me, now);
     if (rest === 'ladder/me' && req.method === 'GET') return await meView(db, me, now);
+    if (rest === 'ladder/near' && req.method === 'GET') return await near(db, me, now); /* 내 순위 둘레(순위표 50위 밖일 때) */
     if (rest === 'ladder/rivals' && req.method === 'GET') return await rivals(db, me);
     const hm = rest.match(/^ladder\/h2h\/([^/]+)$/); if (hm && req.method === 'GET') return await h2hWith(db, me, decodeURIComponent(hm[1]));
     return err(404, 'not_found');

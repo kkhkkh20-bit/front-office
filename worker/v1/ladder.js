@@ -11,12 +11,13 @@ import { ensureRec, recParse, recStmts, PS_BONUS } from './records.js';
 import { ensureAuto, regGet, regCheck, regStmt, leagueStmts } from './ladauto.js';
 import { deckGuard, guardStatus } from './guard.js';
 
-export const DECK_MAX = 40 * 1024, OPP_MAX = 9, BOARD_N = 20, FEED_N = 30, STALE = 45 * 86400e3;
+export const DECK_MAX = 40 * 1024, OPP_MAX = 9, BOARD_N = 50, FEED_N = 30, STALE = 45 * 86400e3;
 /* 순위 규칙 하나(srv2 #36): 포인트 많은 순 → 우승(리그 1위) 많은 순 → 그 점수에 먼저 도달한 순(updated 이른 순) → 플레이어 id.
    순위표(단계별·전체)·내 순위·시즌 시상·관리자 상위가 모두 이 순서. 순위 자격(#37): 이번 시즌 리그를 하나 이상 마쳤고 숨김이 아닌 플레이어 */
 export const RANK_ORDER = 'e.points DESC, e.wins DESC, e.updated ASC, e.player_id ASC';
 const AHEAD = '(e.points > ? OR (e.points = ? AND (e.wins > ? OR (e.wins = ? AND (e.updated < ? OR (e.updated = ? AND e.player_id < ?))))))';
 const aheadArgs = en => [en.points, en.points, en.wins, en.wins, en.updated, en.updated, en.player_id];
+const BEHIND = '(e.points < ? OR (e.points = ? AND (e.wins < ? OR (e.wins = ? AND (e.updated > ? OR (e.updated = ? AND e.player_id > ?))))))'; /* AHEAD의 반대쪽(내 뒤) */
 /* 내 순위: {rank(단계 안), rank_all(전체)}. 자격이 없으면 null. 색인(season, tier, points) 범위 읽기라 읽는 줄 ≈ 내 앞 사람 수 */
 export async function boardRank(db, en, hidden) {
   if (!en || !(en.leagues > 0) || hidden) return { rank: null, rank_all: null };
@@ -181,18 +182,73 @@ async function dupReply(db, me, dup, s) {
     points: entry ? entry.points : null, best_tier: entry ? entry.best_tier : null, current: dup.season === s.id, entry });
 }
 
+/* 순위표 뼈대 하나(구단주 11-19 "덱 구경은 상위 50위까지"): 단계 순위표와 덱 구경 자격(boardTop)이 같은 FROM·WHERE·ORDER·LIMIT을 쓴다 → 둘이 어긋날 수 없다 */
+const BOARD_FROM = 'FROM ladder_entries e JOIN players p ON p.id = e.player_id LEFT JOIN decks d ON d.player_id = e.player_id WHERE e.season = ? AND p.hidden = 0 AND e.leagues > 0';
+const BOARD_TIER = `${BOARD_FROM} AND e.tier = ? ORDER BY ${RANK_ORDER} LIMIT ?`;
+/* 이 플레이어가 지금 자기 단계 순위표(상위 BOARD_N명)에 있는가. 순위표와 같은 줄(최대 BOARD_N줄)을 읽어 그 안에 있는지만 본다 */
+export async function boardTop(db, season, tier, pid) {
+  return !!(await db.prepare(`SELECT 1 AS y FROM (SELECT e.player_id AS pid ${BOARD_TIER}) WHERE pid = ?`).bind(season, tier, BOARD_N, pid).first());
+}
 export async function leaderboard(url, db, now) {
   const s = await currentSeason(db, now);
   const season = url.searchParams.has('season') ? int(url.searchParams.get('season'), 1, 1e6) : s.id; if (!season) return err(400, 'bad_json');
-  const g = await cacheGen(db, now), B = 'FROM ladder_entries e JOIN players p ON p.id = e.player_id LEFT JOIN decks d ON d.player_id = e.player_id WHERE e.season = ? AND p.hidden = 0 AND e.leagues > 0';
+  const g = await cacheGen(db, now), B = BOARD_FROM;
   if (url.searchParams.get('tier') === 'all') return cached(url, `board/g${g}/${season}/all`, 60, async () => { /* 전체 순위(래더 v2): 높은 단계 먼저, 같은 단계는 RANK_ORDER */
     const r = await db.prepare(`SELECT e.player_id AS pid, p.nickname, e.tier, e.points, e.leagues, e.wins, e.best_tier, d.name AS team, d.ovr ${B} ORDER BY e.tier DESC, ${RANK_ORDER} LIMIT ?`).bind(season, BOARD_N).all();
-    return pub({ ok: true, season, tier: 'all', current: season === s.id, ends: season === s.id ? s.ends : null, rows: (r.results || []).map((x, i) => Object.assign({ rank: i + 1 }, x)) }, 60);
+    return pub({ ok: true, season, tier: 'all', current: season === s.id, ends: season === s.id ? s.ends : null, cap: BOARD_N, rows: (r.results || []).map((x, i) => Object.assign({ rank: i + 1 }, x)) }, 60);
   });
   const tier = qInt(url.searchParams.get('tier'), 0, 0, TOP);
   return cached(url, `board/g${g}/${season}/${tier}`, 60, async () => {
-    const r = await db.prepare(`SELECT e.player_id AS pid, p.nickname, e.points, e.leagues, e.wins, e.best_tier, d.name AS team, d.ovr ${B} AND e.tier = ? ORDER BY ${RANK_ORDER} LIMIT ?`).bind(season, tier, BOARD_N).all();
-    return pub({ ok: true, season, tier, current: season === s.id, ends: season === s.id ? s.ends : null, rows: (r.results || []).map((x, i) => Object.assign({ rank: i + 1 }, x)) }, 60);
+    const r = await db.prepare(`SELECT e.player_id AS pid, p.nickname, e.points, e.leagues, e.wins, e.best_tier, d.name AS team, d.ovr ${BOARD_TIER}`).bind(season, tier, BOARD_N).all();
+    return pub({ ok: true, season, tier, current: season === s.id, ends: season === s.id ? s.ends : null, cap: BOARD_N, rows: (r.results || []).map((x, i) => Object.assign({ rank: i + 1 }, x)) }, 60);
+  });
+}
+
+/* 내 순위 둘레(구단주 11-19 "다른 유저들 리그 순위"): 순위표(상위 BOARD_N명)에 못 든 유저가 자기 자리 위·아래 NEAR_N명을 본다.
+   로그인 필요(내 칸 기준). 색인 범위 읽기 두 번(각 NEAR_N줄) + 내 순위 세기. 순위 자격이 없으면 rows가 빈다. 내주는 칸은 순위표와 같다 */
+export const NEAR_N = 3;
+export async function near(db, me, now) {
+  const s = await currentSeason(db, now);
+  const en = await db.prepare('SELECT * FROM ladder_entries WHERE season = ? AND player_id = ?').bind(s.id, me.id).first();
+  const rk = await boardRank(db, en, me.hidden);
+  if (!en || rk.rank == null) return json(200, { ok: true, season: s.id, tier: en ? en.tier : null, rank: null, rows: [] });
+  const C = 'e.player_id AS pid, p.nickname, e.points, e.leagues, e.wins, e.best_tier, d.name AS team, d.ovr', B = 'FROM ladder_entries e JOIN players p ON p.id = e.player_id LEFT JOIN decks d ON d.player_id = e.player_id WHERE e.season = ? AND p.hidden = 0 AND e.leagues > 0 AND e.tier = ?';
+  const [up, dn, mine] = await Promise.all([
+    db.prepare(`SELECT ${C} ${B} AND ${AHEAD} ORDER BY e.points ASC, e.wins ASC, e.updated DESC, e.player_id DESC LIMIT ?`).bind(s.id, en.tier, ...aheadArgs(en), NEAR_N).all(),
+    db.prepare(`SELECT ${C} ${B} AND ${BEHIND} ORDER BY ${RANK_ORDER} LIMIT ?`).bind(s.id, en.tier, ...aheadArgs(en), NEAR_N).all(),
+    db.prepare(`SELECT ${C} ${B} AND e.player_id = ?`).bind(s.id, en.tier, me.id).first(),
+  ]);
+  const U = (up.results || []).reverse(), D = dn.results || [], rows = [];
+  U.forEach((x, i) => rows.push(Object.assign({ rank: rk.rank - U.length + i }, x)));
+  if (mine) rows.push(Object.assign({ rank: rk.rank }, mine));
+  D.forEach((x, i) => rows.push(Object.assign({ rank: rk.rank + 1 + i }, x)));
+  return json(200, { ok: true, season: s.id, tier: en.tier, rank: rk.rank, rows });
+}
+
+/* 덱 구경(구단주 11-19 "랭킹 상위 팀 덱 관전"): GET /ladder/deck/PID. 공개 읽기, 한 번에 한 팀, DECK_SEC초 캐시(세대 열쇠: 숨김·삭제 때 바로 바뀜).
+   내주는 것은 래더가 이미 상대 덱으로 나눠 주는 것과 같다: 닉네임·팀 이름·단계·시즌 기록(포인트·리그·우승)·OVR·명단(타순·선발·불펜·벤치·감독).
+   숨긴 플레이어·덱이 없는 플레이어(자동 참가를 끄면 서버 덱이 지워진다)는 404 not_found.
+   상위 BOARD_N명만(구단주 11-19): 지금 자기 단계 순위표에 있는 플레이어의 덱만 준다(boardTop: 순위표와 같은 질의). 아니면 404 not_top.
+   200만 캐시하므로 순위표에서 밀려난 뒤에도 길게는 DECK_SEC초 동안 그 덱이 보일 수 있다(받아들인 지연). 본문은 아는 칸만 골라 낸다(세계 id·기기·등록 정보는 원래 덱에 없지만 한 번 더 거른다) */
+export const DECK_SEC = 120;
+const DECK_KEYS = Object.freeze(['v', 'kind', 'name', 'club', 'year', 'seasons', 'mgr', 'P', 'ln', 'bn', 'rot', 'pen', 'bp', 'ovr']);
+export function deckPublic(e) {
+  if (!e || typeof e !== 'object' || !Array.isArray(e.P)) return null; const x = {};
+  for (const k of DECK_KEYS) if (e[k] !== undefined) x[k] = e[k];
+  x.P = e.P.filter(p => p && typeof p === 'object').map(p => { const q = Object.assign({}, p); delete q.f; return q; });
+  return x;
+}
+export async function deckView(url, db, now, pid) {
+  if (!PID.test(pid)) return err(400, 'bad_json');
+  const s = await currentSeason(db, now), g = await cacheGen(db, now);
+  return cached(url, `deck/g${g}/${s.id}/${pid}`, DECK_SEC, async () => {
+    const r = await db.prepare('SELECT d.name, d.year, d.ovr, d.ovr_json, d.tier, d.at, d.body, p.nickname, e.tier AS etier, e.points, e.leagues, e.wins, e.best_tier FROM decks d JOIN players p ON p.id = d.player_id LEFT JOIN ladder_entries e ON e.player_id = d.player_id AND e.season = ? WHERE d.player_id = ? AND p.hidden = 0').bind(s.id, pid).first();
+    if (!r) return err(404, 'not_found');
+    if (!(r.leagues > 0) || !await boardTop(db, s.id, r.etier, pid)) return err(404, 'not_top');
+    let e = null, ovr = null; try { e = deckPublic(JSON.parse(r.body)); } catch (x) {} try { ovr = r.ovr_json ? JSON.parse(r.ovr_json) : null; } catch (x) {}
+    if (!e) return err(404, 'not_found');
+    return pub({ ok: true, pid, nickname: r.nickname, name: r.name, year: r.year, tier: r.tier, ovr: ovr || { t: r.ovr }, at: r.at, season: s.id,
+      entry: { points: r.points, leagues: r.leagues, wins: r.wins, best_tier: r.best_tier }, e }, DECK_SEC);
   });
 }
 

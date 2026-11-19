@@ -12,7 +12,7 @@ const {runPanels}=require('./lib/game-panels-776-browser.cjs');
   const page=await browser.newPage({viewport:{width,height:900}}),errors=[];
   page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(180000);
   await page.route('https://**',r=>r.fulfill({body:'',contentType:'text/css'}));
-  await page.goto(server.url);await page.waitForSelector('[data-a="tsGo"][data-v="mode"]');
+  await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await page.waitForSelector('[data-a="tsGo"][data-v="mode"]');
   await page.evaluate(()=>{
    DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.fdWait=false;G.day=G.cal.open+2;for(const t of G.teams)setEntry(t.id);
    const h=G.user,a=G.teams.find(t=>t.id!==h).id,sim=simGame(G.day,h,a,false),base=gameRecord(G.day,h,a,sim,'');window.__gcBase=base;

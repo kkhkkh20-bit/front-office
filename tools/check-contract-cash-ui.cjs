@@ -5,7 +5,7 @@ const ok=(c,m)=>{ console.log((c?'통과':'실패')+' '+m); if(!c)process.exitCo
 (async()=>{const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});
 for(const vp of [{width:1366,height:800,pc:true},{width:390,height:844}]){
  const ctx=await b.newContext({viewport:{width:vp.width,height:vp.height}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.route(/fonts\.g/,r=>r.abort());
- await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+ await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
  const r=await p.evaluate(()=>{ localStorage.clear(); DEMO.on=false; newGame(6); try{ hireMgr(G.mmarket[0].id,3); }catch(e){} G.tut={done:true,step:99}; G.medSet=true; UI.title=false; render();
    const L=playersOf(G.user).filter(p=>canExtend(p)&&!p.foreign).sort((a,b)=>ovr(b)-ovr(a)); if(!L.length)return {skip:'다년계약 대상 없음'}; const pl=L[0];
    A.player(pl.id); A.ngtOpen('ext:'+pl.id); const T=UI.ngt.T; T.years=3; T.annual=500; T.bonus=1500; T.opt=100; render();

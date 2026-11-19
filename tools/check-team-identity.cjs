@@ -8,7 +8,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),fs=require(
   const SH=process.env.SHOTS||''; if(SH)fs.mkdirSync(SH,{recursive:true}); const shot=async(p,n,el)=>{ if(!SH)return; if(el)await el.screenshot({path:path.join(SH,n)}); else await p.screenshot({path:path.join(SH,n)}); };
   try{ browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'}); const p=await browser.newPage({viewport:{width:1366,height:900}});
     p.on('pageerror',e=>errors.push(e.message)); await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'})); await p.route('https://www.googletagmanager.com/**',r=>r.fulfill({body:'',contentType:'text/javascript'}));
-    await p.goto(server.url,{waitUntil:'domcontentloaded'});
+    await p.goto(server.url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
     await p.evaluate(()=>{ DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let n=0; while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true); hireMgr(G.mmarket[0].id,3); G.tut={done:true,step:99}; G.medSet=true; UI.title=false; UI.menu=false; UI._clk=null; });
     const city0=await p.evaluate(()=>({city:team(G.user).city,region:team(G.user).region,market:team(G.user).market}));
     /* 1) 가로로 긴(3:1) 투명 PNG: 양 끝에 빨강·파랑 막대를 그려, 잘리면 끝 색이 사라진다 */

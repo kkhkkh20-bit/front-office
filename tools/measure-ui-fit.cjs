@@ -54,7 +54,7 @@ const MET=()=>{
 (async()=>{const srv=await startHtmlServer(ROOT+'/index.html');const b=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium',args:['--enable-unsafe-swiftshader']});const res=[];
  const ctx=await b.newContext({viewport:{width:1366,height:768},deviceScaleFactor:+(process.env.SHOTDSF||1)});const p=await ctx.newPage();p.setDefaultTimeout(30000);
  await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.route('https://www.googletagmanager.com/**',r=>r.fulfill({body:'',contentType:'text/javascript'}));
- await p.goto(srv.url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>typeof newGame==='function');await p.waitForTimeout(800);
+ await p.goto(srv.url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');await p.waitForTimeout(800);
  const ONLY=process.env.ONLY?process.env.ONLY.split(','):null;
  for(const ph of phases){const base=fs.readFileSync(ST+'/state-'+ph+'.json','utf8');
   await p.evaluate(b=>{DEMO.on=false;G=JSON.parse(b);UI.title=false;UI.menu=false;closeSheets();UI.tab='home';render();},base);

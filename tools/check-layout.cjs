@@ -11,7 +11,7 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
     browser=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});
     const page=await browser.newPage({viewport:{width:1366,height:768}});
     page.on('pageerror',e=>failures.push(e.message));
-    await page.goto(server.url,{waitUntil:'domcontentloaded'});
+    await page.goto(server.url,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
     console.log('배치 검사: 새 게임 준비');
     await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);G.tut={done:true,step:99};hireMgr(G.mmarket[0].id,3);G.medSet=true;UI.menu=false;UI.title=false;UI.tab='home';render();});
     for(const size of [{width:1280,height:720},{width:1366,height:768},{width:1440,height:900},{width:1920,height:1080},{width:390,height:844}]){

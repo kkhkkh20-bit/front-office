@@ -258,12 +258,18 @@ function ntcAskOdds(p,tid,bonus){ initPers(p); const s=p.pers; let x=.3-(s.loy-1
   const pr=p.grv&&p.grv.prom||0; if(pr>0){ x-=Math.min(.2,pr*.02); why.push('지켜지지 않은 약속'); }
   if(bonus){ x+=.2; why.push('포기 대가'); }
   return {p:clamp(x,.03,.92),why}; }
+/* AI 구단도 우리와 같은 동의 절차(AI 규칙 동등 11-19): 자기 선수에게 그 구단행 동의를 묻는다. 같은 확률(ntcAskOdds, 포기 대가 없음)·같은 30일 재질문 간격·같은 14일 동의, 거절하면 같은 기분 하락.
+   추첨은 선수·구단·날짜로 정한 따로 된 난수(본 난수 순서 그대로) */
+const ntcAskWait=(p,tid)=>{ const A=p.ntcAsk; return !!(A&&A[tid]!=null&&G.day-A[tid]<30); };
+const ntcAskable=(p,tid)=>!ntcFor(p,tid)||!ntcAskWait(p,tid); /* 동의가 있거나 아직 물어볼 수 있다 */
+function ntcAskAI(p,tid){ if(!p||!ntcFor(p,tid))return true; if(p.team===ME()||ntcAskWait(p,tid))return false; const A=p.ntcAsk=p.ntcAsk||{}; A[tid]=G.day;
+  const yes=withRng(rngHash('ntcAI',p.id,tid,G.year,G.day),()=>R()<ntcAskOdds(p,tid,false).p); if(yes)p.ntcOk={tid,until:G.day+14}; else p.mor=clamp((p.mor??60)-3,0,100); return yes; }
 function ntcAsk(id,tid,bonus){ const p=G.players[+id]; tid=+tid; if(!p||p.team!==G.user||G.unemp)return '우리 선수가 아닙니다.'; if(!hasNtc(p))return `${p.name}은(는) 거부권이 없습니다.`; if(!team(tid)||tid===G.user)return '상대 구단을 먼저 고르세요.';
   if(!ntcFor(p,tid))return `${p.name}은(는) 이미 ${tshort(tid)}행에 동의했습니다(${dmd(p.ntcOk.until)}까지).`;
   const A=p.ntcAsk=p.ntcAsk||{}; if(A[tid]!=null&&G.day-A[tid]<30)return `${p.name}에게는 ${tshort(tid)}행을 ${dmd(A[tid])}에 이미 물었습니다. 30일 뒤에 다시 물을 수 있습니다.`;
   const cost=bonus?round5(Math.max(MIN_SAL,p.sal*NTC_BONUS_F)):0; if(cost&&spendable(G.user)<cost)return `포기 대가 ${money(cost)}을(를) 낼 돈이 부족합니다(${spendTxt()}).`;
   const o=ntcAskOdds(p,tid,!!bonus); A[tid]=G.day;
-  if(R()<o.p){ if(cost){ spendPay(cost); G.spend.etc=(G.spend.etc||0); story(p,`${G.year} 트레이드 거부권 포기 대가 ${money(cost)}`,'move'); } p.ntcOk={tid,until:G.day+14}; return `${p.name}: "${tshort(tid)}(이)라면 가겠습니다." ${dmd(G.day+14)}까지 ${tname(tid)}과(와)의 트레이드에 동의했습니다.${cost?` 포기 대가 ${money(cost)}을(를) 지급했습니다.`:''}`; }
+  if(R()<o.p){ if(cost){ ledgerPay(G.user,'opsP',cost,{me:true}); /* 현금 몫은 이미 낸 지출, 모자란 몫만 미지급 기타 지출(원장 검수 11-19 #5) */ story(p,`${G.year} 트레이드 거부권 포기 대가 ${money(cost)}`,'move'); } p.ntcOk={tid,until:G.day+14}; return `${p.name}: "${tshort(tid)}(이)라면 가겠습니다." ${dmd(G.day+14)}까지 ${tname(tid)}과(와)의 트레이드에 동의했습니다.${cost?` 포기 대가 ${money(cost)}을(를) 지급했습니다.`:''}`; }
   p.mor=clamp((p.mor??60)-3,0,100); return `${p.name}: "${tshort(tid)}행은 생각이 없습니다." 거부권을 지키겠다고 합니다. (기분 하락${o.why.length?` · 고려한 점: ${o.why.join(', ')}`:''})`; } /* 스토브리그 뒤에는 다음 시즌 계약 기준: 끝난 해까지인 거부권이 11월 거래를 막았다(검수 11-09zzb) */
 /* 계약 금액 표기 통일: 그 시즌 현금 지출(연봉 + 그 회계연도에 준 계약금) · 보장 총액(계약금 + 연봉×기간) · 연평균(상한 반영 = 연봉 + 계약금/기간) */
 function ctMoney(p){ if(!p||!p.faC||!ctOn(p))return null; const c=ctInfo(p); const yrs=c?c.tot:Math.max(1,p.yrs||1); const sy=ctSeason(); const B=p.capB&&p.capB.until>=sy?p.capB:null;

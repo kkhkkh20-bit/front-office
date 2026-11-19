@@ -8,7 +8,7 @@ const upload={name:'tall.svg',mimeType:'image/svg+xml',buffer:tall};
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;
 try{browser=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});
 for(const [width,height,touch] of [[1366,768,false],[390,844,true]]){
- const ctx=await browser.newContext({viewport:{width,height},isMobile:touch,hasTouch:touch}),p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+ const ctx=await browser.newContext({viewport:{width,height},isMobile:touch,hasTouch:touch}),p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
  const press=async q=>touch?q.tap():q.click();
  await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;A.go('home');A.player(domestic(G.user).find(p=>!p.isP).id);});
  const key=await p.evaluate(()=>'p:'+UI.sheet), pen=p.locator(`[data-a="phMenu"][data-v="${key}"]:visible`).first();

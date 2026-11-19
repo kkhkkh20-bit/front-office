@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),path=require('node:path');
 const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let b;
-try{b=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await b.newPage({viewport:{width:1366,height:768}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(server.url);
+try{b=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await b.newPage({viewport:{width:1366,height:768}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
 await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open-1;G.fOkY=G.year;for(const t of G.teams)setEntry(t.id);G.entryY=G.year;G.res=null;G.stops=[];G.evs=[];G.offers=[];UI.title=false;UI.tab='home';window._entryBase=JSON.stringify(G);window._entryProcess=processDay;
 // 실 경기 계산을 사용하되 평상시 진행 시나리오에는 무작위 업무 중단을 제거한다.
 processDay=function(){_entryProcess();G.stops=[];for(const e of G.evs||[])e.done=true;G.offers=[];};render();});

@@ -94,6 +94,9 @@ function postPromMem(p,kept){ try{ const ag=agentOf(p); if(!kept)grvAdd(p,'prom'
 function aiPostDecide(p){ if(p.postPromise===G.year)return 'allow'; const t=team(p.team); if(!t)return 'allow'; const pl=planOf(t)||'next';
   let ny=1; try{ ny=ctrlYears(p); }catch(e){} if(ny<=1||pl==='build'||pl==='tight')return 'allow';
   let reg=false; try{ reg=isRegular(p); }catch(e){} if(reg&&(pl==='win'||pl==='next'||pl==='star')){ if(ny<=2){ const E=postEst(p); if(E.fee[0]+E.fee[1]>=2*POST_T.feeSell)return 'allow'; } return 'promise'; } return 'allow'; } /* 2년 뒤면 FA로 잃을 주전은 포스팅 비용 예상(2-3)이 크면 우승 도전 구단도 보낸다: 우리 화면과 같은 예상치 */
+/* 포스팅 무산으로 돌아온 선수: 그 선수를 떠날 선수로 보고 FA를 데려온 구단은 그 시즌 그 선수 몫의 상한 초과를 면제한다(계약은 되돌리지 않는다, 구단주 승인 11-19). 사용자·AI 같은 규칙 */
+function postCapBack(p,x){ const E=(G.capPostX||[]).filter(e=>e.tid===x.tid&&e.pend.some(q=>q[0]===p.id&&(q[2]??x.y)===x.y)); if(!E.length)return 0; /* 이 포스팅 신청(그해)을 뺀 결재만: 이듬해 다시 신청해 무산돼도 지난해 기록을 쓰지 않는다 */ const s=E[0].s; const amt=Math.max(0,Math.round(capPayWith(x.tid,null,null,s).tot-capPayWith(x.tid,null,null,s,new Set([p.id])).tot)); /* 면제액은 명목 연봉이 아니라 이 선수가 돌아와 실제로 늘어난 상한 합계(상위 40명·프랜차이즈 예외 반영) */ if(!(amt>0))return 0; G.capPostA=G.capPostA||[]; if(G.capPostA.some(a=>a.tid===x.tid&&a.s===s&&a.pid===p.id))return 0; G.capPostA.push({tid:x.tid,s,pid:p.id,amt});
+  if(x.tid===G.user&&!G.unemp)mail('운영팀',`${p.name} 복귀: ${s}시즌 상한 초과 면제`,`${p.name}의 포스팅이 무산돼 팀에 남습니다. 포스팅 신청 중에는 이 선수 연봉을 이적 예상으로 보고 FA 영입을 결재했기 때문에, 맺은 FA 계약은 그대로 두고 ${s}시즌 상위 40명 연봉 가운데 이 선수 몫(${money(amt)})만큼의 상한 초과는 경쟁균형세와 구단주 제재에서 빼 줍니다.`,{kind:'구단'}); return amt; }
 function postDay(){ return Math.max(G.day+20,KD(12,12)); } /* 결과 발표일: 안내 문구와 실제 처리일이 같은 계산 */
 function postStart(p,day){ G.posting=G.posting||[];const promise=p.postPromise===G.year&&(p.postPromiseT==null||p.postPromiseT===p.team);if(promise)postPromMem(p,true);const rt=p.postRetry===G.year?1:0; delete p.postRetry; delete p.postRetryT; const x={pid:p.id,y:G.year,tid:p.team,d:G.day,mv:G.mvN||0,st:p.postStint||0,rt,day:day!=null&&day>G.day?day:postDay(), /* 요청 때 안내한 발표일(검수 11-07) */done:false}; G.posting.push(x);for(const e of G.evs||[])if(e.k==='post'&&!e.done&&e.data?.pid===p.id)postCloseRequest(e,'포스팅 신청이 완료돼 이 요청을 정리했습니다.');wire('해외',`${tname(p.team)} ${p.name}, 포스팅 신청`,{tid:p.team,ref:p.id}); if(p.team===G.user&&!G.unemp)news('선수',`${p.name}, 메이저리그 도전 공식화 · 포스팅 공시`,`${tname(p.team)}이(가) ${p.name}의 포스팅을 신청했습니다. 공시 뒤 협상 기간이 열리고 ${dmd(x.day)}에 결과가 나옵니다. 팬들은 아쉬움과 응원을 함께 보내고 있습니다.`,1,{ref:p.id}); delete p.postPromise; delete p.postPromiseT; return x; }
 /* 포스팅 기준(해외 활성화 2-1). 실제: KBO 포스팅은 해마다 0~2명(2020 김하성·나성범, 2023 이정후·고우석, 2024 김혜성, 2025 송성문), 해외 FA까지 합쳐 성사는 해마다 1명 안팎.
@@ -132,7 +135,7 @@ function ovsDaily(){try{postFix();}catch(e){}try{ ovsBackSweep(); }catch(e){} if
     const offTxt=offs.length?offs.map(f=>`${f.lg} ${f.club}: ${f.yrs}년 연 ${usdKw(f.amt)}${f.minor?'(스플릿·마이너 계약)':''}`).join('\n'):'제안 없음';
     const why=!offs.length?'계약을 제시한 구단이 없었습니다.':best?'':offs.every(f=>f.lg==='NPB')?`MLB 제안이 없었고, 선수가 일본행은 원하지 않아(메이저리그 의지 ${want}) NPB 제안을 거절했습니다.`:offs.some(f=>f.lg==='MLB'&&f.minor)&&!offs.some(f=>f.lg==='MLB'&&!f.minor)?'MLB 제안이 마이너 계약(스플릿)뿐이라 선수가 거절했습니다.':`제안 금액이 선수 기대(연 ${usdKw(ask)} 이상)에 못 미쳐 선수가 거절했습니다.`;
     x.offs=offs; x.why=why;
-    if(!best){ x.res=offs.length?'선수 거절':'무산'; if(!x.rt){ p.postRetry=G.year+1; p.postRetryT=x.tid; } /* 해외 활성화 5: 처음 무산된 선수는 이듬해 다시 요청한다(재도전도 무산되면 끝) */ p.mor=clamp((p.mor??60)-(offs.length?2:5),0,100); p.mlb=clamp(p.mlb-15,0,100); wire('해외',`${p.name} 포스팅 ${offs.length?'선수가 제안 거절':'무산'}, ${tshort(x.tid)} 잔류`,{tid:x.tid,ref:p.id}); if(x.tid===G.user)mail('운영팀',`${p.name} 포스팅 ${offs.length?'결과: 선수가 제안을 모두 거절':'무산'}`,`${why}\n\n받은 제안:\n${offTxt}\n\n선수는 우리 구단에 남습니다. 기분이 ${offs.length?'조금':'꽤'} 상했습니다.`,{kind:'해외',ref:p.id}); continue; }
+    if(!best){ postCapBack(p,x); x.res=offs.length?'선수 거절':'무산'; if(!x.rt){ p.postRetry=G.year+1; p.postRetryT=x.tid; } /* 해외 활성화 5: 처음 무산된 선수는 이듬해 다시 요청한다(재도전도 무산되면 끝) */ p.mor=clamp((p.mor??60)-(offs.length?2:5),0,100); p.mlb=clamp(p.mlb-15,0,100); wire('해외',`${p.name} 포스팅 ${offs.length?'선수가 제안 거절':'무산'}, ${tshort(x.tid)} 잔류`,{tid:x.tid,ref:p.id}); if(x.tid===G.user)mail('운영팀',`${p.name} 포스팅 ${offs.length?'결과: 선수가 제안을 모두 거절':'무산'}`,`${why}\n\n받은 제안:\n${offTxt}\n\n선수는 우리 구단에 남습니다. 기분이 ${offs.length?'조금':'꽤'} 상했습니다.`,{kind:'해외',ref:p.id}); continue; }
     const lg=best.lg, yrs=best.yrs, amt=best.amt; const fee=usd(postFee(amt*yrs)); x.res=lg; x.club=best.club;
     if(x.tid===G.user&&!G.unemp)mail('운영팀',`${p.name} 포스팅 결과: ${lg} ${best.club} 선택`,`받은 제안:\n${offTxt}\n\n${p.name}은(는) ${best.club}(${lg})의 ${yrs}년 연 ${usdKw(amt)} 제안을 골랐습니다${lg==='MLB'&&want>=50?'(메이저리그 의지가 강해 금액보다 리그를 먼저 봤습니다)':''}. 구단은 포스팅 비용 ${money(fee)}을 받습니다.`,{kind:'해외',ref:p.id});
     if(x.tid===G.user&&!G.unemp){ G.ovsIncome=(G.ovsIncome||0)+fee; G.spend.postIn=(G.spend.postIn||0)+fee; note('재정',`${p.name} 포스팅 비용 ${money(fee)}은 이번 결산 때 '포스팅 수입'으로 들어옵니다(지금 현금에는 바로 더해지지 않음). 재정 > 예산에서 확인할 수 있습니다.`,p.id); } /* 카페 문의: 안내가 없어 안 들어온 줄 앎 */ else team(x.tid).cash+=fee; /* 우리 구단 포스팅 수입은 그 시즌 결산(재정 화면 '포스팅 수입' 줄)으로 들어간다 */
@@ -262,11 +265,11 @@ function fwatchWeek(){ G.fwatch=G.fwatch||[]; const out=[]; try{ fwAiWeek(); }ca
 
 /* 상대 구단이 눈여겨보는 우리 선수: 그 팀 약한 자리에 맞고 그 팀 눈에 값어치가 큰 선수 3명. 매주 바뀐다 */
 let _intC={};
-function aiInterest(tid,actorTid){ const actor=actorTid??G.user; if(tid===actor||!G.teams[tid])return []; const wk=G.year*100+Math.floor(G.day/7); const n=tradeActorCount(actor); const k=actor+':'+wk+':'+n+':'+(G.trades||[]).length+':'+(G.lgTrades||[]).length; const ck=tid+':'+actor;
-  if(_intC[ck]&&_intC[ck].g===G&&_intC[ck].k===k)return _intC[ck].v; const t=team(tid); let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){}
+function aiInterest(tid,actorTid){ const actor=actorTid??G.user; if(tid===actor||!G.teams[tid])return []; const wk=G.year*100+Math.floor(G.day/7); const n=tradeActorCount(actor); const k=actor+':'+wk+':'+n+':'+(G.trades||[]).length+':'+(G.lgTrades||[]).length; const ck=tid+':'+actor; const lt=(G.trades||[])[(G.trades||[]).length-1]||null, ll=(G.lgTrades||[])[(G.lgTrades||[]).length-1]||null; /* 거래 장부는 길이만 보면 같은 길이로 바뀐(앞을 덜어 내거나 새로 쓴) 장부를 놓친다: 마지막 기록까지 같아야 기억을 쓴다 */
+  if(_intC[ck]&&_intC[ck].g===G&&_intC[ck].k===k&&_intC[ck].lt===lt&&_intC[ck].ll===ll)return _intC[ck].v; const t=team(tid); let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){}
   const back=new Set([...(G.trades||[]).filter(r=>r.y===G.year).flatMap(r=>{ const me=r.me??G.user; return me===actor&&r.with===tid?r.gi||[]:r.with===actor&&me===tid?r.go||[]:[]; }),...(G.lgTrades||[]).filter(r=>r.y===G.year).flatMap(r=>r.a===actor&&r.b===tid?r.ag||[]:r.b===actor&&r.a===tid?r.bg||[]:[])]); /* 올해 이 구단에서 받아 온 선수는 되찾으려 하지 않는다 */
   const v=domestic(actor).filter(p=>!p.ys&&!p.noTrade&&!(p.joinY>G.year)&&healthy(p)&&!back.has(p.id)).map(p=>{ const val=tval(t,p,'in'); const fit=weak.includes(pSlot(p))?1.35:1; return {id:p.id,s:val*fit+hn('int'+tid+':'+wk,p.id)*.6}; }).filter(x=>x.s>.6).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.id);
-  _intC[ck]={k,v,g:G}; return v; }
+  _intC[ck]={k,v,g:G,lt,ll}; return v; }
 function interestKnown(tid){ return team(tid).rel>=35; }
 
 function interestWhy(tid,p){ const w=[]; let weak=[]; try{ weak=teamNeeds(tid).weak||[]; }catch(e){} if(weak.includes(pSlot(p)))w.push(`${SLOTK[pSlot(p)]} 보강`); const tr=gmTrait(tid);
@@ -301,7 +304,7 @@ const US_HS={top:5,p:.6,max:2,stay:.3,hs:58,co:60,coO:48}; /* hs·co: 미국 구
 /* 설득: 1순위 구단이 우리든 AI든 같은 두 선택지·같은 비용(계약금 1.3배, 성공했을 때만)·같은 확률 */
 function usHsCh(tid,p,i){ const mv=mlbOf(p); return i===0?clamp(.92-(mv-50)/120,.55,.95):clamp(.55-(mv-50)/90+(p.gmVis&&p.gmVis.t===tid&&p.gmVis.y===G.year?.08:0),.15,.75); } /* 고교 방문을 기억하는 선수는 직접 설득이 조금 낫다 */
 const usHsCost=(p,i)=>i===0?Math.round(p.usOff.bonus*1.3):0;
-function usHsTry(tid,p,i){ const cost=usHsCost(p,i); if(R()<usHsCh(tid,p,i)){ p.usStay=true; delete p.usOff; if(cost){ if(tid===G.user)spendPay(cost); else team(tid).cash-=cost; } p.usKeepT=tid;
+function usHsTry(tid,p,i){ const cost=usHsCost(p,i); if(R()<usHsCh(tid,p,i)){ p.usStay=true; delete p.usOff; if(cost){ ledgerPay(tid,'opsP',cost,{me:tid===G.user}); } p.usKeepT=tid;
     const t=`${p.name}, 미국 대신 국내 잔류 · ${tshort(tid)} 설득 통했다`, b=i===0?`${tshort(tid)}이(가) 최고 대우를 약속했다는 후문입니다.`:`단장이 직접 집을 찾아가 육성 계획을 설명한 것이 마음을 돌렸다는 후문입니다.`;
     if(tid===G.user)news('드래프트',t,b,1,{ref:p.id}); else wire('드래프트',t,{tid,ref:p.id}); return true; }
   p.mlb=clamp(mlbOf(p)+5,0,100); if(tid!==G.user)wire('드래프트',`${tshort(tid)}, ${p.name} 설득 실패 · 미국행 기울어`,{tid,ref:p.id}); return false; }

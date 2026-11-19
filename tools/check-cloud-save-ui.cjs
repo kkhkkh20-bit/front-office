@@ -24,7 +24,7 @@ function fakeR2(){ const m=new Map(); return { m,
   { const r=await handle(new Request('http://x/api/v1/admin/migrate',{method:'POST',headers:{Authorization:'Bearer s3cret'}}),env); assert.equal(r.status,200); }
   /* 첫 기기(PC) */
   const ca=await b.newContext({viewport:{width:1366,height:768}}), pa=await ca.newPage(); pa.on('pageerror',e=>errs.push('A '+e.message)); await prep(pa);
-  await pa.goto(server.url); await pa.waitForTimeout(500);
+  await pa.goto(server.url);await pa.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await pa.waitForTimeout(500);
   await pa.click('[data-a="tsGo"][data-v="mode"]'); await pa.click('[data-a="smode"][data-v="take"]',{timeout:120000}); await pa.waitForSelector('.tmk',{timeout:120000}); await pa.click('.tmk [data-a="start"].btn'); await pa.fill('#gp-name','클라우드'); await pa.click('[data-a="gpStart"]'); await pa.waitForTimeout(1500);
   await pa.evaluate(()=>{ saveNow(); G.tut={done:true,step:99}; closeSheets(); A.go('cfg:save'); });
   /* 1) R2 없음 */
@@ -46,7 +46,7 @@ function fakeR2(){ const m=new Map(); return { m,
   /* 3) 기기 연결 코드 → 두 번째 기기 */
   await pa.click('[data-a="clLink"]'); await pa.waitForSelector('.cl-link'); const code=(await pa.locator('.cl-link').innerText()).trim(); assert.match(code,/^[A-HJKMNP-Z2-9]{4}-[A-HJKMNP-Z2-9]{4}$/);
   const cb=await b.newContext({viewport:{width:390,height:844}}), pb=await cb.newPage(); pb.on('pageerror',e=>errs.push('B '+e.message)); await prep(pb);
-  await pb.goto(server.url); await pb.waitForTimeout(500); await pb.click('[data-a="tsGo"][data-v="slots"]'); await pb.waitForSelector('#clIn',{timeout:20000});
+  await pb.goto(server.url);await pb.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await pb.waitForTimeout(500); await pb.click('[data-a="tsGo"][data-v="slots"]'); await pb.waitForSelector('#clIn',{timeout:20000});
   assert.equal(await pb.evaluate(()=>clOn()),false,'두 번째 기기는 아직 꺼짐');
   await pb.fill('#clIn',code.toLowerCase()); await pb.click('[data-a="clJoin"]'); await pb.waitForSelector('.cl-slot',{timeout:30000});
   assert.equal(await pb.locator('.cl-slot').getAttribute('data-slot'),wid,'두 번째 기기 목록에 같은 슬롯'); assert.equal(await pb.evaluate(()=>FrontOfficeCore.netCreate({}).player().id),pid,'같은 플레이어');

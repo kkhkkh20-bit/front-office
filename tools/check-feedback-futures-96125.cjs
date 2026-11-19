@@ -3,7 +3,7 @@ if(process.env.FUTURES_BEFORE)for(const file of ['players/46_workload.js','playe
 let seed=101;const random=()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;};
 new Function('assert','random','before',engine.replace('createRandom(Math.random)','createRandom(random)').replace('const FO_RNG0=Math.random;','const FO_RNG0=random;') /* 본 난수원은 FO_RNG0(11-16 해외 활성화 3단계부터) */+`
 {
-DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let guard=0;while(G.fd&&!G.fd.done&&guard++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);const base=JSON.stringify(G),reset=()=>{G=JSON.parse(base);worldReset();G.day=G.cal.open+45;},us=G.user,other=G.teams.find(t=>t.id!==us).id;let failures=0,count=0;
+DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let guard=0;while(G.fd&&!G.fd.done&&guard++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);const base=JSON.stringify(G),reset=()=>{G=JSON.parse(base);worldReset();G.day=G.cal.open+45;G.entryY=G.year;for(const t of G.teams)setEntry(t.id);} /* 실제 시즌처럼 개막 전날의 1군 엔트리 등록(07_daily, entryOn)을 해 둔다: 등록 밖 선수는 퓨처스에서 뛴다 */,us=G.user,other=G.teams.find(t=>t.id!==us).id;let failures=0,count=0;
 const T=(name,fn)=>{count++;try{reset();fn();console.log('PASS '+name);}catch(e){failures++;console.log('FAIL '+name+' · '+e.message.slice(0,240));if(!before)throw e;}};
 const pitcher=(tid=us)=>{const p=newPlayer({team:tid,age:24,base:40,pot:50,isP:true,role:'RP'});p.role='RP';p.inj=0;p.injOut=0;p.mil={done:true};p.e1=false;p.ld=[];p.armw=0;p.fat=0;return p;};
 const returned=(isP=true,unit='현역')=>{const p=isP?pitcher():newPlayer({team:us,age:25,base:40,pot:50,isP:false,pos:'LF'});p.inj=0;p.injOut=0;p.e1=false;p.mil={unit,from:G.day-500,until:G.day};milDaily();p.e1=false;delete p.downDay;delete p.gl;return p;};

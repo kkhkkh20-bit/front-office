@@ -6,7 +6,7 @@ const ok=(c,m)=>{ console.log((c?'통과':'실패')+' '+m); if(!c)process.exitCo
 (async()=>{const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});
 for(const vp of [{width:1366,height:800,pc:true},{width:390,height:844}]){ const tag=vp.pc?'PC':'휴대폰';
  const ctx=await b.newContext({viewport:{width:vp.width,height:vp.height}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.route(/fonts\.g/,r=>r.abort());
- await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+ await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
  const id=await p.evaluate(()=>{ localStorage.clear(); DEMO.on=false; newGame(6); try{ hireMgr(G.mmarket[0].id,3); }catch(e){} G.tut={done:true,step:99}; G.medSet=true; UI.title=false;
    G.fa={pool:[],offers:{},ai:{},open:true,openDay:G.day-20,closed:false,results:[],cap:3,outN:{},y0:G.year};
    const q=newPlayer({age:29,isP:false,base:60,pot:62,team:G.user}); q.team=null; q.faFrom=G.user; q.faGrade='A'; q.faPrevSal=500; q.sal=500; q.ask={annual:900,years:4}; q.ask0=900; G.fa.pool.push(q.id); G.fa.ai[q.id]={};

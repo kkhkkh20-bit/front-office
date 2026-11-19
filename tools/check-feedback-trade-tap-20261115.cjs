@@ -12,7 +12,7 @@ const {chromium}=require('playwright');
  try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
   const ctx=await browser.newContext({viewport:{width:390,height:780},isMobile:true,hasTouch:true}),p=await ctx.newPage(),errors=[];
   p.on('pageerror',e=>errors.push(e.message));p.setDefaultTimeout(8000);await p.route('https://**/*',r=>r.abort());
-  await p.goto('http://127.0.0.1:'+server.address().port,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>typeof newGame==='function'&&typeof A==='object');
+  await p.goto('http://127.0.0.1:'+server.address().port,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function'&&typeof A==='object');
   const look=()=>p.evaluate(()=>{const main=document.querySelector('#app main.content'),list=document.querySelector('.ibx-list');return {tab:UI.tab,main:main&&main.className,pages:[...document.querySelectorAll('.ws-page')].map(b=>b.textContent),fail:!!document.querySelector('.tab-fail'),partner:!!document.querySelector('.tp-grid'),listShown:!!(list&&!list.closest('[hidden]')&&list.getBoundingClientRect().height>0),rows:list?list.querySelectorAll('[data-a=mailJump]').length:0,toast:(document.getElementById('toast')||{}).textContent||''};});
   const tapTrade=async()=>{await p.locator('nav.bnav button[data-a=tab][data-v=trade]').tap();await p.waitForTimeout(350);};
   const tapInbox=async()=>{await p.locator('nav.bnav button[data-a=tab][data-v=inbox]').tap();await p.waitForTimeout(350);};

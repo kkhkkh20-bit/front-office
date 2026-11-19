@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),path=require('node:path'),{chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 const exe=process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium';
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;try{
-browser=await chromium.launch({executablePath:exe});const p=await browser.newPage({viewport:{width:1366,height:768}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(server.url);
+browser=await chromium.launch({executablePath:exe});const p=await browser.newPage({viewport:{width:1366,height:768}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
 const active=()=>p.evaluate(()=>{const a=document.activeElement;return a?{tag:a.tagName,a:a.dataset?.a||'',label:a.getAttribute('aria-label')||'',inCfm:!!a.closest('#cfm'),id:a.id||''}:null;});
 
 /* 20. 창단 드래프트 관심 별: aria-pressed가 표시와 같이 바뀐다 */

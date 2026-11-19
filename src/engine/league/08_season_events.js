@@ -136,7 +136,7 @@ function psFinishSeries(day,s,g,ownRec){ const P=G.ps; if(!s||!s.need||!P||P.don
 }
 /* 상한 초과(경쟁균형세)는 세금과 별개로 구단주가 부담으로 본다. 초과 폭과 연속 초과 횟수만큼 커진다(사용자 11-13 "셀캡 깨는 유저": 예전에는 신뢰 -10·지원 축소 초과분의 50%에서 멈춰 상한의 60%를 넘겨도 부담이 같았다).
    신뢰: 초과율×60(2회 연속 ×1.25, 3회 ×1.5), -2~-20. 다음 시즌 모기업 지원 한도 축소: 초과분의 50%(초과율 0)~150%(초과율 40% 이상), 2회 연속부터 1.2배. 신뢰 감점 값을 돌려준다(결산이 더한다). AI 구단은 세금(경쟁균형세)만 같은 규칙으로 낸다 */
-function capOverOwner(u,y){ const ci=capInfo(u.id); if(!(ci.over>0)||u.indie||G.unemp)return 0; const r=ci.over/ci.cap, n=Math.max(1,u.capOver||1), nm=1+.25*Math.min(2,n-1);
+function capOverOwner(u,y){ const ci={...capInfo(u.id)}; ci.over=Math.max(0,ci.over-capPostAllow(u.id,y)); /* 포스팅 무산 복귀 몫 면제(11-19) */ if(!(ci.over>0)||u.indie||G.unemp)return 0; const r=ci.over/ci.cap, n=Math.max(1,u.capOver||1), nm=1+.25*Math.min(2,n-1);
   const pen=-clamp(Math.round(r*60*nm),2,20);
   const cutR=clamp(.5+r*2.5,.5,1.5)*(n>=2?1.2:1); const cut=Math.round(ci.over*cutR); const prev=u.supCut&&u.supCut.y===y+1?u.supCut.amt:0; u.supCut={y:y+1,amt:prev+cut};
   mail('구단주실',`상한 초과: 다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`상위 40명 연봉이 상한을 ${money(ci.over)}(${Math.round(r*100)}%) 넘었습니다${n>=2?`(${n}년 연속)`:''}. 경쟁균형세와 별도로, 모기업은 "규정을 넘겨 가며 쓴 돈은 구단이 책임지라"며 ${y+1}시즌 지원 한도를 초과분의 ${Math.round(cutR*100)}%인 ${money(cut)} 줄입니다. 구단주 신뢰 ${pen}.`,{kind:'구단주'}); return pen; }
@@ -172,7 +172,7 @@ function settlementCore(){
     const AT=G.sea.att&&G.sea.att[t.id]; const S=stadOf(t.id); const SPj=stadProj(t.id); const att=SPj.att||Math.round(1e6*t.market*(.62+t.pop*.38+(wp-.5)*1.4)*fanM);
     const MK=G.mktT&&G.mktT[t.id], mkt=t.id===ME()?G.marketing:MK&&MK.fy===y?MK.v:2000; /* 야인 기간 전 소속 구단은 AI 구단과 같은 방식(스폰서·마케팅)으로 결산한다. 그해 단장이 정해 두고 떠난 마케팅 예산은 그해 결산까지 유지(검수 11-09h) */
     const HO=G.hoL&&G.hoL[y+':'+t.id]; if(HO)t.cash-=HO.net; /* 이직 때 먼저 넣은 현금은 되돌리고 아래 명세로 다시 넣는다(검수 11-09h) */
-    const ci=capInfo(t.id);
+    const ci={...capInfo(t.id)}; ci.over=Math.max(0,ci.over-capPostAllow(t.id,y)); /* 포스팅 무산으로 돌아온 선수 몫의 초과는 그 시즌만 면제(구단주 승인 11-19) */
     let tax=0; if(ci.over>0){ const n=(t.capOver||0)+1; tax=Math.round(ci.over*capRate(n)); t.capOver=n; if(n>=3)t.pickPen=G.year+1; /* KBO 규정: 3회 연속 초과면 다음 해 1라운드 지명 순서 9단계 하락 */ } else t.capOver=0;
     let flo=0; if(G.year>=2027){ const under=ci.floor-ci.pay; if(under>0){ const n=(t.floorUnder||0)+1; flo=Math.round(under*floorRate(n)); t.floorUnder=n; } else t.floorUnder=0; }
     const ownerBasis=financeSeasonOwner(t.id,y),capital=financeCapitalYear(t.id,y);

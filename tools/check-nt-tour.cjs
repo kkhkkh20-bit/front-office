@@ -3,7 +3,7 @@ const {chromium}=require('playwright');const {startHtmlServer}=require('./lib/ui
 const ok=(c,m)=>{ console.log((c?'통과':'실패')+' '+m); if(!c)process.exitCode=1; };
 (async()=>{const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});
 for(const [w,h] of [[1366,800],[390,844]]){ const ctx=await b.newContext({viewport:{width:w,height:h}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.route(/fonts\.g/,r=>r.abort());
-await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
 const r=await p.evaluate(()=>{ localStorage.clear(); DEMO.on=false; newGame(0); try{hireMgr(G.mmarket[0].id,3);}catch(e){} G.tut={done:true,step:99}; G.medSet=true; UI.title=false;
   ntAnnounce('p12'); const N=G.nt; const T=ntTourInit(N); const e=NT_EV.p12; const res=KD(e.res[0],e.res[1]); for(let d=res-12;d<=res-5;d++)ntTourDay(N,d); /* 대회 중간 */
   return {n:T.games.length,done:T.games.filter(g=>g.done).length}; });

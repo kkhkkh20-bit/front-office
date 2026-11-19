@@ -42,6 +42,7 @@ function expGmCancel(){ if(!expGmCanCancel())return '11월 20일 부임 뒤에�
   mail(E.parent,'창단 단장 수락 취소 확인',`${tfull(E)} 창단 단장 수락을 취소했습니다. ${G.unemp?'야인으로 남아 다른 제의를 기다립니다.':`${tname(G.user)} 단장으로 그대로 남고, 지금 계약도 그대로입니다.`}\n\n${E.parent}: "아쉽지만 결정을 존중합니다. 창단 단장은 다른 분께 맡기겠습니다."`,{kind:'경력'});
   return `${tfull(E)} 창단 단장 수락을 취소했습니다. ${G.unemp?'야인으로 남습니다.':`${tshort(G.user)}에 그대로 남습니다.`}`; }
 /* 신생 구단 실사 얼굴(카페 11-19 댄싱고구마: 11구단 선수·코치가 전부 그림 얼굴). 얼굴 사진 시트는 구단 홈 유니폼으로 미리 합성돼 있어 원년 10구단(TEAM_DEF 0~9)만 있다.
+   v23부터 11·12구단은 전용 유니폼 시트(FACE23, 키트 EXP_KIT)로 그린다. 이 함수는 얼굴 배정 범위(같은 사람 유지)와, 전용 시트가 없거나 못 받을 때의 대체 시트를 정한다(77_assets_ui.js f6A·f23Fb).
    신생 구단은 원년 구단 중 색(hue)이 가장 가까운 구단의 사진 시트를 빌려 쓴다. 다른 신생 구단이 이미 빌린 시트는 피한다. 난수 없이 정해 G.faceT[구단]=시트 구단으로 남긴다(한 번 정하면 그대로) */
 function faceTeamOf(tid){ if(tid==null||!Number.isInteger(+tid))return null; tid=+tid; const n=TEAM_DEF.length; if(tid>=0&&tid<n)return tid;
   if(typeof G==='undefined'||!G||!G.teams||!G.teams[tid])return null; const M=G.faceT=G.faceT||{}; if(Number.isInteger(M[tid])&&M[tid]>=0&&M[tid]<n)return M[tid];
@@ -49,8 +50,11 @@ function faceTeamOf(tid){ if(tid==null||!Number.isInteger(+tid))return null; tid
   let C=TEAM_DEF.map((x,i)=>i).filter(i=>!used.has(i)); if(!C.length)C=TEAM_DEF.map((x,i)=>i); C.sort((a,b)=>d(a)-d(b)||a-b); return M[tid]=C[0]; }
 /* 예전 저장 수리(불러올 때, 여러 번 해도 같음·난수 없음): 시트 구단이 없는 신생 구단에 정해 준다 */
 function faceTMigrate(){ if(typeof G==='undefined'||!G||!G.teams)return 0; let n=0; for(let i=TEAM_DEF.length;i<G.teams.length;i++){ const had=G.faceT&&G.faceT[i]!=null; if(faceTeamOf(i)!=null&&!had)n++; } return n; }
+/* 신생 구단 색을 키트(EXP_KIT, 01_rules.js)에 맞춘다(카페 11-19, v23 유니폼). 예전 저장은 창단 때 hue를 해시로 정해 유니폼 사진과 색이 달랐다.
+   불러올 때 실행: 난수 없음·여러 번 해도 같음. 구단 색(tpal)은 번호로 키트 색을 쓰므로 hue만 고친다. 사진 시트를 빌린 기록(G.faceT)은 그대로 둔다(전용 시트가 없을 때만 쓰는 대체 경로) */
+function expKitMigrate(){ if(typeof G==='undefined'||!G||!G.teams)return 0; let n=0; for(let i=TEAM_DEF.length;i<G.teams.length;i++){ const t=G.teams[i], k=expKit(i); if(t&&k&&t.hue!==k.hue){ t.hue=k.hue; n++; } } return n; }
 /* 새 구단 만들기 */
-function expAddTeam(){ const E=expInit(), id=G.teams.length; const t={id,city:E.city,nick:E.nick,code:E.city.slice(0,2),hue:Math.round(u01('expHue',id)*360),market:E.market||.88,region:E.region||'충청',cash:4000,pop:.9,trust:60,rel:50,owner:'pr',mode:'rebuild',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:2,born:G.year+1};
+function expAddTeam(){ const E=expInit(), id=G.teams.length; const t={id,city:E.city,nick:E.nick,code:E.city.slice(0,2),hue:expKit(id)?expKit(id).hue:Math.round(u01('expHue',id)*360),market:E.market||.88,region:E.region||'충청',cash:4000,pop:.9,trust:60,rel:50,owner:'pr',mode:'rebuild',scoutSd:rnd(4,9),capOver:0,expW:.5,rot:0,fac:2,born:G.year+1};
   G.teams.push(t); const S=stadOf(id); S.name=`${E.city} 야구장`; S.cap=17000; S.built=G.year-ri(5,25); S.dim={lf:98,cf:121,rf:98,wl:3,wc:3,wr:3};
   G.mgr[id]=mkMgr(); G.mgr[id].yrs=3; try{ coachInit(); }catch(e){} if(G.sea&&G.sea.rec&&!G.sea.rec[id])G.sea.rec[id]={w:0,l:0,t:0}; try{ ownershipInit(); }catch(e){} try{ if(G.lgStaff&&!G.lgStaff[id]){ G.lgStaff[id]=stMakeTeam(t); stSync(id); } }catch(e){} /* 스카우트·분석원 */
   try{ faceTeamOf(id); }catch(e){} try{ chron('found',`${tfull(E)} 창단 · ${G.year+1}시즌 1군 진입`,null,id,{source:'found:'+id}); }catch(e){} return id; }

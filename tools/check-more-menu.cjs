@@ -7,7 +7,7 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'..',process.argv[2]||'index.html'));let browser;
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
 for(const [width,height,touch] of [[390,844,true],[1366,768,false]]){
- const c=await browser.newContext({viewport:{width,height},isMobile:touch,hasTouch:touch}),p=await c.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+ const c=await browser.newContext({viewport:{width,height},isMobile:touch,hasTouch:touch}),p=await c.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
  const fx=await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open+30;UI.title=false;A.go('home');
   const dom=domestic(G.user).filter(q=>!q.isP&&!q.prospect&&canExtend(q)).sort((a,b)=>a.age-b.age);const young=dom[0],ext=dom[dom.length-1];young.svc=0;ext.svc=Math.max(0,faSvc(ext)-1);
   const other=domestic((G.user+1)%10).find(q=>!q.prospect&&!(q.joinY>G.year));return {young:young.id,ext:ext.id,other:other.id,trade:tradeOpen()};});

@@ -58,9 +58,27 @@ def v13(th=.06):
             if abs(cx-.5)>=th: out.setdefault(str(t),{})[str(c)]=round(cx*1000)
     return out
 
-D={'v18':v18(),'v13':v13()}
+def v23(D):
+    """신생 구단(v23 전용 유니폼, 00l_faces_v23_data.js FACE23): 같은 사람·같은 구도로 다시 그렸지만 칸마다 잰다(v18은 128, v13은 256 시트). 키는 원년 구단과 같은 꼴(시트+구단 번호·구단 번호)"""
+    F=open(os.path.join(ROOT,'src/ui/assets/00l_faces_v23_data.js'),encoding='utf8').read()
+    F23=json.loads(F[F.index('const FACE23=')+13:F.index(';\n',F.index('const FACE23='))]); T=F23['teams']
+    B=F23['base'][:-len('sheets/')]; assert F23['base'].endswith('/expansion_kits/sheets/'), F23['base']  # 게임이 쓰는 판(v23b|v23)의 시트를 잰다
+    M=json.load(open(os.path.join(ROOT,B,'manifest.json'),encoding='utf8'))
+    for tid,key in T.items():
+        for x in M['identities']:
+            if x['set'] not in ('v18','v13'): continue
+            cs,th='128',.04
+            if x['set']=='v13': cs,th='256',.06
+            v=x['variants'][key]['sheets'][cs]; X,Y,w,h=v['rect']; p=B+v['path']
+            if p not in S23: S23.clear(); S23[p]=sheet(p)
+            cx=center(S23[p][Y:Y+h,X:X+w])
+            if abs(cx-.5)>=th:
+                if x['set']=='v18': D['v18'].setdefault(x['sheet'][-1]+tid,{})[str(x['index'])]=round(cx*1000)
+                else: D['v13'].setdefault(tid,{})[str(x['index'])]=round(cx*1000)
+S23={}
+D={'v18':v18(),'v13':v13()}; v23(D)
 n=sum(len(v) for s in D.values() for v in s.values())
 open(OUT,'w',encoding='utf8').write('/* 자동 생성: python3 tools/gen-face-centers.py (손으로 고치지 않는다). 얼굴 칸별 머리 가로 중심(칸 너비 천분율, 500=가운데)이 4%(v13 6%) 넘게 벗어난 칸만.\n'
- '   v18[시트(A|B)+구단 ID][칸 번호], v13[구단 ID][칸 번호]. 77_assets_ui.js fcAt이 읽어 자르는 창을 옮긴다. 원본 그림 고침 요청: docs/asset-requests/2026-11-17-codex-face-centering.md */\n'
+ '   v18[시트(A|B)+구단 ID][칸 번호], v13[구단 ID][칸 번호](신생 구단 10·11 = v23 전용 유니폼 시트). 77_assets_ui.js fcAt이 읽어 자르는 창을 옮긴다. 원본 그림 고침 요청: docs/asset-requests/2026-11-17-codex-face-centering.md */\n'
  'const FACECTR='+json.dumps(D,separators=(',',':'),sort_keys=True)+';\n')
 print('완료',OUT,n,'칸')

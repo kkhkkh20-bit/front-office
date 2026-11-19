@@ -3,7 +3,7 @@ const {chromium}=require('playwright');const {startHtmlServer}=require('./lib/ui
 const ok=(c,m)=>{ console.log((c?'통과':'실패')+' '+m); if(!c)process.exitCode=1; };
 (async()=>{const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});
 for(const [w,h] of [[1366,800],[390,844]]){ const ctx=await b.newContext({viewport:{width:w,height:h}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.route(/fonts\.g/,r=>r.abort());
-await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
 const r=await p.evaluate(()=>{ localStorage.clear(); DEMO.on=false; newGame(0); try{hireMgr(G.mmarket[0].id,3);}catch(e){} G.tut={done:true,step:99}; G.medSet=true; UI.title=false; G.day=G.cal.open+40;
   const q=depth(G.user).start.find(x=>!x.foreign); initPers(q); Object.assign(q.pers,{amb:17,temp:16,loy:5}); grvAdd(q,'pt',10); G.evs=[]; pdStatement(q); const e=G.evs.find(x=>x.k==='pmed'); UI.tab='inbox'; render(); return {name:q.name,eid:e&&e.id,mid:e&&e.mid}; });
 ok(!!r.eid,`언론 플레이 결정 생성 (${w})`);

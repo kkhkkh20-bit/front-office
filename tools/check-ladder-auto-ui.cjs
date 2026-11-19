@@ -35,7 +35,7 @@ function deck(o = {}) { const P = [], POS = ['C', '1B', '2B', '3B', 'SS', 'LF', 
     const errs = [];
     /* ===== 1) 게임: 자동 등록·설정 › 래더 ===== */
     const p = await b.newPage(); await p.setViewportSize({ width: 1366, height: 768 }); p.on('pageerror', e => errs.push(String(e))); p.on('dialog', d => d.accept());
-    await p.goto(url); await p.waitForFunction(() => typeof A === 'object' && typeof newGame === 'function' && UI.title === true, null, { timeout: 30000 });
+    await p.goto(url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await p.waitForFunction(() => typeof A === 'object' && typeof newGame === 'function' && UI.title === true, null, { timeout: 30000 });
     await p.evaluate(() => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; closeSheets(); render(); });
     /* 서버 v1이 꺼진 동안(503 not_configured): 오류 없이 이 기기 덱만 */
     let r = await p.evaluate(async () => { UI.ulAutoTest = true; const x = await ulAutoTick(); return { x, deck: !!(G.uld && G.uld.deck && G.uld.deck.auto), day: G.uld.ar.day, pend: G.uld.ar.pend, signed: ulNet().signedIn() }; });
@@ -64,7 +64,7 @@ function deck(o = {}) { const P = [], POS = ['C', '1B', '2B', '3B', 'SS', 'LF', 
     r = await p.evaluate(async () => { const x = await A.ulReg(); return UL.msg; }); assert.match(r, /하루에 한 번/, '덱 화면 직접 등록도 하루 1회');
     console.log('지금 덱으로 다시 등록(하루 1회) 통과');
     const ph = await b.newPage(); await ph.setViewportSize({ width: 390, height: 844 }); ph.on('pageerror', e => errs.push(String(e)));
-    await ph.goto(url); await ph.waitForFunction(() => typeof A === 'object' && typeof newGame === 'function' && UI.title === true, null, { timeout: 30000 });
+    await ph.goto(url);await ph.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await ph.waitForFunction(() => typeof A === 'object' && typeof newGame === 'function' && UI.title === true, null, { timeout: 30000 });
     const bootUld = () => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; closeSheets(); A.go('cfg:uld'); };
     await ph.evaluate(bootUld);
     await ph.waitForFunction(() => { const x = document.querySelector('.ul-auto'); if (x && x.offsetHeight > 0) return true; try { if (!G || UI.title) { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; } closeSheets(); A.go('cfg:uld'); } catch (e) {} return false; }, null, { timeout: 60000, polling: 1500 }).catch(async e => { console.log('DBG', await ph.evaluate(() => JSON.stringify({ tab: UI.tab, sub: UI.sub, title: UI.title, g: !!G, n: document.querySelectorAll('.ul-auto').length, t: document.body.innerText.slice(0, 600) }))); throw e; }); f = await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1); assert.ok(f, '휴대폰 설정 › 래더 가로 넘침');
@@ -81,7 +81,7 @@ function deck(o = {}) { const P = [], POS = ['C', '1B', '2B', '3B', 'SS', 'LF', 
     await call('POST', '/api/v1/ladder/result', { key: 'lg-bad-1', rank: 1, teams: 10, w: 27, l: 0, d: 0, opps: [], ps: 'c', st: [['팀4', 20, 7, 0, 'me']], champ: '팀4', runner: 'AI 3' }, { auth: P[4].auth });
     await call('POST', '/api/v1/ladder/result', { key: 'lg-bad-2', rank: 1, teams: 10, w: 26, l: 1, d: 0, opps: [], ps: 'c' }, { auth: P[4].auth });
     const open = async (w, h) => { const ctx = await b.newContext({ viewport: { width: w, height: h } }); const q = await ctx.newPage(); q.on('pageerror', e => errs.push(String(e))); q.on('dialog', d => d.accept());
-      await q.addInitScript(() => { try { localStorage.setItem('fo-cup-admin', 'test-admin'); } catch (e) {} }); await q.goto(url);
+      await q.addInitScript(() => { try { localStorage.setItem('fo-cup-admin', 'test-admin'); } catch (e) {} }); await q.goto(url);await q.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
       await q.waitForFunction(() => typeof A === 'object' && typeof ADM === 'object', null, { timeout: 30000 });
       await q.evaluate(() => { ADM.chk = ''; admCheck(); }); await q.waitForFunction(() => ADM.chk === 'ok', null, { timeout: 30000 });
       await q.waitForFunction(() => { if (document.querySelector('[data-a="admTab"][data-v="ld"]')) return true; try { A.admOpen(); } catch (e) {} return false; }, null, { timeout: 30000, polling: 700 }); await q.click('[data-a="admTab"][data-v="ld"]'); await q.evaluate(() => A.ldxTab('ops')); /* 예전 한눈 보기 = 대시보드 '운영' 탭(구단주 11-18) */

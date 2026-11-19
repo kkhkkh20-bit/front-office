@@ -47,7 +47,10 @@ function natHead(){ if(!hasAsset())return ''; return `<div class="nt-id"><img sr
 const F6IMG={}, F6C=new Map(), F6B=new Map(); const F6WAIT='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#2b3442"/><circle cx="32" cy="25" r="11" fill="#4d5a6c"/><path d="M11 64c2-14 10-22 21-22s19 8 21 22z" fill="#4d5a6c"/></svg>'); /* 사진을 받는 동안: 빈 칸 대신 실루엣(UI 3단계 3-6). 다른 얼굴이 잠깐 보였다 바뀌지 않게 그림 얼굴은 쓰지 않는다 */
 /* 사진 시트를 받다가 실패하면(통신 끊김·배포 순간) 세 번까지 다시 받고, 그래도 안 되면 빈 칸 대신 그림 얼굴로 보여 준다(펨코 11-13: 선수 사진이 전부 빈 화면).
    예전에는 한 번 실패하면 새로 고칠 때까지 계속 빈 칸이었다 */
-function f6Retry(im){ im.onerror=()=>{ im._n=(im._n||0)+1; if(im._n<=3){ const base=im._src||(im._src=im.getAttribute('src')); setTimeout(()=>{ try{ im.src=!base||base.startsWith('data:')?base:base+(base.includes('?')?'&':'?')+'r='+im._n; }catch(e){} },1200*im._n); } else { im.bad=true; const redraw=()=>{ if(typeof CT!=='undefined'&&CT.run&&UI.cast){ setTimeout(redraw,1500); return; } /* 중계가 재생 중이면 끝난 뒤에 다시 그린다: 사진 한 장이 안 읽혔다고 화면 전체를 다시 그리면 재생 중인 장면이 끊겼다(11-13) */ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} }; redraw(); } }; return im; }
+/* 중계 화면은 render()로 다시 그려지지 않는다(renderSheet가 재생을 끊지 않으려고 열린 중계 DOM을 그대로 둔다). 그래서 시트가 늦게 오면 실루엣이 남았다(11-19).
+   시트가 도착하면(여러 장은 faceImg의 30ms 묶음으로 한 번) 중계 화면의 얼굴 그림만 바꾼다: castFaceRefresh(23_match_dashboard.js) */
+function faceCastRefresh(){ try{ if(typeof castFaceRefresh==='function')castFaceRefresh(); }catch(e){} }
+function f6Retry(im){ im.onerror=()=>{ im._n=(im._n||0)+1; if(im._n<=3){ const base=im._src||(im._src=im.getAttribute('src')); setTimeout(()=>{ try{ im.src=!base||base.startsWith('data:')?base:base+(base.includes('?')?'&':'?')+'r='+im._n; }catch(e){} },1200*im._n); } else { im.bad=true; faceCastRefresh(); /* 중계 화면은 얼굴만 바꾸므로 재생 중에도 바로(대신 그릴 시트·그림 얼굴로) */ const redraw=()=>{ if(typeof CT!=='undefined'&&CT.run&&UI.cast){ setTimeout(redraw,1500); return; } /* 중계가 재생 중이면 끝난 뒤에 다시 그린다: 사진 한 장이 안 읽혔다고 화면 전체를 다시 그리면 재생 중인 장면이 끊겼다(11-13) */ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} }; redraw(); } }; return im; }
 function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.ids[i]; if(x.x)return false; /* x: 새 배정에서 뺀 얼굴(v18 흰 배경 4명, tools/gen-faces-v18.py SKIP) */ if(!p.foreign)return !x.f; if(!x.f)return false; const asia=/Japanese|Taiwanese|Filipino|Australian/.test(x.e); /* 아시아쿼터: 아시아 국가·호주(v13 필리핀·호주 포함) */ return p.foreign==='아시아'?asia:!asia; }); }
 /* 모든 구단 선수(사용자 11-05): 얼굴 100명을 구단마다 겹치지 않게 나눠 쓴다(리그 전체에서는 같은 얼굴이 여러 구단에 있을 수 있음). G.f6 선수→칸, G.f6r '구단:칸'→선수 */
 /* 얼굴 재사용 쉬는 기간(사용자 11-17): 은퇴하거나 KBO를 떠난 선수의 얼굴(구단:칸)은 그 구단 새 선수에게 20시즌 동안 주지 않는다.
@@ -56,10 +59,17 @@ function face6Pool(p){ return FACE6.ids.map((x,i)=>i).filter(i=>{ const x=FACE6.
    선수 출신 지도자가 쓰는 얼굴(G.f6s)은 리그에 있는 동안 잡아 둔다: 화면에 나온 해(G.f6sY)를 적고, F6OB시즌 넘게 안 보이면 떠난 것으로 보고 그 해부터 쉰다 */
 const F6CD=20, F6OB=3;
 function f6Gone(id){ if(typeof G==='undefined'||!G||!G.f6r)return; const R=G.f6r; let cd=null; for(const k in R)if(R[k]===id){ (cd=cd||(G.f6cd=G.f6cd||{}))[k]=G.year; delete R[k]; } }
-/* 신생 구단(11·12구단)은 사진 시트가 없어 원년 구단 시트를 빌린다(faceTeamOf: 89_league_expansion.js, 카페 11-19). f6T: 구단 → 사진 시트 열쇠(없으면 null).
-   f6Mates: 같은 시트를 쓰는 다른 구단들. 새 얼굴을 고를 때 이 구단들이 쓰는 칸은 피한다(같은 유니폼·같은 얼굴이 두 구단에 보이지 않게). 원년 10구단만 있으면 빈 목록이라 배정은 예전과 같다 */
-function f6T(tid){ if(tid==null||typeof FACE6==='undefined')return null; const t=typeof faceTeamOf==='function'?faceTeamOf(tid):tid; return t!=null&&FACE6.sheet[String(t)]?t:null; }
-function f6Mates(tid){ const st=f6T(tid); if(st==null||!G||!G.teams||G.teams.length<=TEAM_DEF.length)return []; const L=[]; for(let i=0;i<G.teams.length;i++)if(i!==+tid&&f6T(i)===st)L.push(i); return L; }
+/* 신생 구단(11·12구단) 얼굴 사진(카페 11-19).
+   - 그림: v23 전용 유니폼 시트(FACE23, 00l_faces_v23_data.js)가 있으면 자기 시트(11구단 expansion_a·12구단 expansion_b). f6T: 구단 → 그릴 시트 열쇠(없으면 null).
+     전용 시트가 없거나 못 받으면(내려받은 HTML의 256·v18 등) 예전처럼 원년 구단 시트를 빌린다(faceTeamOf: 89_league_expansion.js, faceSheets 대체 경로).
+   - 배정: f6A(빌린 시트 기준, PR #249 그대로)로 정한다. 칸 번호가 곧 사람이라 전용 시트로 바뀌어도 같은 사람이 옷만 바뀐다.
+     f6Mates: 배정 시트가 같은 다른 구단들. 새 얼굴을 고를 때 이 구단들이 쓰는 칸은 피한다(대체 경로로 빌린 시트를 그려도 같은 유니폼·같은 얼굴이 두 구단에 보이지 않게) */
+function f23Key(tid){ return tid==null||typeof FACE23==='undefined'?null:FACE23.teams[String(tid)]||null; }
+function f23Img(set,cs,tid){ const k=f23Key(tid); if(!k)return null; const F=FACE23, e=cs===128&&F.s128[set], h=F.h[set+'/'+cs+'/'+k], src=e&&e[k]?e[k]:h?F.base+set+'/'+cs+'/'+k+'.webp?v='+h:null;
+  return src?faceImg('23'+set+cs+':'+k,src,{f6:1,pitch:F.pitch[cs],big:cs>128}):null; } /* set: v6c|v13|v18A|v18B|staff. 128 v6c·v13·staff는 HTML 안, 나머지는 파일 */
+function f6A(tid){ if(tid==null||typeof FACE6==='undefined')return null; const t=typeof faceTeamOf==='function'?faceTeamOf(tid):tid; return t!=null&&FACE6.sheet[String(t)]?t:null; }
+function f6T(tid){ if(tid!=null&&typeof FACE6!=='undefined'&&f23Key(tid))return +tid; return f6A(tid); }
+function f6Mates(tid){ const st=f6A(tid); if(st==null||!G||!G.teams||G.teams.length<=TEAM_DEF.length)return []; const L=[]; for(let i=0;i<G.teams.length;i++)if(i!==+tid&&f6A(i)===st)L.push(i); return L; }
 function face6Idx(p){ if(!G||G.f6off||!p||p.persona||p.id==null||p.team==null||typeof FACE6==='undefined'||f6T(p.team)==null)return null;
   const fv=FACE6.v==='6c'?3:2; if(G.f6v!==fv){ G.f6={}; G.f6r={}; G.f6s={}; G.f6cd={}; G.f6v=fv; } /* 얼굴 세트가 바뀌면(v6b→v6c) 배정을 새로 */
   const M=G.f6, Rv=G.f6r, t=p.team, key=i=>t+':'+i; const cur=M[p.id]; if(cur!=null&&Rv[key(cur)]===p.id)return cur;
@@ -128,12 +138,12 @@ function face7Idx(o){ if(!o||o.pid==null||(G&&G.f6off))return null; const pid=St
   if(o.persona==='staff'&&pid.startsWith('p8:'))return typeof FACE8==='undefined'||!FACE8.ids[+pid.slice(3)]?null:{k:'8',c:+pid.slice(3)}; /* v9·v10 단장 사진을 고른 경우 */ /* 우리 단장이 고른 사진(새 게임 전 단장 소개 화면에서도) */
   if(!G)return null;
   if(o.persona==='staff'&&/^gm/.test(pid))return null; /* 그림 얼굴 후보 */
-  const pl=face7Pool(o); if(!pl||!pl.ids.length)return null; const team=pl.k==='c'?(()=>{ const t0=o.team??G.user, ft=typeof faceTeamOf==='function'?faceTeamOf(t0):t0; return ft??t0; })():'L'; /* 감독·코치 사진도 구단 유니폼 시트: 신생 구단은 빌린 시트(그 구단 코치와 겹치지 않게 같은 범위) */ const scope=pl.k+team+(pl.k==='8'?face8Role(o):'');
+  const pl=face7Pool(o); if(!pl||!pl.ids.length)return null; const team=pl.k==='c'?(()=>{ const t0=o.team??G.user, ft=typeof faceTeamOf==='function'?faceTeamOf(t0):t0; return ft??t0; })():'L'; /* 감독·코치 사진도 구단 유니폼 시트: 신생 구단은 빌린 시트(그 구단 코치와 겹치지 않게 같은 범위) */ const scope=pl.k+team+(pl.k==='8'?face8Role(o):''); const t1=o.team??G.user, rt=pl.k==='c'&&typeof f23Key==='function'&&f23Key(t1)?+t1:team; /* 배정 범위는 빌린 시트 그대로(같은 사람), 그림은 신생 구단 전용 시트(v23) */
   const M=G.f7=G.f7||{}, Rv=G.f7r=G.f7r||{}, key=o.persona+':'+pid; const mf=String((G.gmP&&G.gmP.face)||''), mine=/^p[78]:/.test(mf)?+mf.slice(3):-1, mk=mf.startsWith('p8:')?'8':'v';
-  const cur=M[key]; if(cur!=null&&Rv[scope+':'+cur]===key&&!(pl.k===mk&&cur===mine))return {k:pl.k,c:cur,team};
+  const cur=M[key]; if(cur!=null&&Rv[scope+':'+cur]===key&&!(pl.k===mk&&cur===mine))return {k:pl.k,c:cur,team:rt};
   const free=x=>{ const h=Rv[scope+':'+x.c]; return (h==null||h===key)&&!(pl.k===mk&&x.c===mine); };
   let C=pl.ids.filter(free); if(!C.length)C=pl.ids.filter(x=>!(pl.k===mk&&x.c===mine)); if(!C.length)return null; /* 다 쓰면 겹치는 것을 허용 */
-  const age=o.age||50; C=[...C].sort((a,b)=>Math.abs(a.a-age)-Math.abs(b.a-age)||hn('f7'+a.c,pid)-hn('f7'+b.c,pid)); const c=C[0].c; M[key]=c; Rv[scope+':'+c]=key; return {k:pl.k,c,team}; }
+  const age=o.age||50; C=[...C].sort((a,b)=>Math.abs(a.a-age)-Math.abs(b.a-age)||hn('f7'+a.c,pid)-hn('f7'+b.c,pid)); const c=C[0].c; M[key]=c; Rv[scope+':'+c]=key; return {k:pl.k,c,team:rt}; }
 /* 단장 나이 변화(v14): v9 단장 사진 20명은 사진 나이보다 8살 이상 많아지면 +10, 18살 이상이면 +20 사진(요청서 기준). 사진이 없는 사람은 그대로 */
 function gmAgeC(c,age){ if(typeof FACE8==='undefined'||age==null)return c; const b=FACE8.ids[c]; if(!b||b.r!=='gm'||b.v!=='9')return c; const d=age-b.a, s=d>=18?20:d>=8?10:0; if(!s)return c; const j=FACE8.ids.findIndex(x=>x.r==='gmage'&&x.b===c&&x.s===s); return j<0?c:j; }
 /* ===== v19 비서 20명(00k_people_v19_data.js, 여 16·남 4): 비서 사진은 v19에서 배정한다(사용자 요청 11-16) =====
@@ -168,9 +178,10 @@ function obPhotoSrc(o){ if(!G||G.f6off||!o||o.pid==null||typeof FACE6==='undefin
    더 선명한 시트를 아직 받는 중이면 결과를 캐시하지 않고, 받으면 다시 그린다(소식함 큰 사진이 128px를 늘린 채로 남지 않게). 아무 시트도 아직 없으면 작은 자리는 실루엣(F6WAIT), 큰 자리는 null(작은 사진을 그대로)
  - 작은 자리 결과는 F6B(그림 → 주소)에 남겨, 큰 자리(faceBust: 32_people.js)가 같은 주소의 흉상을 찾는다 */
 function faceImg(k,src,o){ if(F6IMG[k])return F6IMG[k]; if(!src)return null; const im=new Image(); F6IMG[k]=im; f6Retry(im); if(o&&o.f6)im.f6=true; if(o&&o.pitch){ im.pitch=o.pitch; im.off=8; }
-  im.onload=()=>{ im.ok=true; clearTimeout(faceImg.t); /* 캐시는 어느 시트로 잘랐는지 함께 적어 두므로(faceCut) 더 선명한 시트가 오면 그 얼굴만 다시 자른다: 전부 지우지 않는다(성능 11-18) */ faceImg.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} },30); }; im.src=src; return im; }
+  im.onload=()=>{ im.ok=true; clearTimeout(faceImg.t); /* 캐시는 어느 시트로 잘랐는지 함께 적어 두므로(faceCut) 더 선명한 시트가 오면 그 얼굴만 다시 자른다: 전부 지우지 않는다(성능 11-18) */ faceImg.t=setTimeout(()=>{ try{ render(); renderSheet&&UI.sheet!=null&&renderSheet(); }catch(e){} faceCastRefresh(); },30); }; im.src=src; return im; }
 function faceSheets(a,b){ const L=[], add=(im,cs,cell,x,y,w,o,pad,fc)=>{ if(im)L.push({im,cs,cell,cr:[x,y,w,o,pad||0],fc:fc??null}); }, s=a.s, c=a.c;
   if(s==='p'){ const tid=a.t, T=String(tid);
+    if(f23Key(tid)){ f23P(a,b,add); return L.length&&!L.every(x=>x.im.bad)?L:f23Fb(a,b,L); } /* 신생 구단 전용 시트(v23) */
     if(c>=160){ const V=FACE6.v18; if(!V||!V.teams[T])return L; const r=c-V.o, sh=r<100?'A':'B', cc=r%100, fc=fcAt('v18',sh+tid,cc), ld=cs=>{ const h=V.h&&V.h[sh+cs]; return faceImg('18'+sh+cs+':'+tid,V.base+sh+'/'+cs+'/'+V.teams[T]+'.webp'+(h?'?v='+h:''),{f6:1,pitch:V.pitch&&V.pitch[cs],big:cs>128}); };
       /* v18: 머리가 칸 위쪽까지 차 있어 작은 자리는 모자~턱을 넓게, 큰 자리는 칸 위부터 거의 전부(모자 끝이 칸 가장자리에 붙어 있음). 큰 자리는 384(v18b) → 256 → 128 */
       if(b){ if(V.pitch&&V.pitch['384'])add(ld(384),384,cc,6,0,372,576,0,fc); add(ld(256),256,cc,4,0,248,464,0,fc); add(ld(128),128,cc,2,0,124,232,0,fc); } else add(ld(128),128,cc,19,9,90,128,0,fc); return L; }
@@ -185,12 +196,21 @@ function faceSheets(a,b){ const L=[], add=(im,cs,cell,x,y,w,o,pad,fc)=>{ if(im)L
     if(b){ add(ld(384),384,cc,6,0,372,576,0); add(ld(256),256,cc,4,0,248,464,0); } else add(ld(256),256,cc,38,18,180,128,0); /* 작은 자리 이마~턱, 큰 자리 머리~가슴 */ return L; }
   if(s==='f7v'){ if(typeof FACE7==='undefined')return L; const hd=faceImg('v7b',FACE7.civ.s256,{big:1}), lo=faceImg('v7s',FACE7.civ.s128);
     if(b){ add(hd,256,c,36,0,184,464,0); add(lo,128,c,18,0,92,232,0); } else { add(hd,256,c,52,0,152,256,0); add(lo,128,c,26,0,76,128,0); } return L; }
-  if(s==='f7c'){ if(typeof FACE7==='undefined')return L; const im=faceImg('c7'+a.t,FACE7.coach.sheet[String(a.t)]); if(b)add(im,128,c,18,0,92,232,0); else add(im,128,c,26,0,76,128,0); return L; }
+  if(s==='f7c'){ if(typeof FACE7==='undefined')return L; if(f23Key(a.t)){ const hd=f23Img('staff',256,a.t), lo=f23Img('staff',128,a.t); /* 신생 구단 감독·코치(v23 전용 상의, 256이 있으면 더 선명하게) */
+      if(b){ add(hd,256,c,36,0,184,464,0); add(lo,128,c,18,0,92,232,0); } else { add(hd,256,c,52,0,152,256,0); add(lo,128,c,26,0,76,128,0); } return L.length&&!L.every(x=>x.im.bad)?L:f23Fb(a,b,L); }
+    const im=faceImg('c7'+a.t,FACE7.coach.sheet[String(a.t)]); if(b)add(im,128,c,18,0,92,232,0); else add(im,128,c,26,0,76,128,0); return L; }
   if(s==='f8'){ const e=typeof FACE8!=='undefined'&&FACE8.ids[c]; if(!e)return L; const im=faceImg('v8_'+e.p,FACE8.s128[e.p]), z=e.z||128; /* z: 칸 크기(v15 단원은 256px, 얼굴이 커서 어깨까지 넓게) */
     if(b)add(im,z,e.c,18*z/128,0,92*z/128,232,0); else if(e.v==='15')add(im,z,e.c,z/16,0,z*7/8,z,0); else add(im,128,e.c,26,0,76,128,0); return L; }
   if(s==='f19'){ if(typeof FACE19==='undefined')return L; const ld=cs=>faceImg('19s'+cs,FACE19.base+cs+'.webp?v='+FACE19.h[cs],{f6:1,pitch:FACE19.pitch[cs],big:cs>128});
     if(b){ add(ld(256),256,c,8,0,240,464,0); add(ld(128),128,c,4,0,120,232,0); } else add(ld(128),128,c,20,2,88,128,0); /* 작은 자리 머리~어깨 위, 큰 자리 거의 칸 전체 */ return L; }
   return L; }
+/* v23 신생 구단 선수 시트: 원년 구단 시트와 같은 자르기(v6c·v13·v18 칸 번호 그대로, 머리 중심표 FACECTR의 구단 번호 10·11). v18은 384가 없어 큰 자리는 256 → 128 */
+function f23P(a,b,add){ const tid=a.t, c=a.c, ld=(set,cs)=>f23Img(set,cs,tid);
+  if(c>=160){ const r=c-(FACE6.v18?FACE6.v18.o:160), sh=r<100?'A':'B', S='v18'+sh, cc=r%100, fc=fcAt('v18',sh+tid,cc); if(b){ add(ld(S,256),256,cc,4,0,248,464,0,fc); add(ld(S,128),128,cc,2,0,124,232,0,fc); } else add(ld(S,128),128,cc,19,9,90,128,0,fc); return; }
+  if(c>=100){ const cc=c-100, fc=fcAt('v13',tid,cc), hd=ld('v13',256), lo=ld('v13',128); if(b){ add(hd,256,cc,14,14,228,464,0,fc); add(lo,128,cc,7,7,114,232,0,fc); } else { add(hd,256,cc,52,50,152,256,0,fc); add(lo,128,cc,26,25,76,128,0,fc); } return; }
+  const hd=ld('v6c',256), lo=ld('v6c',128); if(b){ add(hd,256,c,14,14,228,464,0); add(lo,128,c,7,7,114,232,0); } else { add(hd,256,c,52,50,152,256,0); add(lo,128,c,26,25,76,128,0); } }
+/* 전용 시트를 하나도 못 받았을 때(못 받는 중이면 기다린다): 예전처럼 빌린 원년 구단 시트의 같은 칸(같은 사람) */
+function f23Fb(a,b,L){ const bt=typeof faceTeamOf==='function'?faceTeamOf(a.t):null; return bt!=null&&bt!==+a.t&&!f23Key(bt)?faceSheets(Object.assign({},a,{t:bt}),b):L; }
 const faceKeyOf=a=>a.s+(a.v||'')+':'+(a.t??'')+':'+a.c;
 /* 자른 얼굴 캐시: {u: 그림, im: 자른 시트}. 지금 받아진 가장 선명한 시트가 그대로면 다시 자르지 않는다(더 선명한 시트를 받는 중이어도). 더 선명한 시트가 오면 그 얼굴만 다시 자른다.
    예전에는 받는 중이면 캐시하지 않아 화면을 그릴 때마다 보이는 얼굴 전부를 캔버스로 다시 잘랐고(toDataURL), 큰 시트가 올 때마다 캐시를 통째로 비웠다(성능 11-18). 오래 안 쓴 것부터 F6_MAX개까지만 둔다 */
@@ -207,7 +227,7 @@ function face6Src(o){ if(o&&o.foreign&&o.id!=null&&(o.team==null||(G&&G.f17&&G.f
   if(typeof FACE21!=='undefined'&&o&&o.id!=null&&!o.foreign&&!o.persona&&(amFaceOn(o)||G&&G.fam&&G.fam[o.id])){ const x=amIdx(o), vk=x&&amVar(o); const u=vk?faceCut({s:'am',t:vk,c:x.c}):null; if(u)return u; }
   const i=face6Idx(o); if(i==null)return null; return face6At(o.team,i); }
 /* 구단 tid 유니폼의 FACE6 칸 i(선수 사진, 은퇴 후 지도자 사진도 같은 길). 원정 경기 중계 중에는 원정 유니폼(v6c 100명만) */
-function face6At(tid,i){ let aw=false; if(i<100)try{ const c=UI.cast, g=c&&G.games[c.g]; aw=!!(g&&g.away===tid&&g.home!==tid&&FACE6.away); }catch(e){} const st=f6T(tid)??tid; /* 신생 구단은 빌린 시트 */ return faceCut(aw?{s:'p',t:st,c:i,v:'a'}:{s:'p',t:st,c:i}); }
+function face6At(tid,i){ let aw=false; if(i<100)try{ const c=UI.cast, g=c&&G.games[c.g]; aw=!!(g&&g.away===tid&&g.home!==tid&&FACE6.away&&FACE6.away[String(f6T(tid)??tid)]); }catch(e){} const st=f6T(tid)??tid; /* 신생 구단은 전용 시트(v23, 원정 유니폼 없음), 없으면 빌린 시트 */ return faceCut(aw?{s:'p',t:st,c:i,v:'a'}:{s:'p',t:st,c:i}); }
 function face8Src(c){ return faceCut({s:'f8',c}); }
 /* 비서 v19 작은 자리. undefined = 시트를 못 받음(v8 비서 사진으로 돌아감) */
 function face19Src(c){ if(typeof FACE19==='undefined')return undefined; const u=faceCut({s:'f19',c}); return u==null?undefined:u; }

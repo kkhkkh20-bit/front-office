@@ -378,7 +378,7 @@ const EMB={
 };
 function badge(tid,sz){ const t=(G&&G.teams[tid])||TEAM_DEF[tid]; if(!t)return ''; const P=tpal(t); const c1=P[0],c2=P[1]==='#ffffff'?'#e8ecf2':P[1],c3=P[2]; const LG=t.logo||{}; const code=LG.code||t.code;
   const big=sz>=34;
-  { const B=!t.logo&&typeof BADGE_IMG!=='undefined'?BADGE_IMG[t.id!=null?t.id:tid]:null; /* 게임 전(구단 선택)은 TEAM_DEF라 id가 없어 번호로 찾는다 */ if(B)return `<img class="badge bimg${B.c?' bcrest':''}" data-bt="${t.id!=null?t.id:tid}" src="${B.c||(sz>32?B.l:B.s)}" width="${sz}" height="${sz}" alt="" decoding="async" draggable="false">`; } /* 구단 엠블럼은 크기와 관계없이 메인 로고(v2 crest)로 통일(사용자 11-07). 모자·유니폼 마크는 3D·사진 쪽에서 따로 쓴다. 예전 설명: 승인된 구단 원형 배지(assets/badges/v1): 이미지에 배경·테두리가 있어 효과를 더하지 않는다. 32px 이하는 64px, 그보다 크면 128px 원본. 플레이어가 로고를 바꾸면 그쪽이 우선 */
+  { const B=!t.logo&&typeof BADGE_IMG!=='undefined'?BADGE_IMG[t.id!=null?t.id:tid]:null; /* 게임 전(구단 선택)은 TEAM_DEF라 id가 없어 번호로 찾는다 */ if(B)return `<img class="badge bimg${B.c?' bcrest':''}" data-bt="${t.id!=null?t.id:tid}" src="${B.c&&!(B.m&&sz<B.m)?B.c:(sz>32?B.l:B.s)}" width="${sz}" height="${sz}" alt="" decoding="async" draggable="false">`; } /* 구단 엠블럼은 크기와 관계없이 메인 로고(v2 crest)로 통일(사용자 11-07). 신생 구단(v23b)은 B.m(40)보다 작은 자리에 글자 없는 마크를 쓴다(리본의 XI·XII가 작은 크기에서 뭉개져서). 모자·유니폼 마크는 3D·사진 쪽에서 따로 쓴다. 예전 설명: 승인된 구단 원형 배지(assets/badges/v1): 이미지에 배경·테두리가 있어 효과를 더하지 않는다. 32px 이하는 64px, 그보다 크면 128px 원본. 플레이어가 로고를 바꾸면 그쪽이 우선 */
   if(LG.img&&/^data:image\/[a-z]+;base64,[A-Za-z0-9+/=]+$/.test(LG.img))return `<img class="badge bimg bup" src="${LG.img}" width="${sz}" height="${sz}" alt="" decoding="async" draggable="false">`; /* 플레이어가 올린 로고 이미지: 방패에 넣어 자르지 않고 그림 그대로(contain, 투명 배경 유지. 마인2 11-16). 예전 96px 정사각형 저장도 그대로 보인다 */
   const ek=LG.emb||(TEAM_DEF[t.id]||t).nick; const g=ek==='글자'?null:(EMB[ek]||EMB[t.nick]); /* 구단 이름을 바꿔도 엠블럼은 원래 구단 것(로고를 따로 고르면 그것) */
   const inner=g?g.replace(/C1/g,c1).replace(/C3/g,c3):`<text x="12" y="14.4" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" font-size="${code.length>=3?6.6:8.2}" fill="#fff">${esc(code)}</text>`;
@@ -388,7 +388,7 @@ if(typeof document!=='undefined')document.addEventListener('error',e=>{ const i=
 const tb=(tid,label)=>`<span class="tname">${badge(tid,18)}${label??tname(tid)}</span>`;
 /* 구단 고유색: 주색(헤더·강조), 밝은색(버튼·포인트), 어두운색(배경) */
 const TCOL=new Proxy({},{get:(o,code)=>{ const p=TPAL[code]; return p?[p[0],p[3],p[2]]:undefined; }});
-function setTeamVars(t){ const r=document.documentElement.style; const c=t&&(t.logo&&t.logo.c1?(P=>[P[0],P[3],P[2]])(tpal(t)):TCOL[t.code]); const h=t?t.hue:212;
+function setTeamVars(t){ const r=document.documentElement.style; const c=t&&(t.logo&&t.logo.c1?(P=>[P[0],P[3],P[2]])(tpal(t)):(P=>P&&[P[0],P[3],P[2]])(tpBase(t))); /* 신생 구단은 키트 색(expKit) */ const h=t?t.hue:212;
   r.setProperty('--team',c?c[0]:hslHex(h,52,34)); r.setProperty('--team-hi',c?c[1]:hslHex(h,60,50)); r.setProperty('--team-dk',c?c[2]:hslHex(h,42,16)); }
 const TITLE={cal:'캘린더',home:'홈',inbox:'소식함',roster:'선수단',trade:'트레이드',transfer:'영입·계약',scout:'스카우팅',train:'훈련',staff:'스태프·육성',cfg:'설정 · 권한',me:'단장 프로필',league:'리그',club:'구단·재정',uld:'래더'};
 /* 예산 여유 칩의 짧은 꼴(휴대폰·좁은 화면, 카페 11-18 "남은 예산이 늘 보이게"): 100억 이상은 정수 억, 그 아래는 소수 한 자리 억, 1억 미만은 만 */

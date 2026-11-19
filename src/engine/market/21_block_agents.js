@@ -2,7 +2,7 @@
 const WANT={any:'가장 좋은 제안',prospect:'유망주',p:'투수',b:'야수',sal:'연봉 절감'};
 function blockAdd(id,want){ const p=G.players[id]; if(!p||p.team!==G.user||p.foreign||hasNtc(p))return; if(p.noTrade)delete p.noTrade; /* 매물로 올리면 트레이드 불가 지정은 풀린다 */ if(!p.listed)delete p.urgent; /* 새로 올리면 일반 매물(지난 급매 설정이 남지 않게, 검수 11-09w) */ p.listed=true; p.lw=want||p.lw||'any'; }
 function blockRemove(id){ const p=G.players[id]; if(!p)return; delete p.listed; delete p.lw; delete p.urgent; G.offers=(G.offers||[]).filter(o=>{ if(!(o.blk&&o.get.includes(id)))return true; offerMailDone(o.id); return false; }); }
-function corePool(tid){ const t=team(tid); const ds=domestic(tid).filter(p=>tradeEligible(p,{foreign:false,joinY:false,healthy:false,recent:false})); /* 거부권 선수는 트레이드 카드로 내놓지 않는다 */ const core=new Set(ds.map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id)); return ds.filter(p=>!core.has(p.id)); }
+function corePool(tid,ntcTo){ const t=team(tid); const ds=domestic(tid).filter(p=>tradeEligible(p,{foreign:false,joinY:false,healthy:false,recent:false,ntc:ntcTo!=null?false:true})&&(ntcTo==null||ntcAskable(p,ntcTo))); /* 거부권 선수는 트레이드 카드로 내놓지 않는다. AI끼리 거래(ntcTo: 받을 구단)는 우리처럼 동의를 물을 수 있는 선수까지(AI 규칙 동등 11-19) */ const core=new Set(ds.map(p=>({p,v:tval(t,p,'out')})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.p.id)); return ds.filter(p=>!core.has(p.id)); }
 function pickPackage(tid,budget,want,exclude){ const t=team(tid); exclude=exclude||[];
   let pool=corePool(tid).filter(p=>!exclude.includes(p.id)&&healthy(p)).map(p=>({p,v:tval(t,p,'out')*(p.aiListed?.85:1),u:tval(team(G.user),p,'in')})).filter(x=>x.v>0.3&&x.u>0.3);
   if(want==='prospect')pool=pool.filter(x=>x.p.age<=24&&x.p.pot-ovr(x.p)>=6); else if(want==='p')pool=pool.filter(x=>x.p.isP); else if(want==='b')pool=pool.filter(x=>!x.p.isP);
@@ -63,6 +63,9 @@ const offScore=o=>o.annual*(1+.06*(o.years-1));
 /* 제안 반응 표(엔진 판정과 화면의 제안 전 경고가 같은 표를 쓴다): 요구 대비 비율 r → 수락(ok) · 역제안(counter) · 차이 큼(far) · 무리한 제안(bad), 그리고 분위기 변화.
    분위기가 FA_CLOSE_MOOD 밑으로 내려가면 결렬 */
 const FA_CLOSE_MOOD=25, FA_GRACE_MOOD=30;
+/* 다른 구단이 실제로 낸 가장 좋은 조건(선수 평가 점수 기준)보다 나은 우리 제안은, 요구액에 못 미쳐도 '역제안' 대역(0.9)으로 본다: 거절 딱지·분위기 급락·결렬 없이 걸려 있고, 에이전트는 더 달라고만 한다.
+   AI 구단 제안은 요구의 절반이어도 유효하게 남아 계약까지 가는데, 그보다 높은 우리 제안은 '진지하지 않다'며 결렬되고 선수는 더 낮은 금액에 다른 구단과 계약했다(제보 11-19: 금액이 가장 높은데 다른 팀으로 간다). 사용자 = AI 같은 규칙 */
+function faBeatFloor(r,beats){ return beats?Math.max(r,.9):r; }
 function faBand(r){ return r>=1?'ok':r>=.9?'counter':r>=.75?'far':'bad'; }
 function faMoodHit(band,ag){ const h=ag&&ag.style==='hard'; return band==='ok'?8:band==='counter'?-2:band==='far'?(h?-13:-10):(h?-30:-25); }
 /* 원소속 구단 유예(운영 결정 2026-11-17, 카페 제보: 세 번 낮게 불렀다가 프랜차이즈 스타를 잃음): 원소속 구단과의 협상이 결렬될 상황이면
@@ -82,7 +85,8 @@ function faPreview(id,o){ const F=G.fa, p=G.players[id]; if(!F||!p||!o||!p.ask)r
   if(!isCtr&&!reopen){ if(n.fold!=null&&G.day<n.fold)return {st:'cool',mood:mood0,after:mood0,brk:false,warn:false,next:n.fold,nAI};
     const ex=n.fold!=null; const rd=ex?0:(n.rounds||0), d0=ex?null:n.d0; if((d0!=null&&G.day-d0>CT_ROUND_DAYS&&rd>0)||rd>=RM)return {st:'fold',mood:mood0,after:clamp(mood-5,0,100),brk:false,warn:false,nAI}; }
   if(c0&&!isCtr&&ag.size==='big'&&offScore(o)<offScore(c0)*.97)mood=clamp(mood-6,0,100);
-  const r=offScore(o)/(faWantFor(p,G.user)*.97); const st=faBand(r); const hit=faMoodHit(st,ag); const after=clamp(mood+hit,0,100); const brk=after<FA_CLOSE_MOOD;
+  let beats=false; try{ const L=Object.entries((F.ai&&F.ai[id])||{}).filter(([k,x])=>x&&faAiOk(+k,p,x)).map(([k,x])=>({tid:+k,annual:x.annual,years:x.years})), rv=faBestOf(p,L); if(rv){ const X=faScoreParts(p,{tid:G.user,...o}); const sU=X.money*X.home*(n0?(n0.deal?1.06:n0.hot?1.02:1):1)*(.9+mood/500)*X.rel*X.deal*X.appeal*X.dom*X.hard; beats=sU>=faScore(p,rv); } }catch(e){} /* 실제 판정(faNegotiate)과 같은 바닥: 다른 구단 최고 조건보다 나으면 '결렬 위험'으로 겁주지 않는다 */
+  const r=faBeatFloor(offScore(o)/(faWantFor(p,G.user)*.97),beats); const st=faBand(r); const hit=faMoodHit(st,ag); const after=clamp(mood+hit,0,100); const brk=after<FA_CLOSE_MOOD;
   return {st,r,mood:mood0,hit:after-mood0,after,brk,grace:brk&&faGraceOk(p,G.user),warn:brk||st==='bad',nAI}; }
 /* 예상 반응 한 줄: 수락 가능 / 역제안 예상 / 분위기 하락(−10) / 결렬 위험(분위기 −25, 지금 분위기 X → 결렬) */
 function faPreviewTxt(P){ if(!P)return ''; if(P.st==='closed')return '협상 결렬 상태'; if(P.st==='cool')return '협상 중단 중'; if(P.st==='fold')return `협상 횟수 초과 · 이번 제안은 받지 않고 접습니다(분위기 −5)`;
@@ -92,7 +96,7 @@ function faPreviewTxt(P){ if(!P)return ''; if(P.st==='closed')return '협상 결
 function faReopenOk(id){ const F=G.fa, n=F&&F.neg&&F.neg[id], p=G.players[id]; if(!n||!p||F.closed||p.team!=null)return false; return (n.closed||n.rounds>=agRoundsMax(p))&&G.day-F.openDay>=45&&G.day-(n.lastD??-999)>=14; }
 function faReopenDay(id){ const F=G.fa, n=F&&F.neg&&F.neg[id]; if(!n)return null; return Math.max(G.day+1,F.openDay+45,(n.lastD??G.day)+14); }
 /* FA 계약의 상한 결재(13_roster capOwnerCheck): 계약금은 연평균으로 상한에 들어간다 */
-function faCapCheck(p,o){ if(!p||!o)return null; const T=o.terms; const a=T?T.annual+Math.round((T.bonus||0)/Math.max(1,T.years||o.years||1)):o.annual; const s=sponSeason(); const cc=capOwnerCheck(capPayWith(G.user,p.id,a,s).tot,capPayWith(G.user,null,null,s).tot,s,'fa'+p.id); if(cc&&!cc.ok&&!cc.hard&&faGrantOpen(p.id)>0)return {...cc,ok:true,p:1,grant:true,msg:''}; /* 구단주가 영입 자금까지 낸 선수는 상한 초과 결재도 승인한다(절대 한도는 그대로, 피드백 11-18) */ return cc; }
+function faCapCheck(p,o){ if(!p||!o)return null; const T=o.terms; const a=T?T.annual+Math.round((T.bonus||0)/Math.max(1,T.years||o.years||1)):o.annual; const s=sponSeason(), X=postCapOut(G.user,s), sk=X.ids.size?X.ids:null; const cc=capOwnerCheck(capPayWith(G.user,p.id,a,s,sk).tot,capPayWith(G.user,null,null,s,sk).tot,s,'fa'+p.id); if(cc&&X.amt>0){ cc.postOut=X.amt; cc.postTxt=postCapTxt(X); if(cc.msg)cc.msg+=' '+cc.postTxt; } /* 포스팅 신청 선수는 떠날 선수로 본다(구단주 승인 11-19) */ if(cc&&!cc.ok&&!cc.hard&&faGrantOpen(p.id)>0)return {...cc,ok:true,p:1,grant:true,msg:''}; /* 구단주가 영입 자금까지 낸 선수는 상한 초과 결재도 승인한다(절대 한도는 그대로, 피드백 11-18) */ return cc; }
 /* FA 요구 기준(환산 점수): 구단마다 그 구단과의 에이전트 친분으로 달라진다(사용자·AI 같은 식) */
 function faWantFor(p,tid){ const ag=agNeg(p); const ai=Object.entries((G.fa&&G.fa.ai&&G.fa.ai[p.id])||{}).filter(([k,o])=>o&&faAiOk(+k,p,o)).length; return offScore(p.ask)*agWantMul(ag,tid)*(1+.03*ai)*(p.faFrom===tid?.95:1); }
 /* FA 마감일(1월 24일) */
@@ -103,6 +107,7 @@ function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; if(!F||F.closed
   const lk=Array.isArray(o.lock)?o.lock.filter(k=>typeof k==='string').slice(0,8):[];
   const T=o.terms?{...o.terms}:null; if(T)delete T.ov; const D=T?termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}):null; if(T)o={annual:Math.round(termsVal(T,D)),years:T.years,terms:T};
   if(faOutBlocked(G.user,p))return {msg:`이번 겨울 다른 구단 FA는 ${faCapN()}명까지만 영입할 수 있습니다(${ASSOC.s} 규약 제173조). 이미 ${faOutN(G.user)}명을 데려왔습니다.`};
+  if(faRosterFull(G.user))return {msg:`정식 선수와 입단 예정 선수가 ${ROSTER_MAX}명으로 꽉 차 ${p.name}에게 제안할 수 없습니다. 먼저 한 명을 정리하세요.`}; /* 역제안 수락·사인 관문과 같은 정원 검사(제보 11-19) */
   { const cc=faCapCheck(p,o); if(cc&&!cc.ok)return {msg:cc.msg,owner:true}; } /* 구단주 결재가 안 나면 에이전트에게 내밀지 못한다(협상 횟수·분위기 그대로) */
   { const cc=faFundsCheck(p,o); if(cc)return {msg:cc.msg,owner:true,funds:true}; }
   const RM=agRoundsMax(p); /* 오래 팀을 찾지 못한 FA(시장 개장 45일 뒤, 마지막 협상 14일 뒤): 에이전트가 협상을 다시 연다(요구액도 그동안 내려갔다) */
@@ -122,7 +127,7 @@ function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; if(!F||F.closed
   faPruneAi(id); const ai=Object.values(F.ai[id]||{});
   const want=faWantFor(p,G.user); const mk=agMk(p); const shop=mk&&!mk.done;
   /* 요구 기준과 다른 구단 최고 제안(원소속 정·친분까지 반영한 점수)을 모두 넘어야 한다 */
-  const rv=faBestOf(p,Object.entries(F.ai[id]||{}).map(([tid,x])=>({tid:+tid,annual:x.annual,years:x.years}))); const rw=offScore(o)/(want*.97); const r=Math.min(rw,rv?faScore(p,{tid:G.user,...o})/(faScore(p,rv)*1.01):9); let t;
+  const rv=faBestOf(p,Object.entries(F.ai[id]||{}).map(([tid,x])=>({tid:+tid,annual:x.annual,years:x.years}))); const rw=offScore(o)/(want*.97); const sU=faScore(p,{tid:G.user,...o}), sR=rv?faScore(p,rv):0; const beats=!!rv&&sU>=sR; const r=faBeatFloor(Math.min(rw,rv?sU/(sR*1.01):9),beats); let t; /* 다른 구단이 실제로 낸 가장 좋은 조건보다 나은 제안은 요구에 못 미쳐도 거절·모욕으로 보지 않는다(faBeatFloor) */
   const prevO=F.offers[id]; F.offers[id]={annual:o.annual,years:o.years,...(T?{terms:T}:{}),...(lk.length?{lock:lk}:{})}; if(r<.9)F.offers[id].rej=true; /* 선수가 거절한 조건(역제안도 없음)은 그대로 계약되지 않는다 */
   const seed=id*31+(n.log.length||0); const ctx=agCtxTxt(p,ai.length,faDL()); let res='no';
   const band=faBand(r), hit=faMoodHit(band,ag); /* 분위기 변화는 제안 전 경고(faPreview)와 같은 표 */
@@ -135,8 +140,8 @@ function faNegotiate(id,o){ const F=G.fa; const p=G.players[id]; if(!F||F.closed
     need*=1.004*rnd(1,1.03);
     if(T){ const ft=termsFit(T,D,need,y,lk,pref); n.counter=ft?{annual:Math.ceil(termsVal(ft,D)),years:ft.years,terms:ft}:null; }
     else n.counter={annual:Math.ceil(need/5)*5,years:y};
-    if(n.counter){ res='counter'; t=`${agSay(ag,'ctr',seed)} ${T?termsTxt(n.counter.terms,true):`${n.counter.years}년 연 ${money(n.counter.annual)}`}${me?'이면 사인하겠습니다.':'이면 선수를 설득하겠습니다.'}`; }
-    else { F.offers[id].rej=true; t=`조금 모자랍니다. 다만 잠그신 조건만으로는 차이를 메울 수 없습니다. ${ctUnlockTip(ag,lk)}`; } }
+    if(n.counter){ res='counter'; t=`${beats&&rw<.9?`지금 들어온 다른 구단 조건보다는 낫습니다. 다만 ${me?'제':'선수'} 기대에는 많이 못 미칩니다.`:agSay(ag,'ctr',seed)} ${T?termsTxt(n.counter.terms,true):`${n.counter.years}년 연 ${money(n.counter.annual)}`}${me?'이면 사인하겠습니다.':'이면 선수를 설득하겠습니다.'}`; }
+    else { if(!beats)F.offers[id].rej=true; t=`조금 모자랍니다. 다만 잠그신 조건만으로는 차이를 메울 수 없습니다. ${ctUnlockTip(ag,lk)}`; } }
   else if(r>=.75){ n.counter=null; n.mood=clamp(n.mood+hit,0,100); agOfferRel(ag,r,G.user,p.name,p.id); t=`${agSay(ag,'far',seed)} ${me?'제':'선수'} 기대치는 ${T?termsTxt(D,true)+(D.role===0?` · ${roleSet(p)[0]}`:'')+(D.ntc?' · 트레이드 거부권':''):`${p.ask.years}년 연 ${money(p.ask.annual)}`} 수준입니다.`; }
   else { n.counter=null; n.mood=clamp(n.mood+hit,0,100); agOfferRel(ag,r,G.user,p.name,p.id); t=`${agSay(ag,'bad',seed)}${ag.size==='big'?' 저희 회사 고객 전체를 이런 식으로 대하신다면 곤란합니다.':''}`; }
   if(T&&r<1){ if(T.role!=null&&D.role!=null&&T.role>D.role)t+=` 무엇보다 ${me?'저는':'선수는'} ${roleSet(p)[D.role]}을(를) 원합니다.`; if(D.ntc&&!T.ntc)t+=' 트레이드 거부권 조항도 빠져 있습니다.'; }

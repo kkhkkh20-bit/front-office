@@ -8,11 +8,13 @@ on:
 jobs:
   rules:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 규칙 시나리오 3,271개(11-19)가 러너에서 개당 평균 약 7초: 8조각은 조각마다 45~55분이 걸려 30분 제한에 모두 잘렸다.
+    # 16조각이면 조각마다 약 205개·25~30분. 느린 러너 여유로 제한은 45분.
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,7 +25,7 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: 규칙 점검
         env:
-          RULE_SHARD: ${{ matrix.shard }}/8
+          RULE_SHARD: ${{ matrix.shard }}/16
           NODE_PATH: tools/node_modules
         run: |
           bash build.sh --engine-out dist/engine.js

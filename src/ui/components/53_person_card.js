@@ -2,6 +2,8 @@
    선수 상황판과 같은 틀을 쓴다: 큰 사진 카드(pf-fmcard), 능력 차트(radarSVG 큰 차트), 세부 능력 표(pf-attribute-*).
    화면에 숫자로 보이던 값만 숫자로, 말로 보이던 값(고집·인지도·성격)은 그대로 말로 보인다. 새로 드러내는 값은 없다. */
 /* 사진 카드. o: {av, tid, eyebrow, name, sub, pills, keys:[[이름, 값 HTML, 작은 글]], sum:{t,d}} */
+/* 사람 카드 나이: 말풍선에 생년월일(구단주 11-19, 저장 없이 번호로 정한 월일 · 04b_birth bdText) */
+function ageT(o){ const t=o&&typeof bdText==='function'?bdText(o):''; return t?`<span title="생년월일 ${t}">${o.age}세</span>`:`${o&&o.age}세`; }
 function personHero(o){
   const t=o.tid!=null&&G&&G.teams&&G.teams[o.tid]?G.teams[o.tid]:null, P=t?tpal(t):null, st=P?`--pt:${P[2]};--pt2:${P[3]}`:'';
   const pk=o.btns!=null?null:cimgKey(o.av); /* btns: 사진 버튼을 따로 줄 때(우리 단장은 단장 정보 사진) */
@@ -33,7 +35,7 @@ function mgrRadarAx(m){ mgrAttr(m); const eg=m.ego>=70?35:m.ego<=35?68:51, fm=m.
 function mgrProfileView(m,o){ o=o||{}; mgrFix(m); const ty=mgrType(m), v=MV[mgrVoice(m)];
   const pills=`${m.fame>=70?'<span class="pill warn">스타 감독</span>':''}${m.ego>=70?'<span class="pill bad">고집</span>':''}${m.interim?'<span class="pill">감독대행</span>':''}${obTag(m.ob)}`;
   const keys=o.own?[['연봉',money(m.sal||0),m.interim?'감독대행':'1년'],...(m.interim?[]:[['계약',`${Math.max(0,m.yrs||0)}년`,'남은 기간']])]:o.cand?[['요구 연봉',money(m.sal||0),'1년'],['계약 시작',`${ctStartS()}`,'시즌']]:[]; /* 다른 구단 감독 연봉은 원래 보이지 않는다 */
-  const hero=personHero({av:{persona:'mgr',pid:m.id,name:m.name,age:m.age,team:o.tid??G.user},tid:o.tid,eyebrow:o.eyebrow||'감독',name:m.name,sub:`${m.age}세 · ${esc(m.career||'')}`,pills,keys,sum:{t:ty.n,d:ty.d}});
+  const hero=personHero({av:{persona:'mgr',pid:m.id,name:m.name,age:m.age,team:o.tid??G.user},tid:o.tid,eyebrow:o.eyebrow||'감독',name:m.name,sub:`${ageT(m)} · ${esc(m.career||'')}`,pills,keys,sum:{t:ty.n,d:ty.d}});
   const radar=personRadar(mgrRadarAx(m),'유연성·인지도는 말로만 봅니다.');
   const cols=[[{h:'능력',rows:MGR_AB.map(([l,k,d])=>[l,m[k],'n',d])},{h:'성격',rows:[['고집',mgrEgoW(m),'w','높을수록 단장 지시를 덜 받아들입니다'],['인지도',mgrFameW(m),'w','팬·언론 관심'],['말투',v?v.l:'-','w',v?v.d:''],...(o.rel||[]).map(([l,w])=>[l,w,'w'])]}],
     [{h:'운영 성향',html:mgrStyleBox(m)+`<p class="small muted keep pc-note">${esc(mgrYouthWord(m.youth))}</p>`}]];
@@ -43,7 +45,7 @@ function mgrProfileView(m,o){ o=o||{}; mgrFix(m); const ty=mgrType(m), v=MV[mgrV
 /* 코치: 기본 지도·육성과 세부 지도 능력(모두 화면 숫자) */
 function coachProfileView(c,o){ /* o.more: 성격·관계 말 줄, o.avTeam: 사진 유니폼 구단(후보) */ o=o||{}; const a=cAb(c)||{}, D=CDOM[c.role]||[], order=[...new Set([...D,'yng','com','ana','stf','con','def','ctl','pow','spd'])].slice(0,6) /* 차트는 늘 6축: 맡은 자리 능력부터 */, rest=Object.keys(CAB).filter(k=>!D.includes(k)&&!['yng','com','ana'].includes(k));
   const role=(c.ax?'보조 ':'')+(CROLE[c.role]?.l||'코치'), S=cStrong(c), W=cWeak(c);
-  const hero=personHero({av:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:o.avTeam!==undefined?o.avTeam:o.tid??G.user},tid:o.tid,eyebrow:o.eyebrow||role,name:c.name,sub:`${c.age}세${c.car?' · '+esc(c.car):''}`,pills:(typeof coachTag==='function'?coachTag(c):'')+(c.ob?obTag(c.ob):''),
+  const hero=personHero({av:{persona:'coach',pid:c.id,name:c.name,age:c.age,team:o.avTeam!==undefined?o.avTeam:o.tid??G.user},tid:o.tid,eyebrow:o.eyebrow||role,name:c.name,sub:`${ageT(c)}${c.car?' · '+esc(c.car):''}`,pills:(typeof coachTag==='function'?coachTag(c):'')+(c.ob?obTag(c.ob):''),
     keys:[['기본 지도',rchip(c.sk),''],['기본 육성',rchip(c.dv),'']],sum:{t:`연 ${money(c.sal||0)}${c.ce?` · ${c.ce}년까지`:''}`,d:c.ax?'선수 육성을 돕는 보조 코치입니다.':(CROLE[c.role]?.d||'')}});
   const radar=''; /* 코치는 능력 차트 없이 사진 카드 + 세부 능력 표만(사용자 11-16) */
   const tags=`${S.map(k=>`<span class="pill good">${CAB[k]} 강점</span>`).join('')}${W.map(k=>`<span class="pill warn">${CAB[k]} 약함</span>`).join('')}`;
@@ -78,7 +80,7 @@ const traitPos=v=>v>=78?86:v>=62?70:v>=42?52:v>=28?35:22; /* staffTraitWord 구�
 function staffJob(s,kind){ if(kind!=='scout')return AROLE[s.role]?.l||''; return s.role==='intl'?`해외 ${IREG[s.region]?IREG[s.region].l:s.region||''}`:`${SROLE[s.role||'am']}${s.region?' · '+s.region:''}`; }
 function staffProfileView(s,kind,o){ o=o||{}; stAttr(s); const P=staffProfile(s,kind), F=STAFF_OF[kind], sc=kind==='scout', tid=o.tid??G.user;
   const sumD=sc?(s.role==='intl'?'해외 리그 선수를 봅니다.':s.role==='pro'?'다른 구단 선수를 봅니다.':'아마추어 선수를 봅니다.'):(AROLE[s.role]?.d||'');
-  const hero=personHero({av:{persona:'staff',role:sc?'scout':'ana',pid:s.id,team:tid,age:s.age,name:s.name},tid,eyebrow:o.eyebrow,name:s.name,sub:`${s.age}세${s.car?' · '+esc(s.car):''}`,pills:sc&&s.spec?`<span class="pill acc">${esc(SC_SPEC[s.spec])}</span>`:'',
+  const hero=personHero({av:{persona:'staff',role:sc?'scout':'ana',pid:s.id,team:tid,age:s.age,name:s.name},tid,eyebrow:o.eyebrow,name:s.name,sub:`${ageT(s)}${s.car?' · '+esc(s.car):''}`,pills:sc&&s.spec?`<span class="pill acc">${esc(SC_SPEC[s.spec])}</span>`:'',
     keys:[['능력',pcStars(s.skill),''],['연봉',money(s.sal||0),'1년']],sum:{t:staffJob(s,kind),d:sumD}});
   const radar=personRadar([...F.map(([k,,l])=>{ const v=staffOfficeV(s,kind,k); return [l,v,v]; }),...Object.entries(STAFF_MENTAL).map(([k,l])=>wordAx(l,traitPos(P.mental[k]),staffTraitWord(P.mental[k])))],'프로의식·인내심·적응력은 말로만 봅니다.');
   const duty=[['보직',staffJob(s,kind),'w'],...(sc&&s.spec?[['특기',SC_SPEC[s.spec],'w','그 유형 선수를 볼 때 한 단계 정확합니다']]:[]),...(sc&&typeof scHomeTxt==='function'?[['고향',scHomeTxt(s),'w']]:[]),['소속',tname(tid),'w']];
@@ -122,7 +124,7 @@ const OW_AX=[['순위',0,'순위 성적'],['재정',2,'재정'],['여론',3,'팬
 function bossProfileView(kind,tid){ const mine=tid===G.user, t=team(tid), B=bossOf(tid), isOwn=kind==='own'||kind==='oown', x=isOwn?B.own:B.ceo, ow=OWNER[t.owner];
   const c=u01('ceoP',B.ceo.id), bud=40+c*40, fld=30+u01('ceoQ',B.ceo.id)*50;
   const keys=isOwn?(mine?[['신뢰',String(Math.round(t.trust)),t.trust>=60?'두터운 신임':t.trust>=40?'지켜보는 중':t.trust>=25?'불신':'경질 검토']]:[['올해 목표',`${goalRankOf(tid)}위 이내`,'']]):(mine?[['예산 여유',money(budget().roomGoal),'올해']]:[]);
-  const hero=personHero({av:isOwn?{persona:'own',pid:x.id,team:tid,age:x.age,name:x.name}:{persona:'staff',pid:x.id,team:tid,age:x.age,name:x.name},tid,eyebrow:mine?(isOwn?'구단주 · 모기업 회장':'대표이사 사장'):`${tname(tid)} ${isOwn?'구단주':'사장'}`,name:x.name,sub:`${x.age}세${!isOwn&&x.car?' · '+esc(x.car):''}`,
+  const hero=personHero({av:isOwn?{persona:'own',pid:x.id,team:tid,age:x.age,name:x.name}:{persona:'staff',pid:x.id,team:tid,age:x.age,name:x.name},tid,eyebrow:mine?(isOwn?'구단주 · 모기업 회장':'대표이사 사장'):`${tname(tid)} ${isOwn?'구단주':'사장'}`,name:x.name,sub:`${ageT(x)}${!isOwn&&x.car?' · '+esc(x.car):''}`,
     keys,sum:isOwn?{t:ow.label,d:OWNTRAIT[t.owner]||ow.msg}:{t:c>.5?'진취적':'보수적',d:c>.5?'투자에 비교적 열려 있습니다.':'지출 하나하나를 따집니다.'}});
   if(isOwn){ const radar=personRadar(OW_AX.map(([l,i])=>wordAx(l,clamp(25+ow.w[i]*40,20,95),owW(ow.w[i]))),'단장을 평가할 때 보는 비중입니다.','평가 비중');
     const cols=[[{h:'평가 비중',rows:OW_AX.map(([,i,l])=>[l,owW(ow.w[i]),'w'])}],[{h:'구단',rows:[['사장',B.ceo.name,'w'],['단장',mine?(G.gmP?.name||'-'):(gmOf(tid)?gmOf(tid).name:'-'),'w'],...(mine?[['친밀도',cwRapLbl(cwRap('own')),'w','홈경기 동석으로 오릅니다']]:[['운영',modeLabel(t),'w']]),['구단 형태',t.indie?'독립구단(투자사)':'모기업 구단','w']]}]];

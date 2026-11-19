@@ -6,7 +6,7 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
 (async()=>{const out=process.env.WORLD_P2_OUT||'/tmp/world-p2-1119';fs.mkdirSync(out,{recursive:true});const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
 for(const [width,height] of [[1366,768],[1920,1080],[390,844]]){const phone=width<1000,ctx=await browser.newContext({viewport:{width,height},isMobile:phone,hasTouch:phone}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());await page.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));
-try{await page.goto(server.url);await page.waitForFunction(()=>typeof newGame==='function'&&UI.title===true);
+try{await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await page.waitForFunction(()=>typeof newGame==='function'&&UI.title===true);
   await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.stops=[];G.evs=[];G.offers=[];UI.title=false;G.ovw=[];G.fwatch=[];
     G.day=KD(6,20);UI.it={...(UI.it||{}),ovlv:'world',wpsl:'MLB'};A.go('league:ovs');render();});
   const fit=async tag=>{const r=await page.evaluate(()=>{window.scrollTo(0,9999);const m=document.querySelector('.fmmain');return {sy:scrollY,h:document.documentElement.scrollHeight,vh:innerHeight,sw:document.documentElement.scrollWidth,vw:innerWidth,main:m?m.getBoundingClientRect().bottom:0};});
