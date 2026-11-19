@@ -28,15 +28,21 @@ function operationsPhotos(root){ const base='assets/design-review/2026-11-10/', 
 /* 제보용 정보에 실을 커밋(검수 11-17 #19): Workers Builds·GitHub Actions가 주는 값, 없으면 로컬 git. 못 찾으면 비운다 */
 function buildCommit(root){ const e=process.env, v=e.WORKERS_CI_COMMIT_SHA||e.CF_PAGES_COMMIT_SHA||e.GITHUB_SHA; if(v&&/^[0-9a-f]{7,40}$/i.test(v))return v.slice(0,12).toLowerCase();
  try{ const r=require('node:child_process').execFileSync('git',['rev-parse','--short=12','HEAD'],{cwd:root,stdio:['ignore','pipe','ignore']}).toString().trim(); return /^[0-9a-f]{7,40}$/.test(r)?r:''; }catch(x){ return ''; } }
+/* 홈 화면에 추가(카페 부올 11-19 '모바일 크롬 주소창'): 웹 앱 매니페스트와 아이콘은 사이트판에만 올린다(내려받는 index.html은 파일 하나 그대로).
+   display:standalone이라 홈 화면 아이콘으로 열면 브라우저 주소창 없이 뜬다. 서비스 워커는 두지 않는다. 아이콘은 tools/make-app-icons.py로 만든 assets/app/*.png */
+const APP_BG='#0d1217'; /* src/css/foundation/00_layout_shell.css --bg */
+function appManifest(){ return {name:'프런트야구',short_name:'프런트야구',description:'KBO 단장이 되어 구단을 운영하는 야구 게임',lang:'ko',dir:'ltr',start_url:'./',scope:'./',display:'standalone',orientation:'any',background_color:APP_BG,theme_color:APP_BG,
+  icons:[192,512].map(n=>({src:`icons/icon-${n}.png`,sizes:`${n}x${n}`,type:'image/png',purpose:'any'}))}; }
+function appFiles(root){ return [{filename:'manifest.webmanifest',data:Buffer.from(JSON.stringify(appManifest(),null,1)+'\n')},...[192,512].map(n=>({filename:`icons/icon-${n}.png`,data:fs.readFileSync(path.join(root,`assets/app/icon-${n}.png`))}))]; }
 function buildSite({root=path.resolve(__dirname,'..'),out=path.join(root,'site')}={}){
  const {html}=build({root,write:false,embedded3d:false}),web=splitWebsite(html);const buildId=crypto.createHash('sha256').update(web.document).digest('hex').slice(0,16),staging=out+'.tmp-'+process.pid;
- commit=buildCommit(root),document=web.document.replace('</head>',`<meta name="fronttime-build" content="${buildId}">\n${commit?`<meta name="fronttime-commit" content="${commit}">\n`:''}</head>`),models=modelFiles(root);
- const headers='/\n  Cache-Control: no-cache\n/index.html\n  Cache-Control: no-cache\n/release.json\n  Cache-Control: no-store\n/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n';
- const files=[{filename:'_headers',data:Buffer.from(headers)},{filename:'index.html',data:Buffer.from(document)},...web.files,...models.map(f=>({filename:f.filename,data:fs.readFileSync(f.source)})),...audioFiles(root).map(f=>({filename:f.filename,data:fs.readFileSync(f.source)})),...sceneFiles(root),...fs.readdirSync(path.join(root,'docs/licenses')).filter(f=>f.endsWith('.txt')).map(f=>({filename:'licenses/'+f,data:fs.readFileSync(path.join(root,'docs/licenses',f))}))]; /* 사이트판은 본문(라이선스 템플릿)을 버리므로 고지 전문을 파일로 올린다(크레딧의 전문 링크) */
+ commit=buildCommit(root),document=web.document.replace('</head>',`<link rel="manifest" href="./manifest.webmanifest">\n<meta name="fronttime-build" content="${buildId}">\n${commit?`<meta name="fronttime-commit" content="${commit}">\n`:''}</head>`),models=modelFiles(root);
+ const headers='/\n  Cache-Control: no-cache\n/index.html\n  Cache-Control: no-cache\n/release.json\n  Cache-Control: no-store\n/manifest.webmanifest\n  Content-Type: application/manifest+json; charset=utf-8\n  Cache-Control: no-cache\n/icons/*\n  Cache-Control: public, max-age=86400\n/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n';
+ const files=[{filename:'_headers',data:Buffer.from(headers)},{filename:'index.html',data:Buffer.from(document)},...appFiles(root),...web.files,...models.map(f=>({filename:f.filename,data:fs.readFileSync(f.source)})),...audioFiles(root).map(f=>({filename:f.filename,data:fs.readFileSync(f.source)})),...sceneFiles(root),...fs.readdirSync(path.join(root,'docs/licenses')).filter(f=>f.endsWith('.txt')).map(f=>({filename:'licenses/'+f,data:fs.readFileSync(path.join(root,'docs/licenses',f))}))]; /* 사이트판은 본문(라이선스 템플릿)을 버리므로 고지 전문을 파일로 올린다(크레딧의 전문 링크) */
  for(const f of files)if(f.data.length>MAX_ASSET_BYTES)throw Error(`Cloudflare 파일 한도 초과: ${f.filename} (${f.data.length})`);
  const release={build:buildId,...(commit?{commit}:{}),rendering:'3d',lazy3d:web.lazy3d,eager:web.eager,models:models.map(({key,filename,bytes})=>({key,path:filename,bytes})),files:files.map(f=>({path:f.filename,bytes:f.data.length}))};files.push({filename:'release.json',data:Buffer.from(JSON.stringify(release,null,2)+'\n')});
  try{fs.mkdirSync(staging,{recursive:true});for(const f of files){const target=path.join(staging,f.filename);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,f.data);}fs.rmSync(out,{recursive:true,force:true});fs.renameSync(staging,out);}finally{fs.rmSync(staging,{recursive:true,force:true});}
  return {out,release};
 }
-module.exports={buildSite,MAX_ASSET_BYTES};
+module.exports={appManifest,buildSite,MAX_ASSET_BYTES};
 if(require.main===module){try{const {release}=buildSite();console.log(`Cloudflare 배포 생성: ${release.build}; HTML ${release.files.find(f=>f.path==='index.html').bytes} bytes; 최대 ${Math.max(...release.files.map(f=>f.bytes))} bytes; 모든 파일 25 MiB 이하`);}catch(e){console.error(e);process.exitCode=1;}}

@@ -31,7 +31,8 @@
 
 /* 전체 화면 버튼: 휴대폰은 공간이 좁아 숨김(태블릿·PC만) */
 @media(max-width:699px){.fullbtn{display:none!important}}
-.fullbtn.on,.fm-i.on[data-a="fullTg"]{color:var(--team-hi,#4fa3ff)}
+:is(#app,#sheet,body) .sheet .menu-full{min-height:44px!important;display:flex;align-items:center;justify-content:center;gap:6px}#app .set-full .btn.fullset{min-height:44px!important}.fullset.on{border-color:var(--team-hi,#4fa3ff)}
+.fullbtn.on,.fm-i.on[data-a="fullTg"],.menu-full.on,.fullset.on{color:var(--team-hi,#4fa3ff)}
 /* 선택 상자 대신 버튼 줄(optRow, 41_guard_boot.js) */
 .optrow{display:flex;flex-wrap:wrap;gap:4px;margin:0;align-items:center}.optrow>button{font-size:12px;padding:4px 10px;min-height:28px}
 .optrow.wsx{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;max-width:100%}.optrow.wsx>button{flex:none}

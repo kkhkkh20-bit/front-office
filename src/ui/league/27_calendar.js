@@ -203,11 +203,18 @@ function gplGrid(first,last,w0){ const S=gmPlanSpans(first,last), M=gplLanes(S.f
       d=e+1; } }
   return R; }
 /* 이달 단장 일정 목록: 기간과 할 일, 누르면 그날을 연다 */
-function gplMonth(y,m){ const a=dnum(y,m,1), b=dnum(m===12?y+1:y,m===12?1:m+1,1)-1, now=dobj(G.day), S=gmPlanSpans(a,b);
+/* 일괄 취소(카페 다다고 11-19 '일정 일괄 취소가 모바일에서 힘들다'): 전에는 날짜를 하나씩 눌러 그날 칸의 작은 '취소'를 눌러야 했다(12일 출장이면 12번).
+   이달 목록에서 '일괄 취소'를 켜면 줄마다 체크 칸이 생기고, 고른 묶음의 남은 날(내일부터)을 결재 한 번으로 지운다. 지우는 일은 하루 취소와 같은 gmPlanSet(d,null) */
+function gplCanDays(s){ return s.days.filter(d=>d>G.day&&!(gmPlanAt(d)||{}).done); }
+function gplPicked(S){ const P=new Set((UI.gplSel||[]).map(Number)); return S.filter(s=>P.has(s.a)&&gplCanDays(s).length); }
+function gplMonthSpans(){ const o=UI.gplYM||UI.calYM||dobj(G.day), a=dnum(o.y,o.m,1), b=dnum(o.m===12?o.y+1:o.y,o.m===12?1:o.m+1,1)-1; return gmPlanSpans(a,b); }
+function gplMonth(y,m){ const a=dnum(y,m,1), b=dnum(m===12?y+1:y,m===12?1:m+1,1)-1, now=dobj(G.day), S=gmPlanSpans(a,b); UI.gplYM={y,m}; /* 일괄 취소가 지금 보이는 달의 목록을 쓰게 */
+  const can=S.filter(s=>gplCanDays(s).length), ed=!!UI.gplEdit&&can.length>0, pk=ed?gplPicked(S):[]; if(ed)UI.gplSel=pk.map(s=>s.a); const pkD=pk.reduce((n,s)=>n+gplCanDays(s).length,0);
   const rows=S.map(s=>{ const st=s.b<G.day?'지남':s.a<=G.day?'진행 중':'', v=Math.max(s.a,a), o=dobj(s.a);
+    if(ed){ const ok=gplCanDays(s).length>0, on=ok&&pk.includes(s); return `<button class="gpl-mr gpl-pk${on?' on':''}${st==='지남'?' past':''}" data-a="gplPick" data-v="${s.a}" role="checkbox" aria-checked="${on}" ${ok?'':'disabled'}><span class="gpl-ck" aria-hidden="true">${on?'✓':''}</span><span class="gpl-md">${s.multi?`${gplMD(s.a)}~${gplMD(s.b)}`:`${gplMD(s.a)} (${WD[o.w]})`}</span><span class="gpl-mt"><i style="background:${GPL_K[s.k].c}"></i><b>${esc(gplLong(s))}</b></span>${st?`<em>${st}</em>`:''}</button>`; }
     return `<button class="gpl-mr${st==='지남'?' past':''}" data-a="calJump" data-v="${v}"><span class="gpl-md">${s.multi?`${gplMD(s.a)}~${gplMD(s.b)}`:`${gplMD(s.a)} (${WD[o.w]})`}</span><span class="gpl-mt"><i style="background:${GPL_K[s.k].c}"></i><b>${esc(gplLong(s))}</b></span>${st?`<em>${st}</em>`:''}</button>`; }).join('');
   const leg=`<div class="cal-leg gpl-leg">${Object.values(GPL_K).map(x=>`<span><i style="background:${x.c}"></i>${x.l}</span>`).join('')}</div>`;
-  return `<section class="card gpl-mon"><div class="row between"><h2 class="sec">${now.y===y&&now.m===m?'이번 달':`${m}월`} 단장 일정</h2><span class="small muted">${S.length?`${S.length}건`:''}</span></div>${rows?`<div class="gpl-ml">${rows}</div>`:'<p class="small muted">잡은 일정이 없습니다. 앞으로의 날짜를 누르면 출장·고교 방문·2군 관전을 잡을 수 있습니다.</p>'}${gplSchBulk(a)}${leg}</section>`; }
+  return `<section class="card gpl-mon"><div class="row between"><h2 class="sec">${now.y===y&&now.m===m?'이번 달':`${m}월`} 단장 일정</h2><span class="row gpl-hd"><span class="small muted">${S.length?`${S.length}건`:''}</span>${can.length?`<button class="btn small gpl-eb" data-a="gplEdit" aria-pressed="${ed}">${ed?'선택 끝내기':'일괄 취소'}</button>`:''}</span></div>${ed?`<p class="small keep gpl-eh">취소할 일정을 눌러 고르세요. 지난 날은 그대로 두고 내일부터 남은 날만 지웁니다.</p>`:''}${rows?`<div class="gpl-ml">${rows}</div>${ed?`<div class="gpl-ba"><button class="btn small" data-a="gplAll">${pk.length===can.length?'모두 해제':'모두 고르기'}</button><button class="btn danger gpl-go" data-a="gplCancel" ${pk.length?'':'disabled'}>고른 ${pk.length}건 취소${pkD?` · ${pkD}일`:''}</button></div>`:''}`:'<p class="small muted">잡은 일정이 없습니다. 앞으로의 날짜를 누르면 출장·고교 방문·2군 관전을 잡을 수 있습니다.</p>'}${gplSchBulk(a)}${leg}</section>`; }
 /* 고교 방문 한꺼번에(국사왕 제안): 권역별로 이달 또는 시즌 끝까지. 규칙은 하루씩 잡을 때와 같다(주 1회, 같은 학교는 효과 감소) */
 function gplSchBulk(a){ if(G.unemp)return ''; let S=[]; try{ S=gmSchools(); }catch(e){ return ''; } const regs=REG.filter(r=>S.some(s=>s.reg===r)); if(!regs.length)return '';
   const RM=gmSchRange(a,'schm'), RS=gmSchRange(G.day,'schs'); if(!RM&&!RS)return ''; const m=dobj(a).m;
