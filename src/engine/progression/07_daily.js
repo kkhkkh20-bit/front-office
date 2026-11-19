@@ -86,6 +86,7 @@ function processDay(){ syncMinSal(); try{ leaveSweep(); }catch(e){} if(G.day%7==
   if(G.demoEnd)return;
   try{ plogDaily(); }catch(e){} /* 날짜를 넘기기 전에: 오늘 단장이 바꾼 감독·코치 자리를 오늘 날짜로 인물 이력에 적는다(검수 11-17 #201) */
   G.day++; const day=G.day, o=dobj(day);
+  try{ bdMigrate(); }catch(e){} /* 생년월일: 새로 생긴 선수의 월일을 번호가 정해진 뒤 채운다(번호 해시, 난수 없음, 04b_birth) */
   try{ asstCapacityDaily(); }catch(e){} /* 시설 축소로 사라진 보조 코치 자리는 그날 계약·정산에 반영한다. */
   try{ ownerTrustWatch(); }catch(e){}
   if(day===KD(11,1)&&demoOver()){ G.day--; G.demoEnd=true; stop('체험판',`${G.year}시즌을 모두 마쳤습니다. 체험판은 여기까지입니다. 홈 화면에서 한 시즌 기록을 확인하세요.`); return; }

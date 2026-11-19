@@ -10358,6 +10358,32 @@ T('[AI 규칙 동등 11-19 B7] 트레이드 결재 주체는 실제 운영 주�
 T('[AI 규칙 동등 11-19 B8] 트레이드 거래 한도는 누가 운영하든 두 장부를 센다: AI 시절 같은 구단과 두 번 거래한 구단으로 옮겨 와도 올해 한도가 남는다 [트레이드]',()=>{ const {A,B}=tb1119(); G.trades=[]; G.lgTrades=[{y:G.year,d:G.day-90,a:A,b:B},{y:G.year,d:G.day-60,a:B,b:A}]; ok(tradeCool(B,[],0,null,A),'준비 실패: AI 한도');
   switchTeam(A); ok(G.user===A&&!G.unemp,'준비 실패: 이직'); const cd=tradeCool(B); ok(cd&&cd.cap,'이직해 온 구단의 AI 시절 거래가 우리 한도에서 사라짐');
   G.trades=[{y:G.year,d:G.day-70,with:B,me:A,give:[],get:[]}]; G.lgTrades=[{y:G.year,d:G.day-90,a:A,b:B}]; const c2=tradeCool(B); ok(c2&&c2.cap,'두 장부를 함께 세지 않음'); const C=G.teams.find(t=>t.id!==A&&t.id!==B).id; switchTeam(C); ok(tradeCool(B,[],0,null,A)&&tradeCool(B,[],0,null,A).cap,'떠난 구단의 우리 시절 거래가 AI 한도에서 사라짐'); });
+/* [구단주 11-19 생년월일] 생년월일은 월일(p.bd=MMDD)만 저장하고 태어난 해는 올해 − 나이(연 나이). 월일은 번호 해시로만 정해 본게임 난수·경기 결과를 바꾸지 않는다(04b_birth) */
+const bd1119ok=(b,msg)=>{ ok(b&&Number.isInteger(b.y)&&b.m>=1&&b.m<=12&&b.d>=1,msg+' 형식 '+JSON.stringify(b)); const L=[31,bdLeap(b.y)?29:28,31,30,31,30,31,31,30,31,30,31][b.m-1]; ok(b.d<=L,msg+' 없는 날짜 '+JSON.stringify(b)); };
+T('[구단주 11-19 생년월일] 모든 선수·해외 주목 선수에 올바른 날짜, 태어난 해 = 올해 − 나이, 월이 고르게 퍼지고 새해에도 태어난 해·월일이 그대로',()=>{ fresh(); const d0=G.day; simTo(()=>G.day>d0); /* 하루 진행에서 새로 생긴 선수까지 채운다(processDay) */ const P=Object.values(G.players); ok(P.length>500,'준비: 선수 수 '+P.length);
+  const M=Array(13).fill(0); for(const p of P){ ok(Number.isInteger(p.bd),'생년월일 없음 '+p.id+' '+p.name); const b=bdOf(p); bd1119ok(b,p.name); ok(b.y===G.year-p.age,'태어난 해가 올해 − 나이와 다름 '+p.name+' '+b.y+' '+p.age); if(b.m===2&&b.d===29)ok(bdLeap(b.y),'평년 2월 29일 '+p.name); M[b.m]++; const m=manAge(p); ok(m===p.age||m===p.age-1,'만 나이가 연 나이와 0~1살 차이가 아님 '+p.age+'/'+m); }
+  for(let m=1;m<=12;m++)ok(M[m]>=P.length*.045&&M[m]<=P.length*.125,m+'월 생일 비율 치우침 '+M[m]+'/'+P.length);
+  const W=(G.wps&&G.wps.L)||[]; ok(W.length>100,'준비: 해외 주목 선수 '+W.length); for(const e of W){ ok(Number.isInteger(e.bd),'해외 주목 선수 생년월일 없음 '+e.n); const b=bdOf(e); bd1119ok(b,e.n); ok(b.y===G.year-e.a,'해외 주목 선수 태어난 해 '+e.n); }
+  const x=wpsExpand(W[0]); ok(x&&x.bd===W[0].bd,'펼친 해외 선수의 생일이 기록과 다름');
+  const mg=G.mgr[G.user]; ok(mg&&/^[0-9]{4}[.][0-9]{2}[.][0-9]{2}$/.test(bdText(mg))&&bdOf(mg).y===G.year-mg.age,'감독 생년월일 '+bdText(mg));
+  const T0=domestic(G.user).slice(0,30), before=new Map(T0.map(p=>[p.id,bdText(p)])); const y=G.year; newYear(); ok(G.year===y+1,'새해 처리');
+  let n=0; for(const p of T0){ const q=G.players[p.id]; if(!q||q.team==null)continue; n++; ok(bdText(q)===before.get(p.id),'새해 뒤 생년월일이 바뀜 '+q.name+' '+before.get(p.id)+' → '+bdText(q)); } ok(n>=20,'새해 뒤 확인한 선수 '+n);
+  const nw=Object.values(G.players).filter(p=>p.prospect||p.draft&&p.draft.y===G.year); for(const p of nw){ const b=bdOf(p); bd1119ok(b,p.name); ok(b.y===G.year-p.age,'새로 만든 선수 태어난 해 '+p.name); } });
+T('[구단주 11-19 생년월일] 만 나이·생일 날: 생일 전날은 한 살 적고 당일부터 같으며, 2월 29일생은 평년 2월 28일이 생일',()=>{ fresh(); const p=domestic(G.user)[0], y=G.year; p.bd=314;
+  ok(manAge(p,dnum(y,3,13))===p.age-1&&manAge(p,dnum(y,3,14))===p.age&&manAge(p,dnum(y,12,31))===p.age,'만 나이 '+[manAge(p,dnum(y,3,13)),manAge(p,dnum(y,3,14)),p.age]);
+  ok(bdIsDay(p,dnum(y,3,14))&&!bdIsDay(p,dnum(y,3,13))&&!bdIsDay(p,dnum(y,3,15)),'생일 날 판정'); ok(bdText(p)===(y-p.age)+'.03.14','생년월일 글자 '+bdText(p));
+  p.age=[18,19,20,21].find(a=>bdLeap(G.year-a)); p.bd=229; const b=bdOf(p); ok(b.m===2&&b.d===29,'윤년생 2월 29일 '+JSON.stringify(b));
+  const ny=[y,y+1,y+2,y+3].find(v=>!bdLeap(v)); ok(bdIsDay(p,dnum(ny,2,28))&&!bdIsDay(p,dnum(ny,3,1)),'평년의 2월 29일생 생일'); const ly=[y,y+1,y+2,y+3].find(v=>bdLeap(v)); ok(bdIsDay(p,dnum(ly,2,29))&&!bdIsDay(p,dnum(ly,2,28)),'윤년의 2월 29일생 생일');
+  p.age+=1; ok(!bdLeap(G.year-p.age)&&bdOf(p).d===28,'평년에 태어난 해로 바뀐 2월 29일 기록은 28일로 읽음');
+  for(const k of [1,7,99,2000123])for(const yy of [2023,2024,2025,2100])bd1119ok({y:yy,m:Math.floor(bdPick(k,yy)/100),d:bdPick(k,yy)%100},'bdPick '+k+' '+yy); });
+T('[구단주 11-19 생년월일] 예전 저장 이전: 난수 없이 같은 값, 두 번 불러도 그대로(멱등), 이미 있는 값은 건드리지 않음',()=>{ fresh(); const d0=G.day; simTo(()=>G.day>d0); const P=Object.values(G.players), W=G.wps.L, b0=new Map(P.map(p=>[p.id,p.bd])), w0=W.map(e=>e.bd);
+  for(const p of P)delete p.bd; for(const e of W)delete e.bd; migrateDraft(); /* 실제 불러오기 경로 */ ok(P.every(p=>Number.isInteger(p.bd)),'불러오기(migrateDraft)가 생년월일을 채우지 않음');
+  for(const p of P)delete p.bd; for(const e of W)delete e.bd; const r1=__rngState(); bdMigrate(); ok(__rngState()===r1,'생년월일 이전이 주 난수를 씀'); for(const p of P){ ok(Number.isInteger(p.bd),'이전 뒤 빈 생년월일 '+p.name); ok(p.bd===b0.get(p.id),'예전 저장 이전 값이 새 게임 값과 다름 '+p.name+' '+b0.get(p.id)+'/'+p.bd); } ok(W.every((e,i)=>e.bd===w0[i]),'해외 주목 선수 이전 값이 다름');
+  const s1=JSON.stringify(G), r2=__rngState(); bdMigrate(); bdMigrate(); ok(JSON.stringify(G)===s1&&__rngState()===r2,'두 번째 이전이 상태·난수를 바꿈');
+  const p=P[0]; p.bd=1225; bdMigrate(); ok(p.bd===1225,'이미 있는 생년월일을 덮어씀');
+  const G2=JSON.parse(JSON.stringify(G)); for(const q of Object.values(G2.players))delete q.bd; const keep=G; G=G2; try{ bdMigrate(); }finally{ G=keep; } for(const q of Object.values(G2.players))ok(q.bd===bdPick(q.id,G2.year-q.age),'이전 값이 번호·나이만으로 정해지지 않음 '+q.name); });
+T('[구단주 11-19 생년월일] 엔진 동일성: 같은 씨앗으로 생년월일을 끈 세계와 켠 세계를 진행해도 생년월일 밖의 상태·주 난수가 같다',()=>{ const run=off=>{ const f=bdSet, g=bdSetW, h=bdMigrate; if(off){ bdSet=()=>{}; bdSetW=()=>{}; bdMigrate=()=>{}; } try{ __seed(1119); fresh(); const d=G.day+12; simTo(()=>G.day>=d); return {j:JSON.stringify(G,(k,v)=>k==='bd'||k==='amBootMs'?undefined:v) /* amBootMs: 아마추어 준비 걸린 시간(벽시계, 매번 다름) */,r:__rngState(),c:__rngCalls(),n:Object.values(G.players).filter(p=>p.bd!=null).length}; } finally{ bdSet=f; bdSetW=g; bdMigrate=h; } };
+  const A=run(true), B=run(false); ok(A.n===0&&B.n>500,'준비: 끈 세계 '+A.n+' · 켠 세계 '+B.n); ok(A.r===B.r&&A.c===B.c,'주 난수 상태가 다름 '+A.r+'/'+B.r+' 호출 '+A.c+'/'+B.c); ok(A.j.length===B.j.length&&A.j===B.j,'생년월일 밖의 상태가 다름 '+A.j.length+'/'+B.j.length); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
