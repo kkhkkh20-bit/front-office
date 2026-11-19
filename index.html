@@ -29356,8 +29356,10 @@ function draftRumors(tid){ tid=tid??G.user; const wk=Math.floor(G.day/7); const 
   return out; }
 const doRelL=q=>q>=.65?'믿을 만한 소문':q>=.5?'반쯤 믿을 소문':'흘려들을 소문';
 /* seededRand와 같은 수열(같은 비트 연산)을 부호 있는 32비트로 들고 다녀 큰 수 객체를 만들지 않는다(성능, 카페 11-17). 값은 seededRand와 같다(check-logic [드래프트 확률 성능]) */
-function doRand(seed){ let h=2166136261|0; const s=String(seed); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return ()=>{ h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
+function doSeed(seed){ let h=2166136261|0; const s=String(seed); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h; }
+function doRand(seed){ let h=doSeed(seed); return ()=>{ h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
 let _doc=null; /* 저장하지 않는 계산 캐시 */
+const _doStat={calc:0,skip:0,full:0,ref:false}; /* 일 횟수(성능 점검용, 저장 안 함). ref: 건너뛰기·미리 세기를 끈 기준 계산(규칙 점검이 결과가 같은지 견준다) */
 /* 앞으로 남은 지명 순번(우리 차례 두 번째까지) */
 function doPicks(tid){ const d=G.draft, live=d&&!d.done; const L=live?d.picks.slice(d.cur):(draftPlan()||[]); const out=[]; let mine=0; for(const k of L){ out.push(k); if(k.tid===tid&&++mine>=2)break; } return out; }
 function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; const pool=((live?d.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null);
@@ -29365,13 +29367,15 @@ function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; cons
   const reports=new Map(pool.map(p=>[p.id,scoutReport(p)]));
   const boardOrder=draftBoardOrder();
   const picked0=live?d.picks.filter(k=>k.tid===tid&&k.pid>0).map(k=>G.players[k.pid]).filter(Boolean):[];
-  const key=JSON.stringify([tid,G.year,G.day,live?d.cur:-1,picks,rest,dplanOf(),draftPolK(),boardOrder,pool.map(p=>[p.id,reports.get(p.id),obsCount(p,tid),p.press,amDraftAdj(p)]),G.teams.map(t=>[t.id,t.mode,draftNeed(t.id)]),rosterProj(tid)]);
+  /* 성능(카페 11-19 지명마다 느림): 등록 인원 전망(rosterProj, 전 선수 훑기)과 구단별 자리 필요(draftNeed)는 한 번의 계산 안에서 바뀌지 않는다. 240번 모의마다·열쇠와 본계산에서 따로 다시 세지 않고 한 번만 센다(값은 같다) */
+  const proj0=rosterProj(tid), _need=new Map(), needOf=c=>{ let v=_need.get(c); if(!v){ v=draftNeed(c); _need.set(c,v); } return v; }; _doStat.calc++;
+  const key=JSON.stringify([tid,G.year,G.day,live?d.cur:-1,picks,rest,dplanOf(),draftPolK(),boardOrder,pool.map(p=>[p.id,reports.get(p.id),obsCount(p,tid),p.press,amDraftAdj(p)]),G.teams.map(t=>[t.id,t.mode,needOf(t.id)]),proj0]);
   if(_doc&&_doc.g===G&&_doc.k===key)return _doc.r;
   const own=new Map(pool.map(p=>[p.id,doOwn(tid,p)])); const rum=draftRumors(tid); const RB={}; for(const r of rum)RB[r.tid+':'+r.id]=DO_RUM_B*r.q;
   const base=pool.map(p=>{ const o=own.get(p.id), w1=1/(o.sd*o.sd), w2=1/(DO_PUB_SD*DO_PUB_SD); const m=(o.v*w1+doPress(p)*w2)/(w1+w2); return {p,m,s:Math.sqrt(1/(w1+w2)),cur:o.cur??40,adj:amDraftAdj(p),g:dGrp(p)}; });
-  const clubs=[...new Set(picks.map(k=>k.tid))]; const need={}, cw={}; for(const c of clubs){ need[c]=draftNeed(c); const t=team(c); cw[c]=t.mode==='contend'?.5:.25; } /* 자리 필요는 각 구단 로스터(공개)로, 성향은 운영 방향(공개)으로 */
+  const clubs=[...new Set(picks.map(k=>k.tid))]; const need={}, cw={}; for(const c of clubs){ need[c]=needOf(c); const t=team(c); cw[c]=t.mode==='contend'?.5:.25; } /* 자리 필요는 각 구단 로스터(공개)로, 성향은 운영 방향(공개)으로 */
   const board=boardOrder.filter(id=>pool.some(p=>p.id===id));
-  const rr=doRand('dodds:'+G.year+':'+G.day+':'+tid+':'+(live?d.cur:-1)); const gn=()=>{ let u=0; while(!u)u=rr(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*rr()); };
+  let h=doSeed('dodds:'+G.year+':'+G.day+':'+tid+':'+(live?d.cur:-1)); /* doRand와 같은 수열을 반복문 안에서 바로 굴린다(함수 호출 없이, 값은 같다) */
   const P={}; for(const p of pool)P[p.id]={av:0,av2:0,by:{},r1:0};
   const myIdx=picks.map((k,i)=>k.tid===tid&&rest?.mode!=='pass'?i:-1).filter(i=>i>=0); const slot=picks.map(()=>({}));
   /* 성능(카페 11-17 드래프트 지명 렉): 240번 × 순번 × 후보 반복에서 Map 조회·문자열 키(RB)·Set을 빼고 후보 번호(j) 배열로 돈다.
@@ -29380,22 +29384,31 @@ function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; cons
   const add={}; for(const c of clubs){ const a1=new Float64Array(nB), a2=new Float64Array(nB), a4=new Float64Array(nB); for(let j=0;j<nB;j++){ const b=base[j]; a1[j]=(b.cur-35)*cw[c]; a2[j]=(need[c][b.g]||0); a4[j]=(RB[c+':'+b.p.id]||0); } add[c]={a1,a2,a4}; }
   const adj=base.map(b=>b.adj), boardJ=board.map(id=>id2j.get(id)), repJ=base.map(b=>reports.get(b.p.id)), tierJ=new Array(nB); /* 잠재 등급은 시뮬레이션마다 같아 한 번만 계산 */
   const tierOf=j=>tierJ[j]===undefined?(tierJ[j]=potTierP(repJ[j],base[j].p)||null):tierJ[j];
+  /* 우리 차례 점수(draftUserScore)는 '평가 + 감독 방침 가산'이 모의마다 같고, 라운드 목표 가산(dplanBonus)만 그 모의에서 이미 뽑은 자리에 따라 달라진다: 앞의 둘은 후보마다 한 번, 뒤는 자리(투·포·내·외)마다 한 번만 센다. 더하는 순서는 draftUserScore와 같다 */
+  const usAB=new Float64Array(nB), usOk=new Uint8Array(nB), plG=base.map(b=>dplanG(b.p)), polK=draftPolK();
+  const usOf=(j,rd,picked,bon)=>{ const p=base[j].p; if(_doStat.ref||!repJ[j])return draftUserScore(p,rd,picked,repJ[j]); if(!usOk[j]){ usAB[j]=draftVal(repJ[j],p)+(polK&&draftFit(p,polK)?4:0); usOk[j]=1; } const g=plG[j]; let b=bon[g]; if(b===undefined)b=bon[g]=dplanBonus(p,rd,picked); return usAB[j]+b; };
   const av=new Float64Array(nB), av2=new Float64Array(nB), T=new Float64Array(nB), left=new Uint8Array(nB);
-  for(let n=0;n<DO_N;n++){ for(let j=0;j<nB;j++){ const b=base[j]; T[j]=b.m+gn()*b.s; } left.fill(1); const picked=[...picked0]; let proj=rosterProj(tid);
+  let nSkip=0, nFull=0;
+  for(let n=0;n<DO_N;n++){ for(let j=0;j<nB;j++){ const b=base[j]; let u=0; while(!u){ h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; u=(h>>>0)/4294967296; } h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; T[j]=b.m+Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*((h>>>0)/4294967296))*b.s; } left.fill(1); const picked=[...picked0]; let proj=proj0;
     for(let i=0;i<picks.length;i++){ const k=picks[i]; if(i===myIdx[0])for(let j=0;j<nB;j++)av[j]+=left[j]; if(i===myIdx[1])for(let j=0;j<nB;j++)av2[j]+=left[j];
       let best=-1,bs=-1e9;
       if(k.tid===tid){ if(rest?.mode==='pass'||rest&&proj>=ROSTER_MAX)continue; /* 우리 차례는 난수를 쓰지 않는다: 지명 방식(보드·조건·건너뛰기)과 등록 인원 전망대로 */
         if(!rest||rest.mode==='board'){ for(const j of boardJ)if(left[j]){ best=j; break; } }
-        if(best<0){ const cond=rest&&(rest.mode==='cond'||rest.mode==='board'); let unknown=false;
+        if(best<0){ const bon={}; const cond=rest&&(rest.mode==='cond'||rest.mode==='board'); let unknown=false;
           for(let j=0;j<nB;j++){ if(!left[j])continue; const p=base[j].p, rp=repJ[j];
             if(cond){ const tier=tierOf(j); if(!tier){ unknown=true; continue; } if(tier.n<(rest.min||3))continue; }
-            const v=draftUserScore(p,k.rd,picked,rp); if(v>bs){bs=v;best=j;} }
+            const v=usOf(j,k.rd,picked,bon); if(v>bs){bs=v;best=j;} }
           if(best<0&&cond){ if(unknown&&clubAmScouts(tid).length)break;
             if(!unknown)continue;
-            for(let j=0;j<nB;j++){ if(!left[j])continue; const v=draftUserScore(base[j].p,k.rd,picked,repJ[j]); if(v>bs){bs=v;best=j;} } } }
+            for(let j=0;j<nB;j++){ if(!left[j])continue; const v=usOf(j,k.rd,picked,bon); if(v>bs){bs=v;best=j;} } } }
         if(best>=0){ picked.push(base[best].p); proj++; } }
-      else { const A=add[k.tid], a1=A.a1, a2=A.a2, a4=A.a4; for(let j=0;j<nB;j++){ if(!left[j])continue; const v=T[j]+gn()*DO_CLUB_SD+a1[j]+a2[j]+adj[j]+a4[j]; if(v>bs){ bs=v; best=j; } } }
+      else { const A=add[k.tid], a1=A.a1, a2=A.a2, a4=A.a4; for(let j=0;j<nB;j++){ if(!left[j])continue;
+          /* 난수는 예전과 똑같이 두 번 뽑고(수열 유지), 이 후보가 지금 1위를 넘을 수 없으면 로그·코사인 계산만 건너뛴다: |정규 난수| ≤ √(−2·ln u) 이므로 u로 상한을 안다. 넘을 수 있는 후보는 예전 식 그대로 계산해 결과가 같다 */
+          let u=0; while(!u){ h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; u=(h>>>0)/4294967296; } h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; const u2=(h>>>0)/4294967296; const cap=u>=.6066?1:u>=.1354?2:u>=.0112?3:u>=3.4e-4?4:6.7;
+          if(!_doStat.ref&&T[j]+a1[j]+a2[j]+adj[j]+a4[j]+cap*DO_CLUB_SD+1e-6<=bs){ nSkip++; continue; } nFull++;
+          const v=T[j]+Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*u2)*DO_CLUB_SD+a1[j]+a2[j]+adj[j]+a4[j]; if(v>bs){ bs=v; best=j; } } }
       if(best<0)break; left[best]=0; const bid=ids[best]; if(k.tid!==tid){ const o=P[bid].by; o[k.tid]=(o[k.tid]||0)+1; if(k.rd===1)P[bid].r1++; } slot[i][bid]=(slot[i][bid]||0)+1; } }
+  _doStat.skip+=nSkip; _doStat.full+=nFull;
   for(let j=0;j<nB;j++){ P[ids[j]].av=av[j]; P[ids[j]].av2=av2[j]; }
   for(const id in P){ const o=P[id]; o.av=myIdx.length?o.av/DO_N:null; o.av2=myIdx.length>1?o.av2/DO_N:null; o.noPick=!myIdx.length?(rest?.mode==='pass'?'pass':'none'):null; o.r1/=DO_N; const b=Object.entries(o.by).sort((a,b)=>b[1]-a[1])[0]; o.top=b?{tid:+b[0],s:b[1]/DO_N}:null; delete o.by; }
   const r={at:G.day,tid,live,pick:myIdx.length?picks[myIdx[0]]:null,pick2:myIdx.length>1?picks[myIdx[1]]:null,picks,slot:slot.map(o=>Object.entries(o).sort((a,b)=>b[1]-a[1])[0]).map(x=>x?{id:+x[0],s:x[1]/DO_N}:null),slotL:slot.map(o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>({id:+x[0],s:x[1]/DO_N}))),P,rum};
@@ -41726,17 +41739,19 @@ function nextCard(){
 }
 /* ---------- 실시간 드래프트: 다른 구단 지명을 한 명씩 보여 준다 ---------- */
 const DSPD={slow:1100,norm:550,fast:180};
+/* 지명 간격은 '지명에서 다음 지명까지'로 잰다(카페 11-19 한 팀마다 느림): 예전에는 화면을 다 그린 뒤부터 간격을 세어, 그리는 시간(느린 기기·오래 한 세이브에서 0.5~1초)이 지명마다 그대로 더해졌다. 그린 시간만큼 기다림을 줄이되, 화면이 보이고 버튼(멈춤·속도)이 눌리도록 최소 DL_MIN은 쉰다 */
+const DL_MIN=60; const dlNow=()=>{ try{ return performance.now(); }catch(e){ return Date.now(); } }; const dlWait=(gap,used)=>Math.round(Math.max(DL_MIN,gap-Math.max(0,used||0)));
 /* UI.dl은 이번 해 드래프트 것만 이어 쓴다: 지난해 드래프트 기록이 남으면 새 드래프트가 저절로 시작하지 않았다(2027년부터 '다른 구단 지명 보기'를 눌러야 했음) */
 const dlSame=kind=>!!(UI.dl&&UI.dl.kind===kind&&UI.dl.y===G.year);
 function dliveStart(kind){ if(UI.dl&&UI.dl.on)return; const o=dlSame(kind)?UI.dl:null; UI.dl={on:true,kind,y:G.year,feed:(o?o.feed:[])||[],stolen:o?o.stolen||[]:[],stN:o?o.stN||0:0}; dliveTick(); }
 /* 우리가 노리던 선수: 관심 표시 + 지금 우리 보드 상위 3명 */
 function dlTargets(kind){ const m=new Map(); (G.shortlist||[]).forEach(id=>m.set(id,'관심 선수')); return m; }
-function dliveTick(){ const L=UI.dl; if(!L||!L.on||!G)return; const T=dlTargets(L.kind); let r=L.kind==='fd'?fdStep():amStep();
+function dliveTick(){ const L=UI.dl; if(!L||!L.on||!G)return; const t0=dlNow(); const T=dlTargets(L.kind); let r=L.kind==='fd'?fdStep():amStep();
   if(r==='user'&&L.kind==='am'){ const x=draftRestPick(); if(x)r=x; }
   if(!r||r==='user'){ L.on=false; L.just=null; save(); render(); return; }
   L.just=r.pid||null; if(r.pid){ const p=G.players[r.pid]; const tg=T.get(r.pid)||null; L.feed.unshift({me:!!r.me,tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,pid:r.pid,nm:p?p.name:'',pos:p?(L.kind==='fd'&&p.isP?'투수':posLabel(p)):'',age:p?p.age:null,tg,o:L.kind==='fd'&&p?fdEstOf(p):null}); L.feed=L.feed.slice(0,12);
     if(tg&&r.pk.tid!==G.user){ /* 우리 구단 지명(일괄·자동 포함)은 놓친 선수가 아니다(검수 11-09ze) */ (L.stolen=L.stolen||[]).unshift({nm:p?p.name:'',tid:r.pk.tid,rd:r.pk.rd,no:r.pk.no,tg,pid:r.pid}); L.stolen=L.stolen.slice(0,20); L.stN=(L.stN||0)+1; } }
-  render(); L.t=setTimeout(()=>{ if(UI.dl===L)dliveTick(); },DSPD[UI.dspeed||'norm']); } /* 다른 세이브로 바뀐 뒤 남은 예약은 실행하지 않는다(검수 11-09) */
+  render(); L.t=setTimeout(()=>{ if(UI.dl===L)dliveTick(); },dlWait(DSPD[UI.dspeed||'norm'],dlNow()-t0)); } /* 다른 세이브로 바뀐 뒤 남은 예약은 실행하지 않는다(검수 11-09) */
 function dlFeedAdd(kind,pk,pid){ if(!dlSame(kind))UI.dl={on:false,kind,y:G.year,feed:[]}; const p=G.players[pid]; UI.dl.feed.unshift({tid:pk.tid,rd:pk.rd,no:pk.no,pid,nm:p?p.name:'',pos:p?posLabel(p):'',age:p?p.age:null,tg:null,me:pk.tid===G.user}); UI.dl.feed=UI.dl.feed.slice(0,12); }
 function dliveStop(){ const L=UI.dl; if(L){ L.on=false; clearTimeout(L.t); } save(); render(); }
 function dliveBox(kind){ if(!dlSame(kind)&&!UI.dlAuto&&!UI.rev&&!(kind==='fd'&&G.fd&&G.fd.open===false)){ UI.dlAuto=1; const g0=G; setTimeout(()=>{ if(G!==g0)return; UI.dlAuto=0; const d=kind==='fd'?G.fd:G.draft; if(d&&!d.done&&d.picks[d.cur]&&(d.picks[d.cur].tid!==G.user||kind==='am'&&draftRestOf())&&!dlSame(kind))dliveStart(kind); /* 미리 정한 자동 지명 기준이 있으면 우리 차례여도 바로 진행 */ },800); } const L=dlSame(kind)?UI.dl:null; const on=L&&L.on; const sp=UI.dspeed||'norm';
@@ -51900,6 +51915,8 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-19-draft-pace',d:'11월 19일',t:'신인 드래프트에서 다른 구단 지명이 넘어가는 속도를 되돌렸습니다',items:[
+    "다른 구단 지명이 한 팀씩 넘어갈 때, 화면을 다시 그리는 시간이 지명마다 더해져 고른 속도(느리게·보통·빠르게)보다 훨씬 느리게 넘어갔습니다. 이제 지명에서 다음 지명까지를 고른 속도에 맞추고, 지명마다 다시 세는 '남을 확률' 계산도 절반쯤으로 줄였습니다(지명 결과와 확률 값은 그대로)."]},
   {id:'2026-11-19-ui-cafe',d:'11월 19일',t:'주소창 없이 쓰기 · 플레잉코치 제안 찾기 · 잠재력으로 방출 후보 고르기 · 일정 일괄 취소',items:[
     '휴대폰에서 주소창 없이 쓰려면 브라우저 메뉴 › 홈 화면에 추가를 누르세요. 홈 화면에 생긴 프런트야구 아이콘으로 열면 주소창 없이 열립니다. 전체 화면 단추는 휴대폰 전체 메뉴 아래와 설정 › 게임 설정 › 표시에 있습니다.',
     "33세 이상 우리 국내 선수의 선수 화면에 '플레잉코치 제안'이 시즌 중에도 늘 보입니다. 지금 제안할 수 없으면 버튼을 눌렀을 때 이유(비시즌에만, 보조 코치 자리 없음 등)를 알려 줍니다.",

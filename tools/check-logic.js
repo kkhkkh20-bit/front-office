@@ -9561,6 +9561,14 @@ T('[구장 증설 검수 174] 시와 합의한 증설이 남아 있으면 신구
   S.xq={k:'of',stage:'ok',st:G.day,exp:stadXpExp()}; S.proj={stage:'talk',start:G.day,res:G.day+180}; const m0=(G.mail||[]).length; stadXpDaily(); ok(!S.xq&&(G.mail||[]).length>m0&&JSON.stringify(G.mail).includes('증설 합의 취소'),'겹친 증설이 알림 없이 남음');
   const o=otherT(), t=team(o), S2=xpPrep(o,.95,40); S2.xq={k:'of',stage:'ok',st:G.day,exp:stadXpExp(),esc:500}; S2.proj={stage:'plan'}; const c0=t.cash; stadXpDaily(); ok(!S2.xq&&t.cash===c0+500,'AI 겹친 증설 처리·환급 실패'); });
 
+T('[성능 11-19] 지명마다 다시 세는 남을 확률(draftOdds): 등록 인원 전망은 한 번·자리 필요는 구단마다 한 번만 세고, 넘을 수 없는 후보의 로그·코사인을 건너뛰어도 기준 계산과 결과가 같으며 본 난수를 쓰지 않는다 [드래프트]',()=>{ fresh(); ok(draftOrders(),'준비 실패: 지명 순서 없음'); startDraft(); const d=G.draft; G.shortlist=draftBoardRanked().slice(2,7).map(x=>x.p.id);
+  const run=ref=>{ _doc=null; _doStat.ref=!!ref; try{ const O=draftOdds(G.user); return JSON.stringify([O.P,O.slot,O.slotL,O.pick,O.pick2]); } finally { _doStat.ref=false; } };
+  const cmp=w=>{ const r0=globalThis.__rngCalls(); const a=run(false), b=run(true); ok(a===b,w+': 기준 계산과 결과가 다름'); ok(globalThis.__rngCalls()===r0,w+': 본 난수를 씀'); };
+  const rp0=rosterProj, dn0=draftNeed; let nP=0,nN=0; rosterProj=(...a)=>{ nP++; return rp0(...a); }; draftNeed=(...a)=>{ nN++; return dn0(...a); };
+  try{ const s0=_doStat.skip, f0=_doStat.full; run(false); ok(nP<=2,'등록 인원 전망을 '+nP+'번 셈(모의 240번마다 다시 세면 241번)'); ok(nN<=G.teams.length,'자리 필요를 '+nN+'번 셈(구단 수 '+G.teams.length+')');
+    const sk=_doStat.skip-s0, fu=_doStat.full-f0; ok(sk+fu>0&&sk>fu,'건너뛴 계산이 절반이 안 됨 '+sk+'/'+(sk+fu)); } finally { rosterProj=rp0; draftNeed=dn0; }
+  cmp('기본(보드 5명)'); G.shortlist=[]; cmp('보드 없음'); dplanOf().C=3; dplanOf().P=1; cmp('라운드 목표'); d.rest={mode:'cond',min:3,tid:G.user}; cmp('조건 일괄'); d.rest={mode:'board',min:3,tid:G.user}; G.shortlist=draftBoardRanked().slice(0,3).map(x=>x.p.id); cmp('보드 일괄'); d.rest=null;
+  let g=0; while(!d.done&&g++<25){ const pk=d.picks[d.cur]; if(pk.tid===G.user){ const id=userAutoPick(); if(id)userPick(id); else passCurrent(); } else amStep(); if(g%6===0)cmp('지명 '+g+'번 뒤'); } });
 T('[드래프트 확률 성능] 카페 11-17 렉: 빠른 난수(doRand)는 seededRand와 같은 수열이고, 드래프트 확률은 같은 상태에서 같은 결과(캐시를 비워도)이며 본 난수를 쓰지 않는다',()=>{ fresh(); for(const sd of ['dodds:2026:250:3:9','x',12345]){ const a=seededRand(sd), b=doRand(sd); for(let i=0;i<2000;i++){ const x=a(), y=b(); if(x!==y)throw new Error('수열 다름 '+sd+' '+i); } }
   simTo(()=>G.draft&&!G.draft.done); advanceDraft(true); const r0=__rngState(); _doc=null; const A=JSON.stringify(draftOdds(G.user)); _doc=null; const B=JSON.stringify(draftOdds(G.user)); ok(A===B,'같은 상태에서 결과가 다름'); ok(__rngState()===r0,'본 난수를 씀');
   const O=JSON.parse(A); ok(O.picks.length>0&&Object.values(O.P).every(v=>v.av>=0&&v.av<=1),'확률 범위 이상'); });
