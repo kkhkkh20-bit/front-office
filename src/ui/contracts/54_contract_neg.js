@@ -125,13 +125,13 @@ function ngtReport(N,D){ const p=G.players[N.id]; const T=N.T; const b=budget();
     <div><i>인상률</i><b class="num ${d>0?'warn':''}">${d>=0?'+':''}${p.sal?Math.round(d/p.sal*100):0}%</b><em>${money(p.sal)} → ${money(T.annual)}</em></div>
     <div><i>예산 여유(구단주 목표 기준)</i><b class="num">${money(b.roomGoal)}</b><em>${dobj(G.day).m<=3&&G.day>KD(1,10)?'1월 31일 마감 · 미합의면 구단 마지막 제시액으로 확정':(p.svc||0)>=ARB_SVC?'1월 10일까지 안 되면 연봉조정 신청 가능':'연봉조정 신청 대상 아님'}</em></div>
     ${cc?`<div><i>${cc.hard?'구단주 허용 한도 초과':'구단주 결재 필요'}</i><b class="num ${cc.hard?'bad':'warn'}">${cc.hard?'승인 불가':`승인 가능성 ${capPLabel(cc.p)}`}</b><em>${cc.s}시즌 상위 40명 연봉이 상한을 ${money(cc.over)} 넘습니다</em></div>`:''}</div></aside>`; }
-  const [s0]=ngtSeasons(N); const W=capPayWith(G.user,p.id,p.foreign?null:capAvg,s0); const over=W.tot-W.cap; const cc=over>0?ngtCapC(N):null; const X=over>0?capTaxEst(over):null;
+  const [s0]=ngtSeasons(N); const PX=N.k==='fa'&&!p.foreign?postCapOut(G.user,s0):null; const W=capPayWith(G.user,p.id,p.foreign?null:capAvg,s0,PX&&PX.ids.size?PX.ids:null); const over=W.tot-W.cap; /* FA 결재와 같은 기준: 포스팅 신청 선수는 이적 예상으로 뺀다 */ const cc=over>0?ngtCapC(N):null; const X=over>0?capTaxEst(over):null;
   return `<aside class="ng-rep"><div class="ng-sum">
     <div><i>시장 가치(운영팀 추정)</i><b class="num">연 ${money(lo)}~${money(hi)}</b><em>${N.k==='fa'?`${p.faGrade}등급 FA · 관심 구단 ${Object.keys(G.fa.ai[p.id]||{}).length}곳`:'예상 FA 시장가 기준'}</em></div>
     <div><i>지금 연봉 · 계약</i><b class="num">${money(p.faPrevSal&&N.k==='fa'?p.faPrevSal:p.sal)}</b><em>${N.k==='fa'?`원소속 ${esc(tshort(p.faFrom))}`:esc(ctText(p))}</em></div>${stars}
     <div><i>적용 시즌 · 보장 총액</i><b class="num">${ngtSeasons(N).join('~')} · ${money(tot)}</b><em>${T.opt?`옵션 포함 최대 ${money(tot+T.opt*(T.years||1))}`:'옵션 없음'}</em></div>
     ${ngtCashRow(T,s0,p.foreign?null:capAvg)}
-    <div><i>${W.s}시즌 상한 합계(계약 후)</i><b class="num ${over>0?'bad':''}">${money(W.tot)}</b><em>상한 ${money(W.cap)}${over>0?` · ${money(over)} 초과`:` · 여유 ${money(-over)}`} · 상한 반영 연 ${money(capAvg)}</em></div>
+    <div><i>${W.s}시즌 상한 합계(계약 후)</i><b class="num ${over>0?'bad':''}">${money(W.tot)}</b><em>상한 ${money(W.cap)}${over>0?` · ${money(over)} 초과`:` · 여유 ${money(-over)}`} · 상한 반영 연 ${money(capAvg)}${PX&&PX.amt>0?` · ${esc(postCapTxt(PX))}`:''}</em></div>
     ${over>0?`<div><i>${cc?(cc.hard?'구단주 허용 한도 초과':'구단주 결재 필요'):'넘겨도 계약할 수 있습니다'}</i><b class="num ${cc&&cc.hard?'bad':'warn'}">${cc?(cc.hard?'승인 불가':`승인 가능성 ${capPLabel(cc.p)}`):`제재금 약 ${money(X.tax)}`}</b><em>시즌 끝까지 넘으면 초과분의 ${Math.round(capRate(X.n)*100)}%를 냅니다(${X.n}회 연속). 트레이드 마감 전에 줄이면 내지 않습니다.</em></div>`:''}
     <div><i>예산 여유</i><b class="num">${money(b.roomGoal)}</b><em class="${T.bonus>b.roomGoal?'bad':''}">${T.bonus?`계약금 ${money(T.bonus)} 즉시 지급${T.bonus>b.roomGoal?' · 예산 여유를 넘습니다':''}`:'계약금 없음'}</em></div>
     ${N.k==='fa'&&faCompTxt(p)?`<div><i>영입 보상</i><em>${esc(faCompTxt(p))}</em></div>`:''}</div></aside>`; }
