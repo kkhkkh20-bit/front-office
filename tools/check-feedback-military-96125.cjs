@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const owner=fs.readFileSync(path.join(root,'src/ui/career/29_owner_media.js'),'utf8'),milUI=owner.slice(owner.indexOf('function milView()'),owner.indexOf('/* 소유권은 구단별'));
 const dev=fs.readFileSync(path.join(root,'src/ui/staff/69_dev_plan.js'),'utf8'),posUI=dev.slice(dev.indexOf('function posCard('),dev.indexOf('/* 한 번 누르면 끝나는 메일 버튼'));
 try{new Function('assert','force','rngCalls',build({root,write:false}).engine+String.raw`
-const UI={},esc=x=>String(x),csec=(t,x)=>t+x,pcard=(p,o)=>p.name+Object.values(o).join(' '),rosterFoot=()=>'',hideOvr=()=>false,rchip=x=>String(x);
+const UI={},esc=x=>String(x),csec=(t,x)=>t+x,pcard=(p,o)=>p.name+Object.values(o).join(' '),rosterFoot=()=>'',hideOvr=()=>false,rchip=x=>String(x),rchipG=x=>String(x);
 `+milUI+posUI+String.raw`
 DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);const base=JSON.stringify(G);let count=0;
 const test=(name,run)=>{force(null);G=JSON.parse(base);worldReset();G.day=KD(6,1);try{run();count++;console.log('PASS '+name);}finally{force(null);}};
