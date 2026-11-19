@@ -10264,7 +10264,7 @@ T('[성장 11-19 겨울 상한] 성장 구간 마지막 해에 남은 잠재력�
   { const p=prep(G.user); p.age=22; setOvr(p,50); p.pot=58; p.potB=50; const o=ovr(p); withRng(rngHash('wcap1119c',1),()=>develop(p)); ok(!p.devLog.reasons.includes('winter-cap')&&p.gcar==null,'평범한 성장까지 상한에 걸림 '+(ovr(p)-o).toFixed(2)); }
   G.players[p0.id]=p0;
 });
-T('[성장 11-19 한 해 상한] 구단주 11-19: 겨울 성장(분기 몫 포함)·스프링캠프·기본 훈련·교육리그·마무리캠프를 모두 합친 한 해 종합 능력 상승은 +5(YEAR_GROW_CAP)를 넘지 않고, 우리·AI 구단이 같으며, 상한은 난수를 쓰지 않고, 기준점이 없는 예전 저장 선수도 그 시점부터 +5 안에서만 큰다',()=>{ fresh();
+T('[성장 11-19 한 해 상한] 구단주 11-19: 겨울 성장(분기 몫 포함)·스프링캠프·기본 훈련·교육리그·마무리캠프·부상 후유증 회복을 모두 합친 한 해 종합 능력 상승은 +5(YEAR_GROW_CAP)를 넘지 않고, 우리·AI 구단이 같으며, 상한은 난수를 쓰지 않고, 기준점이 없는 예전 저장 선수도 그 시점부터 +5 안에서만 큰다',()=>{ fresh();
   ok(YEAR_GROW_CAP===5&&WIN_GROW_CAP===5&&MIL_GROW_CAP===5&&WIN_SUB_CAP===7.5,'상수가 바뀜');
   const p0=Object.values(G.players).find(p=>p.team===G.user&&!p.foreign&&!p.prospect&&!p.isP&&!p.mil); ok(p0,'준비: 우리 야수'); const ai=otherT();
   const prep=tid=>{ const p=JSON.parse(JSON.stringify(p0)); G.players[p.id]=p; p.team=tid; setOvr(p,40); p.dt='norm'; p.pers={pro:18,amb:18,loy:10,temp:8}; p.age=dtSpan(p).grow; p.pot=80; p.potB=40; p.realK=1; p.injOut=0; p.hold=false; delete p.bloomY; delete p.gcar; delete p.mil; delete p.devQ; delete p.gy; delete p.tg; delete p.injFx; return p; };
@@ -10280,6 +10280,13 @@ T('[성장 11-19 한 해 상한] 구단주 11-19: 겨울 성장(분기 몫 포�
   ok(hit>=10&&campCut>=10,'준비: 겨울 상한 '+hit+' · 캠프 뒤 상한 '+campCut);
   /* 상한이 걸리지 않는 평범한 성장은 그대로, 난수 호출 수도 그대로 */ { const p=prep(G.user); p.age=22; setOvr(p,50); p.pot=52; const a=JSON.parse(JSON.stringify(p)), b=JSON.parse(JSON.stringify(p)); let na=0, nb=0; const cnt=(q,raw)=>withRng(rngHash('ycap1119n',1),()=>{ const src=FO_RNG; let n=0; FO_RNG=()=>{ n++; return src(); }; try{ raw?campGrow0(q,'spring','skill'):campGrow(q,'spring','skill'); } finally { FO_RNG=src; } return n; }); na=cnt(a,false); nb=cnt(b,true); ok(na===nb&&JSON.stringify(a.r)===JSON.stringify(b.r),'상한에 안 걸리는 캠프 성장이 달라짐 '+na+'/'+nb); }
   /* 예전 저장: 기준점 없는 선수는 첫 성장 직전 값이 기준 */ { const p=prep(ai); const o=ovr(p); ok(p.gy==null,'준비'); big(p); big(p); ok(p.gy&&p.gy.y===G.year&&Math.abs(p.gy.o-o)<.006&&ovr(p)-o<=YEAR_GROW_CAP+1e-6&&ovr(p)-o>=4.6,'예전 저장 선수 상한 '+(ovr(p)-o).toFixed(2)); G.year++; try{ const o2=ovr(p); big(p); ok(ovr(p)-o2>3.5&&p.gy.y===G.year,'해가 바뀌면 새 기준점에서 다시 큰다'); } finally { G.year--; } }
+  /* 부상 후유증 회복도 같은 상한 안에서(구단주 11-19: 예외 없음). 잘린 회복분은 버리지 않고 남겼다가 해가 바뀌면 이어 되찾는다 */
+  { const p=prep(G.user); const o=ovr(p); big(p); big(p); ok(Math.abs(ovr(p)-o-YEAR_GROW_CAP)<.11,'준비: 상한까지 큰 선수 '+(ovr(p)-o).toFixed(2)); const c0=__rngCalls();
+    p.injFx=[{n:'시험 부상',need:100,got:0,L:{con:3,pow:2},P:{}}]; const r1={...p.r}; injRecover(p,60); injRecover(p,60); const fx=p.injFx[0];
+    ok(ovr(p)-o<=YEAR_GROW_CAP+1e-6,'후유증 회복으로 한 해 상한을 넘음 '+(ovr(p)-o).toFixed(3)); ok(fx.hold===1&&!fx.done&&fx.got>=fx.need,'잘린 회복분을 남겨 두지 않음 '+JSON.stringify(fx)); ok((fx.ap.con||0)+(fx.ap.pow||0)<5-.05,'못 되찾은 몫을 되찾은 것으로 셈 '+JSON.stringify(fx.ap));
+    G.year++; try{ const o2=ovr(p); injRecover(p,1); ok(!fx.hold&&fx.done===G.year&&Math.abs(fx.ap.con-3)<.051&&Math.abs(fx.ap.pow-2)<.051,'해가 바뀐 뒤 남은 회복분을 되찾지 못함 '+JSON.stringify(fx)); ok(Math.abs((p.r.con-r1.con)-3)<.11&&Math.abs((p.r.pow-r1.pow)-2)<.11,'되찾은 능력이 잃은 만큼이 아님'); ok(ovr(p)-o2<=YEAR_GROW_CAP+1e-6,'새해 상한을 넘음'); } finally { G.year--; }
+    ok(__rngCalls()===c0,'후유증 회복 상한이 주 난수를 씀');
+    /* 상한과 무관한 평소 회복은 예전과 같다 */ const q=prep(ai); q.injFx=[{n:'시험 부상',need:100,got:0,L:{con:3,pow:2},P:{}}]; const q0={...q.r}; injRecover(q,100); ok(Math.abs(q.r.con-q0.con-3)<.051&&Math.abs(q.r.pow-q0.pow-2)<.051&&q.injFx[0].done===G.year&&!q.injFx[0].hold,'평소 회복이 달라짐 '+JSON.stringify(q.injFx[0])); }
   G.players[p0.id]=p0;
 });
 T('[성장 11-19 환경 배수 상한] 곱해진 환경 배수(출전×시설×감독×코치×지목×성격×훈련 강도)는 GROW_ENV_CAP까지만 겨울 성장에 반영되고, 성장률 천장은 GROW_RATE_HI(성장 구간 마지막 해와 그 전해가 같은 천장)',()=>{ fresh();
