@@ -8541,6 +8541,31 @@ T('[검수 11-17 #270] 코치 교육: 교육 중이거나 합류 전인 2군 투
   const r2=promoteCoach('fp'); ok(r2&&r2.msg&&C.pc===fp&&C.fp===pc,'일하는 코치 승격이 안 됨: '+JSON.stringify(r2)); });
 T('[검수 11-17 #271] 코치 내부 승격: 합류 전·교육 중인 수석코치·2군 감독은 AI 감독 후보에서 빠진다',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user), C=coachesOf(t.id); for(const r of ['hc','fm']){ const c=C[r]; ok(c,'준비 실패'); c.sk=70; c.dv=70; c.age=50; delete c.interim; delete c.jy; delete c.cs; delete c.sisAway; }
   const has=r=>ipMgrCands(t).some(m=>m._ipFrom===C[r]); ok(has('hc')&&has('fm'),'준비 실패: 일하는 코치가 후보 아님'); C.hc.jy=G.year+1; C.fm.sisAway=G.day+14; ok(!has('hc'),'다음 시즌 합류 수석코치가 감독 후보'); ok(!has('fm'),'교육 중인 2군 감독이 감독 후보'); });
+const cf1119c_setup=()=>{ fresh(); const C=G.coach[G.user]; for(const r of ['hc','fm']){ const c=C[r]; delete c.interim; delete c.jy; delete c.cs; delete c.sisAway; c.age=50; c.sk=70; c.dv=66; } delete G.ipMy; return C; };
+T('[카페 11-19c] 우리 수석코치·2군 감독 내부 승격 후보: AI와 같은 기준, 안 되는 까닭은 쉬운 말, 본 난수를 쓰지 않고 다시 그려도·불러와도 같은 후보 [내부승격]',()=>{ const C=cf1119c_setup();
+  ok(ipMgrCands(team(G.user)).length===0,'AI 경로(ipMgrCands)가 우리 구단 후보를 만듦');
+  nameTaken('점검'); const nm0=_nmSet, n0=_nmSet.size; const r0=__rngState(); const R1=ipMyMgrRows(); ok(__rngState()===r0,'내부 승격 후보를 만들며 본 난수 사용'); ok(_nmSet===nm0&&_nmSet.size===n0,'후보를 만들며 그날 이름 목록이 바뀜(본 경로 genName 난수 흐름이 달라짐)');
+  const h=R1.find(x=>x.r==='hc'), f=R1.find(x=>x.r==='fm'); ok(h&&h.m&&f&&f.m,'조건을 갖춘 수석코치·2군 감독이 후보 아님');
+  ok(h.m.ipMine==='hc'&&h.m.name===C.hc.name&&h.m.age===C.hc.age&&h.m.career.includes('수석코치 출신 · 내부 승격'),'출신 표시·이름·나이 틀림 '+h.m.career);
+  ok(mgrCandOf(h.m.id)===h.m,'후보 찾기(mgrCandOf)가 내부 후보를 못 찾음'); ok(!JSON.stringify(G.ipMy).includes('"ab"'),'저장에 코치 원본이 들어감');
+  const snap=JSON.stringify(h.m); ok(JSON.stringify(ipMyMgrRows().find(x=>x.r==='hc').m)===snap,'다시 그리면 후보가 바뀜');
+  const keep=JSON.parse(snap); delete G.ipMy; const again=ipMyMgrRows().find(x=>x.r==='hc').m; ok(['tac','youth','fame','ego','sal','id'].every(k=>again[k]===keep[k]),'캐시를 지우고 다시 만들면 다른 후보 '+JSON.stringify([again.tac,keep.tac]));
+  G=JSON.parse(JSON.stringify(G)); const back=ipMyMgrRows().find(x=>x.r==='hc').m; ok(JSON.stringify(back)===snap&&back._ipFrom===G.coach[G.user].hc,'저장 뒤 불러오면 다른 후보이거나 코치 연결이 끊김');
+  const D=G.coach[G.user]; D.fm.age=67; ok(ipMyMgrRows().find(x=>x.r==='fm').why==='나이 38~66세 아님','나이 까닭 없음'); D.fm.age=50; D.fm.sk=40; D.fm.dv=47; ok(ipMyMgrRows().find(x=>x.r==='fm').why==='지도력·육성력 48 미만','능력 까닭 없음');
+  D.fm.sk=70; D.fm.sisAway=G.day+10; ok(ipMyMgrRows().find(x=>x.r==='fm').why.includes('교육'),'교육 중 까닭 없음'); ok(!G.ipMy[D.fm.id],'후보가 아니게 된 코치 몫이 남음'); });
+T('[카페 11-19c] 내부 승격 선임: 일반 선임과 같은 절차(계약·현 감독 경질 정산), 코치 자리는 비고, 희망 보직이 1군 감독이면 관계 +6 [내부승격]',()=>{ const C=cf1119c_setup(); for(const c of Object.values(C))if(c)c.clan=null;
+  const base=JSON.stringify(G); const run=pref=>{ G=JSON.parse(base); const sp=staffProfile; staffProfile=(s,k)=>({...sp(s,k),pref:pref?'mgr':'hc'}); try{ const cur=G.mgr[G.user], hc=G.coach[G.user].hc, m=ipMyMgrRows().find(x=>x.r==='hc').m; ok(!!m.ipPref===pref,'희망 보직 표시 틀림');
+      const sev=mgrSevPay(cur).pay, err=hireMgr(m.id,2,false,[]); ok(err==='','선임 실패: '+err); const n=G.mgr[G.user];
+      ok(n===m&&n.yrs>=2&&n.inner&&n.inner.coach===hc.id,'내부 승격 감독이 아님'); ok(!G.coach[G.user].hc,'수석코치 자리가 비지 않음'); ok((G.exMgr||[]).some(x=>x.id===cur.id),'현 감독이 경질 명단에 없음');
+      ok(!('ipMine' in n)&&!('_ipFrom' in n)&&!JSON.stringify(n).includes('"ab"'),'선임된 감독에 후보 표시·코치 원본이 남음'); ok(!(G.ipMy||{})[hc.id],'선임 뒤 후보 캐시가 남음'); ok(!ipMyMgrRows().some(x=>x.r==='hc'),'빈 수석코치 자리가 후보로 나옴'); ok(sev>0,'현 감독 정산금 준비 실패');
+      ok(hireMgr(m.id,2,false,[])==='후보가 없습니다.','같은 코치를 또 선임할 수 있음'); return n.rel; }finally{ staffProfile=sp; } };
+  const r0=run(false), r1=run(true); ok(r1===Math.min(100,r0+6),'희망 보직 1군 감독 보너스 틀림 '+r0+'→'+r1); });
+T('[카페 11-19c] 해외 스카우트망 0단계: 파견 스카우트가 있어도 0단계를 고를 수 있고 비용이 멈추며, 지식 %는 0단계로 센다(AI와 같은 식) [해외]',()=>{ fresh(); const sc=G.scouts[0]; sc.role='intl'; sc.region='us'; sc.since=G.day-60;
+  G.intl={us:1,la:0,jp:0,tw:0,au:0}; ok(intlLv('us')===2&&intlCost()===INET[1].c,'준비: 투자 1단계+파견'); G.intl.us=0; ok(intlNet('us')===0&&intlLv('us')===1,'0단계로 내려가지 않음 '+intlNet('us')+'/'+intlLv('us'));
+  ok(intlCost()===0,'0단계인데 비용이 나감 '+intlCost()); const s0=G.spend.intl||0; dailyCost(); ok((G.spend.intl||0)===s0,'0단계인데 하루 비용이 쌓임 '+(G.spend.intl-s0));
+  const I=wkIn(G.user,'MLB'); ok(I.net===0,'지식 계산이 0단계를 안 씀'); const K0=wkPctOf({...I,days:0}); ok(K0===clamp(WK.base+(WK.fame.MLB||0),0,100),'0단계 지식 기본값이 10+0×18이 아님 '+K0);
+  const t=G.teams.find(x=>x.id!==G.user), J=wkIn(t.id,'MLB'); ok(wkPctOf({...J,net:0})===K0,'AI와 우리 0단계 지식이 다름');
+  sc.role='am'; G.intl.us=3; ok(intlCost()===INET[3].c&&intlLv('us')===3,'3단계 비용 틀림'); });
 T('[검수 11-17 #272] 코치 계약 만료: 64세가 되어 시장에서 빠진 코치는 빈자리 안내에서 후보에 남았다고 하지 않고, 남은 코치만 이름으로 알린다',()=>{ fresh(); const C=G.coach[G.user]; for(const k of CKEYS){ const c=C[k]; c.yrs=3; c.cs=G.year-1; c.age=Math.min(c.age||50,50); delete c.ob; delete c.jy; }
   const old=C.pc, yng=C.bc; old.age=63; old.yrs=1; yng.age=45; yng.yrs=1; G.mail=[]; coachYear(); const m=(G.mail||[]).find(x=>x.subj==='코치 자리가 비어 있습니다'); ok(m,'빈자리 안내 없음');
   ok(!(G.cmarket||[]).includes(old)&&(G.cmarket||[]).includes(yng),'준비 확인: 64세는 빠지고 46세는 남아야 함'); ok(m.body.includes(yng.name)&&m.body.includes('남아 있어'),'남은 코치 이름 없음: '+m.body);
