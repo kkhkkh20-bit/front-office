@@ -90,7 +90,7 @@ function capOwnerP(t,r){ const L=capOwnerLim(t), n=t.capOver||0; return clamp((t
 function capRoll(key,tid){ let h=2166136261>>>0; const s='capOwn|'+G.year+'|'+(tid??G.user)+'|'+key; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } h=Math.imul(h^(h>>>13),2246822507)>>>0; return (h>>>0)/4294967296; } /* 경기 난수를 쓰지 않는 고정값 */
 const capPLabel=p=>p>=.7?'높음':p>=.4?'반반':'낮음';
 /* pay: 움직임 뒤 상한 합계, before: 움직임 전, s: 그 합계를 재는 시즌, key: 결재 건(선수·거래). 결재가 필요 없으면 null */
-function capOwnerCheck(pay,before,s,key,tid){ tid=tid??G.user; if(tid===G.user&&G.unemp)return null; const t=team(tid); if(!t||t.indie)return null; /* tid: 결재를 받는 구단(AI끼리 트레이드도 같은 결재, AI 규칙 동등 11-19) */ s=s??sponSeason(); const cap=capOf(s); pay=Math.round(pay); before=Math.round(before??0);
+function capOwnerCheck(pay,before,s,key,tid){ const ai=tid!=null&&tid!==ME(); if(!ai){ tid=G.user; if(G.unemp)return null; } /* 실제 운영 주체로: 야인 기간 전 구단은 AI 구단으로 결재(AI 규칙 동등 11-19) */ const t=team(tid); if(!t||t.indie)return null; /* tid: 결재를 받는 구단(AI끼리 트레이드도 같은 결재, AI 규칙 동등 11-19) */ s=s??sponSeason(); const cap=capOf(s); pay=Math.round(pay); before=Math.round(before??0);
   if(!(pay>cap)||pay<=before)return null; /* 상한 안이거나 합계를 늘리지 않는 움직임은 결재가 필요 없다 */
   const B=bossPeek(tid), who=B&&B.own?B.own.name+' 회장':'구단주'; const r=(pay-cap)/cap, L=capOwnerLim(t), lim=Math.floor(cap*(1+L)), n=(t.capOver||0)+1;
   const base={pay,before,cap,s,over:pay-cap,r,lim,L,n,who,key};
