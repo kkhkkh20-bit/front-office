@@ -156,7 +156,7 @@ function stMineAside(k){ const st=n=>'★'.repeat(n)+'<i class="off">'+'★'.rep
   return `<aside class="cmk-cur">${cmkFold(`지금 우리 분석원 ${L.length}/${ANA_MAX}명`,empty.length?`비어 있는 역할: ${empty.join(', ')}`:'역할 모두 채움',`${Object.keys(AROLE).map(r=>`<div class="cmk-grp"><span class="small muted">${AROLE[r].l}${byR(r).length?'':' · <b class="bad">비어 있음</b>'}</span>${byR(r).sort((a,b)=>b.skill-a.skill).map(row).join('')}</div>`).join('')}<p class="small muted">역할마다 가장 뛰어난 분석원이 가장 크게 반영됩니다(두 번째 60%, 세 번째 30%).${stCapNote('an')?' '+stCapNote('an'):''}</p>`)}</aside>`; }
 
 /* 코치 후보를 노리는 AI 구단(다음 달 1일에 데려갈 수 있다) */
-function cmRivTxt(c){ const R0=cmRivals(c); return R0.length?` · 노리는 구단 ${R0.map(x=>tshort(x.tid)).join('·')}`:''; }
+function cmRivTxt(c){ const R0=cmRivals(c); return R0.length?` · 노리는 구단 ${R0.map(x=>tshort(x.tid)).join('·')}(제안하면 코치가 고릅니다)`:''; }
 /* 스태프 시장 동향: 우리 코치에게 온 영입 제안(바로 답할 수 있게)과 최근 리그 스태프 이동 소식 */
 function smkPulse(k){ const raids=k==='coach'?(G.cmRaid||[]).filter(cmOurs).map(r=>({r,c:cmMine(r)})).filter(x=>x.c):[];
   const news=(G.wire||[]).filter(w=>w.k==='코치'||w.k==='스태프').slice(0,5);

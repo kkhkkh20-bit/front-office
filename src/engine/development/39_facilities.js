@@ -25,15 +25,13 @@ function facRecalc(){ const it=G.fac.it; const avg=sum(FACK.map(k=>it[k]))/FACK.
 function facUpkeep(){ const bu=BUS[busLv()].up; if(!G.fac||!G.fac.it)return FAC_UPKEEP[facLv(G.user)]+bu; return sum(FACK.map(k=>FACI[k].up[G.fac.it[k]]))+bu+(typeof facCityUp==='function'?facCityUp(team(G.user)):0); } /* 지자체 약속(지역 채용) 몫 포함 */ /* 버스 운영비 포함 */
 function facOf(k){ return G.fac&&G.fac.it?G.fac.it[k]||0:1; }
 /* 성장·노화 배수: 모든 구단이 세부 시설을 쓴다(다른 구단 시설은 team.fi, 66_fac_ai.js) */
-function facEff(p){ if(p.team==null)return FAC[2]; const mine=p.team===G.user; const S=mine?G.fac:(()=>{ try{ return facSt(p.team); }catch(e){ return null; } })(); if(!S||!S.it)return FAC[facLv(p.team)];
+function facEff(p){ if(p.team==null)return FAC[2]; let S=null; try{ S=facSt(p.team); }catch(e){ S=null; } if(!S||!S.it)return FAC[facLv(p.team)];
   const fo=k=>Math.max(0,facImpact(S.it[k]||0)-facDis(S,k)); /* 공사 중인 시설은 훈련 효율이 잠시 떨어진다(57_club_econ) */
   const young=p.age<=23; const futP=(()=>{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,G.year,'퓨처스'); return f&&(!a||(p.isP?(f.outs||0)>(a.outs||0):(f.pa||0)>(a.pa||0))); })();
-  /* 다른 구단: 예전 종합 등급 효과(1단계 .88 ~ 5단계 1.12)를 세부 시설 평균으로 이어 쓰고, 숙소·2군 구장·웨이트는 구단 평균과의 차이만큼 더한다.
-     그래서 투자하면 바로 효과가 오르고, 시작 시점 리그 균형은 예전과 같다 */
-  if(!mine){ const av=sum(FACK.map(fo))/FACK.length, c=1+av*4/3;
-    const g=.94+av*.03+ /* 우리 구단 식과 같은 기울기(시설 1단계당 약 .03). 시작 시점(평균 2단계 안팎)은 예전과 같고, 3단계 이상에서 우리 구단보다 더 크게 오르던 것(예전 .82+.06×종합)을 맞췄다(11-12) */(young?(fo('dorm')-av)*.015:0)+(futP?(fo('fut')-av)*.02:0), d=1.15-.05*c-(fo('weight')-av)*.01;
-    return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
-  const g=.94+fo('indoor')*.01+fo('lab')*.012*(1+anaPow('trk')*.08)+(young?fo('dorm')*.012:0)+(futP?fo('fut')*.016:0); /* 전부 최고 단계여도 성장 배수 약 1.12~1.13(예전 1.19 안팎): 예전 종합 5단계 시설(1.12)과 같은 천장 */
+  /* 모든 구단 같은 식(11-19 성장 점검, 구단주 원칙: 사용자 = AI). 예전에는 다른 구단만 세부 시설 평균으로 계산해(.94+평균×.03, 숙소·2군 구장은 평균과의 차이만) 같은 단계에서 젊은 2군 선수가 우리 구단에서 4~6% 더 컸다.
+     시설마다 맡은 몫이 있는 우리 구단 식을 모든 구단에 쓴다: 실내 연습장·랩(트래킹 분석팀이 받쳐 줌)·숙소(23세 이하)·2군 구장(2군 위주 선수)이 성장, 웨이트·재활이 노화. 분석팀 몫도 그 구단 분석팀(anaPow)으로 잰다 */
+  let trk=0; try{ trk=anaPow('trk',p.team); }catch(e){ trk=0; }
+  const g=.94+fo('indoor')*.01+fo('lab')*.012*(1+trk*.08)+(young?fo('dorm')*.012:0)+(futP?fo('fut')*.016:0); /* 전부 최고 단계여도 성장 배수 약 1.12~1.13(예전 1.19 안팎): 예전 종합 5단계 시설(1.12)과 같은 천장 */
   const d=1.05-fo('weight')*.025-fo('rehab')*.012;
   return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
 function buildFacItem(k){ facInit(); const F=FACI[k]; if(!F)return '없는 시설입니다.'; const lv=G.fac.it[k]; { const e=facCanStart(G.user,k); if(e)return e; } /* 선행 조건·큰 공사 한 곳(57_club_econ) */
