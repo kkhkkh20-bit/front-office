@@ -1,0 +1,23 @@
+{
+  "production_complete": false,
+  "asset_validation_passed": false,
+  "status": "production_in_progress",
+  "validated_scope": "v6c only, 100 people x 2 kits x 2 resolutions; other sets pending",
+  "thresholds": {
+    "cosine_min": 0.6,
+    "self_rank": 1,
+    "center_max_abs_axis_px256": 4
+  },
+  "gallery_count": 420,
+  "reference_native_resolution_note": "v13 native128 only; actual original256 unavailable in source Git",
+  "checkpoint_v6c": {
+    "tested": 400,
+    "min_cosine": 0.7610805630683899,
+    "max_center_error": 2.9302520751953125,
+    "issues": []
+  },
+  "model_sha256": {
+    "w600k_r50.onnx": "4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43",
+    "det_10g.onnx": "5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91"
+  }
+}

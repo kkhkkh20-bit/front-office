@@ -1,0 +1,19 @@
+{
+  "rendered_variants": 416,
+  "requested_variants": 840,
+  "runtime_sheet_count": 8,
+  "production_complete": false,
+  "pending_visual_repairs": [],
+  "completed_visual_repairs": [
+    {
+      "batch": "b02",
+      "slot": 3,
+      "id": "v6c100_023",
+      "teams": [
+        "expansion_a",
+        "expansion_b"
+      ],
+      "repair_original": "/workspace/generated_images/exec-5de3d72b-4025-4fcb-b58e-4dd274014522.png"
+    }
+  ]
+}

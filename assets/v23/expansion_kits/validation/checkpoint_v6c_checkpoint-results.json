@@ -1,0 +1,6 @@
+{
+  "tested": 400,
+  "min_cosine": 0.7610805630683899,
+  "max_center_error": 2.9302520751953125,
+  "issues": []
+}
