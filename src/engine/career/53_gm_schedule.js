@@ -23,6 +23,13 @@ function gmGamePick(d,tid,home,op){ return gmGameRows(d).find(m=>!m.overflow&&(h
 function gmWatchBooking(next){ const row=gmGamePick(next.d,G.user,false,next.op); return {day:next.d,op:next.op,...(row?{gk:gmGameKey(next.d,row.h,row.a,row.ordinal)}:{})}; }
 function gmWatchChoose(next,saved){ if(saved&&saved.day>G.day&&gmPlanLive(saved.day,saved))return saved; const p=next&&gmPlanAt(next.d); return p&&p.k==='attend'&&!p.done&&gmPlanLive(next.d,p)?{day:next.d,op:p.op,...(p.gk?{gk:p.gk}:{})}:next?gmWatchBooking(next):null; }
 function gmWatchResult(p){ if(!p)return null; const L=(G.games||[]).map((g,i)=>({g,i})).filter(({g})=>g.gid!=null&&g.day===p.day&&(g.home===G.user||g.away===G.user)&&gmGameMatches(p,g.day,g.home,g.away,g.dh||g.gi||1)); return L.length?{i:L.reduce((a,b)=>b.g.gid<a.g.gid?b:a).i}:null; }
+/* 관전·결과만 보기 버튼(카페 11-19: '3D 중계로 보기'를 눌렀는데 중계 없이 경기만 지나갔다).
+   비로 밀린 경기의 예약은 새 날짜(몇 주 뒤일 수 있다)로 옮겨 둔다. 그 예약이 '다음 경기' 요청을 대신하면 누를 때마다 다음 경기를 치르고도 예약 날짜의 기록만 찾아 화면 없이 넘어갔다.
+   gmWatchSaved: 다음 경기보다 뒤 날짜의 예약은 이번 요청으로 쓰지 않는다. gmWatchLater: 그런 예약은 그 경기 날 다시 묻도록 남겨 둔다.
+   gmWatchPlayed: 고른 경기 기록, 없으면 이번 진행(d0 다음 날부터)에서 실제로 치른 우리 첫 경기(other=1). 모두 조회만 하고 난수·저장 상태를 바꾸지 않는다 */
+function gmWatchSaved(next,saved){ return saved&&next&&saved.day>next.d?null:saved||null; }
+function gmWatchLater(next,saved){ return saved&&next&&saved.day>next.d&&gmPlanLive(saved.day,saved)?saved:null; }
+function gmWatchPlayed(plan,d0){ const res=gmWatchResult(plan); if(res)return {res,other:0}; const L=(G.games||[]).map((g,i)=>({g,i})).filter(({g})=>g.gid!=null&&g.day>d0&&g.day<=G.day&&(g.home===G.user||g.away===G.user)); return L.length?{res:{i:L.reduce((a,b)=>b.g.gid<a.g.gid?b:a).i},other:1}:{res:null,other:0}; }
 function gmGameMatches(p,d,h,a,i=1){ if(p.gk)return p.gk.d===+d&&p.gk.h===h&&p.gk.a===a&&p.gk.i===i;
   const op=h===G.user?a:h; if(p.op!=null&&p.op!==op||p.a!=null&&p.a!==a||p.home!=null&&p.home!==(h===G.user))return false;
   if(p.op==null&&p.a==null){ const L=gmGameRows(d).filter(m=>p.k==='attend'?m.h===G.user||m.a===G.user:m.h===h); if(L.length!==1||L[0].h!==h||L[0].a!==a)return false; }
