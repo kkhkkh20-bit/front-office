@@ -60,9 +60,10 @@ def v13(th=.06):
 
 def v23(D):
     """신생 구단(v23 전용 유니폼, 00l_faces_v23_data.js FACE23): 같은 사람·같은 구도로 다시 그렸지만 칸마다 잰다(v18은 128, v13은 256 시트). 키는 원년 구단과 같은 꼴(시트+구단 번호·구단 번호)"""
-    B='assets/v23/expansion_kits/'; M=json.load(open(os.path.join(ROOT,B,'manifest.json'),encoding='utf8'))
     F=open(os.path.join(ROOT,'src/ui/assets/00l_faces_v23_data.js'),encoding='utf8').read()
-    T=json.loads(F[F.index('const FACE23=')+13:F.index(';\n',F.index('const FACE23='))])['teams']
+    F23=json.loads(F[F.index('const FACE23=')+13:F.index(';\n',F.index('const FACE23='))]); T=F23['teams']
+    B=F23['base'][:-len('sheets/')]; assert F23['base'].endswith('/expansion_kits/sheets/'), F23['base']  # 게임이 쓰는 판(v23b|v23)의 시트를 잰다
+    M=json.load(open(os.path.join(ROOT,B,'manifest.json'),encoding='utf8'))
     for tid,key in T.items():
         for x in M['identities']:
             if x['set'] not in ('v18','v13'): continue
