@@ -296,7 +296,7 @@ function faSign(p,offers){if(!p||!G.fa||!(G.fa.pool||[]).includes(p.id))return;c
   finally{FO_RNG=source;if(C){C.k=null;_faPC=C;}}}  /* 계약 중에는 입찰 캐시를 끄고, 끝나면 비운다 */
 /* 우리 제안이 지금 실제로 계약까지 갈 수 있는지: 사인 관문(faSignRun)과 같은 검사(외부 FA 한도·정원·계약 자금). 막히면 그 이유, 아니면 ''.
    시장 보고·우선 제안·라스트 룩·사인 관문이 같은 판정을 쓴다(제보 11-19: 보고는 '가장 좋다'인데 관문에서 말없이 빠져 계약도 안내도 없었다) */
-function faUserBlock(p,o){ if(!p||!o||G.unemp)return ''; if(faOutBlocked(G.user,p))return `외부 FA 영입 한도(${faCapN()}명)를 채웠습니다.`; if(faRosterFull(G.user))return `정식 선수와 입단 예정 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`; const f=faFundsCheck(p,o,G.user); return f?f.msg:''; }
+function faUserBlock(p,o){ if(!p||!o||G.unemp)return ''; if(faOutBlocked(G.user,p))return `외부 FA 영입 한도(${faCapN()}명)를 채웠습니다.`; if(faRosterFull(G.user))return `정식 선수와 입단 예정 선수가 ${ROSTER_MAX}명으로 꽉 찼습니다. 먼저 한 명을 정리하세요.`; const f=faFundsCheck(p,o,G.user); if(f)return f.msg; const cc=faCapCheck(p,o); return cc&&!cc.ok?cc.msg:''; } /* 상한 결재까지 같은 판정(사인 관문의 faCapCheck): 제안 뒤 연봉 합계가 늘면 보고에서도 막힌 제안으로 본다 */
 function faSignRun(p,offers){
   { const uo=G.unemp?null:offers.find(o=>o.tid===G.user), why=uo?faUserBlock(p,uo):''; if(why){ offers=offers.filter(o=>o!==uo); if(G.fa.offers[p.id]){ delete G.fa.offers[p.id]; stop('FA',`${p.name} 측이 계약을 결정하는 날 우리 제안은 계약할 수 없는 상태여서 비교에서 빠졌고, 제안을 거둬들였습니다. ${why} 사정이 풀리면 협상실에서 다시 제안할 수 있습니다.`,p.id); } } } /* 막힌 우리 제안을 말없이 빼면 선수가 '제시함'으로 남아 기다리다 계약 실패로 끝났다(제보 11-19). AI 제안은 faPruneAi가 같은 검사로 정리한다 */
   offers=offers.filter(o=>!faOutBlocked(o.tid,p)&&!faRosterFull(o.tid)&&!faFundsCheck(p,o,o.tid)&&(o.tid===ME()||faAiCapOk(o.tid,p,o))); if(!offers.length)return; /* 정식 선수가 꽉 찬 구단은 계약할 수 없다(검수 11-09r) */
