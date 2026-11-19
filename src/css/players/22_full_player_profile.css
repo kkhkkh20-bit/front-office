@@ -407,3 +407,5 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
 }
 /* 휴대폰·좁은 화면 머리말: 사진이 연필 버튼 틀(.ph-w)에 싸이면서 위 112px 규칙(.pf-name>img)이 빠져 84px로 작아졌다. 틀 안 사진도 크게 */
 @media(max-width:1099px){.pf-screen .pf-name>.ph-w>img.av.big{width:clamp(96px,28vw,112px);height:clamp(96px,28vw,112px);border-radius:8px;object-fit:cover;object-position:50% 10%;border:1px solid var(--pt2,var(--line2))}}
+/* 나이·생년월일(구단주 11-19): 만 나이는 흐리게, 생년월일은 줄바꿈 없이 */
+.p-man{color:var(--muted);font-weight:400}.p-bd{white-space:nowrap}

@@ -34,7 +34,7 @@ function wpsNew(lg,c,t,used){ const st=wpsSt(lg), sd=wpsSd(lg), nk=wpick(WPS_NAT
   const isP=R()<.46, role=isP?(R()<.6?'SP':'RP'):null, pos=isP?null:wpick({C:.8,'1B':1.1,'2B':1,'3B':1,SS:1,LF:1,CF:1,RF:1.1});
   const W=G.wps, e={i:W.nid++,n:wpsName(nk,used),na:nk==='mx'?'멕시코':(FN[nk]||FN.us).nat,o:WPS_REG[nk]||'us',lg,c,t,P:isP?1:0,a:age,r:wpsRat(isP,pos,role,o),L:[]};
   if(isP)e.ro=role; else e.ps=pos; e.pt=Math.round((t==='p'?o+rnd(4,12):age<27?o+rnd(0,3):o)*10)/10; if(e.pt>80)e.pt=80;
-  e.ct=wpsCt(e); if(t==='i'){ e.ij={y:W.y??G.year-1,d:ri(70,160),f:1}; } return e; }
+  e.ct=wpsCt(e); bdSetW(e); /* 생년월일(번호 해시, 04b_birth) */ if(t==='i'){ e.ij={y:W.y??G.year-1,d:ri(70,160),f:1}; } return e; }
 /* 계약(남은 해·연봉 만 달러). 화면에는 스카우트 지식만큼만 보인다 */
 function wpsCt(e){ const o=wpsOvr(e), lg=e.lg;
   if(lg==='MLB'){ const pre=e.a<=25; const amt=pre?ri(74,90):Math.round(clamp(100+(o-60)*230+N(0,120),74,3800)); return {y:pre?ri(1,4):e.a>=34?ri(1,2):ri(1,6),amt}; }
@@ -104,7 +104,7 @@ function wpsNewYear(){ const W=G.wps; if(!W||W.ny>=G.year)return 0; W.ny=G.year;
 /* 심층 보고서용 전체 선수: 번호로 씨앗을 둔 난수라 언제 펼쳐도 같은 사람. G.players·G.nextId·본게임 난수를 그대로 둔다(돌려주기만 한다) */
 function wpsExpand(e){ if(!e)return null; const n0=G.nextId, keep=G.players[n0];
   try{ return withRng(rngHash('wpsX',e.i),()=>{ const p=newPlayer({age:e.a,isP:!!e.P,base:50,pos:e.ps,foreign:e.o==='jp'||e.o==='tw'?'아시아':'용병',nat:e.na,name:e.n}); if(G.players[p.id]===p)delete G.players[p.id];
-      p.id=e.i; p.r=Object.assign({},e.r); p.pot=Math.max(wpsOvr(e),e.pt||0); if(e.ro)p.role=e.ro; p.team=null; p.wps=e.lg; p.orig=e.o; return p; }); }
+      p.id=e.i; p.r=Object.assign({},e.r); p.pot=Math.max(wpsOvr(e),e.pt||0); if(e.ro)p.role=e.ro; p.team=null; p.wps=e.lg; p.orig=e.o; if(e.bd!=null)p.bd=e.bd; return p; }); }
   finally{ G.nextId=n0; if(keep)G.players[n0]=keep; } }
 /* 화면: 시즌 줄들(끝난 시즌 + 올해 진행 중) */
 function wpsLines(e){ const isP=!!e.P, out=e.L.map(l=>wpsH(l,isP)); const f=ovlFrac(G.year); if(e.cu&&e.cu.y===G.year&&f>0){ const q=wpsH(ovsPart(e.cu,f),isP); q.live=f<1?1:0; out.push(q); } return out; }

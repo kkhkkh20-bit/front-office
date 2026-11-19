@@ -11,6 +11,7 @@
       "src/engine/players/03_depth.js",
       "src/engine/players/03b_def_sub.js",
       "src/engine/players/04_growth.js",
+      "src/engine/players/04b_birth.js",
       "src/engine/league/05_calendar.js",
       "src/engine/matches/06_game.js",
       "src/engine/matches/07_pitch_records.js",

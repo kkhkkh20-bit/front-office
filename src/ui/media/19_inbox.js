@@ -93,6 +93,13 @@ function ibPsLadder(){ if(!G.ps||G.ps.done||typeof bkData!=='function')return ''
 /* 분류 탭 버튼(본문·맨 위 줄 공용) */
 function ibTabBtns(f,cnt){ return IB_CAT.map(([k,l])=>{ const n=k==='all'?0:cnt(k); return `<button role="tab" data-a="mf" data-v="${k}" class="${f===k?'on':''}${k==='task'&&n?' hot':''}"><span class="ibl">${l}</span><span class="ibs">${IB_CATS[k]}</span>${n?`<i>${n}</i>`:''}</button>`; }).join(''); }
 function inboxSubRow(){ if(!G||!G.mail)return ''; const f=['all','task','squad','move','club','media'].includes(UI.mf)?UI.mf:'all'; const cnt=k=>k==='task'?ibNeedList().length:mailFilter(k).filter(m=>!m.read).length; return `<nav class="subtabs ib-subtabs" role="tablist" aria-label="소식 분류">${ibTabBtns(f,cnt)}</nav>`; }
+/* 생일(구단주 11-19 생년월일): 우리 구단 선수의 생일을 소식함 위 줄에 짧게. 저장·난수 없이 화면에서만 계산한다(소식 목록·진행 멈춤에 넣지 않는다).
+   진행은 시리즈(보통 사흘) 단위라 하루씩 보면 놓치므로 오늘 포함 최근 사흘. 설정 › 표시 '선수 생일 알림'으로 끈다 */
+function ibBday(){ if(!G||G.unemp||(G.cfg&&G.cfg.bdayOff)||typeof bdIsDay!=='function')return ''; const L=[];
+  for(const p of playersOf(G.user))for(let k=0;k<3;k++)if(bdIsDay(p,G.day-k)){ L.push([k,p]); break; }
+  if(!L.length)return ''; L.sort((a,b)=>a[0]-b[0]||a[1].id-b[1].id);
+  const one=([k,p])=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><span class="muted">(${k?dmd(G.day-k)+' · ':''}만 ${manAge(p,G.day-k)}세)</span>`;
+  return `<span class="ibx-bd" title="${esc(L.map(([k,p])=>`${p.name} ${k?dmd(G.day-k):'오늘'} 생일 · 만 ${manAge(p,G.day-k)}세`).join('\n'))}">${L[0][0]?'생일':'오늘 생일'} · ${L.slice(0,2).map(one).join(', ')}${L.length>2?` 외 ${L.length-2}명`:''}</span>`; }
 function inboxView(){
   if(!['all','task','squad','move','club','media'].includes(UI.mf))UI.mf='all'; const f=UI.mf;
   const list=ibList(f); const unread=G.mail.filter(m=>!m.read&&!ibSpoiled(m)).length; const need=ibNeedList().length;
@@ -101,7 +108,7 @@ function inboxView(){
   const W0=wide(); /* '확인할 소식 N건'은 탭 숫자와 같아 뺐고, PC는 '안 읽음 N'도 목록 맨 위 '안 읽은 소식' 머리와 같아 뺐다(UI 검수 2026-11-15 1-5) */
   /* PC: 분류 탭은 맨 위 줄(inboxSubRow, 사용자 11-17 "한단계위로") */
   let bar=`<div class="ibx-bar">${fmOn()?'':`<div class="ibx-tabs" role="tablist">${ibTabBtns(f,cnt)}</div>`}
-    <div class="ibx-meta">${W0?'':unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${(()=>{ const D=ibDecideList(); return D.length?`<button class="lnk ibx-need" data-a="ibDecideGo" title="읽었어도 아직 답하지 않은 일(마감 빠른 순)">결정할 일 ${D.length}건${ibDue(D[0])!=null?` · ${W0?'가장 빠른 마감 ':''}D-${Math.max(0,ibDue(D[0])-G.day)}`:''}</button>`:''; })()}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · ↑/↓ 또는 K/J: 이전/다음">↑↓ 소식 이동 · Space 다음 소식·진행</span>':''}</div></div>`;
+    <div class="ibx-meta">${ibBday()}${W0?'':unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${(()=>{ const D=ibDecideList(); return D.length?`<button class="lnk ibx-need" data-a="ibDecideGo" title="읽었어도 아직 답하지 않은 일(마감 빠른 순)">결정할 일 ${D.length}건${ibDue(D[0])!=null?` · ${W0?'가장 빠른 마감 ':''}D-${Math.max(0,ibDue(D[0])-G.day)}`:''}</button>`:''; })()}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · ↑/↓ 또는 K/J: 이전/다음">↑↓ 소식 이동 · Space 다음 소식·진행</span>':''}</div></div>`;
   const lad=ibPsLadder(); if(lad)bar+=lad;
   if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'확인할 소식이 없습니다.':'소식이 없습니다.'}</p></section>`;
   const pin=ibPinned(list); const pinS=new Set(pin.map(m=>m.id)); const rest=list.filter(m=>!pinS.has(m.id));
