@@ -103,6 +103,12 @@ function postStart(p,day){ G.posting=G.posting||[];const promise=p.postPromise==
    예전 문턱(국내 능력 60)은 창단 직후 국내 선수 580명 중 5명이라 4시즌에 포스팅이 1번이었다. 56은 상위 약 18명(김혜성·고우석급 포함). MLB 응찰 확률·연봉은 2020~2025 계약에 맞춘 추정(불확실) */
 const POST_T={o:56,feeSell:300}; /* feeSell: 포스팅 비용 예상(만 달러)이 이만큼이면 우승 도전 구단도 보낸다 */
 const postPm=o=>o>=66?.9:o>=62?.8:o>=59?.55:o>=57?.25:.1; /* MLB 구단이 계약을 내밀 확률. 11-17: 62~65 70→80%, 59~61 45→55%(김혜성·송성문급 포스팅이 빅리그 계약을 받는 실제 흐름. MLB 국내 선수 3~5명) */
+/* MLB 국내 선수 수 완충(11-19 성장 점검): 설계 목표는 빅리그에 3~5명인데 12시즌에 14명까지 쌓였고 해마다 상위 40명 가운데 5~6명이 빠져나갔다.
+   국내 구단을 거쳐 MLB에 가 있는 선수가 MLB_SOFT_N(6)명 이상이면, 빅리그급 스타(국내 능력 MLB_STAR_O 63 이상)가 아닌 경계선 선수에게 MLB 구단이 계약을 내밀 확률과 해외 FA로 떠날 확률을
+   한 명 넘칠 때마다 25%p씩 줄인다(6명 .5, 7명 .25, 8명부터 .15). 스타는 그대로 간다. 모든 구단 선수에게 같은 식이고 화면 예상(postEst)도 같은 값을 쓴다. 난수는 쓰지 않는다(확률만 바뀜) */
+const MLB_SOFT_N=6, MLB_STAR_O=63;
+function mlbDomN(){ return (G.abroad||[]).filter(a=>!a.back&&!a.foreign&&!a.cand&&a.lg==='MLB'&&a.from!=null).length; }
+function mlbFullF(o){ if(o>=MLB_STAR_O)return 1; const n=mlbDomN(); return n<MLB_SOFT_N?1:clamp(.75-(n-MLB_SOFT_N+1)*.25,.15,1); }
 const postAmt0=o=>350+(o-58)*140; /* MLB 보장 연봉 중심(만 달러): 58 약 350(김혜성 3년 1250), 62 약 900(김하성 4년 2800), 67 약 1600(이정후 6년 1억1300) */
 const postYrs=o=>o>=66?[4,6]:o>=62?[2,4]:[1,3];
 /* 선수가 포스팅을 원하는가: 메이저리그 의지에 MLB가 원할 만한 실력이 더해진다(잘할수록 덜 망설인다). 우리와 AI 구단 선수가 같은 기준 */
@@ -113,7 +119,7 @@ const postStar=p=>clamp((ovr(p)-59)*5,0,30);
 function postWant(p){ return mlbOf(p)+postPull(p)+postStar(p)>=52; }
 /* 포스팅 예상(해외 활성화 2-3): 실제 결과 식(postPm·postAmt0·postYrs·ovsAgeT)의 기대 범위. 미국 스카우트가 보는 능력에 공개 오차(선수·해마다 고정)를 얹어 우리와 AI 구단이 같은 값을 본다.
    n: 관심 구단 수 범위, amt: 보장 연봉 범위(만 달러), yrs: 기간 범위, fee: 포스팅 비용 범위(만 달러), lv: 관심 정도 */
-function postEst(p){ const o=ovr(p)+hn('post'+G.year,p.id)*1.2, A=ovsAgeT(p.age), pM=postPm(o)*A.m, Y=postYrs(o).map(y=>Math.min(A.y,y));if(!A.m&&!A.n)return {pM:0,n:[0,0],amt:[0,0],yrs:[0,0],fee:[0,0],lv:'없음',none:true};
+function postEst(p){ const o=ovr(p)+hn('post'+G.year,p.id)*1.2, A=ovsAgeT(p.age), pM=postPm(o)*A.m*mlbFullF(o), Y=postYrs(o).map(y=>Math.min(A.y,y));if(!A.m&&!A.n)return {pM:0,n:[0,0],amt:[0,0],yrs:[0,0],fee:[0,0],lv:'없음',none:true};
   const a0=postAmt0(o)*A.f, amt=[Math.round(clamp(a0-130,100,2500)/10)*10,Math.round(clamp(a0+130,100,2500)/10)*10];
   const n=pM>=.8?[4,8]:pM>=.6?[2,5]:pM>=.4?[1,3]:pM>=.2?[0,2]:[0,1];
   return {pM,n,amt,yrs:Y,fee:[postFee(amt[0]*Y[0]),postFee(amt[1]*Y[1])],lv:pM>=.6?'높음':pM>=.4?'보통':pM>=.2?'낮음':'거의 없음'}; }
@@ -124,7 +130,7 @@ function postFee(amtTot){ const a=amtTot; const f=Math.min(a,2500)*.2+Math.max(0
 /* 해외 복귀 협상 정리: 우리 구단 몫이 아니거나(이직·야인) 결정할 이벤트가 없이 기한이 지난 선수는 원소속 구단(AI) 판단으로 끝낸다(예전에 꼬여 저장된 선수 복구 포함) */
 function ovsBackSweep(){ ovsBackStateFix(); for(const p of Object.values(G.players)){ if(!ovsBackReady(p))continue; if(p.retFrom!==G.user||G.unemp)ovsBackAI(p); } }
 function ovsDaily(){try{postFix();}catch(e){}try{ ovsBackSweep(); }catch(e){} if(!G.ovl||OVL_LGS.some(l=>!G.ovl[l]))try{ ovlInit(); }catch(e){} /* 예전 저장: 해외 리그는 다음 날짜 진행 때 만든다(불러오기만으로 난수를 쓰지 않게) */ for(const x of G.posting||[]){ if(x.done||G.day<x.day)continue; x.done=true; const p=G.players[x.pid]; if(!p||!postSame(p,x)||milServing(p)){ x.res='취소'; x.void=true; if(p&&x.tid===G.user&&!G.unemp)note('운영팀',`${p.name}의 포스팅 신청이 ${p.team!==x.tid?`${tname(p.team)}(으)로 옮겨`:'군 복무로'} 무효가 됐습니다.`,p.id); continue; } /* 신청 뒤 이적·이탈: 신청 무효(새 구단이 다시 신청할 수 있게) */ const o=ovr(p);
-    const pm=postPm(o);
+    const pm=postPm(o)*mlbFullF(o); /* MLB에 국내 선수가 이미 많으면 경계선 선수는 계약 제안이 준다(스타는 그대로) */
     /* 제안 목록: MLB·NPB 구단별 기간·연봉(만 달러). 선수는 MLB 꿈(mlb)과 금액을 보고 고르거나 모두 거절한다(커뮤니티 요청 11-07: 금액·거절 사유·리그를 보여 달라) */
     const A=ovsAgeT(p.age); const offs=[]; { const nM=R()<pm*A.m?1+(R()<pm*.6?1:0)+(R()<pm*.3?1:0):0, nN=R()<(o>=POST_T.o+1?.45:.15)*A.n?1+(R()<.3?1:0):0; const used=new Set(); const club=L=>{ let c; do c=pick(L); while(used.has(c)&&used.size<L.length); used.add(c); return c; };
       for(let i=0;i<nM;i++){ const Y=postYrs(o); const yrs=Math.min(A.y,ri(Y[0],Y[1])); offs.push({lg:'MLB',club:club(MLBT),yrs,amt:Math.round(clamp((postAmt0(o)+N(0,80))*A.f,100,2500)),minor:(o<POST_T.o+3||p.age>=34)&&R()<.5}); }
@@ -146,7 +152,7 @@ function ovsAgeT(age){ return age<=27?{y:6,f:1,m:1,n:1}:age<=29?{y:5,f:.95,m:1,n
 /* 해외 FA: 9시즌을 채운 FA 선수는 해외로 갈 수 있다. 해외 활성화 5: 빅리그급 스타 몫(postStar, 능력 60부터 65면 +30)도 포스팅과 같은 식으로 더한다(우리·AI 구단 선수 같게) */
 const ovsFAP=(p,o=ovr(p))=>clamp(mlbOf(p)+postPull(p)+postStar(p),0,100)/100*(o>=64?.8:.45);
 function ovsFA(pool){ for(const id of [...pool]){ const p=G.players[id]; if(!p||p.foreign||p.svc<9||p.age>33||milServing(p))continue; const o=ovr(p); if(o<POST_T.o+1)continue; mlbOf(p);
-    if(R()<ovsFAP(p,o)){ /* 의지는 포스팅(postWant)과 같은 식: 잘할수록 해외 구단이 부르니 덜 망설인다 */ const lg=o>=POST_T.o+4&&R()<.8?'MLB':'NPB'; /* 11-17: 능력 61·70% → 60·80%(해외 FA 빅리그 행이 드물어 MLB 국내 선수가 2명으로 자주 줄었다) */ const A=ovsAgeT(p.age); const yrs=Math.min(A.y,ri(1,3)); const amt=Math.round(lg==='MLB'?clamp(postAmt0(o)*.85*A.f,100,2000):clamp((o-53)*40,80,500)); ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'해외 FA'); const i=pool.indexOf(id); if(i>=0)pool.splice(i,1); } } }
+    if(R()<ovsFAP(p,o)*mlbFullF(o)){ /* 의지는 포스팅(postWant)과 같은 식: 잘할수록 해외 구단이 부르니 덜 망설인다 */ const lg=o>=POST_T.o+4&&R()<.8?'MLB':'NPB'; /* 11-17: 능력 61·70% → 60·80%(해외 FA 빅리그 행이 드물어 MLB 국내 선수가 2명으로 자주 줄었다) */ const A=ovsAgeT(p.age); const yrs=Math.min(A.y,ri(1,3)); const amt=Math.round(lg==='MLB'?clamp(postAmt0(o)*.85*A.f,100,2000):clamp((o-53)*40,80,500)); ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'해외 FA'); const i=pool.indexOf(id); if(i>=0)pool.splice(i,1); } } }
 /* 해외파의 한 해: 그 리그 수준으로 기록을 만들고, 계약이 끝나면 일부는 돌아온다 */
 function abroadYear(){ const NW=[]; for(const a of G.abroad||[]){ if(a.back)continue; if(a.foreign||a.cand){ try{ ovsForeignYear(a,NW); }catch(e){} continue; } const y1=a.y1??a.y+1; if(G.year<y1)continue; /* 아직 해외 시즌을 보내지 않았다(이번 겨울에 떠남) */ if((a.lines||[]).some(l=>l.y===G.year)){ delete a.cur; continue; } /* 같은 시즌 기록 두 번 만들지 않기 */ let p; try{ p=JSON.parse(a.pj); }catch(e){ continue; } if(!p)continue;
     if(a.ci==null)a.ci=ovlIdx(a.lg,a.club); const av=ovsAv(a,p); /* 재활 중인 기간만큼 못 뛴다 */ const line=ovsFinish(a,ovsTake(a,p,{ci:a.ci,av,gt:ovsGt(a)}),p,NW); /* 리그 수준은 LEAGUE_LV 표(ovsAdj), 기준 능력에 못 미치면 트리플A·NPB 2군 */ const ok=line.lvl===a.lg; a.lines.push(line);

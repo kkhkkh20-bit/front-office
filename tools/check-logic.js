@@ -10287,6 +10287,18 @@ T('[성장 11-19 시설 동등] 같은 선수·같은 세부 시설 단계·같�
     let pos=0; for(let sd=0;sd<8;sd++){ const gu=grow(G.user,sd), ga=grow(ai,sd); ok(gu===ga,'같은 시설인데 겨울 성장이 다름: 우리 '+gu+' / AI '+ga); if(gu>1)pos++; } ok(pos>=3,'준비: 성장한 경우가 너무 적음 '+pos);
   } finally { anaPow=a0; effPro=e0; mpickMult=m0; coachDevMult=c0; coachToolMult=t0; playShare=y0; G.mgr=g0; base.hist=keep; G.players[base.id]=base; Object.assign(G.fac,JSON.parse(U0)); Object.assign(S,JSON.parse(A0)); }
 });
+T('[해외 11-19 MLB 완충] 국내 구단을 거쳐 MLB에 가 있는 선수가 MLB_SOFT_N(6)명 이상이면 경계선 선수(국내 능력 63 미만)의 MLB 계약 제안·해외 FA 진출 확률이 줄고(6명 절반, 7명 4분의 1), 스타는 그대로 가며, 아마추어 직행·외국인은 세지 않는다(모든 구단 선수 같은 식)',()=>{ fresh();
+  const A0=G.abroad, l0=ovsLeave; const mk=(n,x)=>Array.from({length:n},(_,i)=>Object.assign({lg:'MLB',from:i%10,back:false,lines:[]},x||{}));
+  try{ G.abroad=mk(5); ok(mlbDomN()===5&&mlbFullF(58)===1,'5명인데 줄어듦'); G.abroad=mk(6); ok(mlbFullF(60)===.5&&mlbFullF(62.9)===.5,'6명 경계선 '+mlbFullF(60)); ok(mlbFullF(MLB_STAR_O)===1&&mlbFullF(70)===1,'스타까지 막힘');
+    G.abroad=mk(7); ok(mlbFullF(60)===.25,'7명 '+mlbFullF(60)); G.abroad=mk(12); ok(mlbFullF(60)===.15,'바닥 '+mlbFullF(60));
+    G.abroad=[...mk(5),...mk(4,{from:null}),...mk(3,{foreign:true}),...mk(3,{back:true}),...mk(3,{lg:'NPB'})]; ok(mlbDomN()===5&&mlbFullF(58)===1,'아마추어 직행·외국인·복귀·NPB를 셈 '+mlbDomN());
+    const P=Object.values(G.players).filter(p=>p.team!=null&&!p.foreign&&!p.prospect&&!p.mil&&p.age>=25&&p.age<=29); ok(P.length>=2,'준비'); const [b,s]=P; const B0=JSON.stringify(b), S0=JSON.stringify(s); setOvr(b,61); setOvr(s,66); b.mlb=60; s.mlb=60; b.svc=9; s.svc=9;
+    for(const [p,tag] of [[b,'경계선'],[s,'스타']]){ G.abroad=mk(0); const e0=postEst(p).pM; G.abroad=mk(6); const e1=postEst(p).pM; if(tag==='스타')ok(e1===e0&&e0>0,'스타 예상이 달라짐 '+e0+' '+e1); else ok(Math.abs(e1-e0*.5)<1e-9&&e0>0,'경계선 예상(화면)이 실제 식과 다름 '+e0+' '+e1); }
+    let go=0; ovsLeave=()=>{ go++; }; const cnt=(p,n)=>{ G.abroad=mk(n); go=0; for(let i=0;i<300;i++)withRng(rngHash('mlbcap1119',i),()=>ovsFA([p.id])); return go; };
+    const b0=cnt(b,0), b6=cnt(b,6), b8=cnt(b,8), s0=cnt(s,0), s8=cnt(s,8); ok(b0>=60,'준비: 경계선 해외 FA 진출 '+b0+'/300'); ok(b6<b0*.7&&b8<b0*.35,'자리가 찼는데 경계선 선수가 그대로 나감 '+b0+' → '+b6+' → '+b8); ok(s8===s0&&s0>=100,'스타 진출이 달라짐 '+s0+' → '+s8);
+    Object.assign(b,JSON.parse(B0)); Object.assign(s,JSON.parse(S0));
+  } finally { G.abroad=A0; ovsLeave=l0; }
+});
 T('[AI 규칙 동등 11-19 A1] 감독 경질 정산은 우리·AI 모두 mgrSevSettle 하나: 남은 지급분(staffLeft)·약속 위반 2회면 절반, AI는 그 구단 현금에서 [재정]',()=>{ fresh(); const a=team(otherT()), m=G.mgr[a.id]; delete m.interim; m.sal=300; m.yrs=3; m.plv=[]; const pay=Math.round(300*staffLeft(m)); const c0=a.cash, s0=JSON.stringify(G.spend||{}); const r=mgrSevSettle(a.id,m); ok(r.pay===pay&&c0-a.cash===pay,'AI 정산 '+r.pay+'/'+(c0-a.cash)+' ≠ '+pay); ok(JSON.stringify(G.spend||{})===s0,'AI 정산이 우리 장부에 적힘');
   m.plv=[{y:G.year,d:1,k:'listen',t:'a'},{y:G.year,d:2,k:'youth',t:'b'}]; const c1=a.cash, r2=mgrSevSettle(a.id,m); ok(r2.brk&&c1-a.cash===Math.round(300*staffLeft(m)*.5),'AI 위반 2회 절반 아님');
   const um=G.mgr[G.user]; um.sal=200; um.yrs=2; um.plv=[]; const u0=team(G.user).cash, m0=G.spend.mgr||0, v0=G.spend.sev||0, up=mgrSevPay(um).pay; mgrSevSettle(G.user,um); ok((G.spend.mgr||0)-m0===up&&(G.spend.sev||0)-v0===up&&team(G.user).cash===u0,'우리 구단 정산은 결산 장부(감독 연봉·경질 정산금)로');
