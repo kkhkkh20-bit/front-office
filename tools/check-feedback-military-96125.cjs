@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{build}=require('./build.cjs');const root=path.resolve(__dirname,'..');let seed=96125,forced=null,calls=0;const original=Math.random;Math.random=()=>{calls++;if(forced!=null)return forced;seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
-const owner=fs.readFileSync(path.join(root,'src/ui/career/29_owner_media.js'),'utf8'),milUI=owner.slice(owner.indexOf('function milView()'),owner.indexOf('/* 소유권은 구단별'));
+const owner=fs.readFileSync(path.join(root,'src/ui/career/29_owner_media.js'),'utf8'),milUI=owner.slice(owner.indexOf('function milData()'),owner.indexOf('/* 소유권은 구단별'));
 const dev=fs.readFileSync(path.join(root,'src/ui/staff/69_dev_plan.js'),'utf8'),posUI=dev.slice(dev.indexOf('function posCard('),dev.indexOf('/* 한 번 누르면 끝나는 메일 버튼'));
 try{new Function('assert','force','rngCalls',build({root,write:false}).engine+String.raw`
 const UI={},esc=x=>String(x),csec=(t,x)=>t+x,pcard=(p,o)=>p.name+Object.values(o).join(' '),rosterFoot=()=>'',hideOvr=()=>false,rchip=x=>String(x),rchipG=x=>String(x);
