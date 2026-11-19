@@ -7644,7 +7644,7 @@ T('[해외 활성화 3-3] 상주 외국인 후보군: 시장 후보 일부가 �
   ok(!G.ovp.L.filter(x=>x.cy===ovpWk()).some(x=>x===ovpPick('용병',{isP:false,amin:e.a,amax:e.a,pos:e.ps})),'같은 겨울에 바로 다시 나옴');
   G.year++; ovpAge(); ovpPregen(); G.day=KD(11,1); G.ovp.y=null; ovpYear(); const e2=G.ovp.L.find(x=>x.i===id);
   if(e2){ ok(e2.L.length===2&&e2.L[1].y===G.year&&JSON.stringify((({y,l,...h})=>h)(e2.L[0]))!=='', '다음 시즌 기록이 쌓이지 않음'); G.day=KD(12,5); delete e2.cy; const r0=OVP.p; OVP.p=1; let q2=null; try{ for(let i=0;i<300&&!q2;i++){ const x=fCandNew(q.foreign,{isP:false}); if(x.id===id)q2=x; else if(x.ovp){ try{ ovpBack(x); }catch(z){} delete G.players[x.id]; } else delete G.players[x.id]; } }finally{ OVP.p=r0; }
-    ok(q2&&q2.ovp===2&&q2.prev2&&q2.prev.y==null,'다시 나온 후보가 같은 사람·두 시즌 기록이 아님'); ok(fScout(q2).why.some(w=>/예전에도 한국행/.test(w)),'다시 나온 후보 표시'); }
+    ok(q2&&q2.ovp===2&&q2.prev2&&q2.prev.y===e2.L[1].y&&q2.prev2.y===e2.L[0].y,'다시 나온 후보가 같은 사람·두 시즌 기록이 아님'); /* 1230cb27(검수 1057~1069 해외 시즌 기록 보존)부터 직전 시즌 기록(prev)에 그 시즌 연도를 남긴다 */ ok(fScout(q2).why.some(w=>/예전에도 한국행/.test(w)),'다시 나온 후보 표시'); }
   ok(G.ovp.L.length>=OVP.n-1,'빈자리를 채우지 않음 '+G.ovp.L.length);
   const P=ovlTopPool(); ok(P.R.some(r=>r.pool&&r.tag==='해외 후보군'),'주목 선수에 후보군이 없음'); });
 T('[해외 리그] 해외 소식은 한 시즌 6건까지, 중요한 소식(시상·우리 구단 출신)부터 낸다',()=>{ fresh(); G.wire=[]; const N=[]; for(let i=0;i<10;i++)N.push({pr:i,t:'소식 '+i,a:{id:-i-1,from:null}}); ovsWires(N); ok(G.wire.length===6,'소식 수 '+G.wire.length); ok(G.wire.some(w=>w.t==='소식 9')&&!G.wire.some(w=>w.t==='소식 0'),'중요도 순서가 아님'); });
