@@ -92,7 +92,7 @@ if(typeof document!=='undefined')document.addEventListener('mouseup',e=>{ try{ i
 /* FM처럼 선수 정보를 열면 상단 제목이 '등번호. 이름', 작은 줄이 '포지션 - 소속'이 된다(상세는 renderSheet만 다시 그리므로 여기서 맞춘다) */
 function fmTitleSync(){ const ctx=typeof document!=='undefined'&&document.querySelector('#app .fm-context'); if(!ctx)return; const st=ctx.querySelector('strong'),sm=ctx.querySelector('small'),p=UI.sheet!=null&&!UI.cast?G.players[UI.sheet]:null;
   const put=(e,t)=>{ if(e&&(e.textContent!==t||e.firstElementChild))e.textContent=t; }; /* 같은 글이면 건드리지 않는다: 매번 다시 쓰면 화면 전체 스타일 계산이 한 번 더 돈다(카페 11-17 코치 채용 렉) */
-  if(p){ put(st,(p.team!=null?jno(p)+'. ':'')+p.name); put(sm,posLabel(p)+' - '+(p.team!=null?tshort(p.team):p.prospect?'드래프트 대상':'소속 없음')); }
+  if(p){ put(st,(p.team!=null?jno(p)+'. ':'')+p.name); put(sm,posLabel(p)+' - '+(p.team!=null?tshort(p.team):p.prospect?'드래프트 대상':'소속 없음')+(typeof bdText==='function'&&bdText(p)?' · 생년월일 '+bdText(p):'')); } /* 생년월일(구단주 11-19): PC 선수 카드는 사진 칸이 좁아 상단 작은 줄에 */
   else { put(st,ctx.dataset.loc||''); put(sm,ctx.dataset.club||''); }
   /* 상단 하위 탭 줄도 선수 탭(능력·육성·요약…)으로 바꾼다. 원래 줄은 보관했다가 닫으면 되돌린다 */
   const sub=document.querySelector('#app .fm-sub'),tabs=p&&fmOn()?document.querySelector('#sheet .pf-topnav .ptabs'):null; if(!sub)return;

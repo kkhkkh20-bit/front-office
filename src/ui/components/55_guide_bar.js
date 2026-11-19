@@ -50,11 +50,14 @@ function guideMailTick(){ if(!guideOn()||G.fdWait||(G.fd&&!G.fd.done))return; co
   for(const x of GUIDE_MAIL){ if(S[x.k]||!x.when())continue; S[x.k]=G.day; const need=x.auto.filter(k=>!guideAuto(k)); if(!need.length)continue;
     const m=mail(`비서 ${SEC}`,x.subj,x.body(),{kind:'업무',face:'sec',acts:guideEasy()?[]:[{l:'쉬운 진행 켜기',a:'easyMode',v:'1'}]}); m.auto=need; } }
 /* 설정 카드 */
+/* 생일 알림(구단주 11-19 생년월일): 소식함 위 줄에 우리 선수 생일을 보일지. 화면 표시만 바꾼다(G.cfg.bdayOff) */
+function bdayCfgCard(){ const off=!!(G.cfg&&G.cfg.bdayOff); return `<section class="card"><h2 class="sec">선수 생일 알림</h2><div class="chips">${[['0','보기'],['1','숨기기']].map(([v,l])=>`<button data-a="bdayOff" data-v="${v}" class="${(off?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단 선수의 생일이면 소식함 위 줄에 짧게 알려 줍니다(지난 사흘 안). 경기·성장에는 영향이 없습니다.</p></section>`; }
 function guideCfgCard(){ const off=!!(G.cfg&&G.cfg.guideOff); return `<section class="card"><h2 class="sec">첫 시즌 안내</h2><div class="chips">${[['0','보기'],['1','숨기기']].map(([v,l])=>`<button data-a="guideOff" data-v="${v}" class="${(off?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">홈 맨 위 '이번 시즌 할 일' 카드, 할 일 화면의 안내 띠, 단계마다 오는 비서 안내 소식을 보이거나 숨깁니다. 첫 시즌의 스토브리그가 끝나면 저절로 꺼집니다.</p></section>`; }
 Object.assign(A,{
   guideGo(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.go)return; if(x.k==='review'){ G.tutFlags=G.tutFlags||{}; G.tutFlags.review=true; } UI.guide={k:x.k}; A[x.go[0]]?.(x.go[1]); UI.guide={k:x.k,route:guideRoute()}; render(); },
   guideDeleg(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.deleg||!x.deleg.length)return; const L=x.deleg.map(k=>handOff(k)); toast(L.length>1?`${x.t}: ${x.deleg.length}가지 업무를 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`:L[0]); save(); render(); },
   easyMode(v){ const on=v==='1'; autoAll(on); toast(on?'쉬운 진행을 켰습니다. 연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강은 비서와 팀장이 맡습니다. 설정 › 권한에서 하나씩 다시 가져올 수 있습니다.':'맡긴 업무를 모두 다시 직접 합니다.'); save(); render(); },
   guideClose(){ UI.guide=null; render(); },
+  bdayOff(v){ G.cfg=G.cfg||{}; G.cfg.bdayOff=v==='1'; save(); render(); },
   guideOff(v){ G.cfg=G.cfg||{}; G.cfg.guideOff=v==='1'; if(G.cfg.guideOff)UI.guide=null; save(); render(); },
 });

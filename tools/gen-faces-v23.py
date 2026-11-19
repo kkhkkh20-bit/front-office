@@ -1,4 +1,5 @@
-"""v23 신생 구단 홈 유니폼 얼굴(assets/v23/expansion_kits) → src/ui/assets/00l_faces_v23_data.js (FACE23)
+"""신생 구단 홈 유니폼 얼굴(기본 v23b: assets/v23b/expansion_kits, 엠블럼만 바꾼 판) → src/ui/assets/00l_faces_v23_data.js (FACE23)
+ - 납품 판: 기본은 v23b(A1 방패·B7 왕관 마크). 예전 v23(별·방패)은 EXPKIT_VER=v23 로 다시 만들 수 있다. 두 판은 인물·칸 번호·시트 구조가 같아 데이터 모듈 하나(FACE23)를 갈아 끼운다(HTML에 두 판을 함께 넣지 않는다).
  - 기존 인물 420명(v6c 100·v13 60·v18 200·감독·코치 60)을 11·12구단 전용 유니폼으로 다시 렌더한 시트 20장. 새 인물은 없다.
    칸 번호 = 원래 묶음의 칸 번호(FACE6 0~99 v6c, 100~159 v13, 160~359 v18, FACE7.coach 칸)라 같은 사람이 그대로 옷만 바뀐다.
    manifest identities의 id 순서·칸 번호·원본 칸(source_reference)을 원본 묶음과 대조한다.
@@ -7,14 +8,15 @@
    256px 전부와 v18(128·256)은 HTML에 넣지 않고 같은 경로의 파일을 받는다(v13 256·FACE18처럼, 사이트 배포 tools/build-site.cjs v23Faces).
    파일 이름이 바뀌지 않아도 브라우저 캐시가 옛 사진을 쓰지 않게 시트별 해시 h를 주소 뒤 ?v=로 붙인다.
  - 화면 연결: 77_assets_ui.js f23Key·faceSheets(선수 'p'·감독·코치 'f7c'). 시트를 못 받으면 예전처럼 원년 구단 시트를 빌린다(faceTeamOf).
- 사용: python3 tools/gen-faces-v23.py  (얼굴 에셋을 바꿨을 때만, PIL 필요). 그 뒤 python3 tools/gen-face-centers.py(신생 구단 머리 중심표)"""
+ 사용: python3 tools/gen-faces-v23.py  (얼굴 에셋을 바꿨을 때만, PIL 필요. 예전 판: EXPKIT_VER=v23 python3 tools/gen-faces-v23.py). 그 뒤 python3 tools/gen-face-centers.py(신생 구단 머리 중심표)"""
 import base64, hashlib, io, json, os, re, sys
 from PIL import Image
 from source_manifest import source_file
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE='assets/v23/expansion_kits'
+VER=os.environ.get('EXPKIT_VER','v23b'); assert VER in ('v23','v23b'), VER
+BASE=f'assets/{VER}/expansion_kits'
 M=json.load(open(os.path.join(ROOT,BASE,'manifest.json'),encoding='utf8'))
-assert M['schema_version']=='v23-expansion-kits-1' and M['asset_validation_passed'] and M['production_complete'], '납품 상태'
+assert M['schema_version']==VER+'-expansion-kits-1' and M['asset_validation_passed'] and M['production_complete'], '납품 상태'
 src=open(source_file('engine','01_rules.js'),encoding='utf8').read()
 NT=len(re.findall(r"\{city:'([^']+)',nick:'([^']+)'",src.split('const TEAM_DEF=[')[1].split('];')[0])); assert NT==10
 KIT=re.findall(r"\{key:'([a-z_]+)',hue:(\d+),pal:\['(#[0-9A-Fa-f]{6})','(#[0-9A-Fa-f]{6})'",src.split('const EXP_KIT=[')[1].split('];')[0])
@@ -65,9 +67,9 @@ def uri(b):
     return 'data:image/webp;base64,'+base64.b64encode(o.getvalue()).decode()
 emb={st:{t:uri(files[(st,'128',t)]) for t in teams.values()} for st in ('v6c','v13','staff')}
 h={f'{st}/{cs}/{t}':hashlib.sha256(b).hexdigest()[:8] for (st,cs,t),b in files.items() if not (cs=='128' and st in emb)}
-F={'v':'23','base':BASE+'/sheets/','pitch':PITCH,'teams':teams,'h':h,'s128':emb}
+F={'v':VER[1:],'base':BASE+'/sheets/','pitch':PITCH,'teams':teams,'h':h,'s128':emb}
 out=os.path.join(ROOT,'src','ui','assets','00l_faces_v23_data.js')
-open(out,'w',encoding='utf8').write('/* 자동 생성: python3 tools/gen-faces-v23.py (손으로 고치지 않는다). v23 신생 구단 홈 유니폼 얼굴(기존 420명, 칸 번호 그대로). teams[구단 번호]=키트(엔진 EXP_KIT 순서). '
+open(out,'w',encoding='utf8').write('/* 자동 생성: python3 tools/gen-faces-v23.py (손으로 고치지 않는다). '+VER+' 신생 구단 홈 유니폼 얼굴(기존 420명, 칸 번호 그대로). teams[구단 번호]=키트(엔진 EXP_KIT 순서). '
   +"s128[묶음][키트]=HTML에 넣은 128px 시트(v6c·v13·staff, q60). 나머지는 파일로 받는다: base+묶음(v6c|v13|v18A|v18B|staff)+'/'+크기+'/'+키트+'.webp?v='+h[묶음/크기/키트]. 10x10 칸(pitch 144·272, 칸 안 8px) */\n"
   +'const FACE23='+json.dumps(F,ensure_ascii=False,separators=(',',':'))+';\n')
 print('완료',out,os.path.getsize(out),'파일로 받는 시트',len(h),'HTML 128px',sum(len(u) for d in emb.values() for u in d.values()))

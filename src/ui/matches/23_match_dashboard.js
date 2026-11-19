@@ -43,6 +43,13 @@ function castSnapshot(g,k){
 }
 const mdColor=(g,side)=>side==='a'?'#75b5df':'#69c69b';
 function mdSet(id,html){const el=document.getElementById(id);if(el&&el._mdHtml!==html){el.innerHTML=html;el._mdHtml=html;}}
+/* 얼굴 시트가 늦게 도착했을 때(77_assets_ui.js faceImg onload) 중계 화면에 이미 그려 둔 얼굴만 바꾼다(11-19: 처음 열면 선수단·미니 구장·좌우 카드·경기 전 라인업이 실루엣인 채로 남던 문제).
+   화면을 다시 만들지 않고 <img> 주소만 바꾸므로 재생·3D·스크롤·열린 패널·투구 표시는 그대로다. 중계가 닫혔거나 다른 경기 화면이면 아무것도 하지 않는다.
+   누구 얼굴인지는 그 칸의 data-fpid(경기 전 라인업) 또는 선수 버튼(data-a="castPlayer" data-v)에서 읽고, 그림은 처음 그릴 때와 같은 avImg로 만든다. 바뀐 칸 수를 돌려준다 */
+function castFaceRefresh(){ const c=UI.cast, root=document.querySelector('#sheet .cast'); if(!c||!root||+root.dataset.g!==c.g||!G)return 0; let n=0; const t=document.createElement('template');
+  for(const im of root.querySelectorAll('img.av')){ const host=im.closest('[data-fpid],[data-a="castPlayer"]'); if(!host)continue; const p=G.players[host.dataset.fpid??host.dataset.v]; if(!p)continue;
+    t.innerHTML=avImg(p,im.classList.contains('big')); const nw=t.content.firstElementChild, src=nw&&nw.tagName==='IMG'?nw.getAttribute('src'):null; if(src&&src!==im.getAttribute('src')){ im.setAttribute('src',src); n++; } }
+  return n; }
 function mdRow(g,id){ if(!g||!g.box)return null; for(const sd of ['h','a'])for(const k of ['bat','pit']){ const q=((g.box[sd]||{})[k]||[]).find(p=>p.id===id); if(q)return q; } return null; }
 function mdPlayer(g,id){ const p=G.players[id], q=mdRow(g,id); if(p)return q&&q.n&&q.n!==p.name?Object.assign(Object.create(p),{name:q.n}):p; return {id,name:q?.n||'기록 선수',th:q?.th,bt:q?.bt,isP:!!(q&&'outs' in q)}; } /* 경기 당시 이름·손잡이(박스스코어 기준): 이름을 바꾸거나 리그를 떠나도 한 경기 화면끼리 같게(검수 11-08) */
 function mdTeamPanel(g,side){const tid=side==='h'?g.home:g.away;return `<aside class="md-team-panel md-panel" style="--md-team:${cTeamCol(tid)}"><header>${badge(tid,20)}<b>${esc(tshort(tid))}</b><span id="md-role-${side}"></span></header><div class="md-mini-field" id="md-field-${side}"></div><div class="md-lineup" id="md-lineup-${side}"></div><div class="md-team-note" id="md-pitcher-${side}"></div></aside>`;}
