@@ -3372,6 +3372,15 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ib-subtabs button.hot i{background:var(--warn);color:#1a1405}
 /* 생일 줄(구단주 11-19): 한 줄로, 좁은 화면에서는 말줄임 */
 .ibx-bd{min-width:0;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}.ibx-bd .muted{margin-left:2px}
+
+/* 보낸이·읽지 않음 필터 칩(카페 11-19): 분류 탭 아래 한 줄, 넘치면 가로 스크롤 */
+.ibx-from{margin:-6px 0 10px;padding-bottom:4px;align-items:center}
+.ibx-from button{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 9px;min-height:28px}
+.ibx-from button i{font-style:normal;font-size:11px;color:var(--muted);background:var(--panel);border-radius:8px;padding:0 5px;line-height:15px}
+.ibx-from button.on i{color:#fff;background:rgba(255,255,255,.25)}
+.ibx-fsep{flex:none;width:1px;height:16px;background:var(--line);margin:0 4px}
+.ibx-unread-only.on{background:var(--warn,#d9822b);border-color:var(--warn,#d9822b)}
+@media (max-width:1099px){ .ibx-from{margin:0 0 8px} }
 /* 창단 드래프트 지명 직후 카드 · 창단 지명 평가 */
 .fde-rv{width:min(400px,100%)}
 .fde-ts{display:flex;flex-wrap:wrap;gap:6px}
@@ -3420,6 +3429,8 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .am-plist{display:flex;flex-direction:column;gap:6px}
 .am-pfilt{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
 .am-pfilt .chips{margin:0}
+.am-auto{display:inline-flex;align-items:center;gap:5px;color:var(--muted);cursor:pointer;white-space:nowrap}.am-auto input{margin:0}
+.am-pager{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 0}.am-pager .am-pgs{margin:0}.am-pager .am-pgs button{padding:3px 8px;min-height:0}
 .am-pscroll{max-height:70vh;overflow:auto;margin:0}
 .am-pscroll thead th{position:sticky;top:0;background:var(--panel);z-index:2}
 .am-ptable td,.am-ptable th{font-size:12px;padding:6px 8px;vertical-align:top}
@@ -6868,7 +6879,7 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .fmsh:has(.inbox-workspace) .fmmain>.gut{flex:1;min-height:0;overflow:hidden}
 .fmsh:has(.inbox-workspace) .fmwrap{height:100%;min-height:0;display:flex;flex-direction:column}
 #app .inbox-workspace{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;padding-bottom:8px}
-.inbox-workspace>.ibx-bar,.inbox-workspace>.ibx-mback{flex:none}
+.inbox-workspace>.ibx-bar,.inbox-workspace>.ibx-from,.inbox-workspace>.ibx-mback{flex:none}
 .inbox-workspace>.ibx{flex:1;min-height:0;height:auto!important;align-items:stretch;overflow:hidden}
 .inbox-workspace>.ibx>.ibx-lw{min-height:0;height:100%}
 .inbox-workspace .ibx-read{min-height:0;height:100%;overflow:auto;overscroll-behavior:contain;box-sizing:border-box}
@@ -42158,7 +42169,13 @@ const mailNeeds=m=>ibMust(m);
  - 접기는 단장만 한다. 시간이 지났다고 저절로 접거나 읽음 처리하지 않는다. 접힌 날짜에 안 읽은 소식이 있으면 머리에 표시된다.
  - 저절로 소식을 골라 열지 않는다(고른 것만 읽음). 날짜가 바뀌어도 보던 위치를 지킨다.
  - 스페이스바(와 '계속' 버튼): 화면 위에서부터 안 읽은 소식을 연다(확인할 소식 먼저). 다 읽었으면 진행한다. */
-function ibList(f){ let list=mailFilter(f); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
+/* 보낸이·읽지 않음 필터(카페 11-19): 분류 탭 아래 칩. 화면 상태(UI)로만 두고 저장하지 않는다. 보낸이 칩은 지금 분류에 있는 보낸이를 많은 순으로 */
+function ibFromList(f){ const n={}; for(const m of mailFilter(f))n[m.from]=(n[m.from]||0)+1; return Object.keys(n).sort((a,b)=>n[b]-n[a]||a.localeCompare(b,'ko')).map(k=>[k,n[k]]); }
+function ibSub(f,list){ const F=UI.mfFrom; if(F&&list.length&&!list.some(m=>m.from===F))UI.mfFrom=null; /* 분류를 바꿔 그 보낸이가 없으면 필터를 푼다 */
+  return list.filter(m=>(!UI.mfFrom||m.from===UI.mfFrom)&&(!UI.mfUnread||!m.read)); }
+function ibFromChips(f){ const L=ibFromList(f); if(!L.length)return ''; const top=L.slice(0,10), cur=UI.mfFrom;
+  return `<div class="chips ibx-from" role="group" aria-label="보낸이·읽음 필터"><button data-a="mfFrom" data-v="" class="${cur?'':'on'}">모든 보낸이</button>${top.map(([k,n])=>`<button data-a="mfFrom" data-v="${esc(k)}" class="${cur===k?'on':''}">${esc(k)}<i>${n}</i></button>`).join('')}${cur&&!top.some(x=>x[0]===cur)?`<button data-a="mfFrom" data-v="${esc(cur)}" class="on">${esc(cur)}</button>`:''}<span class="ibx-fsep"></span><button data-a="mfUnread" class="ibx-unread-only ${UI.mfUnread?'on':''}" aria-pressed="${!!UI.mfUnread}">읽지 않음만</button></div>`; }
+function ibList(f){ let list=ibSub(f,mailFilter(f)); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
   list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep||ibDecide(m)||(m.acts&&m.acts.length&&!mailDone(m)))return true; /* 진행 중인 일은 같은 제목이어도 따로(검수 11-07) */ const k=m.from+'|'+m.subj+'|'+m.body; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
 function contSub(def){ const n=ibNeedList().length; return n?`확인할 소식 ${n}건`:def; }
@@ -42199,12 +42216,12 @@ function inboxView(){
   /* PC: 분류 탭은 맨 위 줄(inboxSubRow, 사용자 11-17 "한단계위로") */
   let bar=`<div class="ibx-bar">${fmOn()?'':`<div class="ibx-tabs" role="tablist">${ibTabBtns(f,cnt)}</div>`}
     <div class="ibx-meta">${ibBday()}${W0?'':unread?`<button class="lnk ibx-ur" data-a="ibUnreadGo" title="가장 오래된 안 읽은 소식으로">안 읽음 <b id="ib-unread">${unread}</b></button>`:`<span>안 읽음 <b id="ib-unread">0</b></span>`}${(()=>{ const D=ibDecideList(); return D.length?`<button class="lnk ibx-need" data-a="ibDecideGo" title="읽었어도 아직 답하지 않은 일(마감 빠른 순)">결정할 일 ${D.length}건${ibDue(D[0])!=null?` · ${W0?'가장 빠른 마감 ':''}D-${Math.max(0,ibDue(D[0])-G.day)}`:''}</button>`:''; })()}${days.length>1?`<button class="lnk" data-a="ibFoldOld">${foldN?'모두 펼치기':'지난 날짜 접기'}</button>`:''}${unread?'<button class="lnk" data-a="readAll">모두 읽음</button>':''}${wide()?'<span class="ibx-key" title="스페이스바: 안 읽은 소식을 확인할 소식부터 차례로 열고, 다 읽었으면 진행 · ↑/↓ 또는 K/J: 이전/다음">↑↓ 소식 이동 · Space 다음 소식·진행</span>':''}</div></div>`;
-  const lad=ibPsLadder(); if(lad)bar+=lad;
-  if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${f==='task'?'확인할 소식이 없습니다.':'소식이 없습니다.'}</p></section>`;
+  bar+=ibFromChips(f); const lad=ibPsLadder(); if(lad)bar+=lad;
+  if(!list.length)return bar+`<section class="card ibx-empty"><p class="muted">${UI.mfFrom||UI.mfUnread?'조건에 맞는 소식이 없습니다. 보낸이·읽지 않음 필터를 풀어 보세요.':f==='task'?'확인할 소식이 없습니다.':'소식이 없습니다.'}</p></section>`;
   const pin=ibPinned(list); const pinS=new Set(pin.map(m=>m.id)); const rest=list.filter(m=>!pinS.has(m.id));
   const all0=pin.concat(rest).map(m=>m.id); const W=wide();
   let sel=[UI.mailFocus,UI.ibSel].find(v=>v&&all0.includes(v));
-  if(UI.mailFocus&&!sel&&G.mail.some(m=>m.id===UI.mailFocus&&!ibSpoiled(m))){ UI.mf='all'; return inboxView(); }
+  if(UI.mailFocus&&!sel&&G.mail.some(m=>m.id===UI.mailFocus&&!ibSpoiled(m))){ UI.mf='all'; UI.mfFrom=null; UI.mfUnread=false; return inboxView(); }
   if(UI.mailFocus&&sel&&!W)UI.ibOpen=sel; UI.ibSel=sel||null;
   /* 지난 소식은 최근 lim건까지(고른 소식이 그보다 뒤면 거기까지), 나머지는 맨 아래 '더 보기' */
   const lim=UI.ibN||80; const ri=sel?rest.findIndex(m=>m.id===sel):-1; const cut=Math.max(lim,ri+1); const shown=rest.slice(0,cut);
@@ -42269,7 +42286,7 @@ function inboxWire(){ ibFit();cssVarSet(document.documentElement,'--ibtop',(ibTo
 function ibStep(d){ const rows=[...document.querySelectorAll('.ibx-list .ibr')],visible=new Set(rows.map(el=>el.dataset.mid)); const ids=(UI._ibOrder||ibList(UI.mf||'all').map(m=>m.id)).filter(id=>!rows.length||visible.has(String(id))||id===UI.ibSel); const cur=wide()?UI.ibSel:UI.ibOpen; const i=ids.indexOf(cur); const n=ids[i<0?(d>0?0:ids.length-1):i+d]; if(n)A.mailJump(n); }
 /* 스페이스바: 안 읽은 소식 → 하나씩 열기, 없으면 계속 버튼 */
 function ibSpace(){ if(UI._spT&&Date.now()-UI._spT<500)return; UI._spT=Date.now(); /* 스페이스바: 안 읽은 소식이 있으면 차례로 연다(확인할 소식 먼저, 그다음 나머지, 오래된 것부터). 다 읽었으면 진행 */
-  const u=ibUnreadOrder(); if(u.length){ let m=u[0]; if(UI.tab==='inbox'){ const L=document.querySelector('.ibx-list'); const R=L?[...L.querySelectorAll('.ibr.unread[data-mid]')].map(e=>G.mail.find(x=>x.id===e.dataset.mid)).filter(x=>x&&!x.read):[]; const M=R.filter(ibMust); if(R.length)m=(M.length?M:R)[(M.length?M:R).length-1]; } /* 화면에 보이는 목록에서 아래부터 위로: 확인할 소식이 있으면 그중 맨 아래, 없으면 안 읽은 소식 맨 아래(사용자 제보 11-14: 소식이 많으면 위아래로 오감). 접힌 날짜·숨은 중복은 목록 순서로 */ UI.mf='all'; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
+  const u=ibUnreadOrder(); if(u.length){ let m=u[0]; if(UI.tab==='inbox'){ const L=document.querySelector('.ibx-list'); const R=L?[...L.querySelectorAll('.ibr.unread[data-mid]')].map(e=>G.mail.find(x=>x.id===e.dataset.mid)).filter(x=>x&&!x.read):[]; const M=R.filter(ibMust); if(R.length)m=(M.length?M:R)[(M.length?M:R).length-1]; } /* 화면에 보이는 목록에서 아래부터 위로: 확인할 소식이 있으면 그중 맨 아래, 없으면 안 읽은 소식 맨 아래(사용자 제보 11-14: 소식이 많으면 위아래로 오감). 접힌 날짜·숨은 중복은 목록 순서로 */ UI.mf='all'; UI.mfFrom=null; UI.mfUnread=false; if(UI.tab!=='inbox')A.openMail(m.id); else A.mailJump(m.id); return; }
   if(G.live){ toast('경기를 먼저 끝까지 보세요.'); return; } const bl=blocker(); if(bl&&!G.res){ toast(bl); UI.tab='home'; render(); return; }
   const b=document.querySelector('button.continue:not([disabled])')||document.querySelector('button.continue'); const v=b?b.dataset.v:'next';
   /* 특별한 소식(남은 결정·제안·중요 소식)이 없으면 묻지 않고 바로 진행한다. 설정에서 '진행 전에 묻기'를 켜면 매번 묻는다 */
@@ -46983,6 +47000,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   evPick(v){ const [id,i]=v.split(':'); const e=(G.evs||[]).find(x=>x.id===id); const r=evPick(id,+i); save(); if(e&&!e.done){ if(r)toast(r); render(); return; } /* 고를 수 없는 선택이면 이유만 알린다(검수 11-09z) */ sfx('confirm',.6); if(e&&e.res)toast(e.res.split('\n')[0].slice(0,140)); /* 결정 결과를 바로 알린다(본문도 전부 펼침) */ if(e&&e.k==='agent'&&+i===0&&G.players[e.data.pid]){ A.extNgt(e.data.pid); return; } /* 다년계약 요구를 받아들이면 바로 연장 협상 창을 연다. 열 수 없으면 이유를 알리고 선수 화면만(피드백 11-17 연장) */ if(e&&e.k==='fx'&&+i===0){ const fp=G.players[e.data&&e.data.pid]; UI.ff=Object.assign({t:'yb',r:'all',s:'cur'},UI.ff||{}); UI.ff.t=fp&&fp.foreign==='아시아'?'asia':'yb'; UI.ff.r='all'; A.go('transfer:foreign'); return; } /* 그 선수 종류의 후보 탭으로(플레이 테스트 11-13: 일반 외국인인데 아시아쿼터 탭이 열림) */ if(e&&e.k==='ret'&&/코치 우선 협상/.test((e.opts[+i]||{}).l||'')){ A.go('staff:coach'); return; } /* 은퇴 선수를 코치 후보로: 바로 코치진 계약 화면으로 */ render(); },
   readAll(){ G.mail.forEach(m=>m.read=true); save(); render(); },
   mf(v){ UI.mf=v; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); },
+  mfFrom(v){ UI.mfFrom=v||null; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); }, mfUnread(){ UI.mfUnread=!UI.mfUnread; UI.ibSel=null; UI.ibOpen=null; UI._ibFirst=true; render(); }, /* 보낸이·읽지 않음 필터(카페 11-19): 화면 상태만 */
   goWork(v){ const g=GW[v]||['home']; A.go(g.join(':')); },
   go(v){ UI.clubInspect=null; v=String(v);if(UI.cast&&!castPark())A.castClose(true); /* 중계 위에서 다른 화면·진행을 누르면 중계를 닫고 간다(사용자 제보 11-06: 경기 끝난 중계에서 '계속'을 눌러도 화면이 그대로) */  UI.it=UI.it||{}; if(v==='club:uld'||v==='uld')v='uld:lobby'; /* 예전 자리(구단 › 유저 래더) → 래더 로비(사용자 11-17) */ if(v==='league:news')v='club:news'; if(v==='league:fans')v='club:fans'; if(v==='staff:mil'||v==='roster:mil'){ UI.it.roster='mil'; UI.rosterTeam=null; return A.tab('roster'); } if(v==='club:set'||v==='club:auth')v='cfg:'+v.split(':')[1]; if(v==='train'||v==='train:camp'||v==='train:dev'||v==='train:lead')v='staff:'+(v.split(':')[1]||'camp'); else if(v==='staff:fac'||v==='train:fac'){ UI.it.inv='train'; v='club:inv'; } else if(v==='club:stad'){ UI.it.inv='home'; v='club:inv'; } else if(v==='club:bus'){ UI.it.inv='bus'; v='club:inv'; } if(v==='scout'||v==='scout:draft')v='transfer:draft'; else if(v==='scout:scouts')v='staff:scouts'; else if(v==='scout:intl'){ UI.it=UI.it||{}; UI.it.fview='net'; v='transfer:foreign'; }
     { const [t0,s0]=String(v).split(':'); const par=ALIAS[t0]&&ALIAS[t0][s0]; UI.it=UI.it||{}; if(par){ if(par===s0)delete UI.it['mg_'+t0+'_'+par]; else UI.it['mg_'+t0+'_'+par]=s0; } } /* 묶음 탭 자체로 가면 그 탭의 기본 안쪽 화면(PC 구단 정보는 개요) */
@@ -50924,7 +50942,8 @@ function amTrendHtml(x,isP,col,full){ const T=amTrend(x,isP); if(!T.length)retur
   return T.map(t=>`<span class="am-tr${t.d>0?' up':t.d<0?' dn':''}">${c}${t.gr} ${t.k?(isP?`${t.k.v.toFixed(2)}${full?` K/9 ${t.k.k9.toFixed(1)}`:''}`:`${fmt3(t.k.v)}${full?` 타율 ${fmt3(t.k.avg)}`:''}`):'<i class="muted">표본 적음</i>'}${t.d>0?'↑':t.d<0?'↓':''}</span>`).join(' · ')+`<i class="muted"> ${isP?'ERA':'OPS'}</i>`; }
 const amSlTag=p=>amSlump(p)?' <span class="pill warn">3학년 부진</span>':'';
 /* ---------- 선수 탭: 1~3학년(대학 1~4학년) 전체 목록 ---------- */
-const AM_GRS=[['h1','고1'],['h2','고2'],['h3','고3'],['c1','대1'],['c2','대2'],['c3','대3'],['c4','대4']];
+const AM_GRS=[['all','전 학년'],['h1','고1'],['h2','고2'],['h3','고3'],['c1','대1'],['c2','대2'],['c3','대3'],['c4','대4']]; /* '전 학년'(카페 11-19): 고1~대4를 한 목록으로 */
+const AM_PAGE=100; /* 목록 한 쪽에 보여 주는 수(수천 명이어도 한 번에 다 그리지 않는다) */
 const AM_PGS=[['all','전체'],['P','투수'],['C','포수'],['IF','내야'],['OF','외야']];
 const amPg=x=>x.isP?'P':x.pos==='C'?'C':['1B','2B','3B','SS','DH'].includes(x.pos)?'IF':'OF';
 const amPosT=x=>x.isP?'투수':POSK[x.pos]||x.pos||'-';
@@ -50934,24 +50953,36 @@ function amRecLine(isP,h){ if(!h)return '<span class="muted">기록 없음</span
   return h.pa?`타율 ${h.ab?fmt3(h.h/h.ab):'-'} · OPS ${fmt3(bRate(h).ops)} · 홈런 ${h.hr} · ${h.pa}타석`:'<span class="muted">출전 없음</span>'; }
 const amRecScore=(isP,h)=>{ if(!h)return -10; if(isP)return h.outs<15?-9+h.outs*.01:(4.5-h.er*27/h.outs)*.6+(h.so*27/h.outs-7)*.25; return h.pa<20?-9+h.pa*.01:(bRate(h).ops-.8)*5; };
 /* 학년 하나의 후보 행: 저학년(G.amU)·졸업 학년(드래프트 후보) */
-function amProspectRows(gk){ const col=gk[0]==='c', gr=+gk[1], Y=G.year, yy=amRecYear(), out=[];
+function amProspectRows(gk){ if(gk==='all')return AM_GRS.slice(1).flatMap(g=>amProspectRows(g[0])); const col=gk[0]==='c', gr=+gk[1], Y=G.year, yy=amRecYear(), out=[];
   if(gr===(col?4:3)){ for(const id of G.draftClass||[]){ const p=G.players[id]; if(!p||!p.prospect||p.ovsRet||p.team!=null||!!p.college!==col)continue; const h=(p.amY||[]).find(r=>r.y===yy&&!r.syn);
-      out.push({id,kind:'p',p,n:p.name,sch:p.school||'',a:areaOf(p),gr,isP:!!p.isP,pos:p.pos,t:p.th,b:p.bt,ht:p.ht,wt:p.wt,h}); } }
-  else for(const e of Object.values(amPipe().L)){ if(!!e.c!==col||amGrade(e,Y)!==gr)continue; const r=e.y.find(x=>x[0]===yy); out.push({id:e.id,kind:'e',e,n:e.n,sch:e.s,a:e.a,gr,isP:!!e.P,pos:e.pos,t:e.t,b:e.b,ht:e.ht,wt:e.wt,h:r?amRowObj(e,r):null}); }
+      out.push({id,kind:'p',p,n:p.name,sch:p.school||'',a:areaOf(p),gr,c:col,isP:!!p.isP,pos:p.pos,t:p.th,b:p.bt,ht:p.ht,wt:p.wt,h}); } }
+  else for(const e of Object.values(amPipe().L)){ if(!!e.c!==col||amGrade(e,Y)!==gr)continue; const r=e.y.find(x=>x[0]===yy); out.push({id:e.id,kind:'e',e,n:e.n,sch:e.s,a:e.a,gr,c:col,isP:!!e.P,pos:e.pos,t:e.t,b:e.b,ht:e.ht,wt:e.wt,h:r?amRowObj(e,r):null}); }
   return out; }
-function amPlyPage(y){ const f=UI.amF=Object.assign({gr:'h1',pg:'all',ar:'all',srt:'rec'},UI.amF||{}); const yy=amRecYear(); const F=amFollowL(G.user);
+/* 스카우트 평가(우리 구단이 본 추정치만): 같은 화면 안에서 한 번만 계산한다 */
+const amEstOf=x=>x.est||(x.est=x.kind==='e'?amEstU(x.e,G.user):amEstP(x.p,G.user));
+/* 대형 재목 자동 관심 등록(카페 11-19, 설정은 저장에 남고 기본은 꺼짐): 우리 스카우트 평가 등급이 '대형 재목'인 선수를 관심 목록에 넣는다.
+   손으로 넣은 관심 선수가 밀려나지 않게 80명 상한 안에서만 넣고, 난수를 쓰지 않는다(평가는 결정적 해시). 넣은 수를 돌려준다 */
+function amAutoFollow(){ if(!G.cfg||!G.cfg.amAuto||G.user==null||G.unemp)return 0; const F=amFollowL(G.user); let n=0;
+  for(const x of amProspectRows('all')){ if(F.length>=AM_FW_MAX)break; if(F.includes(x.id)||amTier(amEstOf(x)).t!==AM_TIERS[0][1])continue; amFollow(x.id,true); n++; }
+  return n; }
+function amPlyPage(y){ const f=UI.amF=Object.assign({gr:'h1',pg:'all',ar:'all',srt:'rec',p:0},UI.amF||{}); const yy=amRecYear(); const F=amFollowL(G.user);
+  const t0=performance.now(); if(G.cfg&&G.cfg.amAuto)amAutoFollow();
   const L=amProspectRows(f.gr).filter(x=>(f.pg==='all'||amPg(x)===f.pg)&&(f.ar==='all'||x.a===f.ar)&&(f.srt!=='sl'||x.kind==='p'&&amSlump(x.p)));
   for(const x of L){ x.fol=F.includes(x.id); x.obs=amObsN(x.kind==='e'?x.e:x.p); x.rs=amRecScore(x.isP,x.h); }
-  const est=x=>x.est||(x.est=x.kind==='e'?amEstU(x.e,G.user):amEstP(x.p,G.user));
+  const est=amEstOf;
   const S0={rec:(a,b)=>b.rs-a.rs,est:(a,b)=>est(b).v-est(a).v,fol:(a,b)=>(b.fol-a.fol)||(b.obs-a.obs)||(b.rs-a.rs)}; S0.sl=S0.est; L.sort(S0[f.srt]||S0.rec);
-  const N=L.length, show=L.slice(0,150);
+  /* 쪽 나누기: 한 쪽 100명. 쪽 번호는 화면 상태(UI.amF.p)에만 둔다 */
+  const N=L.length, pages=Math.max(1,Math.ceil(N/AM_PAGE)), pg=f.p=Math.min(Math.max(0,+f.p||0),pages-1), show=L.slice(pg*AM_PAGE,(pg+1)*AM_PAGE);
   const chips=(k,opts)=>`<div class="chips">${opts.map(([v,l])=>`<button data-a="amF" data-v="${k}:${v}" class="${f[k]===v?'on':''}">${l}</button>`).join('')}</div>`;
+  const pager=pages>1?`<nav class="am-pager" aria-label="목록 쪽"><button class="btn small" data-a="amF" data-v="p:${pg-1}" ${pg>0?'':'disabled'} aria-label="이전 쪽">◀</button><span class="small">${pg*AM_PAGE+1}~${Math.min(N,(pg+1)*AM_PAGE)} / ${N}명</span><button class="btn small" data-a="amF" data-v="p:${pg+1}" ${pg<pages-1?'':'disabled'} aria-label="다음 쪽">▶</button>${pages<=12?`<div class="chips am-pgs">${Array.from({length:pages},(_,i)=>`<button data-a="amF" data-v="p:${i}" class="${i===pg?'on':''}">${i+1}</button>`).join('')}</div>`:''}</nav>`:'';
   const senior=f.gr==='h3'||f.gr==='c4';
-  const row=x=>{ const T=amTier(est(x)); return `<tr><td><button class="am-star${x.fol?' on':''}" data-a="amFollow" data-v="${x.id}" title="관심 선수" aria-label="관심 선수" aria-pressed="${!!x.fol}">${x.fol?'★':'☆'}</button> ${amLnkP(x)}<small class="block">${esc(amPosT(x))} · ${esc(x.t||'')}투${esc(x.b||'')}타 · ${x.ht||'-'}cm ${x.wt||'-'}kg</small></td><td>${amLnkS(x.sch)}<small class="block">${esc(x.a||'')}</small></td><td class="am-rec">${amRecLine(x.isP,x.h)}${x.kind==='p'?amSlTag(x.p):''}<small class="block">${amTrendHtml(x.kind==='e'?x.e:x.p,x.isP,f.gr[0]==='c')}</small>${x.kind==='p'&&amSlHint(x.p)?`<small class="block">스카우트: ${esc(amSlHint(x.p))}</small>`:''}</td><td><span class="pill">${esc(T.t)}</span><small class="block">${T.lo===T.hi?esc(T.w):`${esc(T.lo)}~${esc(T.hi)} · ${esc(T.w)}`}${x.obs?` · 관찰 ${x.obs}회`:''}</small></td></tr>`; };
-  const list=`<section class="card am-plist candidate-list"><div class="row between wrapr"><h2 class="sec">선수 목록 · ${esc((AM_GRS.find(g=>g[0]===f.gr)||[,''])[1])}</h2><span class="small muted">${N}명${N>show.length?` · 위 ${show.length}명 표시`:''} · ${yy} 기록</span></div>
-    <div class="am-pfilt">${chips('gr',AM_GRS)}${chips('pg',AM_PGS)}${chips('srt',[['rec','기록순'],['est','스카우트 평가순'],['fol','관심순'],['sl','3학년 부진']])}${chips('ar',[['all','전 권역'],...AREA.map(a=>[a.k,a.k])])}</div>
-    <div class="tw am-pscroll"><table class="sqt candidate-table am-ptable"><thead><tr><th>선수</th><th>학교</th><th>${yy} 기록 · 학년별</th><th>스카우트 평가</th></tr></thead><tbody>${show.map(row).join('')||`<tr><td colspan="4" class="small muted">${f.srt==='sl'?'3학년 부진 선수가 없습니다. 졸업 학년 기록이 2학년보다 뚜렷이 나쁜 선수(두 해 모두 40타석·15이닝 이상)만 나옵니다.':'조건에 맞는 선수가 없습니다.'}</td></tr>`}</tbody></table></div>
+  const row=x=>{ const T=amTier(est(x)); return `<tr><td><button class="am-star${x.fol?' on':''}" data-a="amFollow" data-v="${x.id}" title="관심 선수" aria-label="관심 선수" aria-pressed="${!!x.fol}">${x.fol?'★':'☆'}</button> ${amLnkP(x)}<small class="block">${esc(amPosT(x))} · ${esc(x.t||'')}투${esc(x.b||'')}타 · ${x.ht||'-'}cm ${x.wt||'-'}kg</small></td><td>${amLnkS(x.sch)}<small class="block">${esc(x.a||'')}${f.gr==='all'?` · ${x.c?'대':'고'}${x.gr}`:''}</small></td><td class="am-rec">${amRecLine(x.isP,x.h)}${x.kind==='p'?amSlTag(x.p):''}<small class="block">${amTrendHtml(x.kind==='e'?x.e:x.p,x.isP,!!x.c)}</small>${x.kind==='p'&&amSlHint(x.p)?`<small class="block">스카우트: ${esc(amSlHint(x.p))}</small>`:''}</td><td><span class="pill">${esc(T.t)}</span><small class="block">${T.lo===T.hi?esc(T.w):`${esc(T.lo)}~${esc(T.hi)} · ${esc(T.w)}`}${x.obs?` · 관찰 ${x.obs}회`:''}</small></td></tr>`; };
+  const auto=!!(G.cfg&&G.cfg.amAuto);
+  const list=`<section class="card am-plist candidate-list"><div class="row between wrapr"><h2 class="sec">선수 목록 · ${esc((AM_GRS.find(g=>g[0]===f.gr)||[,''])[1])}</h2><span class="small muted">${N}명${pages>1?` · ${pg+1}/${pages}쪽`:''} · ${yy} 기록</span></div>
+    <div class="am-pfilt">${chips('gr',AM_GRS)}${chips('pg',AM_PGS)}${chips('srt',[['rec','기록순'],['est','스카우트 평가순'],['fol','관심순'],['sl','3학년 부진']])}${chips('ar',[['all','전 권역'],...AREA.map(a=>[a.k,a.k])])}<label class="am-auto small" title="우리 스카우트 평가가 '대형 재목'인 선수를 관심 목록(80명 상한 안)에 자동으로 넣습니다. 손으로 넣은 관심 선수는 밀어내지 않습니다."><input type="checkbox" data-a="amAuto" ${auto?'checked':''}> 대형 재목 자동 관심 등록</label></div>
+    <div class="tw am-pscroll"><table class="sqt candidate-table am-ptable"><thead><tr><th>선수</th><th>학교</th><th>${yy} 기록 · 학년별</th><th>스카우트 평가</th></tr></thead><tbody>${show.map(row).join('')||`<tr><td colspan="4" class="small muted">${f.srt==='sl'?'3학년 부진 선수가 없습니다. 졸업 학년 기록이 2학년보다 뚜렷이 나쁜 선수(두 해 모두 40타석·15이닝 이상)만 나옵니다.':'조건에 맞는 선수가 없습니다.'}</td></tr>`}</tbody></table></div>${pager}
     <p class="small muted">${senior?'졸업 학년은 드래프트 보드와 같은 평가입니다.':'저학년은 능력 수치 대신 등급과 범위만 봅니다. 졸업까지 남은 해가 많을수록 범위가 넓습니다.'} 관심 선수는 졸업 학년에 드래프트 관심 목록으로 이어집니다.</p></section>`;
+  UI._amPlyMs=performance.now()-t0; /* 화면 점검용: 목록을 만드는 데 걸린 시간 */
   const fl=F.filter(id=>typeof id==='number').map(id=>{ const e=amPipe().L[id]; if(e)return {id,n:e.n,sch:e.s,gr:amGrade(e,G.year),c:e.c,kind:'e',o:e}; const p=G.players[id]; return p&&p.prospect?{id,n:p.name,sch:p.school||'',gr:p.college?4:3,c:p.college,kind:'p',o:p}:null; }).filter(Boolean).sort((a,b)=>b.gr-a.gr);
   const sg=amSuggest(y,amClubRegs(G.user),6,G.user).filter(x=>!F.includes(x.id));
   const side=`<aside class="am-pside">${csec(`관심 선수 ${fl.length}`,fl.length?fl.map(x=>`<p class="small">${amLnkP(x)} · ${amLnkS(x.sch)} ${x.c?'대':'고'}${x.gr} <span class="muted">${esc(amObsTxt(x.o))}</span> <button class="btn small am-fb" data-a="amFollow" data-v="${x.id}">해제</button></p>`).join(''):'<p class="small muted">관심 선수로 두면 그 선수 경기를 스카우트가 챙겨 봅니다.</p>')}
@@ -50966,7 +50997,8 @@ function amRosterHtml(n,col,Ss,yy){ const Y=G.year, nG=col?4:3, lvl=col?'col':'h
   for(const f of amFill(n,Y,lvl,amLvOf(n)))ent.push({id:f.id,n:f.n,kind:'f',gr:f.gr,isP:f.isP,pos:f.pos,ht:f.ht,h:amFRow(n,f.ey,f.isP,f.i,yy),key:amFollowing(G.user,f.id)?1:0}); /* 부원도 눌러 기록·평가를 본다 */
   return Array.from({length:nG},(_,i)=>nG-i).map(g=>{ const R0=ent.filter(x=>x.gr===g).sort((a,b)=>(b.key||0)-(a.key||0)||(a.isP-b.isP)||a.n.localeCompare(b.n)); if(!R0.length)return '';
     return `<h4 class="small">${g}학년 ${R0.length}명${g===nG?' · 올해 드래프트 후보':''}</h4><div class="am-roster"><table class="am-lt"><tbody>${R0.map(x=>`<tr><td>${amLnkP(x)}${x.key&&x.kind!=='f'?' <span class="pill">관심권</span>':x.key?' <span class="pill">관심</span>':''}</td><td class="small">${esc(amPosT(x))}</td><td class="small num">${x.ht||'-'}cm</td><td class="small am-rl">${amRecLine(x.isP,x.h)}</td></tr>`).join('')}</tbody></table></div>`; }).join(''); }
-Object.assign(A,{ amF(v){ const [k,x]=String(v).split(':'); UI.amF=Object.assign({gr:'h1',pg:'all',ar:'all',srt:'rec'},UI.amF||{},{[k]:x}); render(); } });
+Object.assign(A,{ amF(v){ const [k,x]=String(v).split(':'); UI.amF=Object.assign({gr:'h1',pg:'all',ar:'all',srt:'rec',p:0},UI.amF||{},{[k]:k==='p'?+x||0:x}); if(k!=='p')UI.amF.p=0; render(); }, /* 조건을 바꾸면 첫 쪽으로 */
+  amAuto(){ G.cfg=G.cfg||{}; G.cfg.amAuto=!G.cfg.amAuto; const n=G.cfg.amAuto?amAutoFollow():0; toast(G.cfg.amAuto?`대형 재목 자동 관심 등록을 켰습니다${n?` · ${n}명 추가`:''}.`:'대형 재목 자동 관심 등록을 껐습니다. 관심 목록은 그대로 둡니다.'); save(); render(); } });
 /* ===== 스카우트 > 해외 네트워크: 일본·미국 지도 · 해외 구단 정보 · 자매결연(사용자 11-09) =====
  지도: 00h_overseas_map.js(Natural Earth·미국 인구조사국 공공 데이터). 구단은 모두 가상(98_sister_club.js OCL) */
 const SIS_SITE={oki:['오키나와',127.75,26.35],miy:['미야자키',131.42,31.91],jk:['가고시마',130.56,31.6],az:['애리조나',-111.7,34.3],fl:['플로리다',-81.6,28.2]};
@@ -51900,6 +51932,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-19-inbox-amateur',d:'11월 19일',t:'소식함 보낸이·읽지 않음 필터 · 아마추어 전 학년 목록·쪽 나누기·대형 재목 자동 관심',items:[
+    "소식함 분류 탭 아래에 보낸이 칩(운영팀·구단주실·스카우트팀·감독실 등, 지금 분류에 있는 보낸이가 많은 순)과 '읽지 않음만' 단추가 생겼습니다. 둘 다 함께 걸 수 있고, 저장에는 남지 않아 다시 열면 전체로 돌아옵니다.",
+    "스카우트 › 아마추어 야구 › 선수에 '전 학년'이 생겨 고1부터 대4까지 한 목록에서 포지션·권역·정렬로 걸러 봅니다. 수천 명이어도 100명씩 쪽을 나눠 보여 주고, 평가는 전처럼 우리 스카우트가 본 등급과 범위만 나옵니다.",
+    "같은 화면에 '대형 재목 자동 관심 등록'(기본 꺼짐)이 생겼습니다. 켜면 우리 스카우트 평가가 '대형 재목'인 선수를 관심 목록 80명 상한 안에서 자동으로 넣고, 손으로 넣은 관심 선수는 밀어내지 않습니다."
+  ]},
   {id:'2026-11-19-ui-cafe',d:'11월 19일',t:'주소창 없이 쓰기 · 플레잉코치 제안 찾기 · 잠재력으로 방출 후보 고르기 · 일정 일괄 취소',items:[
     '휴대폰에서 주소창 없이 쓰려면 브라우저 메뉴 › 홈 화면에 추가를 누르세요. 홈 화면에 생긴 프런트야구 아이콘으로 열면 주소창 없이 열립니다. 전체 화면 단추는 휴대폰 전체 메뉴 아래와 설정 › 게임 설정 › 표시에 있습니다.',
     "33세 이상 우리 국내 선수의 선수 화면에 '플레잉코치 제안'이 시즌 중에도 늘 보입니다. 지금 제안할 수 없으면 버튼을 눌렀을 때 이유(비시즌에만, 보조 코치 자리 없음 등)를 알려 줍니다.",
