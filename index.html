@@ -17078,7 +17078,9 @@ function mktWins(t,p){ const d=mktDepth(t.id); const adj=mktBase(p)-ovr(p); let 
 function mktWinPrice(t,p){ const st=t.mode==='contend'?(t.owner==='win'?1.4:1.25):t.mode==='rebuild'?(p.age<=27?1:.6):1; const ab=typeof gmAbOf==='function'?gmAbOf(t.id):null;
   const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); return MKT.win*ecoIdx(sponSeason())*st*af*(t.id===p.faFrom?1.05:1)*faMktNow(); }
 /* 지불 의사(연평균, 백만원): 추가 승수 × 1승의 값 × 남는 연봉 여유(faRoomPush) × 구단주가 찍은 선수 웃돈. 한 선수 연평균 상한(faTop)을 넘지 않는다 */
-function mktWTP(t,p){ const w=mktWins(t,p)*mktWinPrice(t,p); const k=(typeof faTgt==='function'&&faTgt(t,p)?faOverpay(t):1)*(t.id===ME()?1:faRoomPush(t,p)*domFaMul(t,p)); /* 독주 견제: 독주 구단의 FA·그 구단이 노리는 FA에는 경쟁 구단이 더 쓴다(86b_dynasty) */ const top=faTop(); /* 급에 따른 천장: 특급(종합 62+)만 리그 최고액까지, 주전급(58)은 75%, 평범한 주전(54)은 절반. 빈자리가 급해도 어중간한 선수에게 특급 값을 주지 않는다 */ return round5(Math.max(MIN_SAL,Math.min(top,w*k))); }
+function mktWTP(t,p){ const w=mktWins(t,p)*mktWinPrice(t,p); const k=(typeof faTgt==='function'&&faTgt(t,p)?faOverpay(t):1)*(t.id===ME()?1:faRoomPush(t,p)*domFaMul(t,p)); /* 독주 견제: 독주 구단의 FA·그 구단이 노리는 FA에는 경쟁 구단이 더 쓴다(86b_dynasty) */ const top=faTop(); /* 급에 따른 천장: 특급(종합 62+)만 리그 최고액까지, 주전급(58)은 75%, 평범한 주전(54)은 절반. 빈자리가 급해도 어중간한 선수에게 특급 값을 주지 않는다 */ /* 구단 상한(faTop, 리그 상한의 20%)은 딱 자르지 않는다(PR #261 검사 [커뮤니티 11-08]: 종합 62의 2위 지불 의사까지 같은 값에 붙어 중간층과 특급의 차이가 줄었다).
+     상한을 넘는 몫은 절반만 쳐서 더 좋은 선수가 계속 더 비싸게 하고, 마지막 안전선은 한 선수 연평균 상한(salCeil, 리그 상한의 25%) 하나다 */
+  const v=w*k; return round5(Math.max(MIN_SAL,v<=top?v:Math.min(salCeil(),top+(v-top)*.5))); }
 /* 시장가: 실제로 입찰할 수 있는 AI 구단들의 지불 의사 가운데 두 번째로 높은 값(경쟁이 가격을 만든다). 원하는 구단이 하나뿐이면 그 구단 값의 70%.
    입찰 구단은 faInterest와 같은 문턱으로 고른다(긴축·리빌딩 계획, 외부 FA 한도, 정원, 현금). 구단 값은 실제 입찰(faWorth)처럼 계획 배율을 곱하고,
    외부 구단은 원소속 구단에 줄 보상금을 계약 기간에 나눠 뺀다(검수 11-14: 입찰하지 않을 구단까지 세어 요구액이 실제 계약보다 높았다) */
@@ -17088,15 +17090,19 @@ function mktBidOk(t,p,fa){ if(t.id===ME()||(t.cash||0)<=-3000)return false; cons
   if(fa){ if(faOutBlocked(t.id,p)||rosterN(t.id)>=ROSTER_MAX)return false; if(!own){ if(ovr(p)<47)return false; const cc=mktCompCost(p); if(cc&&t.cash-cc<-2500)return false; } }
   return true; }
 function mktCompCost(p){ if(!p.faGrade)return 0; const ps=p.faPrevSal??p.sal??0; return p.faGrade==='A'?ps*2:p.faGrade==='B'?ps:ps*1.5; }
-function mktBid(t,p,fa){ let w=mktWTP(t,p)*(typeof planFaMul==='function'?planFaMul(t,p):1); return w; } /* 보상 부담은 입찰 여부(faInterest의 compF)에만 반영한다. 실제 입찰가는 보상을 빼지 않으므로 시장가에서도 빼지 않는다(11-14) */
-function mktPrice(p){ const k=mktKey(); if(_mkP.k!==k||_mkP.g!==G)_mkP={k,g:G,m:{}}; if(_mkP.m[p.id]!=null)return _mkP.m[p.id];
-  const fa=p.team==null&&p.faFrom!=null; return _mkP.m[p.id]=mktClear(mktBids(p,fa),fa?mktSupply(p):1); }
+function mktBid(t,p,fa){ let w=Math.min(salCeil(),mktWTP(t,p)*(typeof planFaMul==='function'?planFaMul(t,p):1)); return w; } /* 운영 전략 배율을 곱해도 연평균 상한 안 */ /* 보상 부담은 입찰 여부(faInterest의 compF)에만 반영한다. 실제 입찰가는 보상을 빼지 않으므로 시장가에서도 빼지 않는다(11-14) */
+/* 캐시는 날짜·이적 수뿐 아니라 그 선수의 지금 상태(능력·나이·자리·소속)로도 확인한다: 같은 날 능력이 바뀐 선수에게 바뀌기 전 값이 그대로 나와
+   종합 55와 62의 요구액이 같았다(PR #261 검사 [커뮤니티 11-08]: main에서는 능력표 묶음이 가려 주던 문제). 값을 자르는 상한 때문이 아니다 */
+function mktSig(p){ return ovr(p)+'|'+p.age+'|'+p.pos+'|'+(p.role||'')+'|'+((p.hist&&p.hist.length)||0)+'|'+(p.team??'n')+'|'+(p.faFrom??''); }
+function mktPrice(p){ const k=mktKey(); if(_mkP.k!==k||_mkP.g!==G)_mkP={k,g:G,m:{}}; const s=mktSig(p), c=_mkP.m[p.id]; if(c&&c.s===s)return c.v; if(c&&p.team!=null&&_mkD.k===k&&_mkD.m)delete _mkD.m[p.team]; /* 그 선수 상태가 바뀌었으면 소속 구단 주전 구성(mktDepth)도 다시 본다 */
+  const fa=p.team==null&&p.faFrom!=null, v=mktClear(mktBids(p,fa),fa?mktSupply(p):1); _mkP.m[p.id]={s,v}; return v; }
 function mktBids(p,fa){ return G.teams.filter(t=>mktBidOk(t,p,fa)).map(t=>mktBid(t,p,fa)).sort((a,b)=>b-a); }
 function mktClear(L,m){ m=Math.max(1,m|0);
   /* 수요·공급 청산(구단주 원칙 11-19): 비슷한 FA가 m명이면 모든 구단의 지불 의사 가운데 (m+1)번째가 값이 된다(m=1이면 예전처럼 두 번째, 1위 값의 70% 아래로는 안 내려감).
      원하는 구단이 공급보다 적으면 가장 낮은 지불 의사가 값이다(예전의 '그 값의 70%' 추가 할인은 없앴다: 값이 낮으면 구단이 더 붙어 올라가는 것은 입찰 경쟁(09_stoveleague faBidUp)이 한다).
      바닥은 두지 않는다: 리그에 쓸 구단이 없는 선수는 싸다. 원하는 구단이 하나뿐이면 그 구단 값의 70%, 없으면 최저 연봉 */
-  const n=L.length, v=n>m?(m===1?Math.max(L[1],L[0]*.7):L[m]):n>=2?L[n-1]:n?L[0]*.7:MIN_SAL; return round5(Math.max(MIN_SAL,v)); }
+  /* 구단이 둘 이상이면 1위 값의 70% 바닥도 두지 않는다(PR #261 검사 [커뮤니티 11-08]: 소속 구단 지불 의사 29억의 70%가 종합 55의 값이 되어 2위 15.75억보다 높았고, 특급과의 차이가 줄었다). 이기는 구단은 2위 구단 값을 낸다 */
+  const n=L.length, v=n>m?L[m]:n>=2?L[n-1]:n?L[0]*.7:MIN_SAL; return round5(Math.max(MIN_SAL,v)); }
 /* 공급: 이번 겨울 시장에 남은 비슷한 FA 수(같은 역할 SP·RP·C·IF·OF, 시장 능력 ±2 안, 본인 포함, 최대 3). 계약하면 빠져 남은 선수 값이 다시 정해진다(캐시 열쇠에 남은 FA 수가 들어 있다) */
 let _mkS={k:null,m:{}};
 function mktSupply(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=mktKey(); if(_mkS.k!==k||_mkS.g!==G){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null&&!q.foreign).map(q=>[q.id,dGrp(q),mktBase(q)]); _mkS={k,g:G,m:{},L}; }
@@ -17276,7 +17282,7 @@ function faExpWar(p){ const y0=G.year; const by={}; let pa=0; for(const h of (p.
   if(pa<350)return null; const ys=Object.keys(by).map(Number).sort((a,b)=>b-a).slice(0,3); const W=[6,3,1]; let s=0,w=0; ys.forEach((y,i)=>{ s+=by[y]*W[i]; w+=W[i]; }); let e=w?s/w:0; e=e*.85+1*.15; /* FA 시즌·최근 해에 무게(카페 11-13: 최근 2년 스텝업한 선수가 3년 평균으로 헐값이 됐다) */ if(p.age>=31)e*=Math.max(.5,1-(p.age-30)*.07); return Math.max(0,e); }
 /* AI가 내는 연봉 상한: 기대 WAR × WAR당 시장가(5.5억, 실제 KBO FA 연평균은 대략 WAR당 5~6억: 안치홍 4년 72억·채은성 6년 90억) × 물가, 우승 경쟁 구단은 15% 더 */
 function faWarCap(t,p){ const e=faExpWar(p); if(e==null)return null; return Math.max(MIN_SAL*2,round5(e*550*ecoIdx(sponSeason())*(t.mode==='contend'?1.15:1))); }
-function faWorth(t,p){ if(t.id!==ME()&&!p.foreign)return round5(mktWTP(t,p)*(typeof planFaMul==='function'?planFaMul(t,p):1)); /* AI 구단 평가는 시장 엔진(08_market_engine): 추가 승수 × 1승의 값 */ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); if(wc==null)return round5(Math.min(faTop(),w0*(faTgt(t,p)?faOverpay(t):1)*(t.id===ME()?1:faRoomPush(t,p)))); const pr=Math.min(1.5,faPoolPrem(p)*faPosPrem(t,p)); /* 시장 순위·희소성·구단 수요 웃돈은 합쳐서 +50%까지 */ return round5(Math.min(faTop(),Math.min(w0*pr,Math.max(w0*.7,wc*pr))*(faTgt(t,p)?faOverpay(t):1)*faRoomPush(t,p))); }
+function faWorth(t,p){ if(t.id!==ME()&&!p.foreign)return round5(Math.min(salCeil(),mktWTP(t,p)*(typeof planFaMul==='function'?planFaMul(t,p):1))); /* AI 구단 평가는 시장 엔진(08_market_engine): 추가 승수 × 1승의 값 */ const pf=perfOvr(p,3); const base=(pf==null?ovr(p):pf*.6+ovr(p)*.4)+pvShift(p); const ab=gmAbOf(t.id); const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); /* 재정 운영이 서툰 단장은 노장에게 더 쓴다 */ const w0=round5(Math.max(MIN_SAL,marketSal(base)*af*(t.id===p.faFrom?1.05:1)*(t.mode==='contend'?1.04:.94)*faMktNow()*(ovr(p)>=60?1.12:ovr(p)>=54?1.06:1))); const wc=t.id===ME()?null:faWarCap(t,p); if(wc==null)return round5(Math.min(faTop(),w0*(faTgt(t,p)?faOverpay(t):1)*(t.id===ME()?1:faRoomPush(t,p)))); const pr=Math.min(1.5,faPoolPrem(p)*faPosPrem(t,p)); /* 시장 순위·희소성·구단 수요 웃돈은 합쳐서 +50%까지 */ return round5(Math.min(faTop(),Math.min(w0*pr,Math.max(w0*.7,wc*pr))*(faTgt(t,p)?faOverpay(t):1)*faRoomPush(t,p))); }
 /* FA 시장 경쟁(카페 11-13): 이번 시장 상위 매물은 성적이 조금 모자라도 몸값이 오른다(1~3위 +35%, 4~8위 +15%). 성적(WAR) 상한은 능력 기준 몸값의 70% 아래로는 깎지 않는다 */
 let _fpr={k:null,m:null};
 function faPoolPrem(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=G.year+':'+G.day+':'+F.pool.length; if(_fpr.k!==k||_fpr.g!==G){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null).sort((a,b)=>ovr(b)-ovr(a)); _fpr={k,g:G,m:new Map(L.map((q,i)=>[q.id,i]))}; } const r=_fpr.m.get(p.id); return r==null?1:r<3?1.35:r<8?1.15:1; }
