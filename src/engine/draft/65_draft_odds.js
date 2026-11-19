@@ -20,8 +20,10 @@ function draftRumors(tid){ tid=tid??G.user; const wk=Math.floor(G.day/7); const 
   return out; }
 const doRelL=q=>q>=.65?'믿을 만한 소문':q>=.5?'반쯤 믿을 소문':'흘려들을 소문';
 /* seededRand와 같은 수열(같은 비트 연산)을 부호 있는 32비트로 들고 다녀 큰 수 객체를 만들지 않는다(성능, 카페 11-17). 값은 seededRand와 같다(check-logic [드래프트 확률 성능]) */
-function doRand(seed){ let h=2166136261|0; const s=String(seed); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return ()=>{ h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
+function doSeed(seed){ let h=2166136261|0; const s=String(seed); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h; }
+function doRand(seed){ let h=doSeed(seed); return ()=>{ h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; return (h>>>0)/4294967296; }; }
 let _doc=null; /* 저장하지 않는 계산 캐시 */
+const _doStat={calc:0,skip:0,full:0,ref:false}; /* 일 횟수(성능 점검용, 저장 안 함). ref: 건너뛰기·미리 세기를 끈 기준 계산(규칙 점검이 결과가 같은지 견준다) */
 /* 앞으로 남은 지명 순번(우리 차례 두 번째까지) */
 function doPicks(tid){ const d=G.draft, live=d&&!d.done; const L=live?d.picks.slice(d.cur):(draftPlan()||[]); const out=[]; let mine=0; for(const k of L){ out.push(k); if(k.tid===tid&&++mine>=2)break; } return out; }
 function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; const pool=((live?d.cls:G.draftClass)||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect&&p.team==null);
@@ -29,13 +31,15 @@ function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; cons
   const reports=new Map(pool.map(p=>[p.id,scoutReport(p)]));
   const boardOrder=draftBoardOrder();
   const picked0=live?d.picks.filter(k=>k.tid===tid&&k.pid>0).map(k=>G.players[k.pid]).filter(Boolean):[];
-  const key=JSON.stringify([tid,G.year,G.day,live?d.cur:-1,picks,rest,dplanOf(),draftPolK(),boardOrder,pool.map(p=>[p.id,reports.get(p.id),obsCount(p,tid),p.press,amDraftAdj(p)]),G.teams.map(t=>[t.id,t.mode,draftNeed(t.id)]),rosterProj(tid)]);
+  /* 성능(카페 11-19 지명마다 느림): 등록 인원 전망(rosterProj, 전 선수 훑기)과 구단별 자리 필요(draftNeed)는 한 번의 계산 안에서 바뀌지 않는다. 240번 모의마다·열쇠와 본계산에서 따로 다시 세지 않고 한 번만 센다(값은 같다) */
+  const proj0=rosterProj(tid), _need=new Map(), needOf=c=>{ let v=_need.get(c); if(!v){ v=draftNeed(c); _need.set(c,v); } return v; }; _doStat.calc++;
+  const key=JSON.stringify([tid,G.year,G.day,live?d.cur:-1,picks,rest,dplanOf(),draftPolK(),boardOrder,pool.map(p=>[p.id,reports.get(p.id),obsCount(p,tid),p.press,amDraftAdj(p)]),G.teams.map(t=>[t.id,t.mode,needOf(t.id)]),proj0]);
   if(_doc&&_doc.g===G&&_doc.k===key)return _doc.r;
   const own=new Map(pool.map(p=>[p.id,doOwn(tid,p)])); const rum=draftRumors(tid); const RB={}; for(const r of rum)RB[r.tid+':'+r.id]=DO_RUM_B*r.q;
   const base=pool.map(p=>{ const o=own.get(p.id), w1=1/(o.sd*o.sd), w2=1/(DO_PUB_SD*DO_PUB_SD); const m=(o.v*w1+doPress(p)*w2)/(w1+w2); return {p,m,s:Math.sqrt(1/(w1+w2)),cur:o.cur??40,adj:amDraftAdj(p),g:dGrp(p)}; });
-  const clubs=[...new Set(picks.map(k=>k.tid))]; const need={}, cw={}; for(const c of clubs){ need[c]=draftNeed(c); const t=team(c); cw[c]=t.mode==='contend'?.5:.25; } /* 자리 필요는 각 구단 로스터(공개)로, 성향은 운영 방향(공개)으로 */
+  const clubs=[...new Set(picks.map(k=>k.tid))]; const need={}, cw={}; for(const c of clubs){ need[c]=needOf(c); const t=team(c); cw[c]=t.mode==='contend'?.5:.25; } /* 자리 필요는 각 구단 로스터(공개)로, 성향은 운영 방향(공개)으로 */
   const board=boardOrder.filter(id=>pool.some(p=>p.id===id));
-  const rr=doRand('dodds:'+G.year+':'+G.day+':'+tid+':'+(live?d.cur:-1)); const gn=()=>{ let u=0; while(!u)u=rr(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*rr()); };
+  let h=doSeed('dodds:'+G.year+':'+G.day+':'+tid+':'+(live?d.cur:-1)); /* doRand와 같은 수열을 반복문 안에서 바로 굴린다(함수 호출 없이, 값은 같다) */
   const P={}; for(const p of pool)P[p.id]={av:0,av2:0,by:{},r1:0};
   const myIdx=picks.map((k,i)=>k.tid===tid&&rest?.mode!=='pass'?i:-1).filter(i=>i>=0); const slot=picks.map(()=>({}));
   /* 성능(카페 11-17 드래프트 지명 렉): 240번 × 순번 × 후보 반복에서 Map 조회·문자열 키(RB)·Set을 빼고 후보 번호(j) 배열로 돈다.
@@ -44,22 +48,31 @@ function draftOdds(tid){ tid=tid??G.user; const d=G.draft, live=d&&!d.done; cons
   const add={}; for(const c of clubs){ const a1=new Float64Array(nB), a2=new Float64Array(nB), a4=new Float64Array(nB); for(let j=0;j<nB;j++){ const b=base[j]; a1[j]=(b.cur-35)*cw[c]; a2[j]=(need[c][b.g]||0); a4[j]=(RB[c+':'+b.p.id]||0); } add[c]={a1,a2,a4}; }
   const adj=base.map(b=>b.adj), boardJ=board.map(id=>id2j.get(id)), repJ=base.map(b=>reports.get(b.p.id)), tierJ=new Array(nB); /* 잠재 등급은 시뮬레이션마다 같아 한 번만 계산 */
   const tierOf=j=>tierJ[j]===undefined?(tierJ[j]=potTierP(repJ[j],base[j].p)||null):tierJ[j];
+  /* 우리 차례 점수(draftUserScore)는 '평가 + 감독 방침 가산'이 모의마다 같고, 라운드 목표 가산(dplanBonus)만 그 모의에서 이미 뽑은 자리에 따라 달라진다: 앞의 둘은 후보마다 한 번, 뒤는 자리(투·포·내·외)마다 한 번만 센다. 더하는 순서는 draftUserScore와 같다 */
+  const usAB=new Float64Array(nB), usOk=new Uint8Array(nB), plG=base.map(b=>dplanG(b.p)), polK=draftPolK();
+  const usOf=(j,rd,picked,bon)=>{ const p=base[j].p; if(_doStat.ref||!repJ[j])return draftUserScore(p,rd,picked,repJ[j]); if(!usOk[j]){ usAB[j]=draftVal(repJ[j],p)+(polK&&draftFit(p,polK)?4:0); usOk[j]=1; } const g=plG[j]; let b=bon[g]; if(b===undefined)b=bon[g]=dplanBonus(p,rd,picked); return usAB[j]+b; };
   const av=new Float64Array(nB), av2=new Float64Array(nB), T=new Float64Array(nB), left=new Uint8Array(nB);
-  for(let n=0;n<DO_N;n++){ for(let j=0;j<nB;j++){ const b=base[j]; T[j]=b.m+gn()*b.s; } left.fill(1); const picked=[...picked0]; let proj=rosterProj(tid);
+  let nSkip=0, nFull=0;
+  for(let n=0;n<DO_N;n++){ for(let j=0;j<nB;j++){ const b=base[j]; let u=0; while(!u){ h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; u=(h>>>0)/4294967296; } h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; T[j]=b.m+Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*((h>>>0)/4294967296))*b.s; } left.fill(1); const picked=[...picked0]; let proj=proj0;
     for(let i=0;i<picks.length;i++){ const k=picks[i]; if(i===myIdx[0])for(let j=0;j<nB;j++)av[j]+=left[j]; if(i===myIdx[1])for(let j=0;j<nB;j++)av2[j]+=left[j];
       let best=-1,bs=-1e9;
       if(k.tid===tid){ if(rest?.mode==='pass'||rest&&proj>=ROSTER_MAX)continue; /* 우리 차례는 난수를 쓰지 않는다: 지명 방식(보드·조건·건너뛰기)과 등록 인원 전망대로 */
         if(!rest||rest.mode==='board'){ for(const j of boardJ)if(left[j]){ best=j; break; } }
-        if(best<0){ const cond=rest&&(rest.mode==='cond'||rest.mode==='board'); let unknown=false;
+        if(best<0){ const bon={}; const cond=rest&&(rest.mode==='cond'||rest.mode==='board'); let unknown=false;
           for(let j=0;j<nB;j++){ if(!left[j])continue; const p=base[j].p, rp=repJ[j];
             if(cond){ const tier=tierOf(j); if(!tier){ unknown=true; continue; } if(tier.n<(rest.min||3))continue; }
-            const v=draftUserScore(p,k.rd,picked,rp); if(v>bs){bs=v;best=j;} }
+            const v=usOf(j,k.rd,picked,bon); if(v>bs){bs=v;best=j;} }
           if(best<0&&cond){ if(unknown&&clubAmScouts(tid).length)break;
             if(!unknown)continue;
-            for(let j=0;j<nB;j++){ if(!left[j])continue; const v=draftUserScore(base[j].p,k.rd,picked,repJ[j]); if(v>bs){bs=v;best=j;} } } }
+            for(let j=0;j<nB;j++){ if(!left[j])continue; const v=usOf(j,k.rd,picked,bon); if(v>bs){bs=v;best=j;} } } }
         if(best>=0){ picked.push(base[best].p); proj++; } }
-      else { const A=add[k.tid], a1=A.a1, a2=A.a2, a4=A.a4; for(let j=0;j<nB;j++){ if(!left[j])continue; const v=T[j]+gn()*DO_CLUB_SD+a1[j]+a2[j]+adj[j]+a4[j]; if(v>bs){ bs=v; best=j; } } }
+      else { const A=add[k.tid], a1=A.a1, a2=A.a2, a4=A.a4; for(let j=0;j<nB;j++){ if(!left[j])continue;
+          /* 난수는 예전과 똑같이 두 번 뽑고(수열 유지), 이 후보가 지금 1위를 넘을 수 없으면 로그·코사인 계산만 건너뛴다: |정규 난수| ≤ √(−2·ln u) 이므로 u로 상한을 안다. 넘을 수 있는 후보는 예전 식 그대로 계산해 결과가 같다 */
+          let u=0; while(!u){ h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; u=(h>>>0)/4294967296; } h=Math.imul(h^(h>>>15),2246822507); h=Math.imul(h^(h>>>13),3266489909); h^=h>>>16; const u2=(h>>>0)/4294967296; const cap=u>=.6066?1:u>=.1354?2:u>=.0112?3:u>=3.4e-4?4:6.7;
+          if(!_doStat.ref&&T[j]+a1[j]+a2[j]+adj[j]+a4[j]+cap*DO_CLUB_SD+1e-6<=bs){ nSkip++; continue; } nFull++;
+          const v=T[j]+Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*u2)*DO_CLUB_SD+a1[j]+a2[j]+adj[j]+a4[j]; if(v>bs){ bs=v; best=j; } } }
       if(best<0)break; left[best]=0; const bid=ids[best]; if(k.tid!==tid){ const o=P[bid].by; o[k.tid]=(o[k.tid]||0)+1; if(k.rd===1)P[bid].r1++; } slot[i][bid]=(slot[i][bid]||0)+1; } }
+  _doStat.skip+=nSkip; _doStat.full+=nFull;
   for(let j=0;j<nB;j++){ P[ids[j]].av=av[j]; P[ids[j]].av2=av2[j]; }
   for(const id in P){ const o=P[id]; o.av=myIdx.length?o.av/DO_N:null; o.av2=myIdx.length>1?o.av2/DO_N:null; o.noPick=!myIdx.length?(rest?.mode==='pass'?'pass':'none'):null; o.r1/=DO_N; const b=Object.entries(o.by).sort((a,b)=>b[1]-a[1])[0]; o.top=b?{tid:+b[0],s:b[1]/DO_N}:null; delete o.by; }
   const r={at:G.day,tid,live,pick:myIdx.length?picks[myIdx[0]]:null,pick2:myIdx.length>1?picks[myIdx[1]]:null,picks,slot:slot.map(o=>Object.entries(o).sort((a,b)=>b[1]-a[1])[0]).map(x=>x?{id:+x[0],s:x[1]/DO_N}:null),slotL:slot.map(o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>({id:+x[0],s:x[1]/DO_N}))),P,rum};
