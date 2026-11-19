@@ -3840,7 +3840,7 @@ T('[엔진] 수비 능력이 실점에 반영된다(11-15 수비 감사): 수비
       const c=fld.cArm>=CA0+8?'hi':fld.cArm<=CA0-8?'lo':null; if(c){ CA[c][0]+=sb; CA[c][1]+=cs; CA[c][2]++; }
       for(const q of fld.order){ const x=fld.box.get(q.id), pos=fld.posOf[q.id]; if(x&&x.e&&['SS','3B','2B','1B'].includes(pos)){ const e=errV(q,pos,true)-(ERRN[pos]||DEF0), ek=e>=8?'hi':e<=-8?'lo':null; if(ek)Ek[ek][1]+=x.e; } } }
     return g; };
-  try{ for(const tid of [3,5,7,9]){ W=tid; DEMO.on=false; newGame(tid); } }finally{ bipResolve=b0; simGame=s0; }
+  try{ for(const tid of [3,5,7,9,1,2]){ W=tid; DEMO.on=false; newGame(tid); } }finally{ bipResolve=b0; simGame=s0; } /* 세계 6개(예전 4개): PR #202 뒤 세계에서는 어깨 약한 포수 경기 표본이 4개 세계로 300경기에 못 미쳤다(235) */
   ok(TG>=2000,'준비 실패: 경기 '+TG); const hr=k=>Bk[k][1]/Bk[k][0];
   /* 수비 범위가 그 자리 보통(ERRN)보다 8 이상 좋은 내야수에게 간 땅볼은 8 이상 나쁜 내야수보다 안타가 덜 된다(식으로는 약 .04) */
   ok(Bk.hi[0]>2000&&Bk.lo[0]>2000,'준비 실패: 타구 '+Bk.hi[0]+'/'+Bk.lo[0]); ok(hr('lo')-hr('hi')>=.02,'수비 범위 좋은 내야수 땅볼 안타율 '+hr('hi').toFixed(3)+' vs 나쁜 야수 '+hr('lo').toFixed(3));
