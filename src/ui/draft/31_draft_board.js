@@ -123,7 +123,7 @@ function draftBoard(){
       </details>
     </section>`;
   }
-  { const T30=all.slice(0,30), z=T30.filter(x=>!obsCount(x.p)).length, lw=T30.filter(x=>x.rp.ofp==null||(x.rp.sd||9)>=8).length; if(z||lw)head+=`<p class="note warn small dunseen" role="status">우리 상위 30명 중 관찰 0회 ${z}명 · 신뢰도 낮음 ${lw}명 <button class="btn small" data-a="dset" data-v="unseen:${f.unseen?'':'1'}">${f.unseen?'모두 보기':'이 선수들만'}</button></p>`; }
+  { const T30=all.slice(0,30), z=T30.filter(x=>!obsCount(x.p)).length, lw=T30.filter(x=>x.rp.ofp==null||(x.rp.sd||9)>=8).length, gapR=G.unemp?[]:REG.filter(r=>!scoutOf('am',r)); /* 처음 스카우트가 20년쯤 지나 은퇴하면 그 지역 후보가 모두 관찰 0회·잠재력 ?가 된다(카페 11-19 '20시즌 넘으면 고교 황폐화'): 원인을 같은 줄에 */ if(z||lw)head+=`<p class="note warn small dunseen" role="status">우리 상위 30명 중 관찰 0회 ${z}명 · 신뢰도 낮음 ${lw}명${gapR.length?` · 아마추어 담당 스카우트 없는 지역: ${gapR.map(esc).join(', ')}(은퇴·이동으로 빈자리. 스태프 화면에서 영입하면 그 지역 학교 관찰이 다시 쌓입니다)`:''} <button class="btn small" data-a="dset" data-v="unseen:${f.unseen?'':'1'}">${f.unseen?'모두 보기':'이 선수들만'}</button></p>`; }
   const seg=draftViewMenu(); /* 후보·상세·관심·지명 현황·요약 보기 전환(33_scouting_train.js, UI 3단계 3-9) */
   const frame=content=>fmOn()?draftFM(head,seg,content,all,mine,live):`<div class="draft-page"><aside class="draft-context">${head}</aside><div class="draft-candidate-body">${seg}${content}</div></div>`;
   if(f.seg==='res')return frame(draftResults());
