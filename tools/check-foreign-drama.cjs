@@ -3,7 +3,7 @@ const {chromium}=require('playwright');const {startHtmlServer}=require('./lib/ui
 const ok=(c,m)=>{ console.log((c?'통과':'실패')+' '+m); if(!c)process.exitCode=1; };
 (async()=>{const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});
 for(const vp of [{width:1366,height:900},{width:390,height:844}]){ const p=await b.newPage({viewport:vp}); const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
-await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
 const r=await p.evaluate(()=>{ localStorage.clear(); DEMO.on=false; newGame(3); try{hireMgr(G.mmarket[0].id,3);}catch(e){} G.tut={done:true,step:99}; G.medSet=true; UI.title=false; G.day=G.cal.open+40;
   let f=foreignOf(G.user).find(x=>x.foreign==='용병'); if(!f){ f=newForeign('용병',{isP:true}); f.team=G.user; f.fy=G.year; } fDramaUser(f,'home'); const e=G.evs.find(x=>x.k==='fdrama'&&!x.done); UI.tab='inbox'; render(); return {pid:f.id,eid:e&&e.id,mid:e&&e.mid,name:f.name}; });
 ok(!!r.eid,'향수병 결정 생성');

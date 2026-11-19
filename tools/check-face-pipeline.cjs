@@ -14,7 +14,7 @@ try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABL
  await p.addInitScript(()=>{let s=20261117;Math.random=()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};});
  await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));
  let delay=0;await p.route(u=>new URL(u).pathname.startsWith('/assets/'),async r=>{const f=path.join(root,decodeURIComponent(new URL(r.request().url()).pathname));if(!f.startsWith(path.join(root,'assets'))||!fs.existsSync(f))return r.fulfill({status:404,body:''});if(delay)await new Promise(z=>setTimeout(z,delay));r.fulfill({body:fs.readFileSync(f),contentType:TYPES[path.extname(f)]||'application/octet-stream'});});
- await p.goto(server.url);
+ await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
  await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);UI.title=false;G.tut={done:true,step:99};});
  /* 사람 목록: 순서가 배정 결과를 정하므로 늘 같은 순서로 */
  await p.evaluate(()=>{const L=[],P=Object.values(G.players).sort((a,b)=>a.id-b.id);

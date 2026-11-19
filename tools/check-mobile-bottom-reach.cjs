@@ -59,7 +59,7 @@ async function go(p,route){await p.evaluate(r=>{closeSheets?.();UI._clk=null;if(
       /* 보이는 영역(visualViewport)이 창(innerHeight)보다 짧은 안드로이드: 아래쪽 toolbar px 만큼 가려진 것처럼 */
       if(size.toolbar)await p.addInitScript(t=>{const v=window.visualViewport;if(!v)return;const P=Object.getPrototypeOf(v);const h=Object.getOwnPropertyDescriptor(P,'height');Object.defineProperty(v,'height',{configurable:true,get(){return Math.max(0,h.get.call(v)-t);}});addEventListener('load',()=>v.dispatchEvent(new Event('resize')));},size.toolbar);p.on('pageerror',e=>errors.push(size.name+': '+e.message));
       await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.route('https://www.googletagmanager.com/**',r=>r.fulfill({body:'',contentType:'text/javascript'}));
-      await p.goto(server.url,{waitUntil:'domcontentloaded'});await setup(p);
+      await p.goto(server.url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await setup(p);
       for(const [name,route] of SCREENS){await go(p,route);const m=await measure(p);report[size.name+' '+name]=m.rows;
         for(const r of m.rows)if(!r.ok)failures.push(`${size.name} ${name}: ${r.el} 마지막 ${r.last} 끝 ${r.end} > 보이는 끝 ${r.visEnd} (${-r.reach}px 가려짐)`);
         if(capture)await p.screenshot({path:path.join(capture,`${size.name}-${name}.png`)});}

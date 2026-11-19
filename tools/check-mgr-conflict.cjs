@@ -3,7 +3,7 @@ const {chromium}=require('playwright');const {startHtmlServer}=require('./lib/ui
 const ok=(c,m)=>{ console.log((c?'통과':'실패')+' '+m); if(!c)process.exitCode=1; };
 (async()=>{const server=await startHtmlServer(require('path').resolve(__dirname,'../index.html'));const b=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});
 for(const w of [1366,390]){ const ctx=await b.newContext({viewport:{width:w,height:820}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.route(/fonts\.g/,r=>r.abort());
-await p.goto(server.url);await p.waitForFunction(()=>typeof newGame==='function');
+await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');
 await p.evaluate(()=>{ localStorage.clear(); DEMO.on=false; newGame(6); try{hireMgr(G.mmarket[0].id,3);}catch(e){} G.tut={done:true,step:99}; G.medSet=true; UI.title=false; G.day=G.cal.exh+1; G.evs=[]; mcfPlan(); render(); });
 const r1=await p.evaluate(()=>{ const e=G.evs.find(x=>x.k==='mplan'); UI.tab='inbox'; render(); return {e:!!e,opts:e?e.opts.length:0,txt:document.body.innerText.includes('시즌 구상')}; });
 ok(r1.e&&r1.opts>=2&&r1.txt,w+' 시즌 구상 결정이 소식함에 보임 '+JSON.stringify(r1));

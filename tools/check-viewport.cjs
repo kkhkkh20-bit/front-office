@@ -11,7 +11,7 @@ const SIZES=(process.env.SIZES||'360x640,390x844,844x390,768x1024,1024x768,1280x
   try{
     browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium',args:['--disable-webgl']});
     const page=await browser.newPage({viewport:SIZES[0]}); page.on('pageerror',e=>errors.push(e.message));
-    await page.goto(server.url,{waitUntil:'domcontentloaded'});
+    await page.goto(server.url,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
     await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open;for(const t of G.teams)setEntry(t.id);const op=G.teams.find(t=>t.id!==G.user).id;const g=simGame(G.day,G.user,op,false);applyGame(G.day,G.user,op,g,false);G.games=[gameRecord(G.day,G.user,op,g)];closeSheets();UI.title=false;render();});
     const all=await page.evaluate(()=>{const L=[];for(const t of ['home','inbox','roster','trade','transfer','staff','league','club','cal']){const s=SUBS[t];if(s&&s.length)for(const x of s)L.push(t+':'+x[0]);else L.push(t);}return [...L,'player:bat','player:pit','cast'];});
     const views=process.env.VIEWS?process.env.VIEWS.split(','):all;

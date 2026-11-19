@@ -4,7 +4,7 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;const out=process.env.REVIEW_OUT;
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});
 for(const [width,height,touch] of [[1366,768,false],[390,664,true]]){
- const c=await browser.newContext({viewport:{width,height},isMobile:touch,hasTouch:touch,deviceScaleFactor:2}),p=await c.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+ const c=await browser.newContext({viewport:{width,height},isMobile:touch,hasTouch:touch,deviceScaleFactor:2}),p=await c.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
  const shot=async name=>{ if(out){ fs.mkdirSync(out,{recursive:true}); await p.screenshot({path:path.join(out,name+'-'+width+'.png')}); } };
  const fx=await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;G.day=dnum(G.year,6,15);
   const tid=G.teams.find(t=>t.id!==G.user).id, L=domestic(tid).filter(q=>!q.ys&&!q.isP&&!(q.joinY>G.year)).sort((a,b)=>ovr(b)-ovr(a));

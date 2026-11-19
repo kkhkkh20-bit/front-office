@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),path=require('node:path');
 const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;
-try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await browser.newPage(),errors=[],typeFailures=[],btnFailures=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;});
+try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await browser.newPage(),errors=[],typeFailures=[],btnFailures=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;UI.title=false;});
 for(const [width,height]of [[1366,768],[1024,768],[390,844]]){
  await p.setViewportSize({width,height});await p.waitForTimeout(200);
  for(const route of ['home','roster','staff:coach','transfer:foreign','club:fin','inbox','player','pitcher','contract','match']){

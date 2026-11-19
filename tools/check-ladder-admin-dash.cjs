@@ -42,7 +42,7 @@ function deck(o = {}) { const P = []; const POS = ['C', '1B', '2B', '3B', 'SS', 
     b = await chromium.launch({ executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium' });
     const errs = [];
     const open = async (w, h) => { const ctx = await b.newContext({ viewport: { width: w, height: h } }); const p = await ctx.newPage(); p.on('pageerror', e => errs.push(String(e)));
-      await p.addInitScript(() => { try { localStorage.setItem('fo-cup-admin', 'test-admin'); } catch (e) {} }); await p.goto(url);
+      await p.addInitScript(() => { try { localStorage.setItem('fo-cup-admin', 'test-admin'); } catch (e) {} }); await p.goto(url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
       await p.waitForFunction(() => typeof A === 'object' && typeof ADM === 'object' && typeof LDX === 'object', null, { timeout: 30000 });
       await p.evaluate(() => { ADM.chk = ''; admCheck(); }); await p.waitForFunction(() => ADM.chk === 'ok', null, { timeout: 10000 });
       await p.evaluate(() => { A.admOpen(); }); await p.waitForSelector('.ldx-tabs', { timeout: 30000 }).catch(async e => { throw new Error('대시보드가 열리지 않음: ' + (await p.evaluate(() => document.body.innerText.slice(0, 400)))); }); /* 래더가 기본 탭(누르지 않아도 열림) */

@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),path=require('node:path'),{chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;try{
  browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const page=await browser.newPage();
- await page.goto(server.url);await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);G.tut={done:true,step:99};G.medSet=true;UI.title=false;});
+ await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);G.tut={done:true,step:99};G.medSet=true;UI.title=false;});
  const results=await page.evaluate(()=>{const out=[],test=(n,f)=>{try{if(!f())throw Error('기대와 다른 표시');out.push([n,true]);}catch(e){out.push([n,false,e.message]);}};
  test('#316 확장 리그 사전 순번 안내',()=>{const orig=G.teams;try{G.teams=[...orig,...orig.slice(0,2).map((t,i)=>({...t,id:10+i}))];return draftPlan().length===132&&draftBoard().includes('132개');}finally{G.teams=orig;}});
  test('#311 지명권 없는 잔류 확률',()=>doChip({av:null,noPick:'none'}).includes('지명권 없음')&&!doChip({av:null,noPick:'none'}).includes('1%'));

@@ -105,7 +105,7 @@ async function cast(p,w,res,base){
   try{
     const ctx=await browser.newContext({viewport:{width:1366,height:768},deviceScaleFactor:+(process.env.DSF||2)});const p=await ctx.newPage();p.setDefaultTimeout(60000);p.on('pageerror',e=>errs.push(e.message.slice(0,200)));
     await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.route('https://www.googletagmanager.com/**',r=>r.fulfill({body:'',contentType:'text/javascript'}));
-    await p.goto(srv.url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>typeof newGame==='function');await p.waitForTimeout(800);
+    await p.goto(srv.url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof newGame==='function');await p.waitForTimeout(800);
     if(PHASE==='new'){
       for(const [w,h] of [[390,844],[1366,768]]){ await p.setViewportSize({width:w,height:h});
         await p.evaluate(()=>{G=null;UI.title=true;render();}); await shoot(p,'title',w,res,null);

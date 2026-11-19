@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs'),{chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;let fail=0;const log=(n,ok,m)=>{console.log((ok?'통과 ':'실패 ')+n+(ok||!m?'':' '+m));if(!ok)fail++;};try{
  browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const page=await browser.newPage({viewport:{width:1366,height:768}});
- await page.goto(server.url);await page.waitForSelector('[data-a="tsGo"][data-v="mode"]');await page.waitForTimeout(300);
+ await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await page.waitForSelector('[data-a="tsGo"][data-v="mode"]');await page.waitForTimeout(300);
  const ids=await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);G.tut={done:true,step:99};G.medSet=true;UI.title=false;
    const all=draftRanked();const pick=[all[9],all[2],all[6],all[0],all[4]].map(x=>x.p.id);for(const id of pick)amFollow(id,true);UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'mine',more:20};A.go('transfer:draft');render();return pick;});
  const order=()=>page.evaluate(()=>(G.shortlist||[]).filter(id=>G.players[id]&&G.players[id].prospect).slice());

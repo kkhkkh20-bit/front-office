@@ -7,7 +7,7 @@ const {startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;const errors=[];
   const check=(yes,msg)=>{if(!yes)errors.push(msg);};
   try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium',args:['--disable-webgl']});const page=await browser.newPage({viewport:{width:1366,height:768}});page.on('pageerror',e=>errors.push(e.message));
-    await page.goto(server.url,{waitUntil:'domcontentloaded'});
+    await page.goto(server.url,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
     await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open;for(const t of G.teams)setEntry(t.id);const op=G.teams.find(t=>t.id!==G.user).id;const g=simGame(G.day,G.user,op,false);applyGame(G.day,G.user,op,g,false);G.games=[gameRecord(G.day,G.user,op,g,'')];UI.title=false;UI.tab='home';render();A.cast(0);UI.cast.play=false;castJump(0,false);});
     let r=await page.evaluate(()=>{const g=G.games[0];return {helper:typeof castSnapshot==='function',starts:!!g.box.h.lineup&&!!g.box.a.lineup,dashboard:!!document.querySelector('.match-dashboard')};});
     check(r.helper&&r.starts&&r.dashboard,'기록 기반 대시보드·선발 스냅샷 없음');

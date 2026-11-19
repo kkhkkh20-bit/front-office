@@ -9,7 +9,7 @@ try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABL
 for(const width of [390,1366]){const ctx=await browser.newContext({viewport:{width,height:844}}),pg=await ctx.newPage(),errors=[];
 pg.on('pageerror',e=>errors.push(e.message));await pg.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));
 await pg.route('**/api/transfer**',r=>r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'}));
-await pg.goto(server.url);await pg.waitForFunction(()=>typeof newGame==='function');
+await pg.goto(server.url);await pg.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await pg.waitForFunction(()=>typeof newGame==='function');
 await pg.evaluate(()=>{DEMO.on=false;newGame(6);G.tut={done:true,step:99};G.medSet=true;UI.title=false;window.__xfBase=prepG();});
 const reset=()=>pg.evaluate(async()=>{if(_svT)clearTimeout(_svT);_svT=null;G=JSON.parse(window.__xfBase);worldReset();CUR_SLOT=1;SLOT_REV=0;SLOT_NEW=true;SAVE_CONFL=false;SAVE_ERR='';SB.clear();SB_PEND.clear();SB_WAIT.clear();if(typeof SB_REV!=='undefined')SB_REV.clear();if(typeof SB_CTX!=='undefined')SB_CTX.clear();UI.title=false;UI.tab='cfg';UI.cfg='save';UI.impMsg='';closeSheets();
 const ls=new Map(),big=new Map(),H={fail:false,hold:false,queue:[]};window.__xfStore={ls,big,H};

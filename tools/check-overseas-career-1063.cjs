@@ -18,7 +18,7 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
   const person=async id=>{await page.evaluate(id=>{closeSheets();UI.it={...(UI.it||{}),ovlv:'moves'};A.go('league:ovs');render();workspaceReveal(`[data-a="person"][data-v="abr:${id}"]`);},id);await click(page.locator(`[data-a="person"][data-v="abr:${id}"]:visible`).first());return page.locator('.sheet.ps:visible').first();};
   const inquire=async(id,pool=false)=>{await page.evaluate(({id,pool})=>{closeSheets();UI.it={...(UI.it||{}),ovlv:pool?'top':'alum',ovla:'all',ovlt:'NPB'};A.go('league:ovs');render();workspaceReveal(`[data-a="ovqAsk"][data-v="${id}"]`);},{id,pool});await click(await reveal(`[data-a="ovqAsk"][data-v="${id}"]`));};
   try{
-   await page.goto(server.url);await page.waitForFunction(()=>UI.title===true&&UI.sstep==='main');
+   await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await page.waitForFunction(()=>UI.title===true&&UI.sstep==='main');
    await page.evaluate(()=>{
     UI.title=true;DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);uiSaveSync();G.tut={done:true,step:99};G.medSet=true;G.stops=[];G.evs=[];G.offers=[];closeSheets();UI.title=false;
     const base=JSON.stringify(G),B=(y,lvl,c,pa=375)=>({y,lvl,c,g:Math.round(pa/4.1),pa,ab:pa-50,h:100,d:20,tr:1,hr:15,bb:40,hbp:5,sf:5,so:70,rbi:50,r:40,sb:5});

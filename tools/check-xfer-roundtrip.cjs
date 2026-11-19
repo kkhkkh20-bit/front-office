@@ -17,14 +17,14 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
    const myIp='203.0.113.'+(ip++); /* 기기마다 다른 IP: 시간당 올리기 제한(10번)에 걸리지 않게 */
    await pg.route('**/api/transfer**',async route=>{ const r=route.request(); const h=Object.assign({},r.headers(),{'cf-connecting-ip':myIp}); const body=r.method()==='POST'?r.postDataBuffer():undefined;
     const res=await handle(new Request(r.url(),{method:r.method(),headers:h,body}),env); await route.fulfill({status:res.status,headers:Object.fromEntries(res.headers),body:Buffer.from(await res.arrayBuffer())}); });
-   await pg.goto(server.url); await pg.waitForTimeout(500); return pg; }
+   await pg.goto(server.url);await pg.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await pg.waitForTimeout(500); return pg; }
   const state=pg=>pg.evaluate(()=>{ const m=meta(), used=SLOT_IDS.filter(n=>slotHas(n)); return {title:!!UI.title,cur:G?curSlot():null,day:G?G.day:null,wid:G?G.wid||null:null,active:m.active,cont:contSlot(m),
     slots:Object.fromEntries(used.map(n=>{ const h=unpack(sbGet(n)); return [n,{day:h.day,wid:h.wid||null,metaDay:(m.slots[n]||{}).day}]; }))}; });
   /* 화면으로 코드 만들기(세계 번호를 붙이는 길) */
   async function codeUI(pg){ await pg.evaluate(()=>{ closeSheets(); XF.out=null; A.go('cfg:save'); }); await pg.waitForSelector('[data-a="xfUp"]'); await pg.click('[data-a="xfUp"]'); await pg.waitForSelector('.xf-code'); return (await pg.locator('.xf-code').innerText()).trim(); }
   /* 같은 상태로 코드를 하나 더(받는 쪽 점검용) */
   const codeApi=pg=>pg.evaluate(async()=>{ const r=await fetch('/api/transfer',{method:'POST',body:LZString.compressToBase64(prepG()),headers:{'Content-Type':'text/plain'}}); return (await r.json()).code; });
-  async function receiveFromTitle(pg,code){ await pg.goto(server.url); await pg.waitForTimeout(500); await pg.click('[data-a="tsGo"][data-v="slots"]'); await pg.waitForSelector('#xfIn'); await pg.fill('#xfIn',code); await pg.click('[data-a="xfGet"]'); }
+  async function receiveFromTitle(pg,code){ await pg.goto(server.url);await pg.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await pg.waitForTimeout(500); await pg.click('[data-a="tsGo"][data-v="slots"]'); await pg.waitForSelector('#xfIn'); await pg.fill('#xfIn',code); await pg.click('[data-a="xfGet"]'); }
   const dlabel=(pg,d)=>pg.evaluate(d=>xfD(d),d);
 
   /* A: 새 게임(D1) */
@@ -50,11 +50,11 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
     assert.equal(await B.locator('.xf-ask .btn.primary').getAttribute('data-v'),'empty','옛 저장이면 새 슬롯이 기본'); }
   await B.click('.xf-ask [data-a="xfImp"][data-v="rep"]'); await B.waitForSelector('text=한 번 더 눌러 바꾸기');
   { const s=await state(B); assert.equal(s.slots[b1.cur].day,D2,'한 번 눌러서는 B의 더 최근 저장을 덮지 않는다'); assert.equal(Object.keys(s.slots).length,1); }
-  await B.reload(); await B.waitForTimeout(500); { const s=await state(B); assert.equal(s.slots[b1.cur].day,D2); assert.equal(s.cont,b1.cur); }
+  await B.reload();await B.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await B.waitForTimeout(500); { const s=await state(B); assert.equal(s.slots[b1.cur].day,D2); assert.equal(s.cont,b1.cur); }
   console.log('B: A의 옛 저장을 받으면 경고·새 슬롯 기본·두 번 눌러야 바꿈 → B의 최근 저장 그대로 통과');
 
   /* A로 돌아오기: 새로고침하면 이어하기는 A의 옛 슬롯(D1). 코드를 받으면 같은 게임으로 알아보고 바꾸기가 먼저 */
-  await A.goto(server.url); await A.waitForTimeout(500);
+  await A.goto(server.url);await A.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await A.waitForTimeout(500);
   assert.match(await A.locator('[data-a="tsCont"]').innerText(),new RegExp((await A.evaluate(d=>dstr(d),D1)).split(' ').slice(1,3).join(' ')),'돌아온 A의 이어하기는 옛 날짜(제보 상황 재현)');
   await receiveFromTitle(A,c2); await A.waitForSelector('.xf-ask',{timeout:30000});
   { const t=await A.locator('.xf-ask').innerText(); assert.match(t,/더 나중 날짜입니다/); const L=await dlabel(A,D1), R=await dlabel(A,D2); assert.ok(t.includes(`이 슬롯(${L})을 받은 저장(${R})으로 바꾸기`),'바꾸기 버튼에 두 날짜'); assert.match(t,/저장 \d/); assert.match(t,/다른 기기에서 보낸 시각/);
@@ -62,7 +62,7 @@ function fakeKV(){ const m=new Map(); return { m, async get(k){ return m.has(k)?
   if(process.env.CAPTURE){ require('node:fs').mkdirSync(process.env.CAPTURE,{recursive:true}); await A.setViewportSize({width:390,height:844}); await A.locator('.xf-ask').scrollIntoViewIfNeeded(); await A.screenshot({path:path.join(process.env.CAPTURE,'xfer-ask-390.png')}); await A.setViewportSize({width:1280,height:900}); }
   await A.click('.xf-ask [data-a="xfImp"][data-v="rep"]'); await A.waitForFunction(()=>!UI.title,{},{timeout:30000});
   { const s=await state(A); assert.equal(s.cur,aSlot,'같은 슬롯을 바꿈'); assert.equal(s.day,D2); assert.equal(s.slots[aSlot].day,D2); assert.equal(s.active,aSlot); assert.equal(Object.keys(s.slots).length,1,'슬롯이 늘지 않음'); assert.equal(s.slots[aSlot].metaDay,D2); }
-  await A.goto(server.url); await A.waitForTimeout(500); { const s=await state(A); assert.equal(s.cont,aSlot); assert.equal(s.slots[aSlot].day,D2); }
+  await A.goto(server.url);await A.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await A.waitForTimeout(500); { const s=await state(A); assert.equal(s.cont,aSlot); assert.equal(s.slots[aSlot].day,D2); }
   await A.click('[data-a="tsCont"]'); await A.waitForFunction(()=>!UI.title,{},{timeout:30000}); assert.equal(await A.evaluate(()=>G.day),D2,'이어하기가 B에서 진행한 날짜부터');
   assert.equal(env.SAVE_KV.m.has('x:'+c2),false,'받은 코드는 서버에서 삭제');
   console.log('A: 돌아와 받은 저장으로 바꾸기 →',await dlabel(A,D2),'부터 이어하기 통과');

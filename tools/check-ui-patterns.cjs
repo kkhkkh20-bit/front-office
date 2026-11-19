@@ -16,7 +16,7 @@ const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?
  assert.ok(empty<=EMPTY_BASE,`빈 상태 한 줄 문구가 늘었습니다(${empty} > ${EMPTY_BASE}). emptyState(문구, 동작)를 쓰세요`);
  assert.ok(/function emptyState\(/.test(src)&&/function loadingState\(/.test(src),'빈 상태·불러오는 중 부품');
  const server=await startHtmlServer(path.join(root,'index.html'));let browser;
- try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await browser.newPage();await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>typeof GUARD==='object');
+ try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await browser.newPage();await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await p.waitForFunction(()=>typeof GUARD==='object');
   const r=await p.evaluate(()=>{const css=[...document.styleSheets].flatMap(s=>{try{return [...s.cssRules].map(r=>r.cssText)}catch(e){return []}}).join('\n');
    const lines=css.split('\n').filter(l=>/\.danger/.test(l));const acts=[...new Set(lines.flatMap(l=>[...l.matchAll(/\[data-a="?([a-zA-Z]+)"?\]/g)].map(m=>m[1])))];
    return {acts,guard:Object.keys(GUARD)};});

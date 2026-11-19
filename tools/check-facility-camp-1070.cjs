@@ -18,7 +18,7 @@ const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-serve
   const camp=async()=>page.evaluate(()=>{closeSheets();A.goWork('스프링캠프');render();workspaceReveal('.sprc-sites,.camp,.mst');});
   const mail=async mid=>{await page.evaluate(mid=>{closeSheets();UI.ib={};A.tab('inbox');render();workspaceReveal(`[data-a="mailJump"][data-v="${mid}"]`);},mid);await click(page.locator(`[data-a="mailJump"][data-v="${mid}"]:visible`).first());await page.evaluate(()=>workspaceReveal('.mailbody'));return page.locator('.mailbody:visible').first();};
   try{
-   await page.goto(server.url);await page.waitForFunction(()=>UI.title===true&&UI.sstep==='main');
+   await page.goto(server.url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);await page.waitForFunction(()=>UI.title===true&&UI.sstep==='main');
    await page.evaluate(()=>{
     UI.title=true;DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);uiSaveSync();G.tut={done:true,step:99};G.medSet=true;G.stops=[];G.evs=[];G.offers=[];closeSheets();UI.title=false;const base=JSON.stringify(G);
     window.__fc1070={base,reset:()=>{closeSheets();G=JSON.parse(base);worldReset();uiSaveSync();G.mail=[];G.ovs=[];G.ovsAi=null;G.fallT={};G.ps=null;G.day=G.cal.camp;G.stops=[];G.evs=[];G.offers=[];UI.title=false;},

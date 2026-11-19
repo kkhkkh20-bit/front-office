@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),path=require('node:path');
 const {chromium}=require('playwright');
 const {startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(process.env.STAFF_HTML||path.resolve(__dirname,'../index.html')));let browser;const errors=[],check=(yes,msg)=>{if(!yes)errors.push(msg);};
-try{browser=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});const page=await browser.newPage({viewport:{width:1366,height:768}});page.on('pageerror',e=>errors.push(e.message));await page.goto(server.url,{waitUntil:'domcontentloaded'});
+try{browser=await chromium.launch(process.env.CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.CHROMIUM_EXECUTABLE_PATH}:{});const page=await browser.newPage({viewport:{width:1366,height:768}});page.on('pageerror',e=>errors.push(e.message));await page.goto(server.url,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
 await page.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);if(!Object.values(coachesOf(G.user)).some(Boolean)){const c=(G.cmarket||[])[0];if(!c)throw Error('코치 채용 후보가 없습니다.');team(G.user).cash=10000;const why=hireCoach(c.id,3);if(why)throw Error(why);}G.tut={done:true,step:99};G.medSet=true;UI.title=false;render();});
 for(const size of [{width:1366,height:768},{width:390,height:844}]){await page.setViewportSize(size);await page.waitForTimeout(220);
   for(const [route,kind] of [['staff:coach','coach'],['staff:scouts','scout'],['staff:data','analyst']]){

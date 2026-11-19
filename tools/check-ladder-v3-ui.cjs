@@ -10,7 +10,7 @@ const SHOT = process.env.SHOT; if (SHOT) fs.mkdirSync(SHOT, { recursive: true })
 const boot = () => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); let n = 0; while (G.fd && !G.fd.done && n++ < 500) fdAdvance(true); hireMgr(G.mmarket[0].id, 3); G.tut = { done: true, step: 99 }; G.medSet = true; UI.title = false; CUR_SLOT = 1; slotRevSync(1); SLOT_NEW = true; uiSaveSync(); render(); saveNow(); };
 (async () => {
   const server = await startHtmlServer(path.resolve(__dirname, '../index.html')), b = await chromium.launch({ executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium' }), errs = [];
-  const open = async (ctx, w, h) => { const p = await ctx.newPage(); await p.setViewportSize({ width: w || 1440, height: h || 900 }); p.on('pageerror', e => errs.push(String(e))); p.on('dialog', d => d.accept()); await p.route('https://fonts.googleapis.com/**', r => r.fulfill({ body: '', contentType: 'text/css' })); await p.goto(server.url); await p.waitForFunction(() => typeof newGame === 'function', null, { timeout: 60000 }); return p; };
+  const open = async (ctx, w, h) => { const p = await ctx.newPage(); await p.setViewportSize({ width: w || 1440, height: h || 900 }); p.on('pageerror', e => errs.push(String(e))); p.on('dialog', d => d.accept()); await p.route('https://fonts.googleapis.com/**', r => r.fulfill({ body: '', contentType: 'text/css' })); await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await p.waitForFunction(() => typeof newGame === 'function', null, { timeout: 60000 }); return p; };
   const fit = p => p.evaluate(() => { window.scrollTo(0, 9999); return { scroll: scrollY, h: document.documentElement.scrollHeight, v: innerHeight, sw: document.documentElement.scrollWidth, iw: innerWidth }; });
   const top = p => p.evaluate(() => { document.querySelectorAll('.setc').forEach(e => { e.scrollTop = 0; }); });
   try {
@@ -27,7 +27,7 @@ const boot = () => { DEMO.on = false; newGame(6); fdStart(); fdAdvance(false); l
     await p.click('[data-a="ulEditOpen"]'); await p.waitForSelector('.ul-edit'); await p.click('.ul-edit [data-a="ulUp"][data-v="1"]'); await p.click('[data-a="ulEditSave"]'); await p.waitForFunction(() => /다음 연전부터/.test(UL.msg));
     const mem = await p.evaluate(() => ({ alb: cupAlbum().length, deck: uld().deck.e.name, next: uld().league.next, edits: uld().league.edits.length, day: G.day }));
     assert.equal(mem.alb, t0.alb + 1); assert.equal(mem.day, t0.day, '본게임은 손대지 않음');
-    await p.waitForTimeout(1600); await p.reload(); await p.waitForFunction(() => typeof A === 'object' && typeof A.slotLoad === 'function', null, { timeout: 60000 });
+    await p.waitForTimeout(1600); await p.reload();await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await p.waitForFunction(() => typeof A === 'object' && typeof A.slotLoad === 'function', null, { timeout: 60000 });
     await p.evaluate(() => { if (!G || curSlot() !== 1) A.slotLoad(1); UI.title = false; });
     const disk = await p.evaluate(() => ({ alb: cupAlbum().length, deck: uld().deck && uld().deck.e.name, next: uld().league && uld().league.next, edits: uld().league && uld().league.edits.length }));
     assert.deepEqual(disk, { alb: mem.alb, deck: mem.deck, next: mem.next, edits: mem.edits }, '새로 고친 뒤 래더·앨범 ' + JSON.stringify({ mem, disk }));

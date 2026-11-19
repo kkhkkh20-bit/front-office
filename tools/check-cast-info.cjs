@@ -2,7 +2,7 @@
 const path=require('node:path');const {chromium}=require('playwright');const {startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium',args:['--disable-webgl']});
 const p=await browser.newPage({viewport:{width:1440,height:900}});const errs=[];p.on('pageerror',e=>errs.push(String(e)));p.setDefaultTimeout(900000);
-await p.route('https://**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);
+await p.route('https://**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
 await p.waitForFunction(()=>typeof newGame==='function');
 const R=await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.day=G.cal.open+2;for(const t of G.teams)setEntry(t.id);const op=G.teams.find(t=>t.id!==G.user).id;G.games=[];
  for(let i=0;i<8;i++){G.day++;const g=simGame(G.day,G.user,op,false);applyGame(G.day,G.user,op,g,false);G.games.unshift(gameRecord(G.day,G.user,op,g,''));}

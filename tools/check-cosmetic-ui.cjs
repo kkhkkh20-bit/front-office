@@ -9,7 +9,7 @@ const setup=()=>{ DEMO.on=false; newGame(6); fdStart(); fdAdvance(false); let n=
 (async()=>{ await new Promise(r=>server.listen(0,'127.0.0.1',r)); const url=`http://127.0.0.1:${server.address().port}/`; let browser;
   try{ browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/opt/pw-browsers/chromium'});
     for(const [w,h] of [[1366,768],[390,844]]){ const ctx=await browser.newContext({viewport:{width:w,height:h},isMobile:w<1100,hasTouch:w<1100}), page=await ctx.newPage(), errs=[]; page.setDefaultTimeout(15000);
-      page.on('pageerror',e=>errs.push(e.message)); await page.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'})); await page.goto(url); await page.waitForFunction(()=>typeof newGame==='function');
+      page.on('pageerror',e=>errs.push(e.message)); await page.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'})); await page.goto(url);await page.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await page.waitForFunction(()=>typeof newGame==='function');
       await page.evaluate(setup);
       /* 1) 다른 구단 선수 화면: 고치기 상자 */
       const pid=await page.evaluate(()=>{ const t=G.teams.find(t=>t.id!==G.user).id, p=playersOf(t).find(x=>!x.foreign); UI.sheet=p.id; UI.ptab='sum'; renderSheet(); A.pEditOpen(p.id); return p.id; });
