@@ -301,7 +301,7 @@ const US_HS={top:5,p:.6,max:2,stay:.3,hs:58,co:60,coO:48}; /* hs·co: 미국 구
 /* 설득: 1순위 구단이 우리든 AI든 같은 두 선택지·같은 비용(계약금 1.3배, 성공했을 때만)·같은 확률 */
 function usHsCh(tid,p,i){ const mv=mlbOf(p); return i===0?clamp(.92-(mv-50)/120,.55,.95):clamp(.55-(mv-50)/90+(p.gmVis&&p.gmVis.t===tid&&p.gmVis.y===G.year?.08:0),.15,.75); } /* 고교 방문을 기억하는 선수는 직접 설득이 조금 낫다 */
 const usHsCost=(p,i)=>i===0?Math.round(p.usOff.bonus*1.3):0;
-function usHsTry(tid,p,i){ const cost=usHsCost(p,i); if(R()<usHsCh(tid,p,i)){ p.usStay=true; delete p.usOff; if(cost){ if(tid===G.user)spendPay(cost); else team(tid).cash-=cost; } p.usKeepT=tid;
+function usHsTry(tid,p,i){ const cost=usHsCost(p,i); if(R()<usHsCh(tid,p,i)){ p.usStay=true; delete p.usOff; if(cost){ ledgerPay(tid,'opsP',cost,{me:tid===G.user}); } p.usKeepT=tid;
     const t=`${p.name}, 미국 대신 국내 잔류 · ${tshort(tid)} 설득 통했다`, b=i===0?`${tshort(tid)}이(가) 최고 대우를 약속했다는 후문입니다.`:`단장이 직접 집을 찾아가 육성 계획을 설명한 것이 마음을 돌렸다는 후문입니다.`;
     if(tid===G.user)news('드래프트',t,b,1,{ref:p.id}); else wire('드래프트',t,{tid,ref:p.id}); return true; }
   p.mlb=clamp(mlbOf(p)+5,0,100); if(tid!==G.user)wire('드래프트',`${tshort(tid)}, ${p.name} 설득 실패 · 미국행 기울어`,{tid,ref:p.id}); return false; }

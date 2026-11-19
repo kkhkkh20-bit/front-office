@@ -62,7 +62,7 @@ function budgetCards(){ const b=budget(); const t=team(G.user); const m=G.mgr[G.
     <div><span class="eyebrow">국내 선수 연봉 · 샐러리캡</span><b>${money(b.ci.pay)} / ${money(b.ci.cap)}</b><i class="bar"><em class="${b.ci.over?'bad':''}" style="width:${Math.min(100,b.ci.pay/b.ci.cap*100)}%"></em></i><span class="small muted">${esc(capStateTxt(b.ci.pay))} ${hiI(capRuleTxt())}</span></div>
   </div><p class="small muted">한도는 계약 규정입니다. 실제로 쓸 수 있는지는 위의 "예산 여유"로 판단하세요.</p></section>
   <section class="card"><h2 class="sec">어디에 쓰고 어디서 버나</h2><div class="eyebrow">연간 예상 지출</div>${[...b.exp].sort((x,y)=>y[1]-x[1]).map(x=>row(x[0],x[1],emax,'ex')).join('')}
-    <div class="eyebrow">수입 (연간 예상${b.inc.some(x=>/포스트시즌 배당/.test(x[0]))?', 포스트시즌 배당 포함':', 포스트시즌 배당 제외'})</div>${b.inc.map(x=>row(x[0],x[1],imax,'in')).join('')}${(()=>{ const S=G.spend||{}, v=(S.stad||0)+(S.facB||0); return v>0?`<p class="small muted">시설·구장 공사비(보유 현금에서 낸 투자, 위 지출과 결산 비용에는 넣지 않음): <b class="num">${money(Math.round(v))}</b></p>`:''; })()}</section>`; /* 검수 11-08: 배당 포함 여부, 현금 공사비 추적 */
+    <div class="eyebrow">수입 (연간 예상${b.inc.some(x=>/포스트시즌 배당/.test(x[0]))?', 포스트시즌 배당 포함':', 포스트시즌 배당 제외'})</div>${b.inc.map(x=>row(x[0],x[1],imax,'in')).join('')}${(()=>{ const S=G.spend||{}, v=(S.stad||0)+(S.facB||0), o=S.opsP||0; return (v>0?`<p class="small muted">시설·구장 공사비(보유 현금에서 낸 투자, 위 지출과 결산 비용에는 넣지 않음): <b class="num">${money(Math.round(v))}</b></p>`:'')+(o>0?`<p class="small muted">보유 현금에서 바로 낸 지출(보조금 반환·지역 야구 교실·거부권 포기 대가 등, 위 지출과 결산 비용에는 넣지 않음): <b class="num">${money(Math.round(o))}</b></p>`:''); })()}</section>`; /* 검수 11-08: 배당 포함 여부, 현금 공사비 추적 */
 }
 /* PC 그래프: 0을 기준선으로 한 면적 그래프(인라인 SVG). p:1인 끝 점들은 예상이라 점선 */
 /* 추이 선 그래프: 면을 채우지 않고 선과 점만. 세로 범위는 값 주변으로(0을 지나면 0선 표시), 점선은 결산까지 예상 */

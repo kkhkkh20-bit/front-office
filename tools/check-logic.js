@@ -10176,6 +10176,45 @@ T('[피드백 11-19 캠프 연습상대] AI 구단도 감독 성향으로 방침
   G.day=G.cal.campEnd; sprcCampEnd(); ok(p.campEv&&p.campEv.t===t0.id&&p.campEv.n===Q.sg[id][0],'AI 선수 평가 기록 '+JSON.stringify(p.campEv)); ok(sprcEvalSdF(p,G.user)===1,'AI 선수 평가가 우리 추정에 섞임');
   ok(p.mor===clamp(mor0-2,0,100),'AI 크게 진 강팀 경기 사기 '+mor0+' '+p.mor); const E=G.scp.t[ai[1].id]; ok(E&&typeof E.cond==='number','AI 컨디션');
   const c0=SPRC_INT[Q.int].cond-((SPRC1[Q.s1]||{}).tr||0)*.12-((SPRC2[Q.s2]||{}).tr||0)*.06+Math.min(8,Q.pgR.length)*.04+sprcPgFx(Q).c; ok(Math.abs(Q.cond-c0)<.011,'AI 개막 컨디션 같은 식 '+Q.cond+' '+c0); });
+/* ===== 원장 검수 11-19(외부 검수 7건: AI 경질 정산 시점·구장 협의 간격·이미 낸 돈 장부·capex 저장) ===== */
+T('[원장검수 11-19 #1] 결산 뒤 감독 경질 정산: AI(단장 교체·mgrFireOff, 감독 연차 넘기기 전)도 우리 구단(넘긴 뒤)과 같은 남은 지급분, 약속 위반 2회면 둘 다 절반 [재정][결산]',()=>{
+  const run=viol=>{ fresh(); G.day=dnum(G.year,11,15); const plv=()=>viol?[{y:G.year,d:1,k:'listen',t:'a'},{y:G.year,d:2,k:'youth',t:'b'}]:[];
+    const um=G.mgr[G.user]; delete um.interim; Object.assign(um,{sal:300,cs:G.year-1,yrs:1,ce:G.year+1,plv:plv()}); G.rolled=G.year; const up=mgrSevPay(um).pay; /* 우리 구단: 연차를 넘긴 뒤(2025~2027 계약이면 남은 2027 + 올해 남은 날) */
+    const a=G.teams.find(t=>t.id!==G.user&&gmExpRank(t)<=6&&!expYr(t.id)); ok(a,'준비 실패: 기대 순위가 높은 AI 구단 없음');
+    const m=G.mgr[a.id]; delete m.interim; delete m.act; Object.assign(m,{sal:300,cs:G.year-1,yrs:2,ce:G.year+1,plv:plv(),hireY:G.year-1});
+    G.last=Object.assign({},G.last||{},{y:G.year,order:[...G.teams.filter(t=>t.id!==a.id).map(t=>({tid:t.id})),{tid:a.id}]}); G.rolled=G.year;
+    const k=fyNow()+':'+a.id, h=()=>((G.hoL||{})[k]&&G.hoL[k].exp['감독 경질 정산금'])||0, h0=h(); offseasonMgr(); ok(G.mgr[a.id]!==m,'준비 실패: 꼴찌 AI 감독이 경질되지 않음');
+    ok(MGR_YRS_DUE==null,'연차 넘기기 표식이 남음'); return {up,paid:h()-h0}; };
+  const n=run(false); ok(n.up===Math.round(300*(1+(dnum(G.year+1,1,1)-dnum(G.year,11,15))/365)),'준비: 우리 정산 '+n.up); ok(n.paid===n.up,'AI 경질 정산 '+n.paid+' ≠ 우리 '+n.up);
+  const v=run(true); ok(Math.abs(v.up-n.up*.5)<=1,'준비: 위반 2회 절반 '+v.up); ok(v.paid===v.up,'약속 위반 2회 AI '+v.paid+' ≠ 우리 '+v.up);
+  ok(gmReformStaff.toString().includes('mgrSevSettle(t.id,m)'),'단장 교체 개편 경질도 같은 정산 함수'); });
+T('[원장검수 11-19 #2] 구장 지자체 분담 협의 60일 간격은 구단 하나에 붙는다: 이직·사임해도, AI가 맡았던 구단을 맡아도 그대로 [재정]',()=>{ fresh(); G.day=dnum(G.year,11,20); G.ps=null; ok(stadWindow(),'준비 실패: 공사 기간 아님');
+  const big=tid=>{ const t=team(tid); t.indie=false; t.cash=60000; stadOf(tid).build=[]; };
+  const U=G.user; big(U); capexAsk('stad','seat'); ok(stadCityWait(U)>0,'준비 실패: 우리 협의일 기록 없음');
+  const B=otherT(); big(B); delete team(B).stadCityD; switchTeam(B); ok(G.user===B,'준비 실패: 이직'); big(U);
+  ok(stadCityWait(U)>0,'이직하자 옛 구단 협의 간격이 사라짐'); ok(stadCityAI(team(U),'fnb',STAD_COST[stadOf(U).lv.fnb+1])===null,'옛 구단(AI)이 60일 안에 다시 협의');
+  G.day++; capexAsk('stad','seat'); ok(stadCityWait(B)>0,'준비 실패: 새 구단 협의일'); const rs=resignGM(); ok(G.unemp,'준비 실패: 사임 '+rs); ok(stadCityWait(B)>0,'사임하자 그 구단 협의 간격이 사라짐');
+  const C=G.teams.find(t=>t.id!==U&&t.id!==B).id; big(C); delete team(C).stadCityD; G.day++; stadCityAI(team(C),'seat',STAD_COST[stadOf(C).lv.seat+1]); ok(team(C).stadCityD===G.day,'준비 실패: AI 협의');
+  switchTeam(C); ok(G.user===C,'준비 실패: 부임'); big(C); const r=capexAsk('stad','fnb'); ok(String(r).includes('기다려야'),'AI 시절 협의 60일 안인데 우리 협의가 됨: '+r); });
+T('[원장검수 11-19 #3] 독립구단 시설 보조금 회수: 현금에서 바로 낸 돈은 이미 낸 지출로 장부에 남고, 결산이 다시 빼는 미지급 기타 지출에는 넣지 않는다 [재정][결산]',()=>{ fresh(); const t=team(G.user); t.indie=true; t.facSpon=null; t.cityOb=[{k:'fut',y1:G.year+2,prog:300,help:4000,miss:1}]; t.cash=-3000; G.last={y:G.year};
+  const e0=G.spend.etc||0, p0=G.spend.opsP||0; facDealsYear(t); const back=Math.round(4000*FAC_SPON.back); ok(!(t.cityOb||[]).length,'준비 실패: 회수되지 않음'); ok(back===3200&&t.cash===-3000-back,'현금 '+t.cash);
+  ok((G.spend.opsP||0)-p0===back,'이미 낸 회수금 '+money(back)+'이 장부에 없음: '+((G.spend.opsP||0)-p0)); ok((G.spend.etc||0)===e0,'이미 낸 돈이 미지급 기타 지출로 또 잡힘'); });
+T('[원장검수 11-19 #4] 지역 야구 교실 비용: 현금에서 낸 몫은 이미 낸 지출이라 이직 정산·결산이 다시 빼지 않는다 [재정][결산]',()=>{ fresh(); const old=G.user, t=team(old); t.indie=false; t.facSpon=null; G.last={y:G.year}; G.smkL=[];
+  const snap=JSON.stringify(G), B=otherT(); const go=withClass=>{ G=JSON.parse(snap); const T0=team(old); T0.cityOb=[{k:'fut',y1:G.year+2,prog:300,help:4000,miss:0,city:T0.city}]; T0.cash=10000; const f0=G.spend.fac||0;
+    if(withClass){ facDealsYear(T0); ok(T0.cash===9700,'교실 비용 현금 '+T0.cash); ok((G.spend.fac||0)===f0,'이미 낸 교실 비용이 결산 때 낼 시설 유지비로 '+((G.spend.fac||0)-f0)); ok((G.spend.opsP||0)===300,'이미 낸 지출 장부 '+G.spend.opsP); } else T0.cityOb=[];
+    __seed(77); switchTeam(B); return team(old).cash; };
+  const a=go(true), b=go(false); ok(b-a===300,'이직 뒤 옛 구단 현금 차이 '+(b-a)+' (교실 비용 300이 한 번만 빠져야)'); });
+T('[원장검수 11-19 #5] 트레이드 거부권 포기 대가: 현금에서 낸 몫은 이미 낸 지출, 모자라 예산으로 넘긴 몫만 미지급 기타 지출(합이 대가, 이중 차감 없음) [재정]',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.foreign&&!q.ys); initPers(p); p.ntc=G.year+3; p.ctT=G.user; p.sal=1000; Object.assign(p.pers,{loy:3,amb:18}); p.mor=80; ok(hasNtc(p),'준비 실패: 거부권'); const pid=p.id, tid=otherT(); team(G.user).indie=false;
+  const snap=JSON.stringify(G); const ask=cash=>{ for(let k=0;k<40;k++){ G=JSON.parse(snap); const t=team(G.user); t.cash=cash; const s0=Object.assign({},G.spend), c0=t.cash; __seed(300+k); const r=ntcAsk(pid,tid,true); if(G.players[pid].ntcOk)return {r,paid:c0-t.cash,opsP:(G.spend.opsP||0)-(s0.opsP||0),etc:(G.spend.etc||0)-(s0.etc||0)}; } ok(false,'준비 실패: 동의를 못 받음'); };
+  const a=ask(10000); ok(a.r.includes('3억'),'준비: 대가 3억 '+a.r); ok(a.paid===300&&a.opsP===300&&a.etc===0,'현금으로 낸 대가 '+JSON.stringify(a));
+  const b=ask(100); ok(b.paid===100&&b.opsP===100&&b.etc===200,'현금 1억 + 예산 2억 '+JSON.stringify(b)); });
+T('[원장검수 11-19 #6] 구단 버스 구입: 현금에서 낸 몫은 시설 투자(이미 낸 돈) 줄에, 모자란 몫만 미지급 기타 지출 [재정]',()=>{ fresh(); const t=team(G.user); t.indie=false; G.bus=1; const snap=JSON.stringify(G);
+  const buy=cash=>{ G=JSON.parse(snap); const T0=team(G.user); T0.cash=cash; const s0=Object.assign({},G.spend), c0=T0.cash; const r=buyBus(2); ok(r==='','준비 실패: '+r); return {paid:c0-T0.cash,facB:(G.spend.facB||0)-(s0.facB||0),etc:(G.spend.etc||0)-(s0.etc||0)}; };
+  const a=buy(10000); ok(a.paid===600&&a.facB===600&&a.etc===0,'현금 구입 '+JSON.stringify(a)); const b=buy(100); ok(b.paid===100&&b.facB===100&&b.etc===500,'현금 1억 + 예산 5억 '+JSON.stringify(b)); });
+T('[원장검수 11-19 #7] last 없이 저장된 시설 투자 기록(G.capex={})도 불러온 뒤 구장 분담 협의가 된다: 불러오기 이전은 난수 없이 여러 번 같다 [재정]',()=>{ fresh(); G.capex={}; G=JSON.parse(JSON.stringify(G)); const r0=__rngState(); migrateDraft(); ok(G.capex&&G.capex.last&&typeof G.capex.last==='object','불러온 뒤 last 없음');
+  const j=JSON.stringify(G); migrateDraft(); ok(JSON.stringify(G)===j&&__rngState()===r0,'두 번째 불러오기가 저장·난수를 바꿈'); G.capex={}; ok(capexState().last&&typeof capexState().last==='object','capexState가 last를 채우지 않음');
+  G.day=dnum(G.year,11,20); G.ps=null; G.capex={}; const t=team(G.user); t.indie=false; t.cash=60000; stadOf(G.user).build=[]; let e=null; try{ capexAsk('stad','seat'); }catch(x){ e=x; } ok(!e,'구장 분담 협의가 멈춤: '+(e&&e.message));
+  fresh(); const d0=G.day-10, b=otherT(); G.capex={last:{stad:d0,fac:d0}}; G.orgT=Object.assign(G.orgT||{},{[b]:{capex:{}}}); delete team(G.user).stadCityD; G=JSON.parse(JSON.stringify(G)); migrateDraft(); ok(team(G.user).stadCityD===d0&&G.capex.last.stad==null&&G.capex.last.fac===d0,'예전 우리 구단 협의일이 구단 협의일로 옮겨지지 않음'); ok(G.orgT[b].capex.last&&typeof G.orgT[b].capex.last==='object','떠난 구단 기록의 last'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
