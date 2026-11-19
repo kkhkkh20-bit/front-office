@@ -89,6 +89,6 @@ function gmReformPick(t,run){ const C=[]; const n=3+Math.min(3,run||0); for(let 
 /* 물러난 단장은 몇 해 동안 다른 구단 후보로 남는다 */
 function gmExAdd(g,tid){ if(!g||g.interim||g.ob||g.age>=62)return; try{ personNetworkEnsure(g,'gm'); }catch(e){} /* 구단 별칭이 바뀌기 전에 같은 인물 키의 교류 기록을 보존한다. */ G.exGM=(G.exGM||[]).filter(x=>G.year-x.y<4&&x.g.id!==g.id); G.exGM.push({g,tid,y:G.year}); if(G.exGM.length>12)G.exGM.shift(); }
 /* 개혁: 새 단장은 대개 감독을 바꾸고(새 감독은 코치진을 데려온다) 계획을 새로 짠다 */
-function gmReformStaff(t,run){ const m=G.mgr&&G.mgr[t.id]; if(!m||m.hireY===G.year||R()>=.7)return; const old=m.name; try{ staffHistory('mgr',m,'경질',t.id,'새 단장 체제 개편'); }catch(e){} t.cash=(t.cash||0)-Math.round((m.sal||0)*Math.max(0,(m.yrs||1)-1));
+function gmReformStaff(t,run){ const m=G.mgr&&G.mgr[t.id]; if(!m||m.hireY===G.year||R()>=.7)return; const old=m.name; try{ staffHistory('mgr',m,'경질',t.id,'새 단장 체제 개편'); }catch(e){} mgrSevSettle(t.id,m); /* 우리 구단 경질과 같은 정산(AI 규칙 동등 11-19) */
   const n=mgrNew(t.id,false); n.yrs=(n.yrs||2)+1; n.hireY=G.year; try{ domLog('reformMgr'); }catch(e){}
   try{ news('리그',`${tshort(t.id)}, 새 단장 체제로 판 갈이… ${old} 감독도 교체`,`${run}시즌째 기대에 못 미친 ${tname(t.id)}이(가) 단장에 이어 감독까지 바꿨습니다. 새 감독은 ${n.name}입니다. 코치진도 상당수 바뀝니다.`,0); }catch(e){} try{ wire('감독',`${tname(t.id)}, ${old} 감독 교체 · ${n.name} 감독 선임`,{tid:t.id,x:{mid:n.id,hire:1}}); }catch(e){} }
