@@ -4,15 +4,15 @@
   "path_base": "assets/v23b/crests/",
   "request": "docs/asset-requests/2026-11-19-codex-v23b-expansion-crests.md",
   "phase": 1,
-  "review_status": "awaiting_expansion_b_selection",
+  "review_status": "approved_for_uniform_emblem_replacement",
   "production_complete": false,
-  "approved": false,
-  "phase2_started": false,
+  "approved": true,
+  "phase2_started": true,
   "selection": {
     "expansion_a": "A1",
-    "expansion_b": null
+    "expansion_b": "B7"
   },
-  "review_default_note": "A1 selected by user. B7 canonical paths are REVIEW COPIES ONLY; B remains unselected. Do not start phase2.",
+  "review_default_note": "A1 and B7 selected by user. Canonical paths are approved selected crests and marks.",
   "teams": [
     {
       "key": "expansion_a",
@@ -76,7 +76,7 @@
         "ink": "#24123D",
         "white": "#F4F5F7"
       },
-      "selected_candidate": null,
+      "selected_candidate": "B7",
       "review_default_candidate": "B7",
       "candidates": [
         "B7",
@@ -252,7 +252,7 @@
           "14": "candidates/B1/png/mark/14.png"
         }
       },
-      "status": "superseded"
+      "status": "not_selected"
     },
     {
       "id": "B2",
@@ -288,7 +288,7 @@
           "14": "candidates/B2/png/mark/14.png"
         }
       },
-      "status": "superseded"
+      "status": "not_selected"
     },
     {
       "id": "B3",
@@ -324,7 +324,7 @@
           "14": "candidates/B3/png/mark/14.png"
         }
       },
-      "status": "superseded"
+      "status": "not_selected"
     },
     {
       "id": "B4",
@@ -360,7 +360,7 @@
           "14": "candidates/B4/png/mark/14.png"
         }
       },
-      "status": "superseded",
+      "status": "not_selected",
       "revision": 2
     },
     {
@@ -397,7 +397,7 @@
           "14": "candidates/B5/png/mark/14.png"
         }
       },
-      "status": "superseded",
+      "status": "not_selected",
       "revision": 2
     },
     {
@@ -434,7 +434,7 @@
           "14": "candidates/B6/png/mark/14.png"
         }
       },
-      "status": "superseded",
+      "status": "not_selected",
       "revision": 2
     },
     {
@@ -471,7 +471,7 @@
           "14": "candidates/B7/png/mark/14.png"
         }
       },
-      "status": "awaiting_user_selection",
+      "status": "selected",
       "revision": 3
     },
     {
@@ -508,7 +508,7 @@
           "14": "candidates/B8/png/mark/14.png"
         }
       },
-      "status": "awaiting_user_selection",
+      "status": "not_selected",
       "revision": 3
     },
     {
@@ -545,7 +545,7 @@
           "14": "candidates/B9/png/mark/14.png"
         }
       },
-      "status": "awaiting_user_selection",
+      "status": "not_selected",
       "revision": 3
     }
   ],
@@ -557,6 +557,10 @@
       "date": "2026-11-19",
       "basis": "User: a1이고 b는 너무 안이쁜데 도형이 들어가서 그런가 메이져리그 로고 참고해서 다시 봐"
     },
-    "expansion_b": null
+    "expansion_b": {
+      "candidate": "B7",
+      "date": "2026-11-19",
+      "basis": "User: 7로"
+    }
   }
 }

@@ -4,15 +4,11 @@
   "technical_validation_passed": true,
   "selection": {
     "expansion_a": "A1",
-    "expansion_b": null
+    "expansion_b": "B7"
   },
-  "approved": false,
-  "phase2_started": false,
+  "approved": true,
+  "phase2_started": true,
   "checks": [
-    {
-      "check": "selection_A1_B_pending",
-      "passed": true
-    },
     {
       "check": "active_B_candidates",
       "passed": true
@@ -1132,23 +1128,27 @@
     {
       "check": "phase2_directory_absent",
       "passed": true
+    },
+    {
+      "check": "user_selection_A1_B7",
+      "passed": true,
+      "basis": "User selected A1, then B7 with 7로"
     }
   ],
   "visual_review": {
     "performed": true,
     "active_candidates": [
       "A1 selected",
-      "B7",
-      "B8",
-      "B9"
+      "B7 selected"
     ],
     "MLB_official_logos_inspected": 6,
     "previews": [
       "candidates_expansion_b_revision3.png",
       "compare_with_v2_dark_light.png"
     ],
-    "subjective_assessment": "All three use a single integrated crown and curved numeral band, without a separate baseball or shield. Fine stitches and letters are intentionally omitted in simplified marks. B aesthetic approval and real uniform placement remain pending.",
+    "subjective_assessment": "A1 and B7 selected by user. Real uniform placement and face validation remain phase2 work.",
     "automated_recognizability_score": null
   },
-  "phase2_face_validation": "not_started; no photos altered"
+  "phase2_face_validation": "not_started; no photos altered",
+  "review_status": "selected_crests_approved_uniform_work_in_progress"
 }
