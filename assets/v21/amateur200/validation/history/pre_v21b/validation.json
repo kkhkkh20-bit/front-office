@@ -1,0 +1,36 @@
+{
+  "status": "INCOMPLETE_FAMILY_CHECKPOINT",
+  "production_complete": false,
+  "asset_validation_passed": false,
+  "target_identity_count": 200,
+  "target_photo_count": 2600,
+  "target_runtime_atlas_count": 78,
+  "generated_identity_families": 110,
+  "generated_photos": 1430,
+  "generated_full_13_families": 110,
+  "human_age_review": "pending",
+  "runtime_atlas_count": 0,
+  "partial_review_atlas_count": 39,
+  "partial_atlas_occupied_slots": 32,
+  "individual_photo_failure_count": 19777,
+  "partial_atlas_failure_count": 0,
+  "age_direction": "Near-adult high-school/very young university face; normal proportions and slight natural smile. User feedback about second image is directional, not approval of all identities.",
+  "originals_preserved": true,
+  "thresholds": {
+    "same_person_min": 0.6,
+    "different_person_max_exclusive": 0.4
+  },
+  "validation_reports": [
+    "validation/families/production_audit.json",
+    "validation/families/atlas_audit.json"
+  ],
+  "historical_day1_report": "validation/day1_candidate_snapshot.json",
+  "verified_numeric_subset_families": 32,
+  "verified_numeric_subset_photos": 416,
+  "subset_proposed_hs_count": 16,
+  "subset_proposed_university_count": 16,
+  "subset_glasses_count": 4,
+  "human_age_review_completed": 0,
+  "selection_note": "Compatible subset only, not a proof of maximum possible identities; final200/78 runtime sheets remain incomplete.",
+  "comparison_scope_clarification": "Request section5 does not specify whether different-person comparison covers all variant photos or representative masters. Conservative all-photo scope retained while user clarification is pending."
+}
