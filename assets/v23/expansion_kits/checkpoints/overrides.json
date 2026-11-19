@@ -10,5 +10,14 @@
       "grid": 2,
       "slot": 2
     }
+  },
+  "v7_staff01_coach_026": {
+    "expansion_b": {
+      "path": "/workspace/generated_images/exec-f7233cdd-091b-4f38-b771-70d60d485635.png",
+      "grid": 2,
+      "slot": 2,
+      "source_resolution": 256,
+      "reason": "Re-rendered only this original coach in same purple kit; initial128 identity score0.539 failed, criterion unchanged."
+    }
   }
 }

@@ -1,0 +1,17 @@
+{
+  "method": "uniform random sample without replacement",
+  "seed": 230011,
+  "population": 420,
+  "ids": [
+    "v6d60_033",
+    "v7_staff01_coach_013",
+    "v18_044",
+    "v6d60_038",
+    "v18_100",
+    "v18_134",
+    "v18_057",
+    "v7_staff01_coach_041",
+    "v6d60_044",
+    "v6d60_034"
+  ]
+}

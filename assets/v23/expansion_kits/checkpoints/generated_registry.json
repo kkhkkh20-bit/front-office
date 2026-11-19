@@ -50,5 +50,61 @@
   "b12": {
     "expansion_a": "/workspace/generated_images/exec-0757623c-056a-4e6b-a8a8-907ad7b0e9d0.png",
     "expansion_b": "/workspace/generated_images/exec-8e4837ab-2654-4118-8414-a8ac6bcd9bed.png"
+  },
+  "b13": {
+    "expansion_a": "/workspace/generated_images/exec-60ec0a44-0a7d-479d-a29c-f15391f72170.png",
+    "expansion_b": "/workspace/generated_images/exec-2f7b348c-43e5-411c-a346-22a0893751f9.png"
+  },
+  "b14": {
+    "expansion_a": "/workspace/generated_images/exec-f9a57bd1-102c-46fe-aeef-6ffd4a6e8a1a.png",
+    "expansion_b": "/workspace/generated_images/exec-0a575b4a-bf6b-43b7-8349-d8be0f2b585b.png"
+  },
+  "b15": {
+    "expansion_a": "/workspace/generated_images/exec-6b36bb85-9328-48e6-86c3-2c6606bb3f34.png",
+    "expansion_b": "/workspace/generated_images/exec-50e49302-cbc6-49b5-8eaa-701a9c7b266b.png"
+  },
+  "b16": {
+    "expansion_a": "/workspace/generated_images/exec-cf095e9d-f596-4960-8947-7bc2eb4c709b.png",
+    "expansion_b": "/workspace/generated_images/exec-2c433f44-e17d-4254-a255-c047abcfab57.png"
+  },
+  "b17": {
+    "expansion_a": "/workspace/generated_images/exec-4530cc7e-6ba2-4e96-8a01-069ea3d4ec7b.png",
+    "expansion_b": "/workspace/generated_images/exec-298b4113-cb9e-4358-a919-81c692a691f9.png"
+  },
+  "b18": {
+    "expansion_a": "/workspace/generated_images/exec-c15963b1-6f0c-48d8-b81f-ebaf6d868f34.png",
+    "expansion_b": "/workspace/generated_images/exec-9466481d-cbe3-460b-9098-27639efa3198.png"
+  },
+  "b19": {
+    "expansion_a": "/workspace/generated_images/exec-2575eab1-d999-4b3f-950d-35419898bde7.png",
+    "expansion_b": "/workspace/generated_images/exec-66088431-c755-43aa-a2b2-7627e3d73d15.png"
+  },
+  "b20": {
+    "expansion_a": "/workspace/generated_images/exec-de2df6d2-a397-4b58-a091-6281e85bb926.png",
+    "expansion_b": "/dev/shm/v23-work/b20_expansion_b_returned_image.png"
+  },
+  "b21": {
+    "expansion_a": "/workspace/generated_images/exec-75486001-7f5b-4a2f-9d47-c68380d0acc8.png",
+    "expansion_b": "/workspace/generated_images/exec-8e2b3f62-6279-48ce-9e30-f0c93237af11.png"
+  },
+  "b22": {
+    "expansion_a": "/workspace/generated_images/exec-8f4d7037-fa2e-4fc7-b4b0-ceb189dcf387.png",
+    "expansion_b": "/workspace/generated_images/exec-c907ee8d-163c-4f1d-9b27-a91a651918fe.png"
+  },
+  "b23": {
+    "expansion_a": "/workspace/generated_images/exec-9d15cec0-c9d7-4b60-bc25-692df1667cad.png",
+    "expansion_b": "/workspace/generated_images/exec-23ac8291-3a24-44a6-9f99-1d6edadff4ed.png"
+  },
+  "b24": {
+    "expansion_a": "/workspace/generated_images/exec-aaf9ee70-2ec9-4837-9ffd-adf3aa32e9ab.png",
+    "expansion_b": "/workspace/generated_images/exec-366b573d-8931-4a3c-a20b-6bf1a8e21f86.png"
+  },
+  "b25": {
+    "expansion_a": "/workspace/generated_images/exec-cea9e41a-8088-43dd-97a2-4873563f0017.png",
+    "expansion_b": "/workspace/generated_images/exec-82135cd0-c879-4981-8cd9-5c097c2ad2b5.png"
+  },
+  "b26": {
+    "expansion_a": "/workspace/generated_images/exec-c14ac1c2-cf05-4721-ba7c-2d091cb334e0.png",
+    "expansion_b": "/workspace/generated_images/exec-c31e7e12-8a45-4aa0-9f60-c2b2e8a9d80e.png"
   }
 }

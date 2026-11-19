@@ -1,0 +1,20 @@
+{
+  "v18_055": {
+    "expansion_b": {
+      "translation_px256": [
+        0,
+        2
+      ],
+      "method": "Integer translation of the entire 256px photograph only; edge pixel replication, no face-specific transform, no facial warp, no change in proportions. Same registered master feeds both128 and256.",
+      "reason": "Strict final decoded bbox-center check exceeded +/-4px before registration; source five-point center already within1px.",
+      "before_bbox_delta_px256": [
+        -0.5169525146484375,
+        -4.6160430908203125
+      ],
+      "before_5point_delta_px256": [
+        0.2505950927734375,
+        -0.5543212890625
+      ]
+    }
+  }
+}

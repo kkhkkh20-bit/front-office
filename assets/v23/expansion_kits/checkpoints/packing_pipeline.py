@@ -9,13 +9,19 @@ for b,variants in reg.items():
   f=R/'checkpoints/rendered_batches'/b/(t+'.png');f.parent.mkdir(parents=True,exist_ok=True)
   if not f.exists():shutil.copyfile(p,f)
 overrides=json.load(open(W/'overrides.json')) if (W/'overrides.json').exists() else {}
+registration=json.load(open(W/'photo_registration.json')) if (W/'photo_registration.json').exists() else {}
+def registered(c,t,im):
+ o=registration.get(c['id'],{}).get(t)
+ if not o:return im
+ import numpy as np
+ dx,dy=o['translation_px256'];a=np.pad(np.array(im),((max(dy,0),max(-dy,0)),(max(dx,0),max(-dx,0)),(0,0)),mode='edge');return Image.fromarray(a[max(-dy,0):max(-dy,0)+256,max(-dx,0):max(-dx,0)+256])
 def photo(c,t):
  o=overrides.get(c['id'],{}).get(t)
  if o:
-  im=Image.open(o['path']).convert('RGB');g=o['grid'];im=im.resize((g*256,g*256),Image.Resampling.LANCZOS);j=o['slot'];return im.crop((j%g*256,j//g*256,j%g*256+256,j//g*256+256))
+  im=Image.open(o['path']).convert('RGB');g=o['grid'];im=im.resize((g*256,g*256),Image.Resampling.LANCZOS);j=o['slot'];return registered(c,t,im.crop((j%g*256,j//g*256,j%g*256+256,j//g*256+256)))
  im=cache.get((c['batch'],t))
  if im is None:return None
- g=4 if c['batch']=='b00' else jobs[c['batch']]['grid'];x=c['slot']%g*256;y=c['slot']//g*256;return im.crop((x,y,x+256,y+256))
+ g=4 if c['batch']=='b00' else jobs[c['batch']]['grid'];x=c['slot']%g*256;y=c['slot']//g*256;return registered(c,t,im.crop((x,y,x+256,y+256)))
 sets=[];sheets=[];runtime=[];check_jobs=[]
 for name in ['v6c','v13','v18A','v18B','staff']:
  ps=[c for c in people if c['sheet']==name];sd={'key':name,'source_manifest':ps[0]['source_manifest'],'count':len(ps),'sheets':{},'ready_counts':{}}
@@ -39,11 +45,12 @@ for name in ['v6c','v13','v18A','v18B','staff']:
   for j,c in enumerate(ps):preview.paste(photo(c,t),(j%10*256,j//10*256))
   f=R/f'previews/{name}_{t}_all256.jpg';f.parent.mkdir(parents=True,exist_ok=True);preview.save(f,quality=90,subsampling=0)
  sets.append(sd)
+sets=[sets[0],sets[1],{'key':'v18','source_manifest':sets[2]['source_manifest'],'count':200,'sheets':{'A':sets[2]['sheets'],'B':sets[3]['sheets']},'ready_counts':{t:sets[2]['ready_counts'][t]+sets[3]['ready_counts'][t] for t in teams}},sets[4]]
 identities=[]
 for c in people:
  rec={k:c[k] for k in ['id','set','sheet','source_manifest']};rec['index']=c['index']%100;rec['source_reference']={'native_resolution':c['source_native'],'sheets':c['source_sheets'],'pixel_sha256':c['source_photo_sha256']};rec['variants']={}
  for t in teams:
-  v={'generated':photo(c,t)is not None,'sheets':{},'batch':c['batch'],'batch_slot':c['slot']};i=c['index']%100
+  v={'generated':photo(c,t)is not None,'sheets':{},'batch':c['batch'],'batch_slot':c['slot'],'whole_photo_registration':registration.get(c['id'],{}).get(t)};i=c['index']%100
   for n in [128,256]:
    rel=f"sheets/{c['sheet']}/{n}/{t}.webp"
    if rel in runtime:v['sheets'][str(n)]={'path':rel,'rect':[i%10*(n+16)+8,i//10*(n+16)+8,n,n]}

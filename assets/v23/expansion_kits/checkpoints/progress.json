@@ -1,8 +1,8 @@
 {
-  "rendered_variants": 416,
+  "rendered_variants": 840,
   "requested_variants": 840,
-  "runtime_sheet_count": 8,
-  "production_complete": false,
+  "runtime_sheet_count": 20,
+  "production_complete": true,
   "pending_visual_repairs": [],
   "completed_visual_repairs": [
     {
@@ -15,5 +15,7 @@
       ],
       "repair_original": "/workspace/generated_images/exec-5de3d72b-4025-4fcb-b58e-4dd274014522.png"
     }
-  ]
+  ],
+  "asset_validation_passed": true,
+  "numeric_measurements_passed": 1680
 }

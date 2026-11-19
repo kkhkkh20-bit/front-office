@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "image_dimensions": 320,
+  "alpha_border_transparent": true,
+  "badges": {
+    "expansion_a": {
+      "path": "badges/expansion_a.png",
+      "size": [
+        320,
+        320
+      ],
+      "mode": "RGBA",
+      "export_transparent_border": 8,
+      "source_resized_to": [
+        304,
+        304
+      ],
+      "source_filename": "exec-d131041c-40bb-4070-9717-61fabcb45900.png",
+      "source_sha256": "384d7a58b8388db3df736c688263ca24a2ec214c57ff03ec0c66efb43fcc5a30",
+      "sha256": "b2bd11cb6c62d33f6e6aafd779c7cd9e8be3de2e7ac32c6c6208ce714b7fbfaa",
+      "design_revision": 1
+    },
+    "expansion_b": {
+      "path": "badges/expansion_b.png",
+      "size": [
+        320,
+        320
+      ],
+      "mode": "RGBA",
+      "export_transparent_border": 8,
+      "source_resized_to": [
+        304,
+        304
+      ],
+      "source_filename": "exec-65553f73-6712-4162-bfd3-e0032f9d533a.png",
+      "source_sha256": "213c003d6ea21ca109b5552ed0062c39b022c71c0a914e914adf69289541c799",
+      "sha256": "9f3a81b6d370de97817a925b728078ce58bd0d41426e03da76116b569d456c5d",
+      "design_revision": 2
+    }
+  },
+  "brand_reference": {
+    "url": "https://github.com/kkhkkh20-bit/front-office/blob/claude/kind-albattani-6wb1vz/assets/badges/v2/preview.png",
+    "source_path": "assets/badges/v2/preview.png",
+    "sha256": "421a7181b2339a8bf4d4a3eedf46cd56523c06f75c17f533907d171ef1b25e09",
+    "notes": "Existing v2 cap-locked identities inspected directly. Main badges refined after user quality feedback: multi-keyline contours and integrated baseball motifs; uniform embroidery remains the simple star/shield version of the same motifs; no letters because expansion names vary."
+  }
+}

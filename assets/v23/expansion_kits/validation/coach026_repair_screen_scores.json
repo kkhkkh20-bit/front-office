@@ -1,0 +1,42 @@
+[
+  {
+    "slot": 0,
+    "resolution": 128,
+    "score": 0.7968065738677979
+  },
+  {
+    "slot": 0,
+    "resolution": 256,
+    "score": 0.8118302226066589
+  },
+  {
+    "slot": 1,
+    "resolution": 128,
+    "score": 0.7715911269187927
+  },
+  {
+    "slot": 1,
+    "resolution": 256,
+    "score": 0.8456676006317139
+  },
+  {
+    "slot": 2,
+    "resolution": 128,
+    "score": 0.7487419843673706
+  },
+  {
+    "slot": 2,
+    "resolution": 256,
+    "score": 0.8223153948783875
+  },
+  {
+    "slot": 3,
+    "resolution": 128,
+    "score": 0.7088388204574585
+  },
+  {
+    "slot": 3,
+    "resolution": 256,
+    "score": 0.8286745548248291
+  }
+]
