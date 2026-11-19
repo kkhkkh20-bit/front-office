@@ -21,7 +21,7 @@ function cvacYears(tid,c){ return withRng(cvacSeed('yrs',tid,c.id),()=>coachCont
 /* 계약: 우리 구단은 단장이 누르는 영입과 같은 hireCoach, AI는 월간 시장 영입과 같은 처리 */
 function cvacHire(tid,c,why,start){ const yrs=cvacYears(tid,c), k=c.role;
   if(!coachCanHire(tid,c,{years:yrs,auto:true,cur:null})||!cmCanPay(team(tid),c,null))return null;
-  if(tid===ME()){ const e=hireCoach(c.id,yrs); if(e)return null; if(start!=null&&start!==c.cs)staffCt(c,yrs,start); return c; }
+  if(tid===ME()){ const e=hireCoach(c.id,yrs,{vac:true}); if(e)return null; if(start!=null&&start!==c.cs)staffCt(c,yrs,start); return c; }
   const C=G.coach[tid]; G.cmarket=G.cmarket.filter(x=>x!==c); c.clan=null; delete c.res; delete c.folM; delete c.gmFol;
   staffCt(c,yrs,start??ctStartS()); C[k]=c; staffHistory('coach',c,'영입',tid,`${why||'코치진 공백 보강'} · ${yrs}년 · 연 ${money(c.sal)}`); stAttr(c); c.loy=20;
   if(typeof schStaffJoined==='function')schStaffJoined(c,tid); try{ if(c.ob)obTaken(c.ob,c); }catch(e){}
