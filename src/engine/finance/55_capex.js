@@ -7,7 +7,19 @@
    - 지자체 분담 협의(구장): 승인되면 지자체가 절반을 낸다. 구단 인기·팬 여론이 높을수록 잘 된다 */
 function capexState(){ return G.capex=G.capex||{last:{}}; }
 function capexOdds(kind,c){ const t=team(G.user); if(kind==='fac')return capexOddsT(G.user,c); /* 구단주와 관계(신뢰 + 개인적 친분)가 좋을수록 잘 된다(사용자 11-05) */
-  return clamp(.35+(t.pop-1)*.4+((G.pr?G.pr.fan:55)-55)/100,.1,.8); }
+  return stadCityOdds(G.user); }
+/* 지자체 분담 협의(구장): 우리 구단과 AI 구단이 같은 조건·같은 승인 식을 쓴다(AI 규칙 동등 11-19).
+   조건: 구장 공사 기간(stadWindow), 그 구단의 지난 협의에서 60일, 쓸 수 있는 돈(spendable)이 구단 부담분(절반) 이상. 승인되면 지자체가 절반을 낸다.
+   AI 구단 승인 추첨은 그 구단·날짜·시설로 정한 따로 된 난수(withRng)라 본 난수 순서를 바꾸지 않는다 */
+const STAD_CITY_GAP=60;
+function stadCityOdds(tid){ const t=team(tid); const fan=tid===ME()&&G.pr?G.pr.fan:55; /* AI 구단은 팬 여론 지표가 없어 중립값 */ return clamp(.35+((t.pop??1)-1)*.4+(fan-55)/100,.1,.8); }
+function stadCityLast(tid){ return tid===ME()?capexState().last.stad:team(tid).stadCityD; }
+function stadCityWait(tid){ const l=stadCityLast(tid); return l!=null&&G.day-l<STAD_CITY_GAP?l+STAD_CITY_GAP:0; }
+/* AI 구단: 지을 시설을 정한 뒤 우리처럼 먼저 지자체 분담을 협의한다. 승인되면 구단 부담분(절반)을, 아니면 null(전액으로 지을지는 호출부가 원래 기준으로 정한다) */
+function stadCityAI(t,k,c){ if(t.id===ME()||!stadWindow()||stadCityWait(t.id))return null; const half=Math.round(c/2); if(spendable(t.id)<half)return null; t.stadCityD=G.day;
+  const ok=withRng(rngHash('stadCity',t.id,G.year,G.day,k),()=>R())<stadCityOdds(t.id); return ok?half:null; }
+/* AI 구단 구장 공사 착공(분담 합의면 구단 몫만): 장부·공사 기록은 우리 구단과 같은 모양 */
+function stadStartAI(t,k,c,pay){ const St=stadOf(t.id), lv=St.lv[k], split=pay<c; ledger(t.id,'stad',pay,{me:false}); St.build=(St.build||[]).concat(Object.assign({k,lv:lv+1,st:G.day,done:G.day+STAD_DAYS[lv+1],c:pay},split?{totalC:c}:{})); const b=St.build[St.build.length-1]; clubFacilityHistory('stad',t.id,`${stadName(t.id)} ${STAD_ITEMS.find(x=>x.k===k).l}`,'착공',split?{...b,c,src:`구단 ${money(pay)} · 지자체 ${money(c-pay)}`}:b); return b; }
 function capexAsk(kind,k,force){ const S=capexState(); const key=kind; const t=team(G.user); if(kind==='fac'){ if(!force){ const w=capexWait(G.user); if(w)return `다시 요청하려면 ${dmd(w)}까지 기다려야 합니다.`; } } else if(S.last[key]!=null&&G.day-S.last[key]<60)return `다시 요청하려면 ${dmd(S.last[key]+60)}까지 기다려야 합니다.`;
   if(kind==='fac'){ facInit(); const F=FACI[k]; if(!F)return '없는 시설입니다.'; const lv=G.fac.it[k]; { const e=facCanStart(G.user,k); if(e)return e; } if(t.indie)return '독립구단은 모기업이 없습니다. 보유 현금으로만 지을 수 있습니다.';
     const c=F.c[lv+1]; const p=force?1:capexOdds('fac',c); S.last[key]=G.day; t.capexD=G.day; const B=bossOf(G.user);
