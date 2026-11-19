@@ -54,7 +54,7 @@ function quickActs(p){
     if(!p.foreign&&tradeOpen())M.push({a:'findMine',v:p.id,l:'시장 가치'},{a:'toTradeGive',v:p.id,l:'트레이드 협상'});
     if(!p.foreign)M.push(p.listed?{a:'blkOff',v:p.id,l:'매물 목록에서 빼기'}:{a:'blkOn',v:p.id,l:'매물 목록에 올리기'});
     if(!p.foreign)M.push({a:'noTrade',v:p.id,l:p.noTrade?'트레이드 불가 해제':'트레이드 불가로 지정',on:!!p.noTrade,title:'다른 구단이 이 선수를 트레이드로 달라고 묻지 않습니다(우리가 먼저 제안할 수는 있음)'});
-    if(!p.foreign)M.push(pcLive(p)?{a:'pcStop',v:p.id,l:'플레잉코치 해제'}:p.age>=PC_AGE&&pcOffWin()?{a:'pcOffer',v:p.id,l:'플레잉코치 제안'}:null); /* 99c_playing_coach */
+    if(!p.foreign)M.push(pcLive(p)?{a:'pcStop',v:p.id,l:'플레잉코치 해제'}:p.age>=PC_AGE?pcActItem(p):null); /* 99c_playing_coach: 33세 이상이면 늘 보이고, 못 하는 때는 이유를 단다(카페 랄프111112 11-19) */
     M.push(ext,tmp);
   } else if(p.team!=null&&p.team!==G.user&&!p.foreign&&!(p.joinY>G.year)){
     if(tradeOpen()){ main={a:'toTrade',v:p.id,l:'트레이드 협상'}; M.push({a:'findT',v:p.id,l:'얻을 조건 보기'}); }

@@ -340,6 +340,10 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   ivAns(v){ ivAnswer(+v); save(); if(G.iv&&G.iv.done){ try{ render(); }catch(e){} } /* 마치면 바로 소식 상태·확인할 소식 수를 갱신(플레이테스트 4 #15) */ renderSheet(); try{ const sh=document.querySelector('#sheet .sheet'), q=document.querySelector('#sheet .iv-q.now,#sheet .iv-end'); if(sh&&q){if(document.documentElement.classList.contains('detail-page-open'))sheetScrollTo(Math.max(0,sheetScrollY()+q.getBoundingClientRect().top-$('#sheet').getBoundingClientRect().top-12));else sh.scrollTop=Math.max(0,q.offsetTop-sh.offsetTop-12);} }catch(e){} }, /* 다시 그리면 창이 맨 위로 튀던 것: 새 질문(또는 끝 안내)이 보이게 */
   gmPlan(v){ const [d,k,x]=String(v).split(':'); toast(gmPlanSet(+d,k||null,x||null)); save(); render(); },
   gmSchR(v){ UI.gmSchR=UI.gmSchR===v?null:v; render(); }, /* 고교 방문: 지역을 고르면 그 지역 학교 버튼이 열린다 */
+  gplEdit(){ UI.gplEdit=!UI.gplEdit; UI.gplSel=[]; render(); }, /* 이달 단장 일정 일괄 취소(카페 다다고 11-19) */
+  gplPick(v){ const a=+v, L=UI.gplSel=UI.gplSel||[]; const i=L.indexOf(a); if(i>=0)L.splice(i,1); else L.push(a); render(); },
+  gplAll(){ const can=gplMonthSpans().filter(s=>gplCanDays(s).length); UI.gplSel=gplPicked(can).length===can.length?[]:can.map(s=>s.a); render(); },
+  gplCancel(){ const L=gplPicked(gplMonthSpans()); let n=0; for(const s of L)for(const d of gplCanDays(s)){ gmPlanSet(d,null,null); n++; } UI.gplSel=[]; UI.gplEdit=false; if(n)toast(`단장 일정 ${L.length}건(${n}일)을 취소했습니다.`); save(); render(); },
   gmPlanBulk(v){ const [d,x,m]=String(v).split(':'); toast(gmPlanBulk(+d,x,m)); save(); render(); },
   capex(v){ const [k,x]=String(v).split(':'); const r=capexAsk(k,x); toast(r||'공사를 시작했습니다.'); save(); render(); },
   offerAsk(v){ const [id,k]=String(v).split(':'); const o=(G.offers||[]).find(x=>String(x.id)===id); if(!o)return toast('끝난 제안입니다.'); offerAdvise(o,k); save(); render(); },
@@ -357,6 +361,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   trimOn(){ UI.trimOn=!UI.trimOn; UI.trimHidden=!UI.trimOn; UI.trimSel=[]; UI.trimN=0; render(); if(UI.trimOn)workspaceReveal('.trimc'); },
   trimClose(){ UI.trimOn=false;UI.trimHidden=true;UI.trimSel=[];UI.trimN=0;UI.it=UI.it||{};UI.it.roster='list';UI.tab='roster';UI.rosterTeam=null;closeSheets();render();window.scrollTo(0,0); },
   trimSel(v){ const id=+v, S=UI.trimSel=UI.trimSel||[]; const i=S.indexOf(id); if(i>=0)S.splice(i,1); else S.push(id); render(); },
+  trimPot(v){ const n=+v===1?1:2, ids=trimPotIds(n); UI.trimSel=ids; UI.trimMsg=ids.length?`잠재력 ★${n} 이하 ${ids.length}명을 골랐습니다. 카드를 눌러 빼거나 더할 수 있고, '고른 ${ids.length}명 방출'을 눌러 결재해야 방출됩니다.`:`잠재력 ★${n} 이하인 선수가 없습니다.`; render(); }, /* 잠재력 별로 미리 고르기만(카페 11-19). 방출은 relBatch 결재 */
   trimMore(){ UI.trimN=(UI.trimN||10)+10; render(); },
   trimClr(){ UI.trimSel=[]; UI.trimYsSel=[]; render(); },
   trimYsSel(v){ const id=+v, S=UI.trimYsSel=UI.trimYsSel||[]; const i=S.indexOf(id); if(i>=0)S.splice(i,1); else S.push(id); render(); }, /* 정리 모드 육성선수 고르기(카페 11-18) */

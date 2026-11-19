@@ -118,6 +118,7 @@ step "3D 상태·공 연결·메모리"; node tools/check-match3d-state.cjs || f
 step "3D 플레이 리뷰·시선·릴리스"; node tools/check-match3d-review.cjs || fail=1
 step "공별 중계·투구판"; node tools/check-pitches.cjs || fail=1
 step "모바일 메뉴·트레이드·코치 보직 버튼"; node tools/check-mobile-workspace.cjs || fail=1
+step "카페 11-19: 홈 화면 추가·전체 화면, 플레잉코치 항목, 잠재력 고르기, 일정 일괄 취소"; node tools/check-ui-cafe-1119.cjs || fail=1
 step "직원 카드·관계·희망 보직"; node tools/check-staff.cjs || fail=1
 step "결재 키 입력·상세 복귀 리뷰"; node tools/check-review.cjs || fail=1
 step "모든 상세 화면 상단바"; node tools/check-topbar.cjs || fail=1
