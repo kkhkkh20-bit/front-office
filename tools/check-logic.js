@@ -4784,6 +4784,7 @@ T('[사용자 11-08] 우리 선수 능력치는 매달 기록되고, 한 달·�
 T('[검수 11-08d] 이직·세대교체 장부·경력: 보조 코치 인계와 나이, 은퇴 선수 연봉, 육성 방출 연봉, 경기 상세 보존, 단장 시즌 수, AI 단장 거래 귀속',()=>{ fresh(); G.day=G.cal.open+40; const A0=G.user; const B=G.teams.find(t=>t.id!==A0).id;
   const cx={id:'cx1',name:'보조',age:36,yrs:2,dv:60,sk:50,role:'pc',sal:50}; G.coachX=[cx]; G.games=[{day:G.day-1,home:A0,away:B,hs:3,as:2,box:{x:1}}];
   switchTeam(B); ok(!(G.coachX||[]).includes(cx)&&cx.yrs===2,'떠난 구단 보조 코치를 풀어 버림 '+cx.yrs);
+  { const tA=G.teams[A0]; tA.fi=tA.fi||{}; tA.fi.it=Object.assign({},tA.fi.it||{},{[FACK[0]]:4}); } ok(axSlots(A0)>=1,'준비 실패: 떠난 구단 보조 코치 자리'); /* 39b1d34b(검수 494~523)부터 asstYear가 시설 정원(asstCapacity)도 맞춘다: 떠난 구단에 보조 코치 한 자리(세부 시설 4단계 하나)를 둔다 */
   G.year++; try{ asstYear(); }catch(e){} G.year--; ok(cx.age===37&&cx.yrs===1,'떠난 구단 보조 코치 나이·계약이 멈춤 '+cx.age+'/'+cx.yrs);
   switchTeam(A0); ok((G.coachX||[]).includes(cx),'돌아왔는데 보조 코치가 없음'); ok((G.games||[]).some(g=>g.box&&g.home===A0&&g.away===B),'돌아오니 박스스코어가 사라짐');
   const p=playersOf(A0).filter(x=>!x.foreign).sort((a,b)=>b.sal-a.sal)[0]; if(p.sal<500)p.sal=500; /* 새 게임 국내 연봉이 낮아져(11-17 샐러리캡·연봉 검수) 5억 이상 선수가 없는 세계가 있다: 가장 비싼 국내 선수를 5억으로 */ const y=G.year; const before=payYear(A0,y); toFree(p,'정리',false,true); const mid=payYear(A0,y); dropP(p.id); ok(Math.abs(payYear(A0,y)-mid)<=1&&mid>0,'은퇴하면 이미 생긴 연봉이 사라짐 '+before+' '+mid+' '+payYear(A0,y));
@@ -8179,7 +8180,7 @@ T('[대회 키트] 경기: 커리어 G·홈 어드밴티지를 건드리지 않�
   G=null; const r2=cupMatch(A,B,{cup:'t',round:'R8',match:'R4M1',best:7}); fresh(); ok(r2.ok&&Math.max(r2.wa,r2.wb)===4,'커리어 G 없이 경기 실패');
   const g=r1.games[0], L=g.log.split('\\n'); ok(/^\\[1회초\\] .+ 공격$/.test(L[0]),'첫 줄 '+L[0]); ok(L.some(l=>/^투수 .+\\(\\d+\\) \\d번타자 .+\\(\\d+\\), .+#(무사|1사|2사|3아웃)/.test(l)),'타석 줄 형식');
   ok(L.some(l=>/^\\[공수교대\\] 스코어 \\d+:\\d+ /.test(l)),'공수교대 줄'); ok(L.some(l=>/^\\[경기종료\\] 스코어 \\d+:\\d+ .+승리\\./.test(l)),'경기종료 줄'); ok(/^승리투수:.+ \\/ 세이브:.+ \\/ 패전투수:.+$/.test(L[L.length-1]),'승패 줄 '+L[L.length-1]);
-  ok(g.bat.split('\\n')[0]==='팀 연도 이름\\tAB\\tH\\tBB\\t HR\\tRBI\\tR\\tSB\\t교\\t결'&&g.pit.split('\\n')[0]==='팀 연도 이름\\tIP\\tH\\tBB\\tSO\\tR\\tER\\t승/패/세','박스 머리줄');
+  ok(g.bat.split('\\n')[0]==='팀 연도 이름\\tAB\\tH\\tBB\\tHBP\\tHR\\tRBI\\tR\\tSB\\t교\\t결'&&g.pit.split('\\n')[0]==='팀 연도 이름\\tIP\\tH\\tBB\\tHBP\\tSO\\tR\\tER\\t승/패/세','박스 머리줄 '+g.bat.split('\\n')[0]+' / '+g.pit.split('\\n')[0]); /* fd81502d(검수 #784): 대회 박스에서 BB와 HBP를 나눈다 */
   const H=g.stats.bat.filter(b=>b.k==='A').reduce((a,b)=>a+b.h,0); ok(g.line.split('\\n')[1].split('\\t').length===g.line.split('\\n')[0].split('\\t').length,'줄 점수 칸 수'); ok(H>=0&&g.sa===g.stats.bat.filter(b=>b.k==='A').reduce((a,b)=>a+b.r,0),'득점 합이 점수와 다름');
   const one=cupMatch(A,B,{cup:'t',round:'R32',match:'R1M1',best:1}); ok(one.games.length===1&&one.games[0].sa!==one.games[0].sb,'단판'); const bad=JSON.parse(JSON.stringify(A)); bad.ln.pop(); ok(!cupMatch(bad,B,{}).ok,'타순 8명 엔트리로 경기'); });
 T('[대회 키트] 출전 로스터 앨범: 시즌 종료 자동 저장은 해마다 하나, 20개 상한(우승 시즌은 남김), 지우기, 크기',()=>{ fresh(); G.cupAlb=[];
