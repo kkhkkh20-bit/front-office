@@ -7048,7 +7048,7 @@ T('[보직] 보직 유지(플레이어 제보 11-15): 잘 던지는 마무리는
     ok(depth(tid).sp.includes(c),'대조 실패: 기록 없는 최고 투수가 선발이 아님 '+tid);
     row(c,{g:30,gs:0,sv:18,outs:90,er:8}); ok(!depth(tid).sp.includes(c)&&depth(tid).pen[0]===c,'잘 던지는 마무리가 선발로 감 '+tid);
     row(c,{g:30,gs:0,sv:18,outs:90,er:70}); ok(depth(tid).sp.includes(c),'부진한 마무리도 보직이 고정됨 '+tid);
-    row(c,{}); c.r=c0; reset();
+    row(c,{}); c.r=c0; reset(); delete team(tid).spO; /* 순번 기억을 비워 마지막 순번 = 고르기 점수가 가장 낮은 선발(카페 11-19 순번 유지: 기억이 있으면 3점 안쪽 차이는 어제 순번 그대로라 마지막 순번이 가장 낮은 투수가 아닐 수 있다) */
     const d1=depth(tid); const s=d1.sp[d1.sp.length-1], r=d1.pen.find(q=>q!==s); ok(s&&r,'준비 실패');
     r.r.stf=s.r.stf+3; r.age=s.age; r.r.ctl=s.r.ctl; r.r.sta=s.r.sta; r.rAdj=s.rAdj; delete r.roleProm; delete s.roleProm; if(G.prole){ delete G.prole[r.id]; delete G.prole[s.id]; } if(G.rplan){ delete G.rplan[r.id]; delete G.rplan[s.id]; } reset();
     ok(depth(tid).sp.includes(r)&&!depth(tid).sp.includes(s),'대조 실패: 조금 나은 투수가 선발이 아님 '+tid);
