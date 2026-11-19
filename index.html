@@ -15721,22 +15721,35 @@ const REALK_LO=.38, BLUE_FLOOR_P=.35, BLOOM_P=.035;
 /* 상무 복무 중 한 해(겨울 develop) 종합 성장 상한(원래 능력 단위, 카페 11-19 꺼끼꺼: 상무 25세 선발 62→78).
    점검(시드 7, 22~25세 유망주): 상무 복무와 구단 소속이 같은 성장 함수를 한 번씩만 탄다(겨울 develop → 분기 devQ, 상무는 캠프·기본 훈련 제외). 중복 적용은 없었다.
    다만 복무 중에는 구단 성장 잡음(평균 -0.25)·출전 비중이 빠져 develop 평균이 0.4 높고 꼬리(p99 5.4, 최대 7.6)도 구단(p99 5.1)보다 길어, 구단 p99 수준인 5에서 자른다. 우리·AI 같은 식 */
-const MIL_GROW_CAP=5;
+const MIL_GROW_CAP=5; /* 한 해 상한(YEAR_GROW_CAP)과 같은 값 */
 /* 겨울 한 해 성장 상한(11-19 성장 점검, 모든 구단·모든 선수 같은 식. 상무 상한과 같은 방식으로 능력별 변화를 같은 비율로 줄이고 난수는 쓰지 않는다).
    제보: 27세 안팎 선수가 한 겨울에 원래 능력 45→75(표시 58→98). 성장 구간 마지막 1~2년에 성장률이 0.4~0.65까지 올라 남은 잠재력을 한 번에 채웠고, 환경 배수(출전×시설×감독×코치×감독 지목×성격×훈련 강도)가 상한 없이 곱해졌다.
-   - WIN_GROW_CAP 6: 구단 소속 겨울 성장 p99가 5.1이라(위 상무 점검) 평소 성장은 그대로 두고 꼬리만 자른다. 능력 하나는 WIN_SUB_CAP 9(종합 상한의 1.5배)까지.
+   - WIN_GROW_CAP: 처음에는 6(구단 소속 겨울 성장 p99 5.1)이었고, 구단주 결정(11-19)으로 한 해 상한 YEAR_GROW_CAP 5와 같게 했다(아래). 능력 하나는 WIN_SUB_CAP 7.5(종합 상한의 1.5배)까지.
    - 잘린 몫은 버리지 않고 p.gcar(원래 능력 단위, 최대 GROW_CARRY_MAX=상한 두 해 몫)로 남겨 다음 겨울들에 상한 안에서 이어 큰다: 늦깎이는 +4~6이 두세 해 이어지는 모양. 잠재력 정리(성장 구간 끝)도 그만큼은 남긴다.
    - GROW_RATE_HI .40: 성장 구간 마지막 두 해의 성장률 천장(예전 .65). 처음 잡은 .30은 24~26세 연간 성장이 예전보다 +0.11에 그치고 27~29세가 0.14 더 떨어져(시드 7·11, 5시즌) .40으로 올렸다: 24~26세 +0.20, 27~29세 -0.07, 겨울 한 해 최대는 그대로 +6. 바닥 GROW_RATE_LO .10(정체형·30대 늦깎이 대기 구간은 예전 .04)은 10대 후반~20세의 몫을 조금 올려 성장을 여러 해에 편다.
    - GROW_ENV_CAP 2: 곱해진 환경 배수 상한. 측정(시드 7, 10구단 모두 AI, 첫 겨울 성장 구간 국내 선수 504명): 중앙값 0.81·p90 1.09·p99 1.44·최대 1.99.
      어느 구단에서든 실제로 나오는 범위(최대 약 2)는 그대로 두고, 한 구단이 모든 요소를 최고로 쌓았을 때만 나오는 그 너머(이론상 약 5배)를 막는다. 예전 저장: 새 값이 없으면 예전과 같고 지금 능력은 그대로다 */
-const WIN_GROW_CAP=6, WIN_SUB_CAP=9, GROW_CARRY_MAX=12, GROW_RATE_HI=.40, GROW_RATE_LO=.10, GROW_ENV_CAP=2;
+/* 한 해 육성 상한(구단주 결정 11-19: "80 스케일 기준 육성 오버롤 한 시즌 최대 +5. 5를 넘을 수 없다").
+   한 해 = 겨울 성장(develop, 분기로 나눠 반영되는 몫 포함) + 스프링캠프 + 시즌 중 기본 훈련 + 마무리캠프·교육리그·해외 연수·자매 구단 파견·자비 훈련. 이 모두를 합친 종합 능력(ovr, 내부 20~80) 상승이 +5(YEAR_GROW_CAP)를 넘지 않는다.
+   - 기준점 p.gy={y:해, o:그해 시작 종합 능력}. develop이 해가 바뀌기 직전에 다음 해 기준점을 남기고(그해 첫 성장), 기준점이 없는 선수(예전 저장·그해 새로 온 선수)는 그해 첫 성장 직전 값으로 잡는다.
+   - 겨울 성장은 종전처럼 능력별 변화를 같은 비율로 줄이고(상무 포함 +5), 그 뒤 성장 경로는 growYearCap이 이번에 오른 몫만 줄인다. 아직 반영 안 된 분기 몫(p.devQ)도 올해 몫으로 센다.
+   - 능력 하나는 겨울에 +7.5(WIN_SUB_CAP, 종합 상한의 1.5배)까지. 잘린 겨울 몫은 종전처럼 p.gcar로 넘겨 다음 해 +5 안에서 이어 큰다. 캠프·훈련에서 잘린 몫은 넘기지 않는다.
+   - 난수를 쓰지 않는다(각 성장 경로의 난수 호출은 그대로). 모든 구단·모든 선수 같은 식. 부상 후유증 회복(injRecover)은 육성이 아니라 잃은 능력을 되찾는 것이라 줄이지 않는다 */
+const YEAR_GROW_CAP=5, GROW_OVR_K={P:['stf','ctl','sta'],B:['con','pow','eye','spd','def']}; /* 종합 능력(ovr)에 들어가는 능력 */
+function growYearBase(p){ if(!p.gy||p.gy.y!==G.year)p.gy={y:G.year,o:Math.round(growProj(p)*100)/100}; return p.gy.o; }
+function growProj(p){ const Q=p.devQ; if(!Q||!Q.D||!Q.w)return ovr(p); let rem=0; for(let j=Q.i;j<3;j++)rem+=Q.w[j]||0; if(!rem)return ovr(p); const r={...p.r}; for(const k in Q.D)if(r[k]!=null)r[k]=clamp(r[k]+Q.D[k]*rem,20,80); return ovr({...p,r}); } /* 남은 분기 몫까지 반영한 올해 끝 예상 종합 능력 */
+function growTrim(p,r0,lim){ for(let i=0;i<400&&growProj(p)>lim+1e-9;i++){ let bk=null,bd=.049; for(const k of (p.isP?GROW_OVR_K.P:GROW_OVR_K.B)){ if(p.r[k]==null)continue; const d=p.r[k]-(r0[k]??p.r[k]); if(d>bd){ bd=d; bk=k; } } if(!bk)break; p.r[bk]=Math.round((p.r[bk]-.1)*10)/10; } } /* 반올림으로 남은 초과분: 이번에 가장 많이 오른 능력부터 0.1씩 */
+function growYearCap(p,r0){ if(!p||!p.r||!r0||!p.gy||p.gy.y!==G.year)return 0; const lim=p.gy.o+YEAR_GROW_CAP; const now=growProj(p); if(now<=lim+1e-9)return 0;
+  const r1={...p.r}; for(const k in p.r)if(r0[k]!=null&&r1[k]>r0[k])p.r[k]=r0[k]; const low=growProj(p); /* 이번에 오른 몫을 뺀 값 */ const f=now>low?clamp((lim-low)/(now-low),0,1):0;
+  for(const k in p.r)if(r0[k]!=null&&r1[k]>r0[k])p.r[k]=Math.floor((r0[k]+(r1[k]-r0[k])*f)*10+1e-6)/10; growTrim(p,r0,lim); (p.gy.c=(p.gy.c||0)+1); return now-growProj(p); }
+const WIN_GROW_CAP=YEAR_GROW_CAP, WIN_SUB_CAP=7.5, GROW_CARRY_MAX=10, GROW_RATE_HI=.40, GROW_RATE_LO=.10, GROW_ENV_CAP=2;
 /* 젊은 선수 성장 잡음(11-19: 성장이 너무 더디다는 제보). 26세 이하는 해마다 깎이던 평균 -0.25를 0으로, 퇴보 폭 1.5~4.5를 1.2~3.8로(퇴보 확률은 그대로). 27세부터와 전성기·노화는 예전 그대로 */
 const YOUNG_NOISE_AGE=26, YOUNG_NOISE_MU=0, YOUNG_SLUMP=[1.2,3.8];
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; initPers(p); const pg=persGrowF(p); /* 외국인도 국내 선수와 같은 성장 규칙(사용자 11-11) */ const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
   const svc=p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day?p.mil.unit:null;
-  const r0={...p.r}; /* 겨울 한 해 성장 상한(WIN_GROW_CAP, 상무는 MIL_GROW_CAP)용 시작 능력 */
+  const r0={...p.r}; /* 겨울 한 해 성장 상한(WIN_GROW_CAP, 상무는 MIL_GROW_CAP)용 시작 능력 */ p.gy={y:G.year+1,o:Math.round(o*100)/100}; /* 다음 해(겨울 성장이 속한 해)의 기준점: 캠프·훈련도 이 값 +5 안에서만(YEAR_GROW_CAP) */
   /* 군 복무 중에는 우리 구단 시설·코치·감독이 아니라 상무 야구단(또는 군) 환경에서 지낸다. 현역은 야구 훈련을 하지 못한다 */
   const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
   const club=p.team!=null&&!svc; const ti=club&&p.trI&&p.trI.n&&(p.trI.y===G.year||p.trI.y===G.year-1)?p.trI.s/p.trI.n:1; delete p.trI; /* 그 시즌 평균 훈련 강도(76_dev_plan) */ const devMgr=club&&G.mgr?mgrOf(p.team):null,yf=devMgr?1+(devMgr.youth-50)/150:1;
@@ -15793,8 +15806,8 @@ function develop(p){
   roundR(p);
   { const car=p.gcar>0&&svc!=='현역'&&age<T.fall?p.gcar:0; if(car>0){ for(const k in p.r)p.r[k]=clamp(p.r[k]+car,20,80); roundR(p); p.devLog.reasons.push('carry'); } if(svc!=='현역')delete p.gcar; } /* 지난 겨울 상한에 잘린 몫을 이어 받는다(난수 없음). 현역 복무 중에는 그대로 둔다 */
   if(ovr(p)>potCap()+.05)setOvr(p,potCap()); /* 잠재력 돌파는 없다 */
-  { const mil=svc==='상무', cap=mil?MIL_GROW_CAP:WIN_GROW_CAP; const g=ovr(p)-o; if(g>cap){ const f=cap/g; for(const k in p.r)if(r0[k]!=null)p.r[k]=clamp(r0[k]+(p.r[k]-r0[k])*f,20,80); roundR(p); p.devLog.reasons.push(mil?'military-cap':'winter-cap'); if(!mil){ const c=Math.min(GROW_CARRY_MAX,g-cap); p.gcar=Math.max(.1,Math.round(c*10)/10); } }
-    if(!mil){ let cut=false; for(const k in p.r)if(r0[k]!=null&&p.r[k]-r0[k]>WIN_SUB_CAP){ p.r[k]=r0[k]+WIN_SUB_CAP; cut=true; } if(cut){ roundR(p); p.devLog.reasons.push('sub-cap'); } } } /* 모든 선수: 겨울 한 해 종합 +6·능력 하나 +9까지(상무는 예전대로 5, 넘친 몫 이월 없음) */ /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
+  { const mil=svc==='상무', cap=mil?MIL_GROW_CAP:WIN_GROW_CAP; const g=ovr(p)-o; if(g>cap){ const f=cap/g; for(const k in p.r)if(r0[k]!=null)p.r[k]=clamp(r0[k]+(p.r[k]-r0[k])*f,20,80); roundR(p); growTrim(p,r0,o+cap); p.devLog.reasons.push(mil?'military-cap':'winter-cap'); if(!mil){ const c=Math.min(GROW_CARRY_MAX,g-cap); p.gcar=Math.max(.1,Math.round(c*10)/10); } }
+    if(!mil){ let cut=false; for(const k in p.r)if(r0[k]!=null&&p.r[k]-r0[k]>WIN_SUB_CAP){ p.r[k]=r0[k]+WIN_SUB_CAP; cut=true; } if(cut){ roundR(p); p.devLog.reasons.push('sub-cap'); } } } /* 모든 선수: 겨울 한 해 종합 +5·능력 하나 +7.5까지(상무도 5, 넘친 몫 이월 없음) */ /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
   const no=ovr(p);
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
   if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0)+(p.gcar||0)); /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
@@ -23216,7 +23229,7 @@ function trnBase0(){ const per=period(); if(per!=='pre'&&per!=='season')return; 
     if(!regs[p.team]){ const d=depth(p.team); regs[p.team]=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }
     if(!p.tg||p.tg.y!==G.year)p.tg={y:G.year,s:0}; if(p.tg.s>=TB_YCAP)continue;
     const f=tbFactors(p,regs[p.team]); const amt=TB_K*f.play*f.room*f.will*f.fac*f.coach*f.mgr*f.age*rnd(.6,1.4)*eliteGrowF(ovr(p)); const ks=TRN_TOOLS[trnG(p)]; const cap=Math.max(p.pot,ovr(p))+2;
-    const o0=ovr(p); for(const k of ks){ if(p.r[k]>=cap)continue; p.tg.s+=addR(p,k,amt*(ks.length===3?1.6:1)); } if(ovr(p)>Math.max(p.pot,o0)+.05)setOvr(p,Math.max(p.pot,o0)); } } /* 잠재력은 넘을 수 없다 */
+    growYearBase(p); const gr0={...p.r}; const o0=ovr(p); for(const k of ks){ if(p.r[k]>=cap)continue; p.tg.s+=addR(p,k,amt*(ks.length===3?1.6:1)); } if(ovr(p)>Math.max(p.pot,o0)+.05)setOvr(p,Math.max(p.pot,o0)); growYearCap(p,gr0); /* 한 해 육성 상한(04_growth YEAR_GROW_CAP) */ } } /* 잠재력은 넘을 수 없다 */
 /* 연수 결과: 크게 늘거나, 조금 늘거나, 그대로거나, 다치거나 폼이 흐트러진다 */
 const jB=w=>{ const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<11172&&c%28>0; }; const jIGa=w=>w+(jB(w)?'이':'가'), jEulReul=w=>w+(jB(w)?'을':'를');
 const OVS_TOOLN={stf:'구위',ctl:'제구',sta:'체력',con:'컨택',pow:'장타',eye:'선구',def:'수비',spd:'주루'};
@@ -23226,14 +23239,14 @@ function ovsOutlookWord(F){return !F?'':F.big>=.15?'큰 성장 기대':F.big>=.0
 function ovsRiskWord(F){const r=F?F.inj+F.form:0;return r>=.16?'높음':r>=.09?'보통':'낮음';}
 /* 연수 상승폭은 화면 점수(100점 척도)로 정한다: 크게 늘어도 +2~+5, 드물게 +7(플레이 테스트 3차: 한 번에 +13). 내부 척도는 구간마다 기울기가 달라 화면 기준으로 되돌려 계산한다 */
 function ovsUp(x,g){ const t=Math.min(100,dvRaw(x)+g); let lo=x,hi=80; if(dvRaw(hi)<=t)return hi; for(let i=0;i<30;i++){ const m=(lo+hi)/2; if(dvRaw(m)<t)lo=m; else hi=m; } return clamp(Math.floor(lo*10)/10,20,80); }
-function ovsRoll(p,o,coachDv){const room=Math.max(0,p.pot-ovr(p)),before=Object.fromEntries(o[p.isP?'P':'B'].map(k=>[k,p.r[k]]));const {big,inj,form,good}=ovsForecast(p,o,coachDv);
+function ovsRoll(p,o,coachDv){growYearBase(p);const gr0={...p.r};const room=Math.max(0,p.pot-ovr(p)),before=Object.fromEntries(o[p.isP?'P':'B'].map(k=>[k,p.r[k]]));const {big,inj,form,good}=ovsForecast(p,o,coachDv);
   const ks=o[p.isP?'P':'B']; const k=ks[Math.floor(R()*ks.length)]; const sc=Math.min(1,room/6+.4); const v0=p.isP?veloOf(p):null; const x=R(); let r;
   if(x<inj){ const raw=ri(14,60),h=p.team!=null&&!milServing(p)?medOf(p.team).hosp:'none',days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{ovs:1}});r={t:'inj',k,txt:`훈련 강도를 이기지 못하고 다쳤습니다. 약 ${days}일 재활이 필요합니다.${p.injOut>days?' 기존 부상 재활은 예정대로 이어갑니다.':''}`}; }
   else if(x<inj+form){ p.r[k]=clamp(p.r[k]-rnd(1,3),20,80); r={t:'form',k,txt:`${jEulReul(OVS_TOOLN[k])} 손보다 폼이 흐트러졌습니다. 다시 잡는 데 시간이 걸립니다.`}; }
   else if(x<inj+form+big){ p.r[k]=ovsUp(p.r[k],R()<.1?rnd(5.5,7):Math.max(2,rnd(2,5)*sc)); if(!p.ovsPot){ p.pot=Math.min(80,p.pot+rnd(.5,2)); p.ovsPot=G.year; } /* 연수로 잠재력이 오르는 건 선수마다 한 번(공략 방지: 해마다 보내 잠재력을 쌓던 것) */ const v1=p.isP?veloOf(p):null; r={t:'big',k,txt:k==='stf'&&v1>v0?`직구 평균 ${v0}km/h에서 ${v1}km/h로 올라 돌아왔습니다.`:`${jIGa(OVS_TOOLN[k])} 확실히 달라져 돌아왔습니다.`}; }
   else if(x<inj+form+big+good){ for(const kk of ks)p.r[kk]=ovsUp(p.r[kk],Math.max(1,rnd(1,3)*sc)*1.4/ks.length); r={t:'good',k,txt:`${ks.map(z=>OVS_TOOLN[z]).join('·')}에서 성장이 확인됐습니다.`}; }
   else r={t:'flat',k,txt:'큰 변화는 없었습니다.'};
-  roundR(p);const after=Object.fromEntries(Object.keys(before).map(k=>[k,p.r[k]]));const changes=Object.keys(before).map(k=>OVS_TOOLN[k]+' '+dv(before[k])+'→'+dv(after[k])).join(' · ');r.txt+=' '+changes+'.';(p.ovsH=p.ovsH||[]).push({y:G.year,k:o.l,t:r.t,before,after,text:r.txt});if(p.ovsH.length>20)p.ovsH.shift();return r; }
+  roundR(p);growYearCap(p,gr0); /* 한 해 육성 상한(04_growth YEAR_GROW_CAP) */ const after=Object.fromEntries(Object.keys(before).map(k=>[k,p.r[k]]));const changes=Object.keys(before).map(k=>OVS_TOOLN[k]+' '+dv(before[k])+'→'+dv(after[k])).join(' · ');r.txt+=' '+changes+'.';(p.ovsH=p.ovsH||[]).push({y:G.year,k:o.l,t:r.t,before,after,text:r.txt});if(p.ovsH.length>20)p.ovsH.shift();return r; }
 /* 가을 교육리그 참가 선수: 25세 이하 국내 선수 가운데 능력이 낮은 순 22명(미계약·입단 전·부상·복무 제외). 결과 계산·신청 안내·자동 신청이 같은 명단을 쓴다 */
 function fallPool(tid){ return domestic(tid).filter(p=>p.age<=25&&!p.hold&&!(p.joinY>G.year)&&!(p.injOut>0) /* 미계약·입단 전 선수 제외(검수 11-07) */&&!(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)).sort((a,b)=>ovr(a)-ovr(b)).slice(0,22); }
 /* 안내용: 참가 명단 가운데 효과가 큰 순(더 클 여지가 큰 순, 우리 구단은 스카우트 추정) */
@@ -23260,8 +23273,8 @@ function fallAutoStatus(){ if(G.unemp)return '일시 중지: 구단을 맡고 �
   if(!fallOpen())return dobj(G.day).m<9?'처리 예정: 9월 1일에 신청이 열립니다':'신청 마감: 10월 10일까지 정하지 않아 올해 불참합니다';
   const k=fallFit(G.user,'jp'); return k?`처리 예정: ${FALL[k].l} 신청 · 다음 월요일에 다시 확인합니다`:`대기: ${fallEntryWhy(G.user,'ul')}`; }
 function fallRollLegacy(tid,k,chosen){ const F=FALL[k]; const L=[]; const ps=chosen||fallPool(tid);
-  for(const p of ps){ const ks=TRN_TOOLS[trnG(p)]; const g=rnd(0,.7)*F.g*Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3); for(const kk of ks)p.r[kk]=clamp(p.r[kk]+g*rnd(.5,1.2),20,80);
-    if(R()<.04*F.g){ const kk=ks[Math.floor(R()*ks.length)]; p.r[kk]=clamp(p.r[kk]+rnd(2,4),20,80); L.push(`${p.name}(${OVS_TOOLN[kk]})`); } roundR(p); }
+  for(const p of ps){ growYearBase(p); const gr0={...p.r}; const ks=TRN_TOOLS[trnG(p)]; const g=rnd(0,.7)*F.g*Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3); for(const kk of ks)p.r[kk]=clamp(p.r[kk]+g*rnd(.5,1.2),20,80);
+    if(R()<.04*F.g){ const kk=ks[Math.floor(R()*ks.length)]; p.r[kk]=clamp(p.r[kk]+rnd(2,4),20,80); L.push(`${p.name}(${OVS_TOOLN[kk]})`); } roundR(p); growYearCap(p,gr0); /* 한 해 육성 상한 */ }
   return {n:ps.length,hot:L}; }
 /* 교육리그 참가자는 개막 때 확정한다. 기존 종료일 명단의 난수는 그대로 소비하되 실제 참가일만 반영한다. */
 function fallRoll(tid,k){campAttendanceMigrate();const P=G.campA?.y===G.year&&G.campA.league;if(!P)return fallRollLegacy(tid,k);if(P.results?.[tid])return JSON.parse(JSON.stringify(P.results[tid]));const old=fallPool(tid),seen=new Set(old.map(p=>p.id)),extra=Object.keys(P.t[tid]||{}).map(id=>G.players[id]).filter(p=>p&&p.team===tid&&!seen.has(p.id)),hot=[];let n=0,unknown=0;for(const p of [...old,...extra]){const f=campAttendanceFraction(p,tid,'league');if(f===1&&seen.has(p.id)){const x=fallRollLegacy(tid,k,[p]);n++;if(P.t[tid]?.[p.id]?.compatFull)unknown++;hot.push(...x.hot);continue;}const q=JSON.parse(JSON.stringify(p)),run=()=>fallRollLegacy(tid,k,[q]),result=seen.has(p.id)?run():withRng(rngHash('campLeagueGrow',G.year,tid,p.id),run);if(f<=0)continue;n++;if(P.t[tid]?.[p.id]?.compatFull)unknown++;for(const key in p.r)p.r[key]=clamp(Math.round((p.r[key]+(q.r[key]-p.r[key])*f)*10)/10,20,80);if(u01('campLeagueHot'+G.year,p.id)<f)hot.push(...result.hot);}P.results=P.results||{};const result={n,hot,...(unknown?{unknown}:{})};P.results[tid]=result;return result;}
@@ -23356,7 +23369,7 @@ function dailyCost(){ try{ smCheck(); }catch(e){} const m=G.mgr[G.user]; if(m&&!
 function vetSelfTrain(young){ const out=[]; const V=domestic(G.user).filter(p=>p.age>=28&&p.age<=35&&p.sal>=300&&!(p.injOut>0)&&!milServing(p)&&!p.hold&&!(G.ovs||[]).some(x=>x.pid===p.id));
   for(const p of V){ initPers(p); if(R()>=.15+p.pers.pro/100)continue; /* 프로 의식이 높을수록 스스로 간다 */ const ks=p.isP?['stf','ctl','sta']:['con','pow','eye']; const k=pick(ks);
     if(R()<.04){ const raw=ri(7,21),h=medOf(p.team).hosp,days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{train:1}});out.push(`${p.name}: 개인 훈련 중 가벼운 부상(약 ${p.injOut}일)`); continue; }
-    const d=Math.round(rnd(.3,1.2)*10)/10; p.r[k]=clamp(p.r[k]+d,20,80); out.push(`${p.name}: 미국·일본에서 자비로 개인 훈련. ${OVS_TOOLN[k]} 감각을 끌어올렸습니다`); }
+    const d=Math.round(rnd(.3,1.2)*10)/10; growYearBase(p); const gr0={...p.r}; p.r[k]=clamp(p.r[k]+d,20,80); growYearCap(p,gr0); /* 한 해 육성 상한 */ out.push(`${p.name}: 미국·일본에서 자비로 개인 훈련. ${OVS_TOOLN[k]} 감각을 끌어올렸습니다`); }
   const lead=V.filter(p=>out.some(t=>t.startsWith(p.name+': 미국')))[0];
   if(lead&&young.length){ for(const y of young)y.mor=clamp((y.mor??60)+3,0,100); lead.mor=clamp((lead.mor??60)+2,0,100); out.push(`${lead.name}이(가) 연수생 ${young.map(y=>y.name).join(', ')}와(과) 함께 훈련하며 후배들을 챙겼습니다. 연수생 기분 상승.`); }
   return out; }
@@ -31639,7 +31652,7 @@ function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
     const ti=trnI(p); { if(!p.trI||p.trI.y!==G.year)p.trI={y:G.year,s:0,n:0}; p.trI.s+=p.boy>G.day?0:TRNI[ti].g; p.trI.n++; } /* 훈련 불참(시위) 주는 훈련 효과 없음 */ /* 그 시즌 훈련한 주의 평균 강도 → 겨울 성장(develop). 모든 구단(사용자 11-13) */
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; { const T=G.trn&&G.trn[p.id]; if(T&&T.by==='gm'&&T.f===f&&T.aw!=null)T.aw++; } /* 회고·보고의 훈련 주수: 비시즌·부상·연수 주는 빼고 실제 훈련한 주만(검수 11-09o) */ const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
     const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:p.age<=33?.35:.2; /* 34세 이상도 지시를 받아들였으면 실제로 한다(효과는 작다) */
-    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4)*TRNI[ti].g*eliteGrowF(ovr(p)); const got=addR(p,k,add); /* 정상급 꼬리 억제(10_draft) */
+    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4)*TRNI[ti].g*eliteGrowF(ovr(p)); growYearBase(p); const gr0={...p.r}; let got=addR(p,k,add); /* 정상급 꼬리 억제(10_draft) */ if(growYearCap(p,gr0))got=Math.round((p.r[k]-gr0[k])*10)/10; /* 한 해 육성 상한(04_growth YEAR_GROW_CAP): 잘린 만큼은 집중 훈련 누적에도 세지 않는다 */
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
 /* 겨울 기회비용: 집중 훈련으로 얻은 만큼(×1.1) 같은 묶음의 다른 항목 성장이 준다.
@@ -31724,7 +31737,7 @@ function rpWeek(){ if(G.bprole)for(const id in G.bprole){ const x=G.bprole[id], 
       else if(x.k==='sp2'){ if(p.r.sta>=thr||y-x.y>=2){ G.rplan[p.id]={k:'done',tid:t.id,y}; /* 마친 기록을 남겨 다음 주 신인 배정에서 다시 수업으로 보내지 않는다(검수 11-08) */ if(t.id===G.user&&!(G.prole&&G.prole[p.id]&&G.prole[p.id].k==='sp2'))grad.push(p); } /* 단장 요청이 남아 있으면 실제 보직은 그대로라 '마침' 메일을 보내지 않는다. 그 선수는 아래 '선발 수업 성과' 메일로 전환을 묻는다(검수 11-06) */ else if(p.age>25){ G.rplan[p.id]={k:'done',tid:t.id,y}; } } /* 체력이 선발 기준에 닿거나 두 시즌을 채우면 수업을 마치고 선발 경쟁에 들어간다 */
       else if(x.k==='auto'&&x.y<y)delete G.rplan[p.id]; } }
   /* 2군 선발 수업 중이면 2군에서 선발로 나간다 */
-  for(const p of Object.values(G.players)){ if(!p.isP||p.team==null||p.e1)continue; if(rpPlanOf(p.team,p)==='sp2'){ p.role='SP'; if(per==='season'&&healthy(p)&&!isAway(p)){ /* 대표팀 차출 중에도 구단 수업 효과 없음(검수 11-08) */ const rm=trnRoom(p,'sta'); if(rm>0)addR(p,'sta',.05*clamp(rm/8,.2,1)); } } /* 체력 성장 여력이 없으면 오르지 않는다(검수 11-06) */ } /* 선발로 길게 던지며 체력이 붙는다 */
+  for(const p of Object.values(G.players)){ if(!p.isP||p.team==null||p.e1)continue; if(rpPlanOf(p.team,p)==='sp2'){ p.role='SP'; if(per==='season'&&healthy(p)&&!isAway(p)){ /* 대표팀 차출 중에도 구단 수업 효과 없음(검수 11-08) */ const rm=trnRoom(p,'sta'); if(rm>0){ growYearBase(p); const gr0={...p.r}; addR(p,'sta',.05*clamp(rm/8,.2,1)); growYearCap(p,gr0); /* 한 해 육성 상한(04_growth) */ } } } /* 체력 성장 여력이 없으면 오르지 않는다(검수 11-06) */ } /* 선발로 길게 던지며 체력이 붙는다 */
   if(myNew.length){ const m=G.mgr[G.user]; const fm=(coachesOf(G.user)||{}).fm; const row=p=>{ const k=G.rplan[p.id].k; return `${p.name}(${p.age}세): ${k==='sp2'?'2군 선발 수업':k==='rp'?'계투로 시작':'선발 경쟁'} · ${rpWhy(p,G.user)}`; };
     /* 1군에서 쓸 투수는 1군 감독이, 2군 선발 수업은 2군 감독이 맡아 말한다(커뮤니티 11-12: 1군 감독이 2군 보직을 정하는 것처럼 보였다) */
     const L1=myNew.filter(p=>G.rplan[p.id].k!=='sp2').map(row), L2=myNew.filter(p=>G.rplan[p.id].k==='sp2').map(row);
@@ -31936,7 +31949,8 @@ function campFocusAi(tid,kind){ const m=mgrOf(tid); if(kind==='fall')return 'ski
   if(pl==='build')return u<.5?'skill':'balance'; if(pl==='win')return u<.3?'game':u<.55?'fitness':'balance'; if(pl==='tight')return u<.4?'fitness':'balance'; return u<.15?'game':u<.3?'fitness':'balance'; }
 function addPitch(p,q){ const have=new Set(arsenalAll(p,p.r.stf).map(x=>x[0])); /* 보유 구종(계투라 안 쓰는 구종 포함)은 새로 익히지 않는다 */ const L=PITCHES.filter(k=>!have.has(k)); if(!L.length)return null; const k=L[Math.floor(u01('np'+G.year+(p.addP||[]).length,p.id)*L.length)];
   (p.addP=p.addP||[]).push({k,q:Math.round(q*10)/10,y:G.year}); return k; }
-function campGrow(p,kind,focus){ const ev=[]; if(p.hold||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
+function campGrow(p,kind,focus){ growYearBase(p); const gr0={...p.r}; const ev=campGrow0(p,kind,focus); growYearCap(p,gr0); return ev; } /* 한 해 육성 상한(04_growth YEAR_GROW_CAP): 겨울 성장과 합쳐 +5까지 */
+function campGrow0(p,kind,focus){ const ev=[]; if(p.hold||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
   const f=tbFactors(p,null); const ks=TRN_TOOLS[trnG(p)]; const o0=ovr(p), cap=Math.max(p.pot,o0)+4; const base=(CAMP_AMT[kind][focus]??1)*(p.age<=26?1:p.age<=30?.45:.15);
   let amt=base*f.room*f.will*f.fac*f.coach*f.mgr*rnd(.5,1.5)*(kind==='spring'&&p.team!=null?sprcGrowMul(p.team):1); /* 캠프 장소·날씨·훈련 강도(97_spring_camp.js) */ let tot=0;
   /* 확 늘어나는 선수 */ if(p.age<=25&&p.pot-ovr(p)>=4&&R()<(focus==='skill'?.05:.03)*f.will){ amt+=rnd(2,4); ev.push({t:'big'}); }
@@ -36870,8 +36884,8 @@ function sisFlDepart(F){ if(!F||F.y!==G.year||F.go)return; const ids=F.ids.filte
 function sisFlRun(F=sisFlOf(G.user)){ const S=sisInit(); if(!F||F.y!==G.year||!F.go)return; sisFlDrop(F); for(const id of F.ids){const p=G.players[id];if(p&&p.sisFlAway&&p.sisFlAway.tid===F.tid&&p.sisFlAway.cid===F.cid)delete p.sisFlAway;} const c=OCL_BY[F.cid]; const b=(55-c.f2)/5; /* 상대 2군이 강할수록 기록이 덜 나온다 */ const L=[];
   for(const id of F.ids){ const p=G.players[id]; if(!p||p.team!==F.tid||isAway(p))continue; let line;
     if(p.isP){ const o=simPit(p,ri(30,54),b); line=`${Math.floor(o.outs/3)}이닝 평균자책 ${(o.er*27/Math.max(1,o.outs)).toFixed(2)} 삼진 ${o.so}`; } else { const o=simBat(p,ri(50,70),b); line=`타율 ${exhF3(o.h/Math.max(1,o.ab))} ${o.hr}홈런 볼넷 ${o.bb}`; }
-    const ks=TRN_TOOLS[trnG(p)], room=Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3), g=rnd(.4,1.3)*room*(c.fac/75); for(const k of ks)p.r[k]=clamp(p.r[k]+g*rnd(.6,1.2),20,80);
-    let hot=''; if(R()<.1){ const k=pick(ks); p.r[k]=clamp(p.r[k]+rnd(2,4),20,80); hot=` · ${OVS_TOOLN[k]}이(가) 눈에 띄게 좋아짐`; } roundR(p); p.mor=clamp((p.mor??60)+2,0,100); L.push(`${p.name}(${posLabel(p)}): ${line}${hot}`); }
+    growYearBase(p); const gr0={...p.r}; const ks=TRN_TOOLS[trnG(p)], room=Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3), g=rnd(.4,1.3)*room*(c.fac/75); for(const k of ks)p.r[k]=clamp(p.r[k]+g*rnd(.6,1.2),20,80);
+    let hot=''; if(R()<.1){ const k=pick(ks); p.r[k]=clamp(p.r[k]+rnd(2,4),20,80); hot=` · ${OVS_TOOLN[k]}이(가) 눈에 띄게 좋아짐`; } roundR(p); growYearCap(p,gr0); /* 한 해 육성 상한 */ p.mor=clamp((p.mor??60)+2,0,100); L.push(`${p.name}(${posLabel(p)}): ${line}${hot}`); }
   if(L.length)sisAdd(F.tid,F.cid,4); if(F.tid===G.user&&!G.unemp&&L.length)mail('육성팀',`${c.n} 가을 교육리그 결과`,`${c.n} 2군·육성군과 약 5주 동안 실전을 치르고 돌아왔습니다.\n\n${L.join('\n')}\n\n상대 2군 전력 ${c.f2} · 시설 ${c.fac}. 시설이 좋을수록 성장 폭이 큽니다. 관계 개선.`,{kind:'연수'}); return L; }
 /* 코치 교육·해외 연수: 실제 인물·지원 구단·출국일을 고정하고 한 번만 귀국 정산한다. */
 const COACH_STUDY={dom:{l:'국내 지도자 교육',days:14,cost:10,gain:[1,1]},jp:{l:'일본 코치 연수',days:42,cost:40,gain:[1,3]},us:{l:'미국 코치 연수',days:42,cost:60,gain:[1,3]}};
@@ -51917,7 +51931,7 @@ Object.assign(A,{
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
   {id:'2026-11-19-growth-rules',d:'11월 19일',t:'성장이 여러 해에 걸쳐 이어집니다',items:[
-    '겨울 성장: 한 선수가 한 해 겨울에 크는 폭에 상한이 생겼습니다(종합 기준 한 해 최대 약 +6, 능력 하나는 +9). 상한에 걸려 못 큰 몫은 사라지지 않고 다음 겨울들에 이어서 큽니다. 늦게 터지는 선수는 한 번에 폭등하지 않고 두세 해에 걸쳐 올라옵니다.',
+    '한 해 성장 상한: 한 선수의 종합 능력은 한 해에 원래 능력 기준 +5까지만 오릅니다(겨울 성장·스프링캠프·시즌 중 훈련·마무리캠프·교육리그·해외 연수를 모두 합쳐서, 상무 포함 모든 구단 같음). 겨울에 상한에 걸려 못 큰 몫은 사라지지 않고 다음 해들에 이어서 큽니다. 늦게 터지는 선수는 한 번에 폭등하지 않고 두세 해에 걸쳐 올라옵니다.',
     '성장 구간 마지막 1~2년에 남은 잠재력이 한꺼번에 채워지던 것을 여러 해로 폈고, 출전·시설·감독·코치·성격·훈련 강도가 모두 좋을 때 곱해지는 효과에 상한을 뒀습니다.',
     '26세 이하 선수는 해마다 조금씩 깎이던 몫을 없애고 퇴보 폭을 줄였습니다. 젊은 선수가 전보다 꾸준히 큽니다. 전성기와 노화는 그대로입니다.',
     '훈련 시설 효과를 우리 구단과 다른 구단이 같은 식으로 계산합니다(실내 연습장·랩·숙소·2군 구장이 성장, 웨이트·재활이 노화).',

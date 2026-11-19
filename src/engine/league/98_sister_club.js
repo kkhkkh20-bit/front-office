@@ -96,8 +96,8 @@ function sisFlDepart(F){ if(!F||F.y!==G.year||F.go)return; const ids=F.ids.filte
 function sisFlRun(F=sisFlOf(G.user)){ const S=sisInit(); if(!F||F.y!==G.year||!F.go)return; sisFlDrop(F); for(const id of F.ids){const p=G.players[id];if(p&&p.sisFlAway&&p.sisFlAway.tid===F.tid&&p.sisFlAway.cid===F.cid)delete p.sisFlAway;} const c=OCL_BY[F.cid]; const b=(55-c.f2)/5; /* 상대 2군이 강할수록 기록이 덜 나온다 */ const L=[];
   for(const id of F.ids){ const p=G.players[id]; if(!p||p.team!==F.tid||isAway(p))continue; let line;
     if(p.isP){ const o=simPit(p,ri(30,54),b); line=`${Math.floor(o.outs/3)}이닝 평균자책 ${(o.er*27/Math.max(1,o.outs)).toFixed(2)} 삼진 ${o.so}`; } else { const o=simBat(p,ri(50,70),b); line=`타율 ${exhF3(o.h/Math.max(1,o.ab))} ${o.hr}홈런 볼넷 ${o.bb}`; }
-    const ks=TRN_TOOLS[trnG(p)], room=Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3), g=rnd(.4,1.3)*room*(c.fac/75); for(const k of ks)p.r[k]=clamp(p.r[k]+g*rnd(.6,1.2),20,80);
-    let hot=''; if(R()<.1){ const k=pick(ks); p.r[k]=clamp(p.r[k]+rnd(2,4),20,80); hot=` · ${OVS_TOOLN[k]}이(가) 눈에 띄게 좋아짐`; } roundR(p); p.mor=clamp((p.mor??60)+2,0,100); L.push(`${p.name}(${posLabel(p)}): ${line}${hot}`); }
+    growYearBase(p); const gr0={...p.r}; const ks=TRN_TOOLS[trnG(p)], room=Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3), g=rnd(.4,1.3)*room*(c.fac/75); for(const k of ks)p.r[k]=clamp(p.r[k]+g*rnd(.6,1.2),20,80);
+    let hot=''; if(R()<.1){ const k=pick(ks); p.r[k]=clamp(p.r[k]+rnd(2,4),20,80); hot=` · ${OVS_TOOLN[k]}이(가) 눈에 띄게 좋아짐`; } roundR(p); growYearCap(p,gr0); /* 한 해 육성 상한 */ p.mor=clamp((p.mor??60)+2,0,100); L.push(`${p.name}(${posLabel(p)}): ${line}${hot}`); }
   if(L.length)sisAdd(F.tid,F.cid,4); if(F.tid===G.user&&!G.unemp&&L.length)mail('육성팀',`${c.n} 가을 교육리그 결과`,`${c.n} 2군·육성군과 약 5주 동안 실전을 치르고 돌아왔습니다.\n\n${L.join('\n')}\n\n상대 2군 전력 ${c.f2} · 시설 ${c.fac}. 시설이 좋을수록 성장 폭이 큽니다. 관계 개선.`,{kind:'연수'}); return L; }
 /* 코치 교육·해외 연수: 실제 인물·지원 구단·출국일을 고정하고 한 번만 귀국 정산한다. */
 const COACH_STUDY={dom:{l:'국내 지도자 교육',days:14,cost:10,gain:[1,1]},jp:{l:'일본 코치 연수',days:42,cost:40,gain:[1,3]},us:{l:'미국 코치 연수',days:42,cost:60,gain:[1,3]}};

@@ -29,22 +29,35 @@ const REALK_LO=.38, BLUE_FLOOR_P=.35, BLOOM_P=.035;
 /* 상무 복무 중 한 해(겨울 develop) 종합 성장 상한(원래 능력 단위, 카페 11-19 꺼끼꺼: 상무 25세 선발 62→78).
    점검(시드 7, 22~25세 유망주): 상무 복무와 구단 소속이 같은 성장 함수를 한 번씩만 탄다(겨울 develop → 분기 devQ, 상무는 캠프·기본 훈련 제외). 중복 적용은 없었다.
    다만 복무 중에는 구단 성장 잡음(평균 -0.25)·출전 비중이 빠져 develop 평균이 0.4 높고 꼬리(p99 5.4, 최대 7.6)도 구단(p99 5.1)보다 길어, 구단 p99 수준인 5에서 자른다. 우리·AI 같은 식 */
-const MIL_GROW_CAP=5;
+const MIL_GROW_CAP=5; /* 한 해 상한(YEAR_GROW_CAP)과 같은 값 */
 /* 겨울 한 해 성장 상한(11-19 성장 점검, 모든 구단·모든 선수 같은 식. 상무 상한과 같은 방식으로 능력별 변화를 같은 비율로 줄이고 난수는 쓰지 않는다).
    제보: 27세 안팎 선수가 한 겨울에 원래 능력 45→75(표시 58→98). 성장 구간 마지막 1~2년에 성장률이 0.4~0.65까지 올라 남은 잠재력을 한 번에 채웠고, 환경 배수(출전×시설×감독×코치×감독 지목×성격×훈련 강도)가 상한 없이 곱해졌다.
-   - WIN_GROW_CAP 6: 구단 소속 겨울 성장 p99가 5.1이라(위 상무 점검) 평소 성장은 그대로 두고 꼬리만 자른다. 능력 하나는 WIN_SUB_CAP 9(종합 상한의 1.5배)까지.
+   - WIN_GROW_CAP: 처음에는 6(구단 소속 겨울 성장 p99 5.1)이었고, 구단주 결정(11-19)으로 한 해 상한 YEAR_GROW_CAP 5와 같게 했다(아래). 능력 하나는 WIN_SUB_CAP 7.5(종합 상한의 1.5배)까지.
    - 잘린 몫은 버리지 않고 p.gcar(원래 능력 단위, 최대 GROW_CARRY_MAX=상한 두 해 몫)로 남겨 다음 겨울들에 상한 안에서 이어 큰다: 늦깎이는 +4~6이 두세 해 이어지는 모양. 잠재력 정리(성장 구간 끝)도 그만큼은 남긴다.
    - GROW_RATE_HI .40: 성장 구간 마지막 두 해의 성장률 천장(예전 .65). 처음 잡은 .30은 24~26세 연간 성장이 예전보다 +0.11에 그치고 27~29세가 0.14 더 떨어져(시드 7·11, 5시즌) .40으로 올렸다: 24~26세 +0.20, 27~29세 -0.07, 겨울 한 해 최대는 그대로 +6. 바닥 GROW_RATE_LO .10(정체형·30대 늦깎이 대기 구간은 예전 .04)은 10대 후반~20세의 몫을 조금 올려 성장을 여러 해에 편다.
    - GROW_ENV_CAP 2: 곱해진 환경 배수 상한. 측정(시드 7, 10구단 모두 AI, 첫 겨울 성장 구간 국내 선수 504명): 중앙값 0.81·p90 1.09·p99 1.44·최대 1.99.
      어느 구단에서든 실제로 나오는 범위(최대 약 2)는 그대로 두고, 한 구단이 모든 요소를 최고로 쌓았을 때만 나오는 그 너머(이론상 약 5배)를 막는다. 예전 저장: 새 값이 없으면 예전과 같고 지금 능력은 그대로다 */
-const WIN_GROW_CAP=6, WIN_SUB_CAP=9, GROW_CARRY_MAX=12, GROW_RATE_HI=.40, GROW_RATE_LO=.10, GROW_ENV_CAP=2;
+/* 한 해 육성 상한(구단주 결정 11-19: "80 스케일 기준 육성 오버롤 한 시즌 최대 +5. 5를 넘을 수 없다").
+   한 해 = 겨울 성장(develop, 분기로 나눠 반영되는 몫 포함) + 스프링캠프 + 시즌 중 기본 훈련 + 마무리캠프·교육리그·해외 연수·자매 구단 파견·자비 훈련. 이 모두를 합친 종합 능력(ovr, 내부 20~80) 상승이 +5(YEAR_GROW_CAP)를 넘지 않는다.
+   - 기준점 p.gy={y:해, o:그해 시작 종합 능력}. develop이 해가 바뀌기 직전에 다음 해 기준점을 남기고(그해 첫 성장), 기준점이 없는 선수(예전 저장·그해 새로 온 선수)는 그해 첫 성장 직전 값으로 잡는다.
+   - 겨울 성장은 종전처럼 능력별 변화를 같은 비율로 줄이고(상무 포함 +5), 그 뒤 성장 경로는 growYearCap이 이번에 오른 몫만 줄인다. 아직 반영 안 된 분기 몫(p.devQ)도 올해 몫으로 센다.
+   - 능력 하나는 겨울에 +7.5(WIN_SUB_CAP, 종합 상한의 1.5배)까지. 잘린 겨울 몫은 종전처럼 p.gcar로 넘겨 다음 해 +5 안에서 이어 큰다. 캠프·훈련에서 잘린 몫은 넘기지 않는다.
+   - 난수를 쓰지 않는다(각 성장 경로의 난수 호출은 그대로). 모든 구단·모든 선수 같은 식. 부상 후유증 회복(injRecover)은 육성이 아니라 잃은 능력을 되찾는 것이라 줄이지 않는다 */
+const YEAR_GROW_CAP=5, GROW_OVR_K={P:['stf','ctl','sta'],B:['con','pow','eye','spd','def']}; /* 종합 능력(ovr)에 들어가는 능력 */
+function growYearBase(p){ if(!p.gy||p.gy.y!==G.year)p.gy={y:G.year,o:Math.round(growProj(p)*100)/100}; return p.gy.o; }
+function growProj(p){ const Q=p.devQ; if(!Q||!Q.D||!Q.w)return ovr(p); let rem=0; for(let j=Q.i;j<3;j++)rem+=Q.w[j]||0; if(!rem)return ovr(p); const r={...p.r}; for(const k in Q.D)if(r[k]!=null)r[k]=clamp(r[k]+Q.D[k]*rem,20,80); return ovr({...p,r}); } /* 남은 분기 몫까지 반영한 올해 끝 예상 종합 능력 */
+function growTrim(p,r0,lim){ for(let i=0;i<400&&growProj(p)>lim+1e-9;i++){ let bk=null,bd=.049; for(const k of (p.isP?GROW_OVR_K.P:GROW_OVR_K.B)){ if(p.r[k]==null)continue; const d=p.r[k]-(r0[k]??p.r[k]); if(d>bd){ bd=d; bk=k; } } if(!bk)break; p.r[bk]=Math.round((p.r[bk]-.1)*10)/10; } } /* 반올림으로 남은 초과분: 이번에 가장 많이 오른 능력부터 0.1씩 */
+function growYearCap(p,r0){ if(!p||!p.r||!r0||!p.gy||p.gy.y!==G.year)return 0; const lim=p.gy.o+YEAR_GROW_CAP; const now=growProj(p); if(now<=lim+1e-9)return 0;
+  const r1={...p.r}; for(const k in p.r)if(r0[k]!=null&&r1[k]>r0[k])p.r[k]=r0[k]; const low=growProj(p); /* 이번에 오른 몫을 뺀 값 */ const f=now>low?clamp((lim-low)/(now-low),0,1):0;
+  for(const k in p.r)if(r0[k]!=null&&r1[k]>r0[k])p.r[k]=Math.floor((r0[k]+(r1[k]-r0[k])*f)*10+1e-6)/10; growTrim(p,r0,lim); (p.gy.c=(p.gy.c||0)+1); return now-growProj(p); }
+const WIN_GROW_CAP=YEAR_GROW_CAP, WIN_SUB_CAP=7.5, GROW_CARRY_MAX=10, GROW_RATE_HI=.40, GROW_RATE_LO=.10, GROW_ENV_CAP=2;
 /* 젊은 선수 성장 잡음(11-19: 성장이 너무 더디다는 제보). 26세 이하는 해마다 깎이던 평균 -0.25를 0으로, 퇴보 폭 1.5~4.5를 1.2~3.8로(퇴보 확률은 그대로). 27세부터와 전성기·노화는 예전 그대로 */
 const YOUNG_NOISE_AGE=26, YOUNG_NOISE_MU=0, YOUNG_SLUMP=[1.2,3.8];
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; initPers(p); const pg=persGrowF(p); /* 외국인도 국내 선수와 같은 성장 규칙(사용자 11-11) */ const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
   const svc=p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day?p.mil.unit:null;
-  const r0={...p.r}; /* 겨울 한 해 성장 상한(WIN_GROW_CAP, 상무는 MIL_GROW_CAP)용 시작 능력 */
+  const r0={...p.r}; /* 겨울 한 해 성장 상한(WIN_GROW_CAP, 상무는 MIL_GROW_CAP)용 시작 능력 */ p.gy={y:G.year+1,o:Math.round(o*100)/100}; /* 다음 해(겨울 성장이 속한 해)의 기준점: 캠프·훈련도 이 값 +5 안에서만(YEAR_GROW_CAP) */
   /* 군 복무 중에는 우리 구단 시설·코치·감독이 아니라 상무 야구단(또는 군) 환경에서 지낸다. 현역은 야구 훈련을 하지 못한다 */
   const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
   const club=p.team!=null&&!svc; const ti=club&&p.trI&&p.trI.n&&(p.trI.y===G.year||p.trI.y===G.year-1)?p.trI.s/p.trI.n:1; delete p.trI; /* 그 시즌 평균 훈련 강도(76_dev_plan) */ const devMgr=club&&G.mgr?mgrOf(p.team):null,yf=devMgr?1+(devMgr.youth-50)/150:1;
@@ -101,8 +114,8 @@ function develop(p){
   roundR(p);
   { const car=p.gcar>0&&svc!=='현역'&&age<T.fall?p.gcar:0; if(car>0){ for(const k in p.r)p.r[k]=clamp(p.r[k]+car,20,80); roundR(p); p.devLog.reasons.push('carry'); } if(svc!=='현역')delete p.gcar; } /* 지난 겨울 상한에 잘린 몫을 이어 받는다(난수 없음). 현역 복무 중에는 그대로 둔다 */
   if(ovr(p)>potCap()+.05)setOvr(p,potCap()); /* 잠재력 돌파는 없다 */
-  { const mil=svc==='상무', cap=mil?MIL_GROW_CAP:WIN_GROW_CAP; const g=ovr(p)-o; if(g>cap){ const f=cap/g; for(const k in p.r)if(r0[k]!=null)p.r[k]=clamp(r0[k]+(p.r[k]-r0[k])*f,20,80); roundR(p); p.devLog.reasons.push(mil?'military-cap':'winter-cap'); if(!mil){ const c=Math.min(GROW_CARRY_MAX,g-cap); p.gcar=Math.max(.1,Math.round(c*10)/10); } }
-    if(!mil){ let cut=false; for(const k in p.r)if(r0[k]!=null&&p.r[k]-r0[k]>WIN_SUB_CAP){ p.r[k]=r0[k]+WIN_SUB_CAP; cut=true; } if(cut){ roundR(p); p.devLog.reasons.push('sub-cap'); } } } /* 모든 선수: 겨울 한 해 종합 +6·능력 하나 +9까지(상무는 예전대로 5, 넘친 몫 이월 없음) */ /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
+  { const mil=svc==='상무', cap=mil?MIL_GROW_CAP:WIN_GROW_CAP; const g=ovr(p)-o; if(g>cap){ const f=cap/g; for(const k in p.r)if(r0[k]!=null)p.r[k]=clamp(r0[k]+(p.r[k]-r0[k])*f,20,80); roundR(p); growTrim(p,r0,o+cap); p.devLog.reasons.push(mil?'military-cap':'winter-cap'); if(!mil){ const c=Math.min(GROW_CARRY_MAX,g-cap); p.gcar=Math.max(.1,Math.round(c*10)/10); } }
+    if(!mil){ let cut=false; for(const k in p.r)if(r0[k]!=null&&p.r[k]-r0[k]>WIN_SUB_CAP){ p.r[k]=r0[k]+WIN_SUB_CAP; cut=true; } if(cut){ roundR(p); p.devLog.reasons.push('sub-cap'); } } } /* 모든 선수: 겨울 한 해 종합 +5·능력 하나 +7.5까지(상무도 5, 넘친 몫 이월 없음) */ /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
   const no=ovr(p);
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
   if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0)+(p.gcar||0)); /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
