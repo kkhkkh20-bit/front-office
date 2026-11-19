@@ -1,0 +1,1154 @@
+{
+  "schema_version": "v23b-crests-stage1-validation-2",
+  "revision": 2,
+  "technical_validation_passed": true,
+  "selection": {
+    "expansion_a": "A1",
+    "expansion_b": null
+  },
+  "approved": false,
+  "phase2_started": false,
+  "checks": [
+    {
+      "check": "selection_A1_B_pending",
+      "passed": true
+    },
+    {
+      "check": "active_B_candidates",
+      "passed": true
+    },
+    {
+      "check": "A1_byte_identical_to_previous_delivery",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/svg/mark.svg",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/svg/primary.svg",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/14.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/16.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/20.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/32.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/64.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/mark/128.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/crest/128.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/crest/256.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/png/crest/512.png",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/svg/relief/mark.svg",
+      "passed": true
+    },
+    {
+      "check": "A1_original_git_hash:candidates/A1/svg/relief/primary.svg",
+      "passed": true
+    },
+    {
+      "check": "v2_actual_font_hash",
+      "passed": true
+    },
+    {
+      "check": "A1:primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "A1:primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "A1:primary:palette",
+      "passed": true
+    },
+    {
+      "check": "A1:primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "A1:primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "A1:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_primary:palette",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_primary:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "A1:mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "A1:mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "A1:mark:palette",
+      "passed": true
+    },
+    {
+      "check": "A1:mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_mark:palette",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "A1:relief_mark:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "A1:crest512:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        24,
+        43,
+        488,
+        480
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "A1:crest512:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "A1:crest256:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        12,
+        21,
+        244,
+        240
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "A1:crest256:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "A1:crest128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        6,
+        10,
+        122,
+        120
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "A1:crest128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "A1:mark128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        23,
+        10,
+        105,
+        120
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "A1:mark128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "A1:mark64:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        11,
+        5,
+        53,
+        60
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "A1:mark64:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "A1:mark32:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        5,
+        2,
+        27,
+        30
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "A1:mark32:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "A1:mark20:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        3,
+        1,
+        17,
+        19
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "A1:mark20:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "A1:mark16:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        1,
+        14,
+        15
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "A1:mark16:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "A1:mark14:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        1,
+        12,
+        13
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "A1:mark14:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B4:primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B4:primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B4:primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B4:primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B4:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B4:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B4:primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_primary:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B4:mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B4:mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B4:mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B4:mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B4:mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_mark:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B4:relief_mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B4:crest512:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        24,
+        59,
+        488,
+        437
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:crest512:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:crest256:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        12,
+        29,
+        244,
+        219
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:crest256:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:crest128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        6,
+        15,
+        122,
+        110
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:crest128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        23,
+        15,
+        105,
+        98
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark64:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        11,
+        7,
+        53,
+        49
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark64:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark32:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        5,
+        3,
+        27,
+        25
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark32:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark20:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        3,
+        2,
+        17,
+        16
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark20:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark16:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        2,
+        14,
+        13
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark16:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B4:mark14:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        1,
+        12,
+        11
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B4:mark14:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B5:primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B5:mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B5:relief_mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B5:crest512:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        24,
+        46,
+        488,
+        437
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:crest512:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:crest256:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        12,
+        23,
+        244,
+        219
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:crest256:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:crest128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        6,
+        11,
+        122,
+        110
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:crest128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:mark128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        19,
+        11,
+        107,
+        100
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:mark128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:mark64:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        9,
+        5,
+        54,
+        50
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:mark64:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:mark32:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        4,
+        3,
+        27,
+        25
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:mark32:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:mark20:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        2,
+        17,
+        16
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:mark20:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:mark16:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        1,
+        14,
+        13
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:mark16:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B5:mark14:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        1,
+        12,
+        11
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B5:mark14:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B6:primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B6:primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B6:primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B6:primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B6:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B6:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B6:primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_primary:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B6:mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B6:mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B6:mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B6:mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B6:mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B6:relief_mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B6:crest512:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        24,
+        76,
+        488,
+        437
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:crest512:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:crest256:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        12,
+        38,
+        244,
+        219
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:crest256:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:crest128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        6,
+        19,
+        122,
+        110
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:crest128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        24,
+        19,
+        104,
+        110
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark64:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        12,
+        9,
+        52,
+        55
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark64:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark32:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        6,
+        4,
+        26,
+        27
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark32:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark20:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        3,
+        2,
+        17,
+        17
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark20:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark16:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        2,
+        14,
+        14
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark16:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B6:mark14:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        1,
+        12,
+        12
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B6:mark14:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_primary",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_mark",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_relief_crest",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_relief_mark",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_crest512",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_crest256",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_crest128",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_mark128",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_mark64",
+      "passed": true
+    },
+    {
+      "check": "expansion_a:canonical_mark32",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_primary",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_mark",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_relief_crest",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_relief_mark",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_crest512",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_crest256",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_crest128",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_mark128",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_mark64",
+      "passed": true
+    },
+    {
+      "check": "expansion_b:canonical_mark32",
+      "passed": true
+    },
+    {
+      "check": "only_v23b_crests_modified",
+      "passed": true
+    },
+    {
+      "check": "existing_v2_hashes_unchanged",
+      "passed": true
+    },
+    {
+      "check": "phase2_directory_absent",
+      "passed": true
+    }
+  ],
+  "visual_review": {
+    "performed": true,
+    "active_candidates": [
+      "A1 selected",
+      "B4",
+      "B5",
+      "B6"
+    ],
+    "MLB_official_logos_inspected": 6,
+    "previews": [
+      "candidates_expansion_b_revision2.png",
+      "compare_with_v2_dark_light.png"
+    ],
+    "subjective_assessment": "B5 has the least dependence on a surrounding frame. B4 emphasizes a crown; B6 retains a shield. Fine stitches intentionally omitted in simplified marks. B aesthetic approval and real uniform placement remain pending.",
+    "automated_recognizability_score": null
+  },
+  "phase2_face_validation": "not_started; no photos altered"
+}

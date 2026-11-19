@@ -1,6 +1,6 @@
 {
-  "schema_version": "v23b-crests-stage1-validation-2",
-  "revision": 2,
+  "schema_version": "v23b-crests-stage1-validation-3",
+  "revision": 3,
   "technical_validation_passed": true,
   "selection": {
     "expansion_a": "A1",
@@ -301,744 +301,744 @@
       "passed": true
     },
     {
-      "check": "B4:primary:native_vector",
+      "check": "B7:primary:native_vector",
       "passed": true
     },
     {
-      "check": "B4:primary:unique_ids",
+      "check": "B7:primary:unique_ids",
       "passed": true
     },
     {
-      "check": "B4:primary:palette",
+      "check": "B7:primary:palette",
       "passed": true
     },
     {
-      "check": "B4:primary:wordmark",
+      "check": "B7:primary:wordmark",
       "passed": true
     },
     {
-      "check": "B4:primary:actual_font_glyph_X",
+      "check": "B7:primary:actual_font_glyph_X",
       "passed": true
     },
     {
-      "check": "B4:primary:actual_font_glyph_I",
+      "check": "B7:primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "B4:primary:actual_font_glyph_I",
+      "check": "B7:primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "B4:primary:removed_infield_and_bats",
+      "check": "B7:primary:removed_infield_and_bats",
       "passed": true
     },
     {
-      "check": "B4:relief_primary:native_vector",
+      "check": "B7:relief_primary:native_vector",
       "passed": true
     },
     {
-      "check": "B4:relief_primary:unique_ids",
+      "check": "B7:relief_primary:unique_ids",
       "passed": true
     },
     {
-      "check": "B4:relief_primary:palette",
+      "check": "B7:relief_primary:palette",
       "passed": true
     },
     {
-      "check": "B4:relief_primary:wordmark",
+      "check": "B7:relief_primary:wordmark",
       "passed": true
     },
     {
-      "check": "B4:relief_primary:actual_font_glyph_X",
+      "check": "B7:relief_primary:actual_font_glyph_X",
       "passed": true
     },
     {
-      "check": "B4:relief_primary:actual_font_glyph_I",
+      "check": "B7:relief_primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "B4:relief_primary:actual_font_glyph_I",
+      "check": "B7:relief_primary:actual_font_glyph_I",
       "passed": true
     },
     {
-      "check": "B4:relief_primary:flat_signature_preserved",
+      "check": "B7:relief_primary:flat_signature_preserved",
       "passed": true
     },
     {
-      "check": "B4:relief_primary:removed_infield_and_bats",
+      "check": "B7:relief_primary:removed_infield_and_bats",
       "passed": true
     },
     {
-      "check": "B4:mark:native_vector",
+      "check": "B7:mark:native_vector",
       "passed": true
     },
     {
-      "check": "B4:mark:unique_ids",
+      "check": "B7:mark:unique_ids",
       "passed": true
     },
     {
-      "check": "B4:mark:palette",
+      "check": "B7:mark:palette",
       "passed": true
     },
     {
-      "check": "B4:mark:no_wordmark",
+      "check": "B7:mark:no_wordmark",
       "passed": true
     },
     {
-      "check": "B4:mark:removed_infield_and_bats",
+      "check": "B7:mark:removed_infield_and_bats",
       "passed": true
     },
     {
-      "check": "B4:relief_mark:native_vector",
+      "check": "B7:relief_mark:native_vector",
       "passed": true
     },
     {
-      "check": "B4:relief_mark:unique_ids",
+      "check": "B7:relief_mark:unique_ids",
       "passed": true
     },
     {
-      "check": "B4:relief_mark:palette",
+      "check": "B7:relief_mark:palette",
       "passed": true
     },
     {
-      "check": "B4:relief_mark:no_wordmark",
+      "check": "B7:relief_mark:no_wordmark",
       "passed": true
     },
     {
-      "check": "B4:relief_mark:flat_signature_preserved",
+      "check": "B7:relief_mark:flat_signature_preserved",
       "passed": true
     },
     {
-      "check": "B4:relief_mark:removed_infield_and_bats",
+      "check": "B7:relief_mark:removed_infield_and_bats",
       "passed": true
     },
     {
-      "check": "B4:crest512:RGBA_size_and_visible_padding",
+      "check": "B7:crest512:RGBA_size_and_visible_padding",
       "passed": true,
       "visible_bbox": [
-        24,
-        59,
-        488,
-        437
+        34,
+        82,
+        478,
+        425
       ],
       "alpha_threshold": 8
     },
     {
-      "check": "B4:crest512:SVG_render_matches_PNG",
+      "check": "B7:crest512:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B4:crest256:RGBA_size_and_visible_padding",
+      "check": "B7:crest256:RGBA_size_and_visible_padding",
       "passed": true,
       "visible_bbox": [
+        17,
+        41,
+        239,
+        213
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B7:crest256:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B7:crest128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        8,
+        20,
+        120,
+        107
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B7:crest128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B7:mark128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        14,
+        25,
+        114,
+        102
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B7:mark128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B7:mark64:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        6,
         12,
+        57,
+        51
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B7:mark64:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B7:mark32:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        3,
+        6,
         29,
-        244,
-        219
+        26
       ],
       "alpha_threshold": 8
     },
     {
-      "check": "B4:crest256:SVG_render_matches_PNG",
+      "check": "B7:mark32:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B4:crest128:RGBA_size_and_visible_padding",
+      "check": "B7:mark20:RGBA_size_and_visible_padding",
       "passed": true,
       "visible_bbox": [
-        6,
-        15,
-        122,
-        110
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B4:crest128:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B4:mark128:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        23,
-        15,
-        105,
-        98
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B4:mark128:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B4:mark64:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        11,
-        7,
-        53,
-        49
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B4:mark64:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B4:mark32:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        5,
-        3,
-        27,
-        25
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B4:mark32:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B4:mark20:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        3,
         2,
-        17,
+        4,
+        18,
         16
       ],
       "alpha_threshold": 8
     },
     {
-      "check": "B4:mark20:SVG_render_matches_PNG",
+      "check": "B7:mark20:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B4:mark16:RGBA_size_and_visible_padding",
+      "check": "B7:mark16:RGBA_size_and_visible_padding",
       "passed": true,
       "visible_bbox": [
-        2,
-        2,
-        14,
+        1,
+        3,
+        15,
         13
       ],
       "alpha_threshold": 8
     },
     {
-      "check": "B4:mark16:SVG_render_matches_PNG",
+      "check": "B7:mark16:SVG_render_matches_PNG",
       "passed": true
     },
     {
-      "check": "B4:mark14:RGBA_size_and_visible_padding",
+      "check": "B7:mark14:RGBA_size_and_visible_padding",
       "passed": true,
       "visible_bbox": [
-        2,
         1,
-        12,
-        11
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B4:mark14:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B5:primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B5:primary:unique_ids",
-      "passed": true
-    },
-    {
-      "check": "B5:primary:palette",
-      "passed": true
-    },
-    {
-      "check": "B5:primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B5:primary:actual_font_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B5:primary:actual_font_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B5:primary:actual_font_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B5:primary:removed_infield_and_bats",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_primary:unique_ids",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_primary:palette",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_primary:actual_font_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_primary:actual_font_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_primary:actual_font_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_primary:flat_signature_preserved",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_primary:removed_infield_and_bats",
-      "passed": true
-    },
-    {
-      "check": "B5:mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B5:mark:unique_ids",
-      "passed": true
-    },
-    {
-      "check": "B5:mark:palette",
-      "passed": true
-    },
-    {
-      "check": "B5:mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B5:mark:removed_infield_and_bats",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_mark:unique_ids",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_mark:palette",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_mark:flat_signature_preserved",
-      "passed": true
-    },
-    {
-      "check": "B5:relief_mark:removed_infield_and_bats",
-      "passed": true
-    },
-    {
-      "check": "B5:crest512:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        24,
-        46,
-        488,
-        437
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B5:crest512:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B5:crest256:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        12,
-        23,
-        244,
-        219
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B5:crest256:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B5:crest128:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        6,
-        11,
-        122,
-        110
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B5:crest128:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B5:mark128:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        19,
-        11,
-        107,
-        100
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B5:mark128:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B5:mark64:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        9,
-        5,
-        54,
-        50
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B5:mark64:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B5:mark32:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        4,
         3,
-        27,
-        25
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B5:mark32:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B5:mark20:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        2,
-        2,
-        17,
-        16
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B5:mark20:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B5:mark16:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        2,
-        1,
-        14,
-        13
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B5:mark16:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B5:mark14:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        2,
-        1,
-        12,
-        11
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B5:mark14:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B6:primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B6:primary:unique_ids",
-      "passed": true
-    },
-    {
-      "check": "B6:primary:palette",
-      "passed": true
-    },
-    {
-      "check": "B6:primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B6:primary:actual_font_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B6:primary:actual_font_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B6:primary:actual_font_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B6:primary:removed_infield_and_bats",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_primary:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_primary:unique_ids",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_primary:palette",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_primary:wordmark",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_primary:actual_font_glyph_X",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_primary:actual_font_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_primary:actual_font_glyph_I",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_primary:flat_signature_preserved",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_primary:removed_infield_and_bats",
-      "passed": true
-    },
-    {
-      "check": "B6:mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B6:mark:unique_ids",
-      "passed": true
-    },
-    {
-      "check": "B6:mark:palette",
-      "passed": true
-    },
-    {
-      "check": "B6:mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B6:mark:removed_infield_and_bats",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_mark:native_vector",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_mark:unique_ids",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_mark:palette",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_mark:no_wordmark",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_mark:flat_signature_preserved",
-      "passed": true
-    },
-    {
-      "check": "B6:relief_mark:removed_infield_and_bats",
-      "passed": true
-    },
-    {
-      "check": "B6:crest512:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        24,
-        76,
-        488,
-        437
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B6:crest512:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B6:crest256:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        12,
-        38,
-        244,
-        219
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B6:crest256:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B6:crest128:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        6,
-        19,
-        122,
-        110
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B6:crest128:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B6:mark128:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        24,
-        19,
-        104,
-        110
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B6:mark128:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B6:mark64:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        12,
-        9,
-        52,
-        55
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B6:mark64:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B6:mark32:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        6,
-        4,
-        26,
-        27
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B6:mark32:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B6:mark20:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        3,
-        2,
-        17,
-        17
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B6:mark20:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B6:mark16:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        2,
-        2,
-        14,
-        14
-      ],
-      "alpha_threshold": 8
-    },
-    {
-      "check": "B6:mark16:SVG_render_matches_PNG",
-      "passed": true
-    },
-    {
-      "check": "B6:mark14:RGBA_size_and_visible_padding",
-      "passed": true,
-      "visible_bbox": [
-        2,
-        1,
-        12,
+        13,
         12
       ],
       "alpha_threshold": 8
     },
     {
-      "check": "B6:mark14:SVG_render_matches_PNG",
+      "check": "B7:mark14:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B8:primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B8:primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B8:primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B8:primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B8:primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B8:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B8:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B8:primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_primary:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B8:mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B8:mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B8:mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B8:mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B8:mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_mark:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B8:relief_mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B8:crest512:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        56,
+        69,
+        473,
+        425
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B8:crest512:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B8:crest256:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        28,
+        34,
+        237,
+        213
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B8:crest256:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B8:crest128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        14,
+        17,
+        119,
+        107
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B8:crest128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B8:mark128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        19,
+        22,
+        113,
+        102
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B8:mark128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B8:mark64:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        9,
+        11,
+        57,
+        51
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B8:mark64:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B8:mark32:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        4,
+        5,
+        29,
+        26
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B8:mark32:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B8:mark20:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        3,
+        3,
+        18,
+        16
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B8:mark20:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B8:mark16:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        2,
+        14,
+        13
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B8:mark16:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B8:mark14:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        2,
+        13,
+        12
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B8:mark14:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B9:primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B9:primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B9:primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B9:primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B9:primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B9:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B9:primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B9:primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_primary:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_primary:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_primary:palette",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_primary:wordmark",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_primary:actual_font_glyph_X",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_primary:actual_font_glyph_I",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_primary:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_primary:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B9:mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B9:mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B9:mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B9:mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B9:mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_mark:native_vector",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_mark:unique_ids",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_mark:palette",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_mark:no_wordmark",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_mark:flat_signature_preserved",
+      "passed": true
+    },
+    {
+      "check": "B9:relief_mark:removed_infield_and_bats",
+      "passed": true
+    },
+    {
+      "check": "B9:crest512:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        36,
+        81,
+        486,
+        425
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B9:crest512:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B9:crest256:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        18,
+        40,
+        243,
+        213
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B9:crest256:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B9:crest128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        9,
+        20,
+        122,
+        107
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B9:crest128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B9:mark128:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        14,
+        24,
+        116,
+        102
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B9:mark128:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B9:mark64:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        7,
+        12,
+        58,
+        51
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B9:mark64:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B9:mark32:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        3,
+        6,
+        29,
+        26
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B9:mark32:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B9:mark20:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        2,
+        3,
+        19,
+        16
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B9:mark20:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B9:mark16:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        1,
+        3,
+        15,
+        13
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B9:mark16:SVG_render_matches_PNG",
+      "passed": true
+    },
+    {
+      "check": "B9:mark14:RGBA_size_and_visible_padding",
+      "passed": true,
+      "visible_bbox": [
+        1,
+        2,
+        13,
+        12
+      ],
+      "alpha_threshold": 8
+    },
+    {
+      "check": "B9:mark14:SVG_render_matches_PNG",
       "passed": true
     },
     {
@@ -1138,16 +1138,16 @@
     "performed": true,
     "active_candidates": [
       "A1 selected",
-      "B4",
-      "B5",
-      "B6"
+      "B7",
+      "B8",
+      "B9"
     ],
     "MLB_official_logos_inspected": 6,
     "previews": [
-      "candidates_expansion_b_revision2.png",
+      "candidates_expansion_b_revision3.png",
       "compare_with_v2_dark_light.png"
     ],
-    "subjective_assessment": "B5 has the least dependence on a surrounding frame. B4 emphasizes a crown; B6 retains a shield. Fine stitches intentionally omitted in simplified marks. B aesthetic approval and real uniform placement remain pending.",
+    "subjective_assessment": "All three use a single integrated crown and curved numeral band, without a separate baseball or shield. Fine stitches and letters are intentionally omitted in simplified marks. B aesthetic approval and real uniform placement remain pending.",
     "automated_recognizability_score": null
   },
   "phase2_face_validation": "not_started; no photos altered"

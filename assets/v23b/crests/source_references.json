@@ -192,5 +192,28 @@
     ],
     "local_visual_review_performed": true,
     "MLB_artwork_in_delivery": false
+  },
+  "revision3": {
+    "date": "2026-11-19",
+    "previous_delivery_commit": "b85fe58bf963e23531075f7f7cfb5f5f5550d050",
+    "feedback": [
+      "왕관모양이 저게 최선이니?",
+      "멋지게 좀 만들어주라"
+    ],
+    "concept_study": {
+      "path": "previews/concept_study_revision3.png",
+      "kind": "generated raster concept; not final vector",
+      "sha256": "8b84e5a05867d7416df093a969a4d827d8d20ffb035b0e42b1db750a2d6b13e9"
+    },
+    "production_candidates": [
+      "B7",
+      "B8",
+      "B9"
+    ],
+    "native_vector_redraw": true,
+    "uses_raster_inside_SVG": false,
+    "wordmark": "Alfa Slab One Regular; actual outlined glyphs",
+    "expansion_a_preserved": "A1",
+    "phase2_started": false
   }
 }

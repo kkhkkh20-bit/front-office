@@ -1,6 +1,6 @@
 {
   "version": "23b",
-  "revision": "stage1-candidates-2",
+  "revision": "stage1-candidates-3",
   "path_base": "assets/v23b/crests/",
   "request": "docs/asset-requests/2026-11-19-codex-v23b-expansion-crests.md",
   "phase": 1,
@@ -12,7 +12,7 @@
     "expansion_a": "A1",
     "expansion_b": null
   },
-  "review_default_note": "A1 selected by user. B4 canonical paths are REVIEW COPIES ONLY; B remains unselected. Do not start phase2.",
+  "review_default_note": "A1 selected by user. B7 canonical paths are REVIEW COPIES ONLY; B remains unselected. Do not start phase2.",
   "teams": [
     {
       "key": "expansion_a",
@@ -77,11 +77,11 @@
         "white": "#F4F5F7"
       },
       "selected_candidate": null,
-      "review_default_candidate": "B4",
+      "review_default_candidate": "B7",
       "candidates": [
-        "B4",
-        "B5",
-        "B6"
+        "B7",
+        "B8",
+        "B9"
       ],
       "assets": {
         "crest": {
@@ -360,7 +360,7 @@
           "14": "candidates/B4/png/mark/14.png"
         }
       },
-      "status": "awaiting_user_selection",
+      "status": "superseded",
       "revision": 2
     },
     {
@@ -397,7 +397,7 @@
           "14": "candidates/B5/png/mark/14.png"
         }
       },
-      "status": "awaiting_user_selection",
+      "status": "superseded",
       "revision": 2
     },
     {
@@ -434,8 +434,119 @@
           "14": "candidates/B6/png/mark/14.png"
         }
       },
-      "status": "awaiting_user_selection",
+      "status": "superseded",
       "revision": 2
+    },
+    {
+      "id": "B7",
+      "key": "expansion_b",
+      "name": "리갈 스크롤",
+      "name_en": "REGAL SCROLL",
+      "wordmark": "XII",
+      "frame": "flowing crown without frame",
+      "design_palette": {
+        "primary": "#4B2A7B",
+        "metal": "#A7A9AC",
+        "ink": "#24123D",
+        "white": "#F4F5F7"
+      },
+      "svg": {
+        "primary": "candidates/B7/svg/primary.svg",
+        "relief_primary": "candidates/B7/svg/relief/primary.svg",
+        "mark": "candidates/B7/svg/mark.svg",
+        "relief_mark": "candidates/B7/svg/relief/mark.svg"
+      },
+      "assets": {
+        "crest": {
+          "512": "candidates/B7/png/crest/512.png",
+          "256": "candidates/B7/png/crest/256.png",
+          "128": "candidates/B7/png/crest/128.png"
+        },
+        "mark": {
+          "128": "candidates/B7/png/mark/128.png",
+          "64": "candidates/B7/png/mark/64.png",
+          "32": "candidates/B7/png/mark/32.png",
+          "20": "candidates/B7/png/mark/20.png",
+          "16": "candidates/B7/png/mark/16.png",
+          "14": "candidates/B7/png/mark/14.png"
+        }
+      },
+      "status": "awaiting_user_selection",
+      "revision": 3
+    },
+    {
+      "id": "B8",
+      "key": "expansion_b",
+      "name": "스위프 크라운",
+      "name_en": "SWEEP CROWN",
+      "wordmark": "XII",
+      "frame": "forward swept crown without frame",
+      "design_palette": {
+        "primary": "#4B2A7B",
+        "metal": "#A7A9AC",
+        "ink": "#24123D",
+        "white": "#F4F5F7"
+      },
+      "svg": {
+        "primary": "candidates/B8/svg/primary.svg",
+        "relief_primary": "candidates/B8/svg/relief/primary.svg",
+        "mark": "candidates/B8/svg/mark.svg",
+        "relief_mark": "candidates/B8/svg/relief/mark.svg"
+      },
+      "assets": {
+        "crest": {
+          "512": "candidates/B8/png/crest/512.png",
+          "256": "candidates/B8/png/crest/256.png",
+          "128": "candidates/B8/png/crest/128.png"
+        },
+        "mark": {
+          "128": "candidates/B8/png/mark/128.png",
+          "64": "candidates/B8/png/mark/64.png",
+          "32": "candidates/B8/png/mark/32.png",
+          "20": "candidates/B8/png/mark/20.png",
+          "16": "candidates/B8/png/mark/16.png",
+          "14": "candidates/B8/png/mark/14.png"
+        }
+      },
+      "status": "awaiting_user_selection",
+      "revision": 3
+    },
+    {
+      "id": "B9",
+      "key": "expansion_b",
+      "name": "헤리티지 크라운",
+      "name_en": "HERITAGE CROWN",
+      "wordmark": "XII",
+      "frame": "five-finial crown without frame",
+      "design_palette": {
+        "primary": "#4B2A7B",
+        "metal": "#A7A9AC",
+        "ink": "#24123D",
+        "white": "#F4F5F7"
+      },
+      "svg": {
+        "primary": "candidates/B9/svg/primary.svg",
+        "relief_primary": "candidates/B9/svg/relief/primary.svg",
+        "mark": "candidates/B9/svg/mark.svg",
+        "relief_mark": "candidates/B9/svg/relief/mark.svg"
+      },
+      "assets": {
+        "crest": {
+          "512": "candidates/B9/png/crest/512.png",
+          "256": "candidates/B9/png/crest/256.png",
+          "128": "candidates/B9/png/crest/128.png"
+        },
+        "mark": {
+          "128": "candidates/B9/png/mark/128.png",
+          "64": "candidates/B9/png/mark/64.png",
+          "32": "candidates/B9/png/mark/32.png",
+          "20": "candidates/B9/png/mark/20.png",
+          "16": "candidates/B9/png/mark/16.png",
+          "14": "candidates/B9/png/mark/14.png"
+        }
+      },
+      "status": "awaiting_user_selection",
+      "revision": 3
     }
   ],
   "source_commit": "4e65d6ba4bbe1c6601f060ab4ec312bad85af7ec",
