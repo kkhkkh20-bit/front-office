@@ -98,7 +98,7 @@ function faReopenDay(id){ const F=G.fa, n=F&&F.neg&&F.neg[id]; if(!n)return null
 /* FA 계약의 상한 결재(13_roster capOwnerCheck): 계약금은 연평균으로 상한에 들어간다 */
 function faCapCheck(p,o){ if(!p||!o)return null; const T=o.terms; const a=T?T.annual+Math.round((T.bonus||0)/Math.max(1,T.years||o.years||1)):o.annual; const s=sponSeason(), X=postCapOut(G.user,s), sk=X.ids.size?X.ids:null; const cc=capOwnerCheck(capPayWith(G.user,p.id,a,s,sk).tot,capPayWith(G.user,null,null,s,sk).tot,s,'fa'+p.id); if(cc&&X.amt>0){ cc.postOut=X.amt; cc.postTxt=postCapTxt(X); if(cc.msg)cc.msg+=' '+cc.postTxt; } /* 포스팅 신청 선수는 떠날 선수로 본다(구단주 승인 11-19) */ if(cc&&!cc.ok&&!cc.hard&&faGrantOpen(p.id)>0)return {...cc,ok:true,p:1,grant:true,msg:''}; /* 구단주가 영입 자금까지 낸 선수는 상한 초과 결재도 승인한다(절대 한도는 그대로, 피드백 11-18) */ return cc; }
 /* FA 요구 기준(환산 점수): 구단마다 그 구단과의 에이전트 친분으로 달라진다(사용자·AI 같은 식) */
-function faWantFor(p,tid){ const ag=agNeg(p); const ai=Object.entries((G.fa&&G.fa.ai&&G.fa.ai[p.id])||{}).filter(([k,o])=>o&&faAiOk(+k,p,o)).length; return offScore(p.ask)*agWantMul(ag,tid)*(1+.03*ai)*(p.faFrom===tid?.95:1); }
+function faWantFor(p,tid){ const ag=agNeg(p); const ai=Object.entries((G.fa&&G.fa.ai&&G.fa.ai[p.id])||{}).filter(([k,o])=>o&&faAiOk(+k,p,o)).length; const w=offScore(p.ask)*agWantMul(ag,tid)*(1+.03*ai)*(p.faFrom===tid?.95:1); return p.foreign?w:Math.min(w,Math.max(offScore(p.ask),offScore({annual:salCeil(),years:p.ask.years}))); } /* 에이전트 웃돈·경쟁 구단 수(구단당 +3%)를 얹은 요구도 연평균 상한(리그 상한의 25%, salCeil)에서 멈춘다(구단주 검수 11-19). 구단이 스스로 더 얹어 주는 것은 막지 않는다 */
 /* FA 마감일(1월 24일) */
 function faDL(){ return G.day<=KD(1,24)?KD(1,24):dnum(G.year+1,1,24); }
 /* 잠금 해제 권유: 모두 잠가 역제안을 낼 수 없을 때 어떤 잠금을 풀면 되는지 */
