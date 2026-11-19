@@ -12,6 +12,7 @@
 .mmenu-i:focus-visible{box-shadow:inset 0 0 0 2px var(--acc)}
 .mmenu-i.on::after{content:'✓';margin-left:auto;color:var(--good)}
 .mmenu-i.danger{color:var(--bad)}
+:is(#app,#sheet,body) :is(.btn,.mmenu-i).act-off{color:var(--muted);border-style:dashed;opacity:.8}:is(#app,#sheet,body) .mmenu-i.act-off small{color:var(--muted)}
 .mmenu-i[disabled]{opacity:.45;cursor:default}
 /* 대표 동작과 ⋯는 한 줄: 행동 줄이 여러 줄로 쌓이지 않게 */
 .qacts{align-items:center}.qacts .act-main{flex:0 1 auto}

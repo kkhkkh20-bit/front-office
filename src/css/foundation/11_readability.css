@@ -436,6 +436,9 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 /* 이달 단장 일정 목록 */
 .gpl-ml{display:flex;flex-direction:column}
 .gpl-mr{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:8px;align-items:center;background:none;border:0;border-bottom:1px solid var(--line);padding:7px 2px;color:inherit;text-align:left;cursor:pointer;font:inherit;min-width:0}
+.gpl-hd{gap:8px;align-items:center}#app .btn.small.gpl-eb.gpl-eb.gpl-eb{min-height:40px!important}.gpl-mr.gpl-pk{grid-template-columns:28px 80px minmax(0,1fr) auto;min-height:44px}.gpl-mr.gpl-pk[disabled]{cursor:default;opacity:.45}
+.gpl-ck{width:24px;height:24px;border:2px solid var(--line2);border-radius:4px;display:grid;place-items:center;font-weight:700;color:#fff;line-height:1}.gpl-pk.on .gpl-ck{background:var(--bad);border-color:var(--bad)}.gpl-pk.on{background:color-mix(in srgb,var(--bad) 10%,transparent)}
+.gpl-ba{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}#app .gpl-ba .btn.btn.btn.btn{min-height:44px!important}.gpl-ba .gpl-go{flex:1 1 160px}.gpl-eh{margin:4px 0}
 .gpl-mr.past{opacity:.6}.gpl-mr em{font-style:normal;font-size:var(--ui-caption);color:var(--muted,#9aa7b4);white-space:nowrap}
 .gpl-md{font:600 12px var(--f-num,inherit);white-space:nowrap}
 .gpl-mt{display:flex;align-items:center;gap:6px;min-width:0}.gpl-mt i{width:9px;height:9px;border-radius:2px;flex:none}.gpl-mt b{font-weight:500;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

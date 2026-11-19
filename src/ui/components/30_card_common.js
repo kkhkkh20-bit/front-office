@@ -12,11 +12,18 @@ function sqCards(groups){
 }
 /* 로스터 정리: 한도를 넘으면 늘 보이고, 아니면 '정리 모드'를 켰을 때. 카드를 눌러 여러 명 고른 뒤 한 번에 방출(카페 피드백 11-09v) */
 function trimNeed(){ const n=rosterN(G.user); return n>ROSTER_MAX||n+milReturns(7).length>ROSTER_MAX; }
+/* 잠재력 별로 빠르게 고르기(카페 랄프111112 11-19 '잠재력 별 1,2개는 자동 방출'): 자동 방출은 만들지 않는다(되돌릴 수 없다).
+   정리 모드에서 별 n개 이하를 미리 골라 주기만 하고, 방출은 늘 하던 결재(명단·정산금)를 거친다. 별은 화면에 보이는 스카우트 추정(potTierP)이고 숨은 실제 잠재력은 쓰지 않는다.
+   대상은 방출 후보 풀(trimPool: 우리 국내 정식 선수) 그대로라 외국인·육성선수는 들어가지 않는다 */
+function trimPotSt(p){ try{ const rp=scoutReport(p); if(!rp||rp.ofp==null)return null; const T=potTierP(rp,p); return T?T.st:null; }catch(e){ return null; } }
+function trimPotIds(n){ return trimPool().filter(p=>{ const st=trimPotSt(p); return st!=null&&st<=n; }).map(p=>p.id); }
 function trimCard(){
   const need=trimNeed(); if(UI.trimHidden&&!UI.trimOn||!need&&!UI.trimOn)return '';
   const n=rosterN(G.user), over=n-ROSTER_MAX; const ret=milReturns(14); const overAll=over+ret.length; const inSea=period()==='season';
-  const pool=trimPool(), show=Math.max(need?overAll+4:10,UI.trimN||0), c=pool.slice(0,show);
+  const pool=trimPool(), show=Math.max(need?overAll+4:10,UI.trimN||0);
   const sel=relPick(UI.trimSel); UI.trimSel=sel.map(p=>p.id); const cost=sel.reduce((s,p)=>s+relCost(p).tot,0);
+  const c0=pool.slice(0,show), c=c0.concat(sel.filter(p=>!c0.includes(p))); /* 잠재력으로 고른 선수는 추천 순서 밖이어도 카드로 보인다(고른 사람을 못 보고 방출하지 않게) */
+  const pq=[1,2].map(n=>[n,trimPotIds(n).length]), potBar=`<div class="trim-q" aria-label="잠재력으로 빠르게 고르기"><span class="small muted">잠재력으로 고르기</span>${pq.map(([n,k])=>`<button class="btn small" data-a="trimPot" data-v="${n}" ${k?'':'disabled'}>잠재력 ★${n} 이하 선택 · ${k}명</button>`).join('')}<span class="small muted trim-qn">화면에 보이는 별(스카우트 추정) 기준입니다. 고르기만 하고, 방출은 아래 버튼의 결재에서 명단과 정산금을 확인한 뒤 됩니다.</span></div>`;
   /* 육성선수도 정리 모드에서(카페 리아네트 11-18): 정식 로스터 인원과 따로 고르고, 방출하거나 정식 선수로 올린다 */
   const ysL=domestic(G.user).filter(p=>p.ys&&p.team===G.user).sort((a,b)=>keepScore(a)-keepScore(b)); UI.trimYsSel=(UI.trimYsSel||[]).filter(id=>ysL.some(p=>p.id===id)); const ysSel=ysL.filter(p=>UI.trimYsSel.includes(p.id)), ysCost=ysSel.reduce((s,p)=>s+relCost(p).tot,0);
   const ysFoot=p=>`<span class="pill warn">육성선수</span>${rosterFoot(p)}<button class="tc-i" data-a="player" data-v="${p.id}">상세</button><button class="tc-i" data-a="trimYsUp" data-v="${p.id}">정식 등록</button>${relCost(p).tot?`<span class="small warn">정산 ${money(relCost(p).tot)}</span>`:''}`;
@@ -24,7 +31,7 @@ function trimCard(){
   const foot=p=>`${trimUnsigned(p)?'<span class="small muted">연봉 미계약 · 방출하면 재계약하지 않음</span>':''}${rosterFoot(p)}<button class="tc-i" data-a="player" data-v="${p.id}">상세</button>${!p.ys&&!p.foreign&&!p.faC&&p.sal<=100&&ysN(G.user)<YS_MAX?`<button class="tc-i" data-a="ysNow" data-v="${p.id}">육성 전환</button>`:''}${relCost(p).tot?`<span class="small warn">정산 ${money(relCost(p).tot)}</span>`:''}`;
   return `<section class="card${need?' hero':''} trimc"><header class="trim-h"><h2 class="sec">${need?'로스터 정리':'정리 모드'}</h2><button class="btn small" data-a="trimClose">‹ 선수단으로 · 정리 종료</button><span class="pill${need?' bad':''}">${n}/${ROSTER_MAX}${need?` · ${over>0?`${over}명 초과`:`복귀 후 ${overAll}명 초과`}`:''}</span></header>
     ${ret.length&&need?`<p class="small warn"><b>군 복귀 예정 ${ret.length}명</b>: ${esc(milRetTxt(ret))}. 복귀까지 고려하면 <b>${overAll}자리</b>를 비워야 다시 막히지 않습니다.</p>`:''}<p class="small">${need?`${inSea?'지금':'개막 전까지'} ${ROSTER_MAX}명 이하로 줄여야 ${inSea?'진행할 수 있습니다':'합니다'}. `:''}코치진이 꼽은 방출 추천 후보입니다(현재 기량과 성장 여지가 낮은 순). <b>카드를 눌러 여러 명 고른 뒤 한 번에 방출</b>하세요. FA·다년계약 선수는 남은 계약의 절반을 정산합니다.${need?' 연봉 1억 원 이하 선수는 방출 대신 육성선수(정식 로스터 밖, 최대 15명)로 돌릴 수 있습니다.':''} ${hiI('육성선수는 정식 로스터 인원에 들지 않아 위 추천 후보에서 빠지고, 아래 육성선수 칸에 따로 모았습니다. 연봉 협상 중인 선수를 방출하면 재계약하지 않고 내보냅니다.')}</p>
-    <div class="tgrid">${c.map(p=>pcard(p,{act:'trimSel',on:UI.trimSel.includes(p.id),foot:foot(p)})).join('')}</div>${ysBox}
+    ${potBar}<div class="tgrid">${c.map(p=>pcard(p,{act:'trimSel',on:UI.trimSel.includes(p.id),foot:foot(p)})).join('')}</div>${ysBox}
     <div class="pgr trim-a" aria-label="로스터 정리 실행"><button class="btn danger" data-a="relBatch" ${sel.length?'':'disabled'}>고른 ${sel.length}명 방출${cost?` · 정산 ${money(cost)}`:''}</button>${over>0?`<button class="btn" data-a="autoTrim">추천대로 ${over}명 방출</button>`:''}${pool.length>show?`<button class="btn small" data-a="trimMore">후보 더 보기</button>`:''}${(()=>{ const ys=sel.filter(p=>!p.ys&&!p.foreign&&!p.faC&&p.sal<=100); const room=Math.max(0,YS_MAX-ysN(G.user)); return ys.length&&room?`<button class="btn" data-a="ysBatch">고른 ${Math.min(ys.length,room)}명 육성선수 전환</button>`:''; })()}${sel.length?`<button class="btn" data-a="blkBatch">고른 ${sel.length}명 트레이드 매물 등록</button>`:''}${ysSel.length?`<button class="btn danger" data-a="ysRelBatch">고른 육성선수 ${ysSel.length}명 방출${ysCost?` · 정산 ${money(ysCost)}`:''}</button>`:''}${sel.length||ysSel.length?'<button class="btn small" data-a="trimClr">선택 해제</button>':''}<button class="btn small" data-a="trimClose">정리 종료</button></div>${UI.trimMsg?`<div class="note">${esc(UI.trimMsg)}</div>`:''}</section>`;
 }
 /* 다른 구단 요약: 리그 화면을 벗어나지 않고 본다 */
