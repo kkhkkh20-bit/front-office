@@ -89,6 +89,8 @@ export function netCreate(o) {
   N.live = body => N.call('POST', '/ladder/live', body, { retries: 0 }); /* 진행 중 리그(관리자 한눈 보기). 실패해도 그만 */
   N.opponents = q => N.call('GET', '/ladder/opponents?' + new URLSearchParams(Object.assign({ n: 9 }, q || {})));
   N.leaderboard = (tier, season) => N.call('GET', `/ladder/leaderboard?tier=${tier === 'all' ? 'all' : tier | 0}${season ? '&season=' + (season | 0) : ''}`, null, { auth: false });
+  N.deckOf = pid => N.call('GET', '/ladder/deck/' + encodeURIComponent(pid), null, { auth: false, retries: 1 }); /* 덱 구경(구단주 11-19): 순위표에서 고른 한 팀. 예전 서버는 404·401 */
+  N.near = () => N.call('GET', '/ladder/near', null, { retries: 1 }); /* 내 순위 둘레(순위표 밖일 때) */
   N.meta = tier => N.call('GET', `/ladder/meta?tier=${tier === 'all' || tier == null ? 'all' : tier | 0}`, null, { auth: false }); /* 덱 구성 집계(래더 v2, 10분 캐시) */
   N.feed = () => N.call('GET', '/ladder/feed', null, { auth: false });
   N.records = (tier, season, scope) => N.call('GET', `/ladder/records?tier=${tier === 'all' || tier == null ? 'all' : tier | 0}${season ? '&season=' + (season | 0) : ''}${scope === 'league' || scope === 'career' ? '&scope=' + scope : ''}`, null, { auth: false }); /* 래더 기록실(사용자 11-18) · scope 한 리그/통산(래더 기록 세분화 11-18) */
