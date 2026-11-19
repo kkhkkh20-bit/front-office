@@ -22,6 +22,7 @@ export const MSG = {
   rate_limited: '요청이 너무 잦습니다. 잠시 뒤 다시 시도해 주세요.',
   cross_origin: '허용되지 않은 곳에서 온 요청입니다.',
   not_found: '찾지 못했습니다.',
+  not_top: '상위 50위 안의 팀만 볼 수 있습니다.',
   not_implemented: '아직 준비 중인 기능입니다.',
   link_failed: '계정 확인에 실패했습니다.',
   linked_other: '이 계정은 이미 다른 플레이어에 연결되어 있습니다.',
