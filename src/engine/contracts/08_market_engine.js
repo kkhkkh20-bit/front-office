@@ -21,7 +21,7 @@ function mktWins(t,p){ const d=mktDepth(t.id); const adj=mktBase(p)-ovr(p); let 
 function mktWinPrice(t,p){ const st=t.mode==='contend'?(t.owner==='win'?1.4:1.25):t.mode==='rebuild'?(p.age<=27?1:.6):1; const ab=typeof gmAbOf==='function'?gmAbOf(t.id):null;
   const af=(p.age<30?1.12:p.age<=32?1:p.age<=34?.75:.55)*(ab&&p.age>=30?1+(55-ab.money)/400:1); return MKT.win*ecoIdx(sponSeason())*st*af*(t.id===p.faFrom?1.05:1)*faMktNow(); }
 /* 지불 의사(연평균, 백만원): 추가 승수 × 1승의 값 × 남는 연봉 여유(faRoomPush) × 구단주가 찍은 선수 웃돈. 한 선수 연평균 상한(faTop)을 넘지 않는다 */
-function mktWTP(t,p){ const w=mktWins(t,p)*mktWinPrice(t,p); const k=(typeof faTgt==='function'&&faTgt(t,p)?faOverpay(t):1)*(t.id===ME()?1:faRoomPush(t,p)*domFaMul(t,p)); /* 독주 견제: 독주 구단의 FA·그 구단이 노리는 FA에는 경쟁 구단이 더 쓴다(86b_dynasty) */ const top=faTop()*clamp((mktBase(p)-46)/16,.1,1); /* 급에 따른 천장: 특급(종합 62+)만 리그 최고액까지, 주전급(58)은 75%, 평범한 주전(54)은 절반. 빈자리가 급해도 어중간한 선수에게 특급 값을 주지 않는다 */ return round5(Math.max(MIN_SAL,Math.min(top,w*k))); }
+function mktWTP(t,p){ const w=mktWins(t,p)*mktWinPrice(t,p); const k=(typeof faTgt==='function'&&faTgt(t,p)?faOverpay(t):1)*(t.id===ME()?1:faRoomPush(t,p)*domFaMul(t,p)); /* 독주 견제: 독주 구단의 FA·그 구단이 노리는 FA에는 경쟁 구단이 더 쓴다(86b_dynasty) */ const top=faTop(); /* 급에 따른 천장: 특급(종합 62+)만 리그 최고액까지, 주전급(58)은 75%, 평범한 주전(54)은 절반. 빈자리가 급해도 어중간한 선수에게 특급 값을 주지 않는다 */ return round5(Math.max(MIN_SAL,Math.min(top,w*k))); }
 /* 시장가: 실제로 입찰할 수 있는 AI 구단들의 지불 의사 가운데 두 번째로 높은 값(경쟁이 가격을 만든다). 원하는 구단이 하나뿐이면 그 구단 값의 70%.
    입찰 구단은 faInterest와 같은 문턱으로 고른다(긴축·리빌딩 계획, 외부 FA 한도, 정원, 현금). 구단 값은 실제 입찰(faWorth)처럼 계획 배율을 곱하고,
    외부 구단은 원소속 구단에 줄 보상금을 계약 기간에 나눠 뺀다(검수 11-14: 입찰하지 않을 구단까지 세어 요구액이 실제 계약보다 높았다) */
@@ -33,4 +33,14 @@ function mktBidOk(t,p,fa){ if(t.id===ME()||(t.cash||0)<=-3000)return false; cons
 function mktCompCost(p){ if(!p.faGrade)return 0; const ps=p.faPrevSal??p.sal??0; return p.faGrade==='A'?ps*2:p.faGrade==='B'?ps:ps*1.5; }
 function mktBid(t,p,fa){ let w=mktWTP(t,p)*(typeof planFaMul==='function'?planFaMul(t,p):1); return w; } /* 보상 부담은 입찰 여부(faInterest의 compF)에만 반영한다. 실제 입찰가는 보상을 빼지 않으므로 시장가에서도 빼지 않는다(11-14) */
 function mktPrice(p){ const k=mktKey(); if(_mkP.k!==k||_mkP.g!==G)_mkP={k,g:G,m:{}}; if(_mkP.m[p.id]!=null)return _mkP.m[p.id];
-  const fa=p.team==null&&p.faFrom!=null; const L=G.teams.filter(t=>mktBidOk(t,p,fa)).map(t=>mktBid(t,p,fa)).sort((a,b)=>b-a); const v=L.length>=2?Math.max(L[1],L[0]*.7):L.length?L[0]*.7:MIN_SAL; return _mkP.m[p.id]=round5(Math.max(MIN_SAL,v)); }
+  const fa=p.team==null&&p.faFrom!=null; return _mkP.m[p.id]=mktClear(mktBids(p,fa),fa?mktSupply(p):1); }
+function mktBids(p,fa){ return G.teams.filter(t=>mktBidOk(t,p,fa)).map(t=>mktBid(t,p,fa)).sort((a,b)=>b-a); }
+function mktClear(L,m){ m=Math.max(1,m|0);
+  /* 수요·공급 청산(구단주 원칙 11-19): 비슷한 FA가 m명이면 그 자리를 사려는 구단 가운데 (m+1)번째 지불 의사가 값이 된다(m=1이면 예전처럼 두 번째).
+     원하는 구단이 공급보다 적으면(공급 과잉) 가장 낮게 부른 구단 값의 70%까지 내려간다. 원하는 구단이 없으면 최저 연봉 */
+  const v=L.length>m?Math.max(L[m],L[m-1]*.7):L.length?L[L.length-1]*.7:MIN_SAL; return round5(Math.max(MIN_SAL,v)); }
+/* 공급: 이번 겨울 시장에 남은 비슷한 FA 수(같은 역할 SP·RP·C·IF·OF, 시장 능력 ±2 안, 본인 포함, 최대 3). 계약하면 빠져 남은 선수 값이 다시 정해진다(캐시 열쇠에 남은 FA 수가 들어 있다) */
+let _mkS={k:null,m:{}};
+function mktSupply(p){ const F=G.fa; if(!F||!F.pool)return 1; const k=mktKey(); if(_mkS.k!==k||_mkS.g!==G){ const L=F.pool.map(i=>G.players[i]).filter(q=>q&&q.team==null&&!q.foreign).map(q=>[q.id,dGrp(q),mktBase(q)]); _mkS={k,g:G,m:{},L}; }
+  if(_mkS.m[p.id]!=null)return _mkS.m[p.id]; const g=dGrp(p), b=mktBase(p); return _mkS.m[p.id]=clamp(_mkS.L.filter(x=>x[1]===g&&Math.abs(x[2]-b)<=2).length+(_mkS.L.some(x=>x[0]===p.id)?0:1),1,MKT_SUP_MAX); } /* 구단은 한 자리에 한 명만 사므로, 대체재는 셋까지만 값에 반영한다(넷째부터는 이미 수요가 바닥) */
+const MKT_SUP_MAX=3;
