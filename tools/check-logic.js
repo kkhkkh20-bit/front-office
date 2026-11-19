@@ -10318,6 +10318,13 @@ T('[코치 11-19 계약 정리 기간] 옛 저장에서 기간 밖(1·2월)에 �
   ok(__rngState()===r&&__rngCalls()===n,'정리에 주 난수를 씀'); ok(G.mail.length===mails,'정리하며 메일을 보냄'); ok(G.coach[G.user].pc===mine&&G.scouts.some(s=>s.id===G.scouts[0].id),'정리하며 사람이 떠남'); ok(cmLet(mine.id)==='이미 끝난 일입니다.','없던 일이 된 제안의 옛 버튼이 동작');
   mk(); cmDaily(); ok(!G.cmRaid.length,'매일 정리에서 기간 밖 제안이 남음');
   /* 기간 안의 제안은 건드리지 않는다 */ G.day=KD(12,22); mk(); coachRulesMigrate(); ok(G.cmRaid.length===1&&G.stRaid.length===1&&Object.keys(G.poachCtr).length===1,'계약 정리 기간 안의 제안까지 지움'); });
+T('[스태프 11-19 수비 BABIP 상한] 수비 코치(지도력 1점에 .0002)와 상대 전력분석이 인플레이 타구 안타 확률을 낮추는 폭은 합쳐서 ±.006(DEF_BAB_CAP)을 넘지 않고, 우리·AI 구단이 같은 식이다',()=>{ fresh();
+  const e0=effC, a0=anaEff, ai=otherT(); try{ const at=(sk,bab,tid)=>{ effC=()=>sk; anaEff=()=>({bab,bat:0,sdm:1,rep:0}); return defBabAdj(null,tid); };
+    for(const tid of [G.user,ai]){ ok(Math.abs(at(55,.0016,tid))<1e-12,'평균 스태프인데 0이 아님 '+at(55,.0016,tid)); ok(Math.abs(at(65,.0016,tid)-.002)<1e-9,'수비 코치 10점 = '+at(65,.0016,tid)+' (기대 .002)'); ok(at(75,.004,tid)===DEF_BAB_CAP&&at(99,.007,tid)===DEF_BAB_CAP,'위 상한을 넘음 '+at(99,.007,tid)); ok(at(20,0,tid)===-DEF_BAB_CAP,'아래 상한을 넘음 '+at(20,0,tid)); ok(Math.abs(at(70,.003,tid)-(.003+.003-.0016))<1e-9,'상한 안쪽 값이 다름'); }
+    ok(at(72,.005,G.user)===at(72,.005,ai),'같은 스태프인데 우리와 AI가 다름');
+  } finally { effC=e0; anaEff=a0; }
+  for(const t of G.teams)ok(Math.abs(defBabAdj(null,t.id))<=DEF_BAB_CAP+1e-12,'실제 구단 값이 상한 밖 '+t.id); ok(DC_BAB_K===.0002&&DEF_BAB_CAP===.006,'상수가 바뀜');
+});
 T('[AI 규칙 동등 11-19 A1] 감독 경질 정산은 우리·AI 모두 mgrSevSettle 하나: 남은 지급분(staffLeft)·약속 위반 2회면 절반, AI는 그 구단 현금에서 [재정]',()=>{ fresh(); const a=team(otherT()), m=G.mgr[a.id]; delete m.interim; m.sal=300; m.yrs=3; m.plv=[]; const pay=Math.round(300*staffLeft(m)); const c0=a.cash, s0=JSON.stringify(G.spend||{}); const r=mgrSevSettle(a.id,m); ok(r.pay===pay&&c0-a.cash===pay,'AI 정산 '+r.pay+'/'+(c0-a.cash)+' ≠ '+pay); ok(JSON.stringify(G.spend||{})===s0,'AI 정산이 우리 장부에 적힘');
   m.plv=[{y:G.year,d:1,k:'listen',t:'a'},{y:G.year,d:2,k:'youth',t:'b'}]; const c1=a.cash, r2=mgrSevSettle(a.id,m); ok(r2.brk&&c1-a.cash===Math.round(300*staffLeft(m)*.5),'AI 위반 2회 절반 아님');
   const um=G.mgr[G.user]; um.sal=200; um.yrs=2; um.plv=[]; const u0=team(G.user).cash, m0=G.spend.mgr||0, v0=G.spend.sev||0, up=mgrSevPay(um).pay; mgrSevSettle(G.user,um); ok((G.spend.mgr||0)-m0===up&&(G.spend.sev||0)-v0===up&&team(G.user).cash===u0,'우리 구단 정산은 결산 장부(감독 연봉·경질 정산금)로');
