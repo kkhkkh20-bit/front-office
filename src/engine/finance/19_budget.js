@@ -12,7 +12,9 @@ function ledger(tid,key,amt,o){ const me=o&&o.me!=null?!!o.me:tid===ME();
 /* 지금 단장이 맡은 구단의 결산 장부에만 적는 일회성 지출·수입(이벤트 비용 등). 호출부가 이미 우리 구단 일로 정한 곳 */
 function ledgerMe(key,amt){ return ledger(G.user,key,amt,{me:true}); }
 /* 공사·보수처럼 그 자리에서 치르는 지출: 우리 구단은 현금에서 낼 수 있는 만큼(spendPay)만 그 항목에 적고 모자란 몫은 spendPay가 기타 지출로 넘긴다.
- AI 구단은 현금에서 전액. 돌려주는 값: 현금에서 낸 몫(AI는 전액) */
+ AI 구단은 현금에서 전액. 돌려주는 값: 현금에서 낸 몫(AI는 전액)
+ key는 이미 낸 돈 항목(SPEND_PAID)만: 결산·이직 정산(spendHandOff)이 다시 빼지 않고 예산표에 따로 보인다. 결산 때 낼 항목(fac·etc 등)에 적으면 두 번 빠진다(원장 검수 11-19) */
+const SPEND_PAID={stad:'구장 공사비',facB:'시설 투자',opsP:'보유 현금에서 바로 낸 지출'}; /* opsP: 보조금·후원금 반환, 지역 야구 교실, 거부권 포기 대가처럼 현금에서 바로 낸 운영 지출 */
 function ledgerPay(tid,key,amt,o){ const me=o&&o.me!=null?!!o.me:tid===ME(); if(me){ const k0=spendPay(amt); ledger(tid,key,k0,{me:true}); return k0; } ledger(tid,key,amt,Object.assign({},o,{me:false})); return amt; }
 /* 트레이드 현금(from이 to에게 amt): 낸 구단은 기타 지출(우리 구단이면 트레이드 약정 현금 trC에도), 받은 구단은 트레이드 수입(tradeIn).
  우리 구단 거래·받은 제안 수락·AI끼리 거래가 같은 함수를 쓴다 */

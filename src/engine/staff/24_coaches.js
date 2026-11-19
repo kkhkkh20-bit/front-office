@@ -67,7 +67,9 @@ function coachMarketMonth(){ const o=dobj(G.day); const mk=o.y*100+o.m; if(G.cmM
 function axOf(tid){ return (tid===G.user&&!G.unemp?G.coachX:((G.orgT||{})[tid]||{}).coachX)||[]; }
 function coachSal(tid,now){ return sum(Object.values(coachesOf(tid)).concat(axOf(tid)).filter(c=>c&&!(now&&c.cs!=null&&c.cs>G.year)).map(c=>c.sal))+pcSalOf(tid,now); } /* 플레잉코치 수당은 코치진 연봉에 한 번만(선수 연봉은 선수단 연봉) */ /* now: 올해 실제로 받는 코치만(다음 시즌부터인 계약 제외) */
 /* 감독·코치 남은 지급 연수: 다음 시즌부터인 계약은 기간 전체, 이미 시작했으면 올해 남은 날 + 남은 다음 시즌들(결산 전이면 올해도 계약 연수에 들어 있다) */
-function staffLeft(x){ const y=Math.max(0,x.yrs||0); if(x.cs!=null&&x.cs>G.year)return y; const rest=Math.max(0,dnum(G.year+1,1,1)-G.day)/365; return G.rolled===G.year?y+rest:Math.max(0,y-1)+rest; }
+function staffLeft(x,due){ const y=Math.max(0,x.yrs||0); if(x.cs!=null&&x.cs>G.year)return y; const rest=Math.max(0,dnum(G.year+1,1,1)-G.day)/365; return G.rolled===G.year&&!due?y+rest:Math.max(0,y-1)+rest; } /* due: 계약을 넘긴(rolled) 뒤지만 이 사람의 올해 연차를 아직 빼지 않았을 때 */
+/* 시즌 넘기기(offseason)와 감독 계약 연차 빼기(offseasonMgr 끝) 사이면 그해 연도. 저장되지 않는 한 틱 안의 표식 */
+let MGR_YRS_DUE=null;
 const coachSev=c=>Math.round(c.sal*staffLeft(c)*.5); /* 코치 잔여 연봉 절반 정산 */
 /* 코치 해지 정산: 현재 단장은 지출장부, AI는 현금과 이미 지급한 결산명세에 함께 남긴다. */
 function coachPaySev(tid,c){ const pay=coachSev(c); if(pay)ledger(tid,'coach',pay,{ho:'코치진 연봉'}); return pay; }
