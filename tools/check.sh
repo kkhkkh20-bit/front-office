@@ -122,6 +122,7 @@ step "3D 플레이 리뷰·시선·릴리스"; node tools/check-match3d-review.c
 step "공별 중계·투구판"; node tools/check-pitches.cjs || fail=1
 step "모바일 메뉴·트레이드·코치 보직 버튼"; node tools/check-mobile-workspace.cjs || fail=1
 step "카페 11-19: 홈 화면 추가·전체 화면, 플레잉코치 항목, 잠재력 고르기, 일정 일괄 취소"; node tools/check-ui-cafe-1119.cjs || fail=1
+step "카페 11-20: 선수단 정원 칸(지금·다음 개막·내역)과 FA 화면 한 줄 요약"; node tools/check-roster-count-ui-1120.cjs || fail=1
 step "카페 11-19 표시: 트라이아웃·엔트리 꼬리표·별, 90점대 색 구간, 능력 칸 정렬, 병역 현황, 이적 시즌 합계"; node tools/check-ui-display-1119.cjs || fail=1
 step "카페 11-19: 소식함 보낸이·읽지 않음 필터, 아마추어 전 학년 목록·쪽 나누기·자동 관심"; node tools/check-inbox-amateur-1119.cjs || fail=1
 step "카페 11-19: 단장 일정 줄마다 취소·시즌 끝까지·매주 자동 잡기·관심 선수 학교"; node tools/check-calendar-plans-1119.cjs || fail=1

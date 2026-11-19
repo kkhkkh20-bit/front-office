@@ -204,13 +204,16 @@ function draftedBy(tid){ return G.draft?G.draft.picks.filter(x=>x.tid===tid&&x.p
 function rosterOpenDay(){ return G.cal&&G.cal.open>G.day?G.cal.open:onOrAfter(G.year+1,3,25,6); }
 function rosterProj(tid){ const d=rosterOpenDay(), y=dobj(d).y; return Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>y)&&!p.ys&&!(p.frehab&&p.frehab!=='hold')&&!milOn(p,d)).length; }
 /* 다음 개막 예상 인원의 내역(카페 11-20: 선수단 화면은 지금 인원만 보여 '60명인데 68명이라 정리하라'로 읽혔다). rosterN(지금)·rosterProj(다음 개막)와 같은 기준으로 차이를 나눈다: 지금 + 신인·내년 입단 계약 + 전역 복귀 − 개막 전 입대 = 다음 개막 */
-function rosterParts(tid){ const d=rosterOpenDay(), y=dobj(d).y, base=p=>p.team===tid&&!p.ys&&!(p.frehab&&p.frehab!=='hold'), inNow=p=>!(p.joinY>G.year)&&!milOn(p,G.day), inNext=p=>!(p.joinY>y)&&!milOn(p,d); const r={now:0,next:0,rk:0,nx:0,mb:0,out:0};
-  for(const k in G.players){ const p=G.players[k]; if(!base(p))continue; const a=inNow(p), b=inNext(p); if(a)r.now++; if(b)r.next++; if(b&&!a){ if(p.joinY>G.year){ if(p.draft&&p.draft.y===G.year)r.rk++; else r.nx++; } else r.mb++; } else if(a&&!b)r.out++; } return r; }
+/* mx: 개막 날에도 군 복무 중이라 세지 않는 선수(카페 11-20 화면 내역의 '세지 않음' 줄). ids=true면 r.L에 갈래별 선수 id(화면 명단용). 읽기만 한다: 상태·난수를 바꾸지 않는다 */
+function rosterParts(tid,ids=false){ const d=rosterOpenDay(), y=dobj(d).y, base=p=>p.team===tid&&!p.ys&&!(p.frehab&&p.frehab!=='hold'), inNow=p=>!(p.joinY>G.year)&&!milOn(p,G.day), inNext=p=>!(p.joinY>y)&&!milOn(p,d); const r={now:0,next:0,rk:0,nx:0,mb:0,out:0,mx:0}, L=ids?{rk:[],nx:[],mb:[],out:[],mx:[]}:null, put=(k,p)=>{ r[k]++; if(L)L[k].push(p.id); };
+  for(const k in G.players){ const p=G.players[k]; if(!base(p))continue; const a=inNow(p), b=inNext(p); if(a)r.now++; if(b)r.next++; if(b&&!a){ if(p.joinY>G.year){ if(p.draft&&p.draft.y===G.year)put('rk',p); else put('nx',p); } else put('mb',p); } else if(a&&!b)put('out',p); else if(!a&&!b&&!(p.joinY>y)&&milOn(p,d))put('mx',p); } if(L)r.L=L; return r; }
+/* 한 줄 요약(선수단·FA·무적·트라이아웃 화면 공통): 다음 개막 71/68 · 지금 60 + 합류 예정 11 */
+function rosterSumTxt(tid){ const r=rosterParts(tid), add=r.rk+r.nx+r.mb; return `다음 개막 ${r.next}/${ROSTER_MAX} · 지금 ${r.now}${add?` + 합류 예정 ${add}`:''}${r.out?` − 입대 ${r.out}`:''}`; }
 function rosterPartsTxt(tid){ const r=rosterParts(tid), add=r.rk+r.nx+r.mb; if(!add&&!r.out)return `지금 선수단 ${r.now}명 · 다음 개막 ${r.next}명`; const L=[r.rk&&`신인 ${r.rk}명`,r.nx&&`내년 입단 계약 ${r.nx}명`,r.mb&&`전역 ${r.mb}명`].filter(Boolean);
   return `지금 선수단 ${r.now}명${add?` + 다음 시즌 합류 예정 ${add}명(${L.join(', ')})`:''}${r.out?` − 개막 전 입대 ${r.out}명`:''} = 다음 개막 ${r.next}명`; }
 /* 정식 정원이 찬 이유 한 문장(FA·무적·트라이아웃 공통). nextOnly: 다음 개막 인원만 보는 계약(내년 합류) */
 function rosterFullMsg(tid,nextOnly=false){ const r=rosterParts(tid), top=nextOnly?r.next:Math.max(r.now,r.next); if(top<ROSTER_MAX)return ''; const need=top-ROSTER_MAX+1, byNext=r.next>=ROSTER_MAX&&r.next>=r.now;
-  return `정식 선수 자리가 없습니다. ${rosterPartsTxt(tid)} / 한도 ${ROSTER_MAX}명.${byNext&&r.next>r.now?' 드래프트 신인·전역 예정자도 다음 시즌 정식 선수로 셉니다.':''} 먼저 ${need}명을 정리하세요(방출·트레이드·육성 전환).`; }
+  return `정식 선수 자리가 없습니다. ${rosterPartsTxt(tid)} / 한도 ${ROSTER_MAX}명.${byNext&&r.next>r.now?' 드래프트 신인·전역 예정자도 다음 시즌 정식 선수로 셉니다.':''}${r.mx?` 개막 뒤에도 군 복무 중인 ${r.mx}명은 세지 않았습니다.`:''} 먼저 ${need}명을 정리하세요(방출·트레이드·육성 전환).`; }
 /* 다음 개막 전까지 전역해 돌아오는 선수(검수 11-08: 지명 화면 예상 인원에서 빠짐) */
 function milBackBy(tid){ const op=rosterOpenDay(); /* 다음 시즌 실제 개막일(buildCalendar와 같은 식, 검수 11-09d) */ return awayOf(tid).filter(p=>!p.ys&&p.mil&&p.mil.until>G.day&&p.mil.until<=op).length; }
 /* 포지션 필요도: 구단 안 26세 이하 유망주가 적은 자리(포수·내야·외야·선발·불펜)일수록 가산점(최대 +3) */
