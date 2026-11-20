@@ -82,9 +82,11 @@ function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.us
     if(c.stage==='protect'&&c.to===G.user){ const S=new Set(protOf(c)); /* 정렬·필터(리아네트 11-11: 잠재력 별을 보기 편하게) */
       const RPm=new Map(compPool(G.user).map(q=>[q.id,(()=>{ try{ return scoutReport(q); }catch(e){ return null; } })()])); const stOf=q=>{ const rp=RPm.get(q.id); try{ return rp&&rp.ofp!=null?potTierP(rp,q).st:-1; }catch(e){ return -1; } };
       const sk=UI.prS||'ovr', fk=UI.prF||'all'; const SRT={ovr:(a,b)=>ovr(b)-ovr(a),pot:(a,b)=>stOf(b)-stOf(a)||ovr(b)-ovr(a),age:(a,b)=>a.age-b.age||ovr(b)-ovr(a),sal:(a,b)=>b.sal-a.sal};
-      const all=compPool(G.user); const pool=all.filter(q=>fk==='all'||(fk==='P'?q.isP:fk==='B'?!q.isP:fk==='on'?S.has(q.id):!S.has(q.id))).sort(SRT[sk]||SRT.ovr);
+      const all=compPool(G.user); const PG={SP:q=>isSP(q),RP:q=>q.isP&&!isSP(q),C:q=>!q.isP&&q.pos==='C',IF:q=>!q.isP&&['1B','2B','3B','SS'].includes(q.pos),OF:q=>!q.isP&&['LF','CF','RF'].includes(q.pos),DH:q=>!q.isP&&q.pos==='DH'}; /* 맥도 11-20: 포지션별 탭 */
+      const pool=all.filter(q=>fk==='all'||(PG[fk]?PG[fk](q):fk==='P'?q.isP:fk==='B'?!q.isP:fk==='on'?S.has(q.id):!S.has(q.id))).sort(SRT[sk]||SRT.ovr);
+      const pgN=k=>all.filter(PG[k]).length, pgL=[['SP','선발'],['RP','불펜'],['C','포수'],['IF','내야'],['OF','외야'],['DH','지명']].filter(([k])=>pgN(k)).map(([k,l])=>[k,`${l} ${pgN(k)}`]);
       const chip=(k,cur,L)=>`<div class="chips">${L.map(([v,l])=>`<button class="${cur===v?'on':''}" data-a="protOpt" data-v="${k}:${v}">${l}</button>`).join('')}</div>`;
-      const ctl=`<div class="pr-ctl">${chip('s',sk,[['ovr','종합 능력순'],['pot','잠재력순'],['age','나이 어린순'],['sal','연봉순']])}${chip('f',fk,[['all',`전체 ${all.length}`],['P','투수'],['B','타자'],['on',`보호 ${S.size}`],['off',`노출 ${all.length-S.size}`]])}</div>`;
+      const ctl=`<div class="pr-ctl">${chip('s',sk,[['ovr','종합 능력순'],['pot','잠재력순'],['age','나이 어린순'],['sal','연봉순']])}${chip('f',fk,[['all',`전체 ${all.length}`],['P','투수'],['B','타자'],['on',`보호 ${S.size}`],['off',`노출 ${all.length-S.size}`]])}${chip('f',fk,pgL)}</div>`;
       const auto=domestic(G.user).concat(awayOf(G.user)).filter(q=>!q.foreign&&autoProt(q)&&q.id!==c.pid);
       return `<section class="card cpbox"><div class="row between"><h2 class="sec">보호선수 명단 · ${esc(c.name)} 영입 보상</h2><span class="small muted">${dmd(c.exp)}까지</span></div>
         <p class="small">${tname(c.from)}에 보상해야 합니다(${c.grade}등급). 보호할 선수 <b>${S.size}/${g.prot}</b>명. 누르면 보호·해제됩니다. 명단 밖에서 상대가 1명을 데려가거나 돈으로 받습니다.</p>

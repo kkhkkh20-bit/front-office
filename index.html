@@ -386,6 +386,8 @@ table.rt td{white-space:nowrap}table.rt tr.fut td{opacity:.8}table.rt i.f{font-s
 .chips i.cnt{font-style:normal;font-size:var(--ui-caption);opacity:.7}
 .dgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
 @media(max-width:560px){.dgrid2{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* 카페 11-20: 포지션 진단 카드 글자가 말줄임(…)으로 잘리지 않게 줄바꿈 */
+.dg-n,.dg-s,.dg-b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere;line-height:1.35}
 .dg{all:unset;box-sizing:border-box;display:grid;gap:2px;background:#0b1014;border:1px solid var(--line);border-left:3px solid var(--rc);border-radius:3px;padding:7px 8px;cursor:pointer;min-width:0}
 div.dg{cursor:default}.dg:hover{border-color:var(--line2);border-left-color:var(--rc)}
 .dg-h{display:flex;justify-content:space-between;align-items:baseline;gap:4px}.dg-h b{font-size:13px}.dg-h i{font-style:normal;font-size:var(--ui-caption);font-weight:700;color:var(--rc)}
@@ -546,10 +548,22 @@ table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}
  #app .roster-heading>div:has(>.rcnt){order:2;flex-basis:100%!important}
  #app .shell:has(.subhead.notitle) main.content .roster-heading:has(.rcnt){padding-right:0}
  #app .shell:has(.subhead.notitle) main.content .roster-heading:has(.rcnt)>.rh-tools{margin-right:var(--metaw,36px)}
+ /* 사용자 11-20: 위 칸을 도구가 너무 차지한다. 정식 수는 정원 줄에 있으니 칩을 빼고, 1군·육성 수와 두 단추를 한 줄에 */
+ #app .roster-heading:has(.rcnt)>.rh-tools{flex-wrap:nowrap;gap:4px;min-width:0}
+ #app .roster-heading:has(.rcnt)>.rh-tools>.chipn.rh-reg{display:none}
+ #app .roster-heading:has(.rcnt)>.rh-tools>.chipn{padding:3px 6px;white-space:nowrap}
+ #app .roster-heading:has(.rcnt)>.rh-tools>.btn.small{min-height:32px;height:32px;padding:0 8px;font-size:12px;white-space:nowrap}
 }
 #app main.ws-up .roster-heading:has(.rcnt){display:flex!important;min-height:0;margin:0}
 #app main.ws-up .roster-heading:has(.rcnt)>:not(:has(.rcnt)),#app main.ws-up .roster-heading>div:has(>.rcnt)>:not(.rcnt){display:none!important}
 #app main.ws-up .rcnt-tog{display:none!important}
+
+/* 카페 11-20: 휴대폰 세로에서도 정원은 한 줄 요약만, 내역·경고는 '내역'을 눌러 펼친다(아래 탭·진단이 먼저 보이게) */
+@media(max-width:699px){
+ .rcnt{padding:3px 8px;gap:3px}#app .rcnt-tog{display:inline-flex;align-items:center;min-height:32px;padding:0 8px}
+ .rcnt:not(.more)>:is(.rcnt-parts,.rcnt-warn){display:none}
+ .rcnt-top{flex-wrap:nowrap;align-items:center;font-size:12px;gap:5px;white-space:nowrap}.rcnt-top b{font-size:13px}.rcnt-h{font-size:12px;padding:0 4px} /* 공통 글꼴 단계(12·13·16·20·24) */
+}
 /* 홈 대시보드 */
 .homeg{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:10px;align-items:start}
 .homeg .col{display:grid;gap:10px;min-width:0}
@@ -3064,6 +3078,8 @@ html{touch-action:manipulation}html.modal-open,html.modal-open body{overflow:hid
 #app .helpbtn.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 @media(max-width:1000px){ #app .subhead.notitle{position:relative;height:0!important;min-height:0!important;padding:0!important;margin:0!important;overflow:visible;z-index:6}
  #app .subhead.notitle>.meta{position:absolute;right:0;top:8px;display:flex;gap:6px;align-items:center} #app .subhead.notitle>.meta>:not(.helpbtn):not(.bud){display:none} #app .subhead.notitle>.meta>.bud{position:relative;font-size:12px;line-height:18px;height:26px;min-height:26px!important;padding:3px 8px;white-space:nowrap;background:var(--bg,#0e141b)} #app .subhead.notitle>.meta>.bud::after{content:"";position:absolute;inset:-7px -3px} #app .subhead.notitle>.meta>.bud>.bud-f{display:none} #app .subhead.notitle>.meta>.bud>.bud-m{display:inline} #app .shell:has(.subhead.notitle) main.content :is(.ibx-tabs,.ws-tab-row,.subtabs,.ibx-mback){margin-right:var(--metaw,34px);box-sizing:border-box} #app .shell:has(.subhead.notitle) main.content>.dhead:first-child .row.between{padding-right:var(--metaw,30px)} /* 떠 있는 ? 버튼이 탭 글자를 덮지 않게 탭 줄 폭 자체를 줄인다(11-08 검수) */ }
+/* 사용자 11-20: 휴대폰 세로에서 예산 여유 칩이 하위 탭 줄을 잘랐다. 탭이 잘릴 바엔 칩을 빼고(재정 화면·PC·태블릿에는 그대로) 물음표만 남긴다 */
+@media(max-width:699px){ #app .subhead.notitle>.meta>.bud{display:none!important} }
 /* 트럭 시위 기사 그림(LED 전광판 트럭) */
 .trk{position:relative;margin:6px 0 4px;height:132px;border-radius:8px;overflow:hidden;background:linear-gradient(#1b2433,#0e141d);border:1px solid var(--line)}
 .trk-bld{position:absolute;left:0;right:0;top:10px;height:70px;background:repeating-linear-gradient(90deg,#1f2b3b 0 26px,#18222f 26px 30px);opacity:.9}.trk-bld span{position:absolute;right:8px;top:6px;font-size:var(--ui-micro);color:#8fa1b6;letter-spacing:.04em}
@@ -39903,7 +39919,7 @@ const TN_KEY='fronttime-teamnames';
 function teamNamesPreset(){ try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); return o&&o.on&&Array.isArray(o.L)?o.L:null; }catch(e){ return null; } }
 function teamNameCard(){ if(!G||!G.teams)return ''; let pre=null; try{ pre=JSON.parse(localStorage.getItem(TN_KEY)||'null'); }catch(e){}
   return `<section class="card"><h2 class="sec">구단 이름·로고 바꾸기</h2><p class="small muted">기본은 가상 구단입니다. 별칭(10자)을 바꾸거나, 구단 표시 이름(14자, 선택)을 적으면 '연고지 별칭' 대신 그 이름이 화면에 나옵니다. 약칭(6자, 선택)은 순위표처럼 좁은 자리에 쓰고, 비우면 표시 이름의 마지막 낱말을 씁니다. 로고는 구단마다 '로고'를 눌러 상징·색·글자를 고르거나 이미지를 올립니다(색을 바꾸면 그 구단의 화면 강조색도 바뀝니다). 이미 나온 기사·기록의 이름은 바뀌지 않습니다.</p><p class="small tn-note">연고지(지역·시장 규모)는 게임 규칙에 그대로 쓰여 바뀌지 않습니다.</p>
-  <div class="tn-l">${G.teams.map(t=>`<div class="tn-r">${badge(t.id,24)}<b class="tn-c" title="기본 이름: ${TEAM_DEF[t.id]?esc(tfull(TEAM_DEF[t.id])):esc(t.city+' '+t.nick)}">${esc(t.city)}</b><input class="tn-n" data-tn="${t.id}" data-k="nick" value="${esc(t.nick)}" maxlength="10" aria-label="별칭"><span class="tn-x"><input class="tn-d" data-tn="${t.id}" data-k="disp" value="${esc(t.disp||'')}" maxlength="14" placeholder="${esc(t.city+' '+t.nick)}" aria-label="구단 표시 이름(선택)" title="구단 표시 이름(선택, 14자)"><input class="tn-a" data-tn="${t.id}" data-k="abbr" value="${esc(t.abbr||'')}" maxlength="6" placeholder="약칭" aria-label="약칭(선택)" title="약칭(선택, 6자): 순위표·일정처럼 좁은 자리"></span><span class="small muted">${TEAM_DEF[t.id]?esc(tfull(TEAM_DEF[t.id])):esc(tfull(t))}</span><button class="tc-i${UI.lgEdit===t.id?' on':''}" data-a="lgOpen" data-v="${t.id}">로고</button></div>${UI.lgEdit===t.id?lgEditor(t):''}`).join('')}</div>
+  <div class="tn-l">${G.teams.map(t=>{ const D=(UI.tnDraft||{})[t.id]||{}; /* 저장 전 입력값(로고 편집으로 다시 그려도 유지, 외부 검토 11-20) */ return `<div class="tn-r">${badge(t.id,24)}<b class="tn-c" title="기본 이름: ${TEAM_DEF[t.id]?esc(tfull(TEAM_DEF[t.id])):esc(t.city+' '+t.nick)}">${esc(t.city)}</b><input class="tn-n" data-tn="${t.id}" data-k="nick" value="${esc(D.nick??t.nick)}" maxlength="10" aria-label="별칭"><span class="tn-x"><input class="tn-d" data-tn="${t.id}" data-k="disp" value="${esc(D.disp??(t.disp||''))}" maxlength="14" placeholder="${esc(t.city+' '+t.nick)}" aria-label="구단 표시 이름(선택)" title="구단 표시 이름(선택, 14자)"><input class="tn-a" data-tn="${t.id}" data-k="abbr" value="${esc(D.abbr??(t.abbr||''))}" maxlength="6" placeholder="약칭" aria-label="약칭(선택)" title="약칭(선택, 6자): 순위표·일정처럼 좁은 자리"></span><span class="small muted">${TEAM_DEF[t.id]?esc(tfull(TEAM_DEF[t.id])):esc(tfull(t))}</span><button class="tc-i${UI.lgEdit===t.id?' on':''}" data-a="lgOpen" data-v="${t.id}">로고</button></div>${UI.lgEdit===t.id?lgEditor(t):''}`; }).join('')}</div>
   <label class="chk"><input type="checkbox" data-a="tnPre" ${pre&&pre.on?'checked':''}> 새 게임에도 이 이름 쓰기(이 브라우저에 저장)</label>
   <div class="row"><button class="btn" data-a="tnSave">이름 저장</button><button class="btn" data-a="tnReset">기본 이름으로</button></div>${UI.tnMsg?`<p class="small">${esc(UI.tnMsg)}</p>`:''}</section>`; }
 /* 로고 편집: 상징(원래 10개 구단 엠블럼 + 별·왕관·배트·산 + 글자), 주색·보조색·바탕색, 글자(3자), 이미지 올리기(192px 안에 자르지 않고 맞춰 저장, 마인2 11-16) */
@@ -39914,16 +39930,18 @@ function lgEditor(t){ const P=tpal(t); const L=t.logo||{}; const cur=L.emb||(TEA
     <div class="row wrapr lg-col"><label>주색 <input type="color" data-lg="${t.id}:c1" value="${P[0]}"></label><label>보조색 <input type="color" data-lg="${t.id}:c2" value="${P[1]}"></label><label>바탕색 <input type="color" data-lg="${t.id}:c3" value="${P[2]}"></label><label>글자 <input type="text" data-lg="${t.id}:code" value="${esc(L.code||t.code)}" maxlength="3" style="width:4.5em" aria-label="로고 글자"></label></div>
     <div class="row wrapr lg-col"><label class="btn small">이미지 올리기<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-lgimg="${t.id}" hidden></label>${L.img?`<button class="btn small" data-a="lgImgDel" data-v="${t.id}">이미지 지우기</button>`:''}<button class="btn small" data-a="lgReset" data-v="${t.id}">기본 로고로</button></div>
     ${UI.lgMsg?`<p class="small">${esc(UI.lgMsg)}</p>`:''}<p class="small muted">이미지는 자르지 않고 그대로 넣습니다(가로·세로가 달라도 됨, 투명 배경 유지). 올리면 192px 안에 맞춰 줄여 저장 파일에 넣습니다.</p></div>`; }
-function lgApply(tid,patch,msg){ const r=setTeamLogo(tid,patch); UI.lgMsg=r||msg||''; if(!r){ if(tid===G.user)setTeamVars(team(G.user)); let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); } render(); }
+function lgApply(tid,patch,msg){ tnKeep(); const r=setTeamLogo(tid,patch); UI.lgMsg=r||msg||''; if(!r){ if(tid===G.user)setTeamVars(team(G.user)); let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); } render(); }
 /* 올린 로고 그림을 S px 정사각형 안에 자르지 않고 가운데 맞춘다(Math.min 배율, 남는 곳은 투명). webp(투명 유지)를 먼저, 못 만들면 png. 저장 한도(64KB)를 넘으면 조금씩 줄인다 */
 function lgFit(im){ for(const S of [192,160,128,96]){ const c=document.createElement('canvas'); c.width=S; c.height=S; const x=c.getContext('2d'); x.clearRect(0,0,S,S); const s=Math.min(S/im.width,S/im.height); const w=im.width*s, h=im.height*s; x.imageSmoothingQuality='high'; x.drawImage(im,(S-w)/2,(S-h)/2,w,h);
     let u=''; try{ u=c.toDataURL('image/webp',.9); if(!/^data:image\/webp/.test(u))u=c.toDataURL('image/png'); }catch(e){ return ''; } if(u&&u.length<=64000)return u; } return ''; }
 function lgImgFile(tid,file){ if(!file)return; if(!/^image\/(png|jpeg|webp|gif)$/.test(file.type)){ UI.lgMsg='png·jpg·webp·gif 이미지만 올릴 수 있습니다.'; render(); return; }
-  const rd=new FileReader(); rd.onload=()=>{ const im=new Image(); im.onload=()=>{ const u=lgFit(im); /* 192px 정사각형 안에 자르지 않고 맞춘다(contain, 남는 곳 투명) */ if(!u){ UI.lgMsg='이미지를 읽지 못했습니다.'; render(); return; } lgApply(tid,{img:u},'로고 이미지를 바꿨습니다.'); };
+  const g0=G; /* 외부 검토 11-20: 읽는 동안 다른 슬롯으로 옮기면 그 슬롯 구단 로고가 바뀌었다. 시작한 게임(G)이 그대로일 때만 적용하고, 바뀌었으면 버린다 */
+  const rd=new FileReader(); rd.onload=()=>{ if(G!==g0)return; const im=new Image(); im.onload=()=>{ if(G!==g0)return; const u=lgFit(im); /* 192px 정사각형 안에 자르지 않고 맞춘다(contain, 남는 곳 투명) */ if(!u){ UI.lgMsg='이미지를 읽지 못했습니다.'; render(); return; } lgApply(tid,{img:u},'로고 이미지를 바꿨습니다.'); };
     im.onerror=()=>{ UI.lgMsg='이미지를 읽지 못했습니다.'; render(); }; im.src=rd.result; }; rd.readAsDataURL(file); }
 if(typeof document!=='undefined')document.addEventListener('change',e=>{ const el=e.target; if(!el||!el.dataset)return;
   if(el.dataset.lg){ const [tid,k]=el.dataset.lg.split(':'); lgApply(+tid,{[k]:el.value},k==='code'?'로고 글자를 바꿨습니다.':'로고 색을 바꿨습니다.'); }
   else if(el.dataset.lgimg){ lgImgFile(+el.dataset.lgimg,el.files&&el.files[0]); } });
+function tnKeep(){ if(typeof document==='undefined'||!document.querySelector('input[data-tn]'))return; const L=tnRead(), D={}; for(const r of L)D[r.id]=r; UI.tnDraft=D; } /* 다시 그리기 전에 저장 전 이름 입력을 기억 */
 function tnRead(){ const L={}; document.querySelectorAll('input[data-tn]').forEach(el=>{ const id=+el.dataset.tn; (L[id]=L[id]||{id})[el.dataset.k]=el.value; }); return Object.values(L); }
 function tnStore(on){ try{ if(on===false){ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null')||{}; o.on=false; localStorage.setItem(TN_KEY,JSON.stringify(o)); return; } localStorage.setItem(TN_KEY,JSON.stringify({on:true,L:G.teams.map(t=>({id:t.id,city:t.city,nick:t.nick,disp:t.disp||'',abbr:t.abbr||'',logo:t.logo||null}))})); }catch(e){} }
 
@@ -41162,9 +41180,11 @@ function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.us
     if(c.stage==='protect'&&c.to===G.user){ const S=new Set(protOf(c)); /* 정렬·필터(리아네트 11-11: 잠재력 별을 보기 편하게) */
       const RPm=new Map(compPool(G.user).map(q=>[q.id,(()=>{ try{ return scoutReport(q); }catch(e){ return null; } })()])); const stOf=q=>{ const rp=RPm.get(q.id); try{ return rp&&rp.ofp!=null?potTierP(rp,q).st:-1; }catch(e){ return -1; } };
       const sk=UI.prS||'ovr', fk=UI.prF||'all'; const SRT={ovr:(a,b)=>ovr(b)-ovr(a),pot:(a,b)=>stOf(b)-stOf(a)||ovr(b)-ovr(a),age:(a,b)=>a.age-b.age||ovr(b)-ovr(a),sal:(a,b)=>b.sal-a.sal};
-      const all=compPool(G.user); const pool=all.filter(q=>fk==='all'||(fk==='P'?q.isP:fk==='B'?!q.isP:fk==='on'?S.has(q.id):!S.has(q.id))).sort(SRT[sk]||SRT.ovr);
+      const all=compPool(G.user); const PG={SP:q=>isSP(q),RP:q=>q.isP&&!isSP(q),C:q=>!q.isP&&q.pos==='C',IF:q=>!q.isP&&['1B','2B','3B','SS'].includes(q.pos),OF:q=>!q.isP&&['LF','CF','RF'].includes(q.pos),DH:q=>!q.isP&&q.pos==='DH'}; /* 맥도 11-20: 포지션별 탭 */
+      const pool=all.filter(q=>fk==='all'||(PG[fk]?PG[fk](q):fk==='P'?q.isP:fk==='B'?!q.isP:fk==='on'?S.has(q.id):!S.has(q.id))).sort(SRT[sk]||SRT.ovr);
+      const pgN=k=>all.filter(PG[k]).length, pgL=[['SP','선발'],['RP','불펜'],['C','포수'],['IF','내야'],['OF','외야'],['DH','지명']].filter(([k])=>pgN(k)).map(([k,l])=>[k,`${l} ${pgN(k)}`]);
       const chip=(k,cur,L)=>`<div class="chips">${L.map(([v,l])=>`<button class="${cur===v?'on':''}" data-a="protOpt" data-v="${k}:${v}">${l}</button>`).join('')}</div>`;
-      const ctl=`<div class="pr-ctl">${chip('s',sk,[['ovr','종합 능력순'],['pot','잠재력순'],['age','나이 어린순'],['sal','연봉순']])}${chip('f',fk,[['all',`전체 ${all.length}`],['P','투수'],['B','타자'],['on',`보호 ${S.size}`],['off',`노출 ${all.length-S.size}`]])}</div>`;
+      const ctl=`<div class="pr-ctl">${chip('s',sk,[['ovr','종합 능력순'],['pot','잠재력순'],['age','나이 어린순'],['sal','연봉순']])}${chip('f',fk,[['all',`전체 ${all.length}`],['P','투수'],['B','타자'],['on',`보호 ${S.size}`],['off',`노출 ${all.length-S.size}`]])}${chip('f',fk,pgL)}</div>`;
       const auto=domestic(G.user).concat(awayOf(G.user)).filter(q=>!q.foreign&&autoProt(q)&&q.id!==c.pid);
       return `<section class="card cpbox"><div class="row between"><h2 class="sec">보호선수 명단 · ${esc(c.name)} 영입 보상</h2><span class="small muted">${dmd(c.exp)}까지</span></div>
         <p class="small">${tname(c.from)}에 보상해야 합니다(${c.grade}등급). 보호할 선수 <b>${S.size}/${g.prot}</b>명. 누르면 보호·해제됩니다. 명단 밖에서 상대가 1명을 데려가거나 돈으로 받습니다.</p>
@@ -46232,7 +46252,7 @@ function fieldSVG(tid,interactive,inline){
 function rosterTabs(){ const tid=UI.rosterTeam??G.user; const own=tid===G.user;
   /* 포지션별 리그 전력 진단은 전력 구성 아래에서 독립 탭으로 분리한다. */
   { UI.it=UI.it||{}; const r=UI.it.roster; if(r==='bat'||r==='pit'){ UI.seg=r; UI.it.roster='list'; } else if(r==='field'||r==='glance'||r==='fut'){ UI.it.roster='depth'; } else if(r==='cmp')UI.it.roster='list'; }
-  const RT=[['list','선수 명단'],...(own?[['ent','엔트리 관리']]:[]),['depth','전력 구성'],['sal','연봉'],...(own?[['plan','선수단 계획'],['diag','포지션 진단'],['st','현황'],['mil','병역']]:[])];
+  const RT=[['list','선수 명단'],...(own?[['diag','포지션 진단'],['ent','엔트리 관리']]:[]),['depth','전력 구성'],['sal','연봉'],...(own?[['plan','선수단 계획'],['st','현황'],['mil','병역']]:[])]; /* 카페 11-20: 포지션 진단을 앞쪽으로 */
   return {RT,it:inTabs('roster',RT,'list')}; }
 function rosterSubRow(){ const tid=UI.rosterTeam??G.user; if(G.unemp||tid===G.user&&(UI.trimOn||trimNeed()&&!UI.trimHidden))return ''; /* 정리 모드는 단일 패널: 탭 대신 제목 */
   const {RT,it}=rosterTabs(); return `<nav class="subtabs" aria-label="선수단 하위 메뉴">${RT.map(([k,l])=>`<button data-a="itab" data-v="roster:${k}" class="${it.cur===k?'on':''}">${l}</button>`).join('')}</nav>`; }
@@ -46252,7 +46272,7 @@ function rosterView(){
     <p class="small">${cv.sc?`<b>${esc(cv.sc.name)} 스카우트</b>(${cv.reg} · 능력 ${'★'.repeat(cv.sc.skill)})가 담당합니다. ${cv.sc.skill>=3?'1군과 2군 선수까지 현재 능력을 평가합니다.':'1군 선수만 평가합니다. 2군까지 보려면 능력 3 이상 스카우트가 필요합니다.'}`:`<b>${cv.reg}</b> 지역을 맡은 스카우트가 없습니다. 1군 기록만 볼 수 있고 능력 평가는 없습니다.`} 다른 구단 선수의 잠재력은 알 수 없습니다.${hidden?` 파악하지 못한 2군 선수 ${hidden}명은 명단에서 빠졌습니다.`:''}</p></section>`;
   const eN=playersOf(tid).filter(p=>p.e1).length;
   const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
-  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}${own&&!G.unemp?rosterCountPanel(tid):''}</div><div class="row small rh-tools"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span>${own&&!G.unemp?'':(()=>{ const r=rosterParts(tid); return r.next!==r.now||r.rk+r.nx+r.mb?`<span class="chipn" title="${esc(rosterPartsTxt(tid))}">다음 개막 <b${r.next>=ROSTER_MAX?' style="color:var(--bad)"':r.next>=ROSTER_MAX-2?' style="color:var(--warn)"':''}>${r.next}</b>/${ROSTER_MAX}</span>`:''; })()}<span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover; /* 카페 11-20: 화면은 지금 인원만 보여 정원 검사와 달라 보였다. 정원 칸은 머리 줄 빈자리에 두어 명단 높이를 지킨다(11-20 화면 공간 검사) */
+  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}${own&&!G.unemp?rosterCountPanel(tid):''}</div><div class="row small rh-tools"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn${own&&!G.unemp?' rh-reg':''}">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span>${own&&!G.unemp?'':(()=>{ const r=rosterParts(tid); return r.next!==r.now||r.rk+r.nx+r.mb?`<span class="chipn" title="${esc(rosterPartsTxt(tid))}">다음 개막 <b${r.next>=ROSTER_MAX?' style="color:var(--bad)"':r.next>=ROSTER_MAX-2?' style="color:var(--warn)"':''}>${r.next}</b>/${ROSTER_MAX}</span>`:''; })()}<span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover; /* 카페 11-20: 화면은 지금 인원만 보여 정원 검사와 달라 보였다. 정원 칸은 머리 줄 빈자리에 두어 명단 높이를 지킨다(11-20 화면 공간 검사) */
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small tipme fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
   if(it.cur==='depth'){ const FS=futSquadView(tid); /* PC 세 칸 묶음: [배치도 | 1군 | 부상·재활] [2군 야수 | 2군 투수 | 육성선수](카페 국사왕 11-17) */
     return head+bar+fmCols(fieldC.replace('<section class="card">','<section class="card" data-wsl="포지션 배치도">')+csec(`1군 야수 · 벤치 · 투수진 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,UI.lufView==='field'?lineupFieldPanel(tid):glancePitch(tid),lineupFieldToggle()).replace('<section class="card">','<section class="card" data-wsl="1군 야수·투수진">'))+FS.injC+FS.farm; }
@@ -46398,7 +46418,7 @@ function posDiag(seg){
   if(seg==='bat'){
     cells=['C','1B','2B','3B','SS','LF','CF','RF','DH'].map(pos=>{ const p=me.ln[pos]; const rk=rankOf(d=>d.ln[pos]?posScore(d.ln[pos],pos):0);
       const bk=pos==='DH'?0:ps.filter(q=>!q.isP&&q.pos===pos&&(!p||q.id!==p.id)).length; const h=p?curLine(p):null; const rp=p?scoutReport(p):null;
-      return `<button class="dg" data-a="posSheet" data-v="${pos}" style="--rc:${rc(rk)}"><span class="dg-h"><b>${POSS[pos]}</b><i title="주전 능력 기준 리그 순위(올해 성적 순위 아님)">전력 ${rk}위</i></span><span class="dg-n">${p?esc(p.name):'빈자리'}</span><span class="dg-s">${rp?rchipG(rp.cur,rp.exact):''} ${h&&h.pa?yrTag(h)+' OPS '+fmt3(bRate(h).ops):''}</span><span class="dg-b ${pos!=='DH'&&bk===0?'warn':''}">${pos==='DH'?'타격 전담':bk?`백업 ${bk}명`:'백업 없음'}</span></button>`; });
+      return `<button class="dg" data-a="posSheet" data-v="${pos}" style="--rc:${rc(rk)}"><span class="dg-h"><b>${POSS[pos]}</b><i title="주전 능력 기준 리그 순위(올해 성적 순위 아님)">전력 ${rk}위</i></span><span class="dg-n">${p?esc(p.name):'빈자리'}</span><span class="dg-s">${rp?rchipG(rp.cur,rp.exact):''} ${h&&h.pa?yrTag(h)+' OPS&nbsp;'+fmt3(bRate(h).ops):''}</span><span class="dg-b ${pos!=='DH'&&bk===0?'warn':''}">${pos==='DH'?'타격 전담':bk?`백업 ${bk}명`:'백업 없음'}</span></button>`; });
   } else {
     const spR=rankOf(d=>avg(d.sp.slice(0,5).map(spV))), rpR=rankOf(d=>avg(d.pen.slice(0,5).map(penV))), clR=rankOf(d=>d.pen[0]?penV(d.pen[0]):0);
     const era=arr=>{ const hs=arr.map(curLine).filter(h=>h&&h.outs); const o=sum(hs.map(h=>h.outs)); return o?(sum(hs.map(h=>h.er))*27/o).toFixed(2):'-'; };
@@ -47879,13 +47899,13 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     toast(ok?'코드를 복사했습니다. 메모장이나 메신저에 붙여 넣어 보관하세요.':(auto?'코드를 만들었습니다. 코드 복사하기를 눌러 주세요.':'자동 복사가 막혀 있습니다. 코드 칸이 선택돼 있으니 Ctrl+C(휴대폰은 길게 눌러 복사)로 복사하세요.')); },
   async impPaste(){ const el=document.getElementById('impCode'); let t=''; try{ if(navigator.clipboard&&navigator.clipboard.readText)t=await navigator.clipboard.readText(); }catch(e){ t=''; } if(t&&el){ el.value=t.trim(); toast('붙여 넣었습니다. 코드로 불러오기를 누르세요.'); } else { if(el)el.focus(); toast('브라우저가 붙여넣기를 막았습니다. 칸을 눌러 Ctrl+V(휴대폰은 길게 눌러 붙여넣기)로 넣어 주세요.'); } },
   bkLater(){ if(G){ G.bkAt=G.day-30; save(); } render(); },
-  lgOpen(v){ const id=+v; UI.lgEdit=UI.lgEdit===id?null:id; UI.lgMsg=''; render(); },
+  lgOpen(v){ tnKeep(); const id=+v; UI.lgEdit=UI.lgEdit===id?null:id; UI.lgMsg=''; render(); },
   lgEmb(v){ const i=v.indexOf(':'); const tid=+v.slice(0,i), k=v.slice(i+1); lgApply(tid,{emb:k},''); },
   lgImgDel(v){ lgApply(+v,{img:null},'로고 이미지를 지웠습니다.'); },
   lgReset(v){ lgApply(+v,null,'기본 로고로 되돌렸습니다.'); },
   stopTg(v){ if(!STOP_DEF.hasOwnProperty(v))return; G.stopCfg=G.stopCfg||{}; const cur=G.stopCfg[v]!=null?!!G.stopCfg[v]:STOP_DEF[v]; G.stopCfg[v]=!cur; save(); render(); },
-  tnSave(){ const r=applyTeamNames(tnRead()); UI.tnMsg=r||'구단 이름을 바꿨습니다.'; if(!r){ let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); } render(); },
-  tnReset(){ resetTeamNames(); UI.tnMsg='기본 이름으로 되돌렸습니다.'; let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); render(); },
+  tnSave(){ const r=applyTeamNames(tnRead()); if(!r)UI.tnDraft=null; UI.tnMsg=r||'구단 이름을 바꿨습니다.'; if(!r){ let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); } render(); },
+  tnReset(){ resetTeamNames(); UI.tnDraft=null; UI.tnMsg='기본 이름으로 되돌렸습니다.'; let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on)tnStore(true); save(); render(); },
   tnPre(){ let on=false; try{ const o=JSON.parse(localStorage.getItem(TN_KEY)||'null'); on=!!(o&&o.on); }catch(e){} if(on){ tnStore(false); UI.tnMsg='새 게임에는 기본 이름을 씁니다.'; } else { tnStore(true); UI.tnMsg='새 게임에도 지금 이름을 씁니다.'; } render(); },
   impCode(){ const el=document.getElementById('impCode'); const t=(el&&el.value||'').trim(); return importText(t); },
 };
@@ -51126,7 +51146,7 @@ async function tcPng(d){ const W=1080,H=1350, c=document.createElement('canvas')
   const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,P[0]); g.addColorStop(.32,P[2]||'#111'); g.addColorStop(1,'#0b0f14'); x.fillStyle=g; x.fillRect(0,0,W,H);
   try{ const B=typeof BADGE_IMG!=='undefined'?BADGE_IMG[d.tid]:null; const src=B&&(B.c||B.s||B.src); if(src&&d.tid===G.user){ const im=new Image(); im.src=src; await new Promise(r=>{ im.onload=r; im.onerror=r; setTimeout(r,1500); }); if(im.naturalWidth)x.drawImage(im,60,60,150,150); } }catch(e){}
   x.fillStyle='rgba(255,255,255,.85)'; x.font=`600 30px ${F}`; x.fillText(`${d.y} 시즌 · 프런트야구`,240,100);
-  x.fillStyle='#fff'; x.font=`800 72px ${F}`; x.fillText(`${tfull(d)}`,240,175);
+  x.fillStyle='#fff'; { const nm=`${tfull(d)}`, maxW=W-240-50; let fs=72; x.font=`800 ${fs}px ${F}`; while(fs>34&&x.measureText(nm).width>maxW){ fs-=2; x.font=`800 ${fs}px ${F}`; } x.fillText(nm,240,175,maxW); } /* 14자 구단 이름이 1080px 밖으로 잘리던 문제(외부 검토 11-20): 글자 크기를 줄여 오른쪽 여백 안에 맞춘다 */
   x.font=`500 32px ${F}`; x.fillStyle='rgba(255,255,255,.9)'; x.fillText(d.st?`${d.st.w}승 ${d.st.l}패${d.st.t?` ${d.st.t}무`:''} · ${d.st.rk}위`:'',240,225);
   let yy=290; x.font=`500 30px ${F}`; for(const s of [tcGmTxt(d.gm),`우승 ${d.champs.length}회${d.champs.length?` (${d.champs.slice(-4).join(', ')})`:''}`,d.star?`올해의 스타 ${d.star.n} ${d.star.pos} · WAR ${d.star.w}`:'']){ if(!s)continue; x.fillText(s,60,yy); yy+=44; }
   const col=(t,L,x0,y0)=>{ x.fillStyle='#fff'; x.font=`800 34px ${F}`; x.fillText(t,x0,y0); let y1=y0+16; x.font=`500 28px ${F}`;
