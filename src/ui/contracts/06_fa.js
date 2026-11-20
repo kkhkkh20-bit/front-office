@@ -17,6 +17,15 @@ function faBig(p){ const o=G.fa.offers[p.id]; const ai=Object.keys(G.fa.ai[p.id]
     <div class="fab-r"><span class="small muted">영입 경쟁</span><span class="heat"><i style="width:${Math.min(100,ai.length*20)}%"></i></span><span class="fab-t">${ai.slice(0,5).map(t=>badge(t,16)).join('')||'<span class="small muted">아직 없음</span>'}</span></div>
     ${o?`<div class="note ${o.rej?'bad':faOutBlocked(G.user,p)?'warn':'good'}">우리 제시 ${o.terms?termsTxt(o.terms,true):`${o.years}년 연 ${money(o.annual)}`}${o.rej?' · 선수가 거절한 조건입니다(계약되지 않음). 조건을 올려 다시 제안하세요':faOutBlocked(G.user,p)?' · 외부 FA 한도를 채워 효력이 없습니다':''}</div>`:''}
     <button class="btn small" data-a="faSel" data-v="${p.id}">${UI.faSel===p.id?'닫기':'협상'}</button></div>`; }
+/* 다른 구단 최고 조건 풀이(42_agents faRivalView): 기간 · 총액 · 연평균(상한 반영) · 계약금+연봉 나눔, 우리 요구 조건과 앞서는 데 필요한 환산 연봉을 한 기준으로(제보 11-20) */
+function faRivalHtml(p,btn){ let V=null; try{ V=faRivalView(p.id); }catch(e){} if(!V)return ''; const pc=x=>Math.max(1,Math.round(x*100));
+  const who=V.named?esc(tname(V.tid)):V.own?'원소속 구단':'다른 구단 한 곳'; const why=V.why.slice(0,btn?3:2).map(w=>`${esc(w[1])} +${pc(w[0])}%`).join(', ');
+  const rv=`<b>다른 구단 최고 조건</b> ${who} · ${V.years}년 총액 ${money(V.tot)} · 연평균 ${money(V.avg)}${V.bonus?`<span class="small muted">(계약금 ${money(V.bonus)} + 연봉 ${money(V.sal)})</span>`:''}`;
+  const dem=`요구 ${p.ask.years}년 연 ${money(p.ask.annual)}(에이전트 환산 연 ${money(V.dem)})`;
+  if(!btn)return `<div class="note small ${V.dBeats?'':'warn'} fa-rv">${rv} · ${dem}으로는 ${V.dBeats?'앞섭니다':'<b class="bad">밀립니다</b>'} · 앞서려면 ${V.needY}년 환산 연 <b>${money(V.need)}</b> 이상${why?` <span class="muted">(${why})</span>`:''}</div>`;
+  return `<div class="note ${V.dBeats?'':'warn'} fa-rv">${rv}
+    <br><span class="small">${dem}으로는 ${V.dBeats?'<b class="good">앞섭니다</b>':'<b class="bad">밀립니다</b>'}. 앞서려면 ${V.needY}년 환산 연 <b>${money(V.need)}</b> 이상${why?` · 같은 돈이면 선수가 그쪽을 더 쳐 줍니다: ${why}`:''}</span>
+    <br><span class="small muted">연평균·환산 연봉 = 연봉 + 계약금 ÷ 기간(구단 연봉 상한과 같은 기준)</span></div><div class="row"><button class="btn small" data-a="faMatch" data-v="${p.id}">다른 구단 최고 조건 넘기기 (${V.needY}년 연봉 ${money(V.need)} · 계약금 없이)</button></div>`; }
 function faRoom(p){ const ag=agNeg(p); const n=G.fa.neg&&G.fa.neg[p.id]; const expr=n?(n.counter?'flat':n.hot||n.deal?'smile':n.mood<40?'angry':null):null; const ai=Object.keys(G.fa.ai[p.id]||{}).map(Number); const b=budget();
   const mk=G.fa.mk&&G.fa.mk[p.id]; const need=agShopN(p); const st=AG_STYLE[ag.style]||AG_STYLE.rel;
   const mkTxt=need?(mk&&mk.done?'시장 확인 끝 · 곧 결정':mk&&mk.ll?`라스트 룩 · ${dsh(mk.ll.until)}까지 ${mk.ll.years}년 연 ${money(mk.ll.annual)}`:`시장 확인 ${mk?mk.round:0}/${need}라운드${mk&&mk.next?` · 다음 보고 ${dsh(mk.next)}`:''}`):'조건이 맞으면 바로 결정하는 선수';
@@ -24,7 +33,7 @@ function faRoom(p){ const ag=agNeg(p); const n=G.fa.neg&&G.fa.neg[p.id]; const e
     ${(()=>{ const A=faAppeal(p,G.user); const oth=G.teams.filter(t=>t.id!==G.user).map(t=>faAppeal(p,t.id).f); const avgO=sum(oth)/oth.length; const d=Math.round((A.f/avgO-1)*100);
       return `<div class="faap"><span class="eyebrow">${esc(p.name)}이(가) 보는 우리 구단</span>${A.parts.map(([l,v])=>`<span class="pill ${v>0?'good':v<0?'bad':''}">${esc(l)} ${v?`${effWord(v,.1,.04)} ${v>0?'유리':'불리'}`:'보통'}</span>`).join('')}<span class="small ${d>=0?'good':'bad'}">같은 돈이면 다른 구단보다 ${d?`${effWord(d,10,4)} ${d>0?'유리':'불리'}`:'비슷'}</span></div>`; })()}
     <div class="note ${mk&&mk.ll?'warn':''}">${mkTxt}${need?` <span class="small muted">· ${agTier(p)==='star'?'대어':'준척'} FA는 바로 사인하지 않고 다른 구단 제안을 받아 본 뒤 결정합니다</span>`:''}</div>
-    ${ai.length&&!(mk&&mk.done)&&G.day>=G.fa.openDay?(()=>{ const mo=agMatchOffer(p.id); return mo?`<div class="row"><button class="btn small" data-a="faMatch" data-v="${p.id}">다른 구단 최고 조건 넘기기 (${mo.years}년 연 ${money(mo.annual)})</button><span class="small muted">선수의 원소속 구단 애착까지 감안한 금액입니다</span></div>`:''; })():''}
+    ${ai.length&&!(mk&&mk.done)&&G.day>=G.fa.openDay?faRivalHtml(p,true):''}
     ${mk&&mk.ll&&(mk.ll.tid==null||mk.ll.tid===G.user)&&G.day<=mk.ll.until?`<div class="row"><button class="btn primary" data-a="faLL" data-v="${p.id}">라스트 룩 맞추기 (${mk.ll.years}년 연 ${money(mk.ll.annual)})</button></div>`:''}
     ${G.fa.pitch&&G.fa.pitch[p.id]&&G.day<=G.fa.pitch[p.id].until?`<div class="row"><button class="btn primary" data-a="agPitchOk" data-v="${p.id}">우선 제안 수락 (${G.fa.pitch[p.id].years}년 연 ${money(G.fa.pitch[p.id].annual)})</button></div>`:''}
     ${(()=>{ if(UI.faMsg&&UI.faMsg.d==null)UI.faMsg.d=G.day; return UI.faMsg&&UI.faMsg.id===p.id&&UI.faMsg.d===G.day?`<div class="note">${esc(UI.faMsg.t)}</div>`:''; })()}

@@ -10759,6 +10759,20 @@ T('[성장 11-20] 노장 비율: 기술형 베테랑 전성기 33·하락 35·�
   for(const tid of [G.user,otherT()]){ const base=domestic(tid).find(q=>!q.isP&&!q.prospect&&!q.foreign&&!q.mil); ok(base,'준비 실패'); const run=(o)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt='norm'; p.age=37; initPers(p); p.pers.pro=10; setOvr(p,o); delete p.declP; G.players[p.id]=p; const s0=__rngState(); __seed(11); const b=ovr(p); develop(p); const d=ovr(p)-b+Object.values(p.declP||{}).reduce((a,x)=>a+x,0)*.3; G.players[base.id]=base; return d; };
     const hi=run(52), lo=run(48); ok(hi<0&&lo<0&&Math.abs(hi)<Math.abs(lo),(tid===G.user?'우리':'AI')+' 능력 높은 노장 하락이 완만하지 않음 '+hi.toFixed(2)+'/'+lo.toFixed(2)); }
   ok(/age<=VET_SKILL_AGE/.test(String(develop)),'기술형 기술 성장 나이 상수 미사용'); });
+T('[제보 11-20 FA 다른 구단 최고 조건] 요구대로 채운 제안은 다른 구단이 더 높게 불러도 결렬되지 않고 앞서는 역제안을 받으며, 다른 구단 조건 풀이·넘기기 묶음은 같은 기준(환산 연봉·연평균)이다',()=>{ const p=FAN_FA(); const U=G.user; const own=G.teams.find(t=>t.id!==U).id, b=G.teams.find(t=>t.id!==U&&t.id!==own).id; p.faFrom=own; p.faGrade='B'; agMk(p)&&(agMk(p).done=false);
+  const co=capOwnerCheck; capOwnerCheck=()=>null; team(U).cash=Math.max(team(U).cash,500000);
+  try{ const ao={annual:round5(p.ask.annual*3),years:p.ask.years}; G.fa.ai[p.id]={[b]:ao}; ok(faAiOk(b,p,ao),'준비 실패: AI 제안 무효');
+    const D=termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}); const T={...D}; delete T.ov; const n=negOf(p.id); n.mood=40; const m0=n.mood;
+    const V=faRivalView(p.id); ok(V&&V.avg===ao.annual&&V.years===ao.years&&V.tot===ao.annual*ao.years,'다른 구단 조건 풀이가 실제 제안과 다름: '+JSON.stringify(V));
+    ok(V.bonus+V.sal*V.years===V.tot,'계약금+연봉 나눔이 총액과 다름: '+JSON.stringify(V)); ok(!V.dBeats&&V.need>V.dem,'요구 조건이 3배 높은 다른 구단보다 앞선다고 봄: '+JSON.stringify(V));
+    const P=faPreview(p.id,{annual:T.annual,years:T.years,terms:T}); ok(P&&P.st==='counter'&&!P.brk,'제안 전 예상이 실제 판정과 다름(다른 구단에 밀리는데 수락 가능/결렬 위험): '+JSON.stringify(P));
+    const r0=__rngCalls(); const r=faNegotiate(p.id,{annual:T.annual,years:T.years,terms:T}); ok(__rngCalls()===r0,'새로 역제안 대역이 된 판정이 본 난수를 씀');
+    ok(!n.closed&&n.mood>=m0-2,'요구를 채운 제안이 다른 구단 조건 때문에 분위기 급락·결렬: '+m0+' → '+n.mood+' '+r.msg); ok(r.st==='counter'&&n.counter,'요구를 채웠는데 앞서는 역제안이 없음: '+r.st+' '+r.msg); ok(r.msg.includes('요구 조건은 채우셨습니다'),'응답이 사실과 다름: '+r.msg);
+    ok(faScore(p,{tid:U,annual:n.counter.annual,years:n.counter.years})>=faScore(p,{tid:b,...ao}),'역제안이 다른 구단 최고 조건보다 못함'); ok(G.fa.offers[p.id],'요구를 채운 제안이 남지 않음'); ok(!G.fa.offers[p.id].rej,'요구를 채운 제안에 거절 딱지');
+    n.counter=null; ctReset(n); const B=faBeatTerms(p.id); ok(B,'넘기기 묶음 없음'); const vB=Math.round(termsVal(B,D)); ok(B.role===D.role&&!!B.ntc===!!D.ntc&&B.years===ao.years,'넘기기 묶음이 요구 묶음 모양과 다름: '+JSON.stringify(B));
+    ok(faScore(p,{tid:U,annual:vB,years:B.years})>=faScore(p,{tid:b,...ao})*1.01,'넘기기 묶음이 다른 구단 최고 조건에 밀림: '+vB+' vs '+ao.annual); ok(offScore({annual:vB,years:B.years})>=faWantFor(p,U)*.97,'넘기기 묶음이 요구 기준 아래');
+    const r2=faNegotiate(p.id,{annual:B.annual,years:B.years,terms:B}); ok(r2.st==='wait'||p.team===U,'넘기기 묶음을 냈는데 받지 않음: '+r2.st+' '+r2.msg);
+  }finally{ capOwnerCheck=co; } });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
