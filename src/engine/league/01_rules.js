@@ -194,6 +194,17 @@ const fUnproven=p=>!!p&&!!p.foreign&&(()=>{ const L=(p.hist||[]).filter(h=>h.lvl
 /* 성능(11-18): 세계를 바꾸지 않는 평가 구간(AI 트레이드 후보 계산 등)에서는 구단 명단을 한 번만 걸러 쓴다. 구간 밖에서는 늘 새로 거른다(결과 동일). 돌려줄 때는 사본이라 호출한 쪽이 정렬·수정해도 기억이 바뀌지 않는다 */
 let _rosM=null; function rosterMemoOn(){ _rosM=new Map(); } function rosterMemoOff(){ _rosM=null; }
 function rosterMemo(k,f){ if(!_rosM)return f(); let v=_rosM.get(k); if(v===undefined){ v=f(); _rosM.set(k,v); } return Array.isArray(v)?v.slice():v; }
+/* Perf (11-21): read memo for ONE screen draw (UI render only; never on during day processing/AI, so engine results are unchanged).
+   Pure reads (budget, capInfo, payYear, slotsRosterKey, roster lists) are computed once per draw. It is bypassed whenever the roster memo
+   is suspended (roomAfter/mgrPlanPos/roomWith move players temporarily and set _rosM=null), when G is swapped, and inside masks (viewMemoHold).
+   Object results are cloned so callers can still mutate what they get. */
+let _rdM=null;
+function viewMemoOn(){ if(_rosM||_rdM)return false; rosterMemoOn(); _rdM={ros:_rosM,g:G,m:new Map()}; return true; }
+function viewMemoOff(){ _rdM=null; rosterMemoOff(); }
+function viewMemoReset(){ if(_rdM&&_rosM===_rdM.ros){ rosterMemoOn(); _rdM.ros=_rosM; _rdM.m=new Map(); } }
+function viewMemoHold(fn){ const m=_rdM, r=_rosM; if(!m)return fn(); _rdM=null; _rosM=null; try{ return fn(); } finally{ _rdM=m; _rosM=r; } }
+const _vmC=v=>v&&typeof v==='object'?structuredClone(v):v;
+function viewMemo(k,f){ const M=_rdM; if(!M||_rosM!==M.ros||G!==M.g)return f(); if(M.m.has(k))return _vmC(M.m.get(k)); const v=f(); try{ M.m.set(k,_vmC(v)); }catch(e){} return v; }
 const playersOf=tid=>rosterMemo('p'+tid+':'+(PROJ_LENS?1:0)+(PROJ_FX?1:0),()=>{ const jy=G.year+(PROJ_LENS&&period()==='off'?1:0); const P=G.players, L=[]; for(const k in P){ const p=P[k]; if(p.team===tid&&!(p.joinY>jy)&&!isAway(p)&&!(PROJ_FX&&fUnproven(p)))L.push(p); } return L; }); /* 전체 배열을 만들지 않고 한 번에 거른다(순서는 Object.values와 같다) */ /* 스토브리그 예상 전력(PROJ_LENS)은 다음 시즌 전력: 내년 합류할 신인·외국인도 넣는다 */
 const awayOf=tid=>Object.values(G.players).filter(p=>p.team===tid&&!(p.joinY>G.year)&&isAway(p));
 const domestic=tid=>playersOf(tid).filter(p=>!p.foreign);
@@ -218,7 +229,8 @@ function preSeason(y){ return y>G.year||(y===G.year&&dobj(G.day).m<=3&&!(G.cal&&
 /* 그해 그 구단 소속 비율: 구단 사이 이동 기록(tLog)이 있으면 날짜로 나눈다 */
 /* s를 주면 비율 대신 금액: 구단을 떠난 구간은 떠날 때 연봉(tLog s), 지금 소속 구간은 s(검수 11-09g: 원구단 복귀 때 첫 재임 기간까지 새 연봉) */
 function payTeamFrac(p,tid,y,s){ const L=(p.tLog||[]).filter(x=>x.y===y); if(!L.length)return p.team===tid?1:0; const [a,b]=payWin(y); /* 연봉은 정규시즌 기간에 나눠 받는다 */ const m=p.mil, mf=m&&(m.from??m.pf), mu=m&&(m.until||m.pu), sv=(s,e)=>mf==null||!mu?0:Math.max(0,Math.min(e,mu)-Math.max(s,mf)); /* 그 구단 소속일 때 복무한 날은 뺀다 */ let cur=L[0].f, d0=a, n=0; for(const x of L){ const d=clamp(x.d,a,b); if((cur??x.f)===tid)n+= /* 웨이버 공시 뒤 양수되면 공시 기간은 계약을 가진 공시 구단이 낸다(검수 11-09zzb) */(d-d0-sv(d0,d))*(s==null?1:(x.s??s)/(s||1)); cur=x.t; d0=d; } if(cur===tid)n+=b-d0-sv(d0,b); return n/(b-a); }
-function payYear(tid,y){ return Math.round(((G.payGone&&G.payGone[y]&&G.payGone[y][tid])||0)+sum(Object.values(G.players).filter(p=>!p.foreign&&!(p.joinY>y)&&(p.team===tid||(p.tLog||[]).some(x=>x.y===y&&(x.f===tid||x.t===tid)))).map(p=>{ const S=(p.team!==tid&&(()=>{ const x=[...(p.tLog||[])].reverse().find(x=>x.y===y&&x.f===tid&&x.s!=null); return x?x.s:null; })()||(preSeason(y)?salNext(p):p.sal)); return S /* 개막 전 겨울은 합의한 다음 시즌 연봉. 떠난 구단 몫은 떠날 때 연봉으로(새 구단 연봉이 지난 기간에 쓰이지 않게, 검수 11-08) */*(y>G.year||!(p.tLog||[]).some(x=>x.y===y)?payFrac(p,y)*(p.team===tid?1:0):payTeamFrac(p,tid,y,S))+ysAdj(p,y,tid) /* 시즌 중 육성 전환: 전환 전 기간은 원래 연봉 */ /* 이적한 해는 구단별 소속 기간에서 그 구단 소속 중 복무한 날을 빼서 나눈다(복무 비율을 따로 곱하면 어느 구단에서 복무했는지가 사라졌다, 검수 11-06) */; }))); }
+function payYear(tid,y){ return viewMemo('py'+tid+':'+y+':'+G.year,()=>payYear0(tid,y)); }
+function payYear0(tid,y){ return Math.round(((G.payGone&&G.payGone[y]&&G.payGone[y][tid])||0)+sum(Object.values(G.players).filter(p=>!p.foreign&&!(p.joinY>y)&&(p.team===tid||(p.tLog||[]).some(x=>x.y===y&&(x.f===tid||x.t===tid)))).map(p=>{ const S=(p.team!==tid&&(()=>{ const x=[...(p.tLog||[])].reverse().find(x=>x.y===y&&x.f===tid&&x.s!=null); return x?x.s:null; })()||(preSeason(y)?salNext(p):p.sal)); return S /* 개막 전 겨울은 합의한 다음 시즌 연봉. 떠난 구단 몫은 떠날 때 연봉으로(새 구단 연봉이 지난 기간에 쓰이지 않게, 검수 11-08) */*(y>G.year||!(p.tLog||[]).some(x=>x.y===y)?payFrac(p,y)*(p.team===tid?1:0):payTeamFrac(p,tid,y,S))+ysAdj(p,y,tid) /* 시즌 중 육성 전환: 전환 전 기간은 원래 연봉 */ /* 이적한 해는 구단별 소속 기간에서 그 구단 소속 중 복무한 날을 빼서 나눈다(복무 비율을 따로 곱하면 어느 구단에서 복무했는지가 사라졌다, 검수 11-06) */; }))); }
 /* 다음 시즌 연봉 한 가지 기준: 이미 합의한 다음 시즌 시작 다년계약(extNext) > 재계약 중 합의 연봉(newSal) > 지금 연봉 */
 /* s시즌 상한에 들어갈 계약금 연 반영액: 이미 맺은 다음 시즌 시작 다년계약은 계약금을 먼저 줬으므로 그 계약의 반영액(검수 11-08: 후속 협상 예상에서 빠짐) */
 function capBAt(p,s){ const x=p.extNext, b=x&&x.terms&&x.terms.bonus; if(b>0&&s>G.year)return Math.round(b/Math.max(1,x.years)); return p.capB&&p.ctT===p.team&&p.capB.until>=s?p.capB.a:0; }

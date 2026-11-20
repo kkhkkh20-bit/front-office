@@ -76,7 +76,7 @@ function opLegend(tid){ let a=null; try{ a=legAt(tid===ME()?legMeK():(gmOf(tid)|
 function opBase(tid,ctx){ const t=team(tid); return .16+((t.trust??55)-50)/110+(opRep(tid)-50)/300-.06*opStrikes(tid)-(ctx&&ctx.k==='cap'?Math.max(0,(ctx.amt||0)-2000)/20000:Math.max(0,((ctx&&ctx.amt)||1000)-1000)/6000)+(t.owner==='pr'?.03:0); }
 function opOdds(tid,ctx,a){ const t=team(tid); if(!t||t.indie||!a)return 0; const base=opBase(tid,ctx); let p;
   if(a.k==='resign')p=base+.3+.25*opLegend(tid)-.12*opRsUses(tid).filter(x=>x.ok).length; else { const W=(OP_W[t.owner]||OP_W.win)[a.k]||.5; p=base+.34*W*a.s-(a.s<.25?.06:0); }
-  return clamp(p*(tid===ME()&&HARD()?.8:1),.03,a.k==='resign'?.8:.7); }
+  return clamp(p*(tid===ME()&&HARD()?.8:tid===ME()&&SOFT()?1.1:1),.03,a.k==='resign'?.8:.7); }
 function opHint(p,a){ return a&&a.k!=='resign'&&a.s<.25?'근거가 약합니다':p>=.5?'먹힐 것 같습니다':p>=.33?'해 볼 만합니다':p>=.2?'쉽지 않습니다':'거의 안 통합니다'; }
 /* 구단주 대답(해요체) */
 function opLine(tid,a,ok,x){ const ow=team(tid).owner||'win'; const R0=a&&a.c!=null?tshort(a.c):'';
