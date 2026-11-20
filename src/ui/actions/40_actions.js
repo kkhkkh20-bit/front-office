@@ -297,6 +297,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   offerRevert(v){ UI.blkMsg={id:v,t:offerRevert(v)}; save(); render(); },
   sangmu(v){ UI.milMsgD=G.day; UI.milMsg=sangmuApply(+v)||`${G.players[+v].name} 상무 지원을 마쳤습니다. 합격자는 ${sangmuWave()==='dec'?'10월 15일':'4월 15일'}에 발표됩니다.`; save(); render(); },
   enlist(v){ UI.milMsgD=G.day; UI.milMsg=enlistNow(+v)||`${G.players[+v].name} 현역 입대를 예약했습니다(2주 뒤 입대, 그 전까지 취소 가능).`; save(); render(); },
+  sangmuCancel(v){ UI.milMsgD=G.day; UI.milMsg=sangmuCancel(+v)||`${G.players[+v].name} 상무 지원을 취소했습니다.`; save(); render(); },
   enlistCancel(v){ UI.milMsgD=G.day; UI.milMsg=enlistCancel(+v)||`${G.players[+v].name} 입대 예약을 취소했습니다.`; save(); render(); },
   entSort(v){ const [k,c]=String(v).split(':'); UI.entSort=UI.entSort||{bat:'ops',pit:'era'}; UI.entSort[k]=c; render(); },
   reqUp(v){ UI.entMsg={id:+v,t:reqEntry(+v,true)}; save(); render(); },

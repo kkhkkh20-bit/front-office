@@ -10699,6 +10699,10 @@ T('[카페 11-20 스카우트 공석] 위임하지 않은 구단에 담당 없�
   ok(__rngCalls()===c0,'주 난수를 쓰지 않음'); ok(JSON.stringify(G.scouts.map(x=>x.id))===ids,'알림만 하고 명단은 그대로');
   G.day++; stDaily(); ok(G.mail.filter(m=>/스카우트 공석/.test(m.subj)).length===1,'같은 공석은 다시 알리지 않음');
   G.mail=[]; autoSet('svac',true); delete G.svacWarn; scVacWarn(); ok(!G.mail.some(m=>/스카우트 공석/.test(m.subj)),'위임하면 알림 대신 운영팀이 채움'); });
+T('[카페 11-20 상무 지원 취소] 접수 기간 안에는 지원을 거두고 다시 지원할 수 있으며, 발표 뒤에는 취소할 수 없다 · 난수 없음',()=>{ fresh(); G.day=dnum(G.year,9,10); const p=domestic(G.user).find(q=>milFree(q)&&!q.mil&&q.age<=24); ok(p,'준비: 미필 24세 이하');
+  ok(sangmuApply(p.id)==='','지원'); ok(p.mil&&p.mil.app==='dec','지원 상태'); const c0=__rngCalls(); ok(sangmuCancel(p.id)==='','기간 안 취소'); ok(!p.mil,'지원이 지워짐'); ok(__rngCalls()===c0,'주 난수를 쓰지 않음');
+  ok(sangmuCanApply(p),'취소 뒤 다시 지원 가능'); ok(sangmuApply(p.id)==='','재지원'); G.day=dnum(G.year,10,20); ok(sangmuCancel(p.id)!=='','기간이 끝나면 취소 불가'); ok(p.mil&&p.mil.app==='dec','지원 유지');
+  const q=domestic(G.user).find(x=>x!==p&&milFree(x)&&!x.mil); ok(sangmuCancel(q.id)!=='','지원 안 한 선수는 취소 대상 아님'); });
 T('[은퇴 11-20] 노화 곡선: 베테랑 은퇴 기준 40(RET_VET_O)은 우리·AI 선수 모두 같고, AI 베테랑 방출도 같은 40 미만',()=>{ fresh(); ok(RET_VET_O===40&&VET_REL_O===RET_VET_O,'베테랑 기준 '+RET_VET_O+'/'+VET_REL_O);
   const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
   for(const p of [me,ai]){ p.age=37; setOvr(p,40.2); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 40을 은퇴로 봄'); setOvr(p,39.4); ok(retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 39를 은퇴로 보지 않음'); p.age=36; setOvr(p,30.4); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 30을 능력으로 은퇴시킴'); } /* 사양 변경(11-20 KBO 비율 기준): 35~36세 능력 은퇴 없음, 기준 40은 37세부터. 예전 이 검사는 36세 40/39 */
