@@ -142,9 +142,9 @@ function milChron(p,kind,unit,from,until){ if(!p||p.team==null)return; chron('mi
    복무는 다친 날 시작해 재활과 겹친다. 복무 중에는 상무·현역처럼 로스터에서 빠지고(milServing), 소집 해제와 재활이 모두 끝나야 경기에 나선다.
    대상: 소속 구단이 있는 국내 미필 선수, 27세 이하(28세면 이미 현역 입대 대상). 상무 지원 중이면 지원을 거두고, 아직 입대 전인 예약(상무 합격·현역 예약)은 사회복무로 바꾼다.
    이미 복무 중·군필·면제는 그대로. 우리 구단·AI 구단 같은 규칙, 난수 없음 */
-const MIL_SOC='사회복무요원', MIL_SOC_DAYS=639, MIL_SOC_INJ=300; /* 639일 = 상무·현역 548일(18개월)과 같은 비율의 21개월 */
+const MIL_SOC='사회복무요원', MIL_SOC_DAYS=639, MIL_SOC_INJ=300; let MIL_SOC_OFF=0; /* 새 게임 시작 세계를 만드는 동안(buildWorld)은 0보다 크다: 사전 시즌 부상은 사회복무로 바꾸지 않는다 */ /* 639일 = 상무·현역 548일(18개월)과 같은 비율의 21개월 */
 const milEnd=u=>u===MIL_SOC?'소집 해제':'전역';
-function milSocOk(p,k,days){ const I=k&&INJ[k]; if(!p||p.foreign||p.team==null||!I||!I.surg||!(days>=MIL_SOC_INJ)||p.age>27)return false;
+function milSocOk(p,k,days){ const I=k&&INJ[k]; if(MIL_SOC_OFF>0||!p||p.foreign||p.team==null||!I||!I.surg||!(days>=MIL_SOC_INJ)||p.age>27)return false;
   const m=p.mil; if(!m)return true; if(m.done||m.exempt)return false; if(m.until)return m.from>G.day; /* 입대 전 예약만 바꾼다 */ return true; }
 function milSocial(p,k,days){ if(!milSocOk(p,k,days))return false; const m=p.mil, I=INJ[k];
   if(m&&m.until){ try{ milNegBack(p,m); }catch(e){} try{ ovsEnlBack(p,m); }catch(e){} } /* 잡혀 있던 입대 예약을 거둔다(연봉 협상 상태도 예약 전으로) */
