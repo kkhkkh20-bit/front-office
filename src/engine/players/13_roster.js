@@ -141,5 +141,6 @@ function aiFloorFix(tid){ if(tid===ME()||G.year<2027||fNewBonus(tid,G.year))retu
 function aiDebtDump(){ let n=0; for(const t of G.teams){ if(t.id===ME())continue; const deep=t.cash<-4000; if(!deep&&planOf(t)!=='tight')continue; if(deep)try{ aiPlanSet(t,'tight','빚 누적'); }catch(e){ t.mode='rebuild'; } n+=aiCapFix(t.id,deep?.8:.88,true,deep?3:2); } return n; }
 function aiCapAll(frac){ for(const t of G.teams)if(t.id!==ME())try{ aiFloorFix(t.id); }catch(e){} let n=0; for(const t of G.teams)if(t.id!==ME())n+=aiCapFix(t.id,frac); return n; }
 /* 경쟁균형세 상한 결정(capCouncil)은 68_assoc.js의 실행위원회·이사회로 옮겼다 */
-function capInfo(tid){ const pay=preSeason(sponSeason())?capPayNext(tid):capPay(tid), /* 겨울: 합의한 다음 시즌 연봉 기준 */ cap=capOf(sponSeason()); return {pay,all:payYear(tid,sponSeason()),cap,floor:sponSeason()>=2027&&!fNewBonus(tid)?floorOf(sponSeason()):0 /* 신생 구단은 외국인 혜택과 같은 첫 두 시즌 하한 적용 안 함(창단 테스트 11-13: 특별지명 선수단 연봉이 하한의 절반) */ /* 하한 제재는 2027년부터(검수 11-09y) */,over:Math.max(0,pay-cap)}; }
+function capInfo(tid){ return viewMemo('ci'+tid+':'+G.day,()=>capInfo0(tid)); }
+function capInfo0(tid){ const pay=preSeason(sponSeason())?capPayNext(tid):capPay(tid), /* 겨울: 합의한 다음 시즌 연봉 기준 */ cap=capOf(sponSeason()); return {pay,all:payYear(tid,sponSeason()),cap,floor:sponSeason()>=2027&&!fNewBonus(tid)?floorOf(sponSeason()):0 /* 신생 구단은 외국인 혜택과 같은 첫 두 시즌 하한 적용 안 함(창단 테스트 11-13: 특별지명 선수단 연봉이 하한의 절반) */ /* 하한 제재는 2027년부터(검수 11-09y) */,over:Math.max(0,pay-cap)}; }
 
