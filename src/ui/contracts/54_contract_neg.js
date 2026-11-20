@@ -167,9 +167,10 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
       </section>
       ${ngtChat(N,D)}
     </div>
+    ${N.k==='fa'&&!closed&&G.day>=G.fa.openDay?faRivalHtml(p,false):''}
     <div class="ng-acts">
       ${closed?`<span class="note bad small">에이전트가 협상을 끝냈습니다. ${esc(ngtReopenTxt(N,{st:'closed'}))}</span>`:''}
-      <button class="btn" data-a="ngtDemand"${closed?' disabled':''}>요구대로 채우기</button>${N.k==='fa'&&G.fa.offers[p.id]?'<button class="btn danger" data-a="ngtWithdraw">제안 철회</button>':''}
+      <button class="btn" data-a="ngtDemand"${closed?' disabled':''}>요구대로 채우기</button>${N.k==='fa'&&!closed&&G.day>=G.fa.openDay&&(()=>{ try{ const V=faRivalView(p.id); return V&&!V.dBeats; }catch(e){ return false; } })()?'<button class="btn" data-a="ngtBeat" title="요구 묶음 모양 그대로, 다른 구단 최고 조건보다 앞서는 금액으로 채웁니다(결재·예산은 제안할 때 확인)">다른 구단 넘기기</button>':''}${N.k==='fa'&&G.fa.offers[p.id]?'<button class="btn danger" data-a="ngtWithdraw">제안 철회</button>':''}
       <button class="btn ng-close" data-a="ngtClose">협상 취소</button>
       <button class="btn" data-a="ngtCounter"${C&&!closed?'':' disabled'}>역제안 수락</button>
       <button class="btn primary" data-a="ngtSubmit"${closed||cool||salLock?' disabled':''}>${cool?`제안 ${dsh(cool)}부터`:R&&R.last?'제안(마지막 라운드)':'제안'}</button></div></div></div>`; }
