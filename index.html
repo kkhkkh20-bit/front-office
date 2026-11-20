@@ -501,16 +501,16 @@ table.rt.rt :is(th,td).rta-l{text-align:left}
 table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}
 /* 정원 패널(카페 11-20): 지금 정식 · 다음 개막 / 한도와 내역. 마우스 없이도 보이고, 내역 숫자를 누르면 이름이 펼쳐진다 */
 .rcnt{display:grid;gap:4px;padding:5px 10px;margin:0;flex:0 0 auto;border:1px solid var(--line,#ffffff1f);border-radius:6px;background:var(--panel2,#ffffff08);font-size:13px;line-height:1.35;min-width:0}
-.rcnt-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}.rcnt-top b{font:700 15px var(--f-num,inherit)}.rcnt-top b.bad{color:var(--bad)}.rcnt-top b.warn{color:var(--warn)}
+.rcnt-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}.rcnt-top b{font:700 16px var(--f-num,inherit)}.rcnt-top b.bad{color:var(--bad)}.rcnt-top b.warn{color:var(--warn)}
 .rcnt-h{font-weight:700;color:var(--muted);font-size:12px;padding:1px 6px;border:1px solid currentColor;border-radius:3px}.rcnt-dot{color:var(--muted)}
 .rcnt-parts{display:flex;flex-wrap:wrap;gap:4px 6px;min-width:0}
 .rcnt-i{position:relative;color:var(--ink,inherit);min-width:0}.rcnt-i.zero{color:var(--muted);padding:2px 6px}
 .rcnt-i>summary{list-style:none;cursor:pointer;padding:2px 8px;border:1px solid var(--line,#ffffff2e);border-radius:12px;background:#ffffff0a;white-space:nowrap;display:inline-flex;align-items:center}.rcnt-i>summary::-webkit-details-marker{display:none}
-.rcnt-i>summary:hover,.rcnt-i[open]>summary{border-color:var(--team-hi,#7fb3ff)}.rcnt-c{font-size:10px;color:var(--muted)}
+.rcnt-i>summary:hover,.rcnt-i[open]>summary{border-color:var(--team-hi,#7fb3ff)}.rcnt-c{font-size:12px;color:var(--muted)}
 .rcnt-i.ex>summary{border-style:dashed;color:var(--muted)}
 .rcnt-pop{position:absolute;left:0;top:calc(100% + 4px);z-index:40;display:grid;gap:2px;min-width:200px;max-width:min(320px,calc(100vw - 32px));max-height:260px;overflow:auto;padding:6px;border:1px solid var(--line,#ffffff2e);border-radius:6px;background:var(--panel,#141b22);box-shadow:0 6px 20px #0008}
 .rcnt-pop .rcnt-n{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;padding:3px 4px;min-height:0;height:auto;margin:0;line-height:1.3}.rcnt-n i{font-style:normal;color:var(--muted);font-size:12px;white-space:nowrap}
-.rcnt-warn{margin:0;color:var(--bad);font-size:12.5px}
+.rcnt-warn{margin:0;color:var(--bad);font-size:12px}
 .ros-sum{margin:2px 0;font-size:13px}.ros-sum.bad{color:var(--bad)}.ros-sum.warn{color:var(--warn)}.ros-sum .muted{font-weight:400}#app .ros-sum span{font-size:inherit}.ros-sum .ros-x{font-weight:700}
 @media(max-width:699px){
  .rcnt{padding:6px 8px}.rcnt-parts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px}
@@ -520,6 +520,33 @@ table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}
 }
 .rcnt-i[open]{grid-column:1/-1}
 #app main.ws-up .rcnt>:is(.rcnt-parts,.rcnt-warn){display:none} /* 목록을 내려 보는 동안엔 한 줄(지금·다음 개막/한도)만 */
+/* 11-20 화면 공간: 정원 칸은 선수단 머리 줄 왼쪽 빈자리(구단 선택 자리)에 둔다. 머리 줄을 숨기는 낮은 가로 화면·목록 내림(ws-up)에서도
+   정원 한 줄(지금 정식 · 다음 개막 / 한도)은 남기고 나머지 머리 줄 도구만 접는다 */
+#app .roster-heading>div:has(>.rcnt){flex:1 1 300px!important}#app .roster-heading .rcnt{flex:1 1 280px}
+#app .rcnt-tog{display:none;font-size:12px;line-height:1.35;color:var(--muted);padding:0 4px;margin:0 0 0 auto;min-height:0;height:auto;white-space:nowrap;border:0;background:none}.rcnt-tog.bad{color:var(--bad)}
+/* 낮은 화면(휴대폰 가로·1024×768 태블릿/작은 PC): 내역·경고는 '내역' 한 번 눌러 펼친다. 한 줄 요약은 늘 보인다 */
+@media(max-height:599px),(min-width:700px) and (max-width:1099px) and (max-height:820px){
+ .rcnt{padding:3px 8px;gap:3px}#app .rcnt-tog{display:inline-flex;align-items:center}
+ .rcnt:not(.more)>:is(.rcnt-parts,.rcnt-warn){display:none}
+}
+@media(pointer:coarse) and (max-height:599px){#app .rcnt-tog{min-height:32px;padding:0 10px}.rcnt{padding-block:0}}
+@media(max-width:1099px) and (max-height:599px){
+ #app .roster-heading:has(.rcnt){display:flex;min-height:0;margin:0;padding-block:0}
+ #app .roster-heading:has(.rcnt)>.rh-tools,#app .roster-heading>div:has(>.rcnt)>:not(.rcnt){display:none}
+ /* 휴대폰 가로: 정원 한 줄과 하위 탭 줄을 같은 줄에 놓아 명단 높이를 지킨다 */
+ #app .roster-page:has(>.roster-heading .rcnt):has(>.roster-navigation):not(:has(>:nth-child(4))){display:grid!important;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);align-items:center}
+ #app .roster-page:has(>.roster-heading .rcnt)>.roster-navigation{min-width:0}
+ #app .roster-page:has(>.roster-heading .rcnt)>:not(.roster-heading,.roster-navigation){grid-column:1/-1;align-self:stretch;min-height:0}
+ #app .roster-page:has(>.roster-heading .rcnt)>.roster-heading .rcnt-h{display:none}
+}
+@media(max-width:699px){ /* 휴대폰 세로: 머리 줄 오른쪽은 메뉴 단추 자리(--metaw)라, 정원 칸은 도구 줄 아래 전체 폭으로 */
+ #app .roster-heading>div:has(>.rcnt){order:2;flex-basis:100%!important}
+ #app .shell:has(.subhead.notitle) main.content .roster-heading:has(.rcnt){padding-right:0}
+ #app .shell:has(.subhead.notitle) main.content .roster-heading:has(.rcnt)>.rh-tools{margin-right:var(--metaw,36px)}
+}
+#app main.ws-up .roster-heading:has(.rcnt){display:flex!important;min-height:0;margin:0}
+#app main.ws-up .roster-heading:has(.rcnt)>:not(:has(.rcnt)),#app main.ws-up .roster-heading>div:has(>.rcnt)>:not(.rcnt){display:none!important}
+#app main.ws-up .rcnt-tog{display:none!important}
 /* 홈 대시보드 */
 .homeg{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:10px;align-items:start}
 .homeg .col{display:grid;gap:10px;min-width:0}
@@ -31749,7 +31776,8 @@ function gmBgApply(){ const P=G.gmP; if(!P||P.bgDone)return; P.bgDone=true; try{
   else if(P.bg==='data'){ G.pr.press=clamp(G.pr.press+3,0,100); for(const a of (typeof anaList==='function'?anaList():[]))a.loy=clamp((a.loy??50)+10,0,100); }
   else if(P.bg==='corp'){ t.trust=clamp((t.trust??55)+5,0,100); } }catch(e){} }
 function meName(){ return (G&&G.gmP&&G.gmP.name)||''; }
-function meAge(){ const P=G.gmP; return P&&P.age?P.age+(G.year-(P.y0||G.year)):null; }
+function meAge(){ const P=G.gmP; if(!P||!P.age)return null; if(P.ageFix!=null)return P.ageFix; return P.age+(G.year-(P.ay0??P.y0??G.year)); } /* 나이 고정(카페 11-20): 켜면 그 나이에 멈추고, 끄면 그 나이부터 다시 먹는다 */
+function gmAgeFixToggle(){ const P=G.gmP; if(!P||!P.age)return; if(P.ageFix!=null){ P.age=P.ageFix; P.ay0=G.year; delete P.ageFix; } else P.ageFix=meAge(); }
 function meInc(k,n){ if(G.unemp)return; const M=meInit(); M[k]=(M[k]||0)+(n??1); }
 /* 다른 구단 단장 기록(사람에게 붙는다: 단장이 바뀌면 새로 시작) */
 function gmSt(tid){ const g=tid===ME()?null:team(tid).gm; /* 야인이면 전 구단 새 AI 단장 실적도 센다(검수 11-08) */ if(!g)return null; g.st=g.st||{fa:0,faBig:0,mgrFire:0}; return g.st; }
@@ -31799,9 +31827,9 @@ function aiGmTags(tid){ const s=aiGmStats(tid); if(!s)return []; const L=[];
 /* 기사에서 단장을 부르는 말: 별명이 붙었으면 '트레이드 귀재' 광주 단장처럼 */
 function meCall(){ let n=''; try{ n=meNick(); }catch(e){} return n?`'${n}' ${tshort(G.user)} 단장`:`${tshort(G.user)} 단장`; }
 /* ===== 단장 세대 교체(100년 플레이): 단장도 나이를 먹는다. 물러날 때 구단·세계는 그대로 두고 후임 단장으로 이어 한다.
- 물러난 단장은 G.gmLine(단장 계보)에 남는다. 65세부터 구단주가 해마다 세대 교체를 묻고, 78세가 되는 해 1월 1일에는 구단이 정한 후임에게 넘어간다 */
-const GM_SUCC_ASK=65, GM_SUCC_FORCE=78;
-function gmRetired(){ const a=meAge(); return a!=null&&a>=GM_SUCC_FORCE; }
+ 물러난 단장은 G.gmLine(단장 계보)에 남는다. 65세부터 구단주가 해마다 세대 교체를 묻는다. 정년은 없다(카페 11-20: 은퇴·후임은 단장이 고른다) */
+const GM_SUCC_ASK=65;
+function gmRetired(){ return false; }
 function gmSuccInfo(){ const P=G.gmP||{}, C=G.myC||{}; const from=Math.min(G.year,...[G.gmSince,C.y0,P.y0,...(C.seas||[]).map(s=>s.y),...(C.stints||[]).map(s=>s.y0)].filter(Number.isFinite)); /* 계보의 기간은 마지막 구단이 아니라 이 사람의 전체 경력이다. */ const H=(G.history||[]).filter(h=>h.y>=from&&h.y<G.year+1);
   return {name:P.name||'단장',face:P.face||null,female:!!P.female,mod:P.mod||null,bg:P.bg||null,tid:G.user,from,to:G.year,age:meAge(),champ:H.filter(h=>h.champ===G.user).length,seas:H.length,rep:G.rep??50}; }
 function gmSucceed(np,why){ if(G.user==null||!G.gmP)return '지금은 넘길 수 없습니다.'; const wasU=!!G.unemp; if(!wasU&&(period()==='season'||period()==='post'))return '시즌이 끝난 뒤(10월 말~3월)에 넘길 수 있습니다.';
@@ -31823,11 +31851,9 @@ function gmSucceed(np,why){ if(G.user==null||!G.gmP)return '지금은 넘길 수
   mail('구단주실',`${G.gmP.name} 단장 취임`,`${old.name} 단장이 ${old.from}~${old.to}년 ${old.seas}시즌을 마치고 물러났습니다. 이제 ${G.gmP.name} 단장(${G.gmP.age}세)이 구단을 맡습니다.\n선수단·시설·재정·코치진은 그대로 이어집니다. 명성은 새로 쌓아야 합니다(지금 ${G.rep}). 단장 계약은 ${G.myC.y0}~${G.myC.y1}년.\n물러난 단장은 단장 화면의 '단장 계보'에 남습니다.`,{imp:true,kind:'경력'});
   return ''; }
 function gmAutoSucc(){ return {name:(()=>{ try{ return genName(); }catch(e){ return '김단장'; } })(),age:ri(40,48),bg:pick(['player','scout','data','corp']),female:R()<.15}; }
-/* 1월 1일: 65세부터 해마다 묻고, 78세면 구단이 정한 후임에게 넘긴다(시즌 밖이라 바로 넘길 수 있다) */
-function gmAgeYear(){ if(!G.gmP)return; const a=meAge(); if(a==null)return;
-  if(a>=GM_SUCC_FORCE){ const run=()=>gmSucceed(gmAutoSucc(),'정년'),r=G.unemp?withRng(G.year*1009+(G.gmLine||[]).length*31,run):run(); if(!r)return; }
-  if(a===GM_SUCC_FORCE-1)stop('구단',`단장님은 내년 1월 1일(${GM_SUCC_FORCE}세)에 정년으로 물러나고, 후임 단장이 이어받습니다. 단장 개인 경력 화면은 후임 기준으로 새로 시작하고, 지금 단장의 재임 기록(시즌·우승)은 단장 > 세대 교체의 단장 계보에 남습니다. 후임을 직접 정하려면 올해 12월 31일까지 정하세요. 지금 상태를 남기려면 빈 슬롯에 따로 저장해 두세요.`); /* 실제 자동 교체일 이전의 선택 기한을 안내한다. */
-  if(a>=GM_SUCC_ASK)mail(G.unemp?'경력 관리':'구단주실',`후임 단장을 정하실 수 있습니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 ${a>=GM_SUCC_FORCE-1?'올해 12월 31일까지':'시즌이 끝난 뒤'} 후임을 직접 정하고 물러날 수 있습니다. ${G.unemp?'후임도 소속 구단 없이 새 제의를 기다립니다.':'선수단·시설·재정은 그대로 후임에게 이어집니다.'}\n${GM_SUCC_FORCE}세가 되는 해 1월 1일에는 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
+/* 1월 1일: 65세부터 해마다 묻는다(나이 고정이면 묻지 않는다). 강제 교체는 없다 */
+function gmAgeYear(){ if(!G.gmP||G.gmP.ageFix!=null)return; const a=meAge(); if(a==null)return;
+  if(a>=GM_SUCC_ASK)mail(G.unemp?'경력 관리':'구단주실',`후임 단장을 정하실 수 있습니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 시즌이 끝난 뒤 후임을 직접 정하고 물러날 수 있습니다. ${G.unemp?'후임도 소속 구단 없이 새 제의를 기다립니다.':'선수단·시설·재정은 그대로 후임에게 이어집니다.'}\n정년은 없습니다. 계속하셔도 됩니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
 
 /* 구단별 누적 경기는 이직·복귀와 세대 교체를 거쳐 보존한다. 옛 저장은 상세 시즌·현재 재임 카운터로 복원한다. */
 function gmClubMigrate(beforeGame=false){ if(!G||G.user==null)return; const M=G.gmClubGames=G.gmClubGames||{}, totals={}, add=(tid,n)=>{if(tid!=null)totals[tid]=(totals[tid]||0)+Math.max(0,n||0);}, count=s=>(s.w||0)+(s.l||0)+(s.t||0);
@@ -45155,7 +45181,7 @@ function dmockHtml(){ let M=[], O=null; try{ O=_dbO||draftOdds(G.user); M=mockDr
 function draftBoard(){
   const live=G.draft&&!G.draft.done; const d=G.draft; const pk=live?d.picks[d.cur]:null; const mine=!!(pk&&pk.tid===G.user);
   const pool=draftPool();
-  if(!pool.length&&!live)return `<p class="small muted keep"><b>신인 드래프트</b> 올해 드래프트는 끝났습니다. 다음 해 참가 선수 명단은 새해에 나옵니다.</p>`+(d&&d.done?draftResults():''); /* 안내는 패널 밖 한 줄, 칸은 지명 결과에 */
+  if(!pool.length&&!live)return draftViewMenu()+`<p class="small muted keep"><b>신인 드래프트</b> 올해 드래프트는 끝났습니다. 다음 해 참가 선수 명단은 새해에 나옵니다.</p>`+(d&&d.done?draftResults():''); /* 안내는 패널 밖 한 줄, 칸은 지명 결과에. 드래프트가 끝난 뒤에도 '보기 ▾'로 지난 드래프트 성적표에 갈 수 있게(카페 11-20) */
   const all=draftRanked(pool); dbAutoApply(all); /* 자동 정렬 유지(사용자가 켰을 때만) */
   try{ _dbO=draftOdds(G.user); }catch(e){ _dbO=null; }
   const f=UI.df||(UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'board',more:20});
@@ -46186,7 +46212,7 @@ function rosterCountPanel(tid){ const r=rosterParts(tid,true), M=ROSTER_MAX, top
   const names=ids=>ids.map(id=>G.players[id]).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>`<button class="lnk rcnt-n" data-a="player" data-v="${p.id}">${esc(p.name)}<i>${esc(posLabel(p))}${p.mil&&p.mil.until?` · ${dsh(p.mil.until)} 전역`:''}</i></button>`).join('');
   const item=(k,l,n,sign,cls)=>n?`<details class="rcnt-i${cls?' '+cls:''}" data-k="${k}"><summary>${l}&nbsp;<b data-n="${k}">${sign}${n}</b>명&nbsp;<span class="rcnt-c" aria-hidden="true">▾</span></summary><div class="rcnt-pop" role="list">${names(r.L[k])}</div></details>`:`<span class="rcnt-i zero" data-k="${k}">${l}&nbsp;<b data-n="${k}">0</b>명</span>`;
   const tone=r.next>=M?'bad':r.next>=M-2?'warn':'good';
-  return `<section class="rcnt" data-rcnt aria-label="정식 선수 정원"><div class="rcnt-top"><span class="rcnt-h">정원</span><span>지금 정식 <b data-n="now">${r.now}</b></span><span class="rcnt-dot">·</span><span class="rcnt-nx">다음 개막 <b class="${tone}" data-n="next">${r.next}</b> / 한도 <b data-n="max">${M}</b></span></div>`
+  return `<section class="rcnt${UI.rcntMore?' more':''}" data-rcnt aria-label="정식 선수 정원"><div class="rcnt-top"><span class="rcnt-h">정원</span><span>지금 정식 <b data-n="now">${r.now}</b></span><span class="rcnt-dot">·</span><span class="rcnt-nx">다음 개막 <b class="${tone}" data-n="next">${r.next}</b> / 한도 <b data-n="max">${M}</b></span><button type="button" class="lnk rcnt-tog${top>=M?' bad':''}" data-a="rcntMore" aria-expanded="${!!UI.rcntMore}">${top>=M?'내역·경고':'내역'}&nbsp;<span aria-hidden="true">${UI.rcntMore?'▴':'▾'}</span></button></div>`
     +(r.rk+r.nx+r.mb+r.out+r.mx?'':`<div class="rcnt-parts rcnt-none"><span class="muted">다음 개막 전 합류·입대 예정 없음 (신인 <b data-n="rk">0</b> · 내년 입단 계약 <b data-n="nx">0</b> · 전역 <b data-n="mb">0</b> · 입대 <b data-n="out">0</b>)</span></div>`)+(r.rk+r.nx+r.mb+r.out+r.mx?`<div class="rcnt-parts">${item('rk','신인(올해 지명)',r.rk,'+')}${item('nx','내년 입단 계약',r.nx,'+')}${item('mb','개막 전 전역',r.mb,'+')}${item('out','개막 전 입대',r.out,'−')}${r.mx?item('mx','군 복무 중(개막 뒤 복귀, 세지 않음)',r.mx,'','ex'):''}</div>`:'')
     +(top>=M?`<p class="rcnt-warn" data-rcnt-warn>${r.next>=r.now?`다음 개막 ${r.next}명`:`지금 ${r.now}명`}으로 한도 ${M}명이 찼습니다. ${need}명을 정리(방출·트레이드·육성 전환)하기 전에는 FA·무적·트라이아웃 계약이 막힙니다.</p>`:'')+`</section>`; }
 /* FA·무적·트라이아웃 화면 한 줄 요약(같은 숫자) */
@@ -46257,7 +46283,7 @@ function rosterView(){
     <p class="small">${cv.sc?`<b>${esc(cv.sc.name)} 스카우트</b>(${cv.reg} · 능력 ${'★'.repeat(cv.sc.skill)})가 담당합니다. ${cv.sc.skill>=3?'1군과 2군 선수까지 현재 능력을 평가합니다.':'1군 선수만 평가합니다. 2군까지 보려면 능력 3 이상 스카우트가 필요합니다.'}`:`<b>${cv.reg}</b> 지역을 맡은 스카우트가 없습니다. 1군 기록만 볼 수 있고 능력 평가는 없습니다.`} 다른 구단 선수의 잠재력은 알 수 없습니다.${hidden?` 파악하지 못한 2군 선수 ${hidden}명은 명단에서 빠졌습니다.`:''}</p></section>`;
   const eN=playersOf(tid).filter(p=>p.e1).length;
   const segT=`<div class="seg rseg"><button data-a="seg" data-v="bat" class="${seg==='bat'?'on':''}">야수 ${playersOf(tid).filter(p=>!p.isP&&vis0(p)).length}</button><button data-a="seg" data-v="pit" class="${seg==='pit'?'on':''}">투수 ${playersOf(tid).filter(p=>p.isP&&vis0(p)).length}</button></div>`;
-  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}</div><div class="row small rh-tools"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span>${own&&!G.unemp?'':(()=>{ const r=rosterParts(tid); return r.next!==r.now||r.rk+r.nx+r.mb?`<span class="chipn" title="${esc(rosterPartsTxt(tid))}">다음 개막 <b${r.next>=ROSTER_MAX?' style="color:var(--bad)"':r.next>=ROSTER_MAX-2?' style="color:var(--warn)"':''}>${r.next}</b>/${ROSTER_MAX}</span>`:''; })()}<span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+(own&&!G.unemp?rosterCountPanel(tid):'')+cover; /* 카페 11-20: 화면은 지금 인원만 보여 정원 검사와 달라 보였다 */
+  const head=(own?trimCard():'')+`<div class="row between wrapr roster-heading"><div class="row" style="flex:1;min-width:0">${sel}${own&&!G.unemp?rosterCountPanel(tid):''}</div><div class="row small rh-tools"><span class="chipn">1군 <b>${entryOn()?eN:'-'}</b>/${entryLimit()}</span><span class="chipn">정식 <b>${rosterN(tid)}</b>/${ROSTER_MAX}</span>${own&&!G.unemp?'':(()=>{ const r=rosterParts(tid); return r.next!==r.now||r.rk+r.nx+r.mb?`<span class="chipn" title="${esc(rosterPartsTxt(tid))}">다음 개막 <b${r.next>=ROSTER_MAX?' style="color:var(--bad)"':r.next>=ROSTER_MAX-2?' style="color:var(--warn)"':''}>${r.next}</b>/${ROSTER_MAX}</span>`:''; })()}<span class="chipn">육성 <b>${ysN(tid)}</b>/${YS_MAX}</span>${own?`<button class="btn small" data-a="noEditOpen">등번호 정리</button>`:''}${own?`<button class="btn small" data-a="${UI.trimOn?'trimClose':'trimOn'}" aria-pressed="${!!UI.trimOn}">${UI.trimOn?'정리 종료':trimNeed()?'로스터 정리':'정리 모드'}</button>`:''}</div></div>`+cover; /* 카페 11-20: 화면은 지금 인원만 보여 정원 검사와 달라 보였다. 정원 칸은 머리 줄 빈자리에 두어 명단 높이를 지킨다(11-20 화면 공간 검사) */
   const fieldC=`<section class="card"><div class="row between"><h2 class="sec">포지션 배치도</h2><span class="small muted">${own?'':'현재 능력 기준'}</span></div><div class="fwrap">${fieldSVG(tid,own,true)}${fposList(tid,UI.fpos||null)}</div><p class="small tipme fpl-h">자리를 누르면 그 자리에 쓸 수 있는 선수가 펼쳐집니다. 투수 자리를 누르면 투수 전원이 나옵니다.</p><p class="small muted">오른쪽 색 숫자는 현재 능력(종합)입니다. 원 숫자는 타순, +는 같은 포지션 선수 수, *는 본래 포지션이 아닌 자리입니다.${own?'':' 평가가 없는 선수는 숫자가 비어 있습니다.'}</p></section>`;
   if(it.cur==='depth'){ const FS=futSquadView(tid); /* PC 세 칸 묶음: [배치도 | 1군 | 부상·재활] [2군 야수 | 2군 투수 | 육성선수](카페 국사왕 11-17) */
     return head+bar+fmCols(fieldC.replace('<section class="card">','<section class="card" data-wsl="포지션 배치도">')+csec(`1군 야수 · 벤치 · 투수진 <span class="small muted">${G.mgr[tid]?esc(G.mgr[tid].name)+' 감독':''}</span>`,UI.lufView==='field'?lineupFieldPanel(tid):glancePitch(tid),lineupFieldToggle()).replace('<section class="card">','<section class="card" data-wsl="1군 야수·투수진">'))+FS.injC+FS.farm; }
@@ -47559,6 +47585,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   seg(v){UI.seg=v;render();},
   rviewMode(v){UI.rlayout=v;render();},
+  rcntMore(){ UI.rcntMore=!UI.rcntMore; render(); }, /* 낮은 화면에서 접힌 정원 내역 펼치기(11-20) */
   fview2(v){ UI.fview2=v; render(); }, cmkView(v){ UI.cmkView=v; render(); }, cmkOpen(v){ v=String(v); UI.cmkOpen=String(UI.cmkOpen)===v?null:v; render(); }, cslotOpen(v){ UI.cslotOpen=UI.cslotOpen===v?null:v; render(); },
   sfCards(){ UI.coachCards=!UI.coachCards; render(); }, sfCoach(v){ UI.coachCards=1; A.coachSlot(v); },
   coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
@@ -51942,9 +51969,10 @@ function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge()
   if(!can)return line?csec('단장 계보',line):'';
   const off=G.unemp||period()!=='season'&&period()!=='post';
   const body=UI.gsucc?`<p class="small">후임 단장을 정합니다. ${G.unemp?'후임도 소속 구단 없이 새 제의를 기다립니다.':'선수단·시설·재정·코치진은 그대로 이어집니다.'} 명성은 새로 쌓습니다.</p>${gpForm('gmSuccGo','이 사람에게 넘기기')}<button class="btn block" data-a="gmSuccAsk" style="margin-top:6px">취소</button>`
-    :`<div class="row between"><p class="small muted">${a!=null?`지금 ${a}세. `:''}${GM_SUCC_FORCE}세가 되는 해 1월 1일에는 후임에게 넘어갑니다.${G.unemp?' 후임도 소속 구단 없이 시작합니다.':off?'':' 시즌이 끝난 뒤 넘길 수 있습니다.'}</p><button class="btn small${a>=GM_SUCC_ASK?' primary':''}" data-a="gmSuccAsk"${off?'':' disabled'}>후임에게 넘기기</button></div>`;
+    :`<div class="row between"><p class="small muted">${a!=null?`지금 ${a}세${G.gmP.ageFix!=null?'(나이 고정)':''}. `:''}정년은 없습니다. 원하실 때 후임을 정하고 물러날 수 있습니다.${G.unemp?' 후임도 소속 구단 없이 시작합니다.':off?'':' 시즌이 끝난 뒤 넘길 수 있습니다.'}</p><button class="btn small${a>=GM_SUCC_ASK?' primary':''}" data-a="gmSuccAsk"${off?'':' disabled'}>후임에게 넘기기</button></div><div class="row between"><p class="small muted">${G.gmP.ageFix!=null?'나이가 멈춰 있습니다. 끄면 이 나이부터 다시 한 살씩 먹습니다.':'켜면 지금 나이에서 더 먹지 않습니다.'}</p><button class="btn small" data-a="gmAgeFix">${G.gmP.ageFix!=null?'나이 고정 끄기':'나이 고정 켜기'}</button></div>`;
   return csec('세대 교체 · 단장 계보',body+line); }
 Object.assign(A,{
+  gmAgeFix(){ gmAgeFixToggle(); save(); render(); },
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
   dr1Pk(v){ UI.dr1Pk=+v||0; render(); },
   fdStr(v){ UI.fdStr=+v?1:0; render(); },
