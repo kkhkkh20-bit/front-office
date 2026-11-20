@@ -1,0 +1,32 @@
+[
+  {
+    "cohort": 0,
+    "variants": [
+      "hs_home",
+      "univ",
+      "seoul_comets",
+      "seoul_hounds"
+    ],
+    "reference_path": "/dev/shm/v21b-work/A061_cap_refs_0.png"
+  },
+  {
+    "cohort": 1,
+    "variants": [
+      "incheon_seagulls",
+      "suwon_sparks",
+      "goyang_storm",
+      "daejeon_redfox"
+    ],
+    "reference_path": "/dev/shm/v21b-work/A061_cap_refs_1.png"
+  },
+  {
+    "cohort": 2,
+    "variants": [
+      "gwangju_blazes",
+      "daegu_thunders",
+      "busan_waves",
+      "changwon_anchors"
+    ],
+    "reference_path": "/dev/shm/v21b-work/A061_cap_refs_2.png"
+  }
+]

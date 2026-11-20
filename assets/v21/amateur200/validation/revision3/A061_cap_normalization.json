@@ -1,0 +1,374 @@
+[
+  {
+    "id": "a061_cap__hs_home",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "hs_home",
+    "native_path": "/workspace/generated_images/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "crop": [
+      3,
+      3,
+      624,
+      624
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__hs_home.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.12066650390625,
+      117.78010559082031
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__univ",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "univ",
+    "native_path": "/workspace/generated_images/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "crop": [
+      630,
+      3,
+      1251,
+      624
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__univ.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.95822143554688,
+      117.8627700805664
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__seoul_comets",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "seoul_comets",
+    "native_path": "/workspace/generated_images/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "crop": [
+      3,
+      630,
+      624,
+      1251
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__seoul_comets.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.1425323486328,
+      117.90440368652344
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__seoul_hounds",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "seoul_hounds",
+    "native_path": "/workspace/generated_images/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "crop": [
+      630,
+      630,
+      1251,
+      1251
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__seoul_hounds.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.97482299804688,
+      117.8108139038086
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__incheon_seagulls",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "incheon_seagulls",
+    "native_path": "/workspace/generated_images/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "crop": [
+      3,
+      3,
+      624,
+      624
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__incheon_seagulls.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      0,
+      -3
+    ],
+    "center_256": [
+      130.98849487304688,
+      118.34913635253906
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__suwon_sparks",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "suwon_sparks",
+    "native_path": "/workspace/generated_images/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "crop": [
+      630,
+      3,
+      1251,
+      624
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__suwon_sparks.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      1,
+      -3
+    ],
+    "center_256": [
+      130.90365600585938,
+      118.3644027709961
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__goyang_storm",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "goyang_storm",
+    "native_path": "/workspace/generated_images/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "crop": [
+      3,
+      630,
+      624,
+      1251
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__goyang_storm.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      1,
+      -3
+    ],
+    "center_256": [
+      130.84268188476562,
+      118.2293930053711
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__daejeon_redfox",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "daejeon_redfox",
+    "native_path": "/workspace/generated_images/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "crop": [
+      630,
+      630,
+      1251,
+      1251
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__daejeon_redfox.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      1,
+      -3
+    ],
+    "center_256": [
+      130.8880615234375,
+      118.26988220214844
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__gwangju_blazes",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "gwangju_blazes",
+    "native_path": "/workspace/generated_images/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "crop": [
+      3,
+      3,
+      624,
+      624
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__gwangju_blazes.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      1,
+      -2
+    ],
+    "center_256": [
+      131.1103973388672,
+      118.42475891113281
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__daegu_thunders",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "daegu_thunders",
+    "native_path": "/workspace/generated_images/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "crop": [
+      630,
+      3,
+      1251,
+      624
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__daegu_thunders.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      0,
+      -2
+    ],
+    "center_256": [
+      130.9108428955078,
+      118.44012451171875
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__busan_waves",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "busan_waves",
+    "native_path": "/workspace/generated_images/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "crop": [
+      3,
+      630,
+      624,
+      1251
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__busan_waves.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      2,
+      -4
+    ],
+    "center_256": [
+      130.68182373046875,
+      118.0771713256836
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "a061_cap__changwon_anchors",
+    "person_key": "A061",
+    "game_id": "v21_amateur_A061",
+    "person_id": "c007_p05",
+    "review_id": "A061",
+    "kind": "A",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "variant": "changwon_anchors",
+    "native_path": "/workspace/generated_images/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "crop": [
+      630,
+      630,
+      1251,
+      1251
+    ],
+    "source": "same_face_low_profile_cap_crown_correction",
+    "normalized_path": "/dev/shm/v21b-work/normalized_A061_cap/a061_cap__changwon_anchors.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.4293670654297,
+      117.75537109375
+    ],
+    "status": "normalized_not_approved"
+  }
+]

@@ -426,15 +426,15 @@
     {
       "photo_id": "c007_p05__hs_home",
       "size": 128,
-      "actual_decoded_rgb_sha256": "9c919eba626c4ac08a5e278c9591433a9fd4dfc0cbb5906407684cdaa03148fd",
-      "measured_decoded_rgb_sha256": "9c919eba626c4ac08a5e278c9591433a9fd4dfc0cbb5906407684cdaa03148fd",
+      "actual_decoded_rgb_sha256": "58ae284364fedbae0aed9332eea0272380016114ecabdc919a3305463ba6d593",
+      "measured_decoded_rgb_sha256": "58ae284364fedbae0aed9332eea0272380016114ecabdc919a3305463ba6d593",
       "equal": true
     },
     {
       "photo_id": "c007_p06__hs_home",
       "size": 128,
-      "actual_decoded_rgb_sha256": "0f5b815968344cf87732153fcc4b0d57681b4f7206ddf5049699957d401dcb55",
-      "measured_decoded_rgb_sha256": "0f5b815968344cf87732153fcc4b0d57681b4f7206ddf5049699957d401dcb55",
+      "actual_decoded_rgb_sha256": "3c47e14e7857e6ccef62d57f27bca22864f60ffd86d5e849249bbc758e9a7571",
+      "measured_decoded_rgb_sha256": "3c47e14e7857e6ccef62d57f27bca22864f60ffd86d5e849249bbc758e9a7571",
       "equal": true
     },
     {
@@ -496,22 +496,22 @@
     {
       "photo_id": "c008_p06__hs_home",
       "size": 128,
-      "actual_decoded_rgb_sha256": "ae5f496093d1a5d0bcfdf2b9e4779ede90447b6e88287b14872a75fe9802487a",
-      "measured_decoded_rgb_sha256": "ae5f496093d1a5d0bcfdf2b9e4779ede90447b6e88287b14872a75fe9802487a",
+      "actual_decoded_rgb_sha256": "906dc07ad42a9bba7713d8a59ef445d507ebf72ad31b9f25968be754f46221bd",
+      "measured_decoded_rgb_sha256": "906dc07ad42a9bba7713d8a59ef445d507ebf72ad31b9f25968be754f46221bd",
       "equal": true
     },
     {
       "photo_id": "c008_p07__hs_home",
       "size": 128,
-      "actual_decoded_rgb_sha256": "465125ca834e55bef639c7de59613c717299a28b54effa4398efcee958abf15d",
-      "measured_decoded_rgb_sha256": "465125ca834e55bef639c7de59613c717299a28b54effa4398efcee958abf15d",
+      "actual_decoded_rgb_sha256": "7de5275d6d0f032a4ec392a8d339ca8c5ceb49e9c27375f52d401683b808dbf2",
+      "measured_decoded_rgb_sha256": "7de5275d6d0f032a4ec392a8d339ca8c5ceb49e9c27375f52d401683b808dbf2",
       "equal": true
     },
     {
       "photo_id": "c008_p08__hs_home",
       "size": 128,
-      "actual_decoded_rgb_sha256": "0897595bcb86ebb167a261022006c417d382aab688c2b217cd9eb0ba1399193b",
-      "measured_decoded_rgb_sha256": "0897595bcb86ebb167a261022006c417d382aab688c2b217cd9eb0ba1399193b",
+      "actual_decoded_rgb_sha256": "235fe77a5e949b06a3ecabddf8b58b46267fc1b4f28fdb272d08a8131b18eade",
+      "measured_decoded_rgb_sha256": "235fe77a5e949b06a3ecabddf8b58b46267fc1b4f28fdb272d08a8131b18eade",
       "equal": true
     },
     {
@@ -573,8 +573,8 @@
     {
       "photo_id": "c009_p08__hs_home",
       "size": 128,
-      "actual_decoded_rgb_sha256": "6ac34286d90079ef8cc28d1bb245c456421f23c7523caab86965f17c5d8488d1",
-      "measured_decoded_rgb_sha256": "6ac34286d90079ef8cc28d1bb245c456421f23c7523caab86965f17c5d8488d1",
+      "actual_decoded_rgb_sha256": "d804252d2876be78fcb3eb96ad2767701673fa6f1ddd4faceeaeced43c38392d",
+      "measured_decoded_rgb_sha256": "d804252d2876be78fcb3eb96ad2767701673fa6f1ddd4faceeaeced43c38392d",
       "equal": true
     },
     {
@@ -1126,15 +1126,15 @@
     {
       "photo_id": "c007_p05__univ",
       "size": 128,
-      "actual_decoded_rgb_sha256": "5cf6d3f3e65cf8d3518970eeb4fd6a11090fce7445cd0a4a6f942e30363f6e8b",
-      "measured_decoded_rgb_sha256": "5cf6d3f3e65cf8d3518970eeb4fd6a11090fce7445cd0a4a6f942e30363f6e8b",
+      "actual_decoded_rgb_sha256": "f2b6be6b13a3f9044a40674ff6c44c02b6c15273784a5e60a9d9f273ad7403cc",
+      "measured_decoded_rgb_sha256": "f2b6be6b13a3f9044a40674ff6c44c02b6c15273784a5e60a9d9f273ad7403cc",
       "equal": true
     },
     {
       "photo_id": "c007_p06__univ",
       "size": 128,
-      "actual_decoded_rgb_sha256": "e8f4c130ae2ab808ea3d1f6c13ebb2b10077be4ab686ab7e5488cd302cf540f2",
-      "measured_decoded_rgb_sha256": "e8f4c130ae2ab808ea3d1f6c13ebb2b10077be4ab686ab7e5488cd302cf540f2",
+      "actual_decoded_rgb_sha256": "7d105f8b64f832d032726d7645e9a740946c5087d9277034f97204909da4127a",
+      "measured_decoded_rgb_sha256": "7d105f8b64f832d032726d7645e9a740946c5087d9277034f97204909da4127a",
       "equal": true
     },
     {
@@ -1196,22 +1196,22 @@
     {
       "photo_id": "c008_p06__univ",
       "size": 128,
-      "actual_decoded_rgb_sha256": "399d0eb821fca890116e437d3298c8764d064253ca64abebc853a3a5393c50e0",
-      "measured_decoded_rgb_sha256": "399d0eb821fca890116e437d3298c8764d064253ca64abebc853a3a5393c50e0",
+      "actual_decoded_rgb_sha256": "4fe66f99ab9e5f3d563cb49db17123658c4f131610afde96a95136aaeae5f1eb",
+      "measured_decoded_rgb_sha256": "4fe66f99ab9e5f3d563cb49db17123658c4f131610afde96a95136aaeae5f1eb",
       "equal": true
     },
     {
       "photo_id": "c008_p07__univ",
       "size": 128,
-      "actual_decoded_rgb_sha256": "3e506f182cbad796c3e7412a55862b698527eae666707c09131e85f1c2f6fbdc",
-      "measured_decoded_rgb_sha256": "3e506f182cbad796c3e7412a55862b698527eae666707c09131e85f1c2f6fbdc",
+      "actual_decoded_rgb_sha256": "a82ecfa964ba1ee5d482ac6806e73b2dabb11d22fe54922bf6f764b9afefdf8d",
+      "measured_decoded_rgb_sha256": "a82ecfa964ba1ee5d482ac6806e73b2dabb11d22fe54922bf6f764b9afefdf8d",
       "equal": true
     },
     {
       "photo_id": "c008_p08__univ",
       "size": 128,
-      "actual_decoded_rgb_sha256": "c2a740493a630672a0a2f9ab9ce23dc4c601b730cfe30e57f4ddec6e8f6063cd",
-      "measured_decoded_rgb_sha256": "c2a740493a630672a0a2f9ab9ce23dc4c601b730cfe30e57f4ddec6e8f6063cd",
+      "actual_decoded_rgb_sha256": "595c8094b9f90e9ba7bd91aaf12a993e8c08eed1d775ece6baf59d409a3fb584",
+      "measured_decoded_rgb_sha256": "595c8094b9f90e9ba7bd91aaf12a993e8c08eed1d775ece6baf59d409a3fb584",
       "equal": true
     },
     {
@@ -1826,15 +1826,15 @@
     {
       "photo_id": "c007_p05__seoul_comets",
       "size": 128,
-      "actual_decoded_rgb_sha256": "8312f95d56407ec9492fec1c16193b9431de57974ba8063b73d058ec955a71dd",
-      "measured_decoded_rgb_sha256": "8312f95d56407ec9492fec1c16193b9431de57974ba8063b73d058ec955a71dd",
+      "actual_decoded_rgb_sha256": "8af11b27f5cfdcfa236e43c581a10faa8785def61c162fa1100999f2781b5aa7",
+      "measured_decoded_rgb_sha256": "8af11b27f5cfdcfa236e43c581a10faa8785def61c162fa1100999f2781b5aa7",
       "equal": true
     },
     {
       "photo_id": "c007_p06__seoul_comets",
       "size": 128,
-      "actual_decoded_rgb_sha256": "6cf67b37f5aeab45906939c7796166c4cac7cf970687f9ae0b770628df18b4de",
-      "measured_decoded_rgb_sha256": "6cf67b37f5aeab45906939c7796166c4cac7cf970687f9ae0b770628df18b4de",
+      "actual_decoded_rgb_sha256": "0768073786f2c310a00e3c400514428b8185981420184b862e56e4fec6659443",
+      "measured_decoded_rgb_sha256": "0768073786f2c310a00e3c400514428b8185981420184b862e56e4fec6659443",
       "equal": true
     },
     {
@@ -1896,15 +1896,15 @@
     {
       "photo_id": "c008_p06__seoul_comets",
       "size": 128,
-      "actual_decoded_rgb_sha256": "e06c34c18edc3032862ae1731fe7938f6f3654f7a3b68f60ad72e60f23024d4a",
-      "measured_decoded_rgb_sha256": "e06c34c18edc3032862ae1731fe7938f6f3654f7a3b68f60ad72e60f23024d4a",
+      "actual_decoded_rgb_sha256": "c4abeb7d55de9016c5b0e51f9aed1c5484f3191be6804285bf519f1529b66b1d",
+      "measured_decoded_rgb_sha256": "c4abeb7d55de9016c5b0e51f9aed1c5484f3191be6804285bf519f1529b66b1d",
       "equal": true
     },
     {
       "photo_id": "c008_p07__seoul_comets",
       "size": 128,
-      "actual_decoded_rgb_sha256": "49ee7f866a65106e97261593bb7f50e2890a3ae18739ba4bf4802ffb5e14d31c",
-      "measured_decoded_rgb_sha256": "49ee7f866a65106e97261593bb7f50e2890a3ae18739ba4bf4802ffb5e14d31c",
+      "actual_decoded_rgb_sha256": "32e8e89fc154306c270d0a0b0875ad06488bdc804546965bbaabeb130af73095",
+      "measured_decoded_rgb_sha256": "32e8e89fc154306c270d0a0b0875ad06488bdc804546965bbaabeb130af73095",
       "equal": true
     },
     {
@@ -2526,15 +2526,15 @@
     {
       "photo_id": "c007_p05__seoul_hounds",
       "size": 128,
-      "actual_decoded_rgb_sha256": "2b50208579909c890fedf05a714cc14fbc70bfa9ade72b0732296de0605bc9a6",
-      "measured_decoded_rgb_sha256": "2b50208579909c890fedf05a714cc14fbc70bfa9ade72b0732296de0605bc9a6",
+      "actual_decoded_rgb_sha256": "e0293038737a7baf3288a8d98aaf41ff08538918a6094f50f1d7120f56acae60",
+      "measured_decoded_rgb_sha256": "e0293038737a7baf3288a8d98aaf41ff08538918a6094f50f1d7120f56acae60",
       "equal": true
     },
     {
       "photo_id": "c007_p06__seoul_hounds",
       "size": 128,
-      "actual_decoded_rgb_sha256": "af510ed633eda785fb629598f75c3512adaeb20f2e860e2a22c6df94782ec142",
-      "measured_decoded_rgb_sha256": "af510ed633eda785fb629598f75c3512adaeb20f2e860e2a22c6df94782ec142",
+      "actual_decoded_rgb_sha256": "173587e7aa516dbb7fd6f855ddf627081e861e830d61d4832b65bc09d00afbe1",
+      "measured_decoded_rgb_sha256": "173587e7aa516dbb7fd6f855ddf627081e861e830d61d4832b65bc09d00afbe1",
       "equal": true
     },
     {
@@ -2596,8 +2596,8 @@
     {
       "photo_id": "c008_p06__seoul_hounds",
       "size": 128,
-      "actual_decoded_rgb_sha256": "bd20e7359792d523d777f66a104f9f0e231ad4925ed7366f6a4ffd6ad7882662",
-      "measured_decoded_rgb_sha256": "bd20e7359792d523d777f66a104f9f0e231ad4925ed7366f6a4ffd6ad7882662",
+      "actual_decoded_rgb_sha256": "55e2f1a05dd7f69af1daf79501768d6a30ac499d10e82753f2318d6c36efe1fb",
+      "measured_decoded_rgb_sha256": "55e2f1a05dd7f69af1daf79501768d6a30ac499d10e82753f2318d6c36efe1fb",
       "equal": true
     },
     {
@@ -3226,15 +3226,15 @@
     {
       "photo_id": "c007_p05__incheon_seagulls",
       "size": 128,
-      "actual_decoded_rgb_sha256": "ffdb51d445af6574dc75dcce436506003026ddd22e1a3af364c37c65c6e48145",
-      "measured_decoded_rgb_sha256": "ffdb51d445af6574dc75dcce436506003026ddd22e1a3af364c37c65c6e48145",
+      "actual_decoded_rgb_sha256": "de1617ccb8dff3055696a1e05d11bebcca19b39724c0897cb0a47e08882ec4ee",
+      "measured_decoded_rgb_sha256": "de1617ccb8dff3055696a1e05d11bebcca19b39724c0897cb0a47e08882ec4ee",
       "equal": true
     },
     {
       "photo_id": "c007_p06__incheon_seagulls",
       "size": 128,
-      "actual_decoded_rgb_sha256": "b01e7523016f51b3cf94ed315e33dc914a27c9882411db181c771cca2f4fbd02",
-      "measured_decoded_rgb_sha256": "b01e7523016f51b3cf94ed315e33dc914a27c9882411db181c771cca2f4fbd02",
+      "actual_decoded_rgb_sha256": "33720eaedcecbf35136fffbe6db431a5250e7d7cdf0c0efd40225caac6bd1c34",
+      "measured_decoded_rgb_sha256": "33720eaedcecbf35136fffbe6db431a5250e7d7cdf0c0efd40225caac6bd1c34",
       "equal": true
     },
     {
@@ -3296,15 +3296,15 @@
     {
       "photo_id": "c008_p06__incheon_seagulls",
       "size": 128,
-      "actual_decoded_rgb_sha256": "b8f90443ca0207cd45b89c4020ec018df69f8cbb85344f7f9abb7f315d93774f",
-      "measured_decoded_rgb_sha256": "b8f90443ca0207cd45b89c4020ec018df69f8cbb85344f7f9abb7f315d93774f",
+      "actual_decoded_rgb_sha256": "18b2eece34c0e6b72bd8c34c3be69d608529fef3dbaef6866e21f81b2895262d",
+      "measured_decoded_rgb_sha256": "18b2eece34c0e6b72bd8c34c3be69d608529fef3dbaef6866e21f81b2895262d",
       "equal": true
     },
     {
       "photo_id": "c008_p07__incheon_seagulls",
       "size": 128,
-      "actual_decoded_rgb_sha256": "f9b0e718d8c6dacef237b186dec2ba71f939eb2dad05ea3d14c9b6fe14c8c6d2",
-      "measured_decoded_rgb_sha256": "f9b0e718d8c6dacef237b186dec2ba71f939eb2dad05ea3d14c9b6fe14c8c6d2",
+      "actual_decoded_rgb_sha256": "913f038ff72de893fa696c62bd29ff20097b5aebc160fcd098eccf128162fec4",
+      "measured_decoded_rgb_sha256": "913f038ff72de893fa696c62bd29ff20097b5aebc160fcd098eccf128162fec4",
       "equal": true
     },
     {
@@ -3373,8 +3373,8 @@
     {
       "photo_id": "c009_p08__incheon_seagulls",
       "size": 128,
-      "actual_decoded_rgb_sha256": "1aa2264f6ced528e9efe0c6ecd2541373662614715e326bc7031942d8457cba1",
-      "measured_decoded_rgb_sha256": "1aa2264f6ced528e9efe0c6ecd2541373662614715e326bc7031942d8457cba1",
+      "actual_decoded_rgb_sha256": "ab0fb0a426e0d0bad927ae26d2d6b95711c7dd4667fe74bdf0a4c0325612ee3f",
+      "measured_decoded_rgb_sha256": "ab0fb0a426e0d0bad927ae26d2d6b95711c7dd4667fe74bdf0a4c0325612ee3f",
       "equal": true
     },
     {
@@ -3926,15 +3926,15 @@
     {
       "photo_id": "c007_p05__suwon_sparks",
       "size": 128,
-      "actual_decoded_rgb_sha256": "db6bc593c021b432ab3871ad69eabc47b9f07afbb2f2e8397eac8db0fe78165b",
-      "measured_decoded_rgb_sha256": "db6bc593c021b432ab3871ad69eabc47b9f07afbb2f2e8397eac8db0fe78165b",
+      "actual_decoded_rgb_sha256": "04262a65ef4b858165f9866be598a1e73e2e135718d123b9fd85346f9b972b54",
+      "measured_decoded_rgb_sha256": "04262a65ef4b858165f9866be598a1e73e2e135718d123b9fd85346f9b972b54",
       "equal": true
     },
     {
       "photo_id": "c007_p06__suwon_sparks",
       "size": 128,
-      "actual_decoded_rgb_sha256": "494dee6ec68d5c4f7bfc16aed000469d78d248edaea0809fb964be3c54af898e",
-      "measured_decoded_rgb_sha256": "494dee6ec68d5c4f7bfc16aed000469d78d248edaea0809fb964be3c54af898e",
+      "actual_decoded_rgb_sha256": "665dba6548cc1b7757ce3325c020cab5e69fdbaaadbc87b82f338648f4872acd",
+      "measured_decoded_rgb_sha256": "665dba6548cc1b7757ce3325c020cab5e69fdbaaadbc87b82f338648f4872acd",
       "equal": true
     },
     {
@@ -3996,22 +3996,22 @@
     {
       "photo_id": "c008_p06__suwon_sparks",
       "size": 128,
-      "actual_decoded_rgb_sha256": "8efe0165b107c893d9e2eb942e806779f584332ffd961bf013595893a17da6ff",
-      "measured_decoded_rgb_sha256": "8efe0165b107c893d9e2eb942e806779f584332ffd961bf013595893a17da6ff",
+      "actual_decoded_rgb_sha256": "17568ef2e27f4e080cbbab037a8ebb0932b40caf39396dd33e32dbdc31181452",
+      "measured_decoded_rgb_sha256": "17568ef2e27f4e080cbbab037a8ebb0932b40caf39396dd33e32dbdc31181452",
       "equal": true
     },
     {
       "photo_id": "c008_p07__suwon_sparks",
       "size": 128,
-      "actual_decoded_rgb_sha256": "6babdfbf2c1a757eb382e8211941d5ea6b77301760f800e5ada2605c76d34bfc",
-      "measured_decoded_rgb_sha256": "6babdfbf2c1a757eb382e8211941d5ea6b77301760f800e5ada2605c76d34bfc",
+      "actual_decoded_rgb_sha256": "045899e188d3ddaeed49f137e3cee9c411884f0318723ebc32bf986f5ea194e9",
+      "measured_decoded_rgb_sha256": "045899e188d3ddaeed49f137e3cee9c411884f0318723ebc32bf986f5ea194e9",
       "equal": true
     },
     {
       "photo_id": "c008_p08__suwon_sparks",
       "size": 128,
-      "actual_decoded_rgb_sha256": "aa504f1f4f7d9ba049f8bdc536d5eef6e28480e77b6e3e9da0dcbe2b0f93062c",
-      "measured_decoded_rgb_sha256": "aa504f1f4f7d9ba049f8bdc536d5eef6e28480e77b6e3e9da0dcbe2b0f93062c",
+      "actual_decoded_rgb_sha256": "eea95ab5ec31a8603e29f2df647024019b913c30e858aba22e01b6db90e4bdb1",
+      "measured_decoded_rgb_sha256": "eea95ab5ec31a8603e29f2df647024019b913c30e858aba22e01b6db90e4bdb1",
       "equal": true
     },
     {
@@ -4073,8 +4073,8 @@
     {
       "photo_id": "c009_p08__suwon_sparks",
       "size": 128,
-      "actual_decoded_rgb_sha256": "0a6674ca389eea2bf6f32b2f028e95c0efaeea20f5a9f2d90fa02ba498dc6a01",
-      "measured_decoded_rgb_sha256": "0a6674ca389eea2bf6f32b2f028e95c0efaeea20f5a9f2d90fa02ba498dc6a01",
+      "actual_decoded_rgb_sha256": "c3e1463be6a9269bf3b4d950c496a46df0075a966cb3793b2d4bc9438b1ee41a",
+      "measured_decoded_rgb_sha256": "c3e1463be6a9269bf3b4d950c496a46df0075a966cb3793b2d4bc9438b1ee41a",
       "equal": true
     },
     {
@@ -4626,15 +4626,15 @@
     {
       "photo_id": "c007_p05__goyang_storm",
       "size": 128,
-      "actual_decoded_rgb_sha256": "bdfdeaa6b2dca5fc7fc91e3326d92feb99af7b7925a13bc550c01091139d4081",
-      "measured_decoded_rgb_sha256": "bdfdeaa6b2dca5fc7fc91e3326d92feb99af7b7925a13bc550c01091139d4081",
+      "actual_decoded_rgb_sha256": "7977bfd7cbc650c35cdbb1c290703a26affaea4f18f317c57233fc05381d09d3",
+      "measured_decoded_rgb_sha256": "7977bfd7cbc650c35cdbb1c290703a26affaea4f18f317c57233fc05381d09d3",
       "equal": true
     },
     {
       "photo_id": "c007_p06__goyang_storm",
       "size": 128,
-      "actual_decoded_rgb_sha256": "066d63cea687d1f9c286f524a110e2a9542757943e73ebc9958d31e961ffead5",
-      "measured_decoded_rgb_sha256": "066d63cea687d1f9c286f524a110e2a9542757943e73ebc9958d31e961ffead5",
+      "actual_decoded_rgb_sha256": "cc656a886d26e919f21ecc21e8a070b22b2364d19a9b80da555ecd5ecdaf09f1",
+      "measured_decoded_rgb_sha256": "cc656a886d26e919f21ecc21e8a070b22b2364d19a9b80da555ecd5ecdaf09f1",
       "equal": true
     },
     {
@@ -4696,15 +4696,15 @@
     {
       "photo_id": "c008_p06__goyang_storm",
       "size": 128,
-      "actual_decoded_rgb_sha256": "118b63b7a941579156039b614587d1644a693e745a40b39795e54ffd816d86ea",
-      "measured_decoded_rgb_sha256": "118b63b7a941579156039b614587d1644a693e745a40b39795e54ffd816d86ea",
+      "actual_decoded_rgb_sha256": "906c1c557ec61d84908b00a3478ae85dfcaa82f0b4a80e47f8f877765961877c",
+      "measured_decoded_rgb_sha256": "906c1c557ec61d84908b00a3478ae85dfcaa82f0b4a80e47f8f877765961877c",
       "equal": true
     },
     {
       "photo_id": "c008_p07__goyang_storm",
       "size": 128,
-      "actual_decoded_rgb_sha256": "cc5b267a55b6f02505693e3b273ed4f6df5a148a8bce1603a800aaa1580c91a7",
-      "measured_decoded_rgb_sha256": "cc5b267a55b6f02505693e3b273ed4f6df5a148a8bce1603a800aaa1580c91a7",
+      "actual_decoded_rgb_sha256": "94856ce26788220175f14552d9c6a97ae1eb72c08589a400d4fd309a01e28c5e",
+      "measured_decoded_rgb_sha256": "94856ce26788220175f14552d9c6a97ae1eb72c08589a400d4fd309a01e28c5e",
       "equal": true
     },
     {
@@ -4766,15 +4766,15 @@
     {
       "photo_id": "c003_p01__goyang_storm",
       "size": 128,
-      "actual_decoded_rgb_sha256": "a1f6e43b0c1f146c06c0e9b69b89eefc7d2204fe9697dfc42c64011187418c4a",
-      "measured_decoded_rgb_sha256": "a1f6e43b0c1f146c06c0e9b69b89eefc7d2204fe9697dfc42c64011187418c4a",
+      "actual_decoded_rgb_sha256": "f28dca07fd24c3f407c13ed37ae11f261fac13465193955b42d980ba551d32fe",
+      "measured_decoded_rgb_sha256": "f28dca07fd24c3f407c13ed37ae11f261fac13465193955b42d980ba551d32fe",
       "equal": true
     },
     {
       "photo_id": "c009_p08__goyang_storm",
       "size": 128,
-      "actual_decoded_rgb_sha256": "bf57e40d71626059a1a5d8f72c9fa11eafdf2ed344c18f53f46b389aceead9e5",
-      "measured_decoded_rgb_sha256": "bf57e40d71626059a1a5d8f72c9fa11eafdf2ed344c18f53f46b389aceead9e5",
+      "actual_decoded_rgb_sha256": "395f2792804f1edbba56bc7004ebcc89e5d7a781ea8d00700be61873abf7df8b",
+      "measured_decoded_rgb_sha256": "395f2792804f1edbba56bc7004ebcc89e5d7a781ea8d00700be61873abf7df8b",
       "equal": true
     },
     {
@@ -5326,15 +5326,15 @@
     {
       "photo_id": "c007_p05__daejeon_redfox",
       "size": 128,
-      "actual_decoded_rgb_sha256": "ad15966c2cc6304e763f3e7a7d895f1a847f006b7a34caf092157a8deb28704b",
-      "measured_decoded_rgb_sha256": "ad15966c2cc6304e763f3e7a7d895f1a847f006b7a34caf092157a8deb28704b",
+      "actual_decoded_rgb_sha256": "567abe9f546c61f6b7ad7aaf5161943589b3e2a0fd3d87234e92cbd4d0722d1b",
+      "measured_decoded_rgb_sha256": "567abe9f546c61f6b7ad7aaf5161943589b3e2a0fd3d87234e92cbd4d0722d1b",
       "equal": true
     },
     {
       "photo_id": "c007_p06__daejeon_redfox",
       "size": 128,
-      "actual_decoded_rgb_sha256": "47dc8673351c2800ab740de57f334de398c3fcb57efbbc18a353f91dd8023270",
-      "measured_decoded_rgb_sha256": "47dc8673351c2800ab740de57f334de398c3fcb57efbbc18a353f91dd8023270",
+      "actual_decoded_rgb_sha256": "0d5727cf658c54f1553fa2824d2a847df38ba003ac0c46b566b3994b7982b67f",
+      "measured_decoded_rgb_sha256": "0d5727cf658c54f1553fa2824d2a847df38ba003ac0c46b566b3994b7982b67f",
       "equal": true
     },
     {
@@ -5396,15 +5396,15 @@
     {
       "photo_id": "c008_p06__daejeon_redfox",
       "size": 128,
-      "actual_decoded_rgb_sha256": "85c92697af1d3c2f11e56dda644873d6cdaaee9ecf3a496fa1043c24d7772e24",
-      "measured_decoded_rgb_sha256": "85c92697af1d3c2f11e56dda644873d6cdaaee9ecf3a496fa1043c24d7772e24",
+      "actual_decoded_rgb_sha256": "bd41ae4d262dcbdb27b31e49264905b93a25f766215eb1e3b560e37a2ecf6047",
+      "measured_decoded_rgb_sha256": "bd41ae4d262dcbdb27b31e49264905b93a25f766215eb1e3b560e37a2ecf6047",
       "equal": true
     },
     {
       "photo_id": "c008_p07__daejeon_redfox",
       "size": 128,
-      "actual_decoded_rgb_sha256": "821967413646d60da6c8bae2ec4ffefddda702a4b688288bf9d7da66f98df7b1",
-      "measured_decoded_rgb_sha256": "821967413646d60da6c8bae2ec4ffefddda702a4b688288bf9d7da66f98df7b1",
+      "actual_decoded_rgb_sha256": "6f79a41d06cb598e625d7c92d47fe4245e1f4d04be618d3e7b6cfd096ef41f62",
+      "measured_decoded_rgb_sha256": "6f79a41d06cb598e625d7c92d47fe4245e1f4d04be618d3e7b6cfd096ef41f62",
       "equal": true
     },
     {
@@ -6026,15 +6026,15 @@
     {
       "photo_id": "c007_p05__gwangju_blazes",
       "size": 128,
-      "actual_decoded_rgb_sha256": "4478db178440a7fe50aa54082b1c8eff62a18e14d0b21ada94747bfa748c4eda",
-      "measured_decoded_rgb_sha256": "4478db178440a7fe50aa54082b1c8eff62a18e14d0b21ada94747bfa748c4eda",
+      "actual_decoded_rgb_sha256": "6bafa1208f9c78dd2a32cae6a5bea73f05d01b10f1c98b4424a0906ffa205fc5",
+      "measured_decoded_rgb_sha256": "6bafa1208f9c78dd2a32cae6a5bea73f05d01b10f1c98b4424a0906ffa205fc5",
       "equal": true
     },
     {
       "photo_id": "c007_p06__gwangju_blazes",
       "size": 128,
-      "actual_decoded_rgb_sha256": "38c2ff2b23f7548acec6d94408adbab0d20fbfde60cea606d2c4702c647f4cf9",
-      "measured_decoded_rgb_sha256": "38c2ff2b23f7548acec6d94408adbab0d20fbfde60cea606d2c4702c647f4cf9",
+      "actual_decoded_rgb_sha256": "df1fc88a253688008a52426739b3f0a2c1db03ec997491f36c3555b039c4ff9d",
+      "measured_decoded_rgb_sha256": "df1fc88a253688008a52426739b3f0a2c1db03ec997491f36c3555b039c4ff9d",
       "equal": true
     },
     {
@@ -6096,22 +6096,22 @@
     {
       "photo_id": "c008_p06__gwangju_blazes",
       "size": 128,
-      "actual_decoded_rgb_sha256": "7f7ffdb4e65d17ed964c2963d0a55f55b4e617df45572a2d8f3b6951938c8cc6",
-      "measured_decoded_rgb_sha256": "7f7ffdb4e65d17ed964c2963d0a55f55b4e617df45572a2d8f3b6951938c8cc6",
+      "actual_decoded_rgb_sha256": "2f3af7b4c92097e38bd855da2b75ee65b6ceec0429d2b027cfb3c05f8fda4af1",
+      "measured_decoded_rgb_sha256": "2f3af7b4c92097e38bd855da2b75ee65b6ceec0429d2b027cfb3c05f8fda4af1",
       "equal": true
     },
     {
       "photo_id": "c008_p07__gwangju_blazes",
       "size": 128,
-      "actual_decoded_rgb_sha256": "cd311f82c8e3aaea3ce6a94a394c597349c43c45c068c5d49c6d1b6803fa2113",
-      "measured_decoded_rgb_sha256": "cd311f82c8e3aaea3ce6a94a394c597349c43c45c068c5d49c6d1b6803fa2113",
+      "actual_decoded_rgb_sha256": "3f8c7161786e13e0648ade5fd92967f5d5a8ffae374431dfeddd05d6104dc598",
+      "measured_decoded_rgb_sha256": "3f8c7161786e13e0648ade5fd92967f5d5a8ffae374431dfeddd05d6104dc598",
       "equal": true
     },
     {
       "photo_id": "c008_p08__gwangju_blazes",
       "size": 128,
-      "actual_decoded_rgb_sha256": "dfe24592a25438e359de449ff31383328b83b56522818a97d6f4117d1c1d1379",
-      "measured_decoded_rgb_sha256": "dfe24592a25438e359de449ff31383328b83b56522818a97d6f4117d1c1d1379",
+      "actual_decoded_rgb_sha256": "8018a571d5e616f1bfc871344491838fed79853e59f87ec7be0d507ad5a637c5",
+      "measured_decoded_rgb_sha256": "8018a571d5e616f1bfc871344491838fed79853e59f87ec7be0d507ad5a637c5",
       "equal": true
     },
     {
@@ -6180,8 +6180,8 @@
     {
       "photo_id": "c009_p09__gwangju_blazes",
       "size": 128,
-      "actual_decoded_rgb_sha256": "16692f432eaab081f5d34ded267dc51aae04583d1e114c437c2fe0b43d431ba7",
-      "measured_decoded_rgb_sha256": "16692f432eaab081f5d34ded267dc51aae04583d1e114c437c2fe0b43d431ba7",
+      "actual_decoded_rgb_sha256": "bbca2603b650dc9abbc43a69c27f5ba779a2f3e28f1afc8198611c213450868d",
+      "measured_decoded_rgb_sha256": "bbca2603b650dc9abbc43a69c27f5ba779a2f3e28f1afc8198611c213450868d",
       "equal": true
     },
     {
@@ -6726,15 +6726,15 @@
     {
       "photo_id": "c007_p05__daegu_thunders",
       "size": 128,
-      "actual_decoded_rgb_sha256": "d2c60d00e2c56765bafa6fb0947aea2b1c089cc26f843bd01b5d36ec9c9b3515",
-      "measured_decoded_rgb_sha256": "d2c60d00e2c56765bafa6fb0947aea2b1c089cc26f843bd01b5d36ec9c9b3515",
+      "actual_decoded_rgb_sha256": "fccb9c15578e09b2c43eda82c8ccd84e8db088784b018cb8faa067a7cf3299a6",
+      "measured_decoded_rgb_sha256": "fccb9c15578e09b2c43eda82c8ccd84e8db088784b018cb8faa067a7cf3299a6",
       "equal": true
     },
     {
       "photo_id": "c007_p06__daegu_thunders",
       "size": 128,
-      "actual_decoded_rgb_sha256": "e1b2c6c5386263213ecd89fdff96e17fc7b2fe4dc47fede1d97120470a710ebb",
-      "measured_decoded_rgb_sha256": "e1b2c6c5386263213ecd89fdff96e17fc7b2fe4dc47fede1d97120470a710ebb",
+      "actual_decoded_rgb_sha256": "9daea9bdaec485731c702a8a3fef90d0d7ad529100196d05ca66f1a869733e0f",
+      "measured_decoded_rgb_sha256": "9daea9bdaec485731c702a8a3fef90d0d7ad529100196d05ca66f1a869733e0f",
       "equal": true
     },
     {
@@ -6796,8 +6796,8 @@
     {
       "photo_id": "c008_p06__daegu_thunders",
       "size": 128,
-      "actual_decoded_rgb_sha256": "65aee578696ba5ad8223db742f512cacd4cc8ac577622e31518d45a6d18a1337",
-      "measured_decoded_rgb_sha256": "65aee578696ba5ad8223db742f512cacd4cc8ac577622e31518d45a6d18a1337",
+      "actual_decoded_rgb_sha256": "22fb081dc1620b87f3224a68eab5729bbebd5a2e34350bd3cca2b60f98597d8b",
+      "measured_decoded_rgb_sha256": "22fb081dc1620b87f3224a68eab5729bbebd5a2e34350bd3cca2b60f98597d8b",
       "equal": true
     },
     {
@@ -7426,15 +7426,15 @@
     {
       "photo_id": "c007_p05__busan_waves",
       "size": 128,
-      "actual_decoded_rgb_sha256": "c456ce5c864b4b470ee689420c984e6820b6a7ad38c6d153bd4886bf0cc7fd55",
-      "measured_decoded_rgb_sha256": "c456ce5c864b4b470ee689420c984e6820b6a7ad38c6d153bd4886bf0cc7fd55",
+      "actual_decoded_rgb_sha256": "07db0da1d0627d8a6218ea5519ce955a292856686abaf063b1a08312ea3f852d",
+      "measured_decoded_rgb_sha256": "07db0da1d0627d8a6218ea5519ce955a292856686abaf063b1a08312ea3f852d",
       "equal": true
     },
     {
       "photo_id": "c007_p06__busan_waves",
       "size": 128,
-      "actual_decoded_rgb_sha256": "6011eeab60ced0a80f47e1a865c9f6b9ad6035b9120ff1b5bb288d8e791e871f",
-      "measured_decoded_rgb_sha256": "6011eeab60ced0a80f47e1a865c9f6b9ad6035b9120ff1b5bb288d8e791e871f",
+      "actual_decoded_rgb_sha256": "7ecdec263988617fc680c5e9a00502d01de3d4d790ca869ba9001d0a08bbaf41",
+      "measured_decoded_rgb_sha256": "7ecdec263988617fc680c5e9a00502d01de3d4d790ca869ba9001d0a08bbaf41",
       "equal": true
     },
     {
@@ -7496,15 +7496,15 @@
     {
       "photo_id": "c008_p06__busan_waves",
       "size": 128,
-      "actual_decoded_rgb_sha256": "88511350bd739414edd863a4d83415b269c68f4eab94155825a920c0abaaa97e",
-      "measured_decoded_rgb_sha256": "88511350bd739414edd863a4d83415b269c68f4eab94155825a920c0abaaa97e",
+      "actual_decoded_rgb_sha256": "17c96c0b44615c749016a61f309b3200ba482c8036637235425f98fe552f3509",
+      "measured_decoded_rgb_sha256": "17c96c0b44615c749016a61f309b3200ba482c8036637235425f98fe552f3509",
       "equal": true
     },
     {
       "photo_id": "c008_p07__busan_waves",
       "size": 128,
-      "actual_decoded_rgb_sha256": "3e9294b75b69251d39f9c777158cede93356f95881daa62f5f90d9d57b5c8071",
-      "measured_decoded_rgb_sha256": "3e9294b75b69251d39f9c777158cede93356f95881daa62f5f90d9d57b5c8071",
+      "actual_decoded_rgb_sha256": "5156e359d5fdfcbd35ff410ff0f6821f3f751893ee6f13e673a6c3e6c426b0de",
+      "measured_decoded_rgb_sha256": "5156e359d5fdfcbd35ff410ff0f6821f3f751893ee6f13e673a6c3e6c426b0de",
       "equal": true
     },
     {
@@ -8126,15 +8126,15 @@
     {
       "photo_id": "c007_p05__changwon_anchors",
       "size": 128,
-      "actual_decoded_rgb_sha256": "2f91eb4d267de3c85e7ec76684db6955d613350b6e2f1c09869f261dd5485b72",
-      "measured_decoded_rgb_sha256": "2f91eb4d267de3c85e7ec76684db6955d613350b6e2f1c09869f261dd5485b72",
+      "actual_decoded_rgb_sha256": "46473aa3cfd78265917b02492ebd21eced8182508c6cfec573645718156af59d",
+      "measured_decoded_rgb_sha256": "46473aa3cfd78265917b02492ebd21eced8182508c6cfec573645718156af59d",
       "equal": true
     },
     {
       "photo_id": "c007_p06__changwon_anchors",
       "size": 128,
-      "actual_decoded_rgb_sha256": "861286534ab38d1c030ee6123aadaac9fb79da9a80ec17dfdaddff71dfd02f5e",
-      "measured_decoded_rgb_sha256": "861286534ab38d1c030ee6123aadaac9fb79da9a80ec17dfdaddff71dfd02f5e",
+      "actual_decoded_rgb_sha256": "0975d966a826f57ebba693d325e820b8e7efb88bbcd9dbb7da5af0b861184064",
+      "measured_decoded_rgb_sha256": "0975d966a826f57ebba693d325e820b8e7efb88bbcd9dbb7da5af0b861184064",
       "equal": true
     },
     {
@@ -8196,15 +8196,15 @@
     {
       "photo_id": "c008_p06__changwon_anchors",
       "size": 128,
-      "actual_decoded_rgb_sha256": "ca4ec2a8e8a19a925cc73deee0e2305db5e40725e2096b9056435cd3330df34a",
-      "measured_decoded_rgb_sha256": "ca4ec2a8e8a19a925cc73deee0e2305db5e40725e2096b9056435cd3330df34a",
+      "actual_decoded_rgb_sha256": "bae4522e968d688886766a556d99076dd607f6b66294d9bdbd25fc1f69e85302",
+      "measured_decoded_rgb_sha256": "bae4522e968d688886766a556d99076dd607f6b66294d9bdbd25fc1f69e85302",
       "equal": true
     },
     {
       "photo_id": "c008_p07__changwon_anchors",
       "size": 128,
-      "actual_decoded_rgb_sha256": "3f9523f8a54a569e98995585324fda2cee6c5ccf0f17c01b24b17e96a9b1d32f",
-      "measured_decoded_rgb_sha256": "3f9523f8a54a569e98995585324fda2cee6c5ccf0f17c01b24b17e96a9b1d32f",
+      "actual_decoded_rgb_sha256": "debabf6612a3b42b917142ae1f8d11e3bbf06b90e2d605ca717641e867522f4c",
+      "measured_decoded_rgb_sha256": "debabf6612a3b42b917142ae1f8d11e3bbf06b90e2d605ca717641e867522f4c",
       "equal": true
     },
     {
@@ -8826,15 +8826,15 @@
     {
       "photo_id": "c007_p05__hs_home",
       "size": 256,
-      "actual_decoded_rgb_sha256": "1114402caf54033351d2b5b39abdd0b8a10df563538700c634d8a97e7104811b",
-      "measured_decoded_rgb_sha256": "1114402caf54033351d2b5b39abdd0b8a10df563538700c634d8a97e7104811b",
+      "actual_decoded_rgb_sha256": "7dbd5c1b299fcb6c750a125e72be3181e314b925158a8eca40c546da41f1d5d4",
+      "measured_decoded_rgb_sha256": "7dbd5c1b299fcb6c750a125e72be3181e314b925158a8eca40c546da41f1d5d4",
       "equal": true
     },
     {
       "photo_id": "c007_p06__hs_home",
       "size": 256,
-      "actual_decoded_rgb_sha256": "cd3b471d36b628dc8a0273116ad4a5fc17f2dde86ec3d075785d26063ab58de3",
-      "measured_decoded_rgb_sha256": "cd3b471d36b628dc8a0273116ad4a5fc17f2dde86ec3d075785d26063ab58de3",
+      "actual_decoded_rgb_sha256": "31d5abd30fdb4ae102e7a24c19475fd3420df6731f543d77cc99356ad8bf4cf6",
+      "measured_decoded_rgb_sha256": "31d5abd30fdb4ae102e7a24c19475fd3420df6731f543d77cc99356ad8bf4cf6",
       "equal": true
     },
     {
@@ -8896,15 +8896,15 @@
     {
       "photo_id": "c008_p06__hs_home",
       "size": 256,
-      "actual_decoded_rgb_sha256": "e8046957c40f590534d026d69ea3d8c62cc8df44a7d3dd964d3d527639a1b626",
-      "measured_decoded_rgb_sha256": "e8046957c40f590534d026d69ea3d8c62cc8df44a7d3dd964d3d527639a1b626",
+      "actual_decoded_rgb_sha256": "29e52f3c0a2b8df594f9d371051ff951dc991e20fa5a0d76de3095792768b028",
+      "measured_decoded_rgb_sha256": "29e52f3c0a2b8df594f9d371051ff951dc991e20fa5a0d76de3095792768b028",
       "equal": true
     },
     {
       "photo_id": "c008_p07__hs_home",
       "size": 256,
-      "actual_decoded_rgb_sha256": "a8da8b1907d07b354a7ea79be7f4d11026c09d7bf7e39d6b90fadfbeb0ff99a6",
-      "measured_decoded_rgb_sha256": "a8da8b1907d07b354a7ea79be7f4d11026c09d7bf7e39d6b90fadfbeb0ff99a6",
+      "actual_decoded_rgb_sha256": "cc703281a13a3a7afeeee8d4d90cc3725f98c20d69ac3ae5d86fe702547f35a3",
+      "measured_decoded_rgb_sha256": "cc703281a13a3a7afeeee8d4d90cc3725f98c20d69ac3ae5d86fe702547f35a3",
       "equal": true
     },
     {
@@ -9526,15 +9526,15 @@
     {
       "photo_id": "c007_p05__univ",
       "size": 256,
-      "actual_decoded_rgb_sha256": "2b77af587fa47fe808869fdb5a2edfbb53947f0acbeb1f04b14f9e8ab6ca1616",
-      "measured_decoded_rgb_sha256": "2b77af587fa47fe808869fdb5a2edfbb53947f0acbeb1f04b14f9e8ab6ca1616",
+      "actual_decoded_rgb_sha256": "b13b4f3fde654f0479a1d562c1ac6eb9b65b4bc6e6713459d596767e19719519",
+      "measured_decoded_rgb_sha256": "b13b4f3fde654f0479a1d562c1ac6eb9b65b4bc6e6713459d596767e19719519",
       "equal": true
     },
     {
       "photo_id": "c007_p06__univ",
       "size": 256,
-      "actual_decoded_rgb_sha256": "3bdb402a333872458bd13bd6d22e4f1749d6648cd1521dad86b34b58eca0d84a",
-      "measured_decoded_rgb_sha256": "3bdb402a333872458bd13bd6d22e4f1749d6648cd1521dad86b34b58eca0d84a",
+      "actual_decoded_rgb_sha256": "2ba0ed42fd9afed96559edf56c044638c154a67538bfb957b413e0358342399b",
+      "measured_decoded_rgb_sha256": "2ba0ed42fd9afed96559edf56c044638c154a67538bfb957b413e0358342399b",
       "equal": true
     },
     {
@@ -9596,15 +9596,15 @@
     {
       "photo_id": "c008_p06__univ",
       "size": 256,
-      "actual_decoded_rgb_sha256": "aab9f98ec022e631b554589f1dc14e4fffd8f5a33030becf9ceef7aceaaafa97",
-      "measured_decoded_rgb_sha256": "aab9f98ec022e631b554589f1dc14e4fffd8f5a33030becf9ceef7aceaaafa97",
+      "actual_decoded_rgb_sha256": "7cc325dc87de973527f9b74c69f2c9c6491697ad18b35a4b2a77c0b24aabe90e",
+      "measured_decoded_rgb_sha256": "7cc325dc87de973527f9b74c69f2c9c6491697ad18b35a4b2a77c0b24aabe90e",
       "equal": true
     },
     {
       "photo_id": "c008_p07__univ",
       "size": 256,
-      "actual_decoded_rgb_sha256": "a4f490a9ef41b0f9265ebe3be5daf74efa9ada7f6827a9c6243b073bd3ae5a4c",
-      "measured_decoded_rgb_sha256": "a4f490a9ef41b0f9265ebe3be5daf74efa9ada7f6827a9c6243b073bd3ae5a4c",
+      "actual_decoded_rgb_sha256": "e5e48b2425422f55eb57b54587ba3fd2f253a25f4f2c616320572e7a7bef87ac",
+      "measured_decoded_rgb_sha256": "e5e48b2425422f55eb57b54587ba3fd2f253a25f4f2c616320572e7a7bef87ac",
       "equal": true
     },
     {
@@ -10226,15 +10226,15 @@
     {
       "photo_id": "c007_p05__seoul_comets",
       "size": 256,
-      "actual_decoded_rgb_sha256": "1c868c5c42a6f500c2913be685e5275ec108a04471e4a680bd6563174fd52577",
-      "measured_decoded_rgb_sha256": "1c868c5c42a6f500c2913be685e5275ec108a04471e4a680bd6563174fd52577",
+      "actual_decoded_rgb_sha256": "7d3c050aa763632b8077d4ef68227f51525b1e40036fcdae80216f0b75291936",
+      "measured_decoded_rgb_sha256": "7d3c050aa763632b8077d4ef68227f51525b1e40036fcdae80216f0b75291936",
       "equal": true
     },
     {
       "photo_id": "c007_p06__seoul_comets",
       "size": 256,
-      "actual_decoded_rgb_sha256": "53a6d98fa457aa26c4ff55aa0b8913d63aa84b9bb6ba582d46b92e996186f31b",
-      "measured_decoded_rgb_sha256": "53a6d98fa457aa26c4ff55aa0b8913d63aa84b9bb6ba582d46b92e996186f31b",
+      "actual_decoded_rgb_sha256": "3d02848db11ddfa1fedcdcd0bbbc34b05697733910af1f7c217037c3fdc04197",
+      "measured_decoded_rgb_sha256": "3d02848db11ddfa1fedcdcd0bbbc34b05697733910af1f7c217037c3fdc04197",
       "equal": true
     },
     {
@@ -10296,22 +10296,22 @@
     {
       "photo_id": "c008_p06__seoul_comets",
       "size": 256,
-      "actual_decoded_rgb_sha256": "d27779dd362ae5191e698306c42e3e3086ddbb9e74b3ca3f11e7047521fa3d5a",
-      "measured_decoded_rgb_sha256": "d27779dd362ae5191e698306c42e3e3086ddbb9e74b3ca3f11e7047521fa3d5a",
+      "actual_decoded_rgb_sha256": "b848baef86bbedda4dbda7165de1866844c6cef2aee295eaaaabc923df304a7f",
+      "measured_decoded_rgb_sha256": "b848baef86bbedda4dbda7165de1866844c6cef2aee295eaaaabc923df304a7f",
       "equal": true
     },
     {
       "photo_id": "c008_p07__seoul_comets",
       "size": 256,
-      "actual_decoded_rgb_sha256": "7d246c8591c3fcd6ad5e8aa72e01b7ca1ba824f497b14eb887bf71a4b74b94b0",
-      "measured_decoded_rgb_sha256": "7d246c8591c3fcd6ad5e8aa72e01b7ca1ba824f497b14eb887bf71a4b74b94b0",
+      "actual_decoded_rgb_sha256": "b6f4ad08203a177586acce78c12dca9a30d6ba02b4bc0eb0eacc62b03d1b2514",
+      "measured_decoded_rgb_sha256": "b6f4ad08203a177586acce78c12dca9a30d6ba02b4bc0eb0eacc62b03d1b2514",
       "equal": true
     },
     {
       "photo_id": "c008_p08__seoul_comets",
       "size": 256,
-      "actual_decoded_rgb_sha256": "207d904c4b36c67a67728560d4a2f7e04168d5e6548c844b33694ae385a4199c",
-      "measured_decoded_rgb_sha256": "207d904c4b36c67a67728560d4a2f7e04168d5e6548c844b33694ae385a4199c",
+      "actual_decoded_rgb_sha256": "a0afc664f173bbfc5a55d83cd68986b25fae60985b73e6945c29ab94f121e6a5",
+      "measured_decoded_rgb_sha256": "a0afc664f173bbfc5a55d83cd68986b25fae60985b73e6945c29ab94f121e6a5",
       "equal": true
     },
     {
@@ -10373,15 +10373,15 @@
     {
       "photo_id": "c009_p08__seoul_comets",
       "size": 256,
-      "actual_decoded_rgb_sha256": "ed50ba3e98cf684e47abf508991645863777391a1a23bb3975dd75b4eb3e99ab",
-      "measured_decoded_rgb_sha256": "ed50ba3e98cf684e47abf508991645863777391a1a23bb3975dd75b4eb3e99ab",
+      "actual_decoded_rgb_sha256": "10e1533d4edd7006f5db51466429bfb5df5f674da15319e8d9bbc9baffb869a0",
+      "measured_decoded_rgb_sha256": "10e1533d4edd7006f5db51466429bfb5df5f674da15319e8d9bbc9baffb869a0",
       "equal": true
     },
     {
       "photo_id": "c009_p09__seoul_comets",
       "size": 256,
-      "actual_decoded_rgb_sha256": "ec954bab1bd39efcaf3a9c57a45965eeb7229de8e1c5b40029ef10bebadbc8ed",
-      "measured_decoded_rgb_sha256": "ec954bab1bd39efcaf3a9c57a45965eeb7229de8e1c5b40029ef10bebadbc8ed",
+      "actual_decoded_rgb_sha256": "4ed12d3c22e299cdb46847a1bf9d8a8c25f382e5528dc7a5dc837780d5556815",
+      "measured_decoded_rgb_sha256": "4ed12d3c22e299cdb46847a1bf9d8a8c25f382e5528dc7a5dc837780d5556815",
       "equal": true
     },
     {
@@ -10926,15 +10926,15 @@
     {
       "photo_id": "c007_p05__seoul_hounds",
       "size": 256,
-      "actual_decoded_rgb_sha256": "94cd02e41982920f14d7f7cd893c1d6ea4aba1ae9f8ef76842cc1d965194d442",
-      "measured_decoded_rgb_sha256": "94cd02e41982920f14d7f7cd893c1d6ea4aba1ae9f8ef76842cc1d965194d442",
+      "actual_decoded_rgb_sha256": "af5cdb25cd69fe627895bdcec8df7a58fd5b8046bc6cf01f4d122640dc5d05b4",
+      "measured_decoded_rgb_sha256": "af5cdb25cd69fe627895bdcec8df7a58fd5b8046bc6cf01f4d122640dc5d05b4",
       "equal": true
     },
     {
       "photo_id": "c007_p06__seoul_hounds",
       "size": 256,
-      "actual_decoded_rgb_sha256": "d1dc98130f383701d19f89430133256c3fa4651254ee0cb607b0747289bf7639",
-      "measured_decoded_rgb_sha256": "d1dc98130f383701d19f89430133256c3fa4651254ee0cb607b0747289bf7639",
+      "actual_decoded_rgb_sha256": "1a6ef7041d7ba3c738cc755f2a62c6a87ec95c27d376e9abe65fd82658528ed3",
+      "measured_decoded_rgb_sha256": "1a6ef7041d7ba3c738cc755f2a62c6a87ec95c27d376e9abe65fd82658528ed3",
       "equal": true
     },
     {
@@ -10996,8 +10996,8 @@
     {
       "photo_id": "c008_p06__seoul_hounds",
       "size": 256,
-      "actual_decoded_rgb_sha256": "f469ff63db329e4d291023f74bbea3c491f0895ec6c1f4628f5bfad8fa5d80d6",
-      "measured_decoded_rgb_sha256": "f469ff63db329e4d291023f74bbea3c491f0895ec6c1f4628f5bfad8fa5d80d6",
+      "actual_decoded_rgb_sha256": "86166c6a0377469b64a641860879de66cd59c83276aedbf2b30e584ec8f5a2ed",
+      "measured_decoded_rgb_sha256": "86166c6a0377469b64a641860879de66cd59c83276aedbf2b30e584ec8f5a2ed",
       "equal": true
     },
     {
@@ -11626,15 +11626,15 @@
     {
       "photo_id": "c007_p05__incheon_seagulls",
       "size": 256,
-      "actual_decoded_rgb_sha256": "60ad08939aca5814ef2509ee045e1f3bd6b43465cdc109c18dcda8894b35acc1",
-      "measured_decoded_rgb_sha256": "60ad08939aca5814ef2509ee045e1f3bd6b43465cdc109c18dcda8894b35acc1",
+      "actual_decoded_rgb_sha256": "5206f7cbaeeda7152c3a94daebc1e9e0cd166682684b88e455d10b87d1df8ca9",
+      "measured_decoded_rgb_sha256": "5206f7cbaeeda7152c3a94daebc1e9e0cd166682684b88e455d10b87d1df8ca9",
       "equal": true
     },
     {
       "photo_id": "c007_p06__incheon_seagulls",
       "size": 256,
-      "actual_decoded_rgb_sha256": "f87a0fba85342a22c0e72177a7f77b505d1b9c46afaf25a1b869f55212862d6f",
-      "measured_decoded_rgb_sha256": "f87a0fba85342a22c0e72177a7f77b505d1b9c46afaf25a1b869f55212862d6f",
+      "actual_decoded_rgb_sha256": "1a734eba1132949705c6838968e188573aadcd55309b0ca7a61369507e465794",
+      "measured_decoded_rgb_sha256": "1a734eba1132949705c6838968e188573aadcd55309b0ca7a61369507e465794",
       "equal": true
     },
     {
@@ -11696,15 +11696,15 @@
     {
       "photo_id": "c008_p06__incheon_seagulls",
       "size": 256,
-      "actual_decoded_rgb_sha256": "96d5091685db0b825c1f19d2ec3a9f25418748d6d1cc2325a0e096eb8b5a03ff",
-      "measured_decoded_rgb_sha256": "96d5091685db0b825c1f19d2ec3a9f25418748d6d1cc2325a0e096eb8b5a03ff",
+      "actual_decoded_rgb_sha256": "f900a701e8264ca8ed421a75b36ffdc2f04218721c9e39543a39925e0627f05c",
+      "measured_decoded_rgb_sha256": "f900a701e8264ca8ed421a75b36ffdc2f04218721c9e39543a39925e0627f05c",
       "equal": true
     },
     {
       "photo_id": "c008_p07__incheon_seagulls",
       "size": 256,
-      "actual_decoded_rgb_sha256": "5042c668756b1e46cc41b1b7c366a2556474e4f329e4e819f2e7ac9198166965",
-      "measured_decoded_rgb_sha256": "5042c668756b1e46cc41b1b7c366a2556474e4f329e4e819f2e7ac9198166965",
+      "actual_decoded_rgb_sha256": "af6d79278839db29a16d734b11f4cb6795f5923a65ca322cc00f80750676b83f",
+      "measured_decoded_rgb_sha256": "af6d79278839db29a16d734b11f4cb6795f5923a65ca322cc00f80750676b83f",
       "equal": true
     },
     {
@@ -11773,8 +11773,8 @@
     {
       "photo_id": "c009_p08__incheon_seagulls",
       "size": 256,
-      "actual_decoded_rgb_sha256": "9d06ce2c773be8c5258c8574c5d1fec6f01466f909e4d5d1095154b8af9808c2",
-      "measured_decoded_rgb_sha256": "9d06ce2c773be8c5258c8574c5d1fec6f01466f909e4d5d1095154b8af9808c2",
+      "actual_decoded_rgb_sha256": "c6c41a3846794fe7b1e81614e01b0640af554a55629d89052a58ed47119eedec",
+      "measured_decoded_rgb_sha256": "c6c41a3846794fe7b1e81614e01b0640af554a55629d89052a58ed47119eedec",
       "equal": true
     },
     {
@@ -12326,15 +12326,15 @@
     {
       "photo_id": "c007_p05__suwon_sparks",
       "size": 256,
-      "actual_decoded_rgb_sha256": "6dbf7e02d7b340a9ad82f988c3fd6234aa8d5caf8b8d9e976d6f30d56d7c1048",
-      "measured_decoded_rgb_sha256": "6dbf7e02d7b340a9ad82f988c3fd6234aa8d5caf8b8d9e976d6f30d56d7c1048",
+      "actual_decoded_rgb_sha256": "06ab2c028f98337cf7c210d981dac35ead5c85474974d84781968e16a121560a",
+      "measured_decoded_rgb_sha256": "06ab2c028f98337cf7c210d981dac35ead5c85474974d84781968e16a121560a",
       "equal": true
     },
     {
       "photo_id": "c007_p06__suwon_sparks",
       "size": 256,
-      "actual_decoded_rgb_sha256": "09ac7e5dd58d1fcf03b3a181b4591b822ece96fecc5ee945a6df7ae71b58a06a",
-      "measured_decoded_rgb_sha256": "09ac7e5dd58d1fcf03b3a181b4591b822ece96fecc5ee945a6df7ae71b58a06a",
+      "actual_decoded_rgb_sha256": "f1223d3bf4f4412113bd0054d3f7e700c86ff30c7a3f891c46153d40916fd0dc",
+      "measured_decoded_rgb_sha256": "f1223d3bf4f4412113bd0054d3f7e700c86ff30c7a3f891c46153d40916fd0dc",
       "equal": true
     },
     {
@@ -12396,22 +12396,22 @@
     {
       "photo_id": "c008_p06__suwon_sparks",
       "size": 256,
-      "actual_decoded_rgb_sha256": "de62996c8b8f8899cfd8237d1250e957c74416b5a47a63afce7b02b345eb30fd",
-      "measured_decoded_rgb_sha256": "de62996c8b8f8899cfd8237d1250e957c74416b5a47a63afce7b02b345eb30fd",
+      "actual_decoded_rgb_sha256": "fef1b639cd9bdf7d56b9a4a3085b49f03b0dc8671a254d569f41fb95475b8900",
+      "measured_decoded_rgb_sha256": "fef1b639cd9bdf7d56b9a4a3085b49f03b0dc8671a254d569f41fb95475b8900",
       "equal": true
     },
     {
       "photo_id": "c008_p07__suwon_sparks",
       "size": 256,
-      "actual_decoded_rgb_sha256": "444438855891290da3e624fcb9c40e8f183adb5a77a40b804f7003b21550a0cc",
-      "measured_decoded_rgb_sha256": "444438855891290da3e624fcb9c40e8f183adb5a77a40b804f7003b21550a0cc",
+      "actual_decoded_rgb_sha256": "8c5c2d38bd32e1b73d4734f6ec21d2a5c03a50a325b9987da1dca94de1591e03",
+      "measured_decoded_rgb_sha256": "8c5c2d38bd32e1b73d4734f6ec21d2a5c03a50a325b9987da1dca94de1591e03",
       "equal": true
     },
     {
       "photo_id": "c008_p08__suwon_sparks",
       "size": 256,
-      "actual_decoded_rgb_sha256": "5b4aacec914c1141845f001ef5493b4aaccf02c4750fb5a97e97493fb1c34fe5",
-      "measured_decoded_rgb_sha256": "5b4aacec914c1141845f001ef5493b4aaccf02c4750fb5a97e97493fb1c34fe5",
+      "actual_decoded_rgb_sha256": "3065ecf7e4d12a32d93d2ccfb2ef83491a15afce25c739f3691ccbf0eabd0ab1",
+      "measured_decoded_rgb_sha256": "3065ecf7e4d12a32d93d2ccfb2ef83491a15afce25c739f3691ccbf0eabd0ab1",
       "equal": true
     },
     {
@@ -13026,15 +13026,15 @@
     {
       "photo_id": "c007_p05__goyang_storm",
       "size": 256,
-      "actual_decoded_rgb_sha256": "614e1e0f2b2c2f40c63765e432253e926a5e9412dbebe479cbf8838f74100a53",
-      "measured_decoded_rgb_sha256": "614e1e0f2b2c2f40c63765e432253e926a5e9412dbebe479cbf8838f74100a53",
+      "actual_decoded_rgb_sha256": "88dac1ddc6b3d3373ffc2fd922155500c22e68a46bdd17e1f2b2d4a7f9b2eb96",
+      "measured_decoded_rgb_sha256": "88dac1ddc6b3d3373ffc2fd922155500c22e68a46bdd17e1f2b2d4a7f9b2eb96",
       "equal": true
     },
     {
       "photo_id": "c007_p06__goyang_storm",
       "size": 256,
-      "actual_decoded_rgb_sha256": "424df50b824a1e17e29eebd2a208dadf6866a748fd39a5737d716d79abdb2746",
-      "measured_decoded_rgb_sha256": "424df50b824a1e17e29eebd2a208dadf6866a748fd39a5737d716d79abdb2746",
+      "actual_decoded_rgb_sha256": "6353849693cfe8257c3d0edccd1967d0438cbf72c73d6d4fff7df4d4607fbc61",
+      "measured_decoded_rgb_sha256": "6353849693cfe8257c3d0edccd1967d0438cbf72c73d6d4fff7df4d4607fbc61",
       "equal": true
     },
     {
@@ -13096,8 +13096,8 @@
     {
       "photo_id": "c008_p06__goyang_storm",
       "size": 256,
-      "actual_decoded_rgb_sha256": "d91d3df37c269dc54ba93e09f787f72d584d00b499fa301c79fa10774a381cb2",
-      "measured_decoded_rgb_sha256": "d91d3df37c269dc54ba93e09f787f72d584d00b499fa301c79fa10774a381cb2",
+      "actual_decoded_rgb_sha256": "b262502b17deb509e71b932daa64d2c78748a018ab3cdb340897bf3befe843db",
+      "measured_decoded_rgb_sha256": "b262502b17deb509e71b932daa64d2c78748a018ab3cdb340897bf3befe843db",
       "equal": true
     },
     {
@@ -13726,15 +13726,15 @@
     {
       "photo_id": "c007_p05__daejeon_redfox",
       "size": 256,
-      "actual_decoded_rgb_sha256": "61cbedff6003eb618cf56d5471ac32f1486c9365a438f3c05ec62b5d8c6edb30",
-      "measured_decoded_rgb_sha256": "61cbedff6003eb618cf56d5471ac32f1486c9365a438f3c05ec62b5d8c6edb30",
+      "actual_decoded_rgb_sha256": "fe1755d55a0d3c9ebddb8c2d74aaf97444beae7cb19ef22ec749d29242f87313",
+      "measured_decoded_rgb_sha256": "fe1755d55a0d3c9ebddb8c2d74aaf97444beae7cb19ef22ec749d29242f87313",
       "equal": true
     },
     {
       "photo_id": "c007_p06__daejeon_redfox",
       "size": 256,
-      "actual_decoded_rgb_sha256": "da3d6029488ac951a812162727e42a6f33e155180433e26ed24194b6147fad64",
-      "measured_decoded_rgb_sha256": "da3d6029488ac951a812162727e42a6f33e155180433e26ed24194b6147fad64",
+      "actual_decoded_rgb_sha256": "aec3b2001dd0d3da592f8a356ab8c657689fdd73e9a9c46e50d9e80f0ae99b6b",
+      "measured_decoded_rgb_sha256": "aec3b2001dd0d3da592f8a356ab8c657689fdd73e9a9c46e50d9e80f0ae99b6b",
       "equal": true
     },
     {
@@ -13796,8 +13796,8 @@
     {
       "photo_id": "c008_p06__daejeon_redfox",
       "size": 256,
-      "actual_decoded_rgb_sha256": "6304bedaf7ee7ba472e0418e8d261048a034615c7d2280b2ce0c9c9a279f234d",
-      "measured_decoded_rgb_sha256": "6304bedaf7ee7ba472e0418e8d261048a034615c7d2280b2ce0c9c9a279f234d",
+      "actual_decoded_rgb_sha256": "19b6622338d3de360e5c104db2621cc0f4ef5ee0bdb8e5c9abdc43f3122cdbf7",
+      "measured_decoded_rgb_sha256": "19b6622338d3de360e5c104db2621cc0f4ef5ee0bdb8e5c9abdc43f3122cdbf7",
       "equal": true
     },
     {
@@ -14426,15 +14426,15 @@
     {
       "photo_id": "c007_p05__gwangju_blazes",
       "size": 256,
-      "actual_decoded_rgb_sha256": "e2734f2e7475eea08b146ec95ba82a658e6a103e6f2df86585d296f53c651780",
-      "measured_decoded_rgb_sha256": "e2734f2e7475eea08b146ec95ba82a658e6a103e6f2df86585d296f53c651780",
+      "actual_decoded_rgb_sha256": "8dad4b05ec121796f7259a3ab1a92d15b76d536fcd4063e2265b4ce8bdaef28b",
+      "measured_decoded_rgb_sha256": "8dad4b05ec121796f7259a3ab1a92d15b76d536fcd4063e2265b4ce8bdaef28b",
       "equal": true
     },
     {
       "photo_id": "c007_p06__gwangju_blazes",
       "size": 256,
-      "actual_decoded_rgb_sha256": "7c0be42970286f697a03e6b9d0c729bf6bcf564f5259a651cbc369a66dfad2d9",
-      "measured_decoded_rgb_sha256": "7c0be42970286f697a03e6b9d0c729bf6bcf564f5259a651cbc369a66dfad2d9",
+      "actual_decoded_rgb_sha256": "10bbf146eb008f51c85229a91907497cb7b958d98c37da4a677c562ae316b2d6",
+      "measured_decoded_rgb_sha256": "10bbf146eb008f51c85229a91907497cb7b958d98c37da4a677c562ae316b2d6",
       "equal": true
     },
     {
@@ -14496,15 +14496,15 @@
     {
       "photo_id": "c008_p06__gwangju_blazes",
       "size": 256,
-      "actual_decoded_rgb_sha256": "dbfd8c5f4159756345c3432ef548ddd948752101349420d8c134caf35ea3e030",
-      "measured_decoded_rgb_sha256": "dbfd8c5f4159756345c3432ef548ddd948752101349420d8c134caf35ea3e030",
+      "actual_decoded_rgb_sha256": "3550e793fb926474bc032f06b16b9e353fa1c5c4142323eaea8ea1a68adb15ea",
+      "measured_decoded_rgb_sha256": "3550e793fb926474bc032f06b16b9e353fa1c5c4142323eaea8ea1a68adb15ea",
       "equal": true
     },
     {
       "photo_id": "c008_p07__gwangju_blazes",
       "size": 256,
-      "actual_decoded_rgb_sha256": "8169e99516d68f417e1d40d47c09d6db7d7ae0123d145fc0a02972b048850703",
-      "measured_decoded_rgb_sha256": "8169e99516d68f417e1d40d47c09d6db7d7ae0123d145fc0a02972b048850703",
+      "actual_decoded_rgb_sha256": "6557ac26c3ebe398ed7ddd563b975d1630abed5989e6b68988ab743f57f96ced",
+      "measured_decoded_rgb_sha256": "6557ac26c3ebe398ed7ddd563b975d1630abed5989e6b68988ab743f57f96ced",
       "equal": true
     },
     {
@@ -15126,15 +15126,15 @@
     {
       "photo_id": "c007_p05__daegu_thunders",
       "size": 256,
-      "actual_decoded_rgb_sha256": "7dc09e7cbf768c5bbe25f7cfd2a68944daa107006bfa776b848b54ee7b36a1fd",
-      "measured_decoded_rgb_sha256": "7dc09e7cbf768c5bbe25f7cfd2a68944daa107006bfa776b848b54ee7b36a1fd",
+      "actual_decoded_rgb_sha256": "b326225a1da4d18635aa85b6d7480c73349c643376ac7f325f383c14f80fcbbe",
+      "measured_decoded_rgb_sha256": "b326225a1da4d18635aa85b6d7480c73349c643376ac7f325f383c14f80fcbbe",
       "equal": true
     },
     {
       "photo_id": "c007_p06__daegu_thunders",
       "size": 256,
-      "actual_decoded_rgb_sha256": "5d4d4d99c9793c03538b236b7fdd8e9caf13dd4f15776d3fa6b55260c7bc61ac",
-      "measured_decoded_rgb_sha256": "5d4d4d99c9793c03538b236b7fdd8e9caf13dd4f15776d3fa6b55260c7bc61ac",
+      "actual_decoded_rgb_sha256": "12cd15997beb6affcb1184fce25c85dbf3623b550d539e3e1e43dcceaca96706",
+      "measured_decoded_rgb_sha256": "12cd15997beb6affcb1184fce25c85dbf3623b550d539e3e1e43dcceaca96706",
       "equal": true
     },
     {
@@ -15196,15 +15196,15 @@
     {
       "photo_id": "c008_p06__daegu_thunders",
       "size": 256,
-      "actual_decoded_rgb_sha256": "5dda35d4b7154830a10e267982043408c2b403b8dd5c0b55ae0d0b394a17d6bd",
-      "measured_decoded_rgb_sha256": "5dda35d4b7154830a10e267982043408c2b403b8dd5c0b55ae0d0b394a17d6bd",
+      "actual_decoded_rgb_sha256": "22409b5a12ee4a190db007f493375d86f1a5569eb98b1060aa1450304eb48ebb",
+      "measured_decoded_rgb_sha256": "22409b5a12ee4a190db007f493375d86f1a5569eb98b1060aa1450304eb48ebb",
       "equal": true
     },
     {
       "photo_id": "c008_p07__daegu_thunders",
       "size": 256,
-      "actual_decoded_rgb_sha256": "8b78bfee6a63b22a3782893ffc3eda638b351afa62092a70798493a0ca257913",
-      "measured_decoded_rgb_sha256": "8b78bfee6a63b22a3782893ffc3eda638b351afa62092a70798493a0ca257913",
+      "actual_decoded_rgb_sha256": "1ba4ecac00d4ce41be7560be81154a567b1ae5bb8ab0190bdf05c9d357aeecaa",
+      "measured_decoded_rgb_sha256": "1ba4ecac00d4ce41be7560be81154a567b1ae5bb8ab0190bdf05c9d357aeecaa",
       "equal": true
     },
     {
@@ -15273,8 +15273,8 @@
     {
       "photo_id": "c009_p08__daegu_thunders",
       "size": 256,
-      "actual_decoded_rgb_sha256": "e8b9d6ad39c0876042181afc46d9144abef89f592ded948186b31a9c81852217",
-      "measured_decoded_rgb_sha256": "e8b9d6ad39c0876042181afc46d9144abef89f592ded948186b31a9c81852217",
+      "actual_decoded_rgb_sha256": "7628cb517fbd1efbdde1e547286194cafa56b54b0b057d8f4fa2c7abb2991190",
+      "measured_decoded_rgb_sha256": "7628cb517fbd1efbdde1e547286194cafa56b54b0b057d8f4fa2c7abb2991190",
       "equal": true
     },
     {
@@ -15826,15 +15826,15 @@
     {
       "photo_id": "c007_p05__busan_waves",
       "size": 256,
-      "actual_decoded_rgb_sha256": "7e399959ffb8ad9bd6d4a1447139abc5ccc637994afd1b023d4581f058df97ad",
-      "measured_decoded_rgb_sha256": "7e399959ffb8ad9bd6d4a1447139abc5ccc637994afd1b023d4581f058df97ad",
+      "actual_decoded_rgb_sha256": "c0b87193beb200bc1184ab8c87b10a7dc6c56b8e8f75b61a66acae36e59ab9fe",
+      "measured_decoded_rgb_sha256": "c0b87193beb200bc1184ab8c87b10a7dc6c56b8e8f75b61a66acae36e59ab9fe",
       "equal": true
     },
     {
       "photo_id": "c007_p06__busan_waves",
       "size": 256,
-      "actual_decoded_rgb_sha256": "a09b9476e69d017e2704398d213c311d908a54a85b95c7a975b6a6431f15b854",
-      "measured_decoded_rgb_sha256": "a09b9476e69d017e2704398d213c311d908a54a85b95c7a975b6a6431f15b854",
+      "actual_decoded_rgb_sha256": "7c7d1cda03376740acfa157499410c84cd0b8c20b490d7c3b3718391896429d4",
+      "measured_decoded_rgb_sha256": "7c7d1cda03376740acfa157499410c84cd0b8c20b490d7c3b3718391896429d4",
       "equal": true
     },
     {
@@ -15896,15 +15896,15 @@
     {
       "photo_id": "c008_p06__busan_waves",
       "size": 256,
-      "actual_decoded_rgb_sha256": "2b0af905ff4258685df2fd49a3f0bc77ac8b57e6759a664384c006ffdd7e2e48",
-      "measured_decoded_rgb_sha256": "2b0af905ff4258685df2fd49a3f0bc77ac8b57e6759a664384c006ffdd7e2e48",
+      "actual_decoded_rgb_sha256": "422b257a67357acc76ee8e86397190ba70b3ec9efe2729a99058f69dd311eb39",
+      "measured_decoded_rgb_sha256": "422b257a67357acc76ee8e86397190ba70b3ec9efe2729a99058f69dd311eb39",
       "equal": true
     },
     {
       "photo_id": "c008_p07__busan_waves",
       "size": 256,
-      "actual_decoded_rgb_sha256": "ec8ac341c500768bcdaf6e24a3cfe34385367b4d2de6c74ca4be1f7bb0652e59",
-      "measured_decoded_rgb_sha256": "ec8ac341c500768bcdaf6e24a3cfe34385367b4d2de6c74ca4be1f7bb0652e59",
+      "actual_decoded_rgb_sha256": "bf81ab83324c7e15d55d2955b728a570e1b130c711876fb8a435a0429fcc81e3",
+      "measured_decoded_rgb_sha256": "bf81ab83324c7e15d55d2955b728a570e1b130c711876fb8a435a0429fcc81e3",
       "equal": true
     },
     {
@@ -15973,8 +15973,8 @@
     {
       "photo_id": "c009_p08__busan_waves",
       "size": 256,
-      "actual_decoded_rgb_sha256": "6799629f49c54fc09d15528bc2cd8351b5aa0fef8ebba8456a8c3232674a4647",
-      "measured_decoded_rgb_sha256": "6799629f49c54fc09d15528bc2cd8351b5aa0fef8ebba8456a8c3232674a4647",
+      "actual_decoded_rgb_sha256": "9331bbc2ae8b6802fabb68187b92492d78027cd075e91a9859190b775b29bb7a",
+      "measured_decoded_rgb_sha256": "9331bbc2ae8b6802fabb68187b92492d78027cd075e91a9859190b775b29bb7a",
       "equal": true
     },
     {
@@ -16526,15 +16526,15 @@
     {
       "photo_id": "c007_p05__changwon_anchors",
       "size": 256,
-      "actual_decoded_rgb_sha256": "32d9ba7c351d3355def6cb0c840f58c2ecfff2c3f283076f5d78fe3c5a018981",
-      "measured_decoded_rgb_sha256": "32d9ba7c351d3355def6cb0c840f58c2ecfff2c3f283076f5d78fe3c5a018981",
+      "actual_decoded_rgb_sha256": "49d5f2b8869ee6b2477304ac1bb0032920ebb8b3ae263bd00a7f208e3e901fcd",
+      "measured_decoded_rgb_sha256": "49d5f2b8869ee6b2477304ac1bb0032920ebb8b3ae263bd00a7f208e3e901fcd",
       "equal": true
     },
     {
       "photo_id": "c007_p06__changwon_anchors",
       "size": 256,
-      "actual_decoded_rgb_sha256": "1cecb251f1d07bf29f4f9eb5ebf98ab1d5cda4032a775cc5530acb0c1e312228",
-      "measured_decoded_rgb_sha256": "1cecb251f1d07bf29f4f9eb5ebf98ab1d5cda4032a775cc5530acb0c1e312228",
+      "actual_decoded_rgb_sha256": "87cce620a1a0738226cc494fb34ceb0584aae48c6eff3925b50a121fbedb83cd",
+      "measured_decoded_rgb_sha256": "87cce620a1a0738226cc494fb34ceb0584aae48c6eff3925b50a121fbedb83cd",
       "equal": true
     },
     {
@@ -16596,15 +16596,15 @@
     {
       "photo_id": "c008_p06__changwon_anchors",
       "size": 256,
-      "actual_decoded_rgb_sha256": "c31f73b521d2c48172804d075aebcbf7aa209bf143f8c70d25af807a4b3aa0b1",
-      "measured_decoded_rgb_sha256": "c31f73b521d2c48172804d075aebcbf7aa209bf143f8c70d25af807a4b3aa0b1",
+      "actual_decoded_rgb_sha256": "2c85d85eae0f0c66aa2eebc67ee2bedf8c59dc1c82e550aea5a3b21a989d0851",
+      "measured_decoded_rgb_sha256": "2c85d85eae0f0c66aa2eebc67ee2bedf8c59dc1c82e550aea5a3b21a989d0851",
       "equal": true
     },
     {
       "photo_id": "c008_p07__changwon_anchors",
       "size": 256,
-      "actual_decoded_rgb_sha256": "7c65424a1d678811872b05b923ba563cc8f276e912833b846b581a9b4b2922cc",
-      "measured_decoded_rgb_sha256": "7c65424a1d678811872b05b923ba563cc8f276e912833b846b581a9b4b2922cc",
+      "actual_decoded_rgb_sha256": "3d24df9a065c9d0fbd53f58f0b739f0c3422888b8fb08cdc9013bbe38f5c9a86",
+      "measured_decoded_rgb_sha256": "3d24df9a065c9d0fbd53f58f0b739f0c3422888b8fb08cdc9013bbe38f5c9a86",
       "equal": true
     },
     {
@@ -17226,15 +17226,15 @@
     {
       "photo_id": "c007_p05__hs_home",
       "size": 384,
-      "actual_decoded_rgb_sha256": "8f41c0904a43b72ac1948233e4f3f7ea417f70019f4131a9bb172366d450eb4f",
-      "measured_decoded_rgb_sha256": "8f41c0904a43b72ac1948233e4f3f7ea417f70019f4131a9bb172366d450eb4f",
+      "actual_decoded_rgb_sha256": "89bf96f6c3ca2b98e2feb79d6c953a59500f84ff763f6ce925c7b23f665bd563",
+      "measured_decoded_rgb_sha256": "89bf96f6c3ca2b98e2feb79d6c953a59500f84ff763f6ce925c7b23f665bd563",
       "equal": true
     },
     {
       "photo_id": "c007_p06__hs_home",
       "size": 384,
-      "actual_decoded_rgb_sha256": "55631c5d22e5a3019ad38bb82574a8de502112a64a6c5b3fe6a23900d17dac25",
-      "measured_decoded_rgb_sha256": "55631c5d22e5a3019ad38bb82574a8de502112a64a6c5b3fe6a23900d17dac25",
+      "actual_decoded_rgb_sha256": "6e8dcf1d82ae6b36012ddbef21c07d9e31d95d501d84ba4d8d2d5de5e46fd43c",
+      "measured_decoded_rgb_sha256": "6e8dcf1d82ae6b36012ddbef21c07d9e31d95d501d84ba4d8d2d5de5e46fd43c",
       "equal": true
     },
     {
@@ -17296,15 +17296,15 @@
     {
       "photo_id": "c008_p06__hs_home",
       "size": 384,
-      "actual_decoded_rgb_sha256": "13ce3a2df3548e6d9597552be78920f876ef678f55c3cddeac35ca3496dbee28",
-      "measured_decoded_rgb_sha256": "13ce3a2df3548e6d9597552be78920f876ef678f55c3cddeac35ca3496dbee28",
+      "actual_decoded_rgb_sha256": "57222dfb4ea0cc98f5074294decffbe46cef7c062518417280f9a1eed1018962",
+      "measured_decoded_rgb_sha256": "57222dfb4ea0cc98f5074294decffbe46cef7c062518417280f9a1eed1018962",
       "equal": true
     },
     {
       "photo_id": "c008_p07__hs_home",
       "size": 384,
-      "actual_decoded_rgb_sha256": "fb3291b9ae3fab69e429ba5a268383c02882b052099c1a6c62e6d4ed4ea049fa",
-      "measured_decoded_rgb_sha256": "fb3291b9ae3fab69e429ba5a268383c02882b052099c1a6c62e6d4ed4ea049fa",
+      "actual_decoded_rgb_sha256": "510c00eaf47b12be910d517830c99da037b864e8b13ffbe93c4c858a8036bee8",
+      "measured_decoded_rgb_sha256": "510c00eaf47b12be910d517830c99da037b864e8b13ffbe93c4c858a8036bee8",
       "equal": true
     },
     {
@@ -17926,15 +17926,15 @@
     {
       "photo_id": "c007_p05__univ",
       "size": 384,
-      "actual_decoded_rgb_sha256": "fcb6cbc396dc24bd6926ec75c071d84b518b9e08b9b545e44ebad2dd30294ecd",
-      "measured_decoded_rgb_sha256": "fcb6cbc396dc24bd6926ec75c071d84b518b9e08b9b545e44ebad2dd30294ecd",
+      "actual_decoded_rgb_sha256": "e3552b295878a64b1fbae4eb7a40664fa77e61b0e90c82c10850e020c707ee4e",
+      "measured_decoded_rgb_sha256": "e3552b295878a64b1fbae4eb7a40664fa77e61b0e90c82c10850e020c707ee4e",
       "equal": true
     },
     {
       "photo_id": "c007_p06__univ",
       "size": 384,
-      "actual_decoded_rgb_sha256": "5733febb9f08c3e75e2cac22321757a8267c9ee0d7a8e95dacbc5719fa5ff0af",
-      "measured_decoded_rgb_sha256": "5733febb9f08c3e75e2cac22321757a8267c9ee0d7a8e95dacbc5719fa5ff0af",
+      "actual_decoded_rgb_sha256": "13da3a492e9a093ba1da7696957d1c25f3cdd1afeac723d75b22c0d7b4d526cf",
+      "measured_decoded_rgb_sha256": "13da3a492e9a093ba1da7696957d1c25f3cdd1afeac723d75b22c0d7b4d526cf",
       "equal": true
     },
     {
@@ -17996,15 +17996,15 @@
     {
       "photo_id": "c008_p06__univ",
       "size": 384,
-      "actual_decoded_rgb_sha256": "e08190ac02f189a108858e365c8a34498d5c558ab1d674c504085caeaf29b97b",
-      "measured_decoded_rgb_sha256": "e08190ac02f189a108858e365c8a34498d5c558ab1d674c504085caeaf29b97b",
+      "actual_decoded_rgb_sha256": "9f563050fd564e86ac099eae2b2073febb0530dac47bc50b327ad78273d51910",
+      "measured_decoded_rgb_sha256": "9f563050fd564e86ac099eae2b2073febb0530dac47bc50b327ad78273d51910",
       "equal": true
     },
     {
       "photo_id": "c008_p07__univ",
       "size": 384,
-      "actual_decoded_rgb_sha256": "7fb3c5892e4071f15f031c8e07632871773f75a03a6955d049f0d63c7d55ce1f",
-      "measured_decoded_rgb_sha256": "7fb3c5892e4071f15f031c8e07632871773f75a03a6955d049f0d63c7d55ce1f",
+      "actual_decoded_rgb_sha256": "0fc8ea4a56de19d942a0f834aac675d03540e1bb5ce86dcdfd8f9f7779fb5b81",
+      "measured_decoded_rgb_sha256": "0fc8ea4a56de19d942a0f834aac675d03540e1bb5ce86dcdfd8f9f7779fb5b81",
       "equal": true
     },
     {
@@ -18626,15 +18626,15 @@
     {
       "photo_id": "c007_p05__seoul_comets",
       "size": 384,
-      "actual_decoded_rgb_sha256": "68d2d3fd677fb3dc5a974e2a45551c3ef876d472d1aa6cc71ce616afb6965e39",
-      "measured_decoded_rgb_sha256": "68d2d3fd677fb3dc5a974e2a45551c3ef876d472d1aa6cc71ce616afb6965e39",
+      "actual_decoded_rgb_sha256": "ec86b67557aca066aafa30003919642415eadf41d609ecd45f2296ef053f6b80",
+      "measured_decoded_rgb_sha256": "ec86b67557aca066aafa30003919642415eadf41d609ecd45f2296ef053f6b80",
       "equal": true
     },
     {
       "photo_id": "c007_p06__seoul_comets",
       "size": 384,
-      "actual_decoded_rgb_sha256": "04cae3df73813c69b688fde9eed496fafc3c5ff247c37947a164193bd750da2c",
-      "measured_decoded_rgb_sha256": "04cae3df73813c69b688fde9eed496fafc3c5ff247c37947a164193bd750da2c",
+      "actual_decoded_rgb_sha256": "b28237a463f8f4eb3b47a8fa74bb9aa94373eb21f32c91379abb4c6bfd97c0c6",
+      "measured_decoded_rgb_sha256": "b28237a463f8f4eb3b47a8fa74bb9aa94373eb21f32c91379abb4c6bfd97c0c6",
       "equal": true
     },
     {
@@ -18696,15 +18696,15 @@
     {
       "photo_id": "c008_p06__seoul_comets",
       "size": 384,
-      "actual_decoded_rgb_sha256": "9d9c713c77262387de4e6e034e1058fdbe99e83ba3a8bcaf5af6ef19527535f9",
-      "measured_decoded_rgb_sha256": "9d9c713c77262387de4e6e034e1058fdbe99e83ba3a8bcaf5af6ef19527535f9",
+      "actual_decoded_rgb_sha256": "b346a3a6feb96b206a2405a80e40d213f6ba7301345e616fb3e053555b433352",
+      "measured_decoded_rgb_sha256": "b346a3a6feb96b206a2405a80e40d213f6ba7301345e616fb3e053555b433352",
       "equal": true
     },
     {
       "photo_id": "c008_p07__seoul_comets",
       "size": 384,
-      "actual_decoded_rgb_sha256": "a7a07a6fd34bf14cd3500112cacfe514528a12d233b211a0059fa1877775dbe5",
-      "measured_decoded_rgb_sha256": "a7a07a6fd34bf14cd3500112cacfe514528a12d233b211a0059fa1877775dbe5",
+      "actual_decoded_rgb_sha256": "2e24cc35808548de8d3b103bd7b639dd8eae192c14cd8beff479853c5d739b61",
+      "measured_decoded_rgb_sha256": "2e24cc35808548de8d3b103bd7b639dd8eae192c14cd8beff479853c5d739b61",
       "equal": true
     },
     {
@@ -19326,15 +19326,15 @@
     {
       "photo_id": "c007_p05__seoul_hounds",
       "size": 384,
-      "actual_decoded_rgb_sha256": "0e4e92829878bdd394dbb4ab7ae2921dd036845885c650bff62b39243c5c1cdc",
-      "measured_decoded_rgb_sha256": "0e4e92829878bdd394dbb4ab7ae2921dd036845885c650bff62b39243c5c1cdc",
+      "actual_decoded_rgb_sha256": "e0a8e8a31afde69ea9da2cdd32409c9e5629203c23b62ff6263eac69d2a817c7",
+      "measured_decoded_rgb_sha256": "e0a8e8a31afde69ea9da2cdd32409c9e5629203c23b62ff6263eac69d2a817c7",
       "equal": true
     },
     {
       "photo_id": "c007_p06__seoul_hounds",
       "size": 384,
-      "actual_decoded_rgb_sha256": "1c61445e60eb325510db1a1a36eb9b310ef709e125d180873a071a78eb1d0dec",
-      "measured_decoded_rgb_sha256": "1c61445e60eb325510db1a1a36eb9b310ef709e125d180873a071a78eb1d0dec",
+      "actual_decoded_rgb_sha256": "482e30eef1ac64e9ae3ad9e2d8674e871ad7bba014785e95eb604dbf8a1e2e93",
+      "measured_decoded_rgb_sha256": "482e30eef1ac64e9ae3ad9e2d8674e871ad7bba014785e95eb604dbf8a1e2e93",
       "equal": true
     },
     {
@@ -19396,15 +19396,15 @@
     {
       "photo_id": "c008_p06__seoul_hounds",
       "size": 384,
-      "actual_decoded_rgb_sha256": "3360757369155ed8b40bdcd406cabad781dcbef5e8b24089214f78f5a2b0e658",
-      "measured_decoded_rgb_sha256": "3360757369155ed8b40bdcd406cabad781dcbef5e8b24089214f78f5a2b0e658",
+      "actual_decoded_rgb_sha256": "78035c66019153b49aa6390df3a28c2bbae2fea40833095a5cbd4cf6bd5ad0b0",
+      "measured_decoded_rgb_sha256": "78035c66019153b49aa6390df3a28c2bbae2fea40833095a5cbd4cf6bd5ad0b0",
       "equal": true
     },
     {
       "photo_id": "c008_p07__seoul_hounds",
       "size": 384,
-      "actual_decoded_rgb_sha256": "4d601be4a2b2f0bada7f76d38131873a7e3256b8eb673b9747ab525319a75995",
-      "measured_decoded_rgb_sha256": "4d601be4a2b2f0bada7f76d38131873a7e3256b8eb673b9747ab525319a75995",
+      "actual_decoded_rgb_sha256": "4795595665f06860c362ab327bd0fbfde876c6525a622dfdc9496f3ee1d1177b",
+      "measured_decoded_rgb_sha256": "4795595665f06860c362ab327bd0fbfde876c6525a622dfdc9496f3ee1d1177b",
       "equal": true
     },
     {
@@ -20026,15 +20026,15 @@
     {
       "photo_id": "c007_p05__incheon_seagulls",
       "size": 384,
-      "actual_decoded_rgb_sha256": "610530c2d973eaa7f80fde4ef66490fa44a684403067ddf7874791d9c496a115",
-      "measured_decoded_rgb_sha256": "610530c2d973eaa7f80fde4ef66490fa44a684403067ddf7874791d9c496a115",
+      "actual_decoded_rgb_sha256": "32dbb81044f8b483867c01914d3e3518e462561061e8601e65b0a9257178cde8",
+      "measured_decoded_rgb_sha256": "32dbb81044f8b483867c01914d3e3518e462561061e8601e65b0a9257178cde8",
       "equal": true
     },
     {
       "photo_id": "c007_p06__incheon_seagulls",
       "size": 384,
-      "actual_decoded_rgb_sha256": "3a077b8a63c5b7265d836c9ea70dbdc436ad08dc847ee7e786be9def6b5143f5",
-      "measured_decoded_rgb_sha256": "3a077b8a63c5b7265d836c9ea70dbdc436ad08dc847ee7e786be9def6b5143f5",
+      "actual_decoded_rgb_sha256": "1080938da563a45fe84af17a75dc74bc1f5821fca500bc33edb3efc5139ca9d8",
+      "measured_decoded_rgb_sha256": "1080938da563a45fe84af17a75dc74bc1f5821fca500bc33edb3efc5139ca9d8",
       "equal": true
     },
     {
@@ -20096,15 +20096,15 @@
     {
       "photo_id": "c008_p06__incheon_seagulls",
       "size": 384,
-      "actual_decoded_rgb_sha256": "2bb202d0a86cf28b3244f8655cdc549b24d2d316e8dab3abbf2c0bd90811cac2",
-      "measured_decoded_rgb_sha256": "2bb202d0a86cf28b3244f8655cdc549b24d2d316e8dab3abbf2c0bd90811cac2",
+      "actual_decoded_rgb_sha256": "80b4f91c421c8529fead2ccc794df700df35d602848008472dee9580e613e9b3",
+      "measured_decoded_rgb_sha256": "80b4f91c421c8529fead2ccc794df700df35d602848008472dee9580e613e9b3",
       "equal": true
     },
     {
       "photo_id": "c008_p07__incheon_seagulls",
       "size": 384,
-      "actual_decoded_rgb_sha256": "adeeaca91e3b6f539b56ad75e2f2bd58c680cb8640514c11b63548525c86aa4f",
-      "measured_decoded_rgb_sha256": "adeeaca91e3b6f539b56ad75e2f2bd58c680cb8640514c11b63548525c86aa4f",
+      "actual_decoded_rgb_sha256": "85a20ef5745b2a14b73bbbf4bb731703cf027859fb525d15218278a3c6a61f8b",
+      "measured_decoded_rgb_sha256": "85a20ef5745b2a14b73bbbf4bb731703cf027859fb525d15218278a3c6a61f8b",
       "equal": true
     },
     {
@@ -20726,15 +20726,15 @@
     {
       "photo_id": "c007_p05__suwon_sparks",
       "size": 384,
-      "actual_decoded_rgb_sha256": "cb4cff714901a1ea3eb614cef1d5f94221518f746e2150810cea2cd0714ba866",
-      "measured_decoded_rgb_sha256": "cb4cff714901a1ea3eb614cef1d5f94221518f746e2150810cea2cd0714ba866",
+      "actual_decoded_rgb_sha256": "1628139cbbb96e76dcb28db099050b14472e16d3a970169275bdaf1d5720e862",
+      "measured_decoded_rgb_sha256": "1628139cbbb96e76dcb28db099050b14472e16d3a970169275bdaf1d5720e862",
       "equal": true
     },
     {
       "photo_id": "c007_p06__suwon_sparks",
       "size": 384,
-      "actual_decoded_rgb_sha256": "e4bd09775db9a10afcbcf28d54a4e50d0da208075d89b30357f6a16a54a3fcf5",
-      "measured_decoded_rgb_sha256": "e4bd09775db9a10afcbcf28d54a4e50d0da208075d89b30357f6a16a54a3fcf5",
+      "actual_decoded_rgb_sha256": "2450dc5d1acdf3604853233fa9cdf7c8fe5557acb0252bc4c09977e10168aa8f",
+      "measured_decoded_rgb_sha256": "2450dc5d1acdf3604853233fa9cdf7c8fe5557acb0252bc4c09977e10168aa8f",
       "equal": true
     },
     {
@@ -20796,22 +20796,22 @@
     {
       "photo_id": "c008_p06__suwon_sparks",
       "size": 384,
-      "actual_decoded_rgb_sha256": "c2b0b26d3c98bfa5251794ead8f469693723a0a8186bb83d80cd8993c654d74c",
-      "measured_decoded_rgb_sha256": "c2b0b26d3c98bfa5251794ead8f469693723a0a8186bb83d80cd8993c654d74c",
+      "actual_decoded_rgb_sha256": "dce642ec5f6a10ebecf5cd178ca017c45b741e878b4ae8e05df5f41cd8c31bfe",
+      "measured_decoded_rgb_sha256": "dce642ec5f6a10ebecf5cd178ca017c45b741e878b4ae8e05df5f41cd8c31bfe",
       "equal": true
     },
     {
       "photo_id": "c008_p07__suwon_sparks",
       "size": 384,
-      "actual_decoded_rgb_sha256": "9f81a6d374bfe1d49ebc1d43f9e3bd2e392fcd63bd4cfe0699924ec5f69c0f21",
-      "measured_decoded_rgb_sha256": "9f81a6d374bfe1d49ebc1d43f9e3bd2e392fcd63bd4cfe0699924ec5f69c0f21",
+      "actual_decoded_rgb_sha256": "8a68110f6baf85847e89416dbe1cc5f54f42edbb3836f7bf078a4609bbf837c6",
+      "measured_decoded_rgb_sha256": "8a68110f6baf85847e89416dbe1cc5f54f42edbb3836f7bf078a4609bbf837c6",
       "equal": true
     },
     {
       "photo_id": "c008_p08__suwon_sparks",
       "size": 384,
-      "actual_decoded_rgb_sha256": "bf46d08d87f888ea90b2fed0896a95f523b93616d6598e9a4ca1f312e2fcd1e3",
-      "measured_decoded_rgb_sha256": "bf46d08d87f888ea90b2fed0896a95f523b93616d6598e9a4ca1f312e2fcd1e3",
+      "actual_decoded_rgb_sha256": "c5c99095d7c97164b827fbc20d49c8a77c14ee48c7b0851b7e0726c45f4a4f04",
+      "measured_decoded_rgb_sha256": "c5c99095d7c97164b827fbc20d49c8a77c14ee48c7b0851b7e0726c45f4a4f04",
       "equal": true
     },
     {
@@ -20873,8 +20873,8 @@
     {
       "photo_id": "c009_p08__suwon_sparks",
       "size": 384,
-      "actual_decoded_rgb_sha256": "fc95218c572c4d145daafe8baf867270c277fa42b117bae5f518d178c23e2113",
-      "measured_decoded_rgb_sha256": "fc95218c572c4d145daafe8baf867270c277fa42b117bae5f518d178c23e2113",
+      "actual_decoded_rgb_sha256": "d278de79979fc1fe1a8c5f9e54aca7746b2f7969806ff069674fb77d878fabf7",
+      "measured_decoded_rgb_sha256": "d278de79979fc1fe1a8c5f9e54aca7746b2f7969806ff069674fb77d878fabf7",
       "equal": true
     },
     {
@@ -21426,15 +21426,15 @@
     {
       "photo_id": "c007_p05__goyang_storm",
       "size": 384,
-      "actual_decoded_rgb_sha256": "59fc533f5e40ce5346e52e890f73403f584443910fb2194788e12691c17a2ec3",
-      "measured_decoded_rgb_sha256": "59fc533f5e40ce5346e52e890f73403f584443910fb2194788e12691c17a2ec3",
+      "actual_decoded_rgb_sha256": "cc8e0cbbe20b1b6fa3d527f9c665ad4af0ae423e32149c08063ab92e9e0f2dea",
+      "measured_decoded_rgb_sha256": "cc8e0cbbe20b1b6fa3d527f9c665ad4af0ae423e32149c08063ab92e9e0f2dea",
       "equal": true
     },
     {
       "photo_id": "c007_p06__goyang_storm",
       "size": 384,
-      "actual_decoded_rgb_sha256": "6547e8ea0d2d8848733d0ad658931f141f6d533c8d09dadaa51e0504c23152ed",
-      "measured_decoded_rgb_sha256": "6547e8ea0d2d8848733d0ad658931f141f6d533c8d09dadaa51e0504c23152ed",
+      "actual_decoded_rgb_sha256": "814bfd222607d36ae2be1c947f042bd909ec4764aa165877650874e172c57187",
+      "measured_decoded_rgb_sha256": "814bfd222607d36ae2be1c947f042bd909ec4764aa165877650874e172c57187",
       "equal": true
     },
     {
@@ -21496,15 +21496,15 @@
     {
       "photo_id": "c008_p06__goyang_storm",
       "size": 384,
-      "actual_decoded_rgb_sha256": "3f79b0001a4408b70e7abffb5a1df92ea8114cb106062b2ff7ce05ed975c8389",
-      "measured_decoded_rgb_sha256": "3f79b0001a4408b70e7abffb5a1df92ea8114cb106062b2ff7ce05ed975c8389",
+      "actual_decoded_rgb_sha256": "e8db434b5f76a7de229e881c413888c552bd88f8f213eca47ff55d8fe3d870a6",
+      "measured_decoded_rgb_sha256": "e8db434b5f76a7de229e881c413888c552bd88f8f213eca47ff55d8fe3d870a6",
       "equal": true
     },
     {
       "photo_id": "c008_p07__goyang_storm",
       "size": 384,
-      "actual_decoded_rgb_sha256": "81930299dc6e710191ec6fa8ac8e4c86873b3fd5ba4f2760e66354cc6d0c25b8",
-      "measured_decoded_rgb_sha256": "81930299dc6e710191ec6fa8ac8e4c86873b3fd5ba4f2760e66354cc6d0c25b8",
+      "actual_decoded_rgb_sha256": "e2b9f92ebc7b9efbf45a2e26d4e47a42593ceb5438064c0d6b68dd5c936fe0b6",
+      "measured_decoded_rgb_sha256": "e2b9f92ebc7b9efbf45a2e26d4e47a42593ceb5438064c0d6b68dd5c936fe0b6",
       "equal": true
     },
     {
@@ -22126,15 +22126,15 @@
     {
       "photo_id": "c007_p05__daejeon_redfox",
       "size": 384,
-      "actual_decoded_rgb_sha256": "2466b82aa63fc1ac76c5ecd8854b292a1a50e99a7a19d1253990aea2ec322327",
-      "measured_decoded_rgb_sha256": "2466b82aa63fc1ac76c5ecd8854b292a1a50e99a7a19d1253990aea2ec322327",
+      "actual_decoded_rgb_sha256": "d55c54d8bc9e199e1fa6aa976f78f4e80b381219f3219cdbbf85d2ef5c5ae4d1",
+      "measured_decoded_rgb_sha256": "d55c54d8bc9e199e1fa6aa976f78f4e80b381219f3219cdbbf85d2ef5c5ae4d1",
       "equal": true
     },
     {
       "photo_id": "c007_p06__daejeon_redfox",
       "size": 384,
-      "actual_decoded_rgb_sha256": "d1f4911171eadfc293bd8999f99c7f2a79a72caa2d993d87bfb30e3c0fe4bc64",
-      "measured_decoded_rgb_sha256": "d1f4911171eadfc293bd8999f99c7f2a79a72caa2d993d87bfb30e3c0fe4bc64",
+      "actual_decoded_rgb_sha256": "5153d96a6d5595c6845a4a571fd50307887144447726f5a2535e6c8ce515aa54",
+      "measured_decoded_rgb_sha256": "5153d96a6d5595c6845a4a571fd50307887144447726f5a2535e6c8ce515aa54",
       "equal": true
     },
     {
@@ -22196,29 +22196,29 @@
     {
       "photo_id": "c008_p06__daejeon_redfox",
       "size": 384,
-      "actual_decoded_rgb_sha256": "9ae21edd3110cebd9f7dadcbb9f2b913e0bc18cd85771e5aa10a8ac1731ec786",
-      "measured_decoded_rgb_sha256": "9ae21edd3110cebd9f7dadcbb9f2b913e0bc18cd85771e5aa10a8ac1731ec786",
+      "actual_decoded_rgb_sha256": "ed476e9e9b8c20ff4a494cfd18aeb90356713b909a3874784b165feba836691f",
+      "measured_decoded_rgb_sha256": "ed476e9e9b8c20ff4a494cfd18aeb90356713b909a3874784b165feba836691f",
       "equal": true
     },
     {
       "photo_id": "c008_p07__daejeon_redfox",
       "size": 384,
-      "actual_decoded_rgb_sha256": "2fe6391f36592dad2c6a71c5c9c35273d306a2eec6f6337c33f400f22abf8616",
-      "measured_decoded_rgb_sha256": "2fe6391f36592dad2c6a71c5c9c35273d306a2eec6f6337c33f400f22abf8616",
+      "actual_decoded_rgb_sha256": "3758e40c47e1a3d48e477d9e622a8c8b18f710d58b5120274390f0c9a30837f5",
+      "measured_decoded_rgb_sha256": "3758e40c47e1a3d48e477d9e622a8c8b18f710d58b5120274390f0c9a30837f5",
       "equal": true
     },
     {
       "photo_id": "c008_p08__daejeon_redfox",
       "size": 384,
-      "actual_decoded_rgb_sha256": "3674e22d597639d8511bc640998d484a188c73fa9feac746c37b4285e81f2e95",
-      "measured_decoded_rgb_sha256": "3674e22d597639d8511bc640998d484a188c73fa9feac746c37b4285e81f2e95",
+      "actual_decoded_rgb_sha256": "7ef3eda3beb1b1131cd9443e3333c31c242d3b23979ecb76f549806ce29accc1",
+      "measured_decoded_rgb_sha256": "7ef3eda3beb1b1131cd9443e3333c31c242d3b23979ecb76f549806ce29accc1",
       "equal": true
     },
     {
       "photo_id": "c008_p09__daejeon_redfox",
       "size": 384,
-      "actual_decoded_rgb_sha256": "721a19b0646efd7c282ed5dd05686412cc0c8719e7a070547ad724c1223101bd",
-      "measured_decoded_rgb_sha256": "721a19b0646efd7c282ed5dd05686412cc0c8719e7a070547ad724c1223101bd",
+      "actual_decoded_rgb_sha256": "af68c62c43ead78c0f7bcd4bc65dbe75880b784eff38c57ecfb7882cbe2e6250",
+      "measured_decoded_rgb_sha256": "af68c62c43ead78c0f7bcd4bc65dbe75880b784eff38c57ecfb7882cbe2e6250",
       "equal": true
     },
     {
@@ -22826,15 +22826,15 @@
     {
       "photo_id": "c007_p05__gwangju_blazes",
       "size": 384,
-      "actual_decoded_rgb_sha256": "7f7b0711542a23374fb46593e4cf987b748a20440d97cbe5441215f93e5f25bf",
-      "measured_decoded_rgb_sha256": "7f7b0711542a23374fb46593e4cf987b748a20440d97cbe5441215f93e5f25bf",
+      "actual_decoded_rgb_sha256": "e24c185f6d96cfaf2850dfb3fe8724130c08a993a615fe8601538cb2380058d1",
+      "measured_decoded_rgb_sha256": "e24c185f6d96cfaf2850dfb3fe8724130c08a993a615fe8601538cb2380058d1",
       "equal": true
     },
     {
       "photo_id": "c007_p06__gwangju_blazes",
       "size": 384,
-      "actual_decoded_rgb_sha256": "2bae9d18a737a234c4f545555a00186176b7e36114194767bda979be5477536c",
-      "measured_decoded_rgb_sha256": "2bae9d18a737a234c4f545555a00186176b7e36114194767bda979be5477536c",
+      "actual_decoded_rgb_sha256": "bdf19b057da4d52a3c8484b7b66df97d7210851d57960ee3343937e2402019af",
+      "measured_decoded_rgb_sha256": "bdf19b057da4d52a3c8484b7b66df97d7210851d57960ee3343937e2402019af",
       "equal": true
     },
     {
@@ -22896,15 +22896,15 @@
     {
       "photo_id": "c008_p06__gwangju_blazes",
       "size": 384,
-      "actual_decoded_rgb_sha256": "aa817894ae2e3c1653aa78c3147e1fd0b174f2f81ba0416399c5256a41f189e7",
-      "measured_decoded_rgb_sha256": "aa817894ae2e3c1653aa78c3147e1fd0b174f2f81ba0416399c5256a41f189e7",
+      "actual_decoded_rgb_sha256": "f1e180f121c7de8cf195e8c6a9cec878fda1397119f845ec9e56db24c4307d9d",
+      "measured_decoded_rgb_sha256": "f1e180f121c7de8cf195e8c6a9cec878fda1397119f845ec9e56db24c4307d9d",
       "equal": true
     },
     {
       "photo_id": "c008_p07__gwangju_blazes",
       "size": 384,
-      "actual_decoded_rgb_sha256": "9ec7ba4c187e0896aa9fc2a5aa1c03cba0177c8de6f0772d6e15f339b32250fa",
-      "measured_decoded_rgb_sha256": "9ec7ba4c187e0896aa9fc2a5aa1c03cba0177c8de6f0772d6e15f339b32250fa",
+      "actual_decoded_rgb_sha256": "82da4c04c46ecfc46fd3eb1555cb61c891de7dafd3e47e3e18d27388bab9d456",
+      "measured_decoded_rgb_sha256": "82da4c04c46ecfc46fd3eb1555cb61c891de7dafd3e47e3e18d27388bab9d456",
       "equal": true
     },
     {
@@ -23526,15 +23526,15 @@
     {
       "photo_id": "c007_p05__daegu_thunders",
       "size": 384,
-      "actual_decoded_rgb_sha256": "735ee52b9f264990f9048024406c4fedad379a3b806d18c19872cb37176a5d66",
-      "measured_decoded_rgb_sha256": "735ee52b9f264990f9048024406c4fedad379a3b806d18c19872cb37176a5d66",
+      "actual_decoded_rgb_sha256": "228682deacdfb45935ffc073ec33a7ed15f11d37de2bf6b2abbfff95af6ae156",
+      "measured_decoded_rgb_sha256": "228682deacdfb45935ffc073ec33a7ed15f11d37de2bf6b2abbfff95af6ae156",
       "equal": true
     },
     {
       "photo_id": "c007_p06__daegu_thunders",
       "size": 384,
-      "actual_decoded_rgb_sha256": "767703cacd2384242636eee28d1df6317bc3e4ef4b3dc1c1c0f036e349c1da83",
-      "measured_decoded_rgb_sha256": "767703cacd2384242636eee28d1df6317bc3e4ef4b3dc1c1c0f036e349c1da83",
+      "actual_decoded_rgb_sha256": "4e7f2f4cf4357f29d14acedcbcf30583ebaa7e64a5912ed68e1b1adfcce1ed7e",
+      "measured_decoded_rgb_sha256": "4e7f2f4cf4357f29d14acedcbcf30583ebaa7e64a5912ed68e1b1adfcce1ed7e",
       "equal": true
     },
     {
@@ -23596,15 +23596,15 @@
     {
       "photo_id": "c008_p06__daegu_thunders",
       "size": 384,
-      "actual_decoded_rgb_sha256": "aa1f24c97c5dc89316834c0cccaa6aa8cd8a4a3a68cbdbe8a4261b8a1d06bd6b",
-      "measured_decoded_rgb_sha256": "aa1f24c97c5dc89316834c0cccaa6aa8cd8a4a3a68cbdbe8a4261b8a1d06bd6b",
+      "actual_decoded_rgb_sha256": "1f7e574aad3f1b2be29b87fa738cdf6d0f77e7dcfd781fdcbb9a2c607850bacc",
+      "measured_decoded_rgb_sha256": "1f7e574aad3f1b2be29b87fa738cdf6d0f77e7dcfd781fdcbb9a2c607850bacc",
       "equal": true
     },
     {
       "photo_id": "c008_p07__daegu_thunders",
       "size": 384,
-      "actual_decoded_rgb_sha256": "2c2a7eaeaee4c3e12dadf3059bdf455e7ac09033f3d20c0866720217240c44b7",
-      "measured_decoded_rgb_sha256": "2c2a7eaeaee4c3e12dadf3059bdf455e7ac09033f3d20c0866720217240c44b7",
+      "actual_decoded_rgb_sha256": "8703bb18ceb709ce41496f0379534ec660eea7dd85b224255c4fd91e4b9074c1",
+      "measured_decoded_rgb_sha256": "8703bb18ceb709ce41496f0379534ec660eea7dd85b224255c4fd91e4b9074c1",
       "equal": true
     },
     {
@@ -24226,15 +24226,15 @@
     {
       "photo_id": "c007_p05__busan_waves",
       "size": 384,
-      "actual_decoded_rgb_sha256": "784dce3f22e36e60c984b47becba955dbf0d93494d9d23fcb29636262d2d0270",
-      "measured_decoded_rgb_sha256": "784dce3f22e36e60c984b47becba955dbf0d93494d9d23fcb29636262d2d0270",
+      "actual_decoded_rgb_sha256": "6578d9c199332822d614a52d04bcbd6c1332f2ce88e7bbefb73867acbdff8a55",
+      "measured_decoded_rgb_sha256": "6578d9c199332822d614a52d04bcbd6c1332f2ce88e7bbefb73867acbdff8a55",
       "equal": true
     },
     {
       "photo_id": "c007_p06__busan_waves",
       "size": 384,
-      "actual_decoded_rgb_sha256": "59efb285b8f4c60df634cb15ecdd1013ea05a60ee0ee21f1223a4beb92412b0e",
-      "measured_decoded_rgb_sha256": "59efb285b8f4c60df634cb15ecdd1013ea05a60ee0ee21f1223a4beb92412b0e",
+      "actual_decoded_rgb_sha256": "185a8cc6ee83c73528b47671b7039ac0b270b9cb051ddf60e6755972fcabed2a",
+      "measured_decoded_rgb_sha256": "185a8cc6ee83c73528b47671b7039ac0b270b9cb051ddf60e6755972fcabed2a",
       "equal": true
     },
     {
@@ -24296,22 +24296,22 @@
     {
       "photo_id": "c008_p06__busan_waves",
       "size": 384,
-      "actual_decoded_rgb_sha256": "a0f6fe1e4d8c5c46cda24af0bafb5ae4406f5f5a9e9deae475e10f12655bdf6a",
-      "measured_decoded_rgb_sha256": "a0f6fe1e4d8c5c46cda24af0bafb5ae4406f5f5a9e9deae475e10f12655bdf6a",
+      "actual_decoded_rgb_sha256": "7edfacab7e6efc523bde8607e5c6221da0144c74f983e6b46191f63bb712f54a",
+      "measured_decoded_rgb_sha256": "7edfacab7e6efc523bde8607e5c6221da0144c74f983e6b46191f63bb712f54a",
       "equal": true
     },
     {
       "photo_id": "c008_p07__busan_waves",
       "size": 384,
-      "actual_decoded_rgb_sha256": "7a11437acdc6054c3c251371ec5b1b5d131180c25d2124425721789648822aa8",
-      "measured_decoded_rgb_sha256": "7a11437acdc6054c3c251371ec5b1b5d131180c25d2124425721789648822aa8",
+      "actual_decoded_rgb_sha256": "b5af31ab71348ce4073b077735368963b72366a52222a08faea866e93b1117f8",
+      "measured_decoded_rgb_sha256": "b5af31ab71348ce4073b077735368963b72366a52222a08faea866e93b1117f8",
       "equal": true
     },
     {
       "photo_id": "c008_p08__busan_waves",
       "size": 384,
-      "actual_decoded_rgb_sha256": "85db157ba5aad2ba2962958507691e9374cede72a91f9fc4a325a91b769135d7",
-      "measured_decoded_rgb_sha256": "85db157ba5aad2ba2962958507691e9374cede72a91f9fc4a325a91b769135d7",
+      "actual_decoded_rgb_sha256": "1d80923d8ccff69d2024fd07cefce9727d4c7600f1d268f3f085979e1f8f9ee6",
+      "measured_decoded_rgb_sha256": "1d80923d8ccff69d2024fd07cefce9727d4c7600f1d268f3f085979e1f8f9ee6",
       "equal": true
     },
     {
@@ -24380,8 +24380,8 @@
     {
       "photo_id": "c009_p09__busan_waves",
       "size": 384,
-      "actual_decoded_rgb_sha256": "db63bcbc89800285709b2cc1e34bf1621ba85bc2932cc53183c7781936a1e008",
-      "measured_decoded_rgb_sha256": "db63bcbc89800285709b2cc1e34bf1621ba85bc2932cc53183c7781936a1e008",
+      "actual_decoded_rgb_sha256": "954dd26d691df6e8845666ef3bb92b90e63247a32706645277f05df421dc3a15",
+      "measured_decoded_rgb_sha256": "954dd26d691df6e8845666ef3bb92b90e63247a32706645277f05df421dc3a15",
       "equal": true
     },
     {
@@ -24926,15 +24926,15 @@
     {
       "photo_id": "c007_p05__changwon_anchors",
       "size": 384,
-      "actual_decoded_rgb_sha256": "e187264416286fc822b677d459e11355243d68a891a67fd40a63c3c537e5f60d",
-      "measured_decoded_rgb_sha256": "e187264416286fc822b677d459e11355243d68a891a67fd40a63c3c537e5f60d",
+      "actual_decoded_rgb_sha256": "81023befb8c8531f15e70bbaf3e14068655610838467b4a4dfbc34a39b706ebd",
+      "measured_decoded_rgb_sha256": "81023befb8c8531f15e70bbaf3e14068655610838467b4a4dfbc34a39b706ebd",
       "equal": true
     },
     {
       "photo_id": "c007_p06__changwon_anchors",
       "size": 384,
-      "actual_decoded_rgb_sha256": "eadfba54cb2ac7e1350464359c3c1bf997b5e9e56ee41ec26163384f45a68f24",
-      "measured_decoded_rgb_sha256": "eadfba54cb2ac7e1350464359c3c1bf997b5e9e56ee41ec26163384f45a68f24",
+      "actual_decoded_rgb_sha256": "8b178e4cf66f4aa503192a08dbe96f8b4c8d997211b1041c843e67938b83f4bc",
+      "measured_decoded_rgb_sha256": "8b178e4cf66f4aa503192a08dbe96f8b4c8d997211b1041c843e67938b83f4bc",
       "equal": true
     },
     {
@@ -24996,8 +24996,8 @@
     {
       "photo_id": "c008_p06__changwon_anchors",
       "size": 384,
-      "actual_decoded_rgb_sha256": "778ea5cfc8aabdca755cc920d960ad1696d9585c46f65896dbe5e8e768cfc394",
-      "measured_decoded_rgb_sha256": "778ea5cfc8aabdca755cc920d960ad1696d9585c46f65896dbe5e8e768cfc394",
+      "actual_decoded_rgb_sha256": "1edc3af4a328851e40b106bb81800740f582f1fa0c78412f5dd0ff6991145b64",
+      "measured_decoded_rgb_sha256": "1edc3af4a328851e40b106bb81800740f582f1fa0c78412f5dd0ff6991145b64",
       "equal": true
     },
     {

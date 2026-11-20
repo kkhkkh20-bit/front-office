@@ -1,62 +1,37 @@
-시각 검수 후속: A061의 모자 윗부분 여백을 추가 보완 중입니다. 이 커밋은 수치 통과 중간본입니다.
+# v21b A100 revision3 및 B 수정 중간본
 
-# v21b 시트 A revision3 — A 7명 교체 및 B 수정 중간본
+브랜치: `assets/v21-review`. 경로: `assets/v21/amateur200/`. main에는 병합하지 않습니다.
 
-A062·A047·A038·A083·A061·A069·A093의 12변형을 교체했습니다. A100 번호·나이·level은 모두 유지합니다. 같은 인물 최저 0.606188, A 대표끼리 최고 0.398291, 기존486명과 최고 0.392386입니다. 최종 손실 시트에서 잘라낸 RGB 3600칸을 직접 측정값과 대조해 통과했습니다. 배경 캔버스 재구성과 A041 수원 사진의 1 native px 전체 사진 중심 보정은 얼굴 변형 없이 기존 사진을 유지하기 위한 처리이며 상세 기록은 validation/revision3/에 있습니다.
+A062·A047·A038·A083·A061·A069·A093의 12변형을 교체했습니다. A061은 12종 모두 모자 크라운과 위 여백을 추가 보완했습니다. A100의 ID·index·나이·level은 모두 그대로입니다. 번호·나이 잠금 SHA256: `a3fbff50ddc24bdb8ab5bb0943c629011a2c3d4de5ebdef51d6f71f9179ee437`.
 
-B는 공식 런타임 시트가 아직 없습니다. 17명×12종=204장의 개별 사진 검수본이며, 최종 B100과 B 시트36장의 완료를 뜻하지 않습니다. game ID는 배정하지 않았습니다. production_complete=false, human_age_review=pending입니다.
+현재 공식 납품은 A100명×12종×3크기, 시트36장입니다. `sheets_ready=["A"]`, `stage_a_complete=true`, `asset_validation_passed=true`, `production_complete=false`, `human_age_review="pending"`입니다. B100 정식 시트는 아직 없습니다.
 
-Q001·Q024·Q033은 머리 크기를 보정했고, Q054·Q055는 무지 아마추어 유니폼, Q083은 검은 머리로 수정했습니다. 이 6명의 12변형은 개별 사진 검사를 통과했습니다. Q071·Q042·Q047·Q064·Q074·Q067·Q075는 최종 선정에서 제외합니다. 첫8명의 candidate8 hs_home 배경은 다른 변형과 가까운 중립 회색으로 맞췄습니다. Q 번호는 82c94805의 리뷰 번호를 그대로 씁니다.
+## 게임 입력
 
-미리보기: previews/revision3_A7_all12.jpg, previews/revision3_B_requested_changes.jpg, previews/revision3_B17_all12.jpg. 변경표는 revision3_review.json, B 전체12종 후보는 stage_b_family_review_manifest.json입니다. 후보판을 공식 B 시트로 연결하지 마세요.
+`manifest.json`의 schema는 `v21-amateur-1`입니다. 각 identity의 `variants[variant_key].sheets["384"|"256"|"128"]`에 있는 path·rect를 그대로 사용합니다. 사진384 시트는4000×4000(q89),256은2720×2720(q88),128은1440×1440(q85), 모두 RGB 손실 WebP입니다. 사진 주위8px, pitch=size+16, localIndex=index%100, rect=[(localIndex%10)*pitch+8, floor(localIndex/10)*pitch+8,size,size]입니다. 고해상도 카드에는384 시트를 사용합니다.
 
-## 이전 A1 납품 기록 (수치와 소스는 validation/history/stage_a_before_revision3/에 보존)
+변형 순서: hs_home, univ, seoul_comets, seoul_hounds, incheon_seagulls, suwon_sparks, goyang_storm, daejeon_redfox, gwangju_blazes, daegu_thunders, busan_waves, changwon_anchors. hs_away는 런타임에서 제외했습니다. 게임 코드는 수정하지 않았습니다.
 
-리뷰 브랜치: `assets/v21-review`  
-기준 경로: `assets/v21/amateur200/`
+## A 검수
 
-시트 A100명,12변형,3크기의 정식 시트36장을 납품합니다. 고교60명·대학40명, 안경11명입니다. 수치 검수는 통과했으며 사람의 나이 확인은 `pending`입니다. 시트 B100명은 다음 단계이므로 `production_complete`는 `false`입니다.
-
-## 런타임 입력
-
-`manifest.json`의 `schema_version`은 `v21-amateur-1`이고 `identities`에는 이번100명만 들어 있습니다. `sheets_ready`는 `["A"]`입니다. `id`, `age`, `sheet`, `index`를 저장 파일의 고정 배정에 사용하고 납품 뒤 번호나 설계 나이를 바꾸지 않습니다. 번호·나이 잠금 SHA256: `a3fbff50ddc24bdb8ab5bb0943c629011a2c3d4de5ebdef51d6f71f9179ee437`.
-
-`variants[variant_key].sheets["384"|"256"|"128"]`의 `path`와 `rect`를 그대로 읽으세요. 크기별 시트는 `sheets/A/{size}/{variant_key}.webp`입니다. 각 시트는10×10칸, 사진 둘레8px입니다.
-
-```js
-const localIndex = identity.index % 100;
-const pitch = size + 16;
-const rect = [
-  (localIndex % 10) * pitch + 8,
-  Math.floor(localIndex / 10) * pitch + 8,
-  size, size
-];
-```
-
-384px 시트는4000×4000(q89),256px는2720×2720(q88),128px는1440×1440(q85)입니다. 모두 RGB 손실 WebP입니다. 고해상도 카드에는384px 시트를 사용합니다.
-
-변형 순서: `hs_home`, `univ`, `seoul_comets`, `seoul_hounds`, `incheon_seagulls`, `suwon_sparks`, `goyang_storm`, `daejeon_redfox`, `gwangju_blazes`, `daegu_thunders`, `busan_waves`, `changwon_anchors`. 고교는 `hs_home`, 대학은 `univ`, 지명 후에는 구단 키를 사용합니다. `hs_away`는 런타임 변형에서 제외했습니다. 기존 후보·실험판 자료는 제작 기록이며 런타임 번호표는 이번 `manifest.json`입니다.
-
-## 검수
-
-| 크기 | 같은 인물 최저값 | 대표 사진끼리 최고값 | 기존486명과 최고값 |
+| 크기 | 같은 인물 최저 | A 대표끼리 최고 | 기존486명과 최고 |
 |---|---:|---:|---:|
-| 128 | 0.614290 | 0.398272 | 0.379359 |
-| 256 | 0.640446 | 0.394158 | 0.392079 |
-| 384 | 0.649693 | 0.396785 | 0.384992 |
+| 128 | 0.606188 | 0.398291 | 0.379783 |
+| 256 | 0.633675 | 0.392670 | 0.392386 |
+| 384 | 0.649565 | 0.395337 | 0.384882 |
 
-같은 인물은12변형의 모든66쌍을 검사했습니다. 다른 인물은 `hs_home` 대표 사진끼리, 그리고 기존 v6c100·v1360·v18200·v7126명 총486명의 대표 사진과 비교했습니다.384 비교의 기존 갤러리는256px입니다. 같은 인물 기준은0.60 이상, 다른 인물은0.40 미만입니다.
+12변형의 모든66쌍이0.60 이상이고, hs_home 대표끼리 및 기존486명과0.40 미만입니다. 최종 시트에서 잘라낸3600개 RGB 칸이 측정본과 같은 SHA256인지 확인했습니다. ArcFace 원시 float32 코사인, buffalo_l, 기존5점 정렬을 유지했고 기준이나 임베딩을 변환하지 않았습니다.384 후보는 기존256 갤러리와 비교합니다.
 
-최종 WebP에서 실제로 잘라낸3600개 RGB 셀을 확인했습니다. 측정본과 디코딩 RGB SHA256이 같은 경우에만 원시 벡터를 재사용하고, 달라진 셀은 최종 시트에서 다시 측정했습니다. ArcFace 모델·5점 정렬·L2 정규화·코사인 기준은 `validation/protocol.json`에 기록했습니다.
+얼굴 중심은5점 평균, v18 기준 [130.98235626,118.22048492]에서 최대 1.318556px(256 기준, 허용±4px)입니다. 원본 사진의 보존된 최소 변은384px 이상, 사진 확대·얼굴 변형·얼굴/몸 합성은 없습니다. 기존 A93의 사진 원본을 보존하며 외부 회색 캔버스를 재구성했습니다. A041 수원 사진은 실제 중심 잔차로 계산한1 native px 전체 사진 위치 보정을 했습니다. 상세 원본·좌표·처리 기록은 validation/stage_a/photo_provenance.json 및 validation/revision3/에 있습니다. 이전 A1 자료는 validation/history/stage_a_before_revision3/에 보존했습니다.
 
-얼굴 중심은5점 랜드마크의 산술평균이며, v18 `seoul_comets`200명의 중앙값을 기준점으로 삼았습니다.256px 기준 좌표는 `[130.98235626,118.22048492]`, 최대 축 편차는1.327020px입니다(허용±4px). 원본 사진의 보존된 최소 변은384px 이상이며 작은 사진을 확대한 납품물은 없습니다. 원본 PNG와 잘라낸 위치·프레임 정보는 `native/`와 `validation/stage_a/photo_provenance.json`에 보관했습니다.
+A 전체 나이 검토판: previews/age_review_A_256.png. 전체: previews/all100_hs_home_256.png. 무작위10명: previews/random10_variants_A_256.png. 교체7명: previews/revision3_A7_all12.jpg.
 
-## 구단주 나이 확인
+## B 수정 현황
 
-`previews/age_review_A_256.png`는 최종 WebP의 고교 사진100명을256px 그대로10×10으로 놓고, 사진 바깥에 `A017 · 18` 형식으로 번호와 설계 나이를 표시했습니다. 나이 들어 보이거나 지나치게 어려 보이는 번호를 받으면 그 인물의 사진을 교체하고 수치 검수를 다시 합니다. ID와 설계 나이는 유지합니다. 현재 사람의 나이 확인은0/100명, `human_age_review: "pending"`입니다.
+17명×12종=204장의 개별 사진 검수본입니다. 공식 B100, B 시트36장 또는 게임 ID 배정을 뜻하지 않습니다. 후보판을 게임 런타임 B로 연결하지 마세요.
 
-추가 확인 자료: `previews/all100_hs_home_256.png`, `previews/random10_variants_A_256.png`(고정 난수로 고른10명의12변형).
+Q001·Q024·Q033은 크기 보정, Q054·Q055는 무지 아마추어 유니폼, Q083은 검은 머리로 수정했으며 이6명의 전체12종은 개별 사진 검사를 통과했습니다. Q071·Q042·Q047·Q064·Q074·Q067·Q075는 최종 선정에서 제외합니다. 첫8명 중 candidate8의 hs_home 배경은 다른 변형과 가까운 중립 회색(모서리 RGB102)으로 맞췄습니다. Q 번호는82c94805의 리뷰 번호를 그대로 사용합니다.
 
-## 연결 범위
+변경표: revision3_review.json. 수정 비교: previews/revision3_B_requested_changes.jpg. 전체17명: previews/revision3_B17_all12.jpg. 후보 번호표: stage_b_candidate_manifest.json. 12종 사진 경로: stage_b_family_review_manifest.json. 수치 자료: validation/revision3/B_family_raw_embeddings.npz 및 B_family_measurements.json.
 
-이 브랜치는 에셋 납품용입니다. Claude가 `FACE21` 번호표 모듈과 기존 `amVar` 연결에 이번100명을 사용하면 됩니다. B가 추가되기 전에는 `FACE21.ids`100명으로 연결합니다. 시트 B가 준비되면 기존 A의 ID와 나이를 유지하며100명을 더합니다.
+B100 선정, 고교60·대학40 구성 및 최종 시트36장의 실제 픽셀 검사가 남아 있습니다. B IDs와 나이는 공식 납품 때 고정합니다. 나이 확인은 구단주 검토 전이므로 pending입니다.

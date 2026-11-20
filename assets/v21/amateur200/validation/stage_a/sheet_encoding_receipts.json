@@ -8,8 +8,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 427454,
-    "sha256": "46ca0b516d144e0bc0d2ae4127085f21684f6543946bef6edd7ece6c6ccd5846"
+    "bytes": 427320,
+    "sha256": "1f36c8250d8cfa6580dcc126da394d0a58ea6e024b7608908cf80b11b80b38cb"
   },
   {
     "path": "sheets/A/256/hs_home.webp",
@@ -20,8 +20,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1168284,
-    "sha256": "e06a9998f1dd88801da703e742703cdeda313a3005114cf7775fba09a05fab62"
+    "bytes": 1167712,
+    "sha256": "89805866ec66a96fd043f4408b53f0030539d371367c5da6bd6bd3c6368ea2b7"
   },
   {
     "path": "sheets/A/384/hs_home.webp",
@@ -32,8 +32,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1496312,
-    "sha256": "ced19aa8bf834edf668cae8cf1d657f5772b73365775f06c7f9987634bf44455"
+    "bytes": 1496122,
+    "sha256": "7520a4a538d702201ceba6b0f4c9615869ec0380464ec173ac4c1d1cb5895012"
   },
   {
     "path": "sheets/A/128/seoul_hounds.webp",
@@ -44,8 +44,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 410836,
-    "sha256": "ceb39f83b1143184ce3c273f8e50880475848fe27d33adfa2fbed4eee56da100"
+    "bytes": 410934,
+    "sha256": "7badc592555ea737fe2148b5594dbe8b7f99e8eccf2d3eb86efb92f53ec4c2bd"
   },
   {
     "path": "sheets/A/256/seoul_hounds.webp",
@@ -56,8 +56,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1181604,
-    "sha256": "3701b93800523d4e8f0536f7768d7764b3a2c8b9b5ab9f250dfb46516da70a9d"
+    "bytes": 1182116,
+    "sha256": "bd31a5bc99ebf3b71b76391e06aea1d697486c7633daab0dc204a2e8b640d70c"
   },
   {
     "path": "sheets/A/384/seoul_hounds.webp",
@@ -68,8 +68,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1699868,
-    "sha256": "62a8083c5756d91788a5575ee0486a2382085fbd7da51194c491c8ffff1f7386"
+    "bytes": 1702158,
+    "sha256": "cf6b7bfdb4f0ac6a128737f7defc37ed3a8b74f4b03757806d99f11b06ec20a2"
   },
   {
     "path": "sheets/A/128/incheon_seagulls.webp",
@@ -80,8 +80,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 556252,
-    "sha256": "3fefe58bd8fa9f61fb6953a2c1e3f7af7bf4396f5da59d9359e1afd370ef8221"
+    "bytes": 555988,
+    "sha256": "ab08b44732b311aa03647e142cff8c96acfbd04a8d5ce1a8f56d0ecc27e04e3a"
   },
   {
     "path": "sheets/A/256/incheon_seagulls.webp",
@@ -92,8 +92,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1571034,
-    "sha256": "97ccfd6fe1ca24db0d12efc0591135c056b2e735e1b493163ff331a79d768a0f"
+    "bytes": 1570580,
+    "sha256": "ddc5fc70e2f25d6fc75b6f10d6a16651ca7f64210aa37baf41055db48e3df076"
   },
   {
     "path": "sheets/A/384/incheon_seagulls.webp",
@@ -104,8 +104,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 2166820,
-    "sha256": "435f0565519d5908e963478ff2f3aa5cfe956beacfb14caac395e03839a45756"
+    "bytes": 2167176,
+    "sha256": "41de689f6943d4064c7db09e3a400ed150be3f4c2c73d461256c9c9d24953f47"
   },
   {
     "path": "sheets/A/128/suwon_sparks.webp",
@@ -116,8 +116,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 494276,
-    "sha256": "36de129c36cb5ab78b074fe2e08c3eb4b820c753df1abd8b68b249a7838b6ad5"
+    "bytes": 494018,
+    "sha256": "d9a7d929581734710ede3a9f8ea2d6e2459a53ec6e17d91f6bc5a02406c0de6c"
   },
   {
     "path": "sheets/A/256/suwon_sparks.webp",
@@ -128,8 +128,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1390992,
-    "sha256": "2a69ac46952df112d50c119ebe25ba312b59e24a60d2bbc5e171f9d5ce27571b"
+    "bytes": 1390028,
+    "sha256": "ecf54cb68fb52b3e01820cc682468e4aed0d9da086dbd98a60b9288de8287283"
   },
   {
     "path": "sheets/A/384/suwon_sparks.webp",
@@ -140,8 +140,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 2130734,
-    "sha256": "a11ad86e2abb498bde9027ce210ce276588788d5d3d93a9ae442aee9d7fd63c8"
+    "bytes": 2130590,
+    "sha256": "a1e93327230b86b5716e99e4a016d8e2f9cbc9a3dbe4d5b5859af124f5268966"
   },
   {
     "path": "sheets/A/128/goyang_storm.webp",
@@ -152,8 +152,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 547612,
-    "sha256": "af97fd6605cfe79108b6fc02e7162e1055f1f49b52dd85f0a7ccac3e3179f541"
+    "bytes": 547116,
+    "sha256": "2a9e6c683da2a472d0573037660bb2898ed6491ec8af68104323818c8df0f22c"
   },
   {
     "path": "sheets/A/256/goyang_storm.webp",
@@ -164,8 +164,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1553864,
-    "sha256": "c8988cb56a7053e0d867ffb93b5d9673eed5dd25acc310cf9e82cd0500df104b"
+    "bytes": 1552932,
+    "sha256": "e3890983ffc7cec388cb3d70b389aa44da0110fee661f975fec31790522b1c48"
   },
   {
     "path": "sheets/A/384/goyang_storm.webp",
@@ -176,8 +176,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 2132572,
-    "sha256": "969977cc65d8031d5385493865c24e0df97a32c05dcdd7301bf2192f882ba528"
+    "bytes": 2133864,
+    "sha256": "c07dc26d41d525b8f292922f6208942e56b42cf929b3e6c702beabb9d06befd9"
   },
   {
     "path": "sheets/A/128/daejeon_redfox.webp",
@@ -188,8 +188,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 553004,
-    "sha256": "d34889ac1005f824c44788612dd6e1527601800b5af9949f39bd42c1f43338bf"
+    "bytes": 552842,
+    "sha256": "cce56cc6804a78f3abfc094b21d4daeb7009f6dc8cb5bd2354f8d9cd7efd73e9"
   },
   {
     "path": "sheets/A/256/daejeon_redfox.webp",
@@ -200,8 +200,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1683466,
-    "sha256": "63f28a52dfb3fef7e865cc4f8c76145255083d7a11a74e775bcb4dabc5b72b47"
+    "bytes": 1682456,
+    "sha256": "98ac10143fca12c5743d686c1f27c191537ecbbf02832d7bef27499794ed08b4"
   },
   {
     "path": "sheets/A/384/daejeon_redfox.webp",
@@ -212,8 +212,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 2416402,
-    "sha256": "fa1c18a0630af4f526d89ad75339e04741aa556fb7fd871ef9c8be90100cdb74"
+    "bytes": 2417078,
+    "sha256": "138d0e98b2776ca4f8dac2ed9ef97d2dcbf64299ab0fd5ae41d123c7d44e944a"
   },
   {
     "path": "sheets/A/128/gwangju_blazes.webp",
@@ -224,8 +224,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 622704,
-    "sha256": "67b397df83c4ebadf1a42ef3c88fee8ac4153e0df608fa1bee08eb4120a4c83c"
+    "bytes": 622516,
+    "sha256": "eb5421d19f83362c7efdbbca88a40c45db75e3e716e7bede5fe848490826b0f8"
   },
   {
     "path": "sheets/A/256/gwangju_blazes.webp",
@@ -236,8 +236,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1829258,
-    "sha256": "82774c557369d1df80c8af2b0bfe60d8b1f741ed5d64245eb235c018e29d52b0"
+    "bytes": 1829120,
+    "sha256": "13b8be799808a6ffc3af528a7689f7706b56fdf3c2ee965093197b459da37864"
   },
   {
     "path": "sheets/A/384/gwangju_blazes.webp",
@@ -248,8 +248,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 2670242,
-    "sha256": "1e2766741ebc82666c70160e2f82414779a98da773028a633d2718800ce93a36"
+    "bytes": 2670994,
+    "sha256": "0bc29572833152205c071db279a90ad9bf4226c767727d7674bff42db332bd64"
   },
   {
     "path": "sheets/A/128/daegu_thunders.webp",
@@ -260,8 +260,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 654030,
-    "sha256": "c4dfe65ecc098641a89004181581c93989ddc17ef7b7d359bda0cb3c15f4442f"
+    "bytes": 653838,
+    "sha256": "8bf580e3fce9d6caf12ed45c367b1b95bcc18a792ecb4b713cd2a82b78dc937e"
   },
   {
     "path": "sheets/A/256/daegu_thunders.webp",
@@ -272,8 +272,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 2006968,
-    "sha256": "534ae0edc8fe87161e528ffc54897a1e1bc57cb7b56f7ed3218087aaeabc6700"
+    "bytes": 2006494,
+    "sha256": "04a1e8ae12cc8288255ec80367e4ca0238cab6aec994c73ab43646be13d735b8"
   },
   {
     "path": "sheets/A/384/daegu_thunders.webp",
@@ -284,8 +284,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 2908124,
-    "sha256": "870e5eb4e98b7ba09009537c411a1eeaa02defbcf81cd1c2ded7d3e6b38b81d1"
+    "bytes": 2909052,
+    "sha256": "58daad71240d7e4f371023055067685af5791a0c199f3dbb0d34e4fdce9de7d9"
   },
   {
     "path": "sheets/A/128/busan_waves.webp",
@@ -296,8 +296,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 522130,
-    "sha256": "a48f489886b5ebe520ed7cf417d47024f055a48ca7d5a0212f653b2831321066"
+    "bytes": 521998,
+    "sha256": "55847e321baa147efd0c91ff82505756454da27c580df0daa35256fa31f66f11"
   },
   {
     "path": "sheets/A/256/busan_waves.webp",
@@ -308,8 +308,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1448244,
-    "sha256": "ab4600e49a132551f2d88ab04852cf59199762ea78e60ac6fd9fc44624ec93fd"
+    "bytes": 1447756,
+    "sha256": "ade4f2aacbe7cfe050e0edd0f0fc0593f2533e70d63c671f3e6c02a8f3c90681"
   },
   {
     "path": "sheets/A/384/busan_waves.webp",
@@ -320,8 +320,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 2124224,
-    "sha256": "aeabb108b5f01088373a8a3d25bcfee58765bde0e7b20e8bc48c58d81ade2dc5"
+    "bytes": 2125064,
+    "sha256": "188380cf5b6be3ea79fb241138cac07e56fa0919b9556da55a335ca7d845f9ed"
   },
   {
     "path": "sheets/A/128/changwon_anchors.webp",
@@ -332,8 +332,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 474994,
-    "sha256": "4dfc97c40bbcd47401501760dd366f8535f4cf7f86b8fe7909c24ed132cda8e7"
+    "bytes": 475182,
+    "sha256": "18da71df2bed88a3f159b5dd8ef133c04d7c31e9d7b122b7e6803a096692c265"
   },
   {
     "path": "sheets/A/256/changwon_anchors.webp",
@@ -344,8 +344,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1346282,
-    "sha256": "f490a9a8bccb6c8780908601821038a5b58ab49352f2690184f670ffa3e52f74"
+    "bytes": 1346256,
+    "sha256": "dd7f455b02fe31d07479755ea79b19966d6bed95549ddbc6103b6913c33e2736"
   },
   {
     "path": "sheets/A/384/changwon_anchors.webp",
@@ -356,8 +356,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1896974,
-    "sha256": "cff9e304077b1a85231677b18578ef52470d723d248d32a4c85ba8cd70af9346"
+    "bytes": 1899156,
+    "sha256": "cc803c066e7b590ebf50f1397f540e5ece58d1306e67daa66d329c98447e1a41"
   },
   {
     "path": "sheets/A/128/univ.webp",
@@ -368,8 +368,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 393434,
-    "sha256": "c7a93da893b37578833e4559b2442f33923c9f76007dbdffee3fe02a2ff30fb4"
+    "bytes": 393394,
+    "sha256": "630101e7c1bcd0fe564cd0698db83944456fb99fa9a5db6e80fe68879c7296d7"
   },
   {
     "path": "sheets/A/256/univ.webp",
@@ -380,8 +380,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1148518,
-    "sha256": "08d002047cec5b8b25bf67623d9f5ce53d1f9c896e0cd00c92d067db5b97435d"
+    "bytes": 1148356,
+    "sha256": "aa5d2118311d8241530abb8b20cac14aedaf836e26f9a7519578289be468308e"
   },
   {
     "path": "sheets/A/384/univ.webp",
@@ -392,8 +392,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1494800,
-    "sha256": "5ddcd309807088bc1d9eb06207e8b5fc317c7b84c73babbd1a9f87d9c6015db3"
+    "bytes": 1496660,
+    "sha256": "4fc51d64d7d50909f327f15f06ed9989132f7afdf093512feda7d8724c33d05e"
   },
   {
     "path": "sheets/A/128/seoul_comets.webp",
@@ -404,8 +404,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 559398,
-    "sha256": "033609ad440edc903166ec60ebb831534a4911a84fcd4721da0a6cb212a7d1aa"
+    "bytes": 559406,
+    "sha256": "8f1ca6c8157537c1a12aa828af3e5786c8d20262f6eba7af9f6cfc919f541a46"
   },
   {
     "path": "sheets/A/256/seoul_comets.webp",
@@ -416,8 +416,8 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 1716926,
-    "sha256": "3d59d8e9ea38a38d2581d21df9845ad400cbc328b92280db9748f0f6f5f7176e"
+    "bytes": 1717060,
+    "sha256": "c284c0d92b45011540ef1021ca4f6c4fa2b1dc8b1a6c4c851ccc0868ea18684d"
   },
   {
     "path": "sheets/A/384/seoul_comets.webp",
@@ -428,7 +428,7 @@
     "sns_strength": 0,
     "filter_strength": 0,
     "sharp_yuv": true,
-    "bytes": 2360976,
-    "sha256": "1972dd8a03e89f554bb4dd1f5f2741bf6c4d4493b98dddfb881108b20d8ba49c"
+    "bytes": 2363814,
+    "sha256": "8e0bb35f46bdeb799b7be0a042e3f18fac12073e30bcfcd2275f12ba4c28c5e1"
   }
 ]

@@ -138,7 +138,7 @@
     "failed_measurements": 0
   },
   "native_sources": {
-    "unique_files": 247,
+    "unique_files": 249,
     "minimum_retained_native_photo_edge": 384,
     "upscaled_photos": 0,
     "native_originals_preserved": true

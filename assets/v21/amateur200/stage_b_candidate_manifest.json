@@ -11,15 +11,15 @@
       "glasses": false,
       "source": "retained_review_candidate",
       "crop": [
-        2,
-        514,
-        510,
-        1022
+        52,
+        517,
+        454,
+        919
       ],
-      "native_edge": 508,
+      "native_edge": 402,
       "translation_origin_xy": [
-        -4,
-        -46
+        0,
+        0
       ],
       "proposed_age": 22,
       "proposed_level": "univ",
@@ -28,23 +28,25 @@
         "sha256": "4eede1aeb1995f6c63ffc977a63df5b268dbf3103e5e97b5961f16a95328a3d9"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_direct_pool_0276_2_128.webp",
-          "decoded_rgb_sha256": "58ac67a3fd801928c540121606493fca933833cb2105c27a73adb6ca8c42c04d"
+          "path": "review/revision3/B/128/b_direct_pool_0276_2__hs_home.webp",
+          "decoded_rgb_sha256": "a2b984e71373ab0cf76eb1fcd474c329cb39eec5ff38481bf42dc59835a82425"
         },
         "256": {
-          "path": "review/stage_b/256/b_direct_pool_0276_2_256.webp",
-          "decoded_rgb_sha256": "8cde89b46ab9329870690677a39b1c389cb6f8aae2b972b378689fdd21b05943"
+          "path": "review/revision3/B/256/b_direct_pool_0276_2__hs_home.webp",
+          "decoded_rgb_sha256": "4aa76665e70b00968e63202fd9e405104c98c9d1e9bc0d60a355033d1aa225a0"
         },
         "384": {
-          "path": "review/stage_b/384/b_direct_pool_0276_2_384.webp",
-          "decoded_rgb_sha256": "369b4c58e1d57162fd26d21ecbad7f5faa6f402a80946209d3fee5bd061c56a8"
+          "path": "review/revision3/B/384/b_direct_pool_0276_2__hs_home.webp",
+          "decoded_rgb_sha256": "f3afb6519004eb00342d4615e0dfbb876acbe6dd53b03ca3607e68dfe8f59139"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0276_2.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_direct_pool_0276_2__hs_home.png",
+      "review_id": "Q001",
+      "source_revision": 3
     },
     {
       "id": "b_direct_pool_0014_1",
@@ -52,40 +54,42 @@
       "glasses": false,
       "source": "retained_review_candidate",
       "crop": [
-        514,
-        2,
-        1022,
-        510
+        449,
+        893,
+        880,
+        1324
       ],
-      "native_edge": 508,
+      "native_edge": 431,
       "translation_origin_xy": [
-        -11,
-        24
+        0,
+        0
       ],
       "proposed_age": 21,
       "proposed_level": "univ",
       "native": {
-        "path": "native/direct_sources/v21_firefly_pool_0014.png",
-        "sha256": "fe19a38e8c72c24dfe310bcce81578ca44b90395cd54eeac75691d6837ad5292"
+        "path": "native/stage_b/51f57fc3adee_exec-1f3e6d1b-f19e-43d9-b8a3-9c8e4c386a34.png",
+        "sha256": "51f57fc3adee521397985d67d198346c5bfa2d9457d3b4a9204f734b86d29935"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_direct_pool_0014_1_128.webp",
-          "decoded_rgb_sha256": "3bbdd8bc75005616bbea5a1f6b764947feefcce2a013652aade43d2957de889b"
+          "path": "review/revision3/B/128/b_direct_pool_0014_1__hs_home.webp",
+          "decoded_rgb_sha256": "be9c5d1518e46c873139a7a09184b7dde284e1245f1676602a428d4d96f15e81"
         },
         "256": {
-          "path": "review/stage_b/256/b_direct_pool_0014_1_256.webp",
-          "decoded_rgb_sha256": "1e9a708d7dd2dc306e1ea65b44788676527dff1b1d3b20a90755240f37295169"
+          "path": "review/revision3/B/256/b_direct_pool_0014_1__hs_home.webp",
+          "decoded_rgb_sha256": "0f5419de19590e687344e2d9e079364eca23f2cd9dd606e32af878e6511fc741"
         },
         "384": {
-          "path": "review/stage_b/384/b_direct_pool_0014_1_384.webp",
-          "decoded_rgb_sha256": "125a7cd6fd5db37c801340820e503eb24f5c951b8ad8fec91c402b3b63f10dba"
+          "path": "review/revision3/B/384/b_direct_pool_0014_1__hs_home.webp",
+          "decoded_rgb_sha256": "b6beaafb238adbf772b84fa42b8a772575ab2e5ec1d31ab5ccbe4f3a4e7c124b"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0014_1.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_direct_pool_0014_1__hs_home.png",
+      "review_id": "Q002",
+      "source_revision": 3
     },
     {
       "id": "b_direct_pool_0014_3",
@@ -126,7 +130,9 @@
           "decoded_rgb_sha256": "ed66583be0ad4fd2d0ee9404860497f53b26f3bc86e9a3fd47d325a6c2a6cf50"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0014_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0014_3.png",
+      "review_id": "Q003",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_direct_pool_0094_3",
@@ -167,7 +173,9 @@
           "decoded_rgb_sha256": "a70f63c218bc18499e16e1e55b0f0eac932d4d375f5fe0de40f5df1caf81c244"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0094_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0094_3.png",
+      "review_id": "Q004",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_direct_pool_0236_2",
@@ -208,7 +216,9 @@
           "decoded_rgb_sha256": "50e11ef6ff7d7f8873e782b0c2f876b3e61bf94ce266db5319576a4a54b51ad3"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0236_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0236_2.png",
+      "review_id": "Q005",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_direct_pool_0063_1",
@@ -249,7 +259,9 @@
           "decoded_rgb_sha256": "0913d22c299b3b1fdbf36505c8cedd621fd6145a3e5077d823ffe5086aa5fa03"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0063_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0063_1.png",
+      "review_id": "Q006",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_direct_pool_0091_0",
@@ -257,40 +269,42 @@
       "glasses": true,
       "source": "retained_review_candidate",
       "crop": [
-        2,
-        2,
-        510,
-        510
+        8,
+        8,
+        1246,
+        1246
       ],
-      "native_edge": 508,
+      "native_edge": 1238,
       "translation_origin_xy": [
-        -27,
-        8
+        0,
+        0
       ],
       "proposed_age": 17,
       "proposed_level": "hs",
       "native": {
-        "path": "native/direct_sources/v21_firefly_pool_0091.png",
-        "sha256": "cd0e9b54760a45b1ac1faaec8c68fb10506f16a5153353a8ee4694130ff47776"
+        "path": "native/revision3/exec-3c6216c2-9229-401d-aabd-3950378f66e5.png",
+        "sha256": "eaa05569e902d8808445a26b99b1754df9d3f72b04469c1539dd8ead9f808eb7"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_direct_pool_0091_0_128.webp",
-          "decoded_rgb_sha256": "68ea935cd32da7d57d64d48b20ede12e3b2f9ddc85f7569b55d5c0a2eab5b1b6"
+          "path": "review/revision3/B/128/b_direct_pool_0091_0__hs_home.webp",
+          "decoded_rgb_sha256": "ea2e2d89a9be10937c789254ce6c534f78f26959b87a5a38e39c525df4a46cd1"
         },
         "256": {
-          "path": "review/stage_b/256/b_direct_pool_0091_0_256.webp",
-          "decoded_rgb_sha256": "1417be9a5b277f5fdf4aa6fbd7ab346e8eef67245609c8aa4de9f105f91099b6"
+          "path": "review/revision3/B/256/b_direct_pool_0091_0__hs_home.webp",
+          "decoded_rgb_sha256": "ea2a5994f022e336489ffec98b3750736d7ee5c0eff0191d6999bf32ce29cd95"
         },
         "384": {
-          "path": "review/stage_b/384/b_direct_pool_0091_0_384.webp",
-          "decoded_rgb_sha256": "c335854cb330c7340863ca45f7cb239e9fa3359769ec40f3b037aa4eaa5a2d4d"
+          "path": "review/revision3/B/384/b_direct_pool_0091_0__hs_home.webp",
+          "decoded_rgb_sha256": "9c21f4ab6b61a83a7fc3892a7ae5539ed3510d373e2798e0d2a585bf51f44bc5"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0091_0.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_direct_pool_0091_0__hs_home.png",
+      "review_id": "Q007",
+      "source_revision": 3
     },
     {
       "id": "b_direct_pool_0093_1",
@@ -331,7 +345,9 @@
           "decoded_rgb_sha256": "185d89cfe95c71f7f1e385efdedfa7da32b123ff90059973388625f2c6404111"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0093_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0093_1.png",
+      "review_id": "Q008",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0014_2",
@@ -372,7 +388,9 @@
           "decoded_rgb_sha256": "36c33296dee0bbb56c2ab4ebbd7ce2cf95c15e1fadd5a77400cb4f7e81283f33"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0014_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0014_2.png",
+      "review_id": "Q009",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0018_0",
@@ -397,23 +415,25 @@
         "sha256": "b349ba144a6cd9ac3ad6c7e32c361378036482e59b3b462a9b748ae6e492b7c3"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_base_pool_0018_0_128.webp",
+          "path": "review/revision3/B/128/b_base_pool_0018_0__hs_home.webp",
           "decoded_rgb_sha256": "b571f6b4a202e67164899458ca8ad6d9204ae917fbf343f5cfe8324e87779bc6"
         },
         "256": {
-          "path": "review/stage_b/256/b_base_pool_0018_0_256.webp",
+          "path": "review/revision3/B/256/b_base_pool_0018_0__hs_home.webp",
           "decoded_rgb_sha256": "039e7520a1d4003fc7b6a613f5754008f688d586ca5d4af7eaa158e5f730a879"
         },
         "384": {
-          "path": "review/stage_b/384/b_base_pool_0018_0_384.webp",
+          "path": "review/revision3/B/384/b_base_pool_0018_0__hs_home.webp",
           "decoded_rgb_sha256": "4edccf4cd994b6dff1f7b77ea316656d37ca9562f942ab06f96e5d30d3cee1f5"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0018_0.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_base_pool_0018_0__hs_home.png",
+      "review_id": "Q010",
+      "source_revision": 3
     },
     {
       "id": "b_base_pool_0022_3",
@@ -421,40 +441,42 @@
       "glasses": false,
       "source": "retained_review_candidate",
       "crop": [
-        2,
-        1191,
-        394,
-        1583
+        8,
+        8,
+        1246,
+        1246
       ],
-      "native_edge": 392,
+      "native_edge": 1238,
       "translation_origin_xy": [
-        -14,
-        22
+        0,
+        0
       ],
       "proposed_age": 18,
       "proposed_level": "hs",
       "native": {
-        "path": "native/hs_home/base_005.png",
-        "sha256": "537bf0c00f9e092ce2c1887c7085ffed34f93b3e968c30c8c385fad146320f2d"
+        "path": "native/stage_b/66312f9aba5d_exec-8a0433ad-9dd8-4fce-84fc-5d67b03dad76.png",
+        "sha256": "66312f9aba5d65a93c881741a234caf3c344fae5d72c2b137d20bbf189211c4e"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_base_pool_0022_3_128.webp",
-          "decoded_rgb_sha256": "bbe0466a87b709573c1e26d2f69dc6a2bcbb62f6d1b0583e276015bdbf3e4b94"
+          "path": "review/revision3/B/128/b_base_pool_0022_3__hs_home.webp",
+          "decoded_rgb_sha256": "6a7b0c5093734807c118b086a7945400a04e1cadc8f2f3ed8c474a5ecbedacca"
         },
         "256": {
-          "path": "review/stage_b/256/b_base_pool_0022_3_256.webp",
-          "decoded_rgb_sha256": "9e3eec79a2314d49cdfeeb0191a652e628996b053942dbbf5670d1e63edbfd70"
+          "path": "review/revision3/B/256/b_base_pool_0022_3__hs_home.webp",
+          "decoded_rgb_sha256": "99be8e02b6a836ce5c2d7e5c142a7316501607db3f32252235f878f8f5859db1"
         },
         "384": {
-          "path": "review/stage_b/384/b_base_pool_0022_3_384.webp",
-          "decoded_rgb_sha256": "5b1488e572b5955e0a564034ff14fa93e71549f5856925e5a63c0d221ee5d4d6"
+          "path": "review/revision3/B/384/b_base_pool_0022_3__hs_home.webp",
+          "decoded_rgb_sha256": "57cc0f87a4360f6f41f6e03b988c751c2394f977dc10c72b134ff75205a2d287"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0022_3.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_base_pool_0022_3__hs_home.png",
+      "review_id": "Q011",
+      "source_revision": 3
     },
     {
       "id": "b_base_pool_0029_0",
@@ -495,7 +517,9 @@
           "decoded_rgb_sha256": "9e90ea04462ef452eba95a7b5fcb10d244b96de7a482e97f3db38a8cb193171e"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0029_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0029_0.png",
+      "review_id": "Q012",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0054_0",
@@ -536,7 +560,9 @@
           "decoded_rgb_sha256": "e9fece68f7885e9bc0c5b11393510972fc0b935bea42576a3618fb112f90d16e"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0054_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0054_0.png",
+      "review_id": "Q013",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0054_3",
@@ -561,23 +587,25 @@
         "sha256": "21af14214f7867015aa38d91988139a50857cc348cdeec7c04ac69e5ae4948d8"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_base_pool_0054_3_128.webp",
+          "path": "review/revision3/B/128/b_base_pool_0054_3__hs_home.webp",
           "decoded_rgb_sha256": "6d188eb107f7fe4874c68b3056a02da887a600e9d2e9a2c065f5e46aa581f0bd"
         },
         "256": {
-          "path": "review/stage_b/256/b_base_pool_0054_3_256.webp",
+          "path": "review/revision3/B/256/b_base_pool_0054_3__hs_home.webp",
           "decoded_rgb_sha256": "016dcb2a8648ac3d6deac894f6d95ce5c9a2fe40251ddef58a85da9617692fc1"
         },
         "384": {
-          "path": "review/stage_b/384/b_base_pool_0054_3_384.webp",
+          "path": "review/revision3/B/384/b_base_pool_0054_3__hs_home.webp",
           "decoded_rgb_sha256": "00f7faddba14499c33f05aee33bef1cc5d3b7979243bbd4838945f76bb78e5f7"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0054_3.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_base_pool_0054_3__hs_home.png",
+      "review_id": "Q014",
+      "source_revision": 3
     },
     {
       "id": "b_base_pool_0057_0",
@@ -618,7 +646,9 @@
           "decoded_rgb_sha256": "39f8631d7df42b8e0058daa5cc4f11e7206d79fc570358684948f3371a3e4ae1"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0057_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0057_0.png",
+      "review_id": "Q015",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0059_0",
@@ -659,7 +689,9 @@
           "decoded_rgb_sha256": "319a846533f1274db9fe1f42e7573c1b6bede4d04b2185faa57e5eed99d2f3c5"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0059_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0059_0.png",
+      "review_id": "Q016",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0061_1",
@@ -700,7 +732,9 @@
           "decoded_rgb_sha256": "786aeadedd6ab64d3d3d458b5f2ee79969dec92f2bb5674a202df668b2187b55"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0061_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0061_1.png",
+      "review_id": "Q017",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0062_2",
@@ -741,7 +775,9 @@
           "decoded_rgb_sha256": "fa24fdba33c4fcf75c2af65d8f11a460b890e0a50f6ab38a73c9d45ef82374ca"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0062_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0062_2.png",
+      "review_id": "Q018",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0064_3",
@@ -782,7 +818,9 @@
           "decoded_rgb_sha256": "96dca3c9f58bc13a13550a9bead589cb817660660e2ad01d74870abbf313fa81"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0064_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0064_3.png",
+      "review_id": "Q019",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0068_0",
@@ -823,7 +861,9 @@
           "decoded_rgb_sha256": "15da4c8081b34e8f4822b9004b594853d443923415f16e53c63606071f8c3e12"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0068_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0068_0.png",
+      "review_id": "Q020",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0078_0",
@@ -848,23 +888,25 @@
         "sha256": "0714d859fd0dd7b4ad112c0a75dcc1e3bcd21e3d65a9a2c8110edb7113d04cf0"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_base_pool_0078_0_128.webp",
+          "path": "review/revision3/B/128/b_base_pool_0078_0__hs_home.webp",
           "decoded_rgb_sha256": "5fe1ecdbd99e0642e232a23e131ad983a3f5b227db1b400f0bfde2b96651bdda"
         },
         "256": {
-          "path": "review/stage_b/256/b_base_pool_0078_0_256.webp",
+          "path": "review/revision3/B/256/b_base_pool_0078_0__hs_home.webp",
           "decoded_rgb_sha256": "8d4f7bf815431210373b392c5ad98f87fb316db07957d97799c3129fba858fc6"
         },
         "384": {
-          "path": "review/stage_b/384/b_base_pool_0078_0_384.webp",
+          "path": "review/revision3/B/384/b_base_pool_0078_0__hs_home.webp",
           "decoded_rgb_sha256": "21f1deb1928c8c7a00f5690d3bf680f37c6650c22fbec64c339109f83b2be6c4"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0078_0.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_base_pool_0078_0__hs_home.png",
+      "review_id": "Q021",
+      "source_revision": 3
     },
     {
       "id": "b_base_pool_0079_2",
@@ -872,40 +914,42 @@
       "glasses": true,
       "source": "retained_review_candidate",
       "crop": [
-        2,
-        795,
-        394,
-        1187
+        6,
+        449,
+        437,
+        880
       ],
-      "native_edge": 392,
+      "native_edge": 431,
       "translation_origin_xy": [
-        7,
-        17
+        0,
+        0
       ],
       "proposed_age": 22,
       "proposed_level": "univ",
       "native": {
-        "path": "native/hs_home/base_019.png",
-        "sha256": "0714d859fd0dd7b4ad112c0a75dcc1e3bcd21e3d65a9a2c8110edb7113d04cf0"
+        "path": "native/stage_b/51f57fc3adee_exec-1f3e6d1b-f19e-43d9-b8a3-9c8e4c386a34.png",
+        "sha256": "51f57fc3adee521397985d67d198346c5bfa2d9457d3b4a9204f734b86d29935"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_base_pool_0079_2_128.webp",
-          "decoded_rgb_sha256": "05fd6637de0e7291b6ccbf4a3fd518cee0e9b3452f035bc8331abf3410463f39"
+          "path": "review/revision3/B/128/b_base_pool_0079_2__hs_home.webp",
+          "decoded_rgb_sha256": "194d80ef012337df3f69a75f6c30c64817db68224189f215b07dd401286cc0ce"
         },
         "256": {
-          "path": "review/stage_b/256/b_base_pool_0079_2_256.webp",
-          "decoded_rgb_sha256": "92c279c4ceb2deeb7a1b4202b0fbce8c7b075f776cec078bbacfee02f64b94a2"
+          "path": "review/revision3/B/256/b_base_pool_0079_2__hs_home.webp",
+          "decoded_rgb_sha256": "35f8ab2540c99e642b2e72c6f9b527c07487143ffd1becff7ae950fd7f9dafe9"
         },
         "384": {
-          "path": "review/stage_b/384/b_base_pool_0079_2_384.webp",
-          "decoded_rgb_sha256": "a2db7ecd4ed461ab05a8ccb1928e550b15e0da95253d62939127bbb89fe6fd21"
+          "path": "review/revision3/B/384/b_base_pool_0079_2__hs_home.webp",
+          "decoded_rgb_sha256": "a832d01669214a34df209ea4b36511b11bf902b4cce7fe3838727bddf8da3533"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0079_2.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_base_pool_0079_2__hs_home.png",
+      "review_id": "Q022",
+      "source_revision": 3
     },
     {
       "id": "b_base_pool_0083_2",
@@ -946,7 +990,9 @@
           "decoded_rgb_sha256": "ee0db144ed342487b581d88ac6f00f1e60d95057a337aa2e56e4c48963d7bfa7"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0083_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0083_2.png",
+      "review_id": "Q023",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0083_3",
@@ -954,40 +1000,42 @@
       "glasses": false,
       "source": "retained_review_candidate",
       "crop": [
-        2,
-        2,
-        394,
-        394
+        630,
+        630,
+        1251,
+        1251
       ],
-      "native_edge": 392,
+      "native_edge": 621,
       "translation_origin_xy": [
-        -4,
-        -8
+        -5,
+        -26
       ],
       "proposed_age": 21,
       "proposed_level": "univ",
       "native": {
-        "path": "native/hs_home/base_020.png",
-        "sha256": "4f1611bc16ca3350f77bccfe9ed7de53561a01148cfd3564af2ae602106064ac"
+        "path": "native/revision3/exec-a3023f6e-04b4-49ce-a899-ab606ed46387.png",
+        "sha256": "7a40a42cd6286a7fe403cfd9d5243169ff45813fe4d5a4bf67e4548ef84f1aa8"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_base_pool_0083_3_128.webp",
-          "decoded_rgb_sha256": "d7929e91278484ccbbaa62d8574e2a8d8c9b8d914a6958539743a8c8a9dc801b"
+          "path": "review/revision3/B/128/b_base_pool_0083_3__hs_home.webp",
+          "decoded_rgb_sha256": "1658c34092b9aaf0a9c10156a71ec6d1e66017aaff52925828ba07122f7c8282"
         },
         "256": {
-          "path": "review/stage_b/256/b_base_pool_0083_3_256.webp",
-          "decoded_rgb_sha256": "57e016173d8ae7bc4fd0fee67b3d814b544828ecfc6a47dcd92997a3e297b3a4"
+          "path": "review/revision3/B/256/b_base_pool_0083_3__hs_home.webp",
+          "decoded_rgb_sha256": "01070ddbf96c75425d0c9e169239d787c0a502ee5ac0d60285fdecd79a2895eb"
         },
         "384": {
-          "path": "review/stage_b/384/b_base_pool_0083_3_384.webp",
-          "decoded_rgb_sha256": "d462d9c645dd3c3f824bff983f9db07e2b4e753ca390e931aaf01555d343b455"
+          "path": "review/revision3/B/384/b_base_pool_0083_3__hs_home.webp",
+          "decoded_rgb_sha256": "97d8d5a664c8c6595dbb8e5925c0585cf6032fc310b41005b17a1f06f15e1a24"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0083_3.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_base_pool_0083_3__hs_home.png",
+      "review_id": "Q024",
+      "source_revision": 3
     },
     {
       "id": "b_base_pool_0088_1",
@@ -1012,23 +1060,25 @@
         "sha256": "1614204703919bdc3700b3a7ae2c22a2e36eae713c03ba3a59e36a5875bf5cbc"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_base_pool_0088_1_128.webp",
+          "path": "review/revision3/B/128/b_base_pool_0088_1__hs_home.webp",
           "decoded_rgb_sha256": "2ed2eff0f3dc3413c0479498cf9966a8a41d4fe7788e13d8ce4994fadc5e6a65"
         },
         "256": {
-          "path": "review/stage_b/256/b_base_pool_0088_1_256.webp",
+          "path": "review/revision3/B/256/b_base_pool_0088_1__hs_home.webp",
           "decoded_rgb_sha256": "6b69a5ed94dbc75e5445d8aaa9e63c78d5d2e12a6fc73e545105bde80de55ea9"
         },
         "384": {
-          "path": "review/stage_b/384/b_base_pool_0088_1_384.webp",
+          "path": "review/revision3/B/384/b_base_pool_0088_1__hs_home.webp",
           "decoded_rgb_sha256": "d096450381b773273179cc3ce3eba89026110226ab17ab5c9aca3b03794bef15"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0088_1.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_base_pool_0088_1__hs_home.png",
+      "review_id": "Q025",
+      "source_revision": 3
     },
     {
       "id": "b_base_pool_0089_1",
@@ -1069,7 +1119,9 @@
           "decoded_rgb_sha256": "645c30c522ae4eebdf6ac4391c9b899e338de91b09d3fd25989958a11fdbed09"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0089_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0089_1.png",
+      "review_id": "Q026",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_base_pool_0089_2",
@@ -1110,7 +1162,9 @@
           "decoded_rgb_sha256": "882bb0ea1499014bbacf19c7169bd89054a0e8471272ca3f0d7375b657d23065"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0089_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0089_2.png",
+      "review_id": "Q027",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_d2base_pool_0287_2",
@@ -1151,7 +1205,9 @@
           "decoded_rgb_sha256": "1344ee797fe96ff6e83fb7b4e877640992a37cb0f6aa9fb5b813c3354265af46"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0287_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0287_2.png",
+      "review_id": "Q028",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_d2base_pool_0267_1",
@@ -1192,7 +1248,9 @@
           "decoded_rgb_sha256": "00877c94b538de64feab961724c85d021725e1e77b4734785d45134fbbc74ef5"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0267_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0267_1.png",
+      "review_id": "Q029",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_d2base_pool_0262_1",
@@ -1233,7 +1291,9 @@
           "decoded_rgb_sha256": "ce9763110a7adf9f07f720ba05e7b19f5f6998f364c3333e1e00b529bdb7e4b9"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0262_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0262_1.png",
+      "review_id": "Q030",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_d2base_pool_0268_3",
@@ -1274,7 +1334,9 @@
           "decoded_rgb_sha256": "ceccb9eaad4b7ed6d387c1d35ed6304195be878888e6c52347ab2e143c7a353c"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0268_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0268_3.png",
+      "review_id": "Q031",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_d2base_pool_0284_3",
@@ -1315,7 +1377,9 @@
           "decoded_rgb_sha256": "b6da3c0c1b689a2e5478c94b135f1728eef7995038a716c47f5ff18429e76188"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0284_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0284_3.png",
+      "review_id": "Q032",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0002_3",
@@ -1323,15 +1387,15 @@
       "glasses": true,
       "source": "retained_native_requires_visual_review",
       "crop": [
-        516,
-        516,
-        1020,
-        1020
+        537,
+        539,
+        992,
+        994
       ],
-      "native_edge": 504,
+      "native_edge": 455,
       "translation_origin_xy": [
-        -4,
-        1
+        0,
+        0
       ],
       "proposed_age": 19,
       "proposed_level": "hs",
@@ -1340,23 +1404,25 @@
         "sha256": "1ba9b1461ed173d534b8613d2f94164c5279b42c7fdbd05601906101dcc4ac70"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_native_pool_0002_3_128.webp",
-          "decoded_rgb_sha256": "fa41a535eafbfeb5616d36852e9e24b93344cb5773dabe11446c09b529aa8028"
+          "path": "review/revision3/B/128/b_native_pool_0002_3__hs_home.webp",
+          "decoded_rgb_sha256": "05980e92925aaf71e5aec5c281aada63b865c83a6a8a01c1602fae25867cbe24"
         },
         "256": {
-          "path": "review/stage_b/256/b_native_pool_0002_3_256.webp",
-          "decoded_rgb_sha256": "f9b9ce19ee49f3967548dd55c7d7e5881268355ee5790d44ffdac95b0d4139bc"
+          "path": "review/revision3/B/256/b_native_pool_0002_3__hs_home.webp",
+          "decoded_rgb_sha256": "a93aca8db7cf1fabadf85290653fb5451a247b0029a02c1f00aa759d0b419e0e"
         },
         "384": {
-          "path": "review/stage_b/384/b_native_pool_0002_3_384.webp",
-          "decoded_rgb_sha256": "78003885ecf0d0cb9adeafe6683f3a4bde41a2338011ed7cee28dc6f4b020cec"
+          "path": "review/revision3/B/384/b_native_pool_0002_3__hs_home.webp",
+          "decoded_rgb_sha256": "868d3a307f188560ec7295ac05e7c9f526acf8adf574ca36230981da4fe69054"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0002_3.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_native_pool_0002_3__hs_home.png",
+      "review_id": "Q033",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0003_1",
@@ -1397,7 +1463,9 @@
           "decoded_rgb_sha256": "a859f998c9fab476161462a9b496462f9b2c59ad13eb8259196605dc97b33a1f"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0003_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0003_1.png",
+      "review_id": "Q034",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0012_1",
@@ -1438,7 +1506,9 @@
           "decoded_rgb_sha256": "714fe401dc6ca6ee7cd389f8fd0be41ce8f24001461d9a2889f2afafdbf664d9"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0012_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0012_1.png",
+      "review_id": "Q035",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0022_0",
@@ -1479,7 +1549,9 @@
           "decoded_rgb_sha256": "846f0816d9e5922a7ff95b8f42c7b3a229171f7499a07f939b40da245da52ebd"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0022_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0022_0.png",
+      "review_id": "Q036",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0046_1",
@@ -1520,7 +1592,9 @@
           "decoded_rgb_sha256": "6aec6db29edd94f6172c93c04c9eda2adf99129dfd570a473d0446ce4683b444"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0046_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0046_1.png",
+      "review_id": "Q037",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0046_3",
@@ -1561,7 +1635,9 @@
           "decoded_rgb_sha256": "3f93c333ab0cf7bde5433dcb2ba801e23f7528abf6d58e36fc19742325e658f2"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0046_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0046_3.png",
+      "review_id": "Q038",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0058_0",
@@ -1602,7 +1678,9 @@
           "decoded_rgb_sha256": "0fac5230d7c88dcc27fabb75a3c14f840b704d76275ed906dc33ea767aa7b10f"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0058_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0058_0.png",
+      "review_id": "Q039",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0078_1",
@@ -1643,7 +1721,9 @@
           "decoded_rgb_sha256": "ad14a9e222cbaac3f34cec58db10cfff3f9375e12e00e99debf236b644935a73"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0078_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0078_1.png",
+      "review_id": "Q040",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0080_3",
@@ -1684,7 +1764,9 @@
           "decoded_rgb_sha256": "107a8d02d5e04fcd8bd55b0270b16131ac2b5ac64d99d6e467d4c4005fbd2a19"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0080_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0080_3.png",
+      "review_id": "Q041",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0204_0",
@@ -1709,7 +1791,7 @@
         "sha256": "0b244efd6179a04f52469822e6d12e27b7c5964985ac3bf7ac838a1f4f2b510b"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "EXCLUDED_BY_REVISION3_REVIEW",
       "human_age_review": "pending",
       "photos": {
         "128": {
@@ -1725,7 +1807,9 @@
           "decoded_rgb_sha256": "cddeef06b9e2077aa6cf3e033216720ba8aebcd886d6b6ac1997a587f7df4fe5"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0204_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0204_0.png",
+      "review_id": "Q042",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0209_2",
@@ -1766,7 +1850,9 @@
           "decoded_rgb_sha256": "d044515c90e4a7b33252f29e9582b205914e6e2aeb4f6b397ffde162e079d079"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0209_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0209_2.png",
+      "review_id": "Q043",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0213_2",
@@ -1807,7 +1893,9 @@
           "decoded_rgb_sha256": "d28b0a531b6e99571d888e176179bb08079ce6c07513b2691319b5c16bddcb7a"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0213_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0213_2.png",
+      "review_id": "Q044",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0215_1",
@@ -1848,7 +1936,9 @@
           "decoded_rgb_sha256": "3aca648c3c95b7a82fcc44a4925a555ad577b09e51451788f03ae1bdcd729ab8"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0215_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0215_1.png",
+      "review_id": "Q045",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0215_3",
@@ -1873,23 +1963,25 @@
         "sha256": "86cfff03cc2dd96070dc52d12749566a90a4e5ec53d581edce9635856977b8f1"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_native_pool_0215_3_128.webp",
+          "path": "review/revision3/B/128/b_native_pool_0215_3__hs_home.webp",
           "decoded_rgb_sha256": "c67db4edd74232790d5ba3d2ff321c1187c293759e7c65e8a56154ac1b5f7ae3"
         },
         "256": {
-          "path": "review/stage_b/256/b_native_pool_0215_3_256.webp",
+          "path": "review/revision3/B/256/b_native_pool_0215_3__hs_home.webp",
           "decoded_rgb_sha256": "e498cbbb2fdae5e76412719069767873b57d22a7f882c990dd604e26616456ce"
         },
         "384": {
-          "path": "review/stage_b/384/b_native_pool_0215_3_384.webp",
+          "path": "review/revision3/B/384/b_native_pool_0215_3__hs_home.webp",
           "decoded_rgb_sha256": "3621073a669c8564034244b28912fd9ef635e6f91caeb7e8aa47d4e07c733035"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0215_3.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_native_pool_0215_3__hs_home.png",
+      "review_id": "Q046",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0217_2",
@@ -1914,7 +2006,7 @@
         "sha256": "2d66f0024acd8ec331356b2cb6a2952d97e6e90ebcaab72980e46c1ff078e3d1"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "EXCLUDED_BY_REVISION3_REVIEW",
       "human_age_review": "pending",
       "photos": {
         "128": {
@@ -1930,7 +2022,9 @@
           "decoded_rgb_sha256": "43fe30edc74f04b3b94b8ed346b1f9b30b6d9f282c66afcc3e24f0e2e346ed90"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0217_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0217_2.png",
+      "review_id": "Q047",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0217_3",
@@ -1971,7 +2065,9 @@
           "decoded_rgb_sha256": "dd7166b214f1d443ca685f0d01e35119c193963c3e902f6b7a1eea09a7c035c6"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0217_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0217_3.png",
+      "review_id": "Q048",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0220_3",
@@ -2012,7 +2108,9 @@
           "decoded_rgb_sha256": "fc4090c6dec93dd5fbb31d16d744af86fd84d7884e210d96dd2b00be67264c90"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0220_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0220_3.png",
+      "review_id": "Q049",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0223_0",
@@ -2053,7 +2151,9 @@
           "decoded_rgb_sha256": "7ac4e078abcdcc459484a752db86b7c30efd84ac550ab91a31354e3b2a2a32e2"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0223_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0223_0.png",
+      "review_id": "Q050",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0224_2",
@@ -2094,7 +2194,9 @@
           "decoded_rgb_sha256": "955d7b77afcb8863c3bbfc40e41e4ae70dd72690b6c3640dc8b85b620ec8ba3c"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0224_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0224_2.png",
+      "review_id": "Q051",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0224_3",
@@ -2135,7 +2237,9 @@
           "decoded_rgb_sha256": "673b3f6be1101255ef72455f24b5990a348577ea91169eb5394d474132eaa0e8"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0224_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0224_3.png",
+      "review_id": "Q052",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0230_1",
@@ -2176,7 +2280,9 @@
           "decoded_rgb_sha256": "9d7d0e788414ae2730cbcfe33c50897abea3bfb14ed693ab44169ba8bef871ab"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0230_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0230_1.png",
+      "review_id": "Q053",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0233_1",
@@ -2184,40 +2290,42 @@
       "glasses": false,
       "source": "retained_native_requires_visual_review",
       "crop": [
-        516,
-        4,
-        1020,
-        508
+        6,
+        633,
+        621,
+        1248
       ],
-      "native_edge": 504,
+      "native_edge": 615,
       "translation_origin_xy": [
-        17,
-        39
+        0,
+        0
       ],
       "proposed_age": 19,
       "proposed_level": "hs",
       "native": {
-        "path": "native/stage_b/471c90a3e764_v21_firefly_pool_0233.png",
-        "sha256": "471c90a3e764c23bbf8f19c157211b943fed884aceb427cdbad19ba1807ab17b"
+        "path": "native/revision3/exec-f1782eb3-ec28-497d-bcac-2b2e6365b83c.png",
+        "sha256": "03d1c307aba466b43f2c1535e4cd336884fec972e5ea42a7c6266e9cb9d75aa9"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_native_pool_0233_1_128.webp",
-          "decoded_rgb_sha256": "c080b8bb0e22d2ad921097ed9507f797f583b129017fc508d38629a91db53ad9"
+          "path": "review/revision3/B/128/b_native_pool_0233_1__hs_home.webp",
+          "decoded_rgb_sha256": "906934dcdf0e9de5997b1ab7db9c33041ddcefc53ad5f24a8675d17f3449d651"
         },
         "256": {
-          "path": "review/stage_b/256/b_native_pool_0233_1_256.webp",
-          "decoded_rgb_sha256": "58170658457996f3b5e269ffb352ae281f69ccb7055d4be8d624c23b2729b515"
+          "path": "review/revision3/B/256/b_native_pool_0233_1__hs_home.webp",
+          "decoded_rgb_sha256": "161f5a5d0626232b4c5a9d14cc6ab052d2696a41de4a4a076a1572ab6535b999"
         },
         "384": {
-          "path": "review/stage_b/384/b_native_pool_0233_1_384.webp",
-          "decoded_rgb_sha256": "49d4b9bebbc01b5790979238e6b16d73a516385c9db5167d510dbc62ada90a2b"
+          "path": "review/revision3/B/384/b_native_pool_0233_1__hs_home.webp",
+          "decoded_rgb_sha256": "bfbd549884db5113eae2d4fbb3f86fa79b09aeceeb7d848d6330381ca553022b"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0233_1.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_native_pool_0233_1__hs_home.png",
+      "review_id": "Q054",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0233_2",
@@ -2225,40 +2333,42 @@
       "glasses": true,
       "source": "retained_native_requires_visual_review",
       "crop": [
-        4,
-        516,
-        508,
-        1020
+        633,
+        633,
+        1248,
+        1248
       ],
-      "native_edge": 504,
+      "native_edge": 615,
       "translation_origin_xy": [
-        -1,
-        39
+        0,
+        0
       ],
       "proposed_age": 19,
       "proposed_level": "hs",
       "native": {
-        "path": "native/stage_b/471c90a3e764_v21_firefly_pool_0233.png",
-        "sha256": "471c90a3e764c23bbf8f19c157211b943fed884aceb427cdbad19ba1807ab17b"
+        "path": "native/revision3/exec-f1782eb3-ec28-497d-bcac-2b2e6365b83c.png",
+        "sha256": "03d1c307aba466b43f2c1535e4cd336884fec972e5ea42a7c6266e9cb9d75aa9"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_native_pool_0233_2_128.webp",
-          "decoded_rgb_sha256": "ed163c926eb634043024f2e44ff471689bce48694f401391952035048d60b952"
+          "path": "review/revision3/B/128/b_native_pool_0233_2__hs_home.webp",
+          "decoded_rgb_sha256": "c04893bf0ffec37e145e1922d013ab6dd44dedb2720d9dc8bef601847388a5a1"
         },
         "256": {
-          "path": "review/stage_b/256/b_native_pool_0233_2_256.webp",
-          "decoded_rgb_sha256": "b5fd89b53f93aecb33a244c73f5493f76387cff9198d780e78a4a2ef7b8cac8a"
+          "path": "review/revision3/B/256/b_native_pool_0233_2__hs_home.webp",
+          "decoded_rgb_sha256": "3dd63e30975e5f0edf7a386a8a96fa014c353e0f5c315d3c44738a6b65f30831"
         },
         "384": {
-          "path": "review/stage_b/384/b_native_pool_0233_2_384.webp",
-          "decoded_rgb_sha256": "f1acadd4d5a27f917dd3ce307f73b3bde23217b12d1066f67e2aee51cc30ddba"
+          "path": "review/revision3/B/384/b_native_pool_0233_2__hs_home.webp",
+          "decoded_rgb_sha256": "9e513554d46fe7dc52dca634f5baa4a78d66790d76e4c88cf66265509a989e15"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0233_2.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_native_pool_0233_2__hs_home.png",
+      "review_id": "Q055",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0237_0",
@@ -2299,7 +2409,9 @@
           "decoded_rgb_sha256": "2db599a2a68a974c9fa24105ef8a710245b24d8ad65009f84f021ce126d8efa0"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0237_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0237_0.png",
+      "review_id": "Q056",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0237_3",
@@ -2340,7 +2452,9 @@
           "decoded_rgb_sha256": "57d053fa61e33a5cb71325c9790f436980e2ea60ded6db292f3d40e66b801ea1"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0237_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0237_3.png",
+      "review_id": "Q057",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0243_2",
@@ -2381,7 +2495,9 @@
           "decoded_rgb_sha256": "535ae8e8002ae61a01d012f8dd4052e61e9407858e00188075626bd19cd8f50c"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0243_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0243_2.png",
+      "review_id": "Q058",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0244_1",
@@ -2422,7 +2538,9 @@
           "decoded_rgb_sha256": "f0d1e6fc119ab58046a4d0528f42844469d3d5d01c2280fb87d0f98e94676c1e"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0244_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0244_1.png",
+      "review_id": "Q059",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0245_2",
@@ -2463,7 +2581,9 @@
           "decoded_rgb_sha256": "1c84a20b5c8438e98a5630c622c24c481b9301c841d62ae6401a96731ce0f880"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0245_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0245_2.png",
+      "review_id": "Q060",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0248_3",
@@ -2504,7 +2624,9 @@
           "decoded_rgb_sha256": "3837b21c0cdf4bdab6f3820d7b917f4bf18425f80547e0f0de40fe7fab2bd59e"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0248_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0248_3.png",
+      "review_id": "Q061",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0254_3",
@@ -2545,7 +2667,9 @@
           "decoded_rgb_sha256": "995f07b000115272f21182d5d4d587ea2e0719af9b134176c047e8ef6e2aa747"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0254_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0254_3.png",
+      "review_id": "Q062",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0255_3",
@@ -2586,7 +2710,9 @@
           "decoded_rgb_sha256": "7a70f078fda03b880d733a7019d8fdc73adf058c3fece8e4955173f21de1aa1c"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0255_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0255_3.png",
+      "review_id": "Q063",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0256_0",
@@ -2611,7 +2737,7 @@
         "sha256": "12133d694bc941e0b075ca10415d35bb1d2102f69fcf33b74d1a5be76623fae7"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "EXCLUDED_BY_REVISION3_REVIEW",
       "human_age_review": "pending",
       "photos": {
         "128": {
@@ -2627,7 +2753,9 @@
           "decoded_rgb_sha256": "2349c445d9856b00150746f218e0de663b35d5a4842f3f5ddc2a02e7ed9d5ced"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0256_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0256_0.png",
+      "review_id": "Q064",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0256_1",
@@ -2668,7 +2796,9 @@
           "decoded_rgb_sha256": "28b5db46624fff1a50e404bdb214f0e270d657949a26f79bed0324e81dac0a20"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0256_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0256_1.png",
+      "review_id": "Q065",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0257_1",
@@ -2709,7 +2839,9 @@
           "decoded_rgb_sha256": "92d08990233b02a3a65d4c0e25407cb13dba8889fa9ac98f54c677ff402a5eeb"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0257_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0257_1.png",
+      "review_id": "Q066",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0257_3",
@@ -2734,7 +2866,7 @@
         "sha256": "260b14ef2545c826b0f77eb0fd997cc66964040e886487dd15b473eae877125d"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "EXCLUDED_BY_REVISION3_REVIEW",
       "human_age_review": "pending",
       "photos": {
         "128": {
@@ -2750,7 +2882,9 @@
           "decoded_rgb_sha256": "2e436bb1b756e10eabb0f0e25232fbe61e4df2fc148d2dd85580ee4ddeebec28"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0257_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0257_3.png",
+      "review_id": "Q067",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0260_1",
@@ -2791,7 +2925,9 @@
           "decoded_rgb_sha256": "52a8ca0087d1c0016d9dda977070a33898bac478bfc496d0fba0932153886151"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0260_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0260_1.png",
+      "review_id": "Q068",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0262_0",
@@ -2832,7 +2968,9 @@
           "decoded_rgb_sha256": "23423fdb08cfe11bfd19bef03c5312083599e0f2bb1943c2dfd0254bbe446f13"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0262_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0262_0.png",
+      "review_id": "Q069",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0262_3",
@@ -2873,7 +3011,9 @@
           "decoded_rgb_sha256": "c85cfb3bc2820b2ae32346d86dbe3f263caa663eadc805f45ea470399f41c41f"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0262_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0262_3.png",
+      "review_id": "Q070",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0263_2",
@@ -2898,7 +3038,7 @@
         "sha256": "0fb3a2a53f927b119bb7d8400e523f08ccf854359956d3c802ee181668c8a490"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "EXCLUDED_BY_REVISION3_REVIEW",
       "human_age_review": "pending",
       "photos": {
         "128": {
@@ -2914,7 +3054,9 @@
           "decoded_rgb_sha256": "b68758fcbb887d2d04a7509884ef5178712442c7cf261a63da604aa712cda990"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0263_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0263_2.png",
+      "review_id": "Q071",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0265_0",
@@ -2955,7 +3097,9 @@
           "decoded_rgb_sha256": "85f038a79e9d922a28e1643e065ab650a70fcdecb303419819577ea3a0b8d86b"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0265_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0265_0.png",
+      "review_id": "Q072",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0267_2",
@@ -2996,7 +3140,9 @@
           "decoded_rgb_sha256": "f0514f78e130dac7ed91aa227f406c9ab3bd3664bccd21b4587d85b2abeb6974"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0267_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0267_2.png",
+      "review_id": "Q073",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0268_2",
@@ -3021,7 +3167,7 @@
         "sha256": "1d2c6bb8ce77e3ed4515c5bcf83784b7397395ae31be97d0e41b98dbd390df10"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "EXCLUDED_BY_REVISION3_REVIEW",
       "human_age_review": "pending",
       "photos": {
         "128": {
@@ -3037,7 +3183,9 @@
           "decoded_rgb_sha256": "4fac13f06193021a9bdb9ed87b108528767e40edf121d0664fd7125077e1e84b"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0268_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0268_2.png",
+      "review_id": "Q074",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0271_1",
@@ -3062,7 +3210,7 @@
         "sha256": "72db27ee21cd336cb27588a1bbc87f2a893eaceb3cd6fac458f8a448d9c8b9ee"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "EXCLUDED_BY_REVISION3_REVIEW",
       "human_age_review": "pending",
       "photos": {
         "128": {
@@ -3078,7 +3226,9 @@
           "decoded_rgb_sha256": "f4ac8be01ddb920e4c50d9c1a1f289b3c1bbe2c34639688342e3e5055674f526"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0271_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0271_1.png",
+      "review_id": "Q075",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0273_0",
@@ -3119,7 +3269,9 @@
           "decoded_rgb_sha256": "1f6f87f041ae4f6d7e0515283fedc3bd2c7ccf02756d7710b93e651c348f9265"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0273_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0273_0.png",
+      "review_id": "Q076",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0277_0",
@@ -3160,7 +3312,9 @@
           "decoded_rgb_sha256": "9e8ea0f81f75009fd5e05048c6ccdeee41859326816773115f25338b8c8581bb"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0277_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0277_0.png",
+      "review_id": "Q077",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0277_1",
@@ -3201,7 +3355,9 @@
           "decoded_rgb_sha256": "7ba75959a05299ca874e25ae377e517a26b163db801132175563f69bd049a8c2"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0277_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0277_1.png",
+      "review_id": "Q078",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0279_0",
@@ -3242,7 +3398,9 @@
           "decoded_rgb_sha256": "e38a909d5d8d0075140426c114d13c38a8ce3275164f2b29a22a686d55a239a2"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_0.png",
+      "review_id": "Q079",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0279_1",
@@ -3283,7 +3441,9 @@
           "decoded_rgb_sha256": "ae5447470ba0d715f2939bc80efd4ce84998547e7a1599807e5b886fe621dc4e"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_1.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_1.png",
+      "review_id": "Q080",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0279_2",
@@ -3324,7 +3484,9 @@
           "decoded_rgb_sha256": "0119e21d2bc9695763c6117496fc1768c992b01643c16e656cd50beb9068e1c4"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_2.png",
+      "review_id": "Q081",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0279_3",
@@ -3365,7 +3527,9 @@
           "decoded_rgb_sha256": "4c264f6147dd1fd53572de56a83889c329acd0f81e1b522a79c14f1b60eab8d5"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_3.png",
+      "review_id": "Q082",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0284_0",
@@ -3373,40 +3537,42 @@
       "glasses": false,
       "source": "retained_native_requires_visual_review",
       "crop": [
-        4,
-        4,
-        508,
-        508
+        6,
+        1336,
+        437,
+        1767
       ],
-      "native_edge": 504,
+      "native_edge": 431,
       "translation_origin_xy": [
-        -3,
-        -25
+        0,
+        0
       ],
       "proposed_age": 19,
       "proposed_level": "hs",
       "native": {
-        "path": "native/direct_sources/v21_firefly_pool_0284.png",
-        "sha256": "acfdf8b2dc8e62cac97d027303a460efd7edac427e17ded065a0273df4e989cf"
+        "path": "native/revision3/exec-5e9736ca-a9a4-4c16-9525-81dc64d75398.png",
+        "sha256": "b6a4e329a8fad53cbd6a6047a4f6e9506a4270e14adafd44c0b93603e307fb8f"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_native_pool_0284_0_128.webp",
-          "decoded_rgb_sha256": "9bba009e03e6f5a031c8636fbed352e34e3d773bf13822ddb4af0a63d153edfe"
+          "path": "review/revision3/B/128/b_native_pool_0284_0__hs_home.webp",
+          "decoded_rgb_sha256": "d511849f865ae5c74780b16be8bf9a7b94fadb760cbef19423f054d03d650e6b"
         },
         "256": {
-          "path": "review/stage_b/256/b_native_pool_0284_0_256.webp",
-          "decoded_rgb_sha256": "c929a76fdbbe9156279d3a84e1790cafbb930913dede4cf78cac2c609b9831bd"
+          "path": "review/revision3/B/256/b_native_pool_0284_0__hs_home.webp",
+          "decoded_rgb_sha256": "b9be2ededcdb706a8868c5d854b272b82f1e93b1d80ed773fa889924883e529c"
         },
         "384": {
-          "path": "review/stage_b/384/b_native_pool_0284_0_384.webp",
-          "decoded_rgb_sha256": "01c3e0bd8e390087f517dac28b46ac7a1ad821ecae3679717b258036581c3fc8"
+          "path": "review/revision3/B/384/b_native_pool_0284_0__hs_home.webp",
+          "decoded_rgb_sha256": "f226a2deb4a2c60442979401865aef005282650ee8a9951f07004acff8eb42a4"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0284_0.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_native_pool_0284_0__hs_home.png",
+      "review_id": "Q083",
+      "source_revision": 3
     },
     {
       "id": "b_native_pool_0284_2",
@@ -3447,7 +3613,9 @@
           "decoded_rgb_sha256": "c340fe35122c663feba4d70f47593bae1c5857306f4cb1ace417bae9425dd78f"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0284_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0284_2.png",
+      "review_id": "Q084",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0285_3",
@@ -3488,7 +3656,9 @@
           "decoded_rgb_sha256": "bfe5dccb055dbb1e61f07e43b6dd35b1037087e8f039cf85a86f113e93c69bbd"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0285_3.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0285_3.png",
+      "review_id": "Q085",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0291_2",
@@ -3529,7 +3699,9 @@
           "decoded_rgb_sha256": "d1be2ff1cd8f9b1cc3b636892cfc7d3663c95765d4ae17db3e83ef30c86a4321"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0291_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0291_2.png",
+      "review_id": "Q086",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_native_pool_0293_2",
@@ -3570,7 +3742,9 @@
           "decoded_rgb_sha256": "0166ca59a8b8b8fcfb666ae18aaea6cdfd3fd068348f2d45a5977f86edfe6257"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0293_2.png"
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0293_2.png",
+      "review_id": "Q087",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_recast_004",
@@ -3611,7 +3785,9 @@
           "decoded_rgb_sha256": "418cc048ac781d8e20146fdc6e180748cb2df83b2d49719c74a08df2fdb372a5"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_recast_004.png"
+      "normalized_native_path": "review/stage_b/normalized/b_recast_004.png",
+      "review_id": "Q088",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_recast_009",
@@ -3652,7 +3828,9 @@
           "decoded_rgb_sha256": "a820da874be509c3a348cea3fc92c1b21e2e60d7bb61a54163b2209c58865da5"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_recast_009.png"
+      "normalized_native_path": "review/stage_b/normalized/b_recast_009.png",
+      "review_id": "Q089",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     },
     {
       "id": "b_recast_010",
@@ -3677,23 +3855,25 @@
         "sha256": "a438530c698c58066535927278c5fb3c04de2abd0385fa43f81d6ae42f8cf811"
       },
       "game_identity_assigned": false,
-      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "status": "FULL12_CANDIDATE_INDIVIDUAL_EXPORTS_PASS_NOT_RUNTIME",
       "human_age_review": "pending",
       "photos": {
         "128": {
-          "path": "review/stage_b/128/b_recast_010_128.webp",
+          "path": "review/revision3/B/128/b_recast_010__hs_home.webp",
           "decoded_rgb_sha256": "81970f2c1e40a2931908645e175fde65b2074eab3c1fce61c3c27bea97b84b48"
         },
         "256": {
-          "path": "review/stage_b/256/b_recast_010_256.webp",
+          "path": "review/revision3/B/256/b_recast_010__hs_home.webp",
           "decoded_rgb_sha256": "897763380d5da1b874450194f35ee5a66a0dca99585a674ac0c138297ad4ddab"
         },
         "384": {
-          "path": "review/stage_b/384/b_recast_010_384.webp",
+          "path": "review/revision3/B/384/b_recast_010__hs_home.webp",
           "decoded_rgb_sha256": "d64c61452d3beb5a74109560390a0cb408e7390c04d67dfb6dc968ed97fc8ecd"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_recast_010.png"
+      "normalized_native_path": "review/revision3/B/normalized/b_recast_010__hs_home.png",
+      "review_id": "Q090",
+      "source_revision": 3
     },
     {
       "id": "b_firefly_002_0",
@@ -3734,7 +3914,96 @@
           "decoded_rgb_sha256": "248140ddc896c61c29d26b68eb07b2a884232818a838459339c15a8636c6ba17"
         }
       },
-      "normalized_native_path": "review/stage_b/normalized/b_firefly_002_0.png"
+      "normalized_native_path": "review/stage_b/normalized/b_firefly_002_0.png",
+      "review_id": "Q091",
+      "numeric_status": "legacy_trial_recheck_required_for_final_B100"
     }
-  ]
+  ],
+  "revision": 3,
+  "review_dispositions": {
+    "Q071": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0263_2",
+      "replacement_person_id": null
+    },
+    "Q042": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0204_0",
+      "replacement_person_id": null
+    },
+    "Q047": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0217_2",
+      "replacement_person_id": null
+    },
+    "Q064": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0256_0",
+      "replacement_person_id": null
+    },
+    "Q074": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0268_2",
+      "replacement_person_id": null
+    },
+    "Q067": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0257_3",
+      "replacement_person_id": null
+    },
+    "Q083": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_native_pool_0284_0",
+      "replacement_person_id": "b_native_pool_0284_0"
+    },
+    "Q075": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0271_1",
+      "replacement_person_id": null
+    },
+    "Q054": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_native_pool_0233_1",
+      "replacement_person_id": "b_native_pool_0233_1"
+    },
+    "Q055": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_native_pool_0233_2",
+      "replacement_person_id": "b_native_pool_0233_2"
+    },
+    "Q001": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_direct_pool_0276_2",
+      "replacement_person_id": "b_direct_pool_0276_2"
+    },
+    "Q024": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_base_pool_0083_3",
+      "replacement_person_id": "b_base_pool_0083_3"
+    },
+    "Q033": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_native_pool_0002_3",
+      "replacement_person_id": "b_native_pool_0002_3"
+    },
+    "candidate8_hs_home": {
+      "status": "corrected",
+      "person_id": "b_direct_pool_0091_0",
+      "background_rgb_before": [
+        138.5,
+        138.5,
+        137
+      ],
+      "background_rgb_after": [
+        102,
+        102,
+        102
+      ],
+      "other_variant_corner_luma_range": [
+        100,
+        118
+      ]
+    }
+  },
+  "current_change_manifest": "revision3_review.json"
 }

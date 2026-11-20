@@ -1700,14 +1700,34 @@
     "bytes": 1965880
   },
   {
-    "path": "native/revision3/exec-7b212310-fcdc-4e6f-96a3-7699b75cc804.png",
-    "sha256": "0b8a86aa01f9f06d0b2313d782c98ade96a50be56f275c431d020a91e61616ae",
-    "original_filename": "exec-7b212310-fcdc-4e6f-96a3-7699b75cc804.png",
+    "path": "native/revision3/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "sha256": "56ee3f940f699ac9e7dd61ca9339daf2e5ecdb33c83387ae498d9cd42a7644f4",
+    "original_filename": "exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
     "dimensions": [
       1254,
       1254
     ],
-    "bytes": 2154539
+    "bytes": 2063166
+  },
+  {
+    "path": "native/revision3/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "sha256": "a9871d90964755f5f74b1efa403bd616d4cc605d4badaa914a9f5c0c307826bb",
+    "original_filename": "exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "bytes": 2054485
+  },
+  {
+    "path": "native/revision3/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "sha256": "29bfdd7b172a5687f149351c27d3adde28d3040c8f37a8ffc4cce7b5ab4f48b5",
+    "original_filename": "exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "bytes": 2117228
   },
   {
     "path": "native/revision3/exec-eaee9dee-eab3-4fbf-b1bf-7c69a4e8c833.png",

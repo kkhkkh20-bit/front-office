@@ -1,0 +1,28 @@
+[
+  {
+    "case": -1,
+    "sizes": {
+      "128": {
+        "same_min": 0.6061884164810181,
+        "same_min_person": "v21_amateur_A041",
+        "between_max": 0.39829087257385254,
+        "old_max": 0.37978291511535645
+      },
+      "256": {
+        "same_min": 0.6336751580238342,
+        "same_min_person": "v21_amateur_A041",
+        "between_max": 0.3926703929901123,
+        "old_max": 0.3923860788345337
+      },
+      "384": {
+        "same_min": 0.6495645046234131,
+        "same_min_person": "v21_amateur_A041",
+        "between_max": 0.39533719420433044,
+        "old_max": 0.38488179445266724
+      }
+    },
+    "failures": [],
+    "center_max": 1.3185562176953027,
+    "passes": true
+  }
+]

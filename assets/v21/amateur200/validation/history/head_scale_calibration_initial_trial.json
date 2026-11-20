@@ -1,0 +1,29 @@
+{
+  "method": "visible ear-to-ear skin span; median of six widest scanlines within 12%-70% of detected face height; neutral-background headshot proxy; verified visually",
+  "A_sample_count": 100,
+  "A_median_visible_head_width_256": 112.0,
+  "A_face_bbox_median_256": 85.82689666748047,
+  "requested_candidates": [
+    {
+      "review_id": "Q001",
+      "old_visible_head_width": 85.0,
+      "current_visible_head_width": 108.0,
+      "target_A_median": 112.0,
+      "current_detected_face_width": 86.51392364501953
+    },
+    {
+      "review_id": "Q024",
+      "old_visible_head_width": 89.0,
+      "current_visible_head_width": 117.0,
+      "target_A_median": 112.0,
+      "current_detected_face_width": 86.3995361328125
+    },
+    {
+      "review_id": "Q033",
+      "old_visible_head_width": 99.5,
+      "current_visible_head_width": 111.0,
+      "target_A_median": 112.0,
+      "current_detected_face_width": 85.89187622070312
+    }
+  ]
+}

@@ -1,0 +1,2270 @@
+{
+  "c004_p05__hs_home": {
+    "game_id": "v21_amateur_A038",
+    "variant": "hs_home",
+    "native_path": "native/revision3/exec-9dfe3202-903b-4050-907b-994965b05d3c.png",
+    "native_sha256": "026d3ea6e799ec0fe91d88bcb341f1dc2519c83d768cfe4bbfbb1afc328907de",
+    "native_cell_xyxy": [
+      633,
+      6,
+      1248,
+      621
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 615,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 615,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c004_p05__univ": {
+    "game_id": "v21_amateur_A038",
+    "variant": "univ",
+    "native_path": "native/revision3/exec-a0ba7873-2e2c-4fae-9270-7810addc4690.png",
+    "native_sha256": "1e989d077cbae64413304ab20d8c960502115b05498f8f16a682990f8dbd0445",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        0,
+        -2
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        2,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c004_p05__seoul_comets": {
+    "game_id": "v21_amateur_A038",
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/exec-a3e83de5-b9bb-40c3-ba4c-9cebd54e1bda.png",
+    "native_sha256": "c2a9044fbae858aab2b220099753733087f85eb8743ce48bd31a05949b383517",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -3,
+        -14
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        14,
+        0,
+        3,
+        0
+      ]
+    }
+  },
+  "c004_p05__seoul_hounds": {
+    "game_id": "v21_amateur_A038",
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/exec-fa9b9347-9625-43f2-b7b6-b2c0b40a95d7.png",
+    "native_sha256": "a5f97c702517e2033720fe7138407d471db9b8e9d5588461125814eaa6c7fe7d",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -4,
+        -18
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        18,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c004_p05__incheon_seagulls": {
+    "game_id": "v21_amateur_A038",
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/exec-7920cc9a-022b-41c3-b511-ab2a78ef87bc.png",
+    "native_sha256": "90800fcdac527bfde5b770276a4bb13554e223044ac5e302866537a4ca07563b",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -2,
+        -19
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        19,
+        0,
+        2,
+        0
+      ]
+    }
+  },
+  "c004_p05__suwon_sparks": {
+    "game_id": "v21_amateur_A038",
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/exec-f556a203-07f3-44cb-9b58-3ae817e4c6f2.png",
+    "native_sha256": "3fc069eba7c2fc536987754f27aa2d965f82d93c81d486fed18a311d39dfbe56",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -19
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        19,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c004_p05__goyang_storm": {
+    "game_id": "v21_amateur_A038",
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/exec-6ca40a71-c49c-462e-92a2-fa294e268486.png",
+    "native_sha256": "675ffa096e448170924ab5196c2ef393a63fd7d2a0b1d6b811071d2da304e0a7",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -4,
+        -28
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        28,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c004_p05__daejeon_redfox": {
+    "game_id": "v21_amateur_A038",
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/exec-c135382c-3ed3-49fa-a66d-dee7d64c9f34.png",
+    "native_sha256": "a9a0f27577425de107e7c17b8b74c7612d7b7f0b5a36e2ffd45ecc17e71511e2",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -3,
+        -20
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        20,
+        0,
+        3,
+        0
+      ]
+    }
+  },
+  "c004_p05__gwangju_blazes": {
+    "game_id": "v21_amateur_A038",
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/exec-d08d59e4-c447-4358-8b63-b0f9d47734c3.png",
+    "native_sha256": "d655fb324b1447b74a118966bfa1b3f27dad8e195677518761aeb4bd52c08030",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -3,
+        -18
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        18,
+        0,
+        3,
+        0
+      ]
+    }
+  },
+  "c004_p05__daegu_thunders": {
+    "game_id": "v21_amateur_A038",
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/exec-2513c31d-ecc5-421c-9192-a0651ee4d2a3.png",
+    "native_sha256": "9e40b1e6208d14885751c0687203288bcec4ee37ef10e12962c542015ef0ce6b",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -4,
+        -27
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        27,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c004_p05__busan_waves": {
+    "game_id": "v21_amateur_A038",
+    "variant": "busan_waves",
+    "native_path": "native/revision3/exec-fedfefea-2245-44b5-a2cf-01db94164e9c.png",
+    "native_sha256": "1e0aff2affb09371d0a89a8e6143df6cbafe90d54b87480097806de87a3c1960",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -22
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        22,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c004_p05__changwon_anchors": {
+    "game_id": "v21_amateur_A038",
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/exec-f9a9e0b8-d651-4ebb-899e-5e12119b45ba.png",
+    "native_sha256": "f270554246c7227f30545feffda8b437e5b883c06e76c8e5bf835060fcc8a337",
+    "native_cell_xyxy": [
+      3,
+      447,
+      440,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -2,
+        -16
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        16,
+        0,
+        2,
+        0
+      ]
+    }
+  },
+  "c005_p04__hs_home": {
+    "game_id": "v21_amateur_A047",
+    "variant": "hs_home",
+    "native_path": "native/revision3/exec-e551eb3b-405d-4e5c-bdca-5d2de6fd50a9.png",
+    "native_sha256": "977b0069e849e0c1efbab7a27d48433969d371d93bdf8fa4ae0a07b18c76ad41",
+    "native_cell_xyxy": [
+      6,
+      6,
+      621,
+      621
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 615,
+      "whole_photo_crop_origin": [
+        -3,
+        -1
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 615,
+      "edge_extension_pixels_tblr": [
+        1,
+        0,
+        3,
+        0
+      ]
+    }
+  },
+  "c005_p04__univ": {
+    "game_id": "v21_amateur_A047",
+    "variant": "univ",
+    "native_path": "native/revision3/exec-a0ba7873-2e2c-4fae-9270-7810addc4690.png",
+    "native_sha256": "1e989d077cbae64413304ab20d8c960502115b05498f8f16a682990f8dbd0445",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c005_p04__seoul_comets": {
+    "game_id": "v21_amateur_A047",
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/exec-a3e83de5-b9bb-40c3-ba4c-9cebd54e1bda.png",
+    "native_sha256": "c2a9044fbae858aab2b220099753733087f85eb8743ce48bd31a05949b383517",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -3,
+        -5
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        5,
+        0,
+        3,
+        0
+      ]
+    }
+  },
+  "c005_p04__seoul_hounds": {
+    "game_id": "v21_amateur_A047",
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/exec-fa9b9347-9625-43f2-b7b6-b2c0b40a95d7.png",
+    "native_sha256": "a5f97c702517e2033720fe7138407d471db9b8e9d5588461125814eaa6c7fe7d",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -4,
+        -11
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        11,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c005_p04__incheon_seagulls": {
+    "game_id": "v21_amateur_A047",
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/exec-7920cc9a-022b-41c3-b511-ab2a78ef87bc.png",
+    "native_sha256": "90800fcdac527bfde5b770276a4bb13554e223044ac5e302866537a4ca07563b",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -7,
+        -10
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        10,
+        0,
+        7,
+        0
+      ]
+    }
+  },
+  "c005_p04__suwon_sparks": {
+    "game_id": "v21_amateur_A047",
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/exec-f556a203-07f3-44cb-9b58-3ae817e4c6f2.png",
+    "native_sha256": "3fc069eba7c2fc536987754f27aa2d965f82d93c81d486fed18a311d39dfbe56",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -14
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        14,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c005_p04__goyang_storm": {
+    "game_id": "v21_amateur_A047",
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/exec-6ca40a71-c49c-462e-92a2-fa294e268486.png",
+    "native_sha256": "675ffa096e448170924ab5196c2ef393a63fd7d2a0b1d6b811071d2da304e0a7",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -6,
+        -12
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        12,
+        0,
+        6,
+        0
+      ]
+    }
+  },
+  "c005_p04__daejeon_redfox": {
+    "game_id": "v21_amateur_A047",
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/exec-c135382c-3ed3-49fa-a66d-dee7d64c9f34.png",
+    "native_sha256": "a9a0f27577425de107e7c17b8b74c7612d7b7f0b5a36e2ffd45ecc17e71511e2",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -4,
+        -9
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        9,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c005_p04__gwangju_blazes": {
+    "game_id": "v21_amateur_A047",
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/exec-d08d59e4-c447-4358-8b63-b0f9d47734c3.png",
+    "native_sha256": "d655fb324b1447b74a118966bfa1b3f27dad8e195677518761aeb4bd52c08030",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -8
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        8,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c005_p04__daegu_thunders": {
+    "game_id": "v21_amateur_A047",
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/exec-2513c31d-ecc5-421c-9192-a0651ee4d2a3.png",
+    "native_sha256": "9e40b1e6208d14885751c0687203288bcec4ee37ef10e12962c542015ef0ce6b",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -16
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        16,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c005_p04__busan_waves": {
+    "game_id": "v21_amateur_A047",
+    "variant": "busan_waves",
+    "native_path": "native/revision3/exec-fedfefea-2245-44b5-a2cf-01db94164e9c.png",
+    "native_sha256": "1e0aff2affb09371d0a89a8e6143df6cbafe90d54b87480097806de87a3c1960",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -7,
+        -17
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        17,
+        0,
+        7,
+        0
+      ]
+    }
+  },
+  "c005_p04__changwon_anchors": {
+    "game_id": "v21_amateur_A047",
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/exec-f9a9e0b8-d651-4ebb-899e-5e12119b45ba.png",
+    "native_sha256": "f270554246c7227f30545feffda8b437e5b883c06e76c8e5bf835060fcc8a337",
+    "native_cell_xyxy": [
+      447,
+      3,
+      884,
+      440
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -1,
+        -9
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        9,
+        0,
+        1,
+        0
+      ]
+    }
+  },
+  "c007_p05__hs_home": {
+    "game_id": "v21_amateur_A061",
+    "variant": "hs_home",
+    "native_path": "native/revision3/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "native_sha256": "56ee3f940f699ac9e7dd61ca9339daf2e5ecdb33c83387ae498d9cd42a7644f4",
+    "native_cell_xyxy": [
+      3,
+      3,
+      624,
+      624
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c007_p05__univ": {
+    "game_id": "v21_amateur_A061",
+    "variant": "univ",
+    "native_path": "native/revision3/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "native_sha256": "56ee3f940f699ac9e7dd61ca9339daf2e5ecdb33c83387ae498d9cd42a7644f4",
+    "native_cell_xyxy": [
+      630,
+      3,
+      1251,
+      624
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c007_p05__seoul_comets": {
+    "game_id": "v21_amateur_A061",
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "native_sha256": "56ee3f940f699ac9e7dd61ca9339daf2e5ecdb33c83387ae498d9cd42a7644f4",
+    "native_cell_xyxy": [
+      3,
+      630,
+      624,
+      1251
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c007_p05__seoul_hounds": {
+    "game_id": "v21_amateur_A061",
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "native_sha256": "56ee3f940f699ac9e7dd61ca9339daf2e5ecdb33c83387ae498d9cd42a7644f4",
+    "native_cell_xyxy": [
+      630,
+      630,
+      1251,
+      1251
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c007_p05__incheon_seagulls": {
+    "game_id": "v21_amateur_A061",
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "native_sha256": "a9871d90964755f5f74b1efa403bd616d4cc605d4badaa914a9f5c0c307826bb",
+    "native_cell_xyxy": [
+      3,
+      3,
+      624,
+      624
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        0,
+        -3
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        3,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c007_p05__suwon_sparks": {
+    "game_id": "v21_amateur_A061",
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "native_sha256": "a9871d90964755f5f74b1efa403bd616d4cc605d4badaa914a9f5c0c307826bb",
+    "native_cell_xyxy": [
+      630,
+      3,
+      1251,
+      624
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        1,
+        -3
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        3,
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "c007_p05__goyang_storm": {
+    "game_id": "v21_amateur_A061",
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "native_sha256": "a9871d90964755f5f74b1efa403bd616d4cc605d4badaa914a9f5c0c307826bb",
+    "native_cell_xyxy": [
+      3,
+      630,
+      624,
+      1251
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        1,
+        -3
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        3,
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "c007_p05__daejeon_redfox": {
+    "game_id": "v21_amateur_A061",
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "native_sha256": "a9871d90964755f5f74b1efa403bd616d4cc605d4badaa914a9f5c0c307826bb",
+    "native_cell_xyxy": [
+      630,
+      630,
+      1251,
+      1251
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        1,
+        -3
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        3,
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "c007_p05__gwangju_blazes": {
+    "game_id": "v21_amateur_A061",
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "native_sha256": "29bfdd7b172a5687f149351c27d3adde28d3040c8f37a8ffc4cce7b5ab4f48b5",
+    "native_cell_xyxy": [
+      3,
+      3,
+      624,
+      624
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        1,
+        -2
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        2,
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "c007_p05__daegu_thunders": {
+    "game_id": "v21_amateur_A061",
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "native_sha256": "29bfdd7b172a5687f149351c27d3adde28d3040c8f37a8ffc4cce7b5ab4f48b5",
+    "native_cell_xyxy": [
+      630,
+      3,
+      1251,
+      624
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        0,
+        -2
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        2,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c007_p05__busan_waves": {
+    "game_id": "v21_amateur_A061",
+    "variant": "busan_waves",
+    "native_path": "native/revision3/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "native_sha256": "29bfdd7b172a5687f149351c27d3adde28d3040c8f37a8ffc4cce7b5ab4f48b5",
+    "native_cell_xyxy": [
+      3,
+      630,
+      624,
+      1251
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        2,
+        -4
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        4,
+        0,
+        0,
+        2
+      ]
+    }
+  },
+  "c007_p05__changwon_anchors": {
+    "game_id": "v21_amateur_A061",
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "native_sha256": "29bfdd7b172a5687f149351c27d3adde28d3040c8f37a8ffc4cce7b5ab4f48b5",
+    "native_cell_xyxy": [
+      630,
+      630,
+      1251,
+      1251
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 621,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 621,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c007_p06__hs_home": {
+    "game_id": "v21_amateur_A062",
+    "variant": "hs_home",
+    "native_path": "native/revision3/exec-eaee9dee-eab3-4fbf-b1bf-7c69a4e8c833.png",
+    "native_sha256": "b356945a62cbbe2578757f78e7a022a1232122b3f19d8dfa07937071d1a99670",
+    "native_cell_xyxy": [
+      8,
+      8,
+      1246,
+      1246
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 1238,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 1238,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c007_p06__univ": {
+    "game_id": "v21_amateur_A062",
+    "variant": "univ",
+    "native_path": "native/revision3/exec-a0ba7873-2e2c-4fae-9270-7810addc4690.png",
+    "native_sha256": "1e989d077cbae64413304ab20d8c960502115b05498f8f16a682990f8dbd0445",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -1,
+        -2
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        2,
+        0,
+        1,
+        0
+      ]
+    }
+  },
+  "c007_p06__seoul_comets": {
+    "game_id": "v21_amateur_A062",
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/exec-a3e83de5-b9bb-40c3-ba4c-9cebd54e1bda.png",
+    "native_sha256": "c2a9044fbae858aab2b220099753733087f85eb8743ce48bd31a05949b383517",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -1,
+        -6
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        6,
+        0,
+        1,
+        0
+      ]
+    }
+  },
+  "c007_p06__seoul_hounds": {
+    "game_id": "v21_amateur_A062",
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/exec-fa9b9347-9625-43f2-b7b6-b2c0b40a95d7.png",
+    "native_sha256": "a5f97c702517e2033720fe7138407d471db9b8e9d5588461125814eaa6c7fe7d",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -4,
+        -12
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        12,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c007_p06__incheon_seagulls": {
+    "game_id": "v21_amateur_A062",
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/exec-7920cc9a-022b-41c3-b511-ab2a78ef87bc.png",
+    "native_sha256": "90800fcdac527bfde5b770276a4bb13554e223044ac5e302866537a4ca07563b",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -4,
+        -12
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        12,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c007_p06__suwon_sparks": {
+    "game_id": "v21_amateur_A062",
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/exec-f556a203-07f3-44cb-9b58-3ae817e4c6f2.png",
+    "native_sha256": "3fc069eba7c2fc536987754f27aa2d965f82d93c81d486fed18a311d39dfbe56",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -6,
+        -14
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        14,
+        0,
+        6,
+        0
+      ]
+    }
+  },
+  "c007_p06__goyang_storm": {
+    "game_id": "v21_amateur_A062",
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/exec-6ca40a71-c49c-462e-92a2-fa294e268486.png",
+    "native_sha256": "675ffa096e448170924ab5196c2ef393a63fd7d2a0b1d6b811071d2da304e0a7",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -5,
+        -13
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        13,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c007_p06__daejeon_redfox": {
+    "game_id": "v21_amateur_A062",
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/exec-c135382c-3ed3-49fa-a66d-dee7d64c9f34.png",
+    "native_sha256": "a9a0f27577425de107e7c17b8b74c7612d7b7f0b5a36e2ffd45ecc17e71511e2",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -5,
+        -8
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        8,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c007_p06__gwangju_blazes": {
+    "game_id": "v21_amateur_A062",
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/exec-d08d59e4-c447-4358-8b63-b0f9d47734c3.png",
+    "native_sha256": "d655fb324b1447b74a118966bfa1b3f27dad8e195677518761aeb4bd52c08030",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -4,
+        -9
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        9,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c007_p06__daegu_thunders": {
+    "game_id": "v21_amateur_A062",
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/exec-2513c31d-ecc5-421c-9192-a0651ee4d2a3.png",
+    "native_sha256": "9e40b1e6208d14885751c0687203288bcec4ee37ef10e12962c542015ef0ce6b",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -5,
+        -14
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        14,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c007_p06__busan_waves": {
+    "game_id": "v21_amateur_A062",
+    "variant": "busan_waves",
+    "native_path": "native/revision3/exec-fedfefea-2245-44b5-a2cf-01db94164e9c.png",
+    "native_sha256": "1e0aff2affb09371d0a89a8e6143df6cbafe90d54b87480097806de87a3c1960",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -6,
+        -18
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        18,
+        0,
+        6,
+        0
+      ]
+    }
+  },
+  "c007_p06__changwon_anchors": {
+    "game_id": "v21_amateur_A062",
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/exec-f9a9e0b8-d651-4ebb-899e-5e12119b45ba.png",
+    "native_sha256": "f270554246c7227f30545feffda8b437e5b883c06e76c8e5bf835060fcc8a337",
+    "native_cell_xyxy": [
+      3,
+      3,
+      441,
+      441
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -2,
+        -10
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        10,
+        0,
+        2,
+        0
+      ]
+    }
+  },
+  "c008_p04__hs_home": {
+    "game_id": "v21_amateur_A069",
+    "variant": "hs_home",
+    "native_path": "native/revision3/exec-0b52051a-090e-45fc-af96-981cc99d44f9.png",
+    "native_sha256": "9d3de9ba76f158655e473371fa45e9c7965040d8b46c4fd7a85a1bcad9cfb8f0",
+    "native_cell_xyxy": [
+      8,
+      8,
+      1246,
+      1246
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 1238,
+      "whole_photo_crop_origin": [
+        1,
+        -3
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 1238,
+      "edge_extension_pixels_tblr": [
+        3,
+        0,
+        0,
+        1
+      ]
+    }
+  },
+  "c008_p04__univ": {
+    "game_id": "v21_amateur_A069",
+    "variant": "univ",
+    "native_path": "native/revision3/exec-a0ba7873-2e2c-4fae-9270-7810addc4690.png",
+    "native_sha256": "1e989d077cbae64413304ab20d8c960502115b05498f8f16a682990f8dbd0445",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -1,
+        -3
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        3,
+        0,
+        1,
+        0
+      ]
+    }
+  },
+  "c008_p04__seoul_comets": {
+    "game_id": "v21_amateur_A069",
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/exec-a3e83de5-b9bb-40c3-ba4c-9cebd54e1bda.png",
+    "native_sha256": "c2a9044fbae858aab2b220099753733087f85eb8743ce48bd31a05949b383517",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -6,
+        -12
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        12,
+        0,
+        6,
+        0
+      ]
+    }
+  },
+  "c008_p04__seoul_hounds": {
+    "game_id": "v21_amateur_A069",
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/exec-fa9b9347-9625-43f2-b7b6-b2c0b40a95d7.png",
+    "native_sha256": "a5f97c702517e2033720fe7138407d471db9b8e9d5588461125814eaa6c7fe7d",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -7,
+        -8
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        8,
+        0,
+        7,
+        0
+      ]
+    }
+  },
+  "c008_p04__incheon_seagulls": {
+    "game_id": "v21_amateur_A069",
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/exec-7920cc9a-022b-41c3-b511-ab2a78ef87bc.png",
+    "native_sha256": "90800fcdac527bfde5b770276a4bb13554e223044ac5e302866537a4ca07563b",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -17
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        17,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c008_p04__suwon_sparks": {
+    "game_id": "v21_amateur_A069",
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/exec-f556a203-07f3-44cb-9b58-3ae817e4c6f2.png",
+    "native_sha256": "3fc069eba7c2fc536987754f27aa2d965f82d93c81d486fed18a311d39dfbe56",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -6,
+        -15
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        15,
+        0,
+        6,
+        0
+      ]
+    }
+  },
+  "c008_p04__goyang_storm": {
+    "game_id": "v21_amateur_A069",
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/exec-6ca40a71-c49c-462e-92a2-fa294e268486.png",
+    "native_sha256": "675ffa096e448170924ab5196c2ef393a63fd7d2a0b1d6b811071d2da304e0a7",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -4,
+        -18
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        18,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c008_p04__daejeon_redfox": {
+    "game_id": "v21_amateur_A069",
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/exec-c135382c-3ed3-49fa-a66d-dee7d64c9f34.png",
+    "native_sha256": "a9a0f27577425de107e7c17b8b74c7612d7b7f0b5a36e2ffd45ecc17e71511e2",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -6,
+        -20
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        20,
+        0,
+        6,
+        0
+      ]
+    }
+  },
+  "c008_p04__gwangju_blazes": {
+    "game_id": "v21_amateur_A069",
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/exec-d08d59e4-c447-4358-8b63-b0f9d47734c3.png",
+    "native_sha256": "d655fb324b1447b74a118966bfa1b3f27dad8e195677518761aeb4bd52c08030",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -8,
+        -13
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        13,
+        0,
+        8,
+        0
+      ]
+    }
+  },
+  "c008_p04__daegu_thunders": {
+    "game_id": "v21_amateur_A069",
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/exec-2513c31d-ecc5-421c-9192-a0651ee4d2a3.png",
+    "native_sha256": "9e40b1e6208d14885751c0687203288bcec4ee37ef10e12962c542015ef0ce6b",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -4,
+        -23
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        23,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c008_p04__busan_waves": {
+    "game_id": "v21_amateur_A069",
+    "variant": "busan_waves",
+    "native_path": "native/revision3/exec-fedfefea-2245-44b5-a2cf-01db94164e9c.png",
+    "native_sha256": "1e0aff2affb09371d0a89a8e6143df6cbafe90d54b87480097806de87a3c1960",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -8,
+        -19
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        19,
+        0,
+        8,
+        0
+      ]
+    }
+  },
+  "c008_p04__changwon_anchors": {
+    "game_id": "v21_amateur_A069",
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/exec-f9a9e0b8-d651-4ebb-899e-5e12119b45ba.png",
+    "native_sha256": "f270554246c7227f30545feffda8b437e5b883c06e76c8e5bf835060fcc8a337",
+    "native_cell_xyxy": [
+      447,
+      890,
+      884,
+      1327
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -6,
+        -12
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        12,
+        0,
+        6,
+        0
+      ]
+    }
+  },
+  "c009_p09__hs_home": {
+    "game_id": "v21_amateur_A083",
+    "variant": "hs_home",
+    "native_path": "native/revision3/exec-56ed396c-c480-428a-8fb8-4c2b6991825e.png",
+    "native_sha256": "b6e229687561a933e14126fa554086cf12463e6e9e8930b242cfd5f8d4ff85dd",
+    "native_cell_xyxy": [
+      8,
+      8,
+      1246,
+      1246
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 1238,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 1238,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "c009_p09__univ": {
+    "game_id": "v21_amateur_A083",
+    "variant": "univ",
+    "native_path": "native/revision3/exec-a0ba7873-2e2c-4fae-9270-7810addc4690.png",
+    "native_sha256": "1e989d077cbae64413304ab20d8c960502115b05498f8f16a682990f8dbd0445",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -1,
+        -2
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        2,
+        0,
+        1,
+        0
+      ]
+    }
+  },
+  "c009_p09__seoul_comets": {
+    "game_id": "v21_amateur_A083",
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/exec-a3e83de5-b9bb-40c3-ba4c-9cebd54e1bda.png",
+    "native_sha256": "c2a9044fbae858aab2b220099753733087f85eb8743ce48bd31a05949b383517",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -4,
+        -21
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        21,
+        0,
+        4,
+        0
+      ]
+    }
+  },
+  "c009_p09__seoul_hounds": {
+    "game_id": "v21_amateur_A083",
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/exec-fa9b9347-9625-43f2-b7b6-b2c0b40a95d7.png",
+    "native_sha256": "a5f97c702517e2033720fe7138407d471db9b8e9d5588461125814eaa6c7fe7d",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -18
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        18,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c009_p09__incheon_seagulls": {
+    "game_id": "v21_amateur_A083",
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/exec-7920cc9a-022b-41c3-b511-ab2a78ef87bc.png",
+    "native_sha256": "90800fcdac527bfde5b770276a4bb13554e223044ac5e302866537a4ca07563b",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -7,
+        -22
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        22,
+        0,
+        7,
+        0
+      ]
+    }
+  },
+  "c009_p09__suwon_sparks": {
+    "game_id": "v21_amateur_A083",
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/exec-f556a203-07f3-44cb-9b58-3ae817e4c6f2.png",
+    "native_sha256": "3fc069eba7c2fc536987754f27aa2d965f82d93c81d486fed18a311d39dfbe56",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -21
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        21,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c009_p09__goyang_storm": {
+    "game_id": "v21_amateur_A083",
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/exec-6ca40a71-c49c-462e-92a2-fa294e268486.png",
+    "native_sha256": "675ffa096e448170924ab5196c2ef393a63fd7d2a0b1d6b811071d2da304e0a7",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -6,
+        -26
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        26,
+        0,
+        6,
+        0
+      ]
+    }
+  },
+  "c009_p09__daejeon_redfox": {
+    "game_id": "v21_amateur_A083",
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/exec-c135382c-3ed3-49fa-a66d-dee7d64c9f34.png",
+    "native_sha256": "a9a0f27577425de107e7c17b8b74c7612d7b7f0b5a36e2ffd45ecc17e71511e2",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -26
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        26,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c009_p09__gwangju_blazes": {
+    "game_id": "v21_amateur_A083",
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/exec-d08d59e4-c447-4358-8b63-b0f9d47734c3.png",
+    "native_sha256": "d655fb324b1447b74a118966bfa1b3f27dad8e195677518761aeb4bd52c08030",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -22
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        22,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c009_p09__daegu_thunders": {
+    "game_id": "v21_amateur_A083",
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/exec-2513c31d-ecc5-421c-9192-a0651ee4d2a3.png",
+    "native_sha256": "9e40b1e6208d14885751c0687203288bcec4ee37ef10e12962c542015ef0ce6b",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -29
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        29,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c009_p09__busan_waves": {
+    "game_id": "v21_amateur_A083",
+    "variant": "busan_waves",
+    "native_path": "native/revision3/exec-fedfefea-2245-44b5-a2cf-01db94164e9c.png",
+    "native_sha256": "1e0aff2affb09371d0a89a8e6143df6cbafe90d54b87480097806de87a3c1960",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -5,
+        -23
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        23,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "c009_p09__changwon_anchors": {
+    "game_id": "v21_amateur_A083",
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/exec-f9a9e0b8-d651-4ebb-899e-5e12119b45ba.png",
+    "native_sha256": "f270554246c7227f30545feffda8b437e5b883c06e76c8e5bf835060fcc8a337",
+    "native_cell_xyxy": [
+      447,
+      447,
+      884,
+      884
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 437,
+      "whole_photo_crop_origin": [
+        -1,
+        -17
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 437,
+      "edge_extension_pixels_tblr": [
+        17,
+        0,
+        1,
+        0
+      ]
+    }
+  },
+  "n000__hs_home": {
+    "game_id": "v21_amateur_A093",
+    "variant": "hs_home",
+    "native_path": "native/revision3/exec-20665b09-e5ea-41f5-965d-699d0277af5e.png",
+    "native_sha256": "1119bb951fb9d2ad5f8913e9341a62f2401cd522c5dd62870867e08860da816a",
+    "native_cell_xyxy": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 431,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 431,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "n000__univ": {
+    "game_id": "v21_amateur_A093",
+    "variant": "univ",
+    "native_path": "native/revision3/exec-a0ba7873-2e2c-4fae-9270-7810addc4690.png",
+    "native_sha256": "1e989d077cbae64413304ab20d8c960502115b05498f8f16a682990f8dbd0445",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        0,
+        0
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "n000__seoul_comets": {
+    "game_id": "v21_amateur_A093",
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/exec-a3e83de5-b9bb-40c3-ba4c-9cebd54e1bda.png",
+    "native_sha256": "c2a9044fbae858aab2b220099753733087f85eb8743ce48bd31a05949b383517",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -2,
+        -15
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        15,
+        0,
+        2,
+        0
+      ]
+    }
+  },
+  "n000__seoul_hounds": {
+    "game_id": "v21_amateur_A093",
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/exec-fa9b9347-9625-43f2-b7b6-b2c0b40a95d7.png",
+    "native_sha256": "a5f97c702517e2033720fe7138407d471db9b8e9d5588461125814eaa6c7fe7d",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -5,
+        -12
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        12,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "n000__incheon_seagulls": {
+    "game_id": "v21_amateur_A093",
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/exec-7920cc9a-022b-41c3-b511-ab2a78ef87bc.png",
+    "native_sha256": "90800fcdac527bfde5b770276a4bb13554e223044ac5e302866537a4ca07563b",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -3,
+        -23
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        23,
+        0,
+        3,
+        0
+      ]
+    }
+  },
+  "n000__suwon_sparks": {
+    "game_id": "v21_amateur_A093",
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/exec-f556a203-07f3-44cb-9b58-3ae817e4c6f2.png",
+    "native_sha256": "3fc069eba7c2fc536987754f27aa2d965f82d93c81d486fed18a311d39dfbe56",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -3,
+        -22
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        22,
+        0,
+        3,
+        0
+      ]
+    }
+  },
+  "n000__goyang_storm": {
+    "game_id": "v21_amateur_A093",
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/exec-6ca40a71-c49c-462e-92a2-fa294e268486.png",
+    "native_sha256": "675ffa096e448170924ab5196c2ef393a63fd7d2a0b1d6b811071d2da304e0a7",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -8,
+        -25
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        25,
+        0,
+        8,
+        0
+      ]
+    }
+  },
+  "n000__daejeon_redfox": {
+    "game_id": "v21_amateur_A093",
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/exec-c135382c-3ed3-49fa-a66d-dee7d64c9f34.png",
+    "native_sha256": "a9a0f27577425de107e7c17b8b74c7612d7b7f0b5a36e2ffd45ecc17e71511e2",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -5,
+        -23
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        23,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "n000__gwangju_blazes": {
+    "game_id": "v21_amateur_A093",
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/exec-d08d59e4-c447-4358-8b63-b0f9d47734c3.png",
+    "native_sha256": "d655fb324b1447b74a118966bfa1b3f27dad8e195677518761aeb4bd52c08030",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -3,
+        -19
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        19,
+        0,
+        3,
+        0
+      ]
+    }
+  },
+  "n000__daegu_thunders": {
+    "game_id": "v21_amateur_A093",
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/exec-2513c31d-ecc5-421c-9192-a0651ee4d2a3.png",
+    "native_sha256": "9e40b1e6208d14885751c0687203288bcec4ee37ef10e12962c542015ef0ce6b",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -5,
+        -28
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        28,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "n000__busan_waves": {
+    "game_id": "v21_amateur_A093",
+    "variant": "busan_waves",
+    "native_path": "native/revision3/exec-fedfefea-2245-44b5-a2cf-01db94164e9c.png",
+    "native_sha256": "1e0aff2affb09371d0a89a8e6143df6cbafe90d54b87480097806de87a3c1960",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -5,
+        -30
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        30,
+        0,
+        5,
+        0
+      ]
+    }
+  },
+  "n000__changwon_anchors": {
+    "game_id": "v21_amateur_A093",
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/exec-f9a9e0b8-d651-4ebb-899e-5e12119b45ba.png",
+    "native_sha256": "f270554246c7227f30545feffda8b437e5b883c06e76c8e5bf835060fcc8a337",
+    "native_cell_xyxy": [
+      3,
+      1333,
+      441,
+      1771
+    ],
+    "whole_photo_frame": {
+      "normalized_native_edge": 438,
+      "whole_photo_crop_origin": [
+        -4,
+        -18
+      ],
+      "canvas_edge_inset": 0,
+      "retained_native_source_edge": 438,
+      "edge_extension_pixels_tblr": [
+        18,
+        0,
+        4,
+        0
+      ]
+    }
+  }
+}

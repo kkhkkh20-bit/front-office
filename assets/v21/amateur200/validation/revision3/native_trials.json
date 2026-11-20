@@ -121,6 +121,17 @@
     "original_preserved": true
   },
   {
+    "original_local_path": "/workspace/generated_images/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "archived_path": "native/revision3/exec-52fa73a6-d5c8-428d-a2be-1b51c654adca.png",
+    "sha256": "a9871d90964755f5f74b1efa403bd616d4cc605d4badaa914a9f5c0c307826bb",
+    "bytes": 2054485,
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "original_preserved": true
+  },
+  {
     "original_local_path": "/workspace/generated_images/exec-56ed396c-c480-428a-8fb8-4c2b6991825e.png",
     "archived_path": "native/revision3/exec-56ed396c-c480-428a-8fb8-4c2b6991825e.png",
     "sha256": "b6e229687561a933e14126fa554086cf12463e6e9e8930b242cfd5f8d4ff85dd",
@@ -238,6 +249,17 @@
     "dimensions": [
       887,
       1774
+    ],
+    "original_preserved": true
+  },
+  {
+    "original_local_path": "/workspace/generated_images/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "archived_path": "native/revision3/exec-8fe7d71c-c172-434a-a47f-74490cc75016.png",
+    "sha256": "56ee3f940f699ac9e7dd61ca9339daf2e5ecdb33c83387ae498d9cd42a7644f4",
+    "bytes": 2063166,
+    "dimensions": [
+      1254,
+      1254
     ],
     "original_preserved": true
   },
@@ -370,6 +392,17 @@
     "dimensions": [
       887,
       1774
+    ],
+    "original_preserved": true
+  },
+  {
+    "original_local_path": "/workspace/generated_images/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "archived_path": "native/revision3/exec-dd85db80-ff8f-49c5-a80f-036a94506504.png",
+    "sha256": "29bfdd7b172a5687f149351c27d3adde28d3040c8f37a8ffc4cce7b5ab4f48b5",
+    "bytes": 2117228,
+    "dimensions": [
+      1254,
+      1254
     ],
     "original_preserved": true
   },
