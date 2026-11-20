@@ -53,9 +53,10 @@ function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge()
   if(!can)return line?csec('단장 계보',line):'';
   const off=G.unemp||period()!=='season'&&period()!=='post';
   const body=UI.gsucc?`<p class="small">후임 단장을 정합니다. ${G.unemp?'후임도 소속 구단 없이 새 제의를 기다립니다.':'선수단·시설·재정·코치진은 그대로 이어집니다.'} 명성은 새로 쌓습니다.</p>${gpForm('gmSuccGo','이 사람에게 넘기기')}<button class="btn block" data-a="gmSuccAsk" style="margin-top:6px">취소</button>`
-    :`<div class="row between"><p class="small muted">${a!=null?`지금 ${a}세. `:''}${GM_SUCC_FORCE}세가 되는 해 1월 1일에는 후임에게 넘어갑니다.${G.unemp?' 후임도 소속 구단 없이 시작합니다.':off?'':' 시즌이 끝난 뒤 넘길 수 있습니다.'}</p><button class="btn small${a>=GM_SUCC_ASK?' primary':''}" data-a="gmSuccAsk"${off?'':' disabled'}>후임에게 넘기기</button></div>`;
+    :`<div class="row between"><p class="small muted">${a!=null?`지금 ${a}세${G.gmP.ageFix!=null?'(나이 고정)':''}. `:''}정년은 없습니다. 원하실 때 후임을 정하고 물러날 수 있습니다.${G.unemp?' 후임도 소속 구단 없이 시작합니다.':off?'':' 시즌이 끝난 뒤 넘길 수 있습니다.'}</p><button class="btn small${a>=GM_SUCC_ASK?' primary':''}" data-a="gmSuccAsk"${off?'':' disabled'}>후임에게 넘기기</button></div><div class="row between"><p class="small muted">${G.gmP.ageFix!=null?'나이가 멈춰 있습니다. 끄면 이 나이부터 다시 한 살씩 먹습니다.':'켜면 지금 나이에서 더 먹지 않습니다.'}</p><button class="btn small" data-a="gmAgeFix">${G.gmP.ageFix!=null?'나이 고정 끄기':'나이 고정 켜기'}</button></div>`;
   return csec('세대 교체 · 단장 계보',body+line); }
 Object.assign(A,{
+  gmAgeFix(){ gmAgeFixToggle(); save(); render(); },
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
   dr1Pk(v){ UI.dr1Pk=+v||0; render(); },
   fdStr(v){ UI.fdStr=+v?1:0; render(); },
