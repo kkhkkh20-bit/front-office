@@ -17,12 +17,12 @@ function milView(){
   const {free,serving,pending}=milData();
   const W=sangmuPeriod(),w=W.open?W.wave:null;
   const card=milFreeCard;
-  return csec('병역 관리',`<p class="small muted">국내 선수는 군 복무를 해야 합니다. 상무(국군체육부대)는 1년 6개월 동안 퓨처스리그에서 뛰며 기량을 유지하고, 현역은 야구를 거의 못 해 기량이 떨어집니다. 상무 접수는 3월 1일~4월 14일, 9월 1일~10월 14일이며 입대 연도에 27세까지 지원할 수 있습니다. 상무는 지원자 중 기량 순으로 한 번에 ${SANGMU_SLOTS}명만 합격합니다. 28세가 되는 해까지 입대하지 않으면 현역으로 갑니다. 복무 중인 선수는 로스터에서 빠졌다가 전역하면 돌아옵니다.</p>
+  return csec('병역 관리',`<p class="small muted">국내 선수는 군 복무를 해야 합니다. 상무(국군체육부대)는 1년 6개월 동안 퓨처스리그에서 뛰며 기량을 유지하고, 현역은 야구를 거의 못 해 기량이 떨어집니다. 상무 접수는 3월 1일~4월 14일, 9월 1일~10월 14일이며 입대 연도에 27세까지 지원할 수 있습니다. 상무는 지원자 중 기량 순으로 한 번에 ${SANGMU_SLOTS}명만 합격합니다. 28세가 되는 해까지 입대하지 않으면 현역으로 갑니다. 복무 중인 선수는 로스터에서 빠졌다가 전역하면 돌아옵니다. 미필 선수가 토미존처럼 재활이 300일 넘게 걸리는 큰 수술을 받으면 사회복무요원(1년 9개월)으로 복무하고, 복무와 재활이 함께 갑니다.</p>
     <dl class="tsum"><div><dt>미필</dt><dd class="num">${free.length}명</dd></div><div><dt>복무 중</dt><dd class="num">${serving.length}명</dd></div><div><dt>상무 지원</dt><dd>${w?(w==='dec'?'지금 가능 · 12월 입대':'지금 가능 · 6월 입대'):'접수 종료·대기 · 3/1~4/14, 9/1~10/14'}</dd></div></dl>
     ${UI.milMsg&&UI.milMsgD===G.day?`<div class="note">${esc(UI.milMsg)}</div>`:""}`)
    +(serving.length||pending.length?csec('복무 중 · 입대 예정',`<div class="tgrid">${serving.concat(pending).map(milServCard).join('')}</div>`):'')
    +csec('미필 선수',free.length?`<div class="tgrid">${(UI.milAll?free:free.slice(0,8)).map(card).join('')}</div>${free.length>8?`<button class="btn block" data-a="milAll" style="margin-top:8px">${UI.milAll?'접기':`나머지 ${free.length-8}명 더 보기 (나이 어린 순)`}</button>`:''}`:'<p class="small muted">미필 선수가 없습니다.</p>')
-   +csec('국가대표',`<p class="small muted">${G.agExOff?`올림픽 3위 이내면 대표팀의 미필 선수는 병역 특례를 받습니다(아시안게임 금메달 특례는 ${G.agExOff}년 병역법 개정으로 폐지).`:'아시안게임 금메달·올림픽 3위 이내면 대표팀의 미필 선수는 병역 특례를 받습니다.'}</p><button class="btn small" data-a="go" data-v="league:nt">국가대표 보기</button>`);
+   +csec('국가대표',`<p class="small muted">${G.agExOff?`올림픽 3위 이내면 대표팀의 미필 선수는 병역 특례를 받습니다(아시안게임 금메달 특례는 ${G.agExOff}년 대표팀 선발 논란으로 지금 불인정).`:'아시안게임 금메달·올림픽 3위 이내면 대표팀의 미필 선수는 병역 특례를 받습니다.'}</p><p class="small muted">${esc(agExTxt())}</p><button class="btn small" data-a="go" data-v="league:nt">국가대표 보기</button>`);
 }
 /* 소유권은 구단별 순수 API에서만 읽는다. 현재 인물로 과거 사건을 다시 쓰지 않는다. */
 function ownershipDate(e){ return e.d!=null?`${dobj(e.d).y}년 ${dmd(e.d)}`:e.y!=null?`${e.y}년 · 일자 기록 없음`:'일자 기록 없음'; }

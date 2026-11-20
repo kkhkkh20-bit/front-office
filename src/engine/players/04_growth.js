@@ -59,7 +59,7 @@ function develop(p){
   const svc=p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day?p.mil.unit:null;
   const r0={...p.r}; /* 겨울 한 해 성장 상한(WIN_GROW_CAP, 상무는 MIL_GROW_CAP)용 시작 능력 */ { const pre=p.gy&&p.gy.pre&&p.gy.y===G.year+1?p.gy.o:null, fo=Math.floor(o*100+1e-6)/100; p.gy={y:G.year+1,o:pre!=null?Math.min(pre,fo):fo}; } /* pre: 해 넘김(09_stoveleague)이 지난 시즌 남은 분기 몫을 반영하기 전에 잡아 둔 값. 그 몫도 새해 첫날 한 번에 오르므로 새해 +5 안에 센다 */ /* 다음 해(겨울 성장이 속한 해)의 기준점: 캠프·훈련도 이 값 +5 안에서만(YEAR_GROW_CAP) */
   /* 군 복무 중에는 우리 구단 시설·코치·감독이 아니라 상무 야구단(또는 군) 환경에서 지낸다. 현역은 야구 훈련을 하지 못한다 */
-  const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
+  const play=svc==='현역'?.55:svc==='상무'?1:svc===MIL_SOC?.7 /* 사회복무요원: 근무 뒤 개인 훈련 */:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
   const club=p.team!=null&&!svc; const ti=club&&p.trI&&p.trI.n&&(p.trI.y===G.year||p.trI.y===G.year-1)?p.trI.s/p.trI.n:1; delete p.trI; /* 그 시즌 평균 훈련 강도(76_dev_plan) */ const devMgr=club&&G.mgr?mgrOf(p.team):null,yf=devMgr?1+(devMgr.youth-50)/150:1;
   p.devLog={y:G.year,tid:p.team,play,fac:fac.l,manager:devMgr&&devMgr.name?{id:devMgr.id??null,name:devMgr.name,youth:devMgr.youth}:null,reasons:[]};
   /* 잠재력 실현율(숨김, 사용자 11-12: 잠재력만 믿고 모으면 망할 수도 있어야 한다. 잠재력만큼 크는 선수는 드물다).

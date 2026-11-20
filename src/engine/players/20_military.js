@@ -12,15 +12,16 @@ function milNtThr(){ const k=G.year+':'+G.day; if(G._mnt&&G._mnt.k===k)return G.
 function milEventAhead(p){ const last=G.year+Math.max(0,26-p.age); for(let y=G.year;y<=last;y++){ const age=p.age+(y-G.year); if(typeof NT_EV==='undefined')return false; if(NT_EV.oly.yr(y))return true; if(NT_EV.ag.yr(y)&&NT_EV.ag.ex&&(age<=25||ovr(p)>=milNtThr()+6))return true; } return false; }
 function milWait(p){ if(p.age>=26)return false; if(ovr(p)>=milNtThr()&&milEventAhead(p))return true; try{ if(p.age<=25&&typeof isRegular==='function'&&isRegular(p))return true; }catch(e){} return false; }
 const MIL_KEEP_POT=44; /* AI 구단: 이 잠재력 이상 20대 초반은 현역으로 일찍 보내지 않는다(국내 20~24세 저능력 선수 중 상위 약 40%) */
-const MIL_FAC={'상무':{l:'상무 야구단 시설',g:1,d:1},'현역':{l:'군 복무(야구 훈련 없음)',g:1,d:1}};
+const MIL_FAC={'상무':{l:'상무 야구단 시설',g:1,d:1},'현역':{l:'군 복무(야구 훈련 없음)',g:1,d:1},'사회복무요원':{l:'사회복무요원(근무 뒤 개인 훈련·재활)',g:1,d:1}};
 function milTrainTxt(p){ if(!p||!milServing(p))return ''; const no='우리 구단 시설·코치진·훈련 지시·포지션 전환·해외 연수는 적용되지 않습니다.';
+  if(p.mil.unit===MIL_SOC)return `사회복무요원 복무 중: 수술 재활과 복무가 함께 갑니다. 근무 뒤 개인 훈련·재활만 할 수 있어 경기에 나서지 못하고, 소집 해제와 재활이 모두 끝나야 돌아옵니다. ${no}`;
   return p.mil.unit==='상무'?`상무(국군체육부대) 복무 중: 상무 야구단 시설·코치진 아래 퓨처스리그에서 뛰며 훈련합니다. ${no}`:`현역 복무 중: 야구 훈련을 하지 못해 능력이 늘지 않고 체력·기술이 조금씩 떨어집니다. ${no}`; }
 const milFree=p=>!p.foreign&&!(p.mil&&(p.mil.done||p.mil.exempt||p.mil.until));
 function milInit(p){ if(p.mil!==undefined||p.foreign)return; const a=p.age; const u=u01('mil',p.id);
   p.mil=a>=28?(u<.9?{done:true}:u<.95?{exempt:true}:null):a>=25?(u<.55?{done:true}:u<.6?{exempt:true}:null):a>=22?(u<.2?{done:true}:null):null; }
 function milText(p){ if(p.foreign)return '해당 없음'; const m=p.mil; if(!m)return `미필 · ${G.year+Math.max(0,27-p.age)}년까지 입대`; if(m.exempt)return '면제(체육요원)'; if(m.done)return '군필';
-  if(m.until&&m.until<=G.day&&m.from<=m.until)return '군필'; if(m.until&&m.from<=G.day&&m.until>G.day)return `${m.unit} 복무 중 · ${dmdY(m.until)} 전역`; if(m.until&&m.from>G.day)return `${m.unit} 입대 예정 · ${dmdY(m.from)}`; if(m.app)return `상무 지원 중(${m.app==='dec'?'12월':'6월'} 입대)`; return '미필'; }
-function enlist(p,unit,from){ p.mil={unit,from,until:from+MIL_DAYS}; try{ ovsEnlCheck(p); }catch(e){} const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.st!=='ok'){ p.mil.neg={st:cn.st,ns:p.newSal,has:'newSal' in p,v:cn.cur??cn.off,ask:cn.ask}; /* 예약 전 협상은 선수에게 남긴다: 단장이 떠났다 돌아와도 같은 결과(검수 11-09zx) */ cn.st='ok'; cn.mil=true; p.newSal=p.sal; } /* 복무 선수는 연봉 협상 없이 지금 연봉으로(복무 중 지급 없음). 예약을 취소하면 아래에서 협상 상태를 되돌린다 */ story(p,`${unit} ${from>G.day?'입대 예정':'입대'} (${dmd(from)})`,'mil'); if(from<=G.day){ p.e1=false; milChron(p,'입대',unit,from,from+MIL_DAYS); } /* 엔트리는 입대일에 뺀다(합격 발표 때 빼지 않는다) */ if(p.team===G.user)addLog(`${p.name} ${unit} 입대 확정 (${dmd(from)} 입대, ${dmd(from+MIL_DAYS)} 전역 예정).`); }
+  if(m.until&&m.until<=G.day&&m.from<=m.until)return '군필'; if(m.until&&m.from<=G.day&&m.until>G.day)return `${m.unit} 복무 중 · ${dmdY(m.until)} ${milEnd(m.unit)}`; if(m.until&&m.from>G.day)return `${m.unit} 입대 예정 · ${dmdY(m.from)}`; if(m.app)return `상무 지원 중(${m.app==='dec'?'12월':'6월'} 입대)`; return '미필'; }
+function enlist(p,unit,from,days=MIL_DAYS){ p.mil={unit,from,until:from+days}; /* days: 복무 일수(사회복무요원은 MIL_SOC_DAYS) */ try{ ovsEnlCheck(p); }catch(e){} const cn=G.contract&&G.contract.neg&&G.contract.neg[p.id]; if(cn&&cn.st!=='ok'){ p.mil.neg={st:cn.st,ns:p.newSal,has:'newSal' in p,v:cn.cur??cn.off,ask:cn.ask}; /* 예약 전 협상은 선수에게 남긴다: 단장이 떠났다 돌아와도 같은 결과(검수 11-09zx) */ cn.st='ok'; cn.mil=true; p.newSal=p.sal; } /* 복무 선수는 연봉 협상 없이 지금 연봉으로(복무 중 지급 없음). 예약을 취소하면 아래에서 협상 상태를 되돌린다 */ story(p,`${unit} ${from>G.day?'입대 예정':'입대'} (${dmd(from)})`,'mil'); if(from<=G.day){ p.e1=false; milChron(p,'입대',unit,from,from+days); } /* 엔트리는 입대일에 뺀다(합격 발표 때 빼지 않는다) */ if(p.team===G.user)addLog(`${p.name} ${unit} 입대 확정 (${dmd(from)} 입대, ${dmd(from+days)} 전역 예정).`); }
 function sangmuApply(id){ const p=G.players[id]; if(!p||p.team!==G.user||!milFree(p))return '대상이 아닙니다.'; if(p.mil&&p.mil.app)return '이미 지원했습니다.'; const W=sangmuPeriod(),w=W.open?W.wave:null; if(!w)return '상무 지원 기간이 아닙니다. 3월 1일~4월 14일, 9월 1일~10월 14일에 지원할 수 있습니다.'; if(sangmuEntryAge(p,W)>27)return '상무는 입대 연도에 27세까지만 지원할 수 있습니다.';
   p.mil={app:w}; addLog(`${p.name}이(가) 상무에 지원했습니다.`); return ''; }
 function sangmuFrom(wave,y=G.year){return dnum(y,wave==='dec'?12:6,10);}
@@ -85,7 +86,7 @@ function milDaily(){ const d=G.day;
     if(mo.some(p=>ovr(p)>=52))news('선수',`${tshort(G.user)} 주축 ${mo.find(p=>ovr(p)>=52).name} 상무 합격`,`전력 공백은 불가피하지만 1년 6개월 뒤 돌아올 자원입니다.`,-1); }
   try{ milRetWarn(d); }catch(e){}
   for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until&&m.from===d){ p.e1=false; try{ ovsEnlCheck(p); }catch(e){} story(p,`${m.unit} 입대 (${dmd(m.from)})`,'mil'); milChron(p,'입대',m.unit,m.from,m.until); if(p.team===G.user)addLog(`${p.name} ${m.unit} 입대. 전역 예정 ${dmdY(m.until)}.`); } }
-  const back={}; for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until&&m.until<=d&&!m.done&&!m.exempt){ milChron(p,'전역',m.unit,m.from,m.until); if(p.team!=null)(back[p.team]=back[p.team]||[]).push(p); p.mil={done:true,unit:m.unit,pf:m.from,pu:m.until}; /* 지난 복무 기간: 그해 연봉 계산(payFrac)에 남긴다(검수 11-06). 날짜를 건너뛴 저장도 동일한 기간으로 한 번 정리한다. */ story(p,`${m.unit} 전역`,'mil'); if(p.team===G.user)mail('운영팀',`${p.name} 전역`,`${p.name}이(가) ${m.unit} 복무를 마치고 돌아왔습니다. ${p.ys?'육성 명단':'정식 로스터'} 인원을 확인해 주세요.`,{kind:'병역',ref:p.id}); } }
+  const back={}; for(const p of Object.values(G.players)){ const m=p.mil; if(m&&m.until&&m.until<=d&&!m.done&&!m.exempt){ milChron(p,'전역',m.unit,m.from,m.until); if(p.team!=null)(back[p.team]=back[p.team]||[]).push(p); p.mil={done:true,unit:m.unit,pf:m.from,pu:m.until}; /* 지난 복무 기간: 그해 연봉 계산(payFrac)에 남긴다(검수 11-06). 날짜를 건너뛴 저장도 동일한 기간으로 한 번 정리한다. */ story(p,`${m.unit} ${milEnd(m.unit)}`,'mil'); if(p.team===G.user)mail('운영팀',`${p.name} ${milEnd(m.unit)}`,`${p.name}이(가) ${m.unit} 복무를 마치고 돌아왔습니다.${p.injOut>0?` 다만 아직 재활 중이라 ${injRetTxt(p)}까지는 뛸 수 없습니다.`:''} ${p.ys?'육성 명단':'정식 로스터'} 인원을 확인해 주세요.`,{kind:'병역',ref:p.id}); } }
   try{ ntDaily(d); }catch(e){ console.error(e); } /* 국가대표(아시안게임·올림픽·WBC·프리미어12): 84_national.js. 정원 정리보다 먼저: 입상 병역 특례로 복무 중 선수가 바로 전역해도 AI가 같은 날 68명에 맞춘다(2028 SEED 7 인천 69명) */
   for(const t of G.teams){ if(t.id===ME())continue; if(rosterN(t.id)>ROSTER_MAX)try{ trimRoster(t.id,ROSTER_MAX); }catch(e){} while(ysN(t.id)>YS_MAX){ const p=ysList(t.id).sort((a,b)=>keepScore(a)-keepScore(b))[0]; if(!p)break; toFree(p,'전역 후 육성 정원 초과',0,true); } }
   for(const tid in back)try{ entryUpgrade(+tid,back[tid],'전역'); }catch(e){} /* 전역한 주축은 당일 엔트리 교체를 검토한다(검수 11-09zx) */ try{captainReconcileAll();}catch(e){} }
@@ -131,11 +132,26 @@ const olyYear=y=>y>=2028&&(y-2028)%4===0;
 /* 올림픽 명단·결과는 국가대표(84_national.js)로 옮겼다 */
 
 /* 병역 상태 한 줄(사용자 피드백 11-05: 상무 복무 중인 선수가 검색표에서 군필·면제로 보였다). k: free 미필 · svc 복무 중·입대 예정 · done 군필·면제 */
-function milState(p){ if(p.foreign)return {k:'done',l:'-'}; const m=p.mil; if(m&&m.until&&!m.done){ if(m.from<=G.day&&m.until>G.day)return {k:'svc',l:`${m.unit||'복무'} 중 · ${dmdY(m.until)} 전역`}; if(m.from>G.day)return {k:'svc',l:`입대 예정 · ${dmdY(m.from)}`}; } return milFree(p)?{k:'free',l:'미필'}:{k:'done',l:'군필·면제'}; }
+function milState(p){ if(p.foreign)return {k:'done',l:'-'}; const m=p.mil; if(m&&m.until&&!m.done){ if(m.from<=G.day&&m.until>G.day)return {k:'svc',l:`${m.unit||'복무'} 중 · ${dmdY(m.until)} ${milEnd(m.unit)}`}; if(m.from>G.day)return {k:'svc',l:`입대 예정 · ${dmdY(m.from)}`}; } return milFree(p)?{k:'free',l:'미필'}:{k:'done',l:'군필·면제'}; }
 
 /* 실제 입대·복귀만 구단 연대기에 남긴다. 예약·취소는 소속 이력이 아니다. */
 function milChron(p,kind,unit,from,until){ if(!p||p.team==null)return; chron('mil',`${p.name} ${unit} ${kind} · 복무 ${dmd(from)}~${dmdY(until)}${kind==='입대'?' · 전역 예정':''}`,p.id,p.team,{source:'mil:'+p.id+':'+from+':'+kind}); }
 
+/* 사회복무요원(카페 11-20 요청): 군 미필 국내 선수가 팔꿈치 인대 재건(토미존)처럼 재활이 300일(MIL_SOC_INJ) 넘게 걸리는 큰 수술을 받으면
+   현역·상무 대신 사회복무요원으로 복무한다(실제: 수술 뒤 병역판정 신체검사 4급 → 보충역 사회복무요원, 복무 21개월).
+   복무는 다친 날 시작해 재활과 겹친다. 복무 중에는 상무·현역처럼 로스터에서 빠지고(milServing), 소집 해제와 재활이 모두 끝나야 경기에 나선다.
+   대상: 소속 구단이 있는 국내 미필 선수, 27세 이하(28세면 이미 현역 입대 대상). 상무 지원 중이면 지원을 거두고, 아직 입대 전인 예약(상무 합격·현역 예약)은 사회복무로 바꾼다.
+   이미 복무 중·군필·면제는 그대로. 우리 구단·AI 구단 같은 규칙, 난수 없음 */
+const MIL_SOC='사회복무요원', MIL_SOC_DAYS=639, MIL_SOC_INJ=300; /* 639일 = 상무·현역 548일(18개월)과 같은 비율의 21개월 */
+const milEnd=u=>u===MIL_SOC?'소집 해제':'전역';
+function milSocOk(p,k,days){ const I=k&&INJ[k]; if(!p||p.foreign||p.team==null||!I||!I.surg||!(days>=MIL_SOC_INJ)||p.age>27)return false;
+  const m=p.mil; if(!m)return true; if(m.done||m.exempt)return false; if(m.until)return m.from>G.day; /* 입대 전 예약만 바꾼다 */ return true; }
+function milSocial(p,k,days){ if(!milSocOk(p,k,days))return false; const m=p.mil, I=INJ[k];
+  if(m&&m.until){ try{ milNegBack(p,m); }catch(e){} try{ ovsEnlBack(p,m); }catch(e){} } /* 잡혀 있던 입대 예약을 거둔다(연봉 협상 상태도 예약 전으로) */
+  const was=m&&m.until?`${m.unit} 입대 예정(${dmdY(m.from)})이었지만 `:m&&m.app?'상무 지원을 거두고 ':'';
+  p.mil=null; enlist(p,MIL_SOC,G.day+1,MIL_SOC_DAYS); p.mil.soc=k; /* soc: 사회복무로 바뀐 수술. 복무는 다음 날 시작(입대일 처리 milDaily가 한 번만 엔트리·연대기를 처리) */
+  if(p.team===G.user)mail('운영팀',`${p.name} 사회복무요원 복무 · ${dmdY(p.mil.until)} 소집 해제`,`${p.name}(${posLabel(p)}, ${p.age}세)이(가) ${I.n}을(를) 받아 병역판정 신체검사에서 보충역 판정을 받았습니다. ${was}현역·상무 대신 사회복무요원으로 복무합니다.\n\n복무 1년 9개월은 내일부터 시작해 재활과 함께 갑니다. 복무 중에는 로스터에서 빠지고, ${dmdY(p.mil.until)} 소집 해제와 재활(${injRetTxt(p)} 예상)이 모두 끝나야 경기에 나섭니다. 복무를 마치면 군필이 됩니다.`,{imp:true,kind:'병역',ref:p.id,acts:[{l:'병역 관리',a:'go',v:'staff:mil'}]});
+  return true; }
 /* 상무 합격 심사의 실적: 상무는 퓨처스리그 팀이라 2군 기록을 주로 본다(사용자 11-11). 올해·지난해 퓨처스 합계(게임 기준값)
    타자 100타석↑: (OPS-.700)×20, 투수 20이닝↑: (4.50-ERA)×1.5 (각 -4~+6) · 기록이 거의 없으면 -4 · 2군 출장 30경기마다 +1(최대 +3) · 1군 경험 30경기마다 +1(최대 +2) */
 function smExp(p){ const y=G.year, F={}; for(const yy of [y,y-1]){ const h=seasonTotal(p,yy,'퓨처스'); if(h)for(const k in h)if(typeof h[k]==='number')F[k]=(F[k]||0)+h[k]; }
