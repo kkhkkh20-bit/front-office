@@ -2345,6 +2345,14 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .sopt-desc{margin:0;min-height:7.6em;padding:10px 12px;border-radius:8px;background:rgba(127,127,127,.08);border-left:3px solid var(--acc);color:var(--muted);font-size:13px;line-height:1.55}
 @media(max-width:639px){.sopt-desc{min-height:0}}
 .sopt-desc .gl{display:inline;min-height:0;padding:0;width:auto}
+
+/* 새 게임 시작 화면(사용자 11-21): 시작 방식 두 장을 크게, 난이도는 아래 한쪽에 작게. 진행 방식·첫 시즌 안내는 게임 안 설정(권한·첫 시즌 안내 숨기기)에서 */
+.mbg>.mbig{min-height:168px;align-content:start}
+.sdiff-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 12px;margin-top:14px}
+.sdiff-l{font-size:13px;font-weight:700;color:var(--muted)}
+.sdiff-row .sopt-seg{width:240px}
+.sdiff-row .sopt-seg button{min-height:32px}
+.sdiff-d{flex-basis:100%;text-align:right;font-size:12px;color:var(--muted)}
 /* 타이틀 화면 */
 .ts{background:radial-gradient(ellipse at 50% -10%,rgba(255,236,170,.16),transparent 55%),radial-gradient(ellipse at 15% 0,rgba(255,236,170,.08),transparent 40%),radial-gradient(ellipse at 85% 0,rgba(255,236,170,.08),transparent 40%);border-radius:14px}
 .ts-bg{display:grid;grid-template-columns:repeat(5,30px);gap:12px;justify-content:center}
@@ -39958,10 +39966,9 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
   if(st==='mode'){ ensureWorld();
     return `<div class="gut"><div class="wrap" style="max-width:760px">${back('main','처음 화면')}
     <h2 class="ts-h">${UI.newSlot?`슬롯 ${UI.newSlot} · `:''}어떻게 시작할까요</h2><div class="mbg">
-      <div class="card sopt"><h3 class="sec">난이도</h3><div class="sopt-seg">${[['soft','쉬움'],['norm','보통'],['hard','어려움']].map(([k,l])=>`<button data-a="sdiff" data-v="${k}" class="${(UI.diff||'norm')===k?'on':''}">${l}</button>`).join('')}</div><p class="sopt-desc">${(UI.diff||'norm')==='hard'?'어려움: 다른 구단 단장이 트레이드에서 더 많이 요구하고, FA는 우리 제안에 덜 끌립니다. 스폰서·광고 수입이 줄고 시즌 '+gl('흑자 조정')+'이 커집니다. 구단주 신뢰는 더 쉽게 떨어지고 지원 승인은 어려워집니다. 다른 구단은 그대로이고 우리 구단만 까다로워집니다. 게임 중에는 보통으로만 낮출 수 있습니다.':(UI.diff||'norm')==='soft'?'쉬움: 창단 자금이 15% 많고, 다른 구단 단장이 우리와 하는 트레이드에서 덜 요구합니다(웃돈 15% 감소). FA는 우리 제안에 조금 더 끌리고, 스폰서·광고 수입이 조금 늘고 시즌 '+gl('흑자 조정')+'이 작아집니다. 구단주 신뢰는 천천히 떨어지고 지원 승인은 조금 쉬워집니다. 다른 구단은 그대로이고 우리 구단만 편해집니다. 게임 중에는 보통으로만 올릴 수 있습니다.':'보통: 기본 규칙입니다.'}</p></div><div class="card sopt"><h3 class="sec">진행 방식</h3><div class="sopt-seg">${[['0','직접 하기'],['1','쉬운 진행']].map(([k,l])=>`<button data-a="seasy" data-v="${k}" class="${(UI.easy?'1':'0')===k?'on':''}">${l}</button>`).join('')}</div><div class="sopt-seg">${[['1','첫 시즌 안내 보기'],['0','안내 없이']].map(([k,l])=>`<button data-a="sguide" data-v="${k}" class="${(UI.guideNo?'0':'1')===k?'on':''}">${l}</button>`).join('')}</div><p class="sopt-desc">${UI.easy?'쉬운 진행: 연봉 협상·외국인 재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강을 비서와 팀장이 맡습니다. 드래프트·FA·외국인 영입·트레이드 협상은 단장이 합니다. 게임 중 설정 › 권한에서 바꿀 수 있습니다.':'직접 하기: 모든 업무를 단장이 정합니다. 어려우면 게임 중 홈 카드나 소식함에서 비서에게 맡길 수 있습니다.'}${UI.guideNo?' 첫 시즌 안내(홈 할 일 카드·비서 안내 소식)는 끕니다.':''}</p></div>
-      <button class="mbig mfd" data-a="smode" data-v="fd"><em>추천 · 드래프트 게임</em><b>창단 드래프트</b><span>리그 국내 선수 전원을 한데 모아 10개 구단이 25라운드에 걸쳐 새로 뽑습니다. 단장은 주전급을 뽑는 앞 10라운드를 직접 지명하고, 나머지는 스카우트에게 맡기거나 더 뽑을 수 있습니다. 능력치는 숨겨져 있고 기록으로 고릅니다. 빈 포지션을 채워 가며 처음부터 내 팀을 만듭니다.</span></button>
-      <button class="mbig" data-a="smode" data-v="take"><em>바로 시작 · 난이도 선택</em><b>단장 취임</b><span>10개 구단 중 하나의 단장으로 부임합니다. 지금 선수단과 계약, 재정을 그대로 이어받아 고쳐 나갑니다. 구단마다 전력이 달라 강팀은 쉽고 약팀은 어렵습니다. 드래프트 없이 바로 시즌 준비에 들어갑니다.</span></button>
-    </div>${foot}</div></div>`; }
+      <button class="mbig mfd" data-a="smode" data-v="fd"><em>추천</em><b>창단 드래프트</b><span>리그 선수 전원을 10개 구단이 새로 뽑습니다. 처음부터 내 팀을 만듭니다.</span></button>
+      <button class="mbig" data-a="smode" data-v="take"><em>바로 시작</em><b>단장 취임</b><span>10개 구단 중 하나를 맡아 지금 선수단 그대로 시작합니다.</span></button>
+    </div><div class="sdiff-row"><span class="sdiff-l">난이도</span><div class="sopt-seg">${[['soft','쉬움'],['norm','보통'],['hard','어려움']].map(([k,l])=>`<button data-a="sdiff" data-v="${k}" class="${(UI.diff||'norm')===k?'on':''}">${l}</button>`).join('')}</div><span class="sdiff-d">${({soft:'돈·트레이드·FA·구단주가 조금 너그럽습니다',norm:'기본 규칙',hard:'돈·트레이드·FA·구단주가 더 까다롭습니다'})[UI.diff||'norm']}</span></div>${foot}</div></div>`; }
   if(st==='prof'&&UI.pickT!=null)return gpStartView();
   if(UI.smode!=='take')UI.smode='fd'; const fd=UI.smode==='fd';
   return `<div class="gut"><div class="wrap" style="max-width:760px">${back('mode','시작 방식')}
