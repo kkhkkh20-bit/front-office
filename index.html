@@ -45057,7 +45057,7 @@ function dmockHtml(){ let M=[], O=null; try{ O=_dbO||draftOdds(G.user); M=mockDr
 function draftBoard(){
   const live=G.draft&&!G.draft.done; const d=G.draft; const pk=live?d.picks[d.cur]:null; const mine=!!(pk&&pk.tid===G.user);
   const pool=draftPool();
-  if(!pool.length&&!live)return `<p class="small muted keep"><b>신인 드래프트</b> 올해 드래프트는 끝났습니다. 다음 해 참가 선수 명단은 새해에 나옵니다.</p>`+(d&&d.done?draftResults():''); /* 안내는 패널 밖 한 줄, 칸은 지명 결과에 */
+  if(!pool.length&&!live)return draftViewMenu()+`<p class="small muted keep"><b>신인 드래프트</b> 올해 드래프트는 끝났습니다. 다음 해 참가 선수 명단은 새해에 나옵니다.</p>`+(d&&d.done?draftResults():''); /* 안내는 패널 밖 한 줄, 칸은 지명 결과에. 드래프트가 끝난 뒤에도 '보기 ▾'로 지난 드래프트 성적표에 갈 수 있게(카페 11-20) */
   const all=draftRanked(pool); dbAutoApply(all); /* 자동 정렬 유지(사용자가 켰을 때만) */
   try{ _dbO=draftOdds(G.user); }catch(e){ _dbO=null; }
   const f=UI.df||(UI.df={pos:'all',typ:'all',reg:'all',star:false,sort:'rk',seg:'board',more:20});
