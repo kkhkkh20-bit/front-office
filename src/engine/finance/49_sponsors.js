@@ -55,7 +55,7 @@ function sponIncome(y){ const S=G.spon; if(!S)return 0; y=y??sponSeason(); const
    - 하드 모드 감액(지급액 -10%)은 사용자의 난이도라 단장이 지금 맡은 구단(ME())의 지급에만 붙는다. 단장이 떠난 구단에 남은 계약은 AI 구단 계약으로 보고 감액하지 않는다(#279).
    - 가을야구 진출 보너스는 진출이 확정된 뒤에만 센다(순위 결정전이 남은 자리는 아직 아님, #282).
    o: {S: 계약서(생략하면 sponBook), ps: 결산 때 포스트시즌 결과, settle: 결산 여부, champ: 전망용 우승 구단, est: 전망} */
-function sponHardF(tid){ return tid===ME()&&HARD()?.9:1; }
+function sponHardF(tid){ return tid===ME()&&HARD()?.9:tid===ME()&&SOFT()?1.05:1; } /* 쉬움: 우리 스폰서 +5% */
 function sponBook(tid){ return tid===ME()?(G.spon||null):sponLeft(tid); }
 function sponPSIn(tid,y,settle){ const P=settle?G.ps:(G.sea&&G.sea.y===y?G.ps:null); if(P&&P.seeds&&P.seeds.length){ const si=P.seeds.indexOf(tid); if(si<0)return false; const c=P.cur&&P.cur.round==='tb'?[P.tbPos,...(P.tbq||[]).map(q=>q[0])]:[]; return !c.some(k=>(si===k||si===k+1)&&k+1>=4); } /* 5위 결정전(4·5번 자리)이 남았으면 두 팀 모두 아직 진출 전. 1위 결정전 두 팀은 결과와 관계없이 진출(psSeedsNow와 같은 결정전 목록) */
   if(settle||y!==G.year)return false; try{ return psClinched(tid); }catch(e){ return false; } } /* 정규시즌 중에는 수학적 확정만 */
