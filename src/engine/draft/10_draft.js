@@ -87,9 +87,9 @@ const DRAFT_READY=.15, DRAFT_SUPER=.2;
    측정(시드 7·8, #292 기준): 18시즌 동안 국내 선수 최고가 내부 68.9(표기 67). 원인은 잠재력 분포 꼭대기가 얕은 것 — 한 해 후보 140명의 잠재력이 N(43,8)이라 최고가 대개 64~71이고,
    정점은 잠재력보다 평균 10 낮다(실현율·잠재력 정리). 표기 70(내부 71.5)에 닿으려면 잠재력 74 안팎에 실현율 0.9 이상이 필요한데 그런 신인이 사실상 나오지 않았다. 표기 변환(50+내부−52)은 일차식이라 위쪽이 눌리지 않는다.
    그래서 잠재력 STAR_MIN 이상인 신인 중 STAR_P(지명 해·선수별 고정 난수, 주 난수 R() 호출 수 불변)만 '세대 재능'으로 잠재력을 STAR_LO~STAR_HI로 올리고 실현율 하한 STAR_REALK를 준다(04_growth).
-   한 해 평균 약 0.4명. 모든 구단 같다: 지명 전 드래프트 후보에서 정해진다.
+   한 해 평균 약 0.5명. 모든 구단 같다: 지명 전 드래프트 후보에서 정해진다.
    잠재력만 올리면 지금 능력과의 차이가 커서 성장 구간이 끝나기 전에 닿지 못했다(측정: 잠재력 75 세대 재능이 28세에 69). 그래서 지금 능력도 잠재력보다 STAR_GAP(고졸 14~18, 대졸 10~14) 낮은 데까지 올린다(첫해부터 1군감, 최대 STAR_CUR) */
-const STAR_MIN=56, STAR_P=.025, STAR_LO=72, STAR_HI=78, STAR_REALK=.9, STAR_GAP=[14,18], STAR_CUR=62;
+const STAR_MIN=56, STAR_P=.05, /* 11-20 재조정: 한 해 잠재력 56 이상 후보가 6~14명(시드 7, 12년)이라 .025면 한 해 0.27명, 8시즌 실경기에서 70+가 나오지 않아 .05(한 해 약 0.5명) */ STAR_LO=72, STAR_HI=78, STAR_REALK=.9, STAR_GAP=[14,18], STAR_CUR=62;
 function starTail(cls){ for(const id of cls){ const p=G.players[id]; if(!p||p.foreign||p.ovsRet||p.starT||p.pot<STAR_MIN)continue; const x=withRng(rngHash('starT',G.year,p.id),()=>[R(),R(),R()]); if(x[0]>=STAR_P)continue; p.pot=Math.round(Math.min(80,Math.max(p.pot+4,STAR_LO+x[1]*(STAR_HI-STAR_LO)))*10)/10; p.starT=G.year;
   const gap=STAR_GAP[0]+x[2]*(STAR_GAP[1]-STAR_GAP[0])-(p.age>=21?4:0), t=Math.min(STAR_CUR,p.pot-gap); if(ovr(p)<t){ setOvr(p,t); p.ready=true; } } }
 function makeDraftClass(){

@@ -10727,13 +10727,13 @@ T('[드래프트 11-20] 상단 꼬리: 잠재력 56 이상 신인 일부(STAR_P)
   const t=hit[1]; t.prospect=false; t.team=otherT(); t.realK=null; initPers(t); t.pers.pro=4; t.pers.amb=4; t.pers.temp=20; develop(t); ok(t.realK>=STAR_REALK,'AI 세대 재능 실현율 '+t.realK);
   { const n0=eliteN80().f; ok(Math.abs(eliteGrowF(70)-n0*.55)<1e-9&&eliteGrowF(70,{})===eliteGrowF(70)&&eliteGrowF(70,{starT:G.year})===n0&&eliteGrowF(50,{starT:G.year})===1,'정상급 억제: 세대 재능만 90 근처 .55를 빼고, 나머지는 그대로'); for(const fn of [develop,campGrow0]){ ok(/eliteGrowF\([^)]*,p\)/.test(String(fn)),'성장 경로가 선수를 넘기지 않음'); } }
   ok(String(makeDraftClass).includes('starTail(cls)'),'드래프트 후보 생성에서 상단 꼬리를 쓰지 않음'); });
-T('[은퇴 11-20] KBO 비율 기준: 35~36세는 능력으로 강제 은퇴하지 않고, 35세 이상은 방출·FA 미계약 뒤 아무도 데려가지 않으면 은퇴한다(우리·AI 같음)',()=>{ fresh(); ok(RET_VET_AGE===37&&RET_FREE_AGE===35,'나이 상수 '+RET_VET_AGE+'/'+RET_FREE_AGE);
+T('[은퇴 11-20] KBO 비율 기준: 35~36세는 능력으로 강제 은퇴하지 않고, 37세 이상은 방출·FA 미계약 뒤 아무도 데려가지 않으면 은퇴한다(우리·AI 같음)',()=>{ fresh(); ok(RET_VET_AGE===37&&RET_FREE_AGE===35,'나이 상수 '+RET_VET_AGE+'/'+RET_FREE_AGE);
   const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
   for(const p of [me,ai]){ const w=p.team===G.user?'우리':'AI'; for(const a of [35,36]){ p.age=a; setOvr(p,33.4); ok(!retireRule(p)&&!retireLikely(p),w+' '+a+'세 33을 능력으로 은퇴'); } p.age=34; setOvr(p,33.4); ok(retireRule(p),w+' 34세 계약 없는 33(32~34세 약체 기준)이 은퇴하지 않음'); }
   ok(String(faClose).includes('if((p.age<=35||!retireVetRule(p))&&ovr(p)>=33)'),'FA 미계약 노장이 은퇴 기준과 무관하게 은퇴'); ok(/\(p\.age<=35\|\|!retireVetRule\(p\)\)/.test(String(freeAiMonthly)),'AI 무적 영입이 나이만으로 노장을 막음');
-  ok(String(freeYear).includes('p.age>=RET_FREE_AGE')&&!/p\.age>=38/.test(String(freeYear)),'무적 노장 은퇴 나이가 35세가 아님');
+  ok(String(freeYear).includes('p.age>=RET_VET_AGE')&&!/p\.age>=38/.test(String(freeYear)),'무적 노장 은퇴 나이가 37세가 아님');
   const mk=(a)=>{ const q=domestic(otherT()).find(x=>x!==ai&&!x.faC&&!x.ys&&!x.foreign&&x.team!=null); q.age=a; setOvr(q,50); toFree(q,'점검'); q.freeSince=G.year; delete q.wv; ok(isFree(q),'준비 실패: 무적 아님'); return q; };
-  const y34=mk(34), y35=mk(35), y36=mk(36); y34.freeDay=y35.freeDay=G.day-FREE_VET_DAYS-1; y36.freeDay=G.day-30; freeYear(); ok(G.players[y34.id]&&isFree(y34),'34세 무적 선수가 바로 은퇴'); ok(!G.players[y35.id],'넉 달 넘게 아무도 안 데려간 35세 무적 노장이 은퇴하지 않음'); ok(G.players[y36.id]&&isFree(y36),'방금 풀린 36세 노장이 다른 구단을 기다리지 못하고 은퇴(저니맨)'); });
+  const y36=mk(36), y37=mk(37), y38=mk(38); y36.freeDay=y37.freeDay=G.day-FREE_VET_DAYS-1; y38.freeDay=G.day-30; freeYear(); ok(G.players[y36.id]&&isFree(y36),'36세 무적 선수가 바로 은퇴'); ok(!G.players[y37.id],'넉 달 넘게 아무도 안 데려간 37세 무적 노장이 은퇴하지 않음'); ok(G.players[y38.id]&&isFree(y38),'방금 풀린 38세 노장이 다른 구단을 기다리지 못하고 은퇴(저니맨)'); });
 T('[은퇴 11-20] 은퇴 예고 시즌: 37세 이상·1군 10시즌 이상 노장이 2월 1일 "올해가 마지막"을 알리고 시즌 뒤 은퇴한다(고정 난수, 우리·AI 같음). 2군 노장의 은퇴 요청은 9월 은퇴 면담으로 온다',()=>{ fresh(); ok(LAST_AGE===37&&LAST_TEN===10&&LAST_P.join()==='0.15,0.25,0.35,0.5','상수 '+LAST_P);
   const me=domestic(G.user).find(q=>!q.isP&&!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.isP&&!q.faC&&!q.ys); ok(me&&ai,'준비 실패'); const y=G.year;
   for(const p of [me,ai]){ p.hist=(p.hist||[]).filter(h=>h.lvl!=='1군'); for(let k=1;k<=12;k++)p.hist.push({...bz(),y:y-k,t:p.team,lvl:'1군',pa:400,ab:350,g:100}); setOvr(p,55); delete p.lastY; }
