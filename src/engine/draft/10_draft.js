@@ -189,7 +189,10 @@ function proStaleFix(){ if(!G||!G.players)return 0; let n=0; const fdLive=!!(G.f
     if(p.fdPool&&!fdLive){ p.fdPool=false; f=true; }
     if(p.ovsWait){ delete p.ovsWait; f=true; }
     if(f)n++; }
-  return n; }
+  obsProDrop(); return n; }
+/* 렉 제보(카페 11-20, 2032년 저장): 아마추어 관찰 기록(obsView: 구단별 스카우트 사본·의견, obsBy)은 아마추어·신인 후보 때만 쓴다(67_scout_trip obsViewRows·obsScoutFor).
+   지명·계약으로 후보가 아니게 된 선수에 남아 저장 용량의 1/4(약 5MB)을 차지하고 자동 저장 압축을 느리게 했다. 후보가 아닌 선수에서 지운다. 난수 없음·멱등·사람·AI 구단 공통 */
+function obsProDrop(){ if(!G||!G.players)return 0; let n=0; for(const p of Object.values(G.players)){ if(!p||p.prospect)continue; if(p.obsView){ delete p.obsView; n++; } if(p.obsBy){ delete p.obsBy; n++; } } return n; }
 /* 예전 후보는 인물·능력·관찰·메모를 그대로 두고 학교/권역 표시만 보완한다. */
 function migrateDraftPool(){
   const d=G.draft, live=!!(d&&!d.done), done=!!(d&&d.done&&(d.y==null||d.y===G.year));

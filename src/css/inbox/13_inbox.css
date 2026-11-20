@@ -246,3 +246,6 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibx-fsep{flex:none;width:1px;height:16px;background:var(--line);margin:0 4px}
 .ibx-unread-only.on{background:var(--warn,#d9822b);border-color:var(--warn,#d9822b)}
 @media (max-width:1099px){ .ibx-from{margin:0 0 8px} }
+
+/* 보낸이 필터 접기(카페 11-20) */
+.ibx-fwrap{margin:-4px 0 10px}.ibx-fwrap>.ibx-fsum{cursor:pointer;color:var(--muted,#9aa7b4);padding:6px 2px;list-style:none}.ibx-fwrap>.ibx-fsum::-webkit-details-marker{display:none}.ibx-fwrap>.ibx-fsum::after{content:" ▾"}.ibx-fwrap[open]>.ibx-fsum::after{content:" ▴"}.ibx-fwrap>.ibx-from{margin:4px 0 0}
