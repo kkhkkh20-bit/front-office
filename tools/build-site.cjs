@@ -5,7 +5,7 @@ const {splitWebsite}=require('./lib/site-runtime.cjs');
 const {build}=require('./build.cjs'),{modelFiles,audioFiles}=require('./match3d-assets.cjs');
 const MAX_ASSET_BYTES=25*1024*1024;
 /* v14 장면 사진(응원 무대·행사·스카우트 출장): HTML에 넣지 않고 같은 경로로 따로 올린다. 화면은 받아지면 그리고 못 받으면 생략(77_assets_ui.js sceneImg) */
-function sceneFiles(root){ const M=JSON.parse(fs.readFileSync(path.join(root,'assets/v14/scene_manifest.json'),'utf8')); return [...M.scenes.map(x=>({filename:'assets/v14/'+x.file.path,data:fs.readFileSync(path.join(root,'assets/v14',x.file.path))})),...champFiles(root),...v13Faces(root),...v18Faces(root),...v19People(root),...v23Faces(root),...operationsPhotos(root)]; }
+function sceneFiles(root){ const M=JSON.parse(fs.readFileSync(path.join(root,'assets/v14/scene_manifest.json'),'utf8')); return [...M.scenes.map(x=>({filename:'assets/v14/'+x.file.path,data:fs.readFileSync(path.join(root,'assets/v14',x.file.path))})),...champFiles(root),...v13Faces(root),...v18Faces(root),...v19People(root),...v23Faces(root),...v21Faces(root),...operationsPhotos(root)]; }
 /* v13 선수 얼굴 60명 256px 시트(구단 ID.webp, 납품 f6bce76 무손실본을 WebP q85로 줄임). 앱 HTML에는 128px만 넣고 사이트에서만 받는다(77_assets_ui.js faceSheets) */
 function v13Faces(root){ const b='assets/v13/face256/'; return fs.readdirSync(path.join(root,b)).filter(f=>f.endsWith('.webp')).map(f=>({filename:b+f,data:fs.readFileSync(path.join(root,b,f))})); }
 /* v18 선수 얼굴 200명 시트(구단 홈 유니폼 A·B × 128·256·384, v18b 납품 그대로 60장). 앱 HTML에는 넣지 않고(00j_faces_v18_data.js는 번호표만) 같은 경로로 받는다(77_assets_ui.js faceSheets).
@@ -16,6 +16,9 @@ function v18Faces(root){ const M=JSON.parse(fs.readFileSync(path.join(root,'asse
 function v19People(root){ const b='assets/v19/secretary20/', M=JSON.parse(fs.readFileSync(path.join(root,b,'manifest.json'),'utf8')); return M.runtime_files.map(p=>({filename:b+p,data:fs.readFileSync(path.join(root,b,p))})); }
 /* 신생 구단 전용 유니폼 얼굴(v23b = v23에서 엠블럼만 교체. 11·12구단, 시트 20장 중 HTML에 넣지 않은 14장: 256px 전부·v18 128px). 00l_faces_v23_data.js의 h(시트별 해시)가 목록이다.
    manifest runtime_files 밖(미리보기·검수·체크포인트)은 저장소에 들이지 않았다. HTML에 넣은 128px(v6c·v13·staff)은 올리지 않는다 */
+/* v21b 고교·대학 선수 얼굴 200명(A·B × 128·256·384 × 12변형 = 72장, 납품 그대로). 앱 HTML에는 넣지 않고(00m_faces_v21_data.js는 번호표만) 같은 경로로 받는다(77_assets_ui.js faceCut 'am').
+   manifest·시트 외 미리보기·검수 자료는 저장소에 들이지 않았다 */
+function v21Faces(root){ const F=fs.readFileSync(path.join(root,'src/ui/assets/00m_faces_v21_data.js'),'utf8'), i=F.indexOf('const FACE21=')+13, J=JSON.parse(F.slice(i,F.indexOf(';\n',i))); const L=Object.keys(J.h).map(k=>{ const [sc,v]=k.split('/'), p=J.base+sc[0]+'/'+sc.slice(1)+'/'+v+'.webp'; return {filename:p,data:fs.readFileSync(path.join(root,p))}; }); if(L.length!==72)throw Error('v21 시트가 72장이 아님: '+L.length); return L; }
 function v23Faces(root){ const F=fs.readFileSync(path.join(root,'src/ui/assets/00l_faces_v23_data.js'),'utf8'), i=F.indexOf('const FACE23=')+13, J=JSON.parse(F.slice(i,F.indexOf(';\n',i))), b=J.base; if(!/^assets\/v23b?\/expansion_kits\/sheets\/$/.test(b))throw Error('신생 구단 시트 경로가 이상함: '+b); /* 게임이 받는 판(FACE23.base, 지금은 v23b)만 올린다 */
  const L=Object.keys(J.h).map(k=>{ const p=b+k+'.webp'; return {filename:p,data:fs.readFileSync(path.join(root,p))}; }); if(L.length!==14)throw Error('v23 파일 시트가 14장이 아님: '+L.length); return L; }
 /* v16 우승 장면·배너·256px 트로피(52_champion.js champPic, 77_assets_ui.js tro16). 1024 트로피·투명 PNG·검수 자료는 올리지 않는다 */
