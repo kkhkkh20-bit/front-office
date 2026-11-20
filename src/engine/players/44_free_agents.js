@@ -59,7 +59,7 @@ function freeIndie(){ const k=Math.max(FREE_NEW,FREE_MIN-freeList().length);
 function freeAiMonthly(){ if(!freeOpen())return; const L=freeList().sort((a,b)=>ovr(b)-ovr(a)); if(!L.length)return;
   for(const t of G.teams){ if(t.id===ME())continue; const n=rosterN(t.id); if(n>=ROSTER_MAX-1)continue; const hurt=playersOf(t.id).filter(p=>p.injOut>14).length;
     if(n>=ROSTER_MAX-6&&hurt<3)continue; const own=domestic(t.id).map(ovr).sort((a,b)=>b-a); const bar=own[Math.min(own.length-1,35)]||35;
-    const basic=p=>p.team==null&&ovr(p)>=bar&&(p.age<=35||!retireVetRule(p)); /* 저니맨(11-20 사용자, 고효준 사례: 방출된 노장도 쓸 만하면 여러 구단을 옮겨 다닌다): 36세 이상도 은퇴 기준에 안 걸리면 같은 기준(구단 상위 36명 수준·빈자리)으로 데려간다. 요구 연봉은 최저연봉 근처(freeAsk) */ if(!L.some(basic))continue; R(); /* 예전 무작위(50%) 자리: 후보별로 다시 뽑지 않고 한 번만 소비한다 */
+    const basic=p=>p.team==null&&ovr(p)>=bar&&(p.age<=35||!retireVetRule(p)); /* 저니맨(11-20 사용자, 고효준 사례: 방출된 노장도 쓸 만하면 여러 구단을 옮겨 다닌다): 36세 이상도 은퇴 기준에 안 걸리면 같은 기준(구단 상위 36명 수준·빈자리)으로 데려간다. 요구 연봉은 최저연봉 근처(freeAsk) */ const basic0=p=>p.team==null&&ovr(p)>=bar&&p.age<=35; if(L.some(basic0))R(); else if(!L.some(basic))continue; /* 예전 무작위(50%) 자리: 후보별로 다시 뽑지 않고 한 번만 소비한다. 주 난수는 예전 조건(35세 이하 후보가 있을 때)에만 써서 저니맨 허용(11-20)이 난수 흐름을 바꾸지 않게 */ if(!L.some(basic))continue;
     const c=L.find(p=>basic(p)&&!freeWhy(p,t.id)); if(!c)continue;
     /* AI 판단 점검 #14: 그 자리(투수/야수)가 실제로 비었을 때만 데려온다. 같은 쪽 부상자가 둘 이상이거나, 정원 여유가 많고 같은 쪽 국내 선수가 46%에 못 미치거나, 확실히 나은 선수(기준선 +4)일 때 */
     const side=playersOf(t.id).filter(p=>p.isP===c.isP), hs=side.filter(p=>p.injOut>14).length, D=domestic(t.id).filter(p=>!p.ys), thin=D.filter(p=>p.isP===c.isP).length<D.length*.46;
