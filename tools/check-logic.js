@@ -10773,6 +10773,16 @@ T('[제보 11-20 FA 다른 구단 최고 조건] 요구대로 채운 제안은 �
     ok(faScore(p,{tid:U,annual:vB,years:B.years})>=faScore(p,{tid:b,...ao})*1.01,'넘기기 묶음이 다른 구단 최고 조건에 밀림: '+vB+' vs '+ao.annual); ok(offScore({annual:vB,years:B.years})>=faWantFor(p,U)*.97,'넘기기 묶음이 요구 기준 아래');
     const r2=faNegotiate(p.id,{annual:B.annual,years:B.years,terms:B}); ok(r2.st==='wait'||p.team===U,'넘기기 묶음을 냈는데 받지 않음: '+r2.st+' '+r2.msg);
   }finally{ capOwnerCheck=co; } });
+T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 선수는 첫 새해에 현역 입대해 드래프트 전에 전역하고, 복무 중에는 트라이아웃에 나오지 않으며, 군필로 드래프트에 나온다(난수 없음·한 번만)',()=>{ fresh(); const y=G.year;
+  const mk=age=>{ const q=newPlayer({age,base:44,pot:52}); q.team=null; q.mil=null; q.ovsWait=y+1; return q; }; const p=mk(24), old=mk(29), late=mk(23); late.ovsWait=y; const done=mk(25); done.mil={done:true};
+  G.day=dnum(y,1,1); const r0=__rngCalls(); [p,old,late,done].forEach(q=>ovsWaitMil(q)); ok(__rngCalls()===r0,'유예 중 입대 판정이 본 난수를 씀');
+  ok(p.mil&&p.mil.unit==='현역'&&p.mil.from===dnum(y,1,20)&&p.mil.until===p.mil.from+MIL_DAYS,'유예 중 미필 복귀자가 1월 20일 현역 입대하지 않음: '+JSON.stringify(p.mil)); ok(old.mil&&old.mil.unit==='현역','28세 넘은 미필 복귀자도 유예 기간에 입대해야 함');
+  ok(p.mil.until<dnum(y+1,9,1),'유예가 끝나는 해 드래프트 전에 전역하지 못함'); ok(milFree(late),'유예가 끝나는 해에 돌아온(예전 저장) 선수를 드래프트 직전에 입대시킴'); ok(done.mil.done&&!done.mil.until,'군필을 다시 입대시킴');
+  const m0=JSON.stringify(p.mil); ok(!ovsWaitMil(p)&&JSON.stringify(p.mil)===m0,'두 번 부르면 다시 입대'); milNewYear(); ok(JSON.stringify(p.mil)===m0,'새해 처리가 복무 기간을 바꿈');
+  const sg=newPlayer({age:24,base:44,pot:52}); sg.team=G.teams.find(t=>t.id!==G.user).id; sg.mil=null; sg.ovsWait=y+1; ok(!ovsWaitMil(sg),'구단 소속 선수를 유예 입대로 처리');
+  G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
+  G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
+  G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

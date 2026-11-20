@@ -35,7 +35,7 @@ function tryIndieMake(y){ const isP=R()<.55; const x=R(); const pos=isP?'P':x<.0
 function tryAnnounce(y){ const T=tryInit(y); if(T.ann!=null)return T; T.ann=G.day;
   for(const p of freeList()){ if(T.ids.includes(p.id))continue; if(p.age<=TRY_VET_AGE&&ovr(p)>=28&&(p.tryK==='indie'||relU('tryvet'+y,p.id)<.65))T.ids.push(p.id); } /* 무적 선수 신청자(방출·독립리그) */
   const k=ri(TRY_INDIE[0],TRY_INDIE[1]); for(let i=0;i<k;i++)T.ids.push(tryIndieMake(y).id);
-  for(const p of Object.values(G.players))if(p.ovsWait&&p.ovsWait>y&&p.team==null&&!p.prospect&&!T.ids.includes(p.id))T.ids.push(p.id); /* 해외 복귀 유예 중: 테스트만 */
+  for(const p of Object.values(G.players))if(p.ovsWait&&p.ovsWait>y&&p.team==null&&!p.prospect&&!T.ids.includes(p.id)&&!milOn(p,T.day??G.day))T.ids.push(p.id); /* 해외 복귀 유예 중: 테스트만. 유예 기간에 군 복무 중이면 나오지 않는다(20_military ovsWaitMil) */
   T.ids=T.ids.filter(id=>{ const p=G.players[id]; return p&&p.team==null; });
   for(const id of T.ids){ const p=G.players[id]; const kd=tryKindOf(p); T.n[kd]=(T.n[kd]||0)+1; }
   if(!G.unemp){ const n=T.n; mail('스카우트팀장',`KBO 공개 트라이아웃 명단 · ${T.ids.length}명`,`${dmd(T.day)} 테스트에 ${T.ids.length}명이 나옵니다(${Object.keys(TRY_K).filter(k=>n[k]).map(k=>TRY_K[k]+' '+n[k]).join(' · ')}). 달력에서 그날 단장 일정으로 직접 참관을 잡을 수 있습니다.`,{kind:'스카우트',acts:[{l:'트라이아웃',a:'go',v:'transfer:tryout'}]}); }

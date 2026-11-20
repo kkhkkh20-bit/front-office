@@ -20825,7 +20825,14 @@ function milAdviceTxt(ms){ const A=ms.map(p=>({p,a:milAdvice(p)})); const sec=(k
   return ['코치진·스카우트 추천', sec('last','마지막 기회'), sec('go','지원 추천'), sec('hold','보류 의견')].filter(Boolean).join('\n\n'); }
 function p28(ms){ const u=ms.filter(p=>p.age>=27); return u.length?`올해 안에 입대해야 하는 선수(27세 이상): ${u.map(p=>p.name).join(', ')}. 해를 넘기면 현역으로 입대합니다.\n\n`:''; }
 function milNewYear(){ // 해가 바뀌면 28세 이상 미필은 현역 입대
-  for(const p of Object.values(G.players)){ milInit(p); if(p.team==null||!milFree(p)||p.mil&&p.mil.app)continue; if(p.team!==ME()&&p.age>=20&&p.age<=24&&ovr(p)<40&&(p.pot||0)<MIL_KEEP_POT&&R()<.22){ enlist(p,'현역',dnum(G.year,1,20)); continue; } /* 일찍 현역으로 보내는 건 기대가 낮은 선수만. 잠재력 높은 유망주는 상무를 노린다(고양스톰 20년차 11-16) */ if(p.age>=28){ enlist(p,'현역',dnum(G.year,1,20)); if(p.team===G.user)mail('운영팀',`${p.name} 현역 입대 예정 · ${dmd(dnum(G.year,1,20))}`,`${p.name}이(가) 28세가 되어 입대 연기 한도를 넘겼습니다. ${dmd(dnum(G.year,1,20))}에 현역으로 입대합니다. 1년 6개월 뒤 돌아오지만 기량이 떨어질 수 있습니다.`,{imp:true,kind:'병역',ref:p.id}); } } }
+  for(const p of Object.values(G.players)){ milInit(p); if(ovsWaitMil(p))continue; if(p.team==null||!milFree(p)||p.mil&&p.mil.app)continue; if(p.team!==ME()&&p.age>=20&&p.age<=24&&ovr(p)<40&&(p.pot||0)<MIL_KEEP_POT&&R()<.22){ enlist(p,'현역',dnum(G.year,1,20)); continue; } /* 일찍 현역으로 보내는 건 기대가 낮은 선수만. 잠재력 높은 유망주는 상무를 노린다(고양스톰 20년차 11-16) */ if(p.age>=28){ enlist(p,'현역',dnum(G.year,1,20)); if(p.team===G.user)mail('운영팀',`${p.name} 현역 입대 예정 · ${dmd(dnum(G.year,1,20))}`,`${p.name}이(가) 28세가 되어 입대 연기 한도를 넘겼습니다. ${dmd(dnum(G.year,1,20))}에 현역으로 입대합니다. 1년 6개월 뒤 돌아오지만 기량이 떨어질 수 있습니다.`,{imp:true,kind:'병역',ref:p.id}); } } }
+/* 해외 복귀 2년 유예 중 병역(카페 11-21 FC서울 제안): 국내 구단을 거치지 않고 해외로 갔다 돌아온 선수(ovsWait, KBO 규약 107조)는 유예 기간에 드래프트를 기다리며 입대하는 게 보통이다.
+   돌아온 뒤 첫 새해에 미필이면 1월 20일 현역으로 입대한다(소속 구단이 없어 상무는 지원할 수 없다: 상무 합격은 구단 소속 선수만, milDaily). 1년 6개월 복무는 유예 기간 안(드래프트 9월 중순 전 7월)에 끝나고,
+   전역하면 군필로 그해 신인 드래프트에 나온다(10_draft). 복무하는 동안 해외 복귀 트라이아웃 명단에서는 빠진다. 소속 없는 선수라 우리·AI 구별이 없고 난수를 쓰지 않는다.
+   유예가 끝나는 해(ovsWait<=올해)에 아직 미필이면(예전 저장·늦게 돌아온 경우) 예전처럼 드래프트 명단에 오를 때 '유예 기간 병역 이행'으로 처리한다 */
+function ovsWaitMil(p){ if(!p||p.team!=null||p.foreign||p.retired||p.prospect||!p.ovsWait||p.ovsWait<=G.year||!milFree(p)||(p.mil&&p.mil.app))return false;
+  const from=Math.max(G.day+1,dnum(G.year,1,20)); if(from+MIL_DAYS>=dnum(p.ovsWait,9,1))return false; /* 드래프트(9월 중순) 전에 전역하지 못하면 입대시키지 않는다 */
+  enlist(p,'현역',from); p.mil.ovsW=p.ovsWait; story(p,`해외 복귀 유예 기간(${p.ovsWait}년 신인 드래프트까지)에 병역 이행`,'mil'); return true; }
 /* 2군 월간 리포트: 5~9월 1일 육성팀 보고 */
 function futuresReport(){ if(G.unemp)return; const y=G.year; const all=Object.values(G.players).filter(p=>p.team===G.user&&!(p.joinY>y)&&!p.foreign), ps=playersOf(G.user).filter(p=>!p.foreign&&!p.e1); /* 성적에는 상무·대표팀 차출·콜업 선수를 포함한다. 구단 훈련·콜업 후보는 현재 구단에 있는 선수만. */
   const B=all.filter(p=>!p.isP).map(p=>({p,h:seasonTotalT(p,y,'퓨처스',G.user)})).filter(x=>x.h&&x.h.pa>=40).map(x=>({...x,v:bRate(x.h).ops})).sort((a,b)=>b.v-a.v).slice(0,3);
@@ -38101,7 +38108,7 @@ function tryIndieMake(y){ const isP=R()<.55; const x=R(); const pos=isP?'P':x<.0
 function tryAnnounce(y){ const T=tryInit(y); if(T.ann!=null)return T; T.ann=G.day;
   for(const p of freeList()){ if(T.ids.includes(p.id))continue; if(p.age<=TRY_VET_AGE&&ovr(p)>=28&&(p.tryK==='indie'||relU('tryvet'+y,p.id)<.65))T.ids.push(p.id); } /* 무적 선수 신청자(방출·독립리그) */
   const k=ri(TRY_INDIE[0],TRY_INDIE[1]); for(let i=0;i<k;i++)T.ids.push(tryIndieMake(y).id);
-  for(const p of Object.values(G.players))if(p.ovsWait&&p.ovsWait>y&&p.team==null&&!p.prospect&&!T.ids.includes(p.id))T.ids.push(p.id); /* 해외 복귀 유예 중: 테스트만 */
+  for(const p of Object.values(G.players))if(p.ovsWait&&p.ovsWait>y&&p.team==null&&!p.prospect&&!T.ids.includes(p.id)&&!milOn(p,T.day??G.day))T.ids.push(p.id); /* 해외 복귀 유예 중: 테스트만. 유예 기간에 군 복무 중이면 나오지 않는다(20_military ovsWaitMil) */
   T.ids=T.ids.filter(id=>{ const p=G.players[id]; return p&&p.team==null; });
   for(const id of T.ids){ const p=G.players[id]; const kd=tryKindOf(p); T.n[kd]=(T.n[kd]||0)+1; }
   if(!G.unemp){ const n=T.n; mail('스카우트팀장',`KBO 공개 트라이아웃 명단 · ${T.ids.length}명`,`${dmd(T.day)} 테스트에 ${T.ids.length}명이 나옵니다(${Object.keys(TRY_K).filter(k=>n[k]).map(k=>TRY_K[k]+' '+n[k]).join(' · ')}). 달력에서 그날 단장 일정으로 직접 참관을 잡을 수 있습니다.`,{kind:'스카우트',acts:[{l:'트라이아웃',a:'go',v:'transfer:tryout'}]}); }
@@ -52538,6 +52545,10 @@ const PATCH=[
   {id:'2026-11-21-amateur-faces',d:'11월 21일',t:'고교·대학 선수에게 실제 사진이 생겼습니다',items:[
     '드래프트 대상 고교·대학 선수 200명분 사진이 들어왔습니다. 고교 선수는 학교 유니폼, 대학 선수는 대학 유니폼을 입습니다.',
     '같은 선수는 늘 같은 얼굴이고, 지명되면 같은 얼굴로 지명 구단 유니폼을 입습니다.'
+  ]},
+  {id:'2026-11-21-ovs-return-mil',d:'11월 21일',t:'해외 복귀 선수가 2년 유예 기간에 병역을 마칩니다',items:[
+    '국내 구단을 거치지 않고 해외로 갔다 돌아온 선수는 2년 뒤 신인 드래프트로만 들어올 수 있습니다. 이 선수가 미필이면 돌아온 뒤 첫 1월 20일에 현역으로 입대해, 드래프트(9월) 전에 전역하고 군필로 드래프트에 나옵니다.',
+    '복무 중에는 트라이아웃 명단에 나오지 않습니다. 현역 복무라 그동안 야구 훈련을 하지 못해 능력이 늘지 않을 수 있습니다. 소속 구단이 없는 선수라 모든 구단이 같은 조건으로 봅니다.'
   ]},
   {id:'2026-11-20-sangmu-cancel',d:'11월 20일',t:'상무 지원을 접수 기간 안에 취소할 수 있습니다',items:[
     '병역 탭 미필 선수 카드에 「상무 지원 취소」 단추가 생겼습니다. 접수 기간(3월 1일~4월 14일, 9월 1일~10월 14일) 안이면 지원을 거두고 다시 지원할 수 있습니다. 합격자 발표 뒤에는 취소할 수 없습니다.',
