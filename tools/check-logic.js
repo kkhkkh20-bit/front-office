@@ -10689,6 +10689,14 @@ T('[카페 11-19 선발 순번] 선발 요청한 유망주가 기존 선발 앞 
   a2.r.stf=base+raw; roleSync(U); ok(depth(U).sp[0]===A[0],'작은 평가 차이로 1·2선발이 뒤바뀜'); a2.r.stf=base+keep; roleSync(U); ok(t.spO.ids[0]===a2.id,'뚜렷한 차이인데 순번이 바뀌지 않음'); a2.r.stf=base+raw; roleSync(U); ok(depth(U).sp[0]===a2,'바뀐 순번이 작은 차이로 되돌아감');
   t.spO.y=G.year-1; ok(depth(U).sp.map(p=>p.id).join()===(()=>{ const sv=t.spO; delete t.spO; const z=depth(U).sp.map(p=>p.id).join(); t.spO=sv; return z; })(),'지난 시즌 순번 기억이 새 시즌에 남음');
   ok(__rngState()===r0,'선발 순번 계산이 주 난수를 씀'); });
+T('[카페 11-20 스카우트 공석] 위임하지 않은 구단에 담당 없는 아마추어 지역이 생기면 한 번 알리고(위임 버튼), 난수·스카우트 명단은 그대로다',()=>{ fresh(); G.auto={}; G.mail=[];
+  const am=G.scouts.filter(x=>(x.role||'am')==='am'); ok(am.length>=3&&!scVacGap().length,'준비: 세 지역 모두 담당');
+  stDaily(); ok(!G.mail.some(m=>/스카우트 공석/.test(m.subj)),'담당이 다 있으면 알리지 않음');
+  const gone=am[0], reg=gone.region; G.scouts=G.scouts.filter(x=>x!==gone); const ids=JSON.stringify(G.scouts.map(x=>x.id)), c0=__rngCalls();
+  stDaily(); const M=G.mail.filter(m=>/스카우트 공석/.test(m.subj)); ok(M.length===1,'공석 알림 1통: '+M.length); ok(M[0].subj.includes(reg),'빈 지역 이름'); ok((M[0].auto||[]).includes('svac'),'위임 버튼(svac)');
+  ok(__rngCalls()===c0,'주 난수를 쓰지 않음'); ok(JSON.stringify(G.scouts.map(x=>x.id))===ids,'알림만 하고 명단은 그대로');
+  G.day++; stDaily(); ok(G.mail.filter(m=>/스카우트 공석/.test(m.subj)).length===1,'같은 공석은 다시 알리지 않음');
+  G.mail=[]; autoSet('svac',true); delete G.svacWarn; scVacWarn(); ok(!G.mail.some(m=>/스카우트 공석/.test(m.subj)),'위임하면 알림 대신 운영팀이 채움'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
