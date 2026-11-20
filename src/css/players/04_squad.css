@@ -11,6 +11,8 @@ table.rt td{white-space:nowrap}table.rt tr.fut td{opacity:.8}table.rt i.f{font-s
 .chips i.cnt{font-style:normal;font-size:var(--ui-caption);opacity:.7}
 .dgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
 @media(max-width:560px){.dgrid2{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* 카페 11-20: 포지션 진단 카드 글자가 말줄임(…)으로 잘리지 않게 줄바꿈 */
+.dg-n,.dg-s,.dg-b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere;line-height:1.35}
 .dg{all:unset;box-sizing:border-box;display:grid;gap:2px;background:#0b1014;border:1px solid var(--line);border-left:3px solid var(--rc);border-radius:3px;padding:7px 8px;cursor:pointer;min-width:0}
 div.dg{cursor:default}.dg:hover{border-color:var(--line2);border-left-color:var(--rc)}
 .dg-h{display:flex;justify-content:space-between;align-items:baseline;gap:4px}.dg-h b{font-size:13px}.dg-h i{font-style:normal;font-size:var(--ui-caption);font-weight:700;color:var(--rc)}
@@ -175,3 +177,10 @@ table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}
 #app main.ws-up .roster-heading:has(.rcnt){display:flex!important;min-height:0;margin:0}
 #app main.ws-up .roster-heading:has(.rcnt)>:not(:has(.rcnt)),#app main.ws-up .roster-heading>div:has(>.rcnt)>:not(.rcnt){display:none!important}
 #app main.ws-up .rcnt-tog{display:none!important}
+
+/* 카페 11-20: 휴대폰 세로에서도 정원은 한 줄 요약만, 내역·경고는 '내역'을 눌러 펼친다(아래 탭·진단이 먼저 보이게) */
+@media(max-width:699px){
+ .rcnt{padding:3px 8px;gap:3px}#app .rcnt-tog{display:inline-flex;align-items:center;min-height:32px;padding:0 8px}
+ .rcnt:not(.more)>:is(.rcnt-parts,.rcnt-warn){display:none}
+ .rcnt-top{flex-wrap:nowrap;align-items:center;font-size:12.5px;gap:5px;white-space:nowrap}.rcnt-top b{font-size:14px}.rcnt-h{font-size:11px;padding:0 4px}
+}

@@ -57,7 +57,7 @@ function fieldSVG(tid,interactive,inline){
 function rosterTabs(){ const tid=UI.rosterTeam??G.user; const own=tid===G.user;
   /* 포지션별 리그 전력 진단은 전력 구성 아래에서 독립 탭으로 분리한다. */
   { UI.it=UI.it||{}; const r=UI.it.roster; if(r==='bat'||r==='pit'){ UI.seg=r; UI.it.roster='list'; } else if(r==='field'||r==='glance'||r==='fut'){ UI.it.roster='depth'; } else if(r==='cmp')UI.it.roster='list'; }
-  const RT=[['list','선수 명단'],...(own?[['ent','엔트리 관리']]:[]),['depth','전력 구성'],['sal','연봉'],...(own?[['plan','선수단 계획'],['diag','포지션 진단'],['st','현황'],['mil','병역']]:[])];
+  const RT=[['list','선수 명단'],...(own?[['diag','포지션 진단'],['ent','엔트리 관리']]:[]),['depth','전력 구성'],['sal','연봉'],...(own?[['plan','선수단 계획'],['st','현황'],['mil','병역']]:[])]; /* 카페 11-20: 포지션 진단을 앞쪽으로 */
   return {RT,it:inTabs('roster',RT,'list')}; }
 function rosterSubRow(){ const tid=UI.rosterTeam??G.user; if(G.unemp||tid===G.user&&(UI.trimOn||trimNeed()&&!UI.trimHidden))return ''; /* 정리 모드는 단일 패널: 탭 대신 제목 */
   const {RT,it}=rosterTabs(); return `<nav class="subtabs" aria-label="선수단 하위 메뉴">${RT.map(([k,l])=>`<button data-a="itab" data-v="roster:${k}" class="${it.cur===k?'on':''}">${l}</button>`).join('')}</nav>`; }
@@ -223,7 +223,7 @@ function posDiag(seg){
   if(seg==='bat'){
     cells=['C','1B','2B','3B','SS','LF','CF','RF','DH'].map(pos=>{ const p=me.ln[pos]; const rk=rankOf(d=>d.ln[pos]?posScore(d.ln[pos],pos):0);
       const bk=pos==='DH'?0:ps.filter(q=>!q.isP&&q.pos===pos&&(!p||q.id!==p.id)).length; const h=p?curLine(p):null; const rp=p?scoutReport(p):null;
-      return `<button class="dg" data-a="posSheet" data-v="${pos}" style="--rc:${rc(rk)}"><span class="dg-h"><b>${POSS[pos]}</b><i title="주전 능력 기준 리그 순위(올해 성적 순위 아님)">전력 ${rk}위</i></span><span class="dg-n">${p?esc(p.name):'빈자리'}</span><span class="dg-s">${rp?rchipG(rp.cur,rp.exact):''} ${h&&h.pa?yrTag(h)+' OPS '+fmt3(bRate(h).ops):''}</span><span class="dg-b ${pos!=='DH'&&bk===0?'warn':''}">${pos==='DH'?'타격 전담':bk?`백업 ${bk}명`:'백업 없음'}</span></button>`; });
+      return `<button class="dg" data-a="posSheet" data-v="${pos}" style="--rc:${rc(rk)}"><span class="dg-h"><b>${POSS[pos]}</b><i title="주전 능력 기준 리그 순위(올해 성적 순위 아님)">전력 ${rk}위</i></span><span class="dg-n">${p?esc(p.name):'빈자리'}</span><span class="dg-s">${rp?rchipG(rp.cur,rp.exact):''} ${h&&h.pa?yrTag(h)+' OPS&nbsp;'+fmt3(bRate(h).ops):''}</span><span class="dg-b ${pos!=='DH'&&bk===0?'warn':''}">${pos==='DH'?'타격 전담':bk?`백업 ${bk}명`:'백업 없음'}</span></button>`; });
   } else {
     const spR=rankOf(d=>avg(d.sp.slice(0,5).map(spV))), rpR=rankOf(d=>avg(d.pen.slice(0,5).map(penV))), clR=rankOf(d=>d.pen[0]?penV(d.pen[0]):0);
     const era=arr=>{ const hs=arr.map(curLine).filter(h=>h&&h.outs); const o=sum(hs.map(h=>h.outs)); return o?(sum(hs.map(h=>h.er))*27/o).toFixed(2):'-'; };

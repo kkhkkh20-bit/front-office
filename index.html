@@ -383,6 +383,8 @@ table.rt td{white-space:nowrap}table.rt tr.fut td{opacity:.8}table.rt i.f{font-s
 .chips i.cnt{font-style:normal;font-size:var(--ui-caption);opacity:.7}
 .dgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
 @media(max-width:560px){.dgrid2{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* 카페 11-20: 포지션 진단 카드 글자가 말줄임(…)으로 잘리지 않게 줄바꿈 */
+.dg-n,.dg-s,.dg-b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere;line-height:1.35}
 .dg{all:unset;box-sizing:border-box;display:grid;gap:2px;background:#0b1014;border:1px solid var(--line);border-left:3px solid var(--rc);border-radius:3px;padding:7px 8px;cursor:pointer;min-width:0}
 div.dg{cursor:default}.dg:hover{border-color:var(--line2);border-left-color:var(--rc)}
 .dg-h{display:flex;justify-content:space-between;align-items:baseline;gap:4px}.dg-h b{font-size:13px}.dg-h i{font-style:normal;font-size:var(--ui-caption);font-weight:700;color:var(--rc)}
@@ -547,6 +549,13 @@ table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}
 #app main.ws-up .roster-heading:has(.rcnt){display:flex!important;min-height:0;margin:0}
 #app main.ws-up .roster-heading:has(.rcnt)>:not(:has(.rcnt)),#app main.ws-up .roster-heading>div:has(>.rcnt)>:not(.rcnt){display:none!important}
 #app main.ws-up .rcnt-tog{display:none!important}
+
+/* 카페 11-20: 휴대폰 세로에서도 정원은 한 줄 요약만, 내역·경고는 '내역'을 눌러 펼친다(아래 탭·진단이 먼저 보이게) */
+@media(max-width:699px){
+ .rcnt{padding:3px 8px;gap:3px}#app .rcnt-tog{display:inline-flex;align-items:center;min-height:32px;padding:0 8px}
+ .rcnt:not(.more)>:is(.rcnt-parts,.rcnt-warn){display:none}
+ .rcnt-top{flex-wrap:nowrap;align-items:center;font-size:12.5px;gap:5px;white-space:nowrap}.rcnt-top b{font-size:14px}.rcnt-h{font-size:11px;padding:0 4px}
+}
 /* 홈 대시보드 */
 .homeg{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:10px;align-items:start}
 .homeg .col{display:grid;gap:10px;min-width:0}
@@ -41150,9 +41159,11 @@ function compView(){ const L=(G.comp||[]).filter(c=>c.from===G.user||c.to===G.us
     if(c.stage==='protect'&&c.to===G.user){ const S=new Set(protOf(c)); /* 정렬·필터(리아네트 11-11: 잠재력 별을 보기 편하게) */
       const RPm=new Map(compPool(G.user).map(q=>[q.id,(()=>{ try{ return scoutReport(q); }catch(e){ return null; } })()])); const stOf=q=>{ const rp=RPm.get(q.id); try{ return rp&&rp.ofp!=null?potTierP(rp,q).st:-1; }catch(e){ return -1; } };
       const sk=UI.prS||'ovr', fk=UI.prF||'all'; const SRT={ovr:(a,b)=>ovr(b)-ovr(a),pot:(a,b)=>stOf(b)-stOf(a)||ovr(b)-ovr(a),age:(a,b)=>a.age-b.age||ovr(b)-ovr(a),sal:(a,b)=>b.sal-a.sal};
-      const all=compPool(G.user); const pool=all.filter(q=>fk==='all'||(fk==='P'?q.isP:fk==='B'?!q.isP:fk==='on'?S.has(q.id):!S.has(q.id))).sort(SRT[sk]||SRT.ovr);
+      const all=compPool(G.user); const PG={SP:q=>isSP(q),RP:q=>q.isP&&!isSP(q),C:q=>!q.isP&&q.pos==='C',IF:q=>!q.isP&&['1B','2B','3B','SS'].includes(q.pos),OF:q=>!q.isP&&['LF','CF','RF'].includes(q.pos),DH:q=>!q.isP&&q.pos==='DH'}; /* 맥도 11-20: 포지션별 탭 */
+      const pool=all.filter(q=>fk==='all'||(PG[fk]?PG[fk](q):fk==='P'?q.isP:fk==='B'?!q.isP:fk==='on'?S.has(q.id):!S.has(q.id))).sort(SRT[sk]||SRT.ovr);
+      const pgN=k=>all.filter(PG[k]).length, pgL=[['SP','선발'],['RP','불펜'],['C','포수'],['IF','내야'],['OF','외야'],['DH','지명']].filter(([k])=>pgN(k)).map(([k,l])=>[k,`${l} ${pgN(k)}`]);
       const chip=(k,cur,L)=>`<div class="chips">${L.map(([v,l])=>`<button class="${cur===v?'on':''}" data-a="protOpt" data-v="${k}:${v}">${l}</button>`).join('')}</div>`;
-      const ctl=`<div class="pr-ctl">${chip('s',sk,[['ovr','종합 능력순'],['pot','잠재력순'],['age','나이 어린순'],['sal','연봉순']])}${chip('f',fk,[['all',`전체 ${all.length}`],['P','투수'],['B','타자'],['on',`보호 ${S.size}`],['off',`노출 ${all.length-S.size}`]])}</div>`;
+      const ctl=`<div class="pr-ctl">${chip('s',sk,[['ovr','종합 능력순'],['pot','잠재력순'],['age','나이 어린순'],['sal','연봉순']])}${chip('f',fk,[['all',`전체 ${all.length}`],['P','투수'],['B','타자'],['on',`보호 ${S.size}`],['off',`노출 ${all.length-S.size}`]])}${chip('f',fk,pgL)}</div>`;
       const auto=domestic(G.user).concat(awayOf(G.user)).filter(q=>!q.foreign&&autoProt(q)&&q.id!==c.pid);
       return `<section class="card cpbox"><div class="row between"><h2 class="sec">보호선수 명단 · ${esc(c.name)} 영입 보상</h2><span class="small muted">${dmd(c.exp)}까지</span></div>
         <p class="small">${tname(c.from)}에 보상해야 합니다(${c.grade}등급). 보호할 선수 <b>${S.size}/${g.prot}</b>명. 누르면 보호·해제됩니다. 명단 밖에서 상대가 1명을 데려가거나 돈으로 받습니다.</p>
@@ -46218,7 +46229,7 @@ function fieldSVG(tid,interactive,inline){
 function rosterTabs(){ const tid=UI.rosterTeam??G.user; const own=tid===G.user;
   /* 포지션별 리그 전력 진단은 전력 구성 아래에서 독립 탭으로 분리한다. */
   { UI.it=UI.it||{}; const r=UI.it.roster; if(r==='bat'||r==='pit'){ UI.seg=r; UI.it.roster='list'; } else if(r==='field'||r==='glance'||r==='fut'){ UI.it.roster='depth'; } else if(r==='cmp')UI.it.roster='list'; }
-  const RT=[['list','선수 명단'],...(own?[['ent','엔트리 관리']]:[]),['depth','전력 구성'],['sal','연봉'],...(own?[['plan','선수단 계획'],['diag','포지션 진단'],['st','현황'],['mil','병역']]:[])];
+  const RT=[['list','선수 명단'],...(own?[['diag','포지션 진단'],['ent','엔트리 관리']]:[]),['depth','전력 구성'],['sal','연봉'],...(own?[['plan','선수단 계획'],['st','현황'],['mil','병역']]:[])]; /* 카페 11-20: 포지션 진단을 앞쪽으로 */
   return {RT,it:inTabs('roster',RT,'list')}; }
 function rosterSubRow(){ const tid=UI.rosterTeam??G.user; if(G.unemp||tid===G.user&&(UI.trimOn||trimNeed()&&!UI.trimHidden))return ''; /* 정리 모드는 단일 패널: 탭 대신 제목 */
   const {RT,it}=rosterTabs(); return `<nav class="subtabs" aria-label="선수단 하위 메뉴">${RT.map(([k,l])=>`<button data-a="itab" data-v="roster:${k}" class="${it.cur===k?'on':''}">${l}</button>`).join('')}</nav>`; }
@@ -46384,7 +46395,7 @@ function posDiag(seg){
   if(seg==='bat'){
     cells=['C','1B','2B','3B','SS','LF','CF','RF','DH'].map(pos=>{ const p=me.ln[pos]; const rk=rankOf(d=>d.ln[pos]?posScore(d.ln[pos],pos):0);
       const bk=pos==='DH'?0:ps.filter(q=>!q.isP&&q.pos===pos&&(!p||q.id!==p.id)).length; const h=p?curLine(p):null; const rp=p?scoutReport(p):null;
-      return `<button class="dg" data-a="posSheet" data-v="${pos}" style="--rc:${rc(rk)}"><span class="dg-h"><b>${POSS[pos]}</b><i title="주전 능력 기준 리그 순위(올해 성적 순위 아님)">전력 ${rk}위</i></span><span class="dg-n">${p?esc(p.name):'빈자리'}</span><span class="dg-s">${rp?rchipG(rp.cur,rp.exact):''} ${h&&h.pa?yrTag(h)+' OPS '+fmt3(bRate(h).ops):''}</span><span class="dg-b ${pos!=='DH'&&bk===0?'warn':''}">${pos==='DH'?'타격 전담':bk?`백업 ${bk}명`:'백업 없음'}</span></button>`; });
+      return `<button class="dg" data-a="posSheet" data-v="${pos}" style="--rc:${rc(rk)}"><span class="dg-h"><b>${POSS[pos]}</b><i title="주전 능력 기준 리그 순위(올해 성적 순위 아님)">전력 ${rk}위</i></span><span class="dg-n">${p?esc(p.name):'빈자리'}</span><span class="dg-s">${rp?rchipG(rp.cur,rp.exact):''} ${h&&h.pa?yrTag(h)+' OPS&nbsp;'+fmt3(bRate(h).ops):''}</span><span class="dg-b ${pos!=='DH'&&bk===0?'warn':''}">${pos==='DH'?'타격 전담':bk?`백업 ${bk}명`:'백업 없음'}</span></button>`; });
   } else {
     const spR=rankOf(d=>avg(d.sp.slice(0,5).map(spV))), rpR=rankOf(d=>avg(d.pen.slice(0,5).map(penV))), clR=rankOf(d=>d.pen[0]?penV(d.pen[0]):0);
     const era=arr=>{ const hs=arr.map(curLine).filter(h=>h&&h.outs); const o=sum(hs.map(h=>h.outs)); return o?(sum(hs.map(h=>h.er))*27/o).toFixed(2):'-'; };
