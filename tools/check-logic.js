@@ -10761,7 +10761,7 @@ T('[성장 11-20] 노장 비율: 기술형 베테랑 전성기 33·하락 35·�
   ok(/age<=VET_SKILL_AGE/.test(String(develop)),'기술형 기술 성장 나이 상수 미사용'); });
 T('[사용자 11-21 쉬움] 쉬움 난이도는 우리와의 트레이드에서만 요구를 15% 줄이고, AI끼리 거래와 하드는 그대로다',()=>{ fresh(); G.cfg=G.cfg||{}; const T0=G.teams.filter(t=>t.id!==G.user), a=T0[0].id, b=T0[1].id; const pa=domestic(a).filter(p=>!p.ys).sort((x,y)=>ovr(y)-ovr(x))[3], pu=domestic(G.user).filter(p=>!p.ys).sort((x,y)=>ovr(y)-ovr(x))[3], pb=domestic(b).filter(p=>!p.ys).sort((x,y)=>ovr(y)-ovr(x))[3];
   const nu=()=>evalTrade(a,[pa.id],[pu.id]).need, nai=()=>evalTrade(a,[pa.id],[pb.id],0,null,b).need; const u0=nu(), ai0=nai();
-  try{ G.cfg.soft=true; const u1=nu(), ai1=nai(); ok(u1<u0,'쉬움인데 우리 거래 요구가 줄지 않음 '+u0+'→'+u1); ok(Math.abs(ai1-ai0)<1e-9,'쉬움이 AI끼리 거래를 바꿈'); G.cfg.hard=true; ok(Math.abs(nu()-evalTrade(a,[pa.id],[pu.id]).need)<1e-9&&!SOFT(),'하드와 함께면 쉬움은 꺼져야 함'); } finally { delete G.cfg.soft; delete G.cfg.hard; } });
+  try{ G.cfg.soft=true; const u1=nu(), ai1=nai(); ok(u1<u0,'쉬움인데 우리 거래 요구가 줄지 않음 '+u0+'→'+u1); ok(sponHardF(G.user)===1.05&&sponHardF(T0[0].id)===1,'쉬움 스폰서 +5%는 우리 구단만'); ok(ownAskP(1000,'fa')>(()=>{ delete G.cfg.soft; const v=ownAskP(1000,'fa'); G.cfg.soft=true; return v; })(),'쉬움인데 구단주 지원 승인 확률이 오르지 않음'); ok(Math.abs(ai1-ai0)<1e-9,'쉬움이 AI끼리 거래를 바꿈'); G.cfg.hard=true; ok(Math.abs(nu()-evalTrade(a,[pa.id],[pu.id]).need)<1e-9&&!SOFT(),'하드와 함께면 쉬움은 꺼져야 함'); } finally { delete G.cfg.soft; delete G.cfg.hard; } });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

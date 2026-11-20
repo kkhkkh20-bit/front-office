@@ -312,7 +312,7 @@ function faDayRun(day){
 function faScore(p,o){ const ag=agNeg(p); const lk=ag.self?2:1; const home=1.08+(ag.self?.04:0)+((p.pers?p.pers.loy:10)-10)/100*lk+((p.mor??60)-60)/300; const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id]; /* 본인 협상: 원소속 구단 정과 애착을 두 배로 본다(에이전트가 없으면 시장보다 마음이 앞선다) */
   const relK=agRel(ag,o.tid)-50; const relF=1+relK/1000*(ag.size==='big'?2:1)*(ag.style==='rel'?2:1); const U=ME(); /* 친분은 구단마다(계약 1단계): 모든 구단 제안에 같은 식으로 곱한다 */ /* 야인 때 전 구단(이제 AI) 제안에 단장 친분·하드 모드 벌점을 얹지 않는다 */
   if(o.tid===U&&ng&&ng.closed)return -1;
-  return o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===U&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*relF*(1+agDealBonus(ag,o.tid)*.25)*faAppeal(p,o.tid).f*domFaPull(p,o.tid)*(o.tid===U&&HARD()?.92:1); /* 구단 매력: 명성·우승 가능성·출전 기회·연고. 하드 모드: 우리 제안은 8% 덜 끌린다 */ }
+  return o.annual*(1+.06*(o.years-1))*(o.tid===p.faFrom?home:1)*(o.tid===U&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1)*relF*(1+agDealBonus(ag,o.tid)*.25)*faAppeal(p,o.tid).f*domFaPull(p,o.tid)*(o.tid===U&&HARD()?.92:o.tid===U&&SOFT()?1.05:1); /* 구단 매력: 명성·우승 가능성·출전 기회·연고. 하드 모드: 우리 제안은 8% 덜 끌린다 */ }
 /* 고향 팀으로 온 FA: 팬과 구단주에게 명분이 선다. 우리 구단은 기사(팬 여론)·구단주 신뢰 +1(33세 이상 귀향은 +2), 다른 구단은 인기 조금 */
 function homeReturn(p,tid,h){ h=h||homeTie(p,tid); /* h: 소속을 바꾸기 전에 구한 판정(바꾼 뒤엔 친정 여부가 사라진다, 검수 11-09s) */ if(!h)return null; const n=h.vet?2:1;
   if(tid===G.user&&!G.unemp){ const t=team(G.user); news('FA',`고향 팀으로 돌아온 ${p.name}`,`${h.sch} 출신 ${p.name}이(가) ${h.vet?'선수 생활의 마지막을 ':''}고향 ${t.city} 팀 ${tname(G.user)} 유니폼을 입습니다.${h.first?' 처음 지명받은 친정이기도 합니다.':''} 지역 팬들이 반기고 있습니다.`,n,{ref:p.id});
@@ -322,7 +322,7 @@ function homeReturn(p,tid,h){ h=h||homeTie(p,tid); /* h: 소속을 바꾸기 전
 function faBestOf(p,offers){ let b=null,bs=-1; for(const o of offers){ const s=faScore(p,o); if(s>bs){bs=s;b=o;} } return b; }
 /* faScore를 항목별로 푼 값(곱하면 faScore와 같다): 계약에서 밀린 까닭을 사용자에게 그대로 알려 주는 데 쓴다. 식을 바꾸면 faScore와 함께 바꾼다(규칙 점검이 둘을 맞춰 본다) */
 function faScoreParts(p,o){ const ag=agNeg(p); const lk=ag.self?2:1; const home=1.08+(ag.self?.04:0)+((p.pers?p.pers.loy:10)-10)/100*lk+((p.mor??60)-60)/300; const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id]; const U=ME(); const A=faAppeal(p,o.tid);
-  return {money:o.annual*(1+.06*(o.years-1)),home:o.tid===p.faFrom?home:1,neg:o.tid===U&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1,rel:1+(agRel(ag,o.tid)-50)/1000*(ag.size==='big'?2:1)*(ag.style==='rel'?2:1),deal:1+agDealBonus(ag,o.tid)*.25,appeal:A.f,ap:A.parts,dom:domFaPull(p,o.tid),hard:o.tid===U&&HARD()?.92:1}; }
+  return {money:o.annual*(1+.06*(o.years-1)),home:o.tid===p.faFrom?home:1,neg:o.tid===U&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1,rel:1+(agRel(ag,o.tid)-50)/1000*(ag.size==='big'?2:1)*(ag.style==='rel'?2:1),deal:1+agDealBonus(ag,o.tid)*.25,appeal:A.f,ap:A.parts,dom:domFaPull(p,o.tid),hard:o.tid===U&&HARD()?.92:o.tid===U&&SOFT()?1.05:1}; }
 /* 우리 제안이 비교 끝에 밀린 까닭(제보 11-19: 금액은 우리가 가장 높았는데 다른 구단과 더 낮은 금액에 계약하고, 안내는 '밀렸습니다'뿐).
    돈이 모자랐으면 그렇게, 돈은 앞섰는데 졌으면 무엇이 얼마나 더 컸는지와 같은 기간에 앞서려면 필요했던 연봉을 적는다. 계약 직전(소속을 바꾸기 전)에 부른다.
    now: 시장 보고에 쓰는 현재형(금액은 우리가 높은데 뒤질 때만) */
