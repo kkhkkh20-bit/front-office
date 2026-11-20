@@ -1,0 +1,3740 @@
+{
+  "status": "INCOMPLETE_FACE_MASTER_REVIEW_NOT_RUNTIME",
+  "candidate_count": 91,
+  "production_complete": false,
+  "human_age_review": "pending",
+  "game_ids_assigned": false,
+  "identities": [
+    {
+      "id": "b_direct_pool_0276_2",
+      "seed_id": "pool_0276_2",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        514,
+        510,
+        1022
+      ],
+      "native_edge": 508,
+      "translation_origin_xy": [
+        -4,
+        -46
+      ],
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0276.png",
+        "sha256": "4eede1aeb1995f6c63ffc977a63df5b268dbf3103e5e97b5961f16a95328a3d9"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_direct_pool_0276_2_128.webp",
+          "decoded_rgb_sha256": "58ac67a3fd801928c540121606493fca933833cb2105c27a73adb6ca8c42c04d"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_direct_pool_0276_2_256.webp",
+          "decoded_rgb_sha256": "8cde89b46ab9329870690677a39b1c389cb6f8aae2b972b378689fdd21b05943"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_direct_pool_0276_2_384.webp",
+          "decoded_rgb_sha256": "369b4c58e1d57162fd26d21ecbad7f5faa6f402a80946209d3fee5bd061c56a8"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0276_2.png"
+    },
+    {
+      "id": "b_direct_pool_0014_1",
+      "seed_id": "pool_0014_1",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        514,
+        2,
+        1022,
+        510
+      ],
+      "native_edge": 508,
+      "translation_origin_xy": [
+        -11,
+        24
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0014.png",
+        "sha256": "fe19a38e8c72c24dfe310bcce81578ca44b90395cd54eeac75691d6837ad5292"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_direct_pool_0014_1_128.webp",
+          "decoded_rgb_sha256": "3bbdd8bc75005616bbea5a1f6b764947feefcce2a013652aade43d2957de889b"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_direct_pool_0014_1_256.webp",
+          "decoded_rgb_sha256": "1e9a708d7dd2dc306e1ea65b44788676527dff1b1d3b20a90755240f37295169"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_direct_pool_0014_1_384.webp",
+          "decoded_rgb_sha256": "125a7cd6fd5db37c801340820e503eb24f5c951b8ad8fec91c402b3b63f10dba"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0014_1.png"
+    },
+    {
+      "id": "b_direct_pool_0014_3",
+      "seed_id": "pool_0014_3",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        514,
+        514,
+        1022,
+        1022
+      ],
+      "native_edge": 508,
+      "translation_origin_xy": [
+        18,
+        11
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0014.png",
+        "sha256": "fe19a38e8c72c24dfe310bcce81578ca44b90395cd54eeac75691d6837ad5292"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_direct_pool_0014_3_128.webp",
+          "decoded_rgb_sha256": "a46506c0e8b99240d22a3c2b074dd670b1c34a206e8e3f34fdda650c5dbfa1cc"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_direct_pool_0014_3_256.webp",
+          "decoded_rgb_sha256": "78baa5c5735e4601ce8ce7d2e92700ca286dee9a1a39c4054804f269b87dbbfb"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_direct_pool_0014_3_384.webp",
+          "decoded_rgb_sha256": "ed66583be0ad4fd2d0ee9404860497f53b26f3bc86e9a3fd47d325a6c2a6cf50"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0014_3.png"
+    },
+    {
+      "id": "b_direct_pool_0094_3",
+      "seed_id": "pool_0094_3",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        514,
+        514,
+        1022,
+        1022
+      ],
+      "native_edge": 508,
+      "translation_origin_xy": [
+        79,
+        14
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0094.png",
+        "sha256": "d4067d4de5a5c2b47534e26e5edaf2050999229164ade7e711a410f423525576"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_direct_pool_0094_3_128.webp",
+          "decoded_rgb_sha256": "3a0e13069090e95e6c1994092e274a0552a77c1cb8461edd1909e5dc0794fad0"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_direct_pool_0094_3_256.webp",
+          "decoded_rgb_sha256": "3a7fb7bc6717e3f38adeea69ab42315410d9c45414b2fd117fb0f53f411d5c6f"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_direct_pool_0094_3_384.webp",
+          "decoded_rgb_sha256": "a70f63c218bc18499e16e1e55b0f0eac932d4d375f5fe0de40f5df1caf81c244"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0094_3.png"
+    },
+    {
+      "id": "b_direct_pool_0236_2",
+      "seed_id": "pool_0236_2",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        514,
+        510,
+        1022
+      ],
+      "native_edge": 508,
+      "translation_origin_xy": [
+        -11,
+        11
+      ],
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0236.png",
+        "sha256": "e76ec3735d1caa87eb30192496241a885f861c2573e64c9d666d60cab26bf78d"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_direct_pool_0236_2_128.webp",
+          "decoded_rgb_sha256": "5ab861f7a2013ef44d349c16d4d0ceb05e616804cf7aa3eb564bdd6c532b853c"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_direct_pool_0236_2_256.webp",
+          "decoded_rgb_sha256": "5d29e797ae67486bbf2d0b978a9deaa42dda4d57f490f892f527198a19abb64b"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_direct_pool_0236_2_384.webp",
+          "decoded_rgb_sha256": "50e11ef6ff7d7f8873e782b0c2f876b3e61bf94ce266db5319576a4a54b51ad3"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0236_2.png"
+    },
+    {
+      "id": "b_direct_pool_0063_1",
+      "seed_id": "pool_0063_1",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        514,
+        2,
+        1022,
+        510
+      ],
+      "native_edge": 508,
+      "translation_origin_xy": [
+        -5,
+        -9
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/stage_a/bd239e3ba20c5d70_v21_firefly_pool_0063.png",
+        "sha256": "bd239e3ba20c5d703d367a97ef619aa1cd93e5f047d56b085a85af3ad6bc27d6"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_direct_pool_0063_1_128.webp",
+          "decoded_rgb_sha256": "0f1ca45e58d138d3eb347b232be3ee06a15d286fc6df5301caf9f813cc87f0f7"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_direct_pool_0063_1_256.webp",
+          "decoded_rgb_sha256": "0af82fd427ef4c6a5a8190c45f3b28eeca17ddf0ec2105ecfcd916c562ad5d9f"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_direct_pool_0063_1_384.webp",
+          "decoded_rgb_sha256": "0913d22c299b3b1fdbf36505c8cedd621fd6145a3e5077d823ffe5086aa5fa03"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0063_1.png"
+    },
+    {
+      "id": "b_direct_pool_0091_0",
+      "seed_id": "pool_0091_0",
+      "glasses": true,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        2,
+        510,
+        510
+      ],
+      "native_edge": 508,
+      "translation_origin_xy": [
+        -27,
+        8
+      ],
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0091.png",
+        "sha256": "cd0e9b54760a45b1ac1faaec8c68fb10506f16a5153353a8ee4694130ff47776"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_direct_pool_0091_0_128.webp",
+          "decoded_rgb_sha256": "68ea935cd32da7d57d64d48b20ede12e3b2f9ddc85f7569b55d5c0a2eab5b1b6"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_direct_pool_0091_0_256.webp",
+          "decoded_rgb_sha256": "1417be9a5b277f5fdf4aa6fbd7ab346e8eef67245609c8aa4de9f105f91099b6"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_direct_pool_0091_0_384.webp",
+          "decoded_rgb_sha256": "c335854cb330c7340863ca45f7cb239e9fa3359769ec40f3b037aa4eaa5a2d4d"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0091_0.png"
+    },
+    {
+      "id": "b_direct_pool_0093_1",
+      "seed_id": "pool_0093_1",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        514,
+        2,
+        1022,
+        510
+      ],
+      "native_edge": 508,
+      "translation_origin_xy": [
+        -11,
+        -17
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0093.png",
+        "sha256": "a29bee4d2411f1799eefddb0c2766d42022a30e7999dba14c9e4f8cd110aecbf"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_direct_pool_0093_1_128.webp",
+          "decoded_rgb_sha256": "a7103c8c2582b8e123910d1bbe91d1c16e46a519cb53a2396e5ad880f905361e"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_direct_pool_0093_1_256.webp",
+          "decoded_rgb_sha256": "c373c4c2acf57acdd3ed5e827a48d9dfcfcb2e00487e2cf45da42ebaf0a2be9b"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_direct_pool_0093_1_384.webp",
+          "decoded_rgb_sha256": "185d89cfe95c71f7f1e385efdedfa7da32b123ff90059973388625f2c6404111"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_direct_pool_0093_1.png"
+    },
+    {
+      "id": "b_base_pool_0014_2",
+      "seed_id": "pool_0014_2",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        795,
+        394,
+        1187
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -14,
+        11
+      ],
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_003.png",
+        "sha256": "a613e74547730e0281e78511d7dbcfd792d0173b3a5502fcc026bcb4a88f3075"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0014_2_128.webp",
+          "decoded_rgb_sha256": "fb0aee39d3150989eb7406fcf682c0f2f623537b41be8f899a02ea45c4f9efd6"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0014_2_256.webp",
+          "decoded_rgb_sha256": "10b41fae9871bf1793822a2f975704201cee2ce04aec443368ced612cee76f14"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0014_2_384.webp",
+          "decoded_rgb_sha256": "36c33296dee0bbb56c2ab4ebbd7ce2cf95c15e1fadd5a77400cb4f7e81283f33"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0014_2.png"
+    },
+    {
+      "id": "b_base_pool_0018_0",
+      "seed_id": "pool_0018_0",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        398,
+        795,
+        790,
+        1187
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -3,
+        -25
+      ],
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_004.png",
+        "sha256": "b349ba144a6cd9ac3ad6c7e32c361378036482e59b3b462a9b748ae6e492b7c3"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0018_0_128.webp",
+          "decoded_rgb_sha256": "b571f6b4a202e67164899458ca8ad6d9204ae917fbf343f5cfe8324e87779bc6"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0018_0_256.webp",
+          "decoded_rgb_sha256": "039e7520a1d4003fc7b6a613f5754008f688d586ca5d4af7eaa158e5f730a879"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0018_0_384.webp",
+          "decoded_rgb_sha256": "4edccf4cd994b6dff1f7b77ea316656d37ca9562f942ab06f96e5d30d3cee1f5"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0018_0.png"
+    },
+    {
+      "id": "b_base_pool_0022_3",
+      "seed_id": "pool_0022_3",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        1191,
+        394,
+        1583
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -14,
+        22
+      ],
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/hs_home/base_005.png",
+        "sha256": "537bf0c00f9e092ce2c1887c7085ffed34f93b3e968c30c8c385fad146320f2d"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0022_3_128.webp",
+          "decoded_rgb_sha256": "bbe0466a87b709573c1e26d2f69dc6a2bcbb62f6d1b0583e276015bdbf3e4b94"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0022_3_256.webp",
+          "decoded_rgb_sha256": "9e3eec79a2314d49cdfeeb0191a652e628996b053942dbbf5670d1e63edbfd70"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0022_3_384.webp",
+          "decoded_rgb_sha256": "5b1488e572b5955e0a564034ff14fa93e71549f5856925e5a63c0d221ee5d4d6"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0022_3.png"
+    },
+    {
+      "id": "b_base_pool_0029_0",
+      "seed_id": "pool_0029_0",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        1588,
+        394,
+        1980
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        2,
+        7
+      ],
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_006.png",
+        "sha256": "b839567bc15315e1e2490c97ee059606d536126c3c261e25db0436b79d0e3d86"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0029_0_128.webp",
+          "decoded_rgb_sha256": "afecc2327267ccd39e7553dde1b53f93519289bb4486c8728cf3f1cbd139c5cd"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0029_0_256.webp",
+          "decoded_rgb_sha256": "2ba8e22cb528aa9366d070877f797ea283dba4f9f5096af57991fecaa966693e"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0029_0_384.webp",
+          "decoded_rgb_sha256": "9e90ea04462ef452eba95a7b5fcb10d244b96de7a482e97f3db38a8cb193171e"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0029_0.png"
+    },
+    {
+      "id": "b_base_pool_0054_0",
+      "seed_id": "pool_0054_0",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        398,
+        795,
+        790,
+        1187
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -3,
+        -11
+      ],
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_012.png",
+        "sha256": "21af14214f7867015aa38d91988139a50857cc348cdeec7c04ac69e5ae4948d8"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0054_0_128.webp",
+          "decoded_rgb_sha256": "9878b0824b5935cc4b4c00bcec1631feae2d71384561c0f88700d29535ff47d5"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0054_0_256.webp",
+          "decoded_rgb_sha256": "aac614d3a579029954899aa4aeab247903fbfda46bc37fd0b1a2defe1895d9d4"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0054_0_384.webp",
+          "decoded_rgb_sha256": "e9fece68f7885e9bc0c5b11393510972fc0b935bea42576a3618fb112f90d16e"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0054_0.png"
+    },
+    {
+      "id": "b_base_pool_0054_3",
+      "seed_id": "pool_0054_3",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        1191,
+        394,
+        1583
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -6,
+        -9
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_012.png",
+        "sha256": "21af14214f7867015aa38d91988139a50857cc348cdeec7c04ac69e5ae4948d8"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0054_3_128.webp",
+          "decoded_rgb_sha256": "6d188eb107f7fe4874c68b3056a02da887a600e9d2e9a2c065f5e46aa581f0bd"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0054_3_256.webp",
+          "decoded_rgb_sha256": "016dcb2a8648ac3d6deac894f6d95ce5c9a2fe40251ddef58a85da9617692fc1"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0054_3_384.webp",
+          "decoded_rgb_sha256": "00f7faddba14499c33f05aee33bef1cc5d3b7979243bbd4838945f76bb78e5f7"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0054_3.png"
+    },
+    {
+      "id": "b_base_pool_0057_0",
+      "seed_id": "pool_0057_0",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        398,
+        1588,
+        791,
+        1981
+      ],
+      "native_edge": 393,
+      "translation_origin_xy": [
+        -14,
+        -23
+      ],
+      "proposed_age": 17,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/hs_home/base_012.png",
+        "sha256": "21af14214f7867015aa38d91988139a50857cc348cdeec7c04ac69e5ae4948d8"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0057_0_128.webp",
+          "decoded_rgb_sha256": "b1e99028d8d80472e53567a11008464b987b4be4a037f6669d0f83e6f7d673f2"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0057_0_256.webp",
+          "decoded_rgb_sha256": "b09211261a1c637e99109c30661cb14fe3a0cde6ebf9738d6c39310b55070842"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0057_0_384.webp",
+          "decoded_rgb_sha256": "39f8631d7df42b8e0058daa5cc4f11e7206d79fc570358684948f3371a3e4ae1"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0057_0.png"
+    },
+    {
+      "id": "b_base_pool_0059_0",
+      "seed_id": "pool_0059_0",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        795,
+        394,
+        1187
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -22,
+        8
+      ],
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_013.png",
+        "sha256": "c478d41816e2c4c4dadd6fb65e490621f716024514eb686571cf75bde805f613"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0059_0_128.webp",
+          "decoded_rgb_sha256": "78fb2e1e52479618dbfc771fb1e8af781a8c77d1478ed0eb74761624089a1f3b"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0059_0_256.webp",
+          "decoded_rgb_sha256": "d61b91016f9ec5c690828965c545f95a3e95d94554d42bb66feba8948e83849f"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0059_0_384.webp",
+          "decoded_rgb_sha256": "319a846533f1274db9fe1f42e7573c1b6bede4d04b2185faa57e5eed99d2f3c5"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0059_0.png"
+    },
+    {
+      "id": "b_base_pool_0061_1",
+      "seed_id": "pool_0061_1",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        1588,
+        394,
+        1980
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        1,
+        14
+      ],
+      "proposed_age": 18,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/hs_home/base_013.png",
+        "sha256": "c478d41816e2c4c4dadd6fb65e490621f716024514eb686571cf75bde805f613"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0061_1_128.webp",
+          "decoded_rgb_sha256": "af3ee1c89bd542aeff61e0083874aba18035b734e4539e0a9a350dbf213f2210"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0061_1_256.webp",
+          "decoded_rgb_sha256": "509ee14edf1d8239e438ee7ab2f63f8d679152cf8fa084188023d72ee6578722"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0061_1_384.webp",
+          "decoded_rgb_sha256": "786aeadedd6ab64d3d3d458b5f2ee79969dec92f2bb5674a202df668b2187b55"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0061_1.png"
+    },
+    {
+      "id": "b_base_pool_0062_2",
+      "seed_id": "pool_0062_2",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        398,
+        394,
+        790
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -5,
+        -15
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/hs_home/base_014.png",
+        "sha256": "485ccf9027e68b8245a8d64e62d0c23963cfbd12ed88611b1f96a387d72aade0"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0062_2_128.webp",
+          "decoded_rgb_sha256": "c04f6b52bd906fa1dd2e177a7cdfa5f77f875eea9468bb52599eea78d27152af"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0062_2_256.webp",
+          "decoded_rgb_sha256": "468e66a7b9e608a1e890199c48bce2d9d7f0500c0ccb94f81be59cdc45da8823"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0062_2_384.webp",
+          "decoded_rgb_sha256": "fa24fdba33c4fcf75c2af65d8f11a460b890e0a50f6ab38a73c9d45ef82374ca"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0062_2.png"
+    },
+    {
+      "id": "b_base_pool_0064_3",
+      "seed_id": "pool_0064_3",
+      "glasses": true,
+      "source": "retained_review_candidate",
+      "crop": [
+        398,
+        1588,
+        791,
+        1981
+      ],
+      "native_edge": 393,
+      "translation_origin_xy": [
+        -1,
+        -16
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_014.png",
+        "sha256": "485ccf9027e68b8245a8d64e62d0c23963cfbd12ed88611b1f96a387d72aade0"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0064_3_128.webp",
+          "decoded_rgb_sha256": "2e11fbed78a3b36fd8ef78ae4450af0029ae46af55042913a3e66f7245d44688"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0064_3_256.webp",
+          "decoded_rgb_sha256": "a49661dcd2c2f52c9466d7bb4e50d3ef3626de4eb8078d85f06694a7b88a0cfa"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0064_3_384.webp",
+          "decoded_rgb_sha256": "96dca3c9f58bc13a13550a9bead589cb817660660e2ad01d74870abbf313fa81"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0064_3.png"
+    },
+    {
+      "id": "b_base_pool_0068_0",
+      "seed_id": "pool_0068_0",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        398,
+        795,
+        790,
+        1187
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -2,
+        17
+      ],
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_015.png",
+        "sha256": "48c67933377437f2466f1f326540a93f1e19c5976963c1ea56960e44d7257b48"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0068_0_128.webp",
+          "decoded_rgb_sha256": "b6eb701cfce66b8632d007c9c7ea11a66b7c049c565a82702db0546d0de649f3"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0068_0_256.webp",
+          "decoded_rgb_sha256": "3530cc2b4c2234cd1215447f91cc07b3afadd403a7114b219541348db89c9900"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0068_0_384.webp",
+          "decoded_rgb_sha256": "15da4c8081b34e8f4822b9004b594853d443923415f16e53c63606071f8c3e12"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0068_0.png"
+    },
+    {
+      "id": "b_base_pool_0078_0",
+      "seed_id": "pool_0078_0",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        2,
+        394,
+        394
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -29,
+        -26
+      ],
+      "proposed_age": 20,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_019.png",
+        "sha256": "0714d859fd0dd7b4ad112c0a75dcc1e3bcd21e3d65a9a2c8110edb7113d04cf0"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0078_0_128.webp",
+          "decoded_rgb_sha256": "5fe1ecdbd99e0642e232a23e131ad983a3f5b227db1b400f0bfde2b96651bdda"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0078_0_256.webp",
+          "decoded_rgb_sha256": "8d4f7bf815431210373b392c5ad98f87fb316db07957d97799c3129fba858fc6"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0078_0_384.webp",
+          "decoded_rgb_sha256": "21f1deb1928c8c7a00f5690d3bf680f37c6650c22fbec64c339109f83b2be6c4"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0078_0.png"
+    },
+    {
+      "id": "b_base_pool_0079_2",
+      "seed_id": "pool_0079_2",
+      "glasses": true,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        795,
+        394,
+        1187
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        7,
+        17
+      ],
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_019.png",
+        "sha256": "0714d859fd0dd7b4ad112c0a75dcc1e3bcd21e3d65a9a2c8110edb7113d04cf0"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0079_2_128.webp",
+          "decoded_rgb_sha256": "05fd6637de0e7291b6ccbf4a3fd518cee0e9b3452f035bc8331abf3410463f39"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0079_2_256.webp",
+          "decoded_rgb_sha256": "92c279c4ceb2deeb7a1b4202b0fbce8c7b075f776cec078bbacfee02f64b94a2"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0079_2_384.webp",
+          "decoded_rgb_sha256": "a2db7ecd4ed461ab05a8ccb1928e550b15e0da95253d62939127bbb89fe6fd21"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0079_2.png"
+    },
+    {
+      "id": "b_base_pool_0083_2",
+      "seed_id": "pool_0083_2",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        398,
+        1588,
+        791,
+        1981
+      ],
+      "native_edge": 393,
+      "translation_origin_xy": [
+        -4,
+        7
+      ],
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_019.png",
+        "sha256": "0714d859fd0dd7b4ad112c0a75dcc1e3bcd21e3d65a9a2c8110edb7113d04cf0"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0083_2_128.webp",
+          "decoded_rgb_sha256": "3b7a1b3eea70b6adb228387c8c89b2fa3b66911e006fe3d90430891936344bc4"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0083_2_256.webp",
+          "decoded_rgb_sha256": "8abaafff3b935992834f200512764affa800b9f9e777d98fbb910ae56841baab"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0083_2_384.webp",
+          "decoded_rgb_sha256": "ee0db144ed342487b581d88ac6f00f1e60d95057a337aa2e56e4c48963d7bfa7"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0083_2.png"
+    },
+    {
+      "id": "b_base_pool_0083_3",
+      "seed_id": "pool_0083_3",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        2,
+        394,
+        394
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -4,
+        -8
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_020.png",
+        "sha256": "4f1611bc16ca3350f77bccfe9ed7de53561a01148cfd3564af2ae602106064ac"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0083_3_128.webp",
+          "decoded_rgb_sha256": "d7929e91278484ccbbaa62d8574e2a8d8c9b8d914a6958539743a8c8a9dc801b"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0083_3_256.webp",
+          "decoded_rgb_sha256": "57e016173d8ae7bc4fd0fee67b3d814b544828ecfc6a47dcd92997a3e297b3a4"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0083_3_384.webp",
+          "decoded_rgb_sha256": "d462d9c645dd3c3f824bff983f9db07e2b4e753ca390e931aaf01555d343b455"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0083_3.png"
+    },
+    {
+      "id": "b_base_pool_0088_1",
+      "seed_id": "pool_0088_1",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        398,
+        795,
+        790,
+        1187
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        1,
+        7
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_021.png",
+        "sha256": "1614204703919bdc3700b3a7ae2c22a2e36eae713c03ba3a59e36a5875bf5cbc"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0088_1_128.webp",
+          "decoded_rgb_sha256": "2ed2eff0f3dc3413c0479498cf9966a8a41d4fe7788e13d8ce4994fadc5e6a65"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0088_1_256.webp",
+          "decoded_rgb_sha256": "6b69a5ed94dbc75e5445d8aaa9e63c78d5d2e12a6fc73e545105bde80de55ea9"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0088_1_384.webp",
+          "decoded_rgb_sha256": "d096450381b773273179cc3ce3eba89026110226ab17ab5c9aca3b03794bef15"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0088_1.png"
+    },
+    {
+      "id": "b_base_pool_0089_1",
+      "seed_id": "pool_0089_1",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        398,
+        1191,
+        791,
+        1584
+      ],
+      "native_edge": 393,
+      "translation_origin_xy": [
+        17,
+        13
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_021.png",
+        "sha256": "1614204703919bdc3700b3a7ae2c22a2e36eae713c03ba3a59e36a5875bf5cbc"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0089_1_128.webp",
+          "decoded_rgb_sha256": "ebc4e1335ac574be57e4abe8f1fa824861f8ea82ea2bdc818776fa49f0797459"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0089_1_256.webp",
+          "decoded_rgb_sha256": "a85d2a2fb154e477c4314a87e42029244ccb37636a85acf9193818cc584f0a42"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0089_1_384.webp",
+          "decoded_rgb_sha256": "645c30c522ae4eebdf6ac4391c9b899e338de91b09d3fd25989958a11fdbed09"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0089_1.png"
+    },
+    {
+      "id": "b_base_pool_0089_2",
+      "seed_id": "pool_0089_2",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        1588,
+        394,
+        1980
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -16,
+        29
+      ],
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/hs_home/base_021.png",
+        "sha256": "1614204703919bdc3700b3a7ae2c22a2e36eae713c03ba3a59e36a5875bf5cbc"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_base_pool_0089_2_128.webp",
+          "decoded_rgb_sha256": "aaa4894e9cd3e84b952ec257c7f857c940587ce4ce5443d7a6804973aca9ae9a"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_base_pool_0089_2_256.webp",
+          "decoded_rgb_sha256": "c4a7e815601bcf8a174fb8562b74c09c755ee0b74abfe3c0fc552c3a60479c79"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_base_pool_0089_2_384.webp",
+          "decoded_rgb_sha256": "882bb0ea1499014bbacf19c7169bd89054a0e8471272ca3f0d7375b657d23065"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_base_pool_0089_2.png"
+    },
+    {
+      "id": "b_d2base_pool_0287_2",
+      "seed_id": "pool_0287_2",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        1588,
+        394,
+        1980
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -16,
+        31
+      ],
+      "proposed_age": 22,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/day2base/master_005.png",
+        "sha256": "3c79f86fc04ad2d5702da7fbf667f6b414a553afa2b61fae3ca14de052fefbde"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_d2base_pool_0287_2_128.webp",
+          "decoded_rgb_sha256": "556579af63a316b152ea01cd27fa2536dc3de355bafc1090f4784b44edbe966b"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_d2base_pool_0287_2_256.webp",
+          "decoded_rgb_sha256": "257f43129881546d89741f2dd60e57d18fcf0c5914270a5c410e2301a75a5c34"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_d2base_pool_0287_2_384.webp",
+          "decoded_rgb_sha256": "1344ee797fe96ff6e83fb7b4e877640992a37cb0f6aa9fb5b813c3354265af46"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0287_2.png"
+    },
+    {
+      "id": "b_d2base_pool_0267_1",
+      "seed_id": "pool_0267_1",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        1191,
+        394,
+        1583
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        1,
+        -4
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/day2base/master_006.png",
+        "sha256": "e5fa25c44000e7d154962b392d061194db920638feafc5cb07df8515595c354d"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_d2base_pool_0267_1_128.webp",
+          "decoded_rgb_sha256": "c4d236d39405fa5ea5994c1f6a41d3d523978eebe12261577084be8e79be41b7"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_d2base_pool_0267_1_256.webp",
+          "decoded_rgb_sha256": "6985608d02d9cd081a2181bc3e635c977d53d954db87a6529718a3f7908cdc65"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_d2base_pool_0267_1_384.webp",
+          "decoded_rgb_sha256": "00877c94b538de64feab961724c85d021725e1e77b4734785d45134fbbc74ef5"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0267_1.png"
+    },
+    {
+      "id": "b_d2base_pool_0262_1",
+      "seed_id": "pool_0262_1",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        398,
+        394,
+        790
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        5,
+        16
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_d2base_pool_0262_1_128.webp",
+          "decoded_rgb_sha256": "1ffef9f7b9c540f97b2aa9125ea92a9fdfdbaa1aa8ef8d15237bdb49b981b87a"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_d2base_pool_0262_1_256.webp",
+          "decoded_rgb_sha256": "862d6ad16fb1ad7a61935c64584118348ce0d5f1b14af11f4c0eec2c56b07251"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_d2base_pool_0262_1_384.webp",
+          "decoded_rgb_sha256": "ce9763110a7adf9f07f720ba05e7b19f5f6998f364c3333e1e00b529bdb7e4b9"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0262_1.png"
+    },
+    {
+      "id": "b_d2base_pool_0268_3",
+      "seed_id": "pool_0268_3",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        398,
+        398,
+        791,
+        791
+      ],
+      "native_edge": 393,
+      "translation_origin_xy": [
+        -12,
+        40
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_d2base_pool_0268_3_128.webp",
+          "decoded_rgb_sha256": "ff2a5010f7b5384e7f14ad5a25d1ca8f38871619bc31ffa1dcd96f560de77b44"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_d2base_pool_0268_3_256.webp",
+          "decoded_rgb_sha256": "8c30eb8883172ffd49699f4f020b70edae7d287b4dccad3087159ea9b1091675"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_d2base_pool_0268_3_384.webp",
+          "decoded_rgb_sha256": "ceccb9eaad4b7ed6d387c1d35ed6304195be878888e6c52347ab2e143c7a353c"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0268_3.png"
+    },
+    {
+      "id": "b_d2base_pool_0284_3",
+      "seed_id": "pool_0284_3",
+      "glasses": false,
+      "source": "retained_review_candidate",
+      "crop": [
+        2,
+        1588,
+        394,
+        1980
+      ],
+      "native_edge": 392,
+      "translation_origin_xy": [
+        -2,
+        -13
+      ],
+      "proposed_age": 21,
+      "proposed_level": "univ",
+      "native": {
+        "path": "native/day2base/master_008.png",
+        "sha256": "be8040246cd0a80dd0c418877a168e5be7e32c02128e34520e54eca1e88f4354"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_d2base_pool_0284_3_128.webp",
+          "decoded_rgb_sha256": "16ca25be142f3c730f74081b62033b4fdb235776b4fe2ded49ac9c188fb6e706"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_d2base_pool_0284_3_256.webp",
+          "decoded_rgb_sha256": "e71ca1d293d221a0147251a92d4cb2eb0139653f8642b5c87c63bf41a15c12ff"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_d2base_pool_0284_3_384.webp",
+          "decoded_rgb_sha256": "b6da3c0c1b689a2e5478c94b135f1728eef7995038a716c47f5ff18429e76188"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_d2base_pool_0284_3.png"
+    },
+    {
+      "id": "b_native_pool_0002_3",
+      "seed_id": "pool_0002_3",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -4,
+        1
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/1ba9b1461ed1_v21_firefly_pool_0002.png",
+        "sha256": "1ba9b1461ed173d534b8613d2f94164c5279b42c7fdbd05601906101dcc4ac70"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0002_3_128.webp",
+          "decoded_rgb_sha256": "fa41a535eafbfeb5616d36852e9e24b93344cb5773dabe11446c09b529aa8028"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0002_3_256.webp",
+          "decoded_rgb_sha256": "f9b9ce19ee49f3967548dd55c7d7e5881268355ee5790d44ffdac95b0d4139bc"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0002_3_384.webp",
+          "decoded_rgb_sha256": "78003885ecf0d0cb9adeafe6683f3a4bde41a2338011ed7cee28dc6f4b020cec"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0002_3.png"
+    },
+    {
+      "id": "b_native_pool_0003_1",
+      "seed_id": "pool_0003_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        4,
+        28
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/4d68e9529535_v21_firefly_pool_0003.png",
+        "sha256": "4d68e9529535df9b887de32d4822f3fff138ab47fe0d33daeaf4277669fd72bc"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0003_1_128.webp",
+          "decoded_rgb_sha256": "4b42c3b770dc4b745d09824655060a541b6fb3636e97a52f4b0321caca93d863"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0003_1_256.webp",
+          "decoded_rgb_sha256": "f687165049fd361e2cb25629ad719682ecad6cfd73cf36c069aab43c1a9b35d2"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0003_1_384.webp",
+          "decoded_rgb_sha256": "a859f998c9fab476161462a9b496462f9b2c59ad13eb8259196605dc97b33a1f"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0003_1.png"
+    },
+    {
+      "id": "b_native_pool_0012_1",
+      "seed_id": "pool_0012_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        71,
+        17
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/65b8ad08986f_v21_firefly_pool_0012.png",
+        "sha256": "65b8ad08986f2b1fafdaf16a699a0aebe94466071feb27079bd7ca17119ee3f0"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0012_1_128.webp",
+          "decoded_rgb_sha256": "a15854ecac4d5b0d4cf039eeafdef9fcd292bd11ce1d1561ef04453486570272"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0012_1_256.webp",
+          "decoded_rgb_sha256": "2594639275570d046520c8851f0ae931b82f27dc22b4e5b223159c8b7d941ab9"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0012_1_384.webp",
+          "decoded_rgb_sha256": "714fe401dc6ca6ee7cd389f8fd0be41ce8f24001461d9a2889f2afafdbf664d9"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0012_1.png"
+    },
+    {
+      "id": "b_native_pool_0022_0",
+      "seed_id": "pool_0022_0",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -57,
+        27
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/c4de61470ca1_v21_firefly_pool_0022.png",
+        "sha256": "c4de61470ca1c7e7828bbc55d0d47ad93bdf9daabc82954e3f7ac8ea12515a04"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0022_0_128.webp",
+          "decoded_rgb_sha256": "db32a3a97d2e81afad651e114619811dea0f4e8ecb0c33df1141969e9ac0fdaf"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0022_0_256.webp",
+          "decoded_rgb_sha256": "08fbbc142386341a1ae33196e0b8d1cc205e2f3c98c7b3336b8f021cf8eee118"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0022_0_384.webp",
+          "decoded_rgb_sha256": "846f0816d9e5922a7ff95b8f42c7b3a229171f7499a07f939b40da245da52ebd"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0022_0.png"
+    },
+    {
+      "id": "b_native_pool_0046_1",
+      "seed_id": "pool_0046_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        4,
+        26
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/7460a2fc6161_v21_firefly_pool_0046.png",
+        "sha256": "7460a2fc616105349399797217ba1e6669cb93013379e30dd31bafb273328a97"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0046_1_128.webp",
+          "decoded_rgb_sha256": "27f9d06c5153e1f5d0cd16dde178ed7ab2f3979e1ed7934f21ceef00fd389afa"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0046_1_256.webp",
+          "decoded_rgb_sha256": "a66a103d093585e0aa6c3918d19a87fca4a5aaf313fb5214e928da3906104d3f"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0046_1_384.webp",
+          "decoded_rgb_sha256": "6aec6db29edd94f6172c93c04c9eda2adf99129dfd570a473d0446ce4683b444"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0046_1.png"
+    },
+    {
+      "id": "b_native_pool_0046_3",
+      "seed_id": "pool_0046_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        5,
+        25
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/7460a2fc6161_v21_firefly_pool_0046.png",
+        "sha256": "7460a2fc616105349399797217ba1e6669cb93013379e30dd31bafb273328a97"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0046_3_128.webp",
+          "decoded_rgb_sha256": "048c27d7e4ce5f37543d7b866939e228b7727b288535791210c9f6784c23e955"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0046_3_256.webp",
+          "decoded_rgb_sha256": "7406d6c69d1b0f49a4d489a32006399f13c092e89cd6b81a178c942b764d9b52"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0046_3_384.webp",
+          "decoded_rgb_sha256": "3f93c333ab0cf7bde5433dcb2ba801e23f7528abf6d58e36fc19742325e658f2"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0046_3.png"
+    },
+    {
+      "id": "b_native_pool_0058_0",
+      "seed_id": "pool_0058_0",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -20,
+        -13
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0058.png",
+        "sha256": "4354984a9ff6a5d9502460d671efcc98502dff35f7855ce7440846ddd7396a3d"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0058_0_128.webp",
+          "decoded_rgb_sha256": "42a533b5a22b3a4b5ad4733d8d19076423e2a9ad78c33a95c576454a0d0c8ee3"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0058_0_256.webp",
+          "decoded_rgb_sha256": "b5e65372aebf177f4ed89e1376609a00edce4bae0afd1e4b91ed235ad561c700"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0058_0_384.webp",
+          "decoded_rgb_sha256": "0fac5230d7c88dcc27fabb75a3c14f840b704d76275ed906dc33ea767aa7b10f"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0058_0.png"
+    },
+    {
+      "id": "b_native_pool_0078_1",
+      "seed_id": "pool_0078_1",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        25,
+        -19
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/cd8096e73eb0_v21_firefly_pool_0078.png",
+        "sha256": "cd8096e73eb0874702efb58447fd9e29df57336b6aa83d7c47fc1577d23181b4"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0078_1_128.webp",
+          "decoded_rgb_sha256": "c1ce42a792c356c96ec6d40a07c4c7ab8e238df099a1e7721be296da781afefb"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0078_1_256.webp",
+          "decoded_rgb_sha256": "707ca5a1ad1d4149feb981dd2ac9c75591d9c2fa264d74a859f2a1a43c9d7b93"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0078_1_384.webp",
+          "decoded_rgb_sha256": "ad14a9e222cbaac3f34cec58db10cfff3f9375e12e00e99debf236b644935a73"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0078_1.png"
+    },
+    {
+      "id": "b_native_pool_0080_3",
+      "seed_id": "pool_0080_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -4,
+        36
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/f57207216841_v21_firefly_pool_0080.png",
+        "sha256": "f572072168417bfbd65fbc3c9852321a0575c33e154e028e205cd28dc5a85ca7"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0080_3_128.webp",
+          "decoded_rgb_sha256": "2d7f643e5a284178e8d1916c24f1a3372d9ad17d096dd507f2a4715adb5661f5"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0080_3_256.webp",
+          "decoded_rgb_sha256": "67bc7d4ef37ceceb3d6904670ed9f0fd07581a67dba88e891bc7fb1ade263953"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0080_3_384.webp",
+          "decoded_rgb_sha256": "107a8d02d5e04fcd8bd55b0270b16131ac2b5ac64d99d6e467d4c4005fbd2a19"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0080_3.png"
+    },
+    {
+      "id": "b_native_pool_0204_0",
+      "seed_id": "pool_0204_0",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        4,
+        -47
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/0b244efd6179_v21_firefly_pool_0204.png",
+        "sha256": "0b244efd6179a04f52469822e6d12e27b7c5964985ac3bf7ac838a1f4f2b510b"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0204_0_128.webp",
+          "decoded_rgb_sha256": "9cb34f83ec29b5113e23b0e7a6d5ddaa88a6610c5a02e9c20673346b8457113f"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0204_0_256.webp",
+          "decoded_rgb_sha256": "1947139cae56d69b2a069b9dcf71bf3ed516d2a53061f1ddb1d322b135679a59"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0204_0_384.webp",
+          "decoded_rgb_sha256": "cddeef06b9e2077aa6cf3e033216720ba8aebcd886d6b6ac1997a587f7df4fe5"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0204_0.png"
+    },
+    {
+      "id": "b_native_pool_0209_2",
+      "seed_id": "pool_0209_2",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -7,
+        28
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/08ec0b1183d3_v21_firefly_pool_0209.png",
+        "sha256": "08ec0b1183d3dff6226262aa83d53dd27e31010cfdadea49c533976a8394d3d3"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0209_2_128.webp",
+          "decoded_rgb_sha256": "45d3cfce3b24bc5bdf450e1e53d592b98a03d2892feefaf36b93cf3fdaabc2c1"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0209_2_256.webp",
+          "decoded_rgb_sha256": "b0d435e70a312816c5dbfbe0e28549162e3412733787ece7703de482cdee25fb"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0209_2_384.webp",
+          "decoded_rgb_sha256": "d044515c90e4a7b33252f29e9582b205914e6e2aeb4f6b397ffde162e079d079"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0209_2.png"
+    },
+    {
+      "id": "b_native_pool_0213_2",
+      "seed_id": "pool_0213_2",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -9,
+        -6
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/8845aca3690e_v21_firefly_pool_0213.png",
+        "sha256": "8845aca3690ed3b660f521a7d2d7439fcc72ca5a81aa07b98a99354a0372c1be"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0213_2_128.webp",
+          "decoded_rgb_sha256": "c1b6b4f061952fca1eb7fb7505b81abef7470b795460e0fa1292cfaad605ded9"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0213_2_256.webp",
+          "decoded_rgb_sha256": "eae8af04dac5afb3e5b95d00170b5e913c4f6901dd8a4b73a985715492337a06"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0213_2_384.webp",
+          "decoded_rgb_sha256": "d28b0a531b6e99571d888e176179bb08079ce6c07513b2691319b5c16bddcb7a"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0213_2.png"
+    },
+    {
+      "id": "b_native_pool_0215_1",
+      "seed_id": "pool_0215_1",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        7,
+        -8
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_a/86cfff03cc2dd960_v21_firefly_pool_0215.png",
+        "sha256": "86cfff03cc2dd96070dc52d12749566a90a4e5ec53d581edce9635856977b8f1"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0215_1_128.webp",
+          "decoded_rgb_sha256": "165bd4e7c4820b2cb70aa334639178bc301bdd3cc126737d348ae6434eb635da"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0215_1_256.webp",
+          "decoded_rgb_sha256": "b0dff2d78d43d872ab3de73fe01661351d7aa92ef523b7f37e29d38315c2e137"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0215_1_384.webp",
+          "decoded_rgb_sha256": "3aca648c3c95b7a82fcc44a4925a555ad577b09e51451788f03ae1bdcd729ab8"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0215_1.png"
+    },
+    {
+      "id": "b_native_pool_0215_3",
+      "seed_id": "pool_0215_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        5,
+        -15
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_a/86cfff03cc2dd960_v21_firefly_pool_0215.png",
+        "sha256": "86cfff03cc2dd96070dc52d12749566a90a4e5ec53d581edce9635856977b8f1"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0215_3_128.webp",
+          "decoded_rgb_sha256": "c67db4edd74232790d5ba3d2ff321c1187c293759e7c65e8a56154ac1b5f7ae3"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0215_3_256.webp",
+          "decoded_rgb_sha256": "e498cbbb2fdae5e76412719069767873b57d22a7f882c990dd604e26616456ce"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0215_3_384.webp",
+          "decoded_rgb_sha256": "3621073a669c8564034244b28912fd9ef635e6f91caeb7e8aa47d4e07c733035"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0215_3.png"
+    },
+    {
+      "id": "b_native_pool_0217_2",
+      "seed_id": "pool_0217_2",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -26,
+        10
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_a/2d66f0024acd8ec3_v21_firefly_pool_0217.png",
+        "sha256": "2d66f0024acd8ec331356b2cb6a2952d97e6e90ebcaab72980e46c1ff078e3d1"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0217_2_128.webp",
+          "decoded_rgb_sha256": "13777409ae23e5fd15f2aab5f477d19b9b099cbe5fd6db37c8130e8f455c0e94"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0217_2_256.webp",
+          "decoded_rgb_sha256": "48a661062ab318e18809c454c76735f3d36828a76b42abd58cbbac66565121fd"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0217_2_384.webp",
+          "decoded_rgb_sha256": "43fe30edc74f04b3b94b8ed346b1f9b30b6d9f282c66afcc3e24f0e2e346ed90"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0217_2.png"
+    },
+    {
+      "id": "b_native_pool_0217_3",
+      "seed_id": "pool_0217_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        13,
+        6
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_a/2d66f0024acd8ec3_v21_firefly_pool_0217.png",
+        "sha256": "2d66f0024acd8ec331356b2cb6a2952d97e6e90ebcaab72980e46c1ff078e3d1"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0217_3_128.webp",
+          "decoded_rgb_sha256": "d4c1a4ef9ed44931f88c7ed8c39c7a99c314e706e1aa8cae1ff4a1218d346792"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0217_3_256.webp",
+          "decoded_rgb_sha256": "6e0c0092f4ef8d7d62717a5815d8db9d0054c9288ae6e2737088364412068cae"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0217_3_384.webp",
+          "decoded_rgb_sha256": "dd7166b214f1d443ca685f0d01e35119c193963c3e902f6b7a1eea09a7c035c6"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0217_3.png"
+    },
+    {
+      "id": "b_native_pool_0220_3",
+      "seed_id": "pool_0220_3",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        44,
+        -6
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/7628ecd7b702_v21_firefly_pool_0220.png",
+        "sha256": "7628ecd7b702b3d4023abb33c3f064c41ca8146eb97e20aa32ee5c58440607be"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0220_3_128.webp",
+          "decoded_rgb_sha256": "45e54650499159898f84caff1c089235930bebd2a9203738f1e56af1d0664c50"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0220_3_256.webp",
+          "decoded_rgb_sha256": "aec09658e5acf87472794952880fbca841cf196ddbde96d7660b3ad04788bd53"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0220_3_384.webp",
+          "decoded_rgb_sha256": "fc4090c6dec93dd5fbb31d16d744af86fd84d7884e210d96dd2b00be67264c90"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0220_3.png"
+    },
+    {
+      "id": "b_native_pool_0223_0",
+      "seed_id": "pool_0223_0",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -6,
+        4
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/9e2cbc1e98c4_v21_firefly_pool_0223.png",
+        "sha256": "9e2cbc1e98c43fcfcac5ca4af028af4b1a33d1c17aa0581c5e350c345eaa3800"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0223_0_128.webp",
+          "decoded_rgb_sha256": "8b6000bfb1e282cdd742e92ecca57eb6665ecea6444085c0873d1aa2e43ac2d4"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0223_0_256.webp",
+          "decoded_rgb_sha256": "61232dd26c133600c11863e30bdd38d0ee26e22223cbf2bb6e696dc80cac2272"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0223_0_384.webp",
+          "decoded_rgb_sha256": "7ac4e078abcdcc459484a752db86b7c30efd84ac550ab91a31354e3b2a2a32e2"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0223_0.png"
+    },
+    {
+      "id": "b_native_pool_0224_2",
+      "seed_id": "pool_0224_2",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -1,
+        16
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/1cc102c2583e_v21_firefly_pool_0224.png",
+        "sha256": "1cc102c2583e9aea9f52c57ea7e3067a03dcec1ddec0f974709bc1d5ca0424db"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0224_2_128.webp",
+          "decoded_rgb_sha256": "3f15ed279059a5010d894810659a18189034fb1093041b197a27cb8d9d8d7eb9"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0224_2_256.webp",
+          "decoded_rgb_sha256": "05bf46d8c11957d7b012360fd2a2237631263a529020bec91c8c4e7016e47267"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0224_2_384.webp",
+          "decoded_rgb_sha256": "955d7b77afcb8863c3bbfc40e41e4ae70dd72690b6c3640dc8b85b620ec8ba3c"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0224_2.png"
+    },
+    {
+      "id": "b_native_pool_0224_3",
+      "seed_id": "pool_0224_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -5,
+        14
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/1cc102c2583e_v21_firefly_pool_0224.png",
+        "sha256": "1cc102c2583e9aea9f52c57ea7e3067a03dcec1ddec0f974709bc1d5ca0424db"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0224_3_128.webp",
+          "decoded_rgb_sha256": "d580db42a1d82b77cfe816236ed048e0af5220f75fee9bab67209fcb98385d1a"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0224_3_256.webp",
+          "decoded_rgb_sha256": "472501a5cacd4d86d3431529ebc6650e55999bdfe8c013020baba96de6b28265"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0224_3_384.webp",
+          "decoded_rgb_sha256": "673b3f6be1101255ef72455f24b5990a348577ea91169eb5394d474132eaa0e8"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0224_3.png"
+    },
+    {
+      "id": "b_native_pool_0230_1",
+      "seed_id": "pool_0230_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -17,
+        -5
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/ba59c600a2f9_v21_firefly_pool_0230.png",
+        "sha256": "ba59c600a2f936f3c0b494613c7ed55239726f2368506a6b21692df4700761e6"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0230_1_128.webp",
+          "decoded_rgb_sha256": "4ef800cf5cd237324c64259c4d7f8af0e2936570b0fa1ef9aa7da2e6be1709fe"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0230_1_256.webp",
+          "decoded_rgb_sha256": "bd7adb63fca262fc234cd26f5bd4d5f157edb165373a686ca5ebe0de5abf0937"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0230_1_384.webp",
+          "decoded_rgb_sha256": "9d7d0e788414ae2730cbcfe33c50897abea3bfb14ed693ab44169ba8bef871ab"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0230_1.png"
+    },
+    {
+      "id": "b_native_pool_0233_1",
+      "seed_id": "pool_0233_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        17,
+        39
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/471c90a3e764_v21_firefly_pool_0233.png",
+        "sha256": "471c90a3e764c23bbf8f19c157211b943fed884aceb427cdbad19ba1807ab17b"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0233_1_128.webp",
+          "decoded_rgb_sha256": "c080b8bb0e22d2ad921097ed9507f797f583b129017fc508d38629a91db53ad9"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0233_1_256.webp",
+          "decoded_rgb_sha256": "58170658457996f3b5e269ffb352ae281f69ccb7055d4be8d624c23b2729b515"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0233_1_384.webp",
+          "decoded_rgb_sha256": "49d4b9bebbc01b5790979238e6b16d73a516385c9db5167d510dbc62ada90a2b"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0233_1.png"
+    },
+    {
+      "id": "b_native_pool_0233_2",
+      "seed_id": "pool_0233_2",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -1,
+        39
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/471c90a3e764_v21_firefly_pool_0233.png",
+        "sha256": "471c90a3e764c23bbf8f19c157211b943fed884aceb427cdbad19ba1807ab17b"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0233_2_128.webp",
+          "decoded_rgb_sha256": "ed163c926eb634043024f2e44ff471689bce48694f401391952035048d60b952"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0233_2_256.webp",
+          "decoded_rgb_sha256": "b5fd89b53f93aecb33a244c73f5493f76387cff9198d780e78a4a2ef7b8cac8a"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0233_2_384.webp",
+          "decoded_rgb_sha256": "f1acadd4d5a27f917dd3ce307f73b3bde23217b12d1066f67e2aee51cc30ddba"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0233_2.png"
+    },
+    {
+      "id": "b_native_pool_0237_0",
+      "seed_id": "pool_0237_0",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        2,
+        -11
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/48bf5638cff3_v21_firefly_pool_0237.png",
+        "sha256": "48bf5638cff37109175bdf65fe4c094f093d0ff727247ddf3932b52d83b6a3bb"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0237_0_128.webp",
+          "decoded_rgb_sha256": "f2a3bb915eef96d3e5b55dde8c48169abc61ecd8c1904788602fe03a5154e830"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0237_0_256.webp",
+          "decoded_rgb_sha256": "688d8f59c396980f60ba8a1812b13cc883178be69d020b72d5e92ed433e6ee7a"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0237_0_384.webp",
+          "decoded_rgb_sha256": "2db599a2a68a974c9fa24105ef8a710245b24d8ad65009f84f021ce126d8efa0"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0237_0.png"
+    },
+    {
+      "id": "b_native_pool_0237_3",
+      "seed_id": "pool_0237_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        3,
+        -33
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/48bf5638cff3_v21_firefly_pool_0237.png",
+        "sha256": "48bf5638cff37109175bdf65fe4c094f093d0ff727247ddf3932b52d83b6a3bb"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0237_3_128.webp",
+          "decoded_rgb_sha256": "7d902c9a83165224ba15b50046ccf686c0f3d1d74cb32df4268180ab7e1d2a68"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0237_3_256.webp",
+          "decoded_rgb_sha256": "65a4e97a753858d7d483173e9dfb62d7e55eadce33695133882b3f2fac5afdae"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0237_3_384.webp",
+          "decoded_rgb_sha256": "57d053fa61e33a5cb71325c9790f436980e2ea60ded6db292f3d40e66b801ea1"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0237_3.png"
+    },
+    {
+      "id": "b_native_pool_0243_2",
+      "seed_id": "pool_0243_2",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -31,
+        1
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_a/e214c23c2f035de2_v21_firefly_pool_0243.png",
+        "sha256": "e214c23c2f035de27fea54af215a6b3af610e3baea509043397945506290c711"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0243_2_128.webp",
+          "decoded_rgb_sha256": "2c81490f15e8bd904b728ff077e7454a761541e72b6b566523d7b21baa649833"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0243_2_256.webp",
+          "decoded_rgb_sha256": "b0ed372db9bc5868e2a2efa4c5ec34bf580579005c8b19d55ccc10362e846d22"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0243_2_384.webp",
+          "decoded_rgb_sha256": "535ae8e8002ae61a01d012f8dd4052e61e9407858e00188075626bd19cd8f50c"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0243_2.png"
+    },
+    {
+      "id": "b_native_pool_0244_1",
+      "seed_id": "pool_0244_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -15,
+        13
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/681deb53f648_v21_firefly_pool_0244.png",
+        "sha256": "681deb53f6483b235899f452f8d449efb233af5ff5334b7ceac8a85b0911b2ce"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0244_1_128.webp",
+          "decoded_rgb_sha256": "7163acb718e9f468a272ca20eaec2dc50b3eb14ffa7f9471f2b80cbf50dbc582"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0244_1_256.webp",
+          "decoded_rgb_sha256": "f2be5695fbe13324cb267607eddb77c4eca8b9d41353910fbd499f1ab2ce9c3f"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0244_1_384.webp",
+          "decoded_rgb_sha256": "f0d1e6fc119ab58046a4d0528f42844469d3d5d01c2280fb87d0f98e94676c1e"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0244_1.png"
+    },
+    {
+      "id": "b_native_pool_0245_2",
+      "seed_id": "pool_0245_2",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -4,
+        13
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0245.png",
+        "sha256": "134926d22da46b4fede91d06620b032793dc805b526dcbed4432acfde99f1cda"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0245_2_128.webp",
+          "decoded_rgb_sha256": "da0b63d18812305a9896bb9b48a7fc4df7944d0a85aeb5305c1099213e05f026"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0245_2_256.webp",
+          "decoded_rgb_sha256": "7ff36aa9d3d4a405326cdbc7d753dbe00296ad7ca7d1e3aaaa7ab3d15a917c8f"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0245_2_384.webp",
+          "decoded_rgb_sha256": "1c84a20b5c8438e98a5630c622c24c481b9301c841d62ae6401a96731ce0f880"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0245_2.png"
+    },
+    {
+      "id": "b_native_pool_0248_3",
+      "seed_id": "pool_0248_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -9,
+        -1
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0248.png",
+        "sha256": "92447a1bb2d1f685bd12983e5c20772d15e99f1522b8a0b423ed4d480125ca5c"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0248_3_128.webp",
+          "decoded_rgb_sha256": "f6a873ad486265921330d14c86b01cc0073f399bbb33aa5576b9811c5319fdf5"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0248_3_256.webp",
+          "decoded_rgb_sha256": "9375816422c12eab8981de2634abba6485b9fe2680f2cafbeb7030dc51d814e4"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0248_3_384.webp",
+          "decoded_rgb_sha256": "3837b21c0cdf4bdab6f3820d7b917f4bf18425f80547e0f0de40fe7fab2bd59e"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0248_3.png"
+    },
+    {
+      "id": "b_native_pool_0254_3",
+      "seed_id": "pool_0254_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        0,
+        0
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/d1d5ad844b4d_v21_firefly_pool_0254.png",
+        "sha256": "d1d5ad844b4d6f2e999860f8dab86ad65df845aad641e2c78ff59c9cd04baee5"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0254_3_128.webp",
+          "decoded_rgb_sha256": "7168c62e77e11b503076100eb232a759089d78787482be7a1184e963a3c80ac4"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0254_3_256.webp",
+          "decoded_rgb_sha256": "48e505ed9de8e6e1bcf5aa9ec8bdf82b3a3b180fb40e91ede6a1da2e6ab26df5"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0254_3_384.webp",
+          "decoded_rgb_sha256": "995f07b000115272f21182d5d4d587ea2e0719af9b134176c047e8ef6e2aa747"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0254_3.png"
+    },
+    {
+      "id": "b_native_pool_0255_3",
+      "seed_id": "pool_0255_3",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -5,
+        32
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/1aa8a042ca14_v21_firefly_pool_0255.png",
+        "sha256": "1aa8a042ca14645cac70709f92356e64eb751cf8247063d0a3ce12671a8a067e"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0255_3_128.webp",
+          "decoded_rgb_sha256": "221e1d5deb0dbc86a71cb2d7f59bd053937e7dd90b46681adb373d64c086fbb3"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0255_3_256.webp",
+          "decoded_rgb_sha256": "3c745ec3a9fa6ae2acf8325e05657857d8a292cea51780b1d95d846439afd3ed"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0255_3_384.webp",
+          "decoded_rgb_sha256": "7a70f078fda03b880d733a7019d8fdc73adf058c3fece8e4955173f21de1aa1c"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0255_3.png"
+    },
+    {
+      "id": "b_native_pool_0256_0",
+      "seed_id": "pool_0256_0",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -15,
+        -24
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/12133d694bc9_v21_firefly_pool_0256.png",
+        "sha256": "12133d694bc941e0b075ca10415d35bb1d2102f69fcf33b74d1a5be76623fae7"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0256_0_128.webp",
+          "decoded_rgb_sha256": "9f600830ab5857b68622843715dec1097bf331a46f454ac824245bece1889fcb"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0256_0_256.webp",
+          "decoded_rgb_sha256": "6c789526298d11410d6835f6a0e2d6ffc75f9e0e9b7fa765d05377038949b312"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0256_0_384.webp",
+          "decoded_rgb_sha256": "2349c445d9856b00150746f218e0de663b35d5a4842f3f5ddc2a02e7ed9d5ced"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0256_0.png"
+    },
+    {
+      "id": "b_native_pool_0256_1",
+      "seed_id": "pool_0256_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        10,
+        -17
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/12133d694bc9_v21_firefly_pool_0256.png",
+        "sha256": "12133d694bc941e0b075ca10415d35bb1d2102f69fcf33b74d1a5be76623fae7"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0256_1_128.webp",
+          "decoded_rgb_sha256": "35a76427f4b8ba87fb848259f645926b8b09f69b7a2d82473202999d3d206aad"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0256_1_256.webp",
+          "decoded_rgb_sha256": "1de0c61b75ff5308c6eadb2a59f84d41671fef71e48a51c6f5e973eae62f271c"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0256_1_384.webp",
+          "decoded_rgb_sha256": "28b5db46624fff1a50e404bdb214f0e270d657949a26f79bed0324e81dac0a20"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0256_1.png"
+    },
+    {
+      "id": "b_native_pool_0257_1",
+      "seed_id": "pool_0257_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -4,
+        25
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0257.png",
+        "sha256": "260b14ef2545c826b0f77eb0fd997cc66964040e886487dd15b473eae877125d"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0257_1_128.webp",
+          "decoded_rgb_sha256": "c0d6d1e41c2f17f40311b8b78e9632297685f06e66ce6a6df931f1128314d5d2"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0257_1_256.webp",
+          "decoded_rgb_sha256": "aa924a9405e15978eb578cc442780b72fbf95612826582b4345afac5369c90b8"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0257_1_384.webp",
+          "decoded_rgb_sha256": "92d08990233b02a3a65d4c0e25407cb13dba8889fa9ac98f54c677ff402a5eeb"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0257_1.png"
+    },
+    {
+      "id": "b_native_pool_0257_3",
+      "seed_id": "pool_0257_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -4,
+        9
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0257.png",
+        "sha256": "260b14ef2545c826b0f77eb0fd997cc66964040e886487dd15b473eae877125d"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0257_3_128.webp",
+          "decoded_rgb_sha256": "9aa944d318546b5b766fc626fa341eec1ec7448557247fd0f5da5a2fd71c95c8"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0257_3_256.webp",
+          "decoded_rgb_sha256": "620bbd398be8d89cf5ae6b56d9eaa098fe8272cd852ded47d9d637965e4e33b1"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0257_3_384.webp",
+          "decoded_rgb_sha256": "2e436bb1b756e10eabb0f0e25232fbe61e4df2fc148d2dd85580ee4ddeebec28"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0257_3.png"
+    },
+    {
+      "id": "b_native_pool_0260_1",
+      "seed_id": "pool_0260_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        0,
+        6
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0260.png",
+        "sha256": "1fce4fa2ed03576b4156f807a91c11f71ab50bd3886286d68da97a7a0ac58410"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0260_1_128.webp",
+          "decoded_rgb_sha256": "1757a192881bc409bf867f9885284c367099f00abd92d6b839cacc5bd93c0c93"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0260_1_256.webp",
+          "decoded_rgb_sha256": "57633b61dc54a70b9158798e47d696270a7fa4e790d62eda1b8e6a2445c25bc2"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0260_1_384.webp",
+          "decoded_rgb_sha256": "52a8ca0087d1c0016d9dda977070a33898bac478bfc496d0fba0932153886151"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0260_1.png"
+    },
+    {
+      "id": "b_native_pool_0262_0",
+      "seed_id": "pool_0262_0",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -13,
+        11
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/b6b27089ff0b_v21_firefly_pool_0262.png",
+        "sha256": "b6b27089ff0b16f2f5fb91dbf3f52eb9005745a4a04e70ec9d51151d640b6e4f"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0262_0_128.webp",
+          "decoded_rgb_sha256": "d6269a789cf9b1a16f388c0428d213b96424e01f48dc925c3585d4e5823df8ef"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0262_0_256.webp",
+          "decoded_rgb_sha256": "783b4677af5f60ab907980928f436ac97da3ab5a65670612308736f38fce7453"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0262_0_384.webp",
+          "decoded_rgb_sha256": "23423fdb08cfe11bfd19bef03c5312083599e0f2bb1943c2dfd0254bbe446f13"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0262_0.png"
+    },
+    {
+      "id": "b_native_pool_0262_3",
+      "seed_id": "pool_0262_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        5,
+        38
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/b6b27089ff0b_v21_firefly_pool_0262.png",
+        "sha256": "b6b27089ff0b16f2f5fb91dbf3f52eb9005745a4a04e70ec9d51151d640b6e4f"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0262_3_128.webp",
+          "decoded_rgb_sha256": "6459e19a074b44c43ce0ce56b990d0ebb32a63ff0a4719648893fd5da1cf95a0"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0262_3_256.webp",
+          "decoded_rgb_sha256": "abbfc06127297e22da6111b9feb1df15ebb094b9866d04d57f4d272e623fd56e"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0262_3_384.webp",
+          "decoded_rgb_sha256": "c85cfb3bc2820b2ae32346d86dbe3f263caa663eadc805f45ea470399f41c41f"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0262_3.png"
+    },
+    {
+      "id": "b_native_pool_0263_2",
+      "seed_id": "pool_0263_2",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -4,
+        -35
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0263.png",
+        "sha256": "0fb3a2a53f927b119bb7d8400e523f08ccf854359956d3c802ee181668c8a490"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0263_2_128.webp",
+          "decoded_rgb_sha256": "10d671af6efcf34ac855eb16bcbb87c4083d53672119d4f50c191672194aad8f"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0263_2_256.webp",
+          "decoded_rgb_sha256": "de571a22fcb7a2c049e3ebe7d426bcc9f49789e8df0428d7f046dbb7dfa8ea2c"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0263_2_384.webp",
+          "decoded_rgb_sha256": "b68758fcbb887d2d04a7509884ef5178712442c7cf261a63da604aa712cda990"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0263_2.png"
+    },
+    {
+      "id": "b_native_pool_0265_0",
+      "seed_id": "pool_0265_0",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -9,
+        3
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/1c258f8c3261_v21_firefly_pool_0265.png",
+        "sha256": "1c258f8c326113ea662ed1286873f35b5461e053dc86788d5f9281fc6cf5d743"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0265_0_128.webp",
+          "decoded_rgb_sha256": "d60f7c23de992c08b43763569beb874f83ed2750c079463e94cd7419f23dba0c"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0265_0_256.webp",
+          "decoded_rgb_sha256": "3848606c39db53ba80207aebfcd782ca6fbebfca11a19c67b53313c3cb29a3b1"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0265_0_384.webp",
+          "decoded_rgb_sha256": "85f038a79e9d922a28e1643e065ab650a70fcdecb303419819577ea3a0b8d86b"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0265_0.png"
+    },
+    {
+      "id": "b_native_pool_0267_2",
+      "seed_id": "pool_0267_2",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -2,
+        3
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0267.png",
+        "sha256": "4974f8711e4ab4b71ab209fbad563cb2c333508e24247a7e28ea650d1099d2dd"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0267_2_128.webp",
+          "decoded_rgb_sha256": "8c0edde22b340566b037898d23c5658b22012722b73e1eaacc6aca7e202a1209"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0267_2_256.webp",
+          "decoded_rgb_sha256": "1470efa7a8b2473a3e5739c8a79380daa6124b36808b398584058fa34041ccee"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0267_2_384.webp",
+          "decoded_rgb_sha256": "f0514f78e130dac7ed91aa227f406c9ab3bd3664bccd21b4587d85b2abeb6974"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0267_2.png"
+    },
+    {
+      "id": "b_native_pool_0268_2",
+      "seed_id": "pool_0268_2",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        3,
+        64
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0268.png",
+        "sha256": "1d2c6bb8ce77e3ed4515c5bcf83784b7397395ae31be97d0e41b98dbd390df10"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0268_2_128.webp",
+          "decoded_rgb_sha256": "340faeb06a594a3b5ff958852dc2aff20434a61692b3e313992cf84c5f2f4a1c"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0268_2_256.webp",
+          "decoded_rgb_sha256": "238df418baa408c46b6513f9632944e91681c2116eacf23902ed7a54cf9f935e"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0268_2_384.webp",
+          "decoded_rgb_sha256": "4fac13f06193021a9bdb9ed87b108528767e40edf121d0664fd7125077e1e84b"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0268_2.png"
+    },
+    {
+      "id": "b_native_pool_0271_1",
+      "seed_id": "pool_0271_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -6,
+        18
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/72db27ee21cd_v21_firefly_pool_0271.png",
+        "sha256": "72db27ee21cd336cb27588a1bbc87f2a893eaceb3cd6fac458f8a448d9c8b9ee"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0271_1_128.webp",
+          "decoded_rgb_sha256": "1841d05450ab35cce6604b62367a54d9604a3f003c3b3881118c0e3b9c43f608"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0271_1_256.webp",
+          "decoded_rgb_sha256": "ee38f055c5af9449ab5a12d4e8f0abdefbe1f2cc8bfc068f8694014422ce3f00"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0271_1_384.webp",
+          "decoded_rgb_sha256": "f4ac8be01ddb920e4c50d9c1a1f289b3c1bbe2c34639688342e3e5055674f526"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0271_1.png"
+    },
+    {
+      "id": "b_native_pool_0273_0",
+      "seed_id": "pool_0273_0",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -42,
+        20
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0273.png",
+        "sha256": "d4b391dd15c693e035876c4f576ec8ee4b79128ed054c6e323f4b2bc71b2684f"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0273_0_128.webp",
+          "decoded_rgb_sha256": "ed4c76f91e5f7d1960559b65b7861733c5b6399d5ead0cf93d8f1574d9fb74bc"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0273_0_256.webp",
+          "decoded_rgb_sha256": "81a1ad26c68476dd83bc1b8fe853b85070d4a496837dcd1d7414b34c344dbf3f"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0273_0_384.webp",
+          "decoded_rgb_sha256": "1f6f87f041ae4f6d7e0515283fedc3bd2c7ccf02756d7710b93e651c348f9265"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0273_0.png"
+    },
+    {
+      "id": "b_native_pool_0277_0",
+      "seed_id": "pool_0277_0",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -66,
+        -9
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/62c73466707d_v21_firefly_pool_0277.png",
+        "sha256": "62c73466707d2581bda37f5d92e6913d34fff98c027ad666794d014e437c2836"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0277_0_128.webp",
+          "decoded_rgb_sha256": "8ca91d54ea457f48bdb0a73abe1eb61f47823b9ed6741cccd2cd3b12c6aed226"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0277_0_256.webp",
+          "decoded_rgb_sha256": "853456e2c6ed445a8a88ad7772b031c47e2695a4df8981bd6d69e7e715b68567"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0277_0_384.webp",
+          "decoded_rgb_sha256": "9e8ea0f81f75009fd5e05048c6ccdeee41859326816773115f25338b8c8581bb"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0277_0.png"
+    },
+    {
+      "id": "b_native_pool_0277_1",
+      "seed_id": "pool_0277_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -29,
+        8
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/62c73466707d_v21_firefly_pool_0277.png",
+        "sha256": "62c73466707d2581bda37f5d92e6913d34fff98c027ad666794d014e437c2836"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0277_1_128.webp",
+          "decoded_rgb_sha256": "8c2cd3e24b75076cf437d784ee9ed453b9c613b1d278b3044949126b21aaa55d"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0277_1_256.webp",
+          "decoded_rgb_sha256": "0b57f37482abf9e45314a227b541c46bb5c7c75a5b7d096f0f5aba58c815b1ea"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0277_1_384.webp",
+          "decoded_rgb_sha256": "7ba75959a05299ca874e25ae377e517a26b163db801132175563f69bd049a8c2"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0277_1.png"
+    },
+    {
+      "id": "b_native_pool_0279_0",
+      "seed_id": "pool_0279_0",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        14,
+        30
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/4b8f94c0a949_v21_firefly_pool_0279.png",
+        "sha256": "4b8f94c0a94980e51b568055a67c7374cf705d78816f1cc56a841ffe92d64583"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0279_0_128.webp",
+          "decoded_rgb_sha256": "abcbbd1850e90cc83f72de867382a6e7e2ac85e030ae72088a1d9f7dea283e12"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0279_0_256.webp",
+          "decoded_rgb_sha256": "6bd7834aa3840a732ecc0bf921d7ae5c829f8bd53394e0ff54698efc76ec2c30"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0279_0_384.webp",
+          "decoded_rgb_sha256": "e38a909d5d8d0075140426c114d13c38a8ce3275164f2b29a22a686d55a239a2"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_0.png"
+    },
+    {
+      "id": "b_native_pool_0279_1",
+      "seed_id": "pool_0279_1",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        4,
+        1020,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        21,
+        46
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/4b8f94c0a949_v21_firefly_pool_0279.png",
+        "sha256": "4b8f94c0a94980e51b568055a67c7374cf705d78816f1cc56a841ffe92d64583"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0279_1_128.webp",
+          "decoded_rgb_sha256": "0f1d3486d6e17be05adc349002fd8a0995e68e2f58675828fbdab478d82ff772"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0279_1_256.webp",
+          "decoded_rgb_sha256": "f61e2c6ed9eb030da6ee4654990da6641ededd4605c05d7d2b1a87e35fcf1e01"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0279_1_384.webp",
+          "decoded_rgb_sha256": "ae5447470ba0d715f2939bc80efd4ce84998547e7a1599807e5b886fe621dc4e"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_1.png"
+    },
+    {
+      "id": "b_native_pool_0279_2",
+      "seed_id": "pool_0279_2",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        40,
+        31
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/4b8f94c0a949_v21_firefly_pool_0279.png",
+        "sha256": "4b8f94c0a94980e51b568055a67c7374cf705d78816f1cc56a841ffe92d64583"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0279_2_128.webp",
+          "decoded_rgb_sha256": "632e180afc259348201507b0e1bed1000229b65a580b9bab44e2df977b456591"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0279_2_256.webp",
+          "decoded_rgb_sha256": "b968d8085e4c5ba37d58f4faf3223b0ddae1d6ab5ea35f0f88526c6cebe028b6"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0279_2_384.webp",
+          "decoded_rgb_sha256": "0119e21d2bc9695763c6117496fc1768c992b01643c16e656cd50beb9068e1c4"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_2.png"
+    },
+    {
+      "id": "b_native_pool_0279_3",
+      "seed_id": "pool_0279_3",
+      "glasses": true,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        40,
+        22
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/4b8f94c0a949_v21_firefly_pool_0279.png",
+        "sha256": "4b8f94c0a94980e51b568055a67c7374cf705d78816f1cc56a841ffe92d64583"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0279_3_128.webp",
+          "decoded_rgb_sha256": "03fd02cb000829ee8549f3d3aa59290e8f338a61d07755595351a85c1a3469e0"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0279_3_256.webp",
+          "decoded_rgb_sha256": "8f936177044c00b44114f4e4967dbcbc72c8394aff5d8786a12f593f14257df1"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0279_3_384.webp",
+          "decoded_rgb_sha256": "4c264f6147dd1fd53572de56a83889c329acd0f81e1b522a79c14f1b60eab8d5"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0279_3.png"
+    },
+    {
+      "id": "b_native_pool_0284_0",
+      "seed_id": "pool_0284_0",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        4,
+        508,
+        508
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -3,
+        -25
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0284.png",
+        "sha256": "acfdf8b2dc8e62cac97d027303a460efd7edac427e17ded065a0273df4e989cf"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0284_0_128.webp",
+          "decoded_rgb_sha256": "9bba009e03e6f5a031c8636fbed352e34e3d773bf13822ddb4af0a63d153edfe"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0284_0_256.webp",
+          "decoded_rgb_sha256": "c929a76fdbbe9156279d3a84e1790cafbb930913dede4cf78cac2c609b9831bd"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0284_0_384.webp",
+          "decoded_rgb_sha256": "01c3e0bd8e390087f517dac28b46ac7a1ad821ecae3679717b258036581c3fc8"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0284_0.png"
+    },
+    {
+      "id": "b_native_pool_0284_2",
+      "seed_id": "pool_0284_2",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -3,
+        -13
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/direct_sources/v21_firefly_pool_0284.png",
+        "sha256": "acfdf8b2dc8e62cac97d027303a460efd7edac427e17ded065a0273df4e989cf"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0284_2_128.webp",
+          "decoded_rgb_sha256": "292dde68a90c5b58c0d4aaff256a0612f34890b7d5076e3cf2ee10ebc46e2a18"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0284_2_256.webp",
+          "decoded_rgb_sha256": "b82e6147dce895b08d83fc7e9041e3085c28a3da3517c659b6909c9238224046"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0284_2_384.webp",
+          "decoded_rgb_sha256": "c340fe35122c663feba4d70f47593bae1c5857306f4cb1ace417bae9425dd78f"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0284_2.png"
+    },
+    {
+      "id": "b_native_pool_0285_3",
+      "seed_id": "pool_0285_3",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        516,
+        516,
+        1020,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -19,
+        14
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_a/40f93f0dc0ca6075_v21_firefly_pool_0285.png",
+        "sha256": "40f93f0dc0ca6075a082748f67d4d57af36127153d0aef934c289f2eba3daec4"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0285_3_128.webp",
+          "decoded_rgb_sha256": "2790b1568f8e5c49a8b36df4667269b908a4f3826d21186ad47d92c5111e3fd0"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0285_3_256.webp",
+          "decoded_rgb_sha256": "4aa05a05b5f5ad0da201453a378b6371ac54af83c2de400ed2419d9772d115cf"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0285_3_384.webp",
+          "decoded_rgb_sha256": "bfe5dccb055dbb1e61f07e43b6dd35b1037087e8f039cf85a86f113e93c69bbd"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0285_3.png"
+    },
+    {
+      "id": "b_native_pool_0291_2",
+      "seed_id": "pool_0291_2",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -1,
+        8
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/756f4dd3d348_v21_firefly_pool_0291.png",
+        "sha256": "756f4dd3d348c217912dd9c5240ba35d4cdb9b40eb23ccc368765d4b04aab164"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0291_2_128.webp",
+          "decoded_rgb_sha256": "6b3e660a64a364512dd8694b551cf543445fe30c268a8f59275d58c350776259"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0291_2_256.webp",
+          "decoded_rgb_sha256": "ca70f1de400fb562e3779e8aea2c665cfeb15b3f1b45d300adf6de0519182604"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0291_2_384.webp",
+          "decoded_rgb_sha256": "d1be2ff1cd8f9b1cc3b636892cfc7d3663c95765d4ae17db3e83ef30c86a4321"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0291_2.png"
+    },
+    {
+      "id": "b_native_pool_0293_2",
+      "seed_id": "pool_0293_2",
+      "glasses": false,
+      "source": "retained_native_requires_visual_review",
+      "crop": [
+        4,
+        516,
+        508,
+        1020
+      ],
+      "native_edge": 504,
+      "translation_origin_xy": [
+        -9,
+        28
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/e0a49ead5298_v21_firefly_pool_0293.png",
+        "sha256": "e0a49ead5298289f195239ed002ae18cb34542805a74354585bd5f8071a408d6"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_native_pool_0293_2_128.webp",
+          "decoded_rgb_sha256": "ecc516522a192ab37e361afb9261662620a5e5f5e350ba1848b5807d05c79066"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_native_pool_0293_2_256.webp",
+          "decoded_rgb_sha256": "5dc6592156af845923f25f0465e1953b27ddb530028d0023e7c5593695ded371"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_native_pool_0293_2_384.webp",
+          "decoded_rgb_sha256": "0166ca59a8b8b8fcfb666ae18aaea6cdfd3fd068348f2d45a5977f86edfe6257"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_native_pool_0293_2.png"
+    },
+    {
+      "id": "b_recast_004",
+      "seed_id": "pool_0234_2",
+      "glasses": true,
+      "source": "new_semantic_master_recast_not_approved",
+      "crop": [
+        6,
+        893,
+        437,
+        1324
+      ],
+      "native_edge": 431,
+      "translation_origin_xy": [
+        2,
+        -2
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/600a7b860a6b_exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+        "sha256": "600a7b860a6bb7c2a5de9a67af6e46887279c8877183d976d3e775165d4cf768"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_recast_004_128.webp",
+          "decoded_rgb_sha256": "c4b7d0851bfd67ffbf746c5da311d69d4927c9bc3ba3da72c269c19af2eb079f"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_recast_004_256.webp",
+          "decoded_rgb_sha256": "74a1c95f6d9b7420e2a88cf21adff24ea9f717c9dfa0ed5caf0335a4c157a910"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_recast_004_384.webp",
+          "decoded_rgb_sha256": "418cc048ac781d8e20146fdc6e180748cb2df83b2d49719c74a08df2fdb372a5"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_recast_004.png"
+    },
+    {
+      "id": "b_recast_009",
+      "seed_id": "pool_0239_0",
+      "glasses": false,
+      "source": "new_semantic_master_recast_not_approved",
+      "crop": [
+        449,
+        6,
+        880,
+        437
+      ],
+      "native_edge": 431,
+      "translation_origin_xy": [
+        -2,
+        2
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/a438530c698c_exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+        "sha256": "a438530c698c58066535927278c5fb3c04de2abd0385fa43f81d6ae42f8cf811"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_recast_009_128.webp",
+          "decoded_rgb_sha256": "983e9318ea6de135c2967b2c6534d9d03ed7eb0621250f900e6224861c52f892"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_recast_009_256.webp",
+          "decoded_rgb_sha256": "066360a838ae583b6e83ca883a6beb9e45b643d959e667fb37ae69cb7335b7c7"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_recast_009_384.webp",
+          "decoded_rgb_sha256": "a820da874be509c3a348cea3fc92c1b21e2e60d7bb61a54163b2209c58865da5"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_recast_009.png"
+    },
+    {
+      "id": "b_recast_010",
+      "seed_id": "pool_0274_2",
+      "glasses": false,
+      "source": "new_semantic_master_recast_not_approved",
+      "crop": [
+        6,
+        449,
+        437,
+        880
+      ],
+      "native_edge": 431,
+      "translation_origin_xy": [
+        3,
+        1
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/a438530c698c_exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+        "sha256": "a438530c698c58066535927278c5fb3c04de2abd0385fa43f81d6ae42f8cf811"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_recast_010_128.webp",
+          "decoded_rgb_sha256": "81970f2c1e40a2931908645e175fde65b2074eab3c1fce61c3c27bea97b84b48"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_recast_010_256.webp",
+          "decoded_rgb_sha256": "897763380d5da1b874450194f35ee5a66a0dca99585a674ac0c138297ad4ddab"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_recast_010_384.webp",
+          "decoded_rgb_sha256": "d64c61452d3beb5a74109560390a0cb408e7390c04d67dfb6dc968ed97fc8ecd"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_recast_010.png"
+    },
+    {
+      "id": "b_firefly_002_0",
+      "seed_id": "b_firefly_002_0",
+      "glasses": false,
+      "source": "new_firefly_casting_trial_not_approved",
+      "crop": [
+        8,
+        8,
+        504,
+        504
+      ],
+      "native_edge": 496,
+      "translation_origin_xy": [
+        51,
+        17
+      ],
+      "proposed_age": 19,
+      "proposed_level": "hs",
+      "native": {
+        "path": "native/stage_b/af745146d560_b_firefly_002.png",
+        "sha256": "af745146d5601f4deacc9a1a2441a768eb94b77dbb820794c821c6f775f207c0"
+      },
+      "game_identity_assigned": false,
+      "status": "FACE_MASTER_CANDIDATE_NOT_RUNTIME_PHOTOGRAPH",
+      "human_age_review": "pending",
+      "photos": {
+        "128": {
+          "path": "review/stage_b/128/b_firefly_002_0_128.webp",
+          "decoded_rgb_sha256": "76ba35f5837bb81203ae7f15bd0e235be45786a1a744e96b9bcba76384f01716"
+        },
+        "256": {
+          "path": "review/stage_b/256/b_firefly_002_0_256.webp",
+          "decoded_rgb_sha256": "7e3ab28d30f0370e9fe3a580db54d9b8f655fa6833a9c07ce78ec41eeb2b8dc4"
+        },
+        "384": {
+          "path": "review/stage_b/384/b_firefly_002_0_384.webp",
+          "decoded_rgb_sha256": "248140ddc896c61c29d26b68eb07b2a884232818a838459339c15a8636c6ba17"
+        }
+      },
+      "normalized_native_path": "review/stage_b/normalized/b_firefly_002_0.png"
+    }
+  ]
+}

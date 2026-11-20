@@ -1,0 +1,2702 @@
+[
+  {
+    "id": "b_base_pool_0054_3__hs_home",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "hs_home",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_012.png",
+    "crop": [
+      2,
+      1191,
+      394,
+      1583
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__hs_home.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      -6,
+      -9
+    ],
+    "center_256": [
+      130.8976287841797,
+      118.18305969238281
+    ],
+    "status": "normalized_not_approved",
+    "selection": "previously_screened_whole_native_hs_photograph",
+    "visual_framing_hold": false
+  },
+  {
+    "id": "b_base_pool_0078_0__hs_home",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "hs_home",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_019.png",
+    "crop": [
+      2,
+      2,
+      394,
+      394
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__hs_home.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      -29,
+      -26
+    ],
+    "center_256": [
+      130.60934448242188,
+      118.5762710571289
+    ],
+    "status": "normalized_not_approved",
+    "selection": "previously_screened_whole_native_hs_photograph",
+    "visual_framing_hold": false
+  },
+  {
+    "id": "b_base_pool_0079_2__hs_home",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "hs_home",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-1f3e6d1b-f19e-43d9-b8a3-9c8e4c386a34.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__hs_home.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.48683166503906,
+      118.97050476074219
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__hs_home",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "hs_home",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_021.png",
+    "crop": [
+      398,
+      795,
+      790,
+      1187
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__hs_home.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      1,
+      7
+    ],
+    "center_256": [
+      131.12179565429688,
+      117.8970718383789
+    ],
+    "status": "normalized_not_approved",
+    "selection": "previously_screened_whole_native_hs_photograph",
+    "visual_framing_hold": false
+  },
+  {
+    "id": "b_base_pool_0018_0__hs_home",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "hs_home",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_004.png",
+    "crop": [
+      398,
+      795,
+      790,
+      1187
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__hs_home.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      -3,
+      -25
+    ],
+    "center_256": [
+      130.92892456054688,
+      117.87406921386719
+    ],
+    "status": "normalized_not_approved",
+    "selection": "previously_screened_whole_native_hs_photograph",
+    "visual_framing_hold": false
+  },
+  {
+    "id": "b_direct_pool_0014_1__hs_home",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "hs_home",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1f3e6d1b-f19e-43d9-b8a3-9c8e4c386a34.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__hs_home.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.3301544189453,
+      117.89421081542969
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__hs_home",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "hs_home",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-8a0433ad-9dd8-4fce-84fc-5d67b03dad76.png",
+    "crop": [
+      8,
+      8,
+      1246,
+      1246
+    ],
+    "source": "single_portrait_jersey_only_repair",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__hs_home.png",
+    "native_edge": 1238,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.0919189453125,
+      118.4912109375
+    ],
+    "status": "normalized_not_approved",
+    "selection": "freshly_measured_single_portrait_jersey_only_repair",
+    "visual_framing_hold": false
+  },
+  {
+    "id": "b_direct_pool_0091_0__hs_home",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "hs_home",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/direct_sources/v21_firefly_pool_0091.png",
+    "crop": [
+      2,
+      2,
+      510,
+      510
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__hs_home.png",
+    "native_edge": 508,
+    "translation_origin_xy": [
+      -27,
+      8
+    ],
+    "center_256": [
+      131.45591735839844,
+      118.2551498413086
+    ],
+    "status": "normalized_not_approved",
+    "selection": "previously_screened_whole_native_hs_photograph",
+    "visual_framing_hold": false
+  },
+  {
+    "id": "b_base_pool_0054_3__univ",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "univ",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__univ.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.24070739746094,
+      117.9193344116211
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__univ",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "univ",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__univ.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.35055541992188,
+      118.21528625488281
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__univ",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "univ",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__univ.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      1,
+      -8
+    ],
+    "center_256": [
+      130.99453735351562,
+      118.2950210571289
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__univ",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "univ",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__univ.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -1,
+      -8
+    ],
+    "center_256": [
+      130.86538696289062,
+      118.79121398925781
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__univ",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "univ",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__univ.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      -9
+    ],
+    "center_256": [
+      130.7816162109375,
+      117.93339538574219
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__univ",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "univ",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__univ.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      1,
+      -7
+    ],
+    "center_256": [
+      130.55130004882812,
+      118.4875717163086
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__univ",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "univ",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__univ.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      -10
+    ],
+    "center_256": [
+      131.12564086914062,
+      118.75590515136719
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__univ",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "univ",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__univ.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      1,
+      -10
+    ],
+    "center_256": [
+      131.17196655273438,
+      118.43571472167969
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__seoul_comets",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__seoul_comets.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -2
+    ],
+    "center_256": [
+      130.7511444091797,
+      118.3655014038086
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__seoul_comets",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__seoul_comets.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      -1
+    ],
+    "center_256": [
+      130.87881469726562,
+      117.7146224975586
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__seoul_comets",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__seoul_comets.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      2,
+      -12
+    ],
+    "center_256": [
+      131.4954071044922,
+      118.4238052368164
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__seoul_comets",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__seoul_comets.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -2,
+      -7
+    ],
+    "center_256": [
+      130.6767578125,
+      118.61320495605469
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__seoul_comets",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__seoul_comets.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -34
+    ],
+    "center_256": [
+      130.74795532226562,
+      119.0622329711914
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__seoul_comets",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__seoul_comets.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      -26
+    ],
+    "center_256": [
+      130.39956665039062,
+      118.79707336425781
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__seoul_comets",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__seoul_comets.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      -21
+    ],
+    "center_256": [
+      131.21923828125,
+      117.90653991699219
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__seoul_comets",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__seoul_comets.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -1,
+      -21
+    ],
+    "center_256": [
+      130.89093017578125,
+      117.99317932128906
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__seoul_hounds",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "seoul_hounds",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-49ce815b-a58c-4608-92a5-cf1150cef179.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__seoul_hounds.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.62057495117188,
+      118.20079040527344
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__seoul_hounds",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "seoul_hounds",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-49ce815b-a58c-4608-92a5-cf1150cef179.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__seoul_hounds.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.49063110351562,
+      118.5131607055664
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__seoul_hounds",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "seoul_hounds",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-49ce815b-a58c-4608-92a5-cf1150cef179.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__seoul_hounds.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.18959045410156,
+      118.72770690917969
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__seoul_hounds",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "seoul_hounds",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-49ce815b-a58c-4608-92a5-cf1150cef179.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__seoul_hounds.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.85560607910156,
+      117.70890045166016
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__seoul_hounds",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "seoul_hounds",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-49ce815b-a58c-4608-92a5-cf1150cef179.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__seoul_hounds.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.7913360595703,
+      117.4234619140625
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__seoul_hounds",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "seoul_hounds",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-49ce815b-a58c-4608-92a5-cf1150cef179.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__seoul_hounds.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.2765350341797,
+      117.62109375
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__seoul_hounds",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "seoul_hounds",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-49ce815b-a58c-4608-92a5-cf1150cef179.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__seoul_hounds.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.94332885742188,
+      118.36598205566406
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__seoul_hounds",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "seoul_hounds",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-49ce815b-a58c-4608-92a5-cf1150cef179.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__seoul_hounds.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.1870574951172,
+      117.9580307006836
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__incheon_seagulls",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "incheon_seagulls",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-716c31ee-3aa0-4875-b18d-17983aa360cf.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__incheon_seagulls.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.13526916503906,
+      118.38835144042969
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__incheon_seagulls",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "incheon_seagulls",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-716c31ee-3aa0-4875-b18d-17983aa360cf.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__incheon_seagulls.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.23068237304688,
+      118.66950988769531
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__incheon_seagulls",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "incheon_seagulls",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-716c31ee-3aa0-4875-b18d-17983aa360cf.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__incheon_seagulls.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -4
+    ],
+    "center_256": [
+      131.0176239013672,
+      118.00752258300781
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__incheon_seagulls",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "incheon_seagulls",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-716c31ee-3aa0-4875-b18d-17983aa360cf.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__incheon_seagulls.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -2,
+      -6
+    ],
+    "center_256": [
+      130.586181640625,
+      118.43009948730469
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__incheon_seagulls",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "incheon_seagulls",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-716c31ee-3aa0-4875-b18d-17983aa360cf.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__incheon_seagulls.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      -13
+    ],
+    "center_256": [
+      130.9265899658203,
+      118.65303039550781
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__incheon_seagulls",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "incheon_seagulls",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-716c31ee-3aa0-4875-b18d-17983aa360cf.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__incheon_seagulls.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -3,
+      -11
+    ],
+    "center_256": [
+      131.33651733398438,
+      118.53901672363281
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__incheon_seagulls",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "incheon_seagulls",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-716c31ee-3aa0-4875-b18d-17983aa360cf.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__incheon_seagulls.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -3,
+      -10
+    ],
+    "center_256": [
+      131.1563262939453,
+      118.84046936035156
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__incheon_seagulls",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "incheon_seagulls",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-716c31ee-3aa0-4875-b18d-17983aa360cf.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__incheon_seagulls.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -3,
+      -11
+    ],
+    "center_256": [
+      130.9918975830078,
+      118.52449035644531
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__suwon_sparks",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "suwon_sparks",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20d7708c-68e4-49ce-90f4-c794f9e245be.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__suwon_sparks.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.10096740722656,
+      117.78670501708984
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__suwon_sparks",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "suwon_sparks",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20d7708c-68e4-49ce-90f4-c794f9e245be.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__suwon_sparks.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.09695434570312,
+      118.37060546875
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__suwon_sparks",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "suwon_sparks",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-20d7708c-68e4-49ce-90f4-c794f9e245be.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__suwon_sparks.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -5
+    ],
+    "center_256": [
+      131.05178833007812,
+      118.03169250488281
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__suwon_sparks",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "suwon_sparks",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20d7708c-68e4-49ce-90f4-c794f9e245be.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__suwon_sparks.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -2,
+      -6
+    ],
+    "center_256": [
+      131.00112915039062,
+      118.83073425292969
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__suwon_sparks",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "suwon_sparks",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20d7708c-68e4-49ce-90f4-c794f9e245be.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__suwon_sparks.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -3,
+      -17
+    ],
+    "center_256": [
+      131.15525817871094,
+      118.3148193359375
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__suwon_sparks",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "suwon_sparks",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20d7708c-68e4-49ce-90f4-c794f9e245be.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__suwon_sparks.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -15
+    ],
+    "center_256": [
+      131.28829956054688,
+      118.33699798583984
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__suwon_sparks",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "suwon_sparks",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20d7708c-68e4-49ce-90f4-c794f9e245be.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__suwon_sparks.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -14
+    ],
+    "center_256": [
+      130.97903442382812,
+      118.01912689208984
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__suwon_sparks",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "suwon_sparks",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-20d7708c-68e4-49ce-90f4-c794f9e245be.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__suwon_sparks.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      -14
+    ],
+    "center_256": [
+      130.9741973876953,
+      118.1942367553711
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__goyang_storm",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "goyang_storm",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ec513052-eb18-4e3b-9b8a-a1a4d875400c.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__goyang_storm.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.4915313720703,
+      118.06376647949219
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__goyang_storm",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "goyang_storm",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ec513052-eb18-4e3b-9b8a-a1a4d875400c.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__goyang_storm.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.5413360595703,
+      118.5157470703125
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__goyang_storm",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "goyang_storm",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-ec513052-eb18-4e3b-9b8a-a1a4d875400c.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__goyang_storm.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -5
+    ],
+    "center_256": [
+      130.73892211914062,
+      118.22900390625
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__goyang_storm",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "goyang_storm",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ec513052-eb18-4e3b-9b8a-a1a4d875400c.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__goyang_storm.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -1,
+      -5
+    ],
+    "center_256": [
+      131.1654815673828,
+      118.5747299194336
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__goyang_storm",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "goyang_storm",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ec513052-eb18-4e3b-9b8a-a1a4d875400c.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__goyang_storm.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      -3
+    ],
+    "center_256": [
+      130.67018127441406,
+      117.827392578125
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__goyang_storm",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "goyang_storm",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ec513052-eb18-4e3b-9b8a-a1a4d875400c.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__goyang_storm.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      -2
+    ],
+    "center_256": [
+      131.18939208984375,
+      118.2223129272461
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__goyang_storm",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "goyang_storm",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ec513052-eb18-4e3b-9b8a-a1a4d875400c.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__goyang_storm.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      -4
+    ],
+    "center_256": [
+      131.05018615722656,
+      118.75614166259766
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__goyang_storm",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "goyang_storm",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-ec513052-eb18-4e3b-9b8a-a1a4d875400c.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__goyang_storm.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      1,
+      -5
+    ],
+    "center_256": [
+      130.8136749267578,
+      118.44490051269531
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__daejeon_redfox",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "daejeon_redfox",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-b170f7b6-430b-4785-94a9-68a3fcf1cc50.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__daejeon_redfox.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.97174072265625,
+      117.87959289550781
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__daejeon_redfox",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "daejeon_redfox",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-b170f7b6-430b-4785-94a9-68a3fcf1cc50.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__daejeon_redfox.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.5931396484375,
+      118.3864517211914
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__daejeon_redfox",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "daejeon_redfox",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-b170f7b6-430b-4785-94a9-68a3fcf1cc50.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__daejeon_redfox.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.6400146484375,
+      118.96272277832031
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__daejeon_redfox",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "daejeon_redfox",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-b170f7b6-430b-4785-94a9-68a3fcf1cc50.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__daejeon_redfox.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.12551879882812,
+      117.89361572265625
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__daejeon_redfox",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "daejeon_redfox",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-b170f7b6-430b-4785-94a9-68a3fcf1cc50.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__daejeon_redfox.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      -2
+    ],
+    "center_256": [
+      130.87925720214844,
+      118.2796401977539
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__daejeon_redfox",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "daejeon_redfox",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-b170f7b6-430b-4785-94a9-68a3fcf1cc50.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__daejeon_redfox.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.37020874023438,
+      117.87445068359375
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__daejeon_redfox",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "daejeon_redfox",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-b170f7b6-430b-4785-94a9-68a3fcf1cc50.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__daejeon_redfox.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.29864501953125,
+      118.0962142944336
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__daejeon_redfox",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "daejeon_redfox",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-b170f7b6-430b-4785-94a9-68a3fcf1cc50.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__daejeon_redfox.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.3109588623047,
+      117.69022369384766
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__gwangju_blazes",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "gwangju_blazes",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-441e5fc2-e926-4509-a3bc-351019488149.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__gwangju_blazes.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.63262939453125,
+      118.09974670410156
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__gwangju_blazes",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "gwangju_blazes",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-441e5fc2-e926-4509-a3bc-351019488149.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__gwangju_blazes.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.57705688476562,
+      118.78726959228516
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__gwangju_blazes",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "gwangju_blazes",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-441e5fc2-e926-4509-a3bc-351019488149.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__gwangju_blazes.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      -2
+    ],
+    "center_256": [
+      131.33828735351562,
+      118.55778503417969
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__gwangju_blazes",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "gwangju_blazes",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-441e5fc2-e926-4509-a3bc-351019488149.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__gwangju_blazes.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      -2
+    ],
+    "center_256": [
+      131.13534545898438,
+      118.4953842163086
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__gwangju_blazes",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "gwangju_blazes",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-441e5fc2-e926-4509-a3bc-351019488149.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__gwangju_blazes.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -3
+    ],
+    "center_256": [
+      130.5806427001953,
+      118.4266357421875
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__gwangju_blazes",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "gwangju_blazes",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-441e5fc2-e926-4509-a3bc-351019488149.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__gwangju_blazes.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.1969451904297,
+      117.71820068359375
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__gwangju_blazes",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "gwangju_blazes",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-441e5fc2-e926-4509-a3bc-351019488149.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__gwangju_blazes.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      -3
+    ],
+    "center_256": [
+      130.81057739257812,
+      118.50520324707031
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__gwangju_blazes",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "gwangju_blazes",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-441e5fc2-e926-4509-a3bc-351019488149.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__gwangju_blazes.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -1,
+      -3
+    ],
+    "center_256": [
+      130.74559020996094,
+      118.43708801269531
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__daegu_thunders",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "daegu_thunders",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-fbfe85c1-ea2c-4763-98b9-2767c33a1d4d.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__daegu_thunders.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.42063903808594,
+      118.06636810302734
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__daegu_thunders",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "daegu_thunders",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-fbfe85c1-ea2c-4763-98b9-2767c33a1d4d.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__daegu_thunders.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.54397583007812,
+      118.66239929199219
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__daegu_thunders",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "daegu_thunders",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-fbfe85c1-ea2c-4763-98b9-2767c33a1d4d.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__daegu_thunders.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -5
+    ],
+    "center_256": [
+      130.98260498046875,
+      118.58441162109375
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__daegu_thunders",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "daegu_thunders",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-fbfe85c1-ea2c-4763-98b9-2767c33a1d4d.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__daegu_thunders.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -1,
+      -2
+    ],
+    "center_256": [
+      131.17742919921875,
+      117.94770812988281
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__daegu_thunders",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "daegu_thunders",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-fbfe85c1-ea2c-4763-98b9-2767c33a1d4d.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__daegu_thunders.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      -18
+    ],
+    "center_256": [
+      130.99853515625,
+      117.8711929321289
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__daegu_thunders",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "daegu_thunders",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-fbfe85c1-ea2c-4763-98b9-2767c33a1d4d.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__daegu_thunders.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      -14
+    ],
+    "center_256": [
+      131.4235382080078,
+      118.33094787597656
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__daegu_thunders",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "daegu_thunders",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-fbfe85c1-ea2c-4763-98b9-2767c33a1d4d.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__daegu_thunders.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -4,
+      -18
+    ],
+    "center_256": [
+      131.30197143554688,
+      118.0570068359375
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__daegu_thunders",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "daegu_thunders",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-fbfe85c1-ea2c-4763-98b9-2767c33a1d4d.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__daegu_thunders.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      -4,
+      -18
+    ],
+    "center_256": [
+      130.8307647705078,
+      118.12022399902344
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__busan_waves",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "busan_waves",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1b8d0382-83bb-4939-9041-7b84d7b0f8b4.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__busan_waves.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.8876190185547,
+      117.82393646240234
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__busan_waves",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "busan_waves",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1b8d0382-83bb-4939-9041-7b84d7b0f8b4.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__busan_waves.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.41700744628906,
+      118.35282135009766
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__busan_waves",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "busan_waves",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-1b8d0382-83bb-4939-9041-7b84d7b0f8b4.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__busan_waves.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      -4
+    ],
+    "center_256": [
+      130.8214111328125,
+      118.22086334228516
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__busan_waves",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "busan_waves",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1b8d0382-83bb-4939-9041-7b84d7b0f8b4.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__busan_waves.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      -5
+    ],
+    "center_256": [
+      130.72677612304688,
+      118.75138092041016
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__busan_waves",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "busan_waves",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1b8d0382-83bb-4939-9041-7b84d7b0f8b4.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__busan_waves.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -14
+    ],
+    "center_256": [
+      130.9513397216797,
+      118.39460754394531
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__busan_waves",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "busan_waves",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1b8d0382-83bb-4939-9041-7b84d7b0f8b4.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__busan_waves.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      2,
+      -12
+    ],
+    "center_256": [
+      130.85060119628906,
+      118.15311431884766
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__busan_waves",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "busan_waves",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1b8d0382-83bb-4939-9041-7b84d7b0f8b4.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__busan_waves.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      -17
+    ],
+    "center_256": [
+      131.023193359375,
+      117.9798583984375
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__busan_waves",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "busan_waves",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-1b8d0382-83bb-4939-9041-7b84d7b0f8b4.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__busan_waves.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      -18
+    ],
+    "center_256": [
+      131.33065795898438,
+      118.20027923583984
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0054_3__changwon_anchors",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "changwon_anchors",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-85a90599-0470-4b13-b271-37aba9d9c7fb.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0054_3__changwon_anchors.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.9862823486328,
+      117.95109558105469
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0078_0__changwon_anchors",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "changwon_anchors",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-85a90599-0470-4b13-b271-37aba9d9c7fb.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0078_0__changwon_anchors.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.63864135742188,
+      118.34676361083984
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0079_2__changwon_anchors",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "changwon_anchors",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-85a90599-0470-4b13-b271-37aba9d9c7fb.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0079_2__changwon_anchors.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.53916931152344,
+      118.95552062988281
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0088_1__changwon_anchors",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "changwon_anchors",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-85a90599-0470-4b13-b271-37aba9d9c7fb.png",
+    "crop": [
+      449,
+      449,
+      881,
+      881
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0088_1__changwon_anchors.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.0590362548828,
+      117.9026870727539
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0018_0__changwon_anchors",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "changwon_anchors",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-85a90599-0470-4b13-b271-37aba9d9c7fb.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0018_0__changwon_anchors.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.95431518554688,
+      117.52071380615234
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0014_1__changwon_anchors",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "changwon_anchors",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-85a90599-0470-4b13-b271-37aba9d9c7fb.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0014_1__changwon_anchors.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.50338745117188,
+      117.8276138305664
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_base_pool_0022_3__changwon_anchors",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "changwon_anchors",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-85a90599-0470-4b13-b271-37aba9d9c7fb.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__changwon_anchors.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.28158569335938,
+      118.2752685546875
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_direct_pool_0091_0__changwon_anchors",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "changwon_anchors",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-85a90599-0470-4b13-b271-37aba9d9c7fb.png",
+    "crop": [
+      449,
+      1336,
+      881,
+      1768
+    ],
+    "source": "wardrobe_only_full_family_batch_000",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_direct_pool_0091_0__changwon_anchors.png",
+    "native_edge": 432,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.36102294921875,
+      117.86865234375
+    ],
+    "status": "normalized_not_approved"
+  }
+]

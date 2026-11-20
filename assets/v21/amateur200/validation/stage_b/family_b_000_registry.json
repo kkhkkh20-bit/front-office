@@ -1,0 +1,29 @@
+{
+  "variants": {
+    "hs_home": "/workspace/generated_images/exec-1f3e6d1b-f19e-43d9-b8a3-9c8e4c386a34.png",
+    "univ": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "seoul_comets": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "seoul_hounds": "/workspace/generated_images/exec-49ce815b-a58c-4608-92a5-cf1150cef179.png",
+    "incheon_seagulls": "/workspace/generated_images/exec-716c31ee-3aa0-4875-b18d-17983aa360cf.png",
+    "suwon_sparks": "/workspace/generated_images/exec-20d7708c-68e4-49ce-90f4-c794f9e245be.png",
+    "goyang_storm": "/workspace/generated_images/exec-ec513052-eb18-4e3b-9b8a-a1a4d875400c.png",
+    "daejeon_redfox": "/workspace/generated_images/exec-b170f7b6-430b-4785-94a9-68a3fcf1cc50.png",
+    "gwangju_blazes": "/workspace/generated_images/exec-441e5fc2-e926-4509-a3bc-351019488149.png",
+    "daegu_thunders": "/workspace/generated_images/exec-fbfe85c1-ea2c-4763-98b9-2767c33a1d4d.png",
+    "busan_waves": "/workspace/generated_images/exec-1b8d0382-83bb-4939-9041-7b84d7b0f8b4.png",
+    "changwon_anchors": "/workspace/generated_images/exec-85a90599-0470-4b13-b271-37aba9d9c7fb.png"
+  },
+  "prompt": "Edit image 1 into the same EIGHT DIFFERENT fictional Korean male baseball players, exact same 2-column by 4-row order. WARDROBE ONLY: preserve each person's exact face, jaw, eyes, nose, lips, skin, hair, ears, apparent age, glasses, expression and normal anatomy. The second reference, if present, shows CLOTHING ONLY. Do not transfer a generic face or blend identities. Full natural chest-up photographs, entire cap with 8% headroom, eyes at 40% height, both shoulders and full upper chest down to bottom. Low-crown caps fully snug on head with brim just above eyebrows. No repeated or stretched pixels at bottom: complete natural jersey. Uniform gray studio background and same soft frontal light. EXACTLY 2 columns by 4 rows of EIGHT SQUARE photos, seamless grid with no borders, labels, extra people or gutters. Native output at least 880 wide and 1760 high. ",
+  "kit_specs": {
+    "hs_home": "All players wear identical plain WHITE high-school baseball jerseys with NAVY collar and piping and completely blank low-crown NAVY caps. Absolutely no text, numbers or logos anywhere.",
+    "seoul_hounds": "Match clothing reference: ivory heritage jersey with NAVY RAGLAN sleeves, thin red shoulder piping, small navy Hounds script and fictional hound emblem at left chest. NAVY #131230 caps with small white fictional hound emblem.",
+    "incheon_seagulls": "Match clothing reference: WHITE jersey with broad red chest band bordered by thin navy lines, white SEAGULLS lettering inside band, red trim. RED #CE0E2D caps with white minimalist fictional seagull emblem.",
+    "suwon_sparks": "Match clothing reference: white jersey with BLACK tech shoulder yoke and red asymmetrical accents, SPARKS black/red angular chest lettering. BLACK #141414 caps with small white lightning emblem.",
+    "goyang_storm": "Match clothing reference: cream jersey with BURGUNDY piping and burgundy Storm script and subtle tonal swirl detail, BURGUNDY #570514 caps with white fictional storm/crescent emblem.",
+    "daejeon_redfox": "Match clothing reference: cream/white jersey with ORANGE chest lettering REDFOX and CHARCOAL raglan sleeves with orange piping. ORANGE #F37321 low-crown caps with a small white angular fox emblem.",
+    "gwangju_blazes": "Match clothing reference: cream jersey with RED raglan sleeves, gold collar and piping, BLAZES red/gold flame-cut chest lettering. RED #EA0029 caps with a small GOLD flame emblem.",
+    "daegu_thunders": "Match clothing reference: WHITE jersey with fine ROYAL BLUE pinstripes and blue trim, Thunders BLUE lightning script and gold detail on chest. ROYAL BLUE #074CA1 caps with small white storm cloud/lightning emblem.",
+    "busan_waves": "Match clothing reference: cream jersey with NAVY collar and marine shoulder bands, navy Waves script and wave underline on chest. NAVY #041E42 low-crown caps with small white wave emblem.",
+    "changwon_anchors": "Match clothing reference: WHITE jersey with BLUE collar and trim, slim asymmetric GOLD placket detail, small navy anchor emblem and Anchors script on left chest. BLUE #1D467B caps with a small white anchor emblem."
+  }
+}

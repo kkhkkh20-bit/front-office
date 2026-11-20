@@ -1,0 +1,450 @@
+[
+  {
+    "id": "b_recast_000",
+    "seed_id": "pool_0229_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0229_2"
+  },
+  {
+    "id": "b_recast_001",
+    "seed_id": "pool_0203_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0203_1"
+  },
+  {
+    "id": "b_recast_002",
+    "seed_id": "pool_0264_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0264_3"
+  },
+  {
+    "id": "b_recast_003",
+    "seed_id": "pool_0281_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      449,
+      449,
+      880,
+      880
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0281_3"
+  },
+  {
+    "id": "b_recast_004",
+    "seed_id": "pool_0234_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0234_2"
+  },
+  {
+    "id": "b_recast_005",
+    "seed_id": "pool_0233_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0233_3"
+  },
+  {
+    "id": "b_recast_006",
+    "seed_id": "pool_0255_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0255_0"
+  },
+  {
+    "id": "b_recast_007",
+    "seed_id": "pool_0238_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      449,
+      1336,
+      880,
+      1767
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0238_0"
+  },
+  {
+    "id": "b_recast_008",
+    "seed_id": "pool_0289_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0289_1"
+  },
+  {
+    "id": "b_recast_009",
+    "seed_id": "pool_0239_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0239_0"
+  },
+  {
+    "id": "b_recast_010",
+    "seed_id": "pool_0274_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0274_2"
+  },
+  {
+    "id": "b_recast_011",
+    "seed_id": "pool_0281_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      449,
+      449,
+      880,
+      880
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0281_1"
+  },
+  {
+    "id": "b_recast_012",
+    "seed_id": "pool_0235_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0235_3"
+  },
+  {
+    "id": "b_recast_013",
+    "seed_id": "pool_0225_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0225_1"
+  },
+  {
+    "id": "b_recast_014",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0202_1"
+  },
+  {
+    "id": "b_recast_015",
+    "seed_id": "pool_0218_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      449,
+      1336,
+      880,
+      1767
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0218_1"
+  },
+  {
+    "id": "b_firefly_001_0",
+    "seed_id": "b_firefly_001_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_001.png",
+    "crop": [
+      8,
+      8,
+      504,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false
+  },
+  {
+    "id": "b_firefly_001_1",
+    "seed_id": "b_firefly_001_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_001.png",
+    "crop": [
+      520,
+      8,
+      1016,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true
+  },
+  {
+    "id": "b_firefly_001_2",
+    "seed_id": "b_firefly_001_2",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_001.png",
+    "crop": [
+      8,
+      520,
+      504,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true
+  },
+  {
+    "id": "b_firefly_001_3",
+    "seed_id": "b_firefly_001_3",
+    "age": 20,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/dev/shm/v21b-work/b_firefly_001.png",
+    "crop": [
+      520,
+      520,
+      1016,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false
+  },
+  {
+    "id": "b_firefly_002_0",
+    "seed_id": "b_firefly_002_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_002.png",
+    "crop": [
+      8,
+      8,
+      504,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false
+  },
+  {
+    "id": "b_firefly_002_1",
+    "seed_id": "b_firefly_002_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_002.png",
+    "crop": [
+      520,
+      8,
+      1016,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false
+  },
+  {
+    "id": "b_firefly_002_2",
+    "seed_id": "b_firefly_002_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_002.png",
+    "crop": [
+      8,
+      520,
+      504,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false
+  },
+  {
+    "id": "b_firefly_002_3",
+    "seed_id": "b_firefly_002_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/dev/shm/v21b-work/b_firefly_002.png",
+    "crop": [
+      520,
+      520,
+      1016,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true
+  },
+  {
+    "id": "b_firefly_003_0",
+    "seed_id": "b_firefly_003_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_003.png",
+    "crop": [
+      8,
+      8,
+      504,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true
+  },
+  {
+    "id": "b_firefly_003_1",
+    "seed_id": "b_firefly_003_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_003.png",
+    "crop": [
+      520,
+      8,
+      1016,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true
+  },
+  {
+    "id": "b_firefly_003_2",
+    "seed_id": "b_firefly_003_2",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_003.png",
+    "crop": [
+      8,
+      520,
+      504,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true
+  },
+  {
+    "id": "b_firefly_003_3",
+    "seed_id": "b_firefly_003_3",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_003.png",
+    "crop": [
+      520,
+      520,
+      1016,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true
+  }
+]

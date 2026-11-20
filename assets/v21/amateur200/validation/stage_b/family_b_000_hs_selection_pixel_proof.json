@@ -1,0 +1,92 @@
+[
+  {
+    "id": "b_base_pool_0054_3__hs_home",
+    "size": 128,
+    "exact_rgb_sha256": "6d188eb107f7fe4874c68b3056a02da887a600e9d2e9a2c065f5e46aa581f0bd",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0054_3__hs_home",
+    "size": 256,
+    "exact_rgb_sha256": "016dcb2a8648ac3d6deac894f6d95ce5c9a2fe40251ddef58a85da9617692fc1",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0054_3__hs_home",
+    "size": 384,
+    "exact_rgb_sha256": "00f7faddba14499c33f05aee33bef1cc5d3b7979243bbd4838945f76bb78e5f7",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0078_0__hs_home",
+    "size": 128,
+    "exact_rgb_sha256": "5fe1ecdbd99e0642e232a23e131ad983a3f5b227db1b400f0bfde2b96651bdda",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0078_0__hs_home",
+    "size": 256,
+    "exact_rgb_sha256": "8d4f7bf815431210373b392c5ad98f87fb316db07957d97799c3129fba858fc6",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0078_0__hs_home",
+    "size": 384,
+    "exact_rgb_sha256": "21f1deb1928c8c7a00f5690d3bf680f37c6650c22fbec64c339109f83b2be6c4",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0088_1__hs_home",
+    "size": 128,
+    "exact_rgb_sha256": "2ed2eff0f3dc3413c0479498cf9966a8a41d4fe7788e13d8ce4994fadc5e6a65",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0088_1__hs_home",
+    "size": 256,
+    "exact_rgb_sha256": "6b69a5ed94dbc75e5445d8aaa9e63c78d5d2e12a6fc73e545105bde80de55ea9",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0088_1__hs_home",
+    "size": 384,
+    "exact_rgb_sha256": "d096450381b773273179cc3ce3eba89026110226ab17ab5c9aca3b03794bef15",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0018_0__hs_home",
+    "size": 128,
+    "exact_rgb_sha256": "b571f6b4a202e67164899458ca8ad6d9204ae917fbf343f5cfe8324e87779bc6",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0018_0__hs_home",
+    "size": 256,
+    "exact_rgb_sha256": "039e7520a1d4003fc7b6a613f5754008f688d586ca5d4af7eaa158e5f730a879",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_base_pool_0018_0__hs_home",
+    "size": 384,
+    "exact_rgb_sha256": "4edccf4cd994b6dff1f7b77ea316656d37ca9562f942ab06f96e5d30d3cee1f5",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_direct_pool_0091_0__hs_home",
+    "size": 128,
+    "exact_rgb_sha256": "68ea935cd32da7d57d64d48b20ede12e3b2f9ddc85f7569b55d5c0a2eab5b1b6",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_direct_pool_0091_0__hs_home",
+    "size": 256,
+    "exact_rgb_sha256": "1417be9a5b277f5fdf4aa6fbd7ab346e8eef67245609c8aa4de9f105f91099b6",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  },
+  {
+    "id": "b_direct_pool_0091_0__hs_home",
+    "size": 384,
+    "exact_rgb_sha256": "c335854cb330c7340863ca45f7cb239e9fa3359769ec40f3b037aa4eaa5a2d4d",
+    "feature_reuse": "byte-identical previously measured photograph; no feature changes"
+  }
+]

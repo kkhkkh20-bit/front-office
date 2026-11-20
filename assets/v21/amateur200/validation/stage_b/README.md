@@ -1,0 +1,9 @@
+# Stage B work checkpoint — not a runtime delivery
+
+The official 100 Stage A identities and all A runtime sheets remain unchanged. Seven A replacement IDs have not been provided in the current conversation or request document; clarification is pending.
+
+601 individual candidate photos were measured using the unchanged raw ArcFace protocol. 91 face master candidates currently pass representative comparisons at 128/256/384 against each other, the frozen A 100 and the existing 486-person gallery. They are not 91 completed 12-kit identities. Candidate photographs may still need cap, jersey, framing, age-design and glasses-balance work. B has no runtime sheets yet. Every final atlas must be measured after export, and A/B comparisons must be repeated after the seven A replacements.
+
+`stage_b_candidate_manifest.json` contains draft source IDs, not assigned game IDs. Q numbers in the preview are temporary review labels. All proposed B ages remain unfrozen. See checkpoint.json for raw maxima and the pending gates. Newly generated originals, including held trials, are archived byte for byte. No numerical acceptance threshold has been relaxed.
+
+First family batch: eight candidates have all 12 wardrobe photographs (96 photos). Every one of the 66 same-person pairs was checked at 128/256/384; minimum 0.7715427875518799. Their selected hs_home photographs pass the representative gates, maximum 0.39879316091537476. These remain individual exports, with final atlas and full-100-person balance checks pending. `stage_b_family_review_manifest.json` locates these photographs and their native sources. Rejected new hs_home proposals are retained in the audit files; five previously validated whole photos were reused only after exact decoded-pixel proof, two new grid portraits and one freshly measured single-portrait repair were selected.

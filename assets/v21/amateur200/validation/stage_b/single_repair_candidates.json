@@ -1,0 +1,32 @@
+[
+  {
+    "id": "b_base_pool_0022_3__hs_home",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "hs_home",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-8a0433ad-9dd8-4fce-84fc-5d67b03dad76.png",
+    "crop": [
+      8,
+      8,
+      1246,
+      1246
+    ],
+    "source": "single_portrait_jersey_only_repair",
+    "normalized_path": "/dev/shm/v21b-work/normalized_family_b_000/b_base_pool_0022_3__hs_home.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      -14,
+      22
+    ],
+    "center_256": [
+      131.03573608398438,
+      118.0416488647461
+    ],
+    "status": "normalized_not_approved",
+    "selection": "previously_screened_whole_native_hs_photograph",
+    "visual_framing_hold": false
+  }
+]

@@ -1,0 +1,274 @@
+[
+  {
+    "id": "b_base_pool_0054_3__univ",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "univ",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0078_0__univ",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "univ",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0079_2__univ",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "univ",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0088_1__univ",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "univ",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      449,
+      449,
+      880,
+      880
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0018_0__univ",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "univ",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_direct_pool_0014_1__univ",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "univ",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0022_3__univ",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "univ",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_direct_pool_0091_0__univ",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "univ",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "crop": [
+      449,
+      1336,
+      880,
+      1767
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0054_3__seoul_comets",
+    "person_id": "b_base_pool_0054_3",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0078_0__seoul_comets",
+    "person_id": "b_base_pool_0078_0",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0079_2__seoul_comets",
+    "person_id": "b_base_pool_0079_2",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0088_1__seoul_comets",
+    "person_id": "b_base_pool_0088_1",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      449,
+      449,
+      880,
+      880
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0018_0__seoul_comets",
+    "person_id": "b_base_pool_0018_0",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_direct_pool_0014_1__seoul_comets",
+    "person_id": "b_direct_pool_0014_1",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_base_pool_0022_3__seoul_comets",
+    "person_id": "b_base_pool_0022_3",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "wardrobe_only_pilot"
+  },
+  {
+    "id": "b_direct_pool_0091_0__seoul_comets",
+    "person_id": "b_direct_pool_0091_0",
+    "variant": "seoul_comets",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "crop": [
+      449,
+      1336,
+      880,
+      1767
+    ],
+    "source": "wardrobe_only_pilot"
+  }
+]

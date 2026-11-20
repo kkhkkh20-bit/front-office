@@ -1,0 +1,52 @@
+[
+  {
+    "path": "native/stage_b/bf9f8ee8faf0_b_firefly_001.png",
+    "sha256": "bf9f8ee8faf0745b2d558c722981877f798a92ab3848316cbcd61cbcef025d39",
+    "production_approved": false
+  },
+  {
+    "path": "native/stage_b/af745146d560_b_firefly_002.png",
+    "sha256": "af745146d5601f4deacc9a1a2441a768eb94b77dbb820794c821c6f775f207c0",
+    "production_approved": false
+  },
+  {
+    "path": "native/stage_b/af5328455e66_b_firefly_003.png",
+    "sha256": "af5328455e669e0cf58ed8ae238406fe0a93ee597cd81abb7f33f333f297e3a7",
+    "production_approved": false
+  },
+  {
+    "path": "native/stage_b/2cc462c5932e_b_firefly_grid_01.png",
+    "sha256": "2cc462c5932e074700de19b1f8127213c6e232c09187ea41ed9ede6f5985a7af",
+    "production_approved": false
+  },
+  {
+    "path": "native/stage_b/d2f59ff53f1f_b_firefly_grid_02.png",
+    "sha256": "d2f59ff53f1fec22cd1e07fd2e6e71b9c286b75fcd61e47ed0346e06b01ad4f4",
+    "production_approved": false
+  },
+  {
+    "path": "native/stage_b/7c3af9accadc_exec-c4df3705-e898-46a0-96eb-31d347fc2662.png",
+    "sha256": "7c3af9accadcd2dd0aa4b0a3502c9db87a7045297624859c8d8c2ccb47ae901d",
+    "production_approved": false
+  },
+  {
+    "path": "native/stage_b/600a7b860a6b_exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "sha256": "600a7b860a6bb7c2a5de9a67af6e46887279c8877183d976d3e775165d4cf768",
+    "production_approved": false
+  },
+  {
+    "path": "native/stage_b/a438530c698c_exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "sha256": "a438530c698c58066535927278c5fb3c04de2abd0385fa43f81d6ae42f8cf811",
+    "production_approved": false
+  },
+  {
+    "path": "native/stage_b/94666515ea7b_exec-7f9834ec-e614-45f1-9fde-6bad06c3de6c.png",
+    "sha256": "94666515ea7b3ea66bdb09544f0d706dd9385600e2091bcbf28b914d0e1639c4",
+    "production_approved": false
+  },
+  {
+    "path": "native/stage_b/64c70d4e48d9_exec-c37108d5-bca5-404f-b596-df3baee5d944.png",
+    "sha256": "64c70d4e48d912beaae938c26238d54bea177d2a8ac5ce11bd0adbbe59c71d18",
+    "production_approved": false
+  }
+]

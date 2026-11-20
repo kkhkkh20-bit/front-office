@@ -1,0 +1,758 @@
+[
+  {
+    "id": "b_recast_000",
+    "seed_id": "pool_0229_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0229_2",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_000.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      8
+    ],
+    "center_256": [
+      130.93368530273438,
+      118.3013687133789
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_001",
+    "seed_id": "pool_0203_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0203_1",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_001.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      5
+    ],
+    "center_256": [
+      131.10568237304688,
+      117.72003173828125
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_002",
+    "seed_id": "pool_0264_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0264_3",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_002.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      2
+    ],
+    "center_256": [
+      131.3038787841797,
+      117.6919937133789
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_003",
+    "seed_id": "pool_0281_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      449,
+      449,
+      880,
+      880
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0281_3",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_003.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -5,
+      1
+    ],
+    "center_256": [
+      131.2812957763672,
+      117.84675598144531
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_004",
+    "seed_id": "pool_0234_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0234_2",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_004.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      2,
+      -2
+    ],
+    "center_256": [
+      130.99803161621094,
+      118.30812072753906
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_005",
+    "seed_id": "pool_0233_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0233_3",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_005.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -3,
+      1
+    ],
+    "center_256": [
+      130.945556640625,
+      118.3255386352539
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_006",
+    "seed_id": "pool_0255_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0255_0",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_006.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      3
+    ],
+    "center_256": [
+      131.53587341308594,
+      118.1260757446289
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_007",
+    "seed_id": "pool_0238_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-4b1a8648-1e3f-4deb-8b79-a39ad05ca376.png",
+    "crop": [
+      449,
+      1336,
+      880,
+      1767
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0238_0",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_007.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      6
+    ],
+    "center_256": [
+      131.23184204101562,
+      118.05256652832031
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_008",
+    "seed_id": "pool_0289_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      6,
+      6,
+      437,
+      437
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0289_1",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_008.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.0187530517578,
+      119.10400390625
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_009",
+    "seed_id": "pool_0239_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      449,
+      6,
+      880,
+      437
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0239_0",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_009.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -2,
+      2
+    ],
+    "center_256": [
+      130.9751434326172,
+      117.99800109863281
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_010",
+    "seed_id": "pool_0274_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      6,
+      449,
+      437,
+      880
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0274_2",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_010.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      3,
+      1
+    ],
+    "center_256": [
+      131.0207977294922,
+      118.26533508300781
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_011",
+    "seed_id": "pool_0281_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      449,
+      449,
+      880,
+      880
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0281_1",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_011.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.24134826660156,
+      118.53654479980469
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_012",
+    "seed_id": "pool_0235_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      6,
+      893,
+      437,
+      1324
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0235_3",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_012.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      1,
+      -14
+    ],
+    "center_256": [
+      131.12225341796875,
+      118.1146240234375
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_013",
+    "seed_id": "pool_0225_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      449,
+      893,
+      880,
+      1324
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0225_1",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_013.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -20
+    ],
+    "center_256": [
+      131.18992614746094,
+      118.1911849975586
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_014",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      6,
+      1336,
+      437,
+      1767
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0202_1",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_014.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      0,
+      -4
+    ],
+    "center_256": [
+      130.8680877685547,
+      118.39485168457031
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_recast_015",
+    "seed_id": "pool_0218_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-ff8eccfa-8f51-42bb-a6ca-5b600dbc1fdf.png",
+    "crop": [
+      449,
+      1336,
+      880,
+      1767
+    ],
+    "source": "new_semantic_master_recast_not_approved",
+    "previous_candidate": "b_native_pool_0218_1",
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_recast_015.png",
+    "native_edge": 431,
+    "translation_origin_xy": [
+      -1,
+      -2
+    ],
+    "center_256": [
+      130.69436645507812,
+      118.1035385131836
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_001_0",
+    "seed_id": "b_firefly_001_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_001.png",
+    "crop": [
+      8,
+      8,
+      504,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_001_0.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      -5,
+      -12
+    ],
+    "center_256": [
+      130.8858184814453,
+      118.25065612792969
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_001_1",
+    "seed_id": "b_firefly_001_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_001.png",
+    "crop": [
+      520,
+      8,
+      1016,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_001_1.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      13,
+      1
+    ],
+    "center_256": [
+      131.25424194335938,
+      118.6433334350586
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_001_2",
+    "seed_id": "b_firefly_001_2",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_001.png",
+    "crop": [
+      8,
+      520,
+      504,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_001_2.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      -14,
+      14
+    ],
+    "center_256": [
+      130.9234619140625,
+      118.0648422241211
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_001_3",
+    "seed_id": "b_firefly_001_3",
+    "age": 20,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/dev/shm/v21b-work/b_firefly_001.png",
+    "crop": [
+      520,
+      520,
+      1016,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_001_3.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      4,
+      -15
+    ],
+    "center_256": [
+      130.794921875,
+      118.49491882324219
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_002_0",
+    "seed_id": "b_firefly_002_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_002.png",
+    "crop": [
+      8,
+      8,
+      504,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_002_0.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      51,
+      17
+    ],
+    "center_256": [
+      131.38070678710938,
+      118.03398132324219
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_002_1",
+    "seed_id": "b_firefly_002_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_002.png",
+    "crop": [
+      520,
+      8,
+      1016,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_002_1.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      -54,
+      52
+    ],
+    "center_256": [
+      130.934326171875,
+      118.31724548339844
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_002_2",
+    "seed_id": "b_firefly_002_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_002.png",
+    "crop": [
+      8,
+      520,
+      504,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": false,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_002_2.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      28,
+      46
+    ],
+    "center_256": [
+      131.1942138671875,
+      117.659423828125
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_002_3",
+    "seed_id": "b_firefly_002_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/dev/shm/v21b-work/b_firefly_002.png",
+    "crop": [
+      520,
+      520,
+      1016,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_002_3.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      -28,
+      38
+    ],
+    "center_256": [
+      130.78076171875,
+      117.8709487915039
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_003_0",
+    "seed_id": "b_firefly_003_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_003.png",
+    "crop": [
+      8,
+      8,
+      504,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_003_0.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      -81,
+      38
+    ],
+    "center_256": [
+      131.0536651611328,
+      118.2542724609375
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_003_1",
+    "seed_id": "b_firefly_003_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_003.png",
+    "crop": [
+      520,
+      8,
+      1016,
+      504
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_003_1.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      22,
+      46
+    ],
+    "center_256": [
+      131.01553344726562,
+      118.4716796875
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_003_2",
+    "seed_id": "b_firefly_003_2",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_003.png",
+    "crop": [
+      8,
+      520,
+      504,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_003_2.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      -83,
+      39
+    ],
+    "center_256": [
+      130.9117431640625,
+      118.0175552368164
+    ],
+    "status": "normalized_not_approved"
+  },
+  {
+    "id": "b_firefly_003_3",
+    "seed_id": "b_firefly_003_3",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/b_firefly_003.png",
+    "crop": [
+      520,
+      520,
+      1016,
+      1016
+    ],
+    "source": "new_firefly_casting_trial_not_approved",
+    "visual_hold": true,
+    "normalized_path": "/dev/shm/v21b-work/normalized_extra/b_firefly_003_3.png",
+    "native_edge": 496,
+    "translation_origin_xy": [
+      73,
+      36
+    ],
+    "center_256": [
+      130.9348907470703,
+      117.9754638671875
+    ],
+    "status": "normalized_not_approved"
+  }
+]

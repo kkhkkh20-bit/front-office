@@ -1,0 +1,306 @@
+[
+  {
+    "id": "b_base_pool_0054_3",
+    "seed_id": "pool_0054_3",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_012.png",
+    "crop": [
+      2,
+      1191,
+      394,
+      1583
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_base_pool_0054_3.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      -6,
+      -9
+    ],
+    "center_256": [
+      130.8976287841797,
+      118.18305969238281
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.30851972103118896,
+    "stage_a_max": 0.3575482964515686,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "face_appearance_pass_photograph_repairs_pending",
+      "reason": null,
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": false,
+    "selected_after_assistant_face_review": true
+  },
+  {
+    "id": "b_base_pool_0078_0",
+    "seed_id": "pool_0078_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_019.png",
+    "crop": [
+      2,
+      2,
+      394,
+      394
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_base_pool_0078_0.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      -29,
+      -26
+    ],
+    "center_256": [
+      130.60934448242188,
+      118.5762710571289
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.2954885959625244,
+    "stage_a_max": 0.37081947922706604,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "face_appearance_pass_photograph_repairs_pending",
+      "reason": null,
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": false,
+    "selected_after_assistant_face_review": true
+  },
+  {
+    "id": "b_base_pool_0079_2",
+    "seed_id": "pool_0079_2",
+    "age": 22,
+    "level": "univ",
+    "glasses": true,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_019.png",
+    "crop": [
+      2,
+      795,
+      394,
+      1187
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_base_pool_0079_2.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      7,
+      17
+    ],
+    "center_256": [
+      131.4234161376953,
+      118.53642272949219
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.3037775456905365,
+    "stage_a_max": 0.3640941381454468,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "face_appearance_pass_photograph_repairs_pending",
+      "reason": null,
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": true
+  },
+  {
+    "id": "b_base_pool_0088_1",
+    "seed_id": "pool_0088_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_021.png",
+    "crop": [
+      398,
+      795,
+      790,
+      1187
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_base_pool_0088_1.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      1,
+      7
+    ],
+    "center_256": [
+      131.12179565429688,
+      117.8970718383789
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.3171437978744507,
+    "stage_a_max": 0.3846479058265686,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "face_appearance_pass_photograph_repairs_pending",
+      "reason": null,
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": false,
+    "selected_after_assistant_face_review": true
+  },
+  {
+    "id": "b_base_pool_0018_0",
+    "seed_id": "pool_0018_0",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_004.png",
+    "crop": [
+      398,
+      795,
+      790,
+      1187
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_base_pool_0018_0.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      -3,
+      -25
+    ],
+    "center_256": [
+      130.92892456054688,
+      117.87406921386719
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.28983938694000244,
+    "stage_a_max": 0.3660229444503784,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "face_appearance_pass_photograph_repairs_pending",
+      "reason": null,
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": false,
+    "selected_after_assistant_face_review": true
+  },
+  {
+    "id": "b_direct_pool_0014_1",
+    "seed_id": "pool_0014_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/direct_sources/v21_firefly_pool_0014.png",
+    "crop": [
+      514,
+      2,
+      1022,
+      510
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_direct_pool_0014_1.png",
+    "native_edge": 508,
+    "translation_origin_xy": [
+      -11,
+      24
+    ],
+    "center_256": [
+      131.12747192382812,
+      118.1619644165039
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.2931731641292572,
+    "stage_a_max": 0.32220739126205444,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "face_appearance_pass_photograph_repairs_pending",
+      "reason": null,
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": true
+  },
+  {
+    "id": "b_base_pool_0022_3",
+    "seed_id": "pool_0022_3",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/hs_home/base_005.png",
+    "crop": [
+      2,
+      1191,
+      394,
+      1583
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_base_pool_0022_3.png",
+    "native_edge": 392,
+    "translation_origin_xy": [
+      -14,
+      22
+    ],
+    "center_256": [
+      131.03573608398438,
+      118.0416488647461
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.2951018810272217,
+    "stage_a_max": 0.38279974460601807,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "face_appearance_pass_photograph_repairs_pending",
+      "reason": null,
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": true
+  },
+  {
+    "id": "b_direct_pool_0091_0",
+    "seed_id": "pool_0091_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/dev/shm/v21b-work/repo/assets/v21/amateur200/native/direct_sources/v21_firefly_pool_0091.png",
+    "crop": [
+      2,
+      2,
+      510,
+      510
+    ],
+    "source": "retained_review_candidate",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_direct_pool_0091_0.png",
+    "native_edge": 508,
+    "translation_origin_xy": [
+      -27,
+      8
+    ],
+    "center_256": [
+      131.45591735839844,
+      118.2551498413086
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.30005285143852234,
+    "stage_a_max": 0.3815191388130188,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "face_appearance_pass_photograph_repairs_pending",
+      "reason": null,
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": false,
+    "selected_after_assistant_face_review": true
+  }
+]

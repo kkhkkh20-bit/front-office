@@ -1,0 +1,46 @@
+{
+  "scope": "individual hs master / univ / seoul_comets pilot, all three pairs at all three sizes, not final atlases",
+  "passed": true,
+  "records": [
+    {
+      "id": "b_base_pool_0054_3",
+      "three_variant_min": 0.8425506353378296,
+      "passed": true
+    },
+    {
+      "id": "b_base_pool_0078_0",
+      "three_variant_min": 0.7795025110244751,
+      "passed": true
+    },
+    {
+      "id": "b_base_pool_0079_2",
+      "three_variant_min": 0.7981787919998169,
+      "passed": true
+    },
+    {
+      "id": "b_base_pool_0088_1",
+      "three_variant_min": 0.8446199893951416,
+      "passed": true
+    },
+    {
+      "id": "b_base_pool_0018_0",
+      "three_variant_min": 0.8020544052124023,
+      "passed": true
+    },
+    {
+      "id": "b_direct_pool_0014_1",
+      "three_variant_min": 0.8208774328231812,
+      "passed": true
+    },
+    {
+      "id": "b_base_pool_0022_3",
+      "three_variant_min": 0.8606283664703369,
+      "passed": true
+    },
+    {
+      "id": "b_direct_pool_0091_0",
+      "three_variant_min": 0.842479944229126,
+      "passed": true
+    }
+  ]
+}

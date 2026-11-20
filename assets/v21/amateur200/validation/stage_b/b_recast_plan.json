@@ -1,0 +1,626 @@
+[
+  {
+    "id": "b_native_pool_0229_2",
+    "seed_id": "pool_0229_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0229.png",
+    "crop": [
+      4,
+      516,
+      508,
+      1020
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0229_2.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -8,
+      24
+    ],
+    "center_256": [
+      130.4551239013672,
+      118.6177749633789
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.23375004529953003,
+    "stage_a_max": 0.392503559589386,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3085859715938568
+  },
+  {
+    "id": "b_native_pool_0203_1",
+    "seed_id": "pool_0203_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0203.png",
+    "crop": [
+      516,
+      4,
+      1020,
+      508
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0203_1.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      2,
+      0
+    ],
+    "center_256": [
+      130.7376708984375,
+      118.38566589355469
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.1797175109386444,
+    "stage_a_max": 0.3200874328613281,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3090789020061493
+  },
+  {
+    "id": "b_native_pool_0264_3",
+    "seed_id": "pool_0264_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0264.png",
+    "crop": [
+      516,
+      516,
+      1020,
+      1020
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0264_3.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -5,
+      -7
+    ],
+    "center_256": [
+      130.89605712890625,
+      118.4490966796875
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.1806149184703827,
+    "stage_a_max": 0.38953500986099243,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3240699768066406
+  },
+  {
+    "id": "b_native_pool_0281_3",
+    "seed_id": "pool_0281_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0281.png",
+    "crop": [
+      516,
+      516,
+      1020,
+      1020
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0281_3.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -29,
+      -67
+    ],
+    "center_256": [
+      131.16934204101562,
+      118.64201354980469
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.2455967366695404,
+    "stage_a_max": 0.35006648302078247,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.32449573278427124
+  },
+  {
+    "id": "b_native_pool_0234_2",
+    "seed_id": "pool_0234_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0234.png",
+    "crop": [
+      4,
+      516,
+      508,
+      1020
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0234_2.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -7,
+      16
+    ],
+    "center_256": [
+      131.16909790039062,
+      118.1878433227539
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.2153167426586151,
+    "stage_a_max": 0.29033684730529785,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3284599184989929
+  },
+  {
+    "id": "b_native_pool_0233_3",
+    "seed_id": "pool_0233_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0233.png",
+    "crop": [
+      516,
+      516,
+      1020,
+      1020
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0233_3.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -2,
+      48
+    ],
+    "center_256": [
+      130.6697540283203,
+      118.34846496582031
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.3244078755378723,
+    "stage_a_max": 0.378845751285553,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3299388587474823
+  },
+  {
+    "id": "b_native_pool_0255_0",
+    "seed_id": "pool_0255_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0255.png",
+    "crop": [
+      4,
+      4,
+      508,
+      508
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0255_0.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -9,
+      9
+    ],
+    "center_256": [
+      130.5108184814453,
+      118.55012512207031
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.3206360638141632,
+    "stage_a_max": 0.3834402561187744,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3346858620643616
+  },
+  {
+    "id": "b_native_pool_0238_0",
+    "seed_id": "pool_0238_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0238.png",
+    "crop": [
+      4,
+      4,
+      508,
+      508
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0238_0.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      15,
+      20
+    ],
+    "center_256": [
+      130.7357177734375,
+      118.0806884765625
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.23521682620048523,
+    "stage_a_max": 0.36266908049583435,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.346210241317749
+  },
+  {
+    "id": "b_native_pool_0289_1",
+    "seed_id": "pool_0289_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0289.png",
+    "crop": [
+      516,
+      4,
+      1020,
+      508
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0289_1.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.20169067382812,
+      117.58366394042969
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.31745660305023193,
+    "stage_a_max": 0.38753920793533325,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.35727280378341675
+  },
+  {
+    "id": "b_native_pool_0239_0",
+    "seed_id": "pool_0239_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0239.png",
+    "crop": [
+      4,
+      4,
+      508,
+      508
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0239_0.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -12,
+      5
+    ],
+    "center_256": [
+      130.96743774414062,
+      118.2235107421875
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.2898883819580078,
+    "stage_a_max": 0.3915526866912842,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3646901845932007
+  },
+  {
+    "id": "b_native_pool_0274_2",
+    "seed_id": "pool_0274_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0274.png",
+    "crop": [
+      4,
+      516,
+      508,
+      1020
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0274_2.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      1,
+      3
+    ],
+    "center_256": [
+      131.10708618164062,
+      118.22314453125
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.29361990094184875,
+    "stage_a_max": 0.3935779929161072,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3743032217025757
+  },
+  {
+    "id": "b_native_pool_0281_1",
+    "seed_id": "pool_0281_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0281.png",
+    "crop": [
+      516,
+      4,
+      1020,
+      508
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0281_1.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -16,
+      -12
+    ],
+    "center_256": [
+      131.12188720703125,
+      118.28411865234375
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.2929767966270447,
+    "stage_a_max": 0.3971116542816162,
+    "selected_distinct_prescreen": false,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3780369460582733
+  },
+  {
+    "id": "b_native_pool_0235_3",
+    "seed_id": "pool_0235_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0235.png",
+    "crop": [
+      516,
+      516,
+      1020,
+      1020
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0235_3.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -5,
+      30
+    ],
+    "center_256": [
+      131.1846466064453,
+      117.896728515625
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.2555606961250305,
+    "stage_a_max": 0.37270528078079224,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.37832048535346985
+  },
+  {
+    "id": "b_native_pool_0225_1",
+    "seed_id": "pool_0225_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0225.png",
+    "crop": [
+      516,
+      4,
+      1020,
+      508
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0225_1.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      10,
+      -6
+    ],
+    "center_256": [
+      130.75927734375,
+      118.39041900634766
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.35163336992263794,
+    "stage_a_max": 0.3905339241027832,
+    "selected_distinct_prescreen": true,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.38796019554138184
+  },
+  {
+    "id": "b_native_pool_0202_1",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0202.png",
+    "crop": [
+      516,
+      4,
+      1020,
+      508
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0202_1.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      11,
+      6
+    ],
+    "center_256": [
+      131.3724822998047,
+      117.96470642089844
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.3013356924057007,
+    "stage_a_max": 0.38997548818588257,
+    "selected_distinct_prescreen": false,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.3974049687385559
+  },
+  {
+    "id": "b_native_pool_0218_1",
+    "seed_id": "pool_0218_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/v21_firefly_pool_0218.png",
+    "crop": [
+      516,
+      4,
+      1020,
+      508
+    ],
+    "source": "retained_native_requires_visual_review",
+    "normalized_path": "/dev/shm/v21b-work/normalized_b/b_native_pool_0218_1.png",
+    "native_edge": 504,
+    "translation_origin_xy": [
+      -18,
+      5
+    ],
+    "center_256": [
+      131.0205841064453,
+      118.1999282836914
+    ],
+    "status": "normalized_not_approved",
+    "old_max": 0.3116387128829956,
+    "stage_a_max": 0.381142258644104,
+    "selected_distinct_prescreen": false,
+    "visual_review": "pending",
+    "scope": "individual normalized candidate WebPs; final atlas validation pending",
+    "assistant_visual_review": {
+      "status": "held",
+      "reason": "childlike or overly stylized face; needs recasting before use",
+      "human_age_review": "pending"
+    },
+    "requires_whole_photograph_rerender": true,
+    "selected_after_assistant_face_review": false,
+    "planning_cross_max": 0.40423280000686646
+  }
+]
