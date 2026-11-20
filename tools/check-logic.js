@@ -10689,6 +10689,21 @@ T('[카페 11-19 선발 순번] 선발 요청한 유망주가 기존 선발 앞 
   a2.r.stf=base+raw; roleSync(U); ok(depth(U).sp[0]===A[0],'작은 평가 차이로 1·2선발이 뒤바뀜'); a2.r.stf=base+keep; roleSync(U); ok(t.spO.ids[0]===a2.id,'뚜렷한 차이인데 순번이 바뀌지 않음'); a2.r.stf=base+raw; roleSync(U); ok(depth(U).sp[0]===a2,'바뀐 순번이 작은 차이로 되돌아감');
   t.spO.y=G.year-1; ok(depth(U).sp.map(p=>p.id).join()===(()=>{ const sv=t.spO; delete t.spO; const z=depth(U).sp.map(p=>p.id).join(); t.spO=sv; return z; })(),'지난 시즌 순번 기억이 새 시즌에 남음');
   ok(__rngState()===r0,'선발 순번 계산이 주 난수를 씀'); });
+/* 카페 11-20 불펜: 8회 이후 큰 리드가 세이브 상황으로 좁혀지면 이닝 중에도 마무리를, 마무리가 동점을 주면 필승조를 올린다. 원정 9회 타석을 고정해 본다 */
+function lf1120Game(seq9,seed,prep){const {h,a,d}=rr536_setup();if(prep)prep(h,d);const old={outcome,runAdvance,dpF,stealTry},cnt={};for(const t of [h,a])G.mgr[t].small=0;
+  outcome=(b,p,dv,fp,fs)=>{const n=cnt[fs.tid]=(cnt[fs.tid]||0)+1;LBIP=null;if(fs.tid===a)return n<=6?'HR':'K';return n<=24?'K':(seq9[n-25]||'K');};runAdvance=()=>({send:true,safe:true});dpF=()=>0;stealTry=()=>0;
+  const one=()=>{for(const k in cnt)delete cnt[k];return withRng(seed,()=>simGame(d,h,a,false,{pitchRecords:false}));};try{const g=one(),g2=one();return {g,g2,h,a};}finally{outcome=old.outcome;runAdvance=old.runAdvance;dpF=old.dpF;stealTry=old.stealTry;}}
+T('[불펜 11-20] 9회 큰 리드가 세이브 상황으로 좁혀지면 이닝 중에도 마무리, 마무리가 동점을 주면 필승조로 바꾼다. 결정은 게임 상태로만(같은 씨앗 같은 결과) [불끄기]',()=>{
+  const A=lf1120Game(['1B','1B','HR'],11201), g=A.g, s=g.S.h, cl=s.pen[0]; ok(g.score.h===6&&g.score.a>=3&&g.score.a<=4,'점수 '+g.score.a+':'+g.score.h);
+  const pc9=g.pbp.filter(z=>z[0]===16&&z[1]==='PC').map(z=>z[2]), first=g.pbp.findIndex(z=>z[0]===16&&typeof z[1]==='number'), cIn=g.pbp.findIndex(z=>z[0]===16&&z[1]==='PC'&&z[2]===cl.id);
+  ok(cl&&s.pitchers.includes(cl.id),'마무리 등판 '+JSON.stringify(pc9)); ok(cIn>first,'9회 이닝 중(타석 뒤) 교체 '+cIn+'>'+first); ok(s.entry[cl.id]>=1&&s.entry[cl.id]<=3,'세이브 상황에 등판 '+s.entry[cl.id]); ok(g.dec.sv===cl.id,'세이브 '+g.dec.sv);
+  ok(g.ev.some(e=>String(e.t).includes('필승조 투입')),'중계 문구'); ok(s.entry[s.pitchers[s.pitchers.indexOf(cl.id)-1]]>4,'앞 투수는 큰 리드에 올라왔다');
+  ok(JSON.stringify(A.g2.pbp)===JSON.stringify(g.pbp)&&A.g2.score.a===g.score.a,'같은 씨앗이면 같은 경기');
+  /* 마무리가 동점·역전을 허용하면 필승조로 */
+  const B=lf1120Game(['1B','1B','HR','HR','HR','HR'],11202), gb=B.g, sb=gb.S.h, cb=sb.pen[0], last=G.players[sb.pitchers[sb.pitchers.length-1]];
+  ok(sb.pitchers.includes(cb.id),'마무리 등판'); ok(last&&last.id!==cb.id&&sb.pen.slice(1,4).some(p=>p.id===last.id),'마무리 강판 뒤 필승조 '+(last&&last.name)); ok(gb.ev.some(e=>String(e.t).includes('마무리 강판')),'중계 문구');
+  /* 마무리·필승조가 모두 쉬어야 하면 바꾸지 않는다(피로·연투 한도 존중) */
+  { let pen=[]; const C=lf1120Game(['1B','1B','HR'],11203,(h,d)=>{ pen=gameSide(h,d,false).pen.slice(0,4); for(const p of pen)p.lastApp=d; }), sc=C.g.S.h; ok(!pen.some(p=>sc.pitchers.includes(p.id)),'쉬어야 하는 마무리·필승조는 올리지 않는다'); ok(!C.g.ev.some(e=>String(e.t).includes('필승조 투입')),'바꿀 투수가 없으면 그대로'); } });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
