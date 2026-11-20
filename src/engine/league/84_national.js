@@ -38,6 +38,7 @@ function agExLawCheck(){ const S=agExSt(); if(!S)return false; agLawDraw(); if(S
   if(!G.unemp)mail('운영팀','아시안게임 금메달 병역 특례 재인정',`아시안게임 금메달 병역 특례가 다시 인정됩니다. 다음 아시안게임 대표팀은 같은 실력이면 미필 선수를 먼저 뽑고, 금메달이면 미필 선수가 체육요원으로 편입됩니다.\n\n대표팀이 미필 위주로 뽑혀 '특례 노림' 비판이 커지면 다시 논란이 될 수 있습니다.`,{kind:'병역',acts:[{l:'국가대표',a:'go',v:'league:nt'}]});
   return true; }
 function agExTxt(){ const S=agExSt(); if(!S)return ''; const op=Math.round(S.op); return G.agExOff?`아시안게임 금메달 병역 특례: ${G.agExOff}년 대표팀 선발 논란으로 불인정 · 특례 여론 ${op}/100 · 여론이 ${AG_EX.back} 이상으로 회복되면 ${G.agExOff+AG_EX.cool}년 말부터 재인정 검토(늦어도 ${G.agExOff+AG_EX.max}년 말)`:`아시안게임 금메달 병역 특례: 인정 · 특례 여론 ${op}/100${op<AG_EX.back?' (나쁨)':''} · 미필 위주로 뽑혀 '특례 노림' 비판이 커지면 금메달 뒤 논란으로 다음 대회 특례가 멈출 수 있습니다${G.year<AG_EX.from-3?`(${AG_EX.from}년 대회부터)`:''}`; }
+function agExShort(){ const S=agExSt(); if(!S)return ''; const op=Math.round(S.op); return G.agExOff?`논란으로 불인정(${G.agExOff}) · 여론 ${op}`:`인정 · 여론 ${op}`; }
 /* 특례 노림 발탁: 미필 가산 없이 같은 명단을 뽑아 보고, 가산 덕에 들어간 미필 선수 수(b)와 미필 선수 수(u). 난수 없음 */
 let NT_NOMB=0;
 function agFarm(N,only){ if(!N||N.k!=='ag'||!NT_EV.ag.ex)return null; let S0=[]; NT_NOMB=1; try{ S0=ntSquad('ag',null,{only}); }finally{ NT_NOMB=0; } const s0=new Set(S0.map(x=>x.id)); const sq=N.ids.map(id=>G.players[id]).filter(Boolean), un=p=>!p.foreign&&!(p.mil&&(p.mil.done||p.mil.exempt));
