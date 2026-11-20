@@ -240,6 +240,7 @@ function evalTrade0(tid,give,get,cash,pk,actorTid,relOv){ const actor=actorTid??
     /* 리그 전체 눈치: 한 시즌에 우리가 트레이드를 많이 할수록(세 번째부터) 다른 단장들도 값을 올린다. KBO는 구단당 한 해 트레이드가 몇 건 안 된다 */
     { const nA=trades.filter(mine).length; if(nA>=2){ need+=repeatedV*.12*rk*(nA-1); parts.repV+=repeatedV*.12*rk*(nA-1); if(repeatedV)parts.rep+=.12*rk*(nA-1); } }
     if(HARD())need+=Math.max(1.5,outV)*.25; /* 하드 모드: 다른 단장들이 25% 더 요구한다 */
+    if(SOFT()&&actor===G.user)need-=Math.max(1.5,outV)*.15; /* 쉬움: 우리와의 거래만 15% 덜 요구한다. 아래 최소 이득(plainV 3%)·관문·독주 견제는 그대로라 공짜 거래는 안 된다 */
     { const S=startersOf(tid); const D=domTradeTax(t,actor,get.some(id=>S.has(id)&&!(P(id)&&P(id).aiListed)),bench); if(D.k>0&&!lstOnly){ const dv=trDomBase(premiumV,bench)*D.k*(fit?TR_TUNE.fitDom:1); need+=dv; domX={k:D.k,refuse:D.refuse,v:dv}; parts.dom=D.k; parts.domV=dv; } } /* 독주 견제(86b_dynasty): 우리가 독주 구단이면 경쟁 구단은 값을 올리고, 우승 경쟁 중인 구단은 주전을 내주지 않는다. 리빌딩 구단은 팔되 비싸게 */
     const core=new Set(domestic(tid).filter(q=>!q.ys&&!q.aiListed).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(q=>q.id)); if(get.some(id=>core.has(id))){ need+=Math.max(1,outV)*.2; parts.core=true; } }
   /* 한 명의 주축을 여러 명의 B급과 바꾸지 않는다: 받는 선수 중 가장 좋은 선수가 내주는 주축의 75%는 돼야 한다 */

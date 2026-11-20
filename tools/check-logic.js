@@ -10759,6 +10759,9 @@ T('[성장 11-20] 노장 비율: 기술형 베테랑 전성기 33·하락 35·�
   for(const tid of [G.user,otherT()]){ const base=domestic(tid).find(q=>!q.isP&&!q.prospect&&!q.foreign&&!q.mil); ok(base,'준비 실패'); const run=(o)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt='norm'; p.age=37; initPers(p); p.pers.pro=10; setOvr(p,o); delete p.declP; G.players[p.id]=p; const s0=__rngState(); __seed(11); const b=ovr(p); develop(p); const d=ovr(p)-b+Object.values(p.declP||{}).reduce((a,x)=>a+x,0)*.3; G.players[base.id]=base; return d; };
     const hi=run(52), lo=run(48); ok(hi<0&&lo<0&&Math.abs(hi)<Math.abs(lo),(tid===G.user?'우리':'AI')+' 능력 높은 노장 하락이 완만하지 않음 '+hi.toFixed(2)+'/'+lo.toFixed(2)); }
   ok(/age<=VET_SKILL_AGE/.test(String(develop)),'기술형 기술 성장 나이 상수 미사용'); });
+T('[사용자 11-21 쉬움] 쉬움 난이도는 우리와의 트레이드에서만 요구를 15% 줄이고, AI끼리 거래와 하드는 그대로다',()=>{ fresh(); G.cfg=G.cfg||{}; const T0=G.teams.filter(t=>t.id!==G.user), a=T0[0].id, b=T0[1].id; const pa=domestic(a).filter(p=>!p.ys).sort((x,y)=>ovr(y)-ovr(x))[3], pu=domestic(G.user).filter(p=>!p.ys).sort((x,y)=>ovr(y)-ovr(x))[3], pb=domestic(b).filter(p=>!p.ys).sort((x,y)=>ovr(y)-ovr(x))[3];
+  const nu=()=>evalTrade(a,[pa.id],[pu.id]).need, nai=()=>evalTrade(a,[pa.id],[pb.id],0,null,b).need; const u0=nu(), ai0=nai();
+  try{ G.cfg.soft=true; const u1=nu(), ai1=nai(); ok(u1<u0,'쉬움인데 우리 거래 요구가 줄지 않음 '+u0+'→'+u1); ok(Math.abs(ai1-ai0)<1e-9,'쉬움이 AI끼리 거래를 바꿈'); G.cfg.hard=true; ok(Math.abs(nu()-evalTrade(a,[pa.id],[pu.id]).need)<1e-9&&!SOFT(),'하드와 함께면 쉬움은 꺼져야 함'); } finally { delete G.cfg.soft; delete G.cfg.hard; } });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
