@@ -1,0 +1,5117 @@
+[
+  {
+    "id": "b_pool_0269_1__seoul_hounds",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-34032433-59cb-41d3-8a14-aa6109c65b14.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__seoul_hounds.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      2
+    ],
+    "center_256": [
+      131.31854248046875,
+      117.8612060546875
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "seoul_hounds",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__seoul_hounds",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-34032433-59cb-41d3-8a14-aa6109c65b14.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__seoul_hounds.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.23268127441406,
+      118.96395111083984
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "seoul_hounds",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__seoul_hounds",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-34032433-59cb-41d3-8a14-aa6109c65b14.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__seoul_hounds.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.4195556640625,
+      118.32466888427734
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "seoul_hounds",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__seoul_hounds",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-34032433-59cb-41d3-8a14-aa6109c65b14.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__seoul_hounds.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.15032958984375,
+      118.57954406738281
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "seoul_hounds",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__seoul_hounds",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-34032433-59cb-41d3-8a14-aa6109c65b14.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__seoul_hounds.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.4692840576172,
+      118.27528381347656
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "seoul_hounds",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__seoul_hounds",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-34032433-59cb-41d3-8a14-aa6109c65b14.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__seoul_hounds.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.56674194335938,
+      118.33426666259766
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "seoul_hounds",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__seoul_hounds",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-34032433-59cb-41d3-8a14-aa6109c65b14.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__seoul_hounds.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.9734649658203,
+      118.63116455078125
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "seoul_hounds",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__seoul_hounds",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-34032433-59cb-41d3-8a14-aa6109c65b14.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__seoul_hounds.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      1,
+      2
+    ],
+    "center_256": [
+      131.08746337890625,
+      117.9271011352539
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "seoul_hounds",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__incheon_seagulls",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-5814abda-3cae-44fd-8d51-0b111e3a9a81.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__incheon_seagulls.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -4
+    ],
+    "center_256": [
+      130.84979248046875,
+      118.2570571899414
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__incheon_seagulls",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-5814abda-3cae-44fd-8d51-0b111e3a9a81.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__incheon_seagulls.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -5,
+      -7
+    ],
+    "center_256": [
+      130.63548278808594,
+      118.38895416259766
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__incheon_seagulls",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-5814abda-3cae-44fd-8d51-0b111e3a9a81.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__incheon_seagulls.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -3,
+      -14
+    ],
+    "center_256": [
+      130.73475646972656,
+      118.49751281738281
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__incheon_seagulls",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-5814abda-3cae-44fd-8d51-0b111e3a9a81.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__incheon_seagulls.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -8,
+      -15
+    ],
+    "center_256": [
+      131.23043823242188,
+      118.67204284667969
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__incheon_seagulls",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-5814abda-3cae-44fd-8d51-0b111e3a9a81.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__incheon_seagulls.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -3,
+      -21
+    ],
+    "center_256": [
+      131.03048706054688,
+      117.56916809082031
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__incheon_seagulls",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-5814abda-3cae-44fd-8d51-0b111e3a9a81.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__incheon_seagulls.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -4,
+      -21
+    ],
+    "center_256": [
+      130.5667724609375,
+      117.9872055053711
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__incheon_seagulls",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-5814abda-3cae-44fd-8d51-0b111e3a9a81.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__incheon_seagulls.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -13
+    ],
+    "center_256": [
+      131.32113647460938,
+      118.07584381103516
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__incheon_seagulls",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-5814abda-3cae-44fd-8d51-0b111e3a9a81.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__incheon_seagulls.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      4,
+      -14
+    ],
+    "center_256": [
+      131.63775634765625,
+      118.3620376586914
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__suwon_sparks",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c49df1b1-8364-45e3-9abf-dbe9deb0714f.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__suwon_sparks.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -2
+    ],
+    "center_256": [
+      130.5525665283203,
+      118.1808853149414
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "suwon_sparks",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__suwon_sparks",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c49df1b1-8364-45e3-9abf-dbe9deb0714f.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__suwon_sparks.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -4,
+      -3
+    ],
+    "center_256": [
+      130.65228271484375,
+      118.34382629394531
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "suwon_sparks",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__suwon_sparks",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c49df1b1-8364-45e3-9abf-dbe9deb0714f.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__suwon_sparks.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      -7
+    ],
+    "center_256": [
+      130.39051818847656,
+      118.7359619140625
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "suwon_sparks",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__suwon_sparks",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-c49df1b1-8364-45e3-9abf-dbe9deb0714f.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__suwon_sparks.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -7,
+      -9
+    ],
+    "center_256": [
+      130.7862091064453,
+      119.05476379394531
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "suwon_sparks",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__suwon_sparks",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c49df1b1-8364-45e3-9abf-dbe9deb0714f.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__suwon_sparks.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      -10
+    ],
+    "center_256": [
+      130.76657104492188,
+      118.1528549194336
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "suwon_sparks",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__suwon_sparks",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c49df1b1-8364-45e3-9abf-dbe9deb0714f.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__suwon_sparks.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -7,
+      -9
+    ],
+    "center_256": [
+      130.78411865234375,
+      118.76517486572266
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "suwon_sparks",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__suwon_sparks",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c49df1b1-8364-45e3-9abf-dbe9deb0714f.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__suwon_sparks.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -9
+    ],
+    "center_256": [
+      130.7740478515625,
+      118.47420501708984
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "suwon_sparks",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__suwon_sparks",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-c49df1b1-8364-45e3-9abf-dbe9deb0714f.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__suwon_sparks.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -12
+    ],
+    "center_256": [
+      131.57730102539062,
+      118.54145812988281
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "suwon_sparks",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__goyang_storm",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-feb41501-b145-4e1b-9e03-625b8ef9abf8.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__goyang_storm.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.38619995117188,
+      117.93940734863281
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "goyang_storm",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__goyang_storm",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-feb41501-b145-4e1b-9e03-625b8ef9abf8.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__goyang_storm.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -3,
+      -4
+    ],
+    "center_256": [
+      131.05105590820312,
+      118.69261169433594
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "goyang_storm",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__goyang_storm",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-feb41501-b145-4e1b-9e03-625b8ef9abf8.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__goyang_storm.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      -12
+    ],
+    "center_256": [
+      130.8933868408203,
+      118.2516860961914
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "goyang_storm",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__goyang_storm",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-feb41501-b145-4e1b-9e03-625b8ef9abf8.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__goyang_storm.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -5,
+      -13
+    ],
+    "center_256": [
+      131.4473876953125,
+      118.2453842163086
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "goyang_storm",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__goyang_storm",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-feb41501-b145-4e1b-9e03-625b8ef9abf8.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__goyang_storm.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      -27
+    ],
+    "center_256": [
+      130.5249786376953,
+      118.54109191894531
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "goyang_storm",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__goyang_storm",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-feb41501-b145-4e1b-9e03-625b8ef9abf8.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__goyang_storm.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      -27
+    ],
+    "center_256": [
+      130.78900146484375,
+      118.37089538574219
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "goyang_storm",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__goyang_storm",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-feb41501-b145-4e1b-9e03-625b8ef9abf8.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__goyang_storm.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -1,
+      -9
+    ],
+    "center_256": [
+      131.20712280273438,
+      118.2609634399414
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "goyang_storm",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__goyang_storm",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-feb41501-b145-4e1b-9e03-625b8ef9abf8.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__goyang_storm.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      5,
+      -17
+    ],
+    "center_256": [
+      131.4484100341797,
+      118.29393005371094
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "goyang_storm",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__daejeon_redfox",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20168b02-0706-41c1-a8d1-8b2608a885db.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__daejeon_redfox.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -1,
+      -2
+    ],
+    "center_256": [
+      131.04421997070312,
+      118.52532958984375
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "daejeon_redfox",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__daejeon_redfox",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20168b02-0706-41c1-a8d1-8b2608a885db.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__daejeon_redfox.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -1,
+      -4
+    ],
+    "center_256": [
+      130.40794372558594,
+      118.24824523925781
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "daejeon_redfox",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__daejeon_redfox",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20168b02-0706-41c1-a8d1-8b2608a885db.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__daejeon_redfox.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -4,
+      -13
+    ],
+    "center_256": [
+      130.57522583007812,
+      118.28609466552734
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "daejeon_redfox",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__daejeon_redfox",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-20168b02-0706-41c1-a8d1-8b2608a885db.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__daejeon_redfox.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -5,
+      -12
+    ],
+    "center_256": [
+      130.85354614257812,
+      118.54707336425781
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "daejeon_redfox",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__daejeon_redfox",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20168b02-0706-41c1-a8d1-8b2608a885db.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__daejeon_redfox.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -3,
+      -18
+    ],
+    "center_256": [
+      131.15145874023438,
+      117.67317199707031
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "daejeon_redfox",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__daejeon_redfox",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20168b02-0706-41c1-a8d1-8b2608a885db.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__daejeon_redfox.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -5,
+      -16
+    ],
+    "center_256": [
+      131.10183715820312,
+      118.45365905761719
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "daejeon_redfox",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__daejeon_redfox",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-20168b02-0706-41c1-a8d1-8b2608a885db.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__daejeon_redfox.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -21
+    ],
+    "center_256": [
+      130.84092712402344,
+      118.2803955078125
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "daejeon_redfox",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__daejeon_redfox",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-20168b02-0706-41c1-a8d1-8b2608a885db.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__daejeon_redfox.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -4,
+      -24
+    ],
+    "center_256": [
+      131.2465362548828,
+      118.70927429199219
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "daejeon_redfox",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__gwangju_blazes",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-e4bfa08d-4ccf-46ce-b76a-27a47391c942.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__gwangju_blazes.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -4
+    ],
+    "center_256": [
+      130.5057830810547,
+      118.27626037597656
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "gwangju_blazes",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__gwangju_blazes",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-e4bfa08d-4ccf-46ce-b76a-27a47391c942.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__gwangju_blazes.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -3,
+      -5
+    ],
+    "center_256": [
+      131.00506591796875,
+      118.17784118652344
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "gwangju_blazes",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__gwangju_blazes",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-e4bfa08d-4ccf-46ce-b76a-27a47391c942.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__gwangju_blazes.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -4,
+      -12
+    ],
+    "center_256": [
+      130.7744140625,
+      118.8869857788086
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "gwangju_blazes",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__gwangju_blazes",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-e4bfa08d-4ccf-46ce-b76a-27a47391c942.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__gwangju_blazes.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -6,
+      -12
+    ],
+    "center_256": [
+      130.9940185546875,
+      118.8358154296875
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "gwangju_blazes",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__gwangju_blazes",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-e4bfa08d-4ccf-46ce-b76a-27a47391c942.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__gwangju_blazes.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -5,
+      -20
+    ],
+    "center_256": [
+      131.42185974121094,
+      117.70771789550781
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "gwangju_blazes",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__gwangju_blazes",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-e4bfa08d-4ccf-46ce-b76a-27a47391c942.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__gwangju_blazes.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -7,
+      -18
+    ],
+    "center_256": [
+      131.28756713867188,
+      118.1880111694336
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "gwangju_blazes",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__gwangju_blazes",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-e4bfa08d-4ccf-46ce-b76a-27a47391c942.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__gwangju_blazes.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -14
+    ],
+    "center_256": [
+      131.31201171875,
+      118.36861419677734
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "gwangju_blazes",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__gwangju_blazes",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-e4bfa08d-4ccf-46ce-b76a-27a47391c942.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__gwangju_blazes.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      5,
+      -15
+    ],
+    "center_256": [
+      130.97792053222656,
+      118.06746673583984
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "gwangju_blazes",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__daegu_thunders",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1766d791-56d0-4bb0-86e2-276353bc9702.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__daegu_thunders.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -6
+    ],
+    "center_256": [
+      130.85215759277344,
+      118.663818359375
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "daegu_thunders",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__daegu_thunders",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1766d791-56d0-4bb0-86e2-276353bc9702.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__daegu_thunders.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -1,
+      -5
+    ],
+    "center_256": [
+      131.03903198242188,
+      118.60384368896484
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "daegu_thunders",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__daegu_thunders",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1766d791-56d0-4bb0-86e2-276353bc9702.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__daegu_thunders.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      -14
+    ],
+    "center_256": [
+      130.88192749023438,
+      118.7380599975586
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "daegu_thunders",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__daegu_thunders",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-1766d791-56d0-4bb0-86e2-276353bc9702.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__daegu_thunders.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -5,
+      -14
+    ],
+    "center_256": [
+      131.0675811767578,
+      118.2868423461914
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "daegu_thunders",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__daegu_thunders",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1766d791-56d0-4bb0-86e2-276353bc9702.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__daegu_thunders.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      -19
+    ],
+    "center_256": [
+      131.59371948242188,
+      117.69731140136719
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "daegu_thunders",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__daegu_thunders",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1766d791-56d0-4bb0-86e2-276353bc9702.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__daegu_thunders.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -3,
+      -19
+    ],
+    "center_256": [
+      131.02256774902344,
+      118.15840148925781
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "daegu_thunders",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__daegu_thunders",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-1766d791-56d0-4bb0-86e2-276353bc9702.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__daegu_thunders.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      2,
+      -17
+    ],
+    "center_256": [
+      130.84457397460938,
+      118.4143295288086
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "daegu_thunders",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__daegu_thunders",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-1766d791-56d0-4bb0-86e2-276353bc9702.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__daegu_thunders.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      5,
+      -19
+    ],
+    "center_256": [
+      131.50155639648438,
+      118.1199722290039
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "daegu_thunders",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__busan_waves",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-0718eee3-b3c8-4f2a-9ccc-6bbfa4cf6704.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__busan_waves.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.44610595703125,
+      118.1392822265625
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "busan_waves",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__busan_waves",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-0718eee3-b3c8-4f2a-9ccc-6bbfa4cf6704.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__busan_waves.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.29330444335938,
+      117.907470703125
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "busan_waves",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__busan_waves",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-0718eee3-b3c8-4f2a-9ccc-6bbfa4cf6704.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__busan_waves.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -6
+    ],
+    "center_256": [
+      130.59756469726562,
+      118.9869384765625
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "busan_waves",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__busan_waves",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-0718eee3-b3c8-4f2a-9ccc-6bbfa4cf6704.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__busan_waves.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -1,
+      -6
+    ],
+    "center_256": [
+      131.08432006835938,
+      118.99964904785156
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "busan_waves",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__busan_waves",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-0718eee3-b3c8-4f2a-9ccc-6bbfa4cf6704.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__busan_waves.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      -5
+    ],
+    "center_256": [
+      130.76535034179688,
+      118.12650299072266
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "busan_waves",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__busan_waves",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-0718eee3-b3c8-4f2a-9ccc-6bbfa4cf6704.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__busan_waves.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      1,
+      -5
+    ],
+    "center_256": [
+      130.51512145996094,
+      118.38871002197266
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "busan_waves",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__busan_waves",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-0718eee3-b3c8-4f2a-9ccc-6bbfa4cf6704.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__busan_waves.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.74583435058594,
+      117.64930725097656
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "busan_waves",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__busan_waves",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-0718eee3-b3c8-4f2a-9ccc-6bbfa4cf6704.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__busan_waves.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      2,
+      0
+    ],
+    "center_256": [
+      131.37722778320312,
+      118.04988098144531
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "busan_waves",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__changwon_anchors",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-df0cab98-247d-4fd7-b694-eddebf09d941.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__changwon_anchors.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.36685180664062,
+      118.42520904541016
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "changwon_anchors",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__changwon_anchors",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-df0cab98-247d-4fd7-b694-eddebf09d941.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__changwon_anchors.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.7763671875,
+      117.99543762207031
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "changwon_anchors",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__changwon_anchors",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-df0cab98-247d-4fd7-b694-eddebf09d941.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__changwon_anchors.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.90921020507812,
+      118.3130111694336
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "changwon_anchors",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__changwon_anchors",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-df0cab98-247d-4fd7-b694-eddebf09d941.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__changwon_anchors.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.74537658691406,
+      118.50529479980469
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "changwon_anchors",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__changwon_anchors",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-df0cab98-247d-4fd7-b694-eddebf09d941.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__changwon_anchors.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.8115234375,
+      118.18599700927734
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "changwon_anchors",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__changwon_anchors",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-df0cab98-247d-4fd7-b694-eddebf09d941.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__changwon_anchors.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.1649627685547,
+      118.48298645019531
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "changwon_anchors",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__changwon_anchors",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-df0cab98-247d-4fd7-b694-eddebf09d941.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__changwon_anchors.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.9026641845703,
+      118.87728118896484
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "changwon_anchors",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__changwon_anchors",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-df0cab98-247d-4fd7-b694-eddebf09d941.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__changwon_anchors.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.0204620361328,
+      118.92134094238281
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "changwon_anchors",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__univ",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-f1dfb380-ba26-45de-9a0e-52e3df4bd374.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__univ.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.54421997070312,
+      118.25306701660156
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "univ",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__univ",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-f1dfb380-ba26-45de-9a0e-52e3df4bd374.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__univ.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.326171875,
+      117.96684265136719
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "univ",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__univ",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-f1dfb380-ba26-45de-9a0e-52e3df4bd374.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__univ.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.12307739257812,
+      118.1156005859375
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "univ",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__univ",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-f1dfb380-ba26-45de-9a0e-52e3df4bd374.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__univ.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      130.92803955078125,
+      118.2931137084961
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "univ",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__univ",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-f1dfb380-ba26-45de-9a0e-52e3df4bd374.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__univ.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.00729370117188,
+      118.4202880859375
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "univ",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__univ",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-f1dfb380-ba26-45de-9a0e-52e3df4bd374.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__univ.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.359130859375,
+      118.7961196899414
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "univ",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__univ",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-f1dfb380-ba26-45de-9a0e-52e3df4bd374.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__univ.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      0,
+      0
+    ],
+    "center_256": [
+      131.12203979492188,
+      118.9052734375
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "univ",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__univ",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-f1dfb380-ba26-45de-9a0e-52e3df4bd374.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__univ.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      1,
+      2
+    ],
+    "center_256": [
+      130.81607055664062,
+      118.0635757446289
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "univ",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0269_1__seoul_comets",
+    "seed_id": "pool_0269_1",
+    "age": 20,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-8e2d0b0b-89e6-4139-bd8d-71708391522d.png",
+    "crop": [
+      3,
+      3,
+      440,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0269_1__seoul_comets.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -1,
+      -5
+    ],
+    "center_256": [
+      131.13807678222656,
+      118.35807800292969
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 73,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38725918531417847,
+    "guard_old": 0.31097009778022766,
+    "guard_B17": 0.372608482837677,
+    "measurement_photo_id": "b_native_pool_0269_1",
+    "actual_photos": {
+      "id": "b_native_pool_0269_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0269_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C123",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 122,
+    "master_photo_id": "b_native_pool_0269_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B066",
+    "review_id": "B066",
+    "source_person_id": "b_pool_0269_1",
+    "index": 165,
+    "sheet": "B",
+    "variant": "seoul_comets",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0260_1__seoul_comets",
+    "seed_id": "pool_0260_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-8e2d0b0b-89e6-4139-bd8d-71708391522d.png",
+    "crop": [
+      446,
+      3,
+      883,
+      440
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0260_1__seoul_comets.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      -6
+    ],
+    "center_256": [
+      130.80104064941406,
+      118.5672836303711
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 48,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3872005045413971,
+    "guard_old": 0.3062190115451813,
+    "guard_B17": 0.36444658041000366,
+    "measurement_photo_id": "b_native_pool_0260_1",
+    "actual_photos": {
+      "id": "b_native_pool_0260_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0260_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C124",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 123,
+    "master_photo_id": "b_native_pool_0260_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B067",
+    "review_id": "B067",
+    "source_person_id": "b_pool_0260_1",
+    "index": 166,
+    "sheet": "B",
+    "variant": "seoul_comets",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0076_1__seoul_comets",
+    "seed_id": "pool_0076_1",
+    "age": 18,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-8e2d0b0b-89e6-4139-bd8d-71708391522d.png",
+    "crop": [
+      3,
+      446,
+      440,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0076_1__seoul_comets.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -1,
+      -9
+    ],
+    "center_256": [
+      130.75254821777344,
+      118.54813385009766
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 7,
+    "canonical_screen_index": 38,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3875972628593445,
+    "guard_old": 0.24492761492729187,
+    "guard_B17": 0.34145987033843994,
+    "measurement_photo_id": "alt_native_pool_0076_1",
+    "actual_photos": {
+      "id": "alt_native_pool_0076_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch07/alt_native_pool_0076_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C125",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 124,
+    "master_photo_id": "alt_native_pool_0076_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B068",
+    "review_id": "B068",
+    "source_person_id": "b_pool_0076_1",
+    "index": 167,
+    "sheet": "B",
+    "variant": "seoul_comets",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0267_0__seoul_comets",
+    "seed_id": "pool_0267_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-8e2d0b0b-89e6-4139-bd8d-71708391522d.png",
+    "crop": [
+      446,
+      446,
+      883,
+      883
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0267_0__seoul_comets.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -5,
+      -10
+    ],
+    "center_256": [
+      131.1289825439453,
+      118.80831146240234
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 69,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38808202743530273,
+    "guard_old": 0.2748497724533081,
+    "guard_B17": 0.3163089156150818,
+    "measurement_photo_id": "b_native_pool_0267_0",
+    "actual_photos": {
+      "id": "b_native_pool_0267_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0267_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C129",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 2.5396825396825395,
+    "feature_index": 128,
+    "master_photo_id": "b_native_pool_0267_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B069",
+    "review_id": "B069",
+    "source_person_id": "b_pool_0267_0",
+    "index": 168,
+    "sheet": "B",
+    "variant": "seoul_comets",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0202_1__seoul_comets",
+    "seed_id": "pool_0202_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-8e2d0b0b-89e6-4139-bd8d-71708391522d.png",
+    "crop": [
+      3,
+      889,
+      440,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0202_1__seoul_comets.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -2,
+      -14
+    ],
+    "center_256": [
+      130.9307403564453,
+      118.09073638916016
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 67,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38813528418540955,
+    "guard_old": 0.29831936955451965,
+    "guard_B17": 0.35487061738967896,
+    "measurement_photo_id": "b_native_pool_0202_1",
+    "actual_photos": {
+      "id": "b_native_pool_0202_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0202_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C130",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 3.0476190476190474,
+    "feature_index": 129,
+    "master_photo_id": "b_native_pool_0202_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B070",
+    "review_id": "B070",
+    "source_person_id": "b_pool_0202_1",
+    "index": 169,
+    "sheet": "B",
+    "variant": "seoul_comets",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0237_0__seoul_comets",
+    "seed_id": "pool_0237_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-8e2d0b0b-89e6-4139-bd8d-71708391522d.png",
+    "crop": [
+      446,
+      889,
+      883,
+      1326
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0237_0__seoul_comets.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      -3,
+      -13
+    ],
+    "center_256": [
+      131.05551147460938,
+      118.48490905761719
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 3,
+    "canonical_screen_index": 79,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38816678524017334,
+    "guard_old": 0.24916131794452667,
+    "guard_B17": 0.2535417675971985,
+    "measurement_photo_id": "b_native_pool_0237_0",
+    "actual_photos": {
+      "id": "b_native_pool_0237_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch03/b_native_pool_0237_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C131",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 130,
+    "master_photo_id": "b_native_pool_0237_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B071",
+    "review_id": "B071",
+    "source_person_id": "b_pool_0237_0",
+    "index": 170,
+    "sheet": "B",
+    "variant": "seoul_comets",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0204_1__seoul_comets",
+    "seed_id": "pool_0204_1",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-8e2d0b0b-89e6-4139-bd8d-71708391522d.png",
+    "crop": [
+      3,
+      1332,
+      440,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0204_1__seoul_comets.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      1,
+      -3
+    ],
+    "center_256": [
+      130.99447631835938,
+      118.3572006225586
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 74,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3881833851337433,
+    "guard_old": 0.2448570430278778,
+    "guard_B17": 0.38357067108154297,
+    "measurement_photo_id": "b_native_pool_0204_1",
+    "actual_photos": {
+      "id": "b_native_pool_0204_1",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0204_1_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C132",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 131,
+    "master_photo_id": "b_native_pool_0204_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B072",
+    "review_id": "B072",
+    "source_person_id": "b_pool_0204_1",
+    "index": 171,
+    "sheet": "B",
+    "variant": "seoul_comets",
+    "cohort": 6
+  },
+  {
+    "id": "b_pool_0279_3__seoul_comets",
+    "seed_id": "pool_0279_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-8e2d0b0b-89e6-4139-bd8d-71708391522d.png",
+    "crop": [
+      446,
+      1332,
+      883,
+      1769
+    ],
+    "source": "same_identity_uniform_only_image_edit",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_uniform_cohort_06/b_pool_0279_3__seoul_comets.png",
+    "native_edge": 437,
+    "translation_origin_xy": [
+      7,
+      -3
+    ],
+    "center_256": [
+      131.23684692382812,
+      117.8223876953125
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 5,
+    "canonical_screen_index": 4,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3241226375102997,
+    "guard_old": 0.3889315724372864,
+    "guard_B17": 0.34407711029052734,
+    "measurement_photo_id": "b_native_pool_0279_3",
+    "actual_photos": {
+      "id": "b_native_pool_0279_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch05/b_native_pool_0279_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C135",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 11.174603174603174,
+    "feature_index": 134,
+    "master_photo_id": "b_native_pool_0279_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B073",
+    "review_id": "B073",
+    "source_person_id": "b_pool_0279_3",
+    "index": 172,
+    "sheet": "B",
+    "variant": "seoul_comets",
+    "cohort": 6
+  }
+]

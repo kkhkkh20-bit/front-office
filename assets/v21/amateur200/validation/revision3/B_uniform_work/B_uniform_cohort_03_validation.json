@@ -1,0 +1,14 @@
+{
+  "cohort": 3,
+  "photo_count": 88,
+  "identity_count": 8,
+  "same_person_min": {
+    "128": 0.7236124277114868,
+    "256": 0.848143458366394,
+    "384": 0.8484024405479431
+  },
+  "same_person_failures": [],
+  "center_deviation_max": 1.2154281594140457,
+  "passed": true,
+  "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+}

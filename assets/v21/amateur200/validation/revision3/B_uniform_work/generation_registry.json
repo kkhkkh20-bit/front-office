@@ -1,0 +1,728 @@
+[
+  {
+    "cohort": 0,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-337c1197-c52e-4869-9d91-da1230f260ab.png",
+    "sha256": "e37e648cb70270086801da9ed123bce13f66ae6b896e0a6032092e310e87473e"
+  },
+  {
+    "cohort": 0,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-8d201b8c-e933-4c80-b4cf-5f3a5d47fe4d.png",
+    "sha256": "62373599644b4e5375de07f56d7bd02c17b63965290bb44836c1a3d4a0294d09"
+  },
+  {
+    "cohort": 0,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-31cdb544-7d17-4c57-8a4c-02d058e1f5e5.png",
+    "sha256": "621a6f0ea42a6e423758f52ae00bfebf13cc5e721d87b79e9a40e1bf69333dc9"
+  },
+  {
+    "cohort": 0,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-4f241516-5aa2-4867-8870-d968f66f947c.png",
+    "sha256": "360a1fa5bc935f4a99db9312071d4bcb84d532b9a77dcf9367191e562af83161"
+  },
+  {
+    "cohort": 0,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-3c220c84-0c28-42d5-81e1-e27a21a54621.png",
+    "sha256": "c5c69b48b0effca69ab8cfc5b6869109e275ba703328667eb54a118c543e71b2"
+  },
+  {
+    "cohort": 0,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-2f04c238-a990-457a-82d1-2a92991666dd.png",
+    "sha256": "68439e812fd8f3cfec163ef55b5c24b87422a72c628e74703ca30a2aeca1b2d6"
+  },
+  {
+    "cohort": 1,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-a4b00b52-7b26-49f9-b2cb-1174d78f6a3e.png",
+    "sha256": "0e20969180ba11987b4ab412c33fdb6ea4eb3739c2b801dc7fa2abe718819b65"
+  },
+  {
+    "cohort": 0,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-b93449c0-8809-4055-a83d-ba1777cb4344.png",
+    "sha256": "c57c03e2540d4871364ae17bb73ff5998cfc1d32862dc2a40d85c62b81204062"
+  },
+  {
+    "cohort": 1,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-f87de519-2431-476e-88de-5d22e55b6cdd.png",
+    "sha256": "4fb2d45cf1856bb34ed03e8715d654ef86fe0059b443b9d2982302917f75b658"
+  },
+  {
+    "cohort": 0,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-68ca7541-bc68-4c70-9147-0579706176a4.png",
+    "sha256": "c97f0f07a3f6d4b78e19ff9c0d2252b30f1052e1dd8cb928774f0aa298510adf"
+  },
+  {
+    "cohort": 0,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-b8564d56-4e41-4ffc-885a-c4fa50cd5e7b.png",
+    "sha256": "794ca4a495bdde78b9bea70a47f22e9b79d41efafeda84b4b73f9cb1749030b6"
+  },
+  {
+    "cohort": 2,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-c407e7c7-54d2-48e3-b54e-00ceea5359bf.png",
+    "sha256": "97887490fbba84494f6bfb16b15fd9ce435119ceba4b39bb0d474b2e78a70e54"
+  },
+  {
+    "cohort": 1,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-6a1be401-8e96-4408-bc97-b34de761e49c.png",
+    "sha256": "f4c038850af7b88c978a957390a2b98b5adaa174b15f1ae2696f08568737b6d8"
+  },
+  {
+    "cohort": 1,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-301ddfb3-141d-4f6d-9520-745a15b39ffa.png",
+    "sha256": "913ff3d3bcdd32ac350c993a467cfe49a2fabf93c94d3599bcaad7922f827575"
+  },
+  {
+    "cohort": 1,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-41d58087-4849-4bae-94fe-3b93f5193534.png",
+    "sha256": "02e015ed35396910b40222d5afd4011c75c5557946dfde411380860f3247dedc"
+  },
+  {
+    "cohort": 2,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-de7edcb2-3dbe-4ca3-aaa7-679d10367dd4.png",
+    "sha256": "e5654cf894b0e81064aee4e7f57925e578968544a5162d549dac529c645d27ee"
+  },
+  {
+    "cohort": 2,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-aee4568b-1030-45ed-8390-22971d28b801.png",
+    "sha256": "f0a491876af1edb1a0ad7d1cef2cfef7bf02a3e4f3a99da6efc4fa2c16d3f28e"
+  },
+  {
+    "cohort": 2,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-9a8d3699-b514-4035-aa9a-b5f18c0350b5.png",
+    "sha256": "f7d072e2cc59a70a6bf2e204efb68801725e676de7fc2c17d1de5d97964244b3"
+  },
+  {
+    "cohort": 1,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-9b83360a-4c1b-4eb6-98c9-7031e24f05e1.png",
+    "sha256": "a0bd74ebe67e7e472ac5e9e9d29c44dfa184ba6e9b41f870487e310eb4dbe299"
+  },
+  {
+    "cohort": 0,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-aef8d3d2-9aa5-47c3-879d-b4c8f502bf46.png",
+    "sha256": "eccd8b74cec4f2bccf3a248d86d2f4794f4d7aef167b391da8a9841aa48d2a8d"
+  },
+  {
+    "cohort": 0,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-a7da2636-b807-4a56-a9f5-ed01229a1af7.png",
+    "sha256": "0aa0980e886c144ca51020c3bb579df4d1bc32158474e47efbc60d2b6f4a162d"
+  },
+  {
+    "cohort": 2,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-4308d440-020a-4f64-a255-9c725b02ff78.png",
+    "sha256": "90d4e7a7eec76cc5dee706024d3d59a41668cf311e925ad51d4d4e2059d0ead1"
+  },
+  {
+    "cohort": 3,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-de908783-9961-402a-861a-7d5f9e2f15a7.png",
+    "sha256": "108162a4d97a24d050d87b895c9f035d9624e14a467b845d0b35909696416701"
+  },
+  {
+    "cohort": 3,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-dc422e31-44c8-49fa-aea4-5d6becf88ad0.png",
+    "sha256": "803b8320097f3896555978e36d10692ddbf3d363a768219d8fd217637ba1aa9c"
+  },
+  {
+    "cohort": 1,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-eb38323f-727b-42cb-9ec1-79a2bfc8b924.png",
+    "sha256": "b6c7391b375201ef8bec98aa667a657895ba5eee51074367849c02034ff31708"
+  },
+  {
+    "cohort": 1,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-6b296b60-7854-4f97-bad3-df1099f8cf5d.png",
+    "sha256": "65b7a03b8c8f1869f324c24d625f0701762604962efb1204e30c788bdb8a96d8"
+  },
+  {
+    "cohort": 3,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-db39e061-6af4-4147-b904-d08cc151724a.png",
+    "sha256": "39f301d12ba0f4c445b8b618a24b28d4eed9732f1c4e10535a9e9eed60c5753b"
+  },
+  {
+    "cohort": 2,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-c728def7-1de0-4473-b8d3-a41d2a7188bd.png",
+    "sha256": "785a94054f658097790c9522ccb7f6a37edf1188c63363a7840f0ddbc7a05eab"
+  },
+  {
+    "cohort": 3,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-dfa01263-49f7-4f2b-aa3c-45ea9b2aa0b3.png",
+    "sha256": "0d736a092e9474ec03fcc16c347a96235653ce5723710e5b6a11be9a2e381db9"
+  },
+  {
+    "cohort": 3,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-a3303b1d-3a5a-49d4-839d-13297a7a9e5c.png",
+    "sha256": "9c21f81eab37e61b80187de581f805f25b7f12b18ec4247cbec3f04e521412c7"
+  },
+  {
+    "cohort": 2,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-d48e8bfb-40c1-47ac-9735-a6ad14c0116a.png",
+    "sha256": "087ce63c8421d595e0ca10748e0aee2c15347b67751316a6b82b747b2d1ad24d"
+  },
+  {
+    "cohort": 3,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-921a5772-04e1-4a5e-b882-0824d13b4c8c.png",
+    "sha256": "a68f0a78bf3c59923cb510ed128941b096c38c60a4e683b5d260947fd29f822d"
+  },
+  {
+    "cohort": 3,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-8b245d11-b498-4c5a-a8a0-6ac20bd2cc55.png",
+    "sha256": "00990f58e1e8f3b4b38704987f06cb601ae7b171e00a71d81f872085c3f14e64"
+  },
+  {
+    "cohort": 4,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-56259f4b-c008-49b3-9565-fea4e1b3f751.png",
+    "sha256": "029ddcbb545af0f99fc79e5c0b074be6d03a61322d4a71b64419405d86a977d1"
+  },
+  {
+    "cohort": 2,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-0644a1c5-9755-4d4b-9b59-89bbe9adfd66.png",
+    "sha256": "216a30855484016d6881bc365ece292efda6b3dfbc46dfcf321f6e2b553c6fa8"
+  },
+  {
+    "cohort": 3,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-8430cc80-b842-41c9-84a5-8680a4e02942.png",
+    "sha256": "a85dc9dc83e58de05b9fafb62914b1421aef6cb47bfcb7a8273de2bc2bb30d4e"
+  },
+  {
+    "cohort": 4,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-712fc6a8-8924-4fbe-9add-d2c3d81ea6ae.png",
+    "sha256": "38650e843b4b696cbbd0b58dfce7e48c5b660a2a615b864af4b625e38ea030df"
+  },
+  {
+    "cohort": 1,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-0b284cae-4da8-49de-bd9c-0c3f3a788ce7.png",
+    "sha256": "ef13bcb87e05da9cb2b213c2db4c6bf5b0d5647cd48c82580c13b5d4d187d557"
+  },
+  {
+    "cohort": 3,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-a9970838-671b-47d3-986b-637935aaa8b5.png",
+    "sha256": "31490d39469e5fc5f79d382252fe2e7f9723e907314678bc29e0f455190217fc"
+  },
+  {
+    "cohort": 2,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-6056517b-6ee7-4cc9-a092-72bfecc297cb.png",
+    "sha256": "f18117029aca99ae6ec918195bde13a1bc2fed5e7138540213030132e77d5a52"
+  },
+  {
+    "cohort": 3,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-3482c779-f12e-40ad-ad65-88982ca0895e.png",
+    "sha256": "cfa945b8c02507200acc25fc70095d9f3bd1657554c113ab9ebdf8720d9289b1"
+  },
+  {
+    "cohort": 4,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-1c9a16ec-e6c8-4945-90eb-cca6e2a0a1ff.png",
+    "sha256": "8bf6daa52b41f13984ad2b0377b16c1ce6cbf49f01f5ea3a031bd6fd5a6c74a1"
+  },
+  {
+    "cohort": 1,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-60b5acab-5cf4-4166-b989-3ae42c1f0d8a.png",
+    "sha256": "a8c01ca39463b75a73f456f40a7bf2ff87816d05989e32c0a6b3368ead68f4b0"
+  },
+  {
+    "cohort": 2,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-b257c64d-3cd9-4c0e-9b98-e3fd04c4459a.png",
+    "sha256": "995282bbe6f3fb2362e854d00c586e3ce7c1e8f27f0b707289d6a8628d9bafb6"
+  },
+  {
+    "cohort": 4,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-3099a432-fd62-4d65-8505-b45e73dc61c8.png",
+    "sha256": "30f2a824ebaee87afe63b0c8b0ce72eca1b561fb8b0545fe07aae15a2a38205e"
+  },
+  {
+    "cohort": 3,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-75b5dcca-3d08-423a-8751-64523a533cd1.png",
+    "sha256": "96dfec5f3b1909f0934dbccd5154b66c5d3d4c0b96c1c384fff7faeb387fe601"
+  },
+  {
+    "cohort": 4,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-61cd82b3-b1ab-4c87-b6e4-f86255ae9414.png",
+    "sha256": "25f86f896deaee457e61a95e79322e68983bd4d586235eadad9a8a30b4d6b791"
+  },
+  {
+    "cohort": 1,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-f582b655-2098-4f6d-8bfe-0409bc228f23.png",
+    "sha256": "7312bda12f17ac039026bf9c4a1a6e057c99ba35799fc267e20db1eec234d516"
+  },
+  {
+    "cohort": 4,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-de09e988-38bc-4855-a942-e633bf4535f4.png",
+    "sha256": "1c52d869f47ed971191b7d291c8f11ee9db28b73f77896aa1fc6758c84ce9364"
+  },
+  {
+    "cohort": 4,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-7f97a652-3821-4c21-bd10-98766ae185c2.png",
+    "sha256": "a71c79785fdbb59f946f62a78b76b056baa8e17a83299850adb16f453d6a65bb"
+  },
+  {
+    "cohort": 2,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-ffa9c21d-43ef-4df9-8b91-3b1439c69392.png",
+    "sha256": "d632c72858c2a362ad3f1c11e75db3c2429282a9e03b7e9c1dd89d98d7dbabd4"
+  },
+  {
+    "cohort": 4,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-c64ea324-c2a6-48db-95c5-c88733d72127.png",
+    "sha256": "d753bd64ff59a3db6a61483485652c87d9b4707cc6bedd3cefdfb9cce676d97c"
+  },
+  {
+    "cohort": 4,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-a492ca45-0512-4782-a9b5-d64a180ff33b.png",
+    "sha256": "65aacd8a343695089fa946c76128236e26c3fce981fdfd7f97f61dbed56833c2"
+  },
+  {
+    "cohort": 5,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-b185939e-6199-4a61-941d-4645d75e3fd1.png",
+    "sha256": "f6bbd4122eddf974a8f8094723d247b77d5700d74d379a3dad2f5eea4eea304b"
+  },
+  {
+    "cohort": 5,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-f5c8b706-ea8b-4647-93ed-f49e829aa669.png",
+    "sha256": "cfa754bd0bd07f3a592d083889caa85401a29339affbf058e05acd4deacf7641"
+  },
+  {
+    "cohort": 4,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-b29cdf78-6934-4d4b-8117-fd441049f7bf.png",
+    "sha256": "077ea700b056ec6aa518db60c47eeff81d0ddd5a1ee4ccda0f5fbbf813ab4f48"
+  },
+  {
+    "cohort": 5,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-be2adb01-38d4-4ed2-af43-e1c7ee715b98.png",
+    "sha256": "f5cf9bf7d4e9b1990a1faa82157946cce0d3f6594ccc0031db47d76347ee8d5d"
+  },
+  {
+    "cohort": 4,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-af7ef4c1-e7d1-46f8-8e7c-7e81b008521e.png",
+    "sha256": "0f7d8de63fba5349880c4d7d493f2df7ce27ba15a51771e03d6d8e7ceed9bead"
+  },
+  {
+    "cohort": 5,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-1fc92d9f-440e-4108-83cf-154bc9417dce.png",
+    "sha256": "1f91c39f986d3a8c70121eed465aae1ec83b151fb7e79b5b19e8af744cc14a8c"
+  },
+  {
+    "cohort": 5,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-4280da70-e07d-49bf-abc4-32c37730a452.png",
+    "sha256": "56c24aee9d0be4206b043ee91767d184328e96956463b62da9d756fd461ef805"
+  },
+  {
+    "cohort": 5,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-35bb9671-95ad-445d-820b-06d033bb7215.png",
+    "sha256": "ab7f880f4a018b0c244eb2af517750b439fe1b590314e3b41b61bc134fc6a57b"
+  },
+  {
+    "cohort": 5,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-4219446a-6d23-4ad1-adec-d7c150f871b4.png",
+    "sha256": "c1deb04a417a2b1c75a99a663a07b4e0e9b3a7c965112e567c129c327b69d0e6"
+  },
+  {
+    "cohort": 6,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-34032433-59cb-41d3-8a14-aa6109c65b14.png",
+    "sha256": "5808a473ee7bcf5327da3ab021ea82fbe42d0bbd7931f69ebc19c22e5ce51dc6"
+  },
+  {
+    "cohort": 5,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-d678e5b8-c541-445b-9dd2-bfc99fdbec5d.png",
+    "sha256": "3cf3ab9b14ff64c21d8fa37d9ad39f04f02db99785052e08ef364fc211f54304"
+  },
+  {
+    "cohort": 5,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-4d080767-762c-4524-b40b-c1a2dcd83a98.png",
+    "sha256": "f0bee4e00ea89bd64687fd5f565433252c385770f70eaeb500dde2c5131ae23a"
+  },
+  {
+    "cohort": 5,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-6dcf8046-a64c-424b-bf8d-9d3be3ca01ff.png",
+    "sha256": "7694e194371dafbcaabfa7111ee654e71bf1adc584a02863afdef548f7c1ea24"
+  },
+  {
+    "cohort": 5,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-08be1ae0-657f-43f0-89b4-4cf33e252d5e.png",
+    "sha256": "00dee136668b2b65cbfa7131cfd92bf996f0683dead0ea35608c3374574d2473"
+  },
+  {
+    "cohort": 6,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-feb41501-b145-4e1b-9e03-625b8ef9abf8.png",
+    "sha256": "59d13680685633c27ed11c315e8d62f52e1c578508a62e0811de86a84d0e2606"
+  },
+  {
+    "cohort": 6,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-f1dfb380-ba26-45de-9a0e-52e3df4bd374.png",
+    "sha256": "ad4acbf5d920aff32d5dd904eb33ae30c7ebe8291cea1a21ba63b7df6c9ec0a1"
+  },
+  {
+    "cohort": 6,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-c49df1b1-8364-45e3-9abf-dbe9deb0714f.png",
+    "sha256": "59f4063af77508e7f28ec56973aabf5799c185639ccb20910b1c7d97ab835b6b"
+  },
+  {
+    "cohort": 6,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-5814abda-3cae-44fd-8d51-0b111e3a9a81.png",
+    "sha256": "7ec3eebc4c067c183b05f2024320e780ae491428be3158d4d1e7257bcd9e350f"
+  },
+  {
+    "cohort": 6,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-20168b02-0706-41c1-a8d1-8b2608a885db.png",
+    "sha256": "4464c4a5dea0db0b4c57601bd70f4684b9b286b4d01a680c412261735bfc5ed0"
+  },
+  {
+    "cohort": 6,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-0718eee3-b3c8-4f2a-9ccc-6bbfa4cf6704.png",
+    "sha256": "01670906f05e814e469134cabe54b0c0459c7b442b67dbf9b56bf2d61b2f8682"
+  },
+  {
+    "cohort": 6,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-8e2d0b0b-89e6-4139-bd8d-71708391522d.png",
+    "sha256": "ca149eaa70cce86619dc0b68acba0f0aadfc4cf786b93e2b3c7f66a1b50b877c"
+  },
+  {
+    "cohort": 7,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-15d16ee0-b0bc-417b-a380-99834379b90c.png",
+    "sha256": "61f8e9a195dba87490454164526b19f7295502fa8d5016079f98628777bb6b2a"
+  },
+  {
+    "cohort": 6,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-e4bfa08d-4ccf-46ce-b76a-27a47391c942.png",
+    "sha256": "00e7514c1855a39544ae9d92d32dec9b265b96b53c14243726207c2c195b9006"
+  },
+  {
+    "cohort": 6,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-1766d791-56d0-4bb0-86e2-276353bc9702.png",
+    "sha256": "be33d85c97a5ec4ef798076c0335c29553095d7b64cb2a29c6575f9441fda991"
+  },
+  {
+    "cohort": 7,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-06156ffa-447b-4d39-9923-0ff8ccb3a847.png",
+    "sha256": "8539b0d87af4779bfd7f9aeb51f3580a3e375ed0ae36844f1585474f78184534"
+  },
+  {
+    "cohort": 7,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-82f9824b-f6b2-4a60-ba59-905fd8d60c7b.png",
+    "sha256": "f36584f0d3af01f95d3397273db9c2b09e0a6df5c8b2c73049c41de01062bc4e"
+  },
+  {
+    "cohort": 7,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-8912a656-e686-4611-b8ce-3aa79030133a.png",
+    "sha256": "55186df5f023b9649913e94a8ca9eb103df4fd7eac29b843ca29f629a88f4bbb"
+  },
+  {
+    "cohort": 6,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-df0cab98-247d-4fd7-b694-eddebf09d941.png",
+    "sha256": "8f26802c44b159f4edd7c890841604dbb8584507844113e3625e37a93e8219f8"
+  },
+  {
+    "cohort": 7,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-21093876-d6bd-4d2b-8566-9b7f87f1c3b9.png",
+    "sha256": "cbe921a4a49a7512e49eea84b4b8aad0d568a6a0647bc6c612fb8798698c2f0a"
+  },
+  {
+    "cohort": 7,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-22c3473f-cdf7-476d-8d2e-52fdc45698c7.png",
+    "sha256": "c25b264534273787f0112c6e23053a00cfcb250cda5c9a7180aeef106045aaf5"
+  },
+  {
+    "cohort": 8,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-eff9a345-24fb-47ec-9b00-9d684fca4c69.png",
+    "sha256": "293902ad4e14b416ff5c4e230a927a31feb0b672dfb18db115567f0c4e5254fb"
+  },
+  {
+    "cohort": 7,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-ccf5ac5c-5a2d-4d41-bc63-7f4ba573daa9.png",
+    "sha256": "0c8033718dbd4f9df02c8f56b18de3ca18e4f735d0ad8978072bcfb9f7bdc2e9"
+  },
+  {
+    "cohort": 8,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-7fe8d44b-5e30-4796-87ad-f74c62cbc871.png",
+    "sha256": "7c2476adb802eda483852a27a9d908ecff6600eca69bbff5559443abc078a658"
+  },
+  {
+    "cohort": 7,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-0df70f8f-8e1c-4e6b-aa2b-117180f879e7.png",
+    "sha256": "780efcf6dc9c2fa2ee5952ae416e230b071f5a25253cdde643475565e8129545"
+  },
+  {
+    "cohort": 8,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-ff6f9e51-36d2-4c73-9f56-b413d8fbac88.png",
+    "sha256": "5a1f9918dc4170341382dc0662451d139b548bdba5fed1bb5d1ae1d93e5d73e2"
+  },
+  {
+    "cohort": 8,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-e4375db8-d427-4ae0-9709-8863ab264c9f.png",
+    "sha256": "1a32ba0ee7569ace7d7c25df1f94113c393ce9270da29b4569ef25f7f2123093"
+  },
+  {
+    "cohort": 8,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-8319d7a6-fd05-4d89-bdd7-6fbbceef4f7e.png",
+    "sha256": "a4189c72c6188a26e60a8fcba030e76b2de192d2e7efdade9ff2e26eb1c8305a"
+  },
+  {
+    "cohort": 8,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-780e3033-0015-4e36-97d7-c2be1bc3fa33.png",
+    "sha256": "8338eae5c4ce039f73e320101d4b46db311489c95566c6e36e82cc5930cd8664"
+  },
+  {
+    "cohort": 7,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-6a42b167-abc9-4398-8809-1e14842ac50b.png",
+    "sha256": "fcb698ba1dda01880c24ce16df0fc469e96d6f6dac115222e3d78a00997c972c"
+  },
+  {
+    "cohort": 8,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-99addb66-1333-4611-8960-4408f99daca9.png",
+    "sha256": "b6ad7500d9851a3485eaa8cfd70e6b9117a8693f1fe86d01d2d462b7ff74b931"
+  },
+  {
+    "cohort": 7,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-c6cbd988-dff2-4df9-a1a4-17b4ce33cb67.png",
+    "sha256": "6c97ddfc67b7dc9863f07a730471e8f29302da773299ff5d130721b79d0a9aa7"
+  },
+  {
+    "cohort": 7,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-45240b41-da38-4734-85bf-06012565ba66.png",
+    "sha256": "5f6b74a9895ccb2c6533ad6c4130f7995388a0a4dff4bb07dab152a56e82eb21"
+  },
+  {
+    "cohort": 8,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-66d64ef4-0b97-49d0-a20f-cb7d598021f7.png",
+    "sha256": "cbf53a38fcb1c98a5f42b2eca28e87bbe0019044db8e4cf2a37667a4c89efa20"
+  },
+  {
+    "cohort": 8,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-07674ebd-4da8-4126-943b-11c17925f0b9.png",
+    "sha256": "bb62569c9ee59e4bf1f9447794cec7e921577fbd9315632e21060995ec83656c"
+  },
+  {
+    "cohort": 8,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-fa33b832-9b6f-43eb-a1d7-dd870831f0b0.png",
+    "sha256": "71c479e6bbea7111a84476b9bd3dc4ca133035d8ed6e1111bda135c0f07cf77c"
+  },
+  {
+    "cohort": 8,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-fd82dc67-4535-44ab-92dc-a6ac04089712.png",
+    "sha256": "e515f99fb9b506981b9b96440e8e97c2ac865c8f8aae443815c38338323279b5"
+  },
+  {
+    "cohort": 9,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-14687699-168e-463e-806c-46a7a846337c.png",
+    "sha256": "d403da8c2ab33d4f69d29e29b3d366024253d47a8620d53fedaeedeb72a23eac"
+  },
+  {
+    "cohort": 9,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-17ce003f-ef21-4946-87a1-19ec176e6177.png",
+    "sha256": "14d57861eefb3116871cc078bba5c3c113b3ef79b227496473f411b31d3c22c3"
+  },
+  {
+    "cohort": 9,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-d6f1ef31-0cb9-4912-a8a9-e628084cc43e.png",
+    "sha256": "d1aa6eccddcec609e857cda6360f98f8a05668e5dccbea6ebb51c541d127b6d9"
+  },
+  {
+    "cohort": 9,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-2242aa07-6579-4ae3-a263-fa282578e57d.png",
+    "sha256": "91c62e544e3ff7bd48aeabaa7fadaef8c6b6420c0cc3561c8a24cc672068f097"
+  },
+  {
+    "cohort": 9,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-9d193807-b822-4f2d-856c-6e6b8fb07ce3.png",
+    "sha256": "2701e4f74627a0306120d993e59b3c658430def2adf9cde722f222a0ee5f3479"
+  },
+  {
+    "cohort": 9,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-d449bea3-335c-4767-8fd7-ad852af398c8.png",
+    "sha256": "f3b1dac4995ec18ff209c685b1270b36a522c13d7df689048acca8aaa3899041"
+  },
+  {
+    "cohort": 9,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-974abe22-782b-4301-bf9c-e56a5526b593.png",
+    "sha256": "5b05217392fc665115f73de9cedb6c2b95743a7220bb65739c1d6eeeaee3b12b"
+  },
+  {
+    "cohort": 10,
+    "variant": "suwon_sparks",
+    "native_path": "native/revision3/B_uniforms/exec-795c1f20-60a0-4d2c-9002-e5dc95ffece7.png",
+    "sha256": "a4c11d3241e9bc4e77f053816c0a1932cd00b6de9c910fdb3898c1b1e9d207f4"
+  },
+  {
+    "cohort": 9,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-8287fd36-f4bf-4502-a090-ba7381d012a0.png",
+    "sha256": "679e0fb9ec714cacc3b0af24c16cb3c64f9b26a3e178a9a3ea6b5ad79f4ee15b"
+  },
+  {
+    "cohort": 10,
+    "variant": "seoul_hounds",
+    "native_path": "native/revision3/B_uniforms/exec-f5ca2339-57b5-4e69-9eee-eb0589fc5145.png",
+    "sha256": "787936195513372ef92fcc1e303387da749011c1220f8b13317fc856d1ff5be8"
+  },
+  {
+    "cohort": 9,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-c864afc7-1594-4bbc-8def-161f8682286e.png",
+    "sha256": "548e786e3d42dcc76dd4bcc6d0de24f109c137d81305976b92cf0afcaef0a154"
+  },
+  {
+    "cohort": 10,
+    "variant": "gwangju_blazes",
+    "native_path": "native/revision3/B_uniforms/exec-126823e7-dd34-4d4b-b0ae-f83690f2c508.png",
+    "sha256": "4b32a2295ff3fa38d4db2284402d76815970e920a43e47c23c19e671f2f4fd62"
+  },
+  {
+    "cohort": 9,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-7c25f107-1f36-4968-9ccd-fefeacaf7fcf.png",
+    "sha256": "094f0d2642da3989b39b0dbae21f6b8d2bb8c81b3f1bc7f122070df0c67ae1d5"
+  },
+  {
+    "cohort": 10,
+    "variant": "changwon_anchors",
+    "native_path": "native/revision3/B_uniforms/exec-dba0b811-cb4f-499a-ac0b-55141571282e.png",
+    "sha256": "6303e70defe7ffdf9e5a18b54589bae38eafb48d616920e798210bec4391accc"
+  },
+  {
+    "cohort": 10,
+    "variant": "incheon_seagulls",
+    "native_path": "native/revision3/B_uniforms/exec-6f6cdbc7-d793-435a-9d6f-8f7067b4ff39.png",
+    "sha256": "1967fc52b05f04b5063ceeb0c2d9ef2607dd4a6dab49d100d05578bd8fc5e4f5"
+  },
+  {
+    "cohort": 9,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-8675860e-264c-4ff6-9840-14dd048af636.png",
+    "sha256": "742b65c14069410db8c82abecdc92e8923d10cdbb893485dbbe98c55b6c13b7a"
+  },
+  {
+    "cohort": 10,
+    "variant": "daejeon_redfox",
+    "native_path": "native/revision3/B_uniforms/exec-78188c11-ac00-4635-8345-b63d807f8216.png",
+    "sha256": "6798692e61c278bc124392580ebe9a0443d8683b66134ae5049e548672752311"
+  },
+  {
+    "cohort": 10,
+    "variant": "daegu_thunders",
+    "native_path": "native/revision3/B_uniforms/exec-2f3f274c-5163-4636-8ed3-fb154f3011bf.png",
+    "sha256": "f43d695f999db6edaaa6d22fcd59d8e421d2b09c276d3d8d355cda7c81a1b60b"
+  },
+  {
+    "cohort": 10,
+    "variant": "univ",
+    "native_path": "native/revision3/B_uniforms/exec-7345830e-49c7-419f-aafa-ececaa43aa23.png",
+    "sha256": "5d7f4042a891ff5c17a50471d054b7201d0910d3b6b3cd65c088d1f89d172dea"
+  },
+  {
+    "cohort": 10,
+    "variant": "seoul_comets",
+    "native_path": "native/revision3/B_uniforms/exec-80b1ae1f-43e7-4bf0-afc9-2fec47885245.png",
+    "sha256": "3eaab0f495445864f44acb286f1e9af0059720661703c32fcad7211ae2d24e2e"
+  },
+  {
+    "cohort": 10,
+    "variant": "goyang_storm",
+    "native_path": "native/revision3/B_uniforms/exec-3781dea5-4f74-46c9-8c9a-0c08f9a4bbb8.png",
+    "sha256": "35bf4ab708bbac2a435fdfb57c269776fb9e0a85481d27afe556be2a33b90a21"
+  },
+  {
+    "cohort": 10,
+    "variant": "busan_waves",
+    "native_path": "native/revision3/B_uniforms/exec-8b756fb0-a119-4843-b0a9-410fd743d1ff.png",
+    "sha256": "a56e757a3e5389b5701a0a009a37aa20f2619f9310d717cc876fef0eb20cb4ba"
+  }
+]

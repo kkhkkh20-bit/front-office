@@ -1,0 +1,135 @@
+{
+  "production_complete": false,
+  "runtime_B_identities": 0,
+  "generated_uniform_boards": 121,
+  "passed_complete_uniform_families": 81,
+  "complete_cohort_reports": [
+    {
+      "cohort": 7,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.7793382406234741,
+        "256": 0.8064241409301758,
+        "384": 0.8363261222839355
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.0118682839257644,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": 6,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.6958374381065369,
+        "256": 0.8061575889587402,
+        "384": 0.8256931304931641
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.1603408856640556,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": 5,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.6945996284484863,
+        "256": 0.7999584078788757,
+        "384": 0.8172875642776489
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.1900177045117175,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": 4,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.7124983072280884,
+        "256": 0.7935581207275391,
+        "384": 0.8163808584213257
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.0704025225390694,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": 3,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.7236124277114868,
+        "256": 0.848143458366394,
+        "384": 0.8484024405479431
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.2154281594140457,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": 2,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.7969648241996765,
+        "256": 0.8429787755012512,
+        "384": 0.84954833984375
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.0193878216992118,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": 1,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.7729401588439941,
+        "256": 0.8117140531539917,
+        "384": 0.8179779052734375
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 0.9706863360156319,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": -1,
+      "photo_count": 187,
+      "identity_count": 17,
+      "same_person_min": {
+        "128": 0.7198148965835571,
+        "256": 0.8025152683258057,
+        "384": 0.8244309425354004
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.127249149824209,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": 0,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.7388371229171753,
+        "256": 0.805500864982605,
+        "384": 0.8036049008369446
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.022294621015618,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    }
+  ],
+  "next": "Finish remaining uniform generation and carrier checks, then final B36 actual runtime atlas verification. A100 and A7 corrections complete."
+}
