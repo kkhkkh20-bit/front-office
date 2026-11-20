@@ -46357,7 +46357,7 @@ function rosterView(){
   const body=rv==='card'?sqCards(groups):rosterTable(groups,seg==='pit',futLink.replace('r2link','r2link r2row'));
   /* 휴대폰 세로: 야수/투수는 표 제목 줄에, 열 넘김은 필터 줄 옆에, 2군 안내는 표 마지막 줄로(CSS가 둘 중 하나만 보임) */
   return `<div class="roster-page">${head}${fm?'':`<div class="roster-navigation">${it.bar}${segT}</div>`}<section class="card roster-list"><div class="row between roster-caption">${segT.replace('seg rseg','seg rseg rseg-cap')}<h2 class="sec">${seg==='bat'?'야수':'투수'} 명단</h2><div class="row"><span class="small muted">${statBasis()}</span><div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div></div></div>
-    <div class="roster-tools">${filterBar({id:'roster',inline:true,cls:'roster-fbar',q:{k:'rq',v:rq,ph:'이름 검색',label:'선수 이름 검색'},groups:[{l:'범위',a:'rscope',cur:sc,def:'one',opts:[['one','1군'],['two','2군'],['all','전체']]},{l:'시즌',a:'rsea',cur:UI.rsea||'cur',def:'cur',opts:[['cur',`${statY()} 시즌`],['prev',`${statY()-1} 시즌`],['car','통산']]},{l:seg==='bat'?'포지션':'유형',a:'rpos',cur:pf,def:'all',opts:posOpts},{l:'보기',html:`<div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div>`}],extra:`<div class="roster-filter-body">${sel?`<div class="roster-short-controls">${sel}</div>`:''}</div>`})}</div>${body}${futLink}
+    <div class="roster-tools">${filterBar({id:'roster',inline:true,cls:'roster-fbar',q:{k:'rq',v:rq,ph:'이름 검색',label:'선수 이름 검색'},groups:[{l:'범위',a:'rscope',cur:sc,def:'one',opts:[['one','1군'],['two','2군'],['all','전체']]},{l:'시즌',a:'rsea',cur:UI.rsea||'cur',def:'cur',opts:[['cur',`${statY()} 시즌`],...(statY()===G.year?RSEA_RECENT.map(([k,d,l])=>[k,l]):[]),['prev',`${statY()-1} 시즌`],['car','통산']]},{l:seg==='bat'?'포지션':'유형',a:'rpos',cur:pf,def:'all',opts:posOpts},{l:'보기',html:`<div class="seg sm"><button data-a="rviewMode" data-v="table" class="${rv==='table'?'on':''}">목록</button><button data-a="rviewMode" data-v="card" class="${rv==='card'?'on':''}">상세</button></div>`}],extra:`<div class="roster-filter-body">${sel?`<div class="roster-short-controls">${sel}</div>`:''}</div>`})}</div>${body}${futLink}
     <p class="small muted">열 제목을 누르면 그 기준으로 정렬합니다(한 번 더 누르면 반대로). 현재는 정확한 능력, 잠재력은 코치진·스카우트 평가입니다.${own?' 기분 점은 선수 만족도, 막대는 피로입니다.':' 다른 구단 선수의 잠재력·기분·피로는 알 수 없습니다.'} 주전과 타순은 감독이 정합니다.</p></section></div>`;
 }
 /* PC: 1군·정식·육성 수와 등번호 정리·정리 모드를 위 하위 탭 줄(fm2)의 빈 자리로 올린다(사용자 11-18: 위 빈 공간에 하나씩 올리기).
@@ -46394,13 +46394,21 @@ function entView(){ const on=entryOn(), pit=UI.seg==='pit', k=pit?'pit':'bat'; c
   return `<section class="card"><div class="row between"><h2 class="sec">1군 ${pit?'투수':'야수'} ${e1.length}명</h2><span class="small muted">${y} 1군 성적</span></div>${intro}${e1.map(row1).join('')||'<p class="small muted">없습니다.</p>'}</section>
   <section class="card"><div class="row between wrapr"><h2 class="sec">2군 ${pit?'투수':'야수'} ${f2.length}명</h2><span class="small muted">${y} 퓨처스 성적순</span></div>${sorts}${f2.map(row2).join('')||'<p class="small muted">없습니다.</p>'}</section>`; }
 function statY(){ const per=period(); return per==='season'||per==='post'||(G.cal&&G.cal.y===G.year&&G.day>G.cal.end)?G.year:G.year-1; }
-function statBasis(){ if(UI.rsea==='car')return '통산 1군 성적'; const y=rSeaY(); return y===G.year&&period()!=='off'?`${G.year} 1군 성적`:`${y} 성적`; }
+/* 최근 성적(카페 11-20 마스터쉐프): 시즌 옆에 최근 1주·2주·30일. 경기별 1군 기록(p.gl, 02_records glAdd)으로 그 기간만 더한다.
+   경기별 기록에 없는 값(타점·도루·승패·세이브·홀드·WAR·wRC+)은 '-'로 둔다. 2루타·3루타는 루타 합으로만 남아 장타율은 정확하고 2루타 수는 쓰지 않는다 */
+const RSEA_RECENT=[['w1',7,'최근 1주'],['w2',14,'최근 2주'],['m1',30,'최근 30일']];
+const rseaRecent=()=>RSEA_RECENT.find(x=>x[0]===UI.rsea)||null;
+function glLine(p,days){ const L=p.gl&&p.gl.y===G.year?p.gl.g||[]:[]; const g=L.filter(x=>x[0]>G.day-days&&x[0]<=G.day); if(!g.length)return null; const s=i=>g.reduce((a,x)=>a+(+x[i]||0),0);
+  if(p.isP)return {y:G.year,recent:true,lvl:'1군',g:g.length,bf:s(1),outs:s(2),so:s(3),bb:s(4),h:s(5),hr:s(6),er:s(7),r:s(8)};
+  const h=s(3),hr=s(7),tb=s(4); return {y:G.year,recent:true,lvl:'1군',g:g.length,pa:s(1),ab:s(2),h,d:Math.max(0,tb-h-3*hr),tr:0,hr,bb:s(5),so:s(6),hbp:s(8),sf:s(9),sh:s(10)}; }
+function statBasis(){ { const R=rseaRecent(); if(R)return `${R[2]} 1군 성적`; } if(UI.rsea==='car')return '통산 1군 성적'; const y=rSeaY(); return y===G.year&&period()!=='off'?`${G.year} 1군 성적`:`${y} 성적`; }
 const RCOL_B=[['g','경기'],['pa','타석'],['avg','타율'],['obp','출루율'],['slg','장타율'],['ops','OPS'],['wrc','wRC+'],['hr','홈런'],['rbi','타점'],['sb','도루'],['bb','볼넷'],['so','삼진'],['bbk','볼삼비'],['war','WAR']];
 const RCOL_P=[['g','경기'],['gs','선발'],['ip','이닝'],['era','ERA'],['whip','WHIP'],['w','승'],['l','패'],['sv','세'],['hld','홀'],['so','탈삼진'],['bb','볼넷'],['k9','K/9'],['bb9','BB/9'],['war','WAR']];
 function rSeaY(){ return UI.rsea==='prev'?statY()-1:statY(); }
 function carLine(p,lvl){ const hs=(p.hist||[]).filter(h=>h.lvl===lvl&&!h.y2); if(!hs.length)return null; const t=Object.assign({},hs[0]); for(const h of hs.slice(1))addTo(t,h); t.y=hs[hs.length-1].y; t.car=true; return t; }
-function rline(p){ if(UI.rsea==='car')return carLine(p,'1군')||carLine(p,'퓨처스'); const y=rSeaY(); return seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); }
+function rline(p){ { const R=rseaRecent(); if(R)return statY()===G.year?glLine(p,R[1]):null; } if(UI.rsea==='car')return carLine(p,'1군')||carLine(p,'퓨처스'); const y=rSeaY(); return seasonTotal(p,y,'1군')||seasonTotal(p,y,'퓨처스'); }
 function rstat(p,k){ const h=rline(p); if(!h)return null;
+  if(h.recent&&['war','wrc','rbi','sb','gs','w','l','sv','hld','r','cs'].includes(k))return null; /* 경기별 기록에 없는 값 */
   if(k==='war')return wOf(h,p);
   if(p.isP){ const r=pRate(h); return {g:h.g||0,gs:h.gs||0,ip:h.outs,era:h.outs?r.era:null,whip:h.outs?r.whip:null,w:h.w||0,l:h.l||0,sv:h.sv||0,hld:h.hld||0,so:h.so,bb:h.bb,k9:h.outs?r.k9:null,bb9:h.outs?r.bb9:null,h:h.h||0,hra:h.hr||0,fip:h.outs?(13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*h.so)/(h.outs/3)+3.2:null}[k]; }
   if(k==='wrc')return h.pa?wrcPlus(h,h.y):null; const r=bRate(h); return {g:h.g||0,pa:h.pa,avg:h.pa?r.avg:null,obp:h.pa?r.obp:null,slg:h.pa?r.slg:null,ops:h.pa?r.ops:null,hr:h.hr,rbi:h.rbi,sb:h.sb,bb:h.bb,so:h.so,bbk:h.so?h.bb/h.so:(h.bb?9:null),h:h.h||0,d:h.d||0,r:h.r||0,cs:h.cs||0}[k]; }
@@ -52477,6 +52485,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-21-recent-stats',d:'11월 21일',t:'선수단 명단에서 최근 1주·2주·30일 성적을 볼 수 있습니다',items:[
+    '선수단 → 선수 명단의 시즌 고르기에 최근 1주, 최근 2주, 최근 30일이 생겼습니다. 그 기간 1군 경기만 더해 타율·출루율·장타율·OPS·홈런, 투수는 이닝·ERA·WHIP·탈삼진을 보여 줍니다.',
+    '타점·도루·승패·세이브·홀드·WAR는 시즌 성적에서만 보입니다.'
+  ]},
   {id:'2026-11-20-sangmu-cancel',d:'11월 20일',t:'상무 지원을 접수 기간 안에 취소할 수 있습니다',items:[
     '병역 탭 미필 선수 카드에 「상무 지원 취소」 단추가 생겼습니다. 접수 기간(3월 1일~4월 14일, 9월 1일~10월 14일) 안이면 지원을 거두고 다시 지원할 수 있습니다. 합격자 발표 뒤에는 취소할 수 없습니다.',
     '상무에 지원한 선수는 병역 탭 미필 목록 맨 앞에 보입니다.'
