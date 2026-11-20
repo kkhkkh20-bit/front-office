@@ -3244,7 +3244,28 @@ T('[은퇴 11-20] 노화 곡선: 베테랑 은퇴 기준 40(RET_VET_O)은 우리
   const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
   for(const p of [me,ai]){ p.age=36; setOvr(p,40.2); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 40을 은퇴로 봄'); setOvr(p,39.4); ok(retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 39를 은퇴로 보지 않음'); }
   ok(String(contractStart).includes('ovr(p)<VET_REL_O')&&!/ovr\(p\)<44/.test(String(contractStart)),'AI 베테랑 방출이 예전 44 기준');
-  ok(String(faUpcoming).includes('p.age>=RET_AGE||(p.age>=RET_VET_AGE&&ovr(p)<RET_VET_O)'),'FA 자격의 은퇴 예상이 은퇴 기준과 다름'); });
+  ok(String(faUpcoming).includes('if(retireVetRule(p))continue;'),'FA 자격의 은퇴 예상이 은퇴 기준과 다름'); /* 11-20 정년 완화: 같은 기준을 한 함수(retireVetRule)로 묶었다. 예전 식 'p.age>=RET_AGE||(p.age>=RET_VET_AGE&&ovr(p)<RET_VET_O)' */
+  for(const a of [35,36,37,38,39])for(const o of [39.4,40.2]){ const q={age:a,r:me.r,isP:me.isP}; ok(retireVetRule(q,o)===(o<RET_VET_O),a+'세 '+o+' FA 은퇴 예상이 35~39세 기준 40과 다름'); } });
+T('[은퇴 11-20] 정년 완화: 40세 이상은 나이마다 기준(40세 42·41세 44·42세 46·43세 48·44세 50) 미만이면 은퇴, 45세는 누구나 은퇴. 우리·AI 같음, 은퇴 면담 유예도 45세 전까지',()=>{ fresh(); ok(RET_AGE===40&&RET_CAP===45&&RET_VET_O===40,'기준 상수 '+RET_AGE+'/'+RET_CAP+'/'+RET_VET_O);
+  const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
+  const exp={40:42,41:44,42:46,43:48,44:50};
+  for(const p of [me,ai]){ const w=p.team===G.user?'우리':'AI';
+    for(const a in exp){ p.age=+a; setOvr(p,exp[a]+.3); ok(ovr(p)>=exp[a],'준비 실패 '+ovr(p)); ok(!retireRule(p)&&!retireLikely(p),w+' '+a+'세 '+exp[a]+'을 은퇴로 봄(정년 완화)'); setOvr(p,exp[a]-.6); ok(ovr(p)<exp[a],'준비 실패 '+ovr(p)); ok(retireRule(p)&&retireLikely(p),w+' '+a+'세 '+(exp[a]-1)+'을 은퇴로 보지 않음'); }
+    p.age=45; setOvr(p,70); ok(retireRule(p)&&retireLikely(p),w+' 45세 70이 은퇴하지 않음(상한 45세)');
+    p.age=44; setOvr(p,30); p.retDelay=G.year; ok(!retireLikely(p),w+' 44세 은퇴 면담 유예가 듣지 않음'); p.age=45; ok(retireLikely(p),w+' 45세에 은퇴 면담 유예가 상한을 넘김'); delete p.retDelay; }
+  ok(String(offseason).includes('retireRule(p,o)&&!retDelayOk(p)')&&!/p\.age<=41/.test(String(offseason))&&!/p\.age<=41/.test(String(retireLikely)),'비시즌 은퇴·은퇴 유력 표시가 예전 41세 유예 상한');
+  ok(String(retireNotice).includes('p.age<RET_CAP&&p.retDelay!==G.year'),'은퇴 면담 대상이 45세 전까지가 아님'); });
+T('[드래프트 11-20] 상단 꼬리: 잠재력 56 이상 신인 일부(STAR_P)만 세대 재능(잠재력 72~78·실현율 0.9 이상). 선수별 고정 난수라 주 난수 호출 수 불변, 구단과 무관',()=>{ fresh(); ok(STAR_MIN===56&&STAR_P>0&&STAR_P<=.1&&STAR_CUR<=62&&STAR_LO===72&&STAR_HI===78&&STAR_REALK===.9,'상수 '+[STAR_MIN,STAR_P,STAR_LO,STAR_HI,STAR_REALK]);
+  const L=[]; for(let i=0;i<1500;i++){ const p=newPlayer({age:18,base:35,pot:i%3?60:50}); p.prospect=true; L.push(p); } const ids=L.map(p=>p.id), pot0=new Map(L.map(p=>[p.id,p.pot]));
+  const rng=FO_RNG; let n=0; try{ FO_RNG=()=>{ n++; return FO_RNG0(); }; starTail(ids); }finally{ FO_RNG=rng; } ok(n===0,'주 난수 '+n+'번 씀');
+  const hit=L.filter(p=>p.starT), cand=L.filter(p=>pot0.get(p.id)>=STAR_MIN); ok(hit.every(p=>pot0.get(p.id)>=STAR_MIN),'잠재력 56 미만이 세대 재능'); const r=hit.length/cand.length; ok(r>STAR_P*.5&&r<STAR_P*1.6,'세대 재능 비율 '+r.toFixed(3));
+  ok(hit.every(p=>p.starT===G.year&&p.pot>=STAR_LO&&p.pot<=Math.max(STAR_HI,pot0.get(p.id)+4)&&p.pot<=80),'세대 재능 잠재력 범위 '+hit.map(p=>p.pot).slice(0,6));
+  ok(hit.every(p=>ovr(p)<=STAR_CUR+.2&&ovr(p)>=Math.min(STAR_CUR,p.pot-STAR_GAP[1])-.3&&ovr(p)<p.pot),'세대 재능 지금 능력 범위 '+hit.map(p=>ovr(p).toFixed(1)).slice(0,6)); ok(L.filter(p=>!p.starT).every(p=>ovr(p)<40),'세대 재능이 아닌 신인 능력이 바뀜');
+  const pots=new Map(L.map(p=>[p.id,p.pot])); for(const p of hit){ delete p.starT; p.pot=pot0.get(p.id); } starTail(ids); ok(L.every(p=>p.pot===pots.get(p.id)),'같은 해·같은 선수 결과가 다름(고정 난수 아님)'); starTail(ids); ok(L.every(p=>p.pot===pots.get(p.id)),'두 번 돌리면 또 오름');
+  const s=hit[0]; ok(s,'준비 실패: 세대 재능 없음'); s.prospect=false; s.team=G.user; s.realK=null; s.pers=s.pers||{}; initPers(s); s.pers.pro=4; s.pers.amb=4; s.pers.temp=20; develop(s); ok(s.realK>=STAR_REALK,'우리 세대 재능 실현율 '+s.realK);
+  const t=hit[1]; t.prospect=false; t.team=otherT(); t.realK=null; initPers(t); t.pers.pro=4; t.pers.amb=4; t.pers.temp=20; develop(t); ok(t.realK>=STAR_REALK,'AI 세대 재능 실현율 '+t.realK);
+  { const n0=eliteN80().f; ok(Math.abs(eliteGrowF(70)-n0*.55)<1e-9&&eliteGrowF(70,{})===eliteGrowF(70)&&eliteGrowF(70,{starT:G.year})===n0&&eliteGrowF(50,{starT:G.year})===1,'정상급 억제: 세대 재능만 90 근처 .55를 빼고, 나머지는 그대로'); for(const fn of [develop,campGrow0]){ ok(/eliteGrowF\([^)]*,p\)/.test(String(fn)),'성장 경로가 선수를 넘기지 않음'); } }
+  ok(String(makeDraftClass).includes('starTail(cls)'),'드래프트 후보 생성에서 상단 꼬리를 쓰지 않음'); });
 T('[성장 11-20] 노화 곡선: 프로의식 하락 시작 보정 한 단계 축소(-2/-1/0/0/+1), 전성기·노화 퇴보 확률 3분의 1·전성기 기대값 +0.3, 하락 기울기 .4·신체 노화 .16',()=>{ fresh(); const base=domestic(G.user).find(q=>!q.isP&&!q.prospect&&!q.foreign); ok(base,'준비 실패');
   const mk=(dt,pro)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt=dt; p.pers.pro=pro; return p; };
   const want={5:31,6:31,7:32,9:32,10:33,12:33,13:33,16:33,17:34,20:34}; for(const pr in want){ const T=dtSpan(mk('norm',+pr)); ok(T.fall===want[pr]&&T.grow===28&&T.peak===Math.min(31,T.fall-1),'정상형 프로의식 '+pr+': '+JSON.stringify(T)); }
