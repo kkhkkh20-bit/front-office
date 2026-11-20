@@ -1,7 +1,7 @@
 {
   "date": "2026-11-20",
   "revision": 3,
-  "scope": "A7 corrected in A100 final runtime; B17 complete candidate families, individually decoded exports only",
+  "scope": "A7 final runtime complete; B100 provisional canonical masters pass actual WebP atlas gate; 17 individual 12-variant families retained",
   "stage_b_complete": false,
   "runtime_identity_count": 0,
   "runtime_sheet_count": 0,
@@ -52,5 +52,49 @@
   "A061_cap_corrected": true,
   "new_originals_preserved": true,
   "production_complete": false,
-  "superseding_review": "revision3_review.json"
+  "superseding_review": "revision3_review.json",
+  "canonical_master_count": 100,
+  "canonical_master_validation": {
+    "128": {
+      "between_max": 0.3952576518058777,
+      "A_max": 0.3995189368724823,
+      "old_max": 0.3936682939529419,
+      "center_deviation_max": 0.9217163129101493,
+      "between_failures": [],
+      "A_failures": [],
+      "old_failures": [],
+      "passed": true
+    },
+    "256": {
+      "between_max": 0.39415907859802246,
+      "A_max": 0.3991968035697937,
+      "old_max": 0.39723366498947144,
+      "center_deviation_max": 0.852905277753905,
+      "between_failures": [],
+      "A_failures": [],
+      "old_failures": [],
+      "passed": true
+    },
+    "384": {
+      "between_max": 0.39602136611938477,
+      "A_max": 0.3993172347545624,
+      "old_max": 0.3983461856842041,
+      "center_deviation_max": 0.9408228599479003,
+      "between_failures": [],
+      "A_failures": [],
+      "old_failures": [],
+      "passed": true
+    }
+  },
+  "canonical_master_sheet_paths": [
+    "review/revision3/B100_masters/hs_home_128.webp",
+    "review/revision3/B100_masters/hs_home_256.webp",
+    "review/revision3/B100_masters/hs_home_384.webp"
+  ],
+  "B_metadata": {
+    "hs": 60,
+    "univ": 40,
+    "glasses": 12
+  },
+  "remaining_new_wardrobe_photos": 913
 }

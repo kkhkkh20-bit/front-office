@@ -1,0 +1,690 @@
+[
+  {
+    "id": "bf3_B025_trial0",
+    "seed_id": "pool_0022_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-6e3e318b-77fb-4d3c-8bef-2e8df193e771.png",
+    "crop": [
+      3,
+      3,
+      624,
+      624
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B025_trial0.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -2,
+      -13
+    ],
+    "center_256": [
+      131.24783325195312,
+      117.89041900634766
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 23,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.35683581233024597,
+    "guard_old": 0.35011667013168335,
+    "guard_B17": 0.27827396988868713,
+    "measurement_photo_id": "b_native_pool_0022_0",
+    "actual_photos": {
+      "id": "b_native_pool_0022_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C031",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 30,
+    "master_photo_id": "b_native_pool_0022_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B025",
+    "review_id": "B025",
+    "source_person_id": "b_pool_0022_0",
+    "index": 124,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B025_trial1",
+    "seed_id": "pool_0022_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-6e3e318b-77fb-4d3c-8bef-2e8df193e771.png",
+    "crop": [
+      630,
+      3,
+      1251,
+      624
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B025_trial1.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -2,
+      -14
+    ],
+    "center_256": [
+      131.16134643554688,
+      118.5157470703125
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 23,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.35683581233024597,
+    "guard_old": 0.35011667013168335,
+    "guard_B17": 0.27827396988868713,
+    "measurement_photo_id": "b_native_pool_0022_0",
+    "actual_photos": {
+      "id": "b_native_pool_0022_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C031",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 30,
+    "master_photo_id": "b_native_pool_0022_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B025",
+    "review_id": "B025",
+    "source_person_id": "b_pool_0022_0",
+    "index": 124,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B025_trial2",
+    "seed_id": "pool_0022_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-6e3e318b-77fb-4d3c-8bef-2e8df193e771.png",
+    "crop": [
+      3,
+      630,
+      624,
+      1251
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B025_trial2.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -2,
+      -14
+    ],
+    "center_256": [
+      131.20535278320312,
+      118.51240539550781
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 23,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.35683581233024597,
+    "guard_old": 0.35011667013168335,
+    "guard_B17": 0.27827396988868713,
+    "measurement_photo_id": "b_native_pool_0022_0",
+    "actual_photos": {
+      "id": "b_native_pool_0022_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C031",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 30,
+    "master_photo_id": "b_native_pool_0022_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B025",
+    "review_id": "B025",
+    "source_person_id": "b_pool_0022_0",
+    "index": 124,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B025_trial3",
+    "seed_id": "pool_0022_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-6e3e318b-77fb-4d3c-8bef-2e8df193e771.png",
+    "crop": [
+      630,
+      630,
+      1251,
+      1251
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B025_trial3.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -2,
+      -13
+    ],
+    "center_256": [
+      131.12026977539062,
+      117.86714935302734
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 2,
+    "canonical_screen_index": 23,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.35683581233024597,
+    "guard_old": 0.35011667013168335,
+    "guard_B17": 0.27827396988868713,
+    "measurement_photo_id": "b_native_pool_0022_0",
+    "actual_photos": {
+      "id": "b_native_pool_0022_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch02/b_native_pool_0022_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C031",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 13.714285714285714,
+    "feature_index": 30,
+    "master_photo_id": "b_native_pool_0022_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B025",
+    "review_id": "B025",
+    "source_person_id": "b_pool_0022_0",
+    "index": 124,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B037_trial0",
+    "seed_id": "pool_0277_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-6c15cbde-9d8d-4bf4-b950-47fc07422ea7.png",
+    "crop": [
+      3,
+      3,
+      624,
+      624
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B037_trial0.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -5,
+      -6
+    ],
+    "center_256": [
+      130.70306396484375,
+      118.4026107788086
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 94,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3675380349159241,
+    "guard_old": 0.2298164814710617,
+    "guard_B17": 0.3119873106479645,
+    "measurement_photo_id": "b_native_pool_0277_0",
+    "actual_photos": {
+      "id": "b_native_pool_0277_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C049",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 48,
+    "master_photo_id": "b_native_pool_0277_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B037",
+    "review_id": "B037",
+    "source_person_id": "b_pool_0277_0",
+    "index": 136,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B037_trial1",
+    "seed_id": "pool_0277_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-6c15cbde-9d8d-4bf4-b950-47fc07422ea7.png",
+    "crop": [
+      630,
+      3,
+      1251,
+      624
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B037_trial1.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -5,
+      -6
+    ],
+    "center_256": [
+      130.71934509277344,
+      118.3207778930664
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 94,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3675380349159241,
+    "guard_old": 0.2298164814710617,
+    "guard_B17": 0.3119873106479645,
+    "measurement_photo_id": "b_native_pool_0277_0",
+    "actual_photos": {
+      "id": "b_native_pool_0277_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C049",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 48,
+    "master_photo_id": "b_native_pool_0277_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B037",
+    "review_id": "B037",
+    "source_person_id": "b_pool_0277_0",
+    "index": 136,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B037_trial2",
+    "seed_id": "pool_0277_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-6c15cbde-9d8d-4bf4-b950-47fc07422ea7.png",
+    "crop": [
+      3,
+      630,
+      624,
+      1251
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B037_trial2.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -5,
+      -6
+    ],
+    "center_256": [
+      130.68295288085938,
+      118.49454498291016
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 94,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3675380349159241,
+    "guard_old": 0.2298164814710617,
+    "guard_B17": 0.3119873106479645,
+    "measurement_photo_id": "b_native_pool_0277_0",
+    "actual_photos": {
+      "id": "b_native_pool_0277_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C049",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 48,
+    "master_photo_id": "b_native_pool_0277_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B037",
+    "review_id": "B037",
+    "source_person_id": "b_pool_0277_0",
+    "index": 136,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B037_trial3",
+    "seed_id": "pool_0277_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-6c15cbde-9d8d-4bf4-b950-47fc07422ea7.png",
+    "crop": [
+      630,
+      630,
+      1251,
+      1251
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B037_trial3.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -5,
+      -6
+    ],
+    "center_256": [
+      130.7161407470703,
+      118.3319320678711
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 94,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3675380349159241,
+    "guard_old": 0.2298164814710617,
+    "guard_B17": 0.3119873106479645,
+    "measurement_photo_id": "b_native_pool_0277_0",
+    "actual_photos": {
+      "id": "b_native_pool_0277_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0277_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C049",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 48,
+    "master_photo_id": "b_native_pool_0277_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B037",
+    "review_id": "B037",
+    "source_person_id": "b_pool_0277_0",
+    "index": 136,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B095_trial0",
+    "seed_id": "pool_0012_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c314a536-eaf5-40cd-a9b2-8dd1d9523141.png",
+    "crop": [
+      3,
+      3,
+      624,
+      624
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B095_trial0.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -1,
+      -5
+    ],
+    "center_256": [
+      130.51611328125,
+      118.02653503417969
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 6,
+    "canonical_screen_index": 24,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3998768925666809,
+    "guard_old": 0.2931358218193054,
+    "guard_B17": 0.3504904508590698,
+    "measurement_photo_id": "alt_native_pool_0012_2",
+    "actual_photos": {
+      "id": "alt_native_pool_0012_2",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C190",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 20.825396825396826,
+    "feature_index": 189,
+    "master_photo_id": "alt_native_pool_0012_2",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B095",
+    "review_id": "B095",
+    "source_person_id": "b_pool_0012_2",
+    "index": 194,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B095_trial1",
+    "seed_id": "pool_0012_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c314a536-eaf5-40cd-a9b2-8dd1d9523141.png",
+    "crop": [
+      630,
+      3,
+      1251,
+      624
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B095_trial1.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -2,
+      -5
+    ],
+    "center_256": [
+      130.8882293701172,
+      118.0848388671875
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 6,
+    "canonical_screen_index": 24,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3998768925666809,
+    "guard_old": 0.2931358218193054,
+    "guard_B17": 0.3504904508590698,
+    "measurement_photo_id": "alt_native_pool_0012_2",
+    "actual_photos": {
+      "id": "alt_native_pool_0012_2",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C190",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 20.825396825396826,
+    "feature_index": 189,
+    "master_photo_id": "alt_native_pool_0012_2",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B095",
+    "review_id": "B095",
+    "source_person_id": "b_pool_0012_2",
+    "index": 194,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B095_trial2",
+    "seed_id": "pool_0012_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c314a536-eaf5-40cd-a9b2-8dd1d9523141.png",
+    "crop": [
+      3,
+      630,
+      624,
+      1251
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B095_trial2.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -2,
+      -5
+    ],
+    "center_256": [
+      130.90548706054688,
+      118.2043228149414
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 6,
+    "canonical_screen_index": 24,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3998768925666809,
+    "guard_old": 0.2931358218193054,
+    "guard_B17": 0.3504904508590698,
+    "measurement_photo_id": "alt_native_pool_0012_2",
+    "actual_photos": {
+      "id": "alt_native_pool_0012_2",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C190",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 20.825396825396826,
+    "feature_index": 189,
+    "master_photo_id": "alt_native_pool_0012_2",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B095",
+    "review_id": "B095",
+    "source_person_id": "b_pool_0012_2",
+    "index": 194,
+    "sheet": "B",
+    "variant": "hs_home"
+  },
+  {
+    "id": "bf3_B095_trial3",
+    "seed_id": "pool_0012_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-c314a536-eaf5-40cd-a9b2-8dd1d9523141.png",
+    "crop": [
+      630,
+      630,
+      1251,
+      1251
+    ],
+    "source": "same_identity_four_genuine_photograph_cap_jersey_repair_options",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_stage3_trials/bf3_B095_trial3.png",
+    "native_edge": 621,
+    "translation_origin_xy": [
+      -2,
+      -5
+    ],
+    "center_256": [
+      130.69345092773438,
+      118.3187484741211
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 6,
+    "canonical_screen_index": 24,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3998768925666809,
+    "guard_old": 0.2931358218193054,
+    "guard_B17": 0.3504904508590698,
+    "measurement_photo_id": "alt_native_pool_0012_2",
+    "actual_photos": {
+      "id": "alt_native_pool_0012_2",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0012_2_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C190",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 20.825396825396826,
+    "feature_index": 189,
+    "master_photo_id": "alt_native_pool_0012_2",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B095",
+    "review_id": "B095",
+    "source_person_id": "b_pool_0012_2",
+    "index": 194,
+    "sheet": "B",
+    "variant": "hs_home"
+  }
+]

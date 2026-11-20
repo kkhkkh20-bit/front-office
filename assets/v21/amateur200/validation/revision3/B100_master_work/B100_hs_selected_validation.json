@@ -1,0 +1,32 @@
+{
+  "128": {
+    "between_max": 0.3952576518058777,
+    "A_max": 0.3995189368724823,
+    "old_max": 0.3936682939529419,
+    "center_deviation_max": 0.9217163129101493,
+    "between_failures": [],
+    "A_failures": [],
+    "old_failures": [],
+    "passed": true
+  },
+  "256": {
+    "between_max": 0.39415907859802246,
+    "A_max": 0.3991968035697937,
+    "old_max": 0.39723366498947144,
+    "center_deviation_max": 0.852905277753905,
+    "between_failures": [],
+    "A_failures": [],
+    "old_failures": [],
+    "passed": true
+  },
+  "384": {
+    "between_max": 0.39602136611938477,
+    "A_max": 0.3993172347545624,
+    "old_max": 0.3983461856842041,
+    "center_deviation_max": 0.9408228599479003,
+    "between_failures": [],
+    "A_failures": [],
+    "old_failures": [],
+    "passed": true
+  }
+}

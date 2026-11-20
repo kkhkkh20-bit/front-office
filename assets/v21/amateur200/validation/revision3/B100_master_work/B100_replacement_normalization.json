@@ -1,0 +1,91 @@
+[
+  {
+    "id": "bfixed_B088_replacement",
+    "seed_id": "pool_0047_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-438ae215-91bd-4fff-abb5-b7e03c5d092e.png",
+    "crop": [
+      8,
+      8,
+      1246,
+      1246
+    ],
+    "source": "new_provisional_HS_replacement_same_reference_identity",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_replacement/bfixed_B088_replacement.png",
+    "native_edge": 1238,
+    "translation_origin_xy": [
+      -3,
+      -9
+    ],
+    "center_256": [
+      130.9322509765625,
+      117.95855712890625
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 6,
+    "canonical_screen_index": 80,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3936627209186554,
+    "guard_old": 0.25204432010650635,
+    "guard_B17": 0.33652234077453613,
+    "measurement_photo_id": "alt_native_pool_0047_2",
+    "actual_photos": {
+      "id": "alt_native_pool_0047_2",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0047_2_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0047_2_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch06/alt_native_pool_0047_2_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C158",
+    "review_id": "B088",
+    "variant": "hs_home",
+    "existing_family_person_id": null
+  },
+  {
+    "id": "bfixed_B098_replacement",
+    "seed_id": "pool_0255_3",
+    "age": 19,
+    "level": "hs",
+    "glasses": true,
+    "native_path": "/workspace/generated_images/exec-0bffbb02-826a-4c3a-ac1d-1f5fd0398784.png",
+    "crop": [
+      8,
+      8,
+      1246,
+      1246
+    ],
+    "source": "new_provisional_HS_replacement_same_reference_identity",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_replacement/bfixed_B098_replacement.png",
+    "native_edge": 1238,
+    "translation_origin_xy": [
+      0,
+      -5
+    ],
+    "center_256": [
+      130.84886169433594,
+      118.46800231933594
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 36,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3499777317047119,
+    "guard_old": 0.2755359411239624,
+    "guard_B17": 0.3034387230873108,
+    "measurement_photo_id": "b_native_pool_0255_3",
+    "actual_photos": {
+      "id": "b_native_pool_0255_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0255_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0255_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0255_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C023",
+    "review_id": "B098",
+    "variant": "hs_home",
+    "existing_family_person_id": null
+  }
+]

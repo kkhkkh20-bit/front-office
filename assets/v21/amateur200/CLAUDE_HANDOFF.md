@@ -35,3 +35,8 @@ Q001·Q024·Q033은 크기 보정, Q054·Q055는 무지 아마추어 유니폼, 
 변경표: revision3_review.json. 수정 비교: previews/revision3_B_requested_changes.jpg. 전체17명: previews/revision3_B17_all12.jpg. 후보 번호표: stage_b_candidate_manifest.json. 12종 사진 경로: stage_b_family_review_manifest.json. 수치 자료: validation/revision3/B_family_raw_embeddings.npz 및 B_family_measurements.json.
 
 B100 선정, 고교60·대학40 구성 및 최종 시트36장의 실제 픽셀 검사가 남아 있습니다. B IDs와 나이는 공식 납품 때 고정합니다. 나이 확인은 구단주 검토 전이므로 pending입니다.
+
+
+## B100 master checkpoint (revision3)
+
+B100 provisional canonical masters are now available at `review/revision3/B100_masters/hs_home_{128,256,384}.webp`; review image: `previews/revision3_B100_provisional_masters.jpg`. These are screening/master atlases, not final game runtime. Actual decoded atlas representatives pass raw ArcFace separation <0.40 against each other, final A100 and legacy486. B runtime remains incomplete:83 identities still need11 wardrobe variants each. A7 correction and A100 runtime remain complete. Human age review pending.
