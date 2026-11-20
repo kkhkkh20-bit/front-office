@@ -3236,10 +3236,24 @@ T('[감독 지시] 투수 보호 요청을 처음 거절당해도 관계(선수�
   let ref2=false; for(let i=0;i<80&&!ref2;i++){ mgrDir().arm={ok:false,mid:m.id,day:G.day-31,rel0:50}; G.dirFr={y:G.year,mid:m.id,arm:1}; /* 충돌 횟수는 감독마다(mid) */ m.rel=50; setMgrDir('arm',true); ref2=!mgrDir().arm.ok; } ok(ref2,'두 번째 거절 재현 실패'); ok(m.rel<50,'반복 거절인데 관계 변화 없음'); });
 T('[위임 11-17] 부단장 1차 검토는 받은 제안의 현금을 트레이드 값과 같은 식(cashVal·cashCost)으로 본다',()=>{ fresh(); const U=team(G.user); const o=otherT(); const a=domestic(o).find(p=>!p.ys), b=domestic(G.user).find(p=>!p.ys); const base={id:'t',from:o,give:[a.id],get:[b.id]};
   const d0=troDiff(base), d1=troDiff({...base,cash:-700}), d2=troDiff({...base,cash:700}); ok(Math.abs(d1-d0-cashVal(U,700))<1e-9,'받는 현금 값이 cashVal과 다름: '+(d1-d0)+' vs '+cashVal(U,700)); ok(Math.abs(d0-d2-cashCost(U,-700))<1e-9,'주는 현금 값이 cashCost와 다름'); });
-T('[은퇴 11-17] 은퇴 유력 표시와 실제 은퇴가 같은 기준(retireRule)을 쓴다: 35세 44는 둘 다 아니고, 43은 둘 다 맞다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.faC&&!q.ys); ok(p,'준비 실패'); const so=x=>{ setOvr(p,x); return ovr(p); };
-  p.age=35; let o=so(44); ok(!retireLikely(p)&&!retireRule(p,o),'35세 44를 은퇴로 봄(실제 은퇴 기준 44 미만)'); o=so(43); ok(retireLikely(p)&&retireRule(p,o),'35세 43을 은퇴로 보지 않음');
-  p.age=33; o=so(34); ok(!retireLikely(p),'33세 34를 은퇴 유력으로 표시'); o=so(33); ok(retireLikely(p),'33세 33을 은퇴 유력으로 표시하지 않음');
+T('[은퇴 11-17] 은퇴 유력 표시와 실제 은퇴가 같은 기준(retireRule)을 쓴다: 35세 40은 둘 다 아니고, 39는 둘 다 맞다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.faC&&!q.ys); ok(p,'준비 실패'); const so=x=>{ setOvr(p,x); return ovr(p); };
+  p.age=35; let o=so(40.3); ok(o>=40,'준비 실패: 40 맞추기 '+o); ok(!retireLikely(p)&&!retireRule(p,o),'35세 40을 은퇴로 봄(실제 은퇴 기준 40 미만)'); o=so(39.4); ok(o<40,'준비 실패: 39 맞추기 '+o); /* setOvr이 40을 39.9대로 맞춰 경계에 걸려 소수 여유를 둔다 */ ok(retireLikely(p)&&retireRule(p,o),'35세 39를 은퇴로 보지 않음'); /* 베테랑 기준 44→40(11-20 노화 곡선 구단주 결정): 예전 44/43 */
+  p.age=33; o=so(34.3); ok(o>=34,'준비 실패: 34 맞추기 '+o); ok(!retireLikely(p),'33세 34를 은퇴 유력으로 표시'); o=so(33.4); ok(retireLikely(p),'33세 33을 은퇴 유력으로 표시하지 않음');
   ok(String(offseason).includes('retireRule(p,o)'),'비시즌 은퇴가 같은 함수를 쓰지 않음'); });
+T('[은퇴 11-20] 노화 곡선: 베테랑 은퇴 기준 40(RET_VET_O)은 우리·AI 선수 모두 같고, AI 베테랑 방출도 같은 40 미만',()=>{ fresh(); ok(RET_VET_O===40&&VET_REL_O===RET_VET_O,'베테랑 기준 '+RET_VET_O+'/'+VET_REL_O);
+  const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
+  for(const p of [me,ai]){ p.age=36; setOvr(p,40.2); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 40을 은퇴로 봄'); setOvr(p,39.4); ok(retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 39를 은퇴로 보지 않음'); }
+  ok(String(contractStart).includes('ovr(p)<VET_REL_O')&&!/ovr\(p\)<44/.test(String(contractStart)),'AI 베테랑 방출이 예전 44 기준');
+  ok(String(faUpcoming).includes('p.age>=RET_AGE||(p.age>=RET_VET_AGE&&ovr(p)<RET_VET_O)'),'FA 자격의 은퇴 예상이 은퇴 기준과 다름'); });
+T('[성장 11-20] 노화 곡선: 프로의식 하락 시작 보정 한 단계 축소(-2/-1/0/0/+1), 전성기·노화 퇴보 확률 3분의 1·전성기 기대값 +0.3, 하락 기울기 .4·신체 노화 .16',()=>{ fresh(); const base=domestic(G.user).find(q=>!q.isP&&!q.prospect&&!q.foreign); ok(base,'준비 실패');
+  const mk=(dt,pro)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt=dt; p.pers.pro=pro; return p; };
+  const want={5:31,6:31,7:32,9:32,10:33,12:33,13:33,16:33,17:34,20:34}; for(const pr in want){ const T=dtSpan(mk('norm',+pr)); ok(T.fall===want[pr]&&T.grow===28&&T.peak===Math.min(31,T.fall-1),'정상형 프로의식 '+pr+': '+JSON.stringify(T)); }
+  ok(dtSpan(mk('early',8)).fall===30&&dtSpan(mk('vet',18)).fall===34,'다른 유형 보정 다름');
+  ok(AGE_DECL_K===.4&&AGE_PHYS_K===.16&&Math.abs(AGE_SLUMP_F-1/3)<1e-9&&PEAK_MU===.3&&POT_TIDY_PEAK===2,'상수 다름');
+  const sl=age=>{ __seed(7); let n=0; const N0=600; for(let i=0;i<N0;i++){ const p=mk('norm',12); p.pers.temp=10; p.age=age; p.id=base.id; delete p.mil; G.players[p.id]=p; develop(p); if(p.devLog.reasons.includes('slump'))n++; } G.players[base.id]=base; return n/N0; };
+  const y=sl(27), pk=sl(30); ok(y>.15&&y<.25,'성장 구간 퇴보 비율 '+y.toFixed(3)+'(기대 .2)'); ok(pk>.035&&pk<.1,'전성기 퇴보 비율 '+pk.toFixed(3)+'(기대 .067, 3분의 1)');
+  /* 퇴보 확률만 바꿨고 같은 R() 한 번으로 정한다: 성장 구간(27세)과 전성기(30세)의 주 난수 호출 수 차이가 바꾸기 전과 같다(퇴보 여부와 무관하게 같은 흐름) */
+  ok(String(develop).includes('*(age>T.grow?AGE_SLUMP_F:1)')&&String(develop).includes('base=N(PEAK_MU,1.1)')&&String(develop).includes('(age>T.grow?POT_TIDY_PEAK:1)'),'전성기 퇴보·잠재력 정리 규칙이 develop에 없음'); });
 T('[위임] 스태프 빼가기를 맡겨도 별 4개 이상이라도 기존 연봉의 1.5배를 넘는 조건이면 단장 승인을 받는다',()=>{ fresh(); stInit(); const s=(G.scouts||[]).find(x=>x.skill>=1); ok(s,'준비 실패'); s.skill=4; const tid=G.teams.find(t=>t.id!==G.user).id; G.stRaid=[{id:s.id,k:'sc',tid,sal:round5(s.sal*2),d:G.day}]; G.auto=G.auto||{}; G.auto.raid=true; const sal0=s.sal;
   autoRaid(); ok(s.sal===sal0&&(G.stRaid||[]).some(r=>r.id===s.id),'한도를 넘는 인상인데 운영팀이 바로 붙잡음'); });
 T('[데이터 보고] 월간 전력 분석 보고에 득실·피타고리안·최근 흐름·백분위 상하위가 붙고, 통계 화면으로 이어 준다',()=>{ fresh(); simTo(()=>period()==='season'&&((G.sea.tl||[])[G.user]||[]).length>=12); ok(typeof dataLines==='function','함수 없음'); ok(anaList().length>0,'분석원 없음');
