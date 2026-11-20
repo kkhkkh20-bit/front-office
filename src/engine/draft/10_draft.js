@@ -81,8 +81,17 @@ function growLevelF(){ const y=G.year; const u=lvUp(); if(G.lvF&&G.lvF.y===y&&G.
    기준은 처음 수(국내 4명 안팎)가 아니라 목표인 구단당 1명(10명): 국내 정상급이 구단마다 한두 명 있게(플레이어 제보 11-15) */
 const ELITE_N0=7, ELITE_SLOPE=1.0; /* 11-17 정상급 수 보정(구단주: 리그 한 해 7~8명): 기준 10→7, 기울기 0.7→1.0. 기준 10은 길게 보면 10명 넘게 쌓였다(드래프트 보정 문서 12년째 10.5명). 8세계 12년째 7.5→6.6명, 늘어나는 속도가 느려져 7명 근처에서 멈추게. 모든 구단에 같다(docs/design/draft-elite-tune-2026-11-17.md) */
 function eliteN80(){ const y=G.year; if(G.elN&&G.elN.y===y&&G.elN.d===2)return G.elN; const n=Object.values(G.players).filter(p=>!p.prospect&&!p.retired&&!p.foreign&&p.team!=null&&FrontOfficeCore.dv(ovr(p))>=80).length; const b=ELITE_N0; G.elN={y,n,d:2,f:+clamp(1-(n-b)/b*ELITE_SLOPE,.3,1.05).toFixed(3)}; return G.elN; }
-function eliteGrowF(o){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86?.55:1); }
+function eliteGrowF(o,p){ const d=FrontOfficeCore.dv(o); if(d<76)return 1; return eliteN80().f*(d>=86&&!(p&&p.starT)?.55:1); } /* 세대 재능(starTail)은 90 근처 추가 억제(.55)를 받지 않는다(11-20 상단 꼬리: 이 억제 때문에 잠재력 74~78 세대 재능이 내부 66~69에서 멈췄다). 정상급 수 보정(eliteN80)은 그대로 받는다 */
 const DRAFT_READY=.15, DRAFT_SUPER=.2;
+/* 상단 꼬리(11-20, 구단주 결정: 20-80 표기 70 이상 MVP급이 시즌마다 리그에 1~2명, 75 이상은 여러 시즌에 한 번).
+   측정(시드 7·8, #292 기준): 18시즌 동안 국내 선수 최고가 내부 68.9(표기 67). 원인은 잠재력 분포 꼭대기가 얕은 것 — 한 해 후보 140명의 잠재력이 N(43,8)이라 최고가 대개 64~71이고,
+   정점은 잠재력보다 평균 10 낮다(실현율·잠재력 정리). 표기 70(내부 71.5)에 닿으려면 잠재력 74 안팎에 실현율 0.9 이상이 필요한데 그런 신인이 사실상 나오지 않았다. 표기 변환(50+내부−52)은 일차식이라 위쪽이 눌리지 않는다.
+   그래서 잠재력 STAR_MIN 이상인 신인 중 STAR_P(지명 해·선수별 고정 난수, 주 난수 R() 호출 수 불변)만 '세대 재능'으로 잠재력을 STAR_LO~STAR_HI로 올리고 실현율 하한 STAR_REALK를 준다(04_growth).
+   한 해 평균 약 0.5명. 모든 구단 같다: 지명 전 드래프트 후보에서 정해진다.
+   잠재력만 올리면 지금 능력과의 차이가 커서 성장 구간이 끝나기 전에 닿지 못했다(측정: 잠재력 75 세대 재능이 28세에 69). 그래서 지금 능력도 잠재력보다 STAR_GAP(고졸 14~18, 대졸 10~14) 낮은 데까지 올린다(첫해부터 1군감, 최대 STAR_CUR) */
+const STAR_MIN=56, STAR_P=.05, /* 11-20 재조정: 한 해 잠재력 56 이상 후보가 6~14명(시드 7, 12년)이라 .025면 한 해 0.27명, 8시즌 실경기에서 70+가 나오지 않아 .05(한 해 약 0.5명) */ STAR_LO=72, STAR_HI=78, STAR_REALK=.9, STAR_GAP=[14,18], STAR_CUR=62;
+function starTail(cls){ for(const id of cls){ const p=G.players[id]; if(!p||p.foreign||p.ovsRet||p.starT||p.pot<STAR_MIN)continue; const x=withRng(rngHash('starT',G.year,p.id),()=>[R(),R(),R()]); if(x[0]>=STAR_P)continue; p.pot=Math.round(Math.min(80,Math.max(p.pot+4,STAR_LO+x[1]*(STAR_HI-STAR_LO)))*10)/10; p.starT=G.year;
+  const gap=STAR_GAP[0]+x[2]*(STAR_GAP[1]-STAR_GAP[0])-(p.age>=21?4:0), t=Math.min(STAR_CUR,p.pot-gap); if(ovr(p)<t){ setOvr(p,t); p.ready=true; } } }
 function makeDraftClass(){
   const cls=[]; const lvAdj=draftLevelAdj();
   /* 고1·대1부터 실제 경기를 치러 온 졸업 학년(13_amateur_league). 아마 리그를 끈 저장·실패할 때만 예전처럼 새로 만든다 */
@@ -108,6 +117,7 @@ function makeDraftClass(){
   { const top=cls.map(id=>G.players[id]).filter(p=>p.pot>=54).sort((a,b)=>b.pot-a.pot).slice(0,5);
     for(const p of top){ if(R()<DRAFT_READY){ const t=clamp(p.pot-rnd(4,9),47,56); if(ovr(p)<t){ setOvr(p,t); p.ready=true; } } }
     if(top[0]&&R()<DRAFT_SUPER){ const p=top[0]; p.pot=clamp(p.pot+rnd(3,7),60,79); setOvr(p,clamp(p.pot-rnd(5,9),53,60)); p.ready=true; p.dt=R()<.5?'early':'norm'; }
+    starTail(cls);
     top.slice(0,3).forEach(p=>{ p.blue=1; }); /* 대어 셋: 성장 실현율 하한이 높다(04_growth). 상위 지명과 하위 지명의 차이가 실제로 나게(사용자 11-13: 우승팀 10순위가 손해가 되게) */
     for(const p of top.filter(q=>q.ready)){ if(p.isP)p.amVelo=veloOf(p)-(p.college?ri(0,2):ri(1,4)); else p.amRun=(+runOf(p)+.04).toFixed(2); } }
   for(const id of cls){ const p=G.players[id]; if(p&&p.amSim){ amSyncR(p); if(p.isP&&p.amVelo==null)p.amVelo=veloOf(p)-(p.college?ri(1,3):ri(3,6)); else if(!p.isP&&p.amRun==null)p.amRun=(+runOf(p)+.04).toFixed(2); } } /* 졸업 학년 후보: 구속·주력 표시 */
@@ -179,7 +189,10 @@ function proStaleFix(){ if(!G||!G.players)return 0; let n=0; const fdLive=!!(G.f
     if(p.fdPool&&!fdLive){ p.fdPool=false; f=true; }
     if(p.ovsWait){ delete p.ovsWait; f=true; }
     if(f)n++; }
-  return n; }
+  obsProDrop(); return n; }
+/* 렉 제보(카페 11-20, 2032년 저장): 아마추어 관찰 기록(obsView: 구단별 스카우트 사본·의견, obsBy)은 아마추어·신인 후보 때만 쓴다(67_scout_trip obsViewRows·obsScoutFor).
+   지명·계약으로 후보가 아니게 된 선수에 남아 저장 용량의 1/4(약 5MB)을 차지하고 자동 저장 압축을 느리게 했다. 후보가 아닌 선수에서 지운다. 난수 없음·멱등·사람·AI 구단 공통 */
+function obsProDrop(){ if(!G||!G.players)return 0; let n=0; for(const p of Object.values(G.players)){ if(!p||p.prospect)continue; if(p.obsView){ delete p.obsView; n++; } if(p.obsBy){ delete p.obsBy; n++; } } return n; }
 /* 예전 후보는 인물·능력·관찰·메모를 그대로 두고 학교/권역 표시만 보완한다. */
 function migrateDraftPool(){
   const d=G.draft, live=!!(d&&!d.done), done=!!(d&&d.done&&(d.y==null||d.y===G.year));

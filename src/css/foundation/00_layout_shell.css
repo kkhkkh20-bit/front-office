@@ -81,3 +81,6 @@ main.content{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-b
 /* 휴대폰·태블릿: 소식함은 하단 탭 하나로(상단 아이콘과 겹치던 것, UI 검수 2026-11-15 1-5). 하단 탭에 확인할 소식 수를 숫자로 */
 .bnav .bcnt{position:absolute;top:2px;left:54%;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:var(--bad);color:#fff;font:700 var(--ui-caption)/18px var(--f-num);text-align:center}
 @media (max-width:979px){ body:not(.fm) .shell .top .tbar>.mailbtn[data-a="inbox"]{display:none} }
+
+/* 전체 화면(휴대폰 노치·상태 표시줄 영역까지 쓰는 viewport-fit=cover)에서 윗부분이 잘리던 문제(카페 11-20 랄프): 맨 위 안전 영역만큼 내린다(휴대폰 머리글 .top은 이미 그 아래에 붙는다). 안전 영역이 없는 화면(PC·일반 브라우저)은 0이라 그대로 */
+#app{padding-top:env(safe-area-inset-top,0px)}

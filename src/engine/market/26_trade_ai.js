@@ -80,7 +80,10 @@ function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=d
       hint=`${TN} 후보 ${C.length}명은 있습니다(예: ${nmx}). 하지만 우리 핵심 선수를 빼고는 상대 요구를 맞출 수 없습니다.${coreIn.length?` ${coreIn.join(', ')}을(를) 넣으면 ${tshort(x.t.id)}이(가) 검토합니다.`:' 핵심 선수를 넣어도 맞추기 어렵습니다.'}${C.length>1?` 다른 후보 ${Math.min(C.length,30)-1}명도 같은 이유로 묶음이 맞지 않았습니다.`:''}`; } }
   return {list:out,hint,open,rank:rk.rank}; }
 function slotGain(k,p){ return k==='SP'?spV(p):k==='RP'?penV(p):posScore(p,k); }
-function tradeSuggest(force,only){ if(!tradeOpen())return [];
+/* 렉 제보(카페 11-20 야구왕 "추천받기를 누르면 화면이 멈춘다"): 후보 거래마다 evalTrade가 리그 자리표 열쇠(slotsRosterKey: 모든 소속 선수 해시)를 새로 만들어
+   후반 시즌(2032년 저장)에 첫 추천이 24초 걸렸다. findPackages처럼 한 번의 추천 동안 자리표·선수단 계산을 한 번만 한다(결과·난수 동일) */
+function tradeSuggest(force,only){ if(_rosM)return tradeSuggest0(force,only); rosterMemoOn(); try{ return slotsHold(()=>tradeSuggest0(force,only)); } finally{ rosterMemoOff(); } }
+function tradeSuggest0(force,only){ if(!tradeOpen())return [];
   const key='v5:'+(G.trades||[]).length+':'+(only||'')+':'+playersOf(G.user).map(p=>p.id).reduce((a,b)=>(a*31+b)%1000003,7);
   if(!force&&G.tsug&&G.tsug.key===key&&G.tsug.day>G.day-7){ const L=G.tsug.list.filter(tsugValid); if(L.length||G.tsug.day===G.day)return L; }
   const rk=slotRanks(G.user); const d=depth(G.user); const core=myCoreIds(); const seed=(G.tsugN=(G.tsugN||0)+(force?1:0));
