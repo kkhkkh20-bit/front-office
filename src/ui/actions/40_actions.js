@@ -252,6 +252,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   tposSheet(v){UI.sheet=null;UI.game=null;UI.posSheet=v;renderSheet();},
   seg(v){UI.seg=v;render();},
   rviewMode(v){UI.rlayout=v;render();},
+  rcntMore(){ UI.rcntMore=!UI.rcntMore; render(); }, /* 낮은 화면에서 접힌 정원 내역 펼치기(11-20) */
   fview2(v){ UI.fview2=v; render(); }, cmkView(v){ UI.cmkView=v; render(); }, cmkOpen(v){ v=String(v); UI.cmkOpen=String(UI.cmkOpen)===v?null:v; render(); }, cslotOpen(v){ UI.cslotOpen=UI.cslotOpen===v?null:v; render(); },
   sfCards(){ UI.coachCards=!UI.coachCards; render(); }, sfCoach(v){ UI.coachCards=1; A.coachSlot(v); },
   coachSlot(v){const C=coachesOf(G.user),slots=[...CKEYS.filter(k=>C[k]),...CKEYS.filter(k=>!C[k])];if(!slots.includes(v))return;UI.cslot=v;UI.pg=UI.pg||{};UI.pg.coachSlots=Math.floor(slots.indexOf(v)/cardPageSize());render();},
