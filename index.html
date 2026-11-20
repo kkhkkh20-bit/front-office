@@ -32191,7 +32191,9 @@ function bproleSet(pid,k){ const p=G.players[pid]; if(!p||p.team!==G.user||!p.is
  모든 구단(사용자 구단 감독 포함) 같은 규칙. 단장 보직 요청(rpBias)이 더 크다. 숨김 값이며 화면에는 보직 결과만 보인다 */
 const RK={sp:7,rp:-5,cl:-18,clPen:8};
 let _rkC=new Map(), _rkD=null, _rkG=null;
-function roleKeep(p){ if(!p||!p.isP||!p.hist)return null; const key=G.year*400+G.day; if(_rkD!==key||_rkG!==G){ _rkC=new Map(); _rkD=key; _rkG=G; } let v=_rkC.get(p.id); if(v!==undefined)return v; v=null;
+/* 그날 치른 경기 수(리그 전체 승·패·무 합): 같은 날이라도 경기를 치러 기록이 바뀌면 보직 판단을 다시 한다. 예전에는 하루 한 번만 계산해, 경기 뒤 같은 날 저장·불러오기를 하면 불러온 쪽만 새 기록으로 계산돼 보직·기분 이유가 달라졌다(검사 [팀 분위기·사기]) */
+function rkStatN(){ const R=G.sea&&G.sea.rec; if(!R)return 0; let n=0; for(const r of R)if(r)n+=(r.w||0)+(r.l||0)+(r.t||0); return n; }
+function roleKeep(p){ if(!p||!p.isP||!p.hist)return null; const key=G.year*400+G.day+':'+rkStatN(); if(_rkD!==key||_rkG!==G){ _rkC=new Map(); _rkD=key; _rkG=G; } let v=_rkC.get(p.id); if(v!==undefined)return v; v=null;
   try{ const cur=seasonTotal(p,G.year,'1군'), prev=seasonTotal(p,G.year-1,'1군'); const curN=cur&&(cur.g||0)>=4; const h=curN?cur:prev&&(prev.g||0)>=12?prev:null;
     if(h){ const g=h.g||0, gs=h.gs||0, sv=h.sv||0; const lgE=lgOf(h.y).era||4.6; const era=(h.outs||0)>=30?h.er*27/h.outs:null; const ok=era==null||era<lgE+1;
       const k=gs>=g*.6?'sp':sv>=Math.max(curN?4:12,g*.22)?'cl':gs<=g*.2?'rp':null; v=ok&&k?k:null; } }catch(e){ v=null; }
