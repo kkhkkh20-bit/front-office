@@ -1,0 +1,46 @@
+[
+  {
+    "variant": "univ",
+    "native_path": "/workspace/generated_images/exec-4f3dc68f-57cb-414a-bf0a-0e3c4d0fc791.png"
+  },
+  {
+    "variant": "seoul_comets",
+    "native_path": "/workspace/generated_images/exec-3ab3e254-3308-4628-856a-6a7e3d4f3669.png"
+  },
+  {
+    "variant": "seoul_hounds",
+    "native_path": "/workspace/generated_images/exec-048ca1f6-386b-4d48-95f8-d2b9ebd9c3d7.png"
+  },
+  {
+    "variant": "incheon_seagulls",
+    "native_path": "/workspace/generated_images/exec-ebdcaf07-02ff-487f-aa08-7af931afdf22.png"
+  },
+  {
+    "variant": "suwon_sparks",
+    "native_path": "/workspace/generated_images/exec-8744ef0d-e66b-40f2-8aae-85f0bc96803d.png"
+  },
+  {
+    "variant": "goyang_storm",
+    "native_path": "/workspace/generated_images/exec-8cd8544c-f9d1-4829-89ff-4d735f926180.png"
+  },
+  {
+    "variant": "daejeon_redfox",
+    "native_path": "/workspace/generated_images/exec-edfe6e95-8a6d-4b02-b022-86a2e2f06ebf.png"
+  },
+  {
+    "variant": "gwangju_blazes",
+    "native_path": "/workspace/generated_images/exec-a33a8448-e318-453b-8bf5-6a60ca6d7e6a.png"
+  },
+  {
+    "variant": "daegu_thunders",
+    "native_path": "/workspace/generated_images/exec-98a80b57-6918-4871-b3e7-600c4ab3ab65.png"
+  },
+  {
+    "variant": "busan_waves",
+    "native_path": "/workspace/generated_images/exec-6b876b3c-1222-44f2-b314-b5e3de1a8693.png"
+  },
+  {
+    "variant": "changwon_anchors",
+    "native_path": "/workspace/generated_images/exec-70afd43e-f224-4079-889a-67a935e1e1fa.png"
+  }
+]

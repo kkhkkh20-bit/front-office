@@ -1,4 +1,16 @@
-# v21b 시트 A — Claude 연결 안내
+시각 검수 후속: A061의 모자 윗부분 여백을 추가 보완 중입니다. 이 커밋은 수치 통과 중간본입니다.
+
+# v21b 시트 A revision3 — A 7명 교체 및 B 수정 중간본
+
+A062·A047·A038·A083·A061·A069·A093의 12변형을 교체했습니다. A100 번호·나이·level은 모두 유지합니다. 같은 인물 최저 0.606188, A 대표끼리 최고 0.398291, 기존486명과 최고 0.392386입니다. 최종 손실 시트에서 잘라낸 RGB 3600칸을 직접 측정값과 대조해 통과했습니다. 배경 캔버스 재구성과 A041 수원 사진의 1 native px 전체 사진 중심 보정은 얼굴 변형 없이 기존 사진을 유지하기 위한 처리이며 상세 기록은 validation/revision3/에 있습니다.
+
+B는 공식 런타임 시트가 아직 없습니다. 17명×12종=204장의 개별 사진 검수본이며, 최종 B100과 B 시트36장의 완료를 뜻하지 않습니다. game ID는 배정하지 않았습니다. production_complete=false, human_age_review=pending입니다.
+
+Q001·Q024·Q033은 머리 크기를 보정했고, Q054·Q055는 무지 아마추어 유니폼, Q083은 검은 머리로 수정했습니다. 이 6명의 12변형은 개별 사진 검사를 통과했습니다. Q071·Q042·Q047·Q064·Q074·Q067·Q075는 최종 선정에서 제외합니다. 첫8명의 candidate8 hs_home 배경은 다른 변형과 가까운 중립 회색으로 맞췄습니다. Q 번호는 82c94805의 리뷰 번호를 그대로 씁니다.
+
+미리보기: previews/revision3_A7_all12.jpg, previews/revision3_B_requested_changes.jpg, previews/revision3_B17_all12.jpg. 변경표는 revision3_review.json, B 전체12종 후보는 stage_b_family_review_manifest.json입니다. 후보판을 공식 B 시트로 연결하지 마세요.
+
+## 이전 A1 납품 기록 (수치와 소스는 validation/history/stage_a_before_revision3/에 보존)
 
 리뷰 브랜치: `assets/v21-review`  
 기준 경로: `assets/v21/amateur200/`

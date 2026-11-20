@@ -1,0 +1,343 @@
+{
+  "status": "ACTUAL_HS_PHOTO_SELECTION_INDIVIDUAL_EXPORTS_NOT_FINAL_ATLASES",
+  "selected": [
+    {
+      "group": "A093",
+      "source": {
+        "id": "ar2_A093_hs_0",
+        "person_id": "n000",
+        "game_id": "v21_amateur_A093",
+        "review_id": "A093",
+        "variant": "hs_home",
+        "age": 20,
+        "level": "univ",
+        "glasses": false,
+        "native_path": "/workspace/generated_images/exec-20665b09-e5ea-41f5-965d-699d0277af5e.png",
+        "crop": [
+          6,
+          1336,
+          437,
+          1767
+        ],
+        "source": "a7_black_hair_uniform_and_artifact_repair",
+        "normalized_path": "/dev/shm/v21b-work/normalized_r2_initial/ar2_A093_hs_0.png",
+        "native_edge": 431,
+        "translation_origin_xy": [
+          0,
+          0
+        ],
+        "center_256": [
+          130.41920471191406,
+          118.78841400146484
+        ],
+        "status": "normalized_not_approved"
+      },
+      "guard_max": 0.36579224467277527,
+      "same_identity_reference_min": 0.9021064043045044,
+      "headroom_256": 4,
+      "background_corner_rgb": [
+        112.0,
+        111.0,
+        114.0
+      ],
+      "background_luma": 111.4292,
+      "cost": 0.3477501165866852
+    },
+    {
+      "group": "A062",
+      "source": {
+        "id": "ar2_A062_single0",
+        "person_id": "c007_p06",
+        "game_id": "v21_amateur_A062",
+        "review_id": "A062",
+        "variant": "hs_home",
+        "age": 18,
+        "level": "hs",
+        "glasses": false,
+        "native_path": "/workspace/generated_images/exec-eaee9dee-eab3-4fbf-b1bf-7c69a4e8c833.png",
+        "crop": [
+          8,
+          8,
+          1246,
+          1246
+        ],
+        "source": "individual_identity_preserving_hair_or_amateur_uniform_correction",
+        "reference_variant": "hs_home",
+        "normalized_path": "/dev/shm/v21b-work/normalized_a7_singles/ar2_A062_single0.png",
+        "native_edge": 1238,
+        "translation_origin_xy": [
+          0,
+          0
+        ],
+        "center_256": [
+          130.87249755859375,
+          118.19914245605469
+        ],
+        "status": "normalized_not_approved"
+      },
+      "guard_max": 0.38756871223449707,
+      "same_identity_reference_min": 0.887767493724823,
+      "headroom_256": 14,
+      "background_corner_rgb": [
+        99.0,
+        103.0,
+        105.0
+      ],
+      "background_luma": 102.294,
+      "cost": 0.3698133623600006
+    },
+    {
+      "group": "A083",
+      "source": {
+        "id": "ar2_A083_single0",
+        "person_id": "c009_p09",
+        "game_id": "v21_amateur_A083",
+        "review_id": "A083",
+        "variant": "hs_home",
+        "age": 21,
+        "level": "univ",
+        "glasses": false,
+        "native_path": "/workspace/generated_images/exec-56ed396c-c480-428a-8fb8-4c2b6991825e.png",
+        "crop": [
+          8,
+          8,
+          1246,
+          1246
+        ],
+        "source": "individual_identity_preserving_hair_or_amateur_uniform_correction",
+        "reference_variant": "gwangju_blazes",
+        "normalized_path": "/dev/shm/v21b-work/normalized_a7_singles/ar2_A083_single0.png",
+        "native_edge": 1238,
+        "translation_origin_xy": [
+          0,
+          0
+        ],
+        "center_256": [
+          130.69241333007812,
+          118.10713195800781
+        ],
+        "status": "normalized_not_approved"
+      },
+      "guard_max": 0.362027108669281,
+      "same_identity_reference_min": 0.628112256526947,
+      "headroom_256": 28,
+      "background_corner_rgb": [
+        111.0,
+        109.0,
+        114.0
+      ],
+      "background_luma": 109.7862,
+      "cost": 0.34946486353874207
+    },
+    {
+      "group": "A061",
+      "source": {
+        "id": "ar2_A061_single0",
+        "person_id": "c007_p05",
+        "game_id": "v21_amateur_A061",
+        "review_id": "A061",
+        "variant": "hs_home",
+        "age": 20,
+        "level": "univ",
+        "glasses": false,
+        "native_path": "/workspace/generated_images/exec-7b212310-fcdc-4e6f-96a3-7699b75cc804.png",
+        "crop": [
+          8,
+          8,
+          1246,
+          1246
+        ],
+        "source": "individual_identity_preserving_hair_or_amateur_uniform_correction",
+        "reference_variant": "hs_home",
+        "normalized_path": "/dev/shm/v21b-work/normalized_a7_singles/ar2_A061_single0.png",
+        "native_edge": 1238,
+        "translation_origin_xy": [
+          -2,
+          -1
+        ],
+        "center_256": [
+          131.1731414794922,
+          118.12591552734375
+        ],
+        "status": "normalized_not_approved"
+      },
+      "guard_max": 0.3667011857032776,
+      "same_identity_reference_min": 0.7844969630241394,
+      "headroom_256": 3,
+      "background_corner_rgb": [
+        114.5,
+        114.5,
+        116.5
+      ],
+      "background_luma": 114.64439999999999,
+      "cost": 0.3510112464427948
+    },
+    {
+      "group": "A069",
+      "source": {
+        "id": "ar2_A069_single0",
+        "person_id": "c008_p04",
+        "game_id": "v21_amateur_A069",
+        "review_id": "A069",
+        "variant": "hs_home",
+        "age": 17,
+        "level": "hs",
+        "glasses": false,
+        "native_path": "/workspace/generated_images/exec-0b52051a-090e-45fc-af96-981cc99d44f9.png",
+        "crop": [
+          8,
+          8,
+          1246,
+          1246
+        ],
+        "source": "individual_identity_preserving_hair_or_amateur_uniform_correction",
+        "reference_variant": "seoul_hounds",
+        "normalized_path": "/dev/shm/v21b-work/normalized_a7_singles/ar2_A069_single0.png",
+        "native_edge": 1238,
+        "translation_origin_xy": [
+          1,
+          -3
+        ],
+        "center_256": [
+          131.0524139404297,
+          118.30850982666016
+        ],
+        "status": "normalized_not_approved"
+      },
+      "guard_max": 0.3781551718711853,
+      "same_identity_reference_min": 0.8931851387023926,
+      "headroom_256": 4,
+      "background_corner_rgb": [
+        113.0,
+        113.0,
+        117.0
+      ],
+      "background_luma": 113.2888,
+      "cost": 0.36029146909713744
+    },
+    {
+      "group": "A047",
+      "source": {
+        "id": "ar2_A047_hair1",
+        "person_id": "c005_p04",
+        "game_id": "v21_amateur_A047",
+        "review_id": "A047",
+        "variant": "hs_home",
+        "age": 17,
+        "level": "hs",
+        "glasses": false,
+        "native_path": "/workspace/generated_images/exec-e551eb3b-405d-4e5c-bdca-5d2de6fd50a9.png",
+        "crop": [
+          633,
+          6,
+          1248,
+          621
+        ],
+        "source": "minimal_hair_only_correction_of_original_hs_identity",
+        "normalized_path": "/dev/shm/v21b-work/normalized_a2_hair/ar2_A047_hair1.png",
+        "native_edge": 615,
+        "translation_origin_xy": [
+          -3,
+          -1
+        ],
+        "center_256": [
+          130.69244384765625,
+          118.2349624633789
+        ],
+        "status": "normalized_not_approved"
+      },
+      "guard_max": 0.3657674789428711,
+      "same_identity_reference_min": 0.8087098002433777,
+      "headroom_256": 11,
+      "background_corner_rgb": [
+        134.0,
+        134.0,
+        136.0
+      ],
+      "background_luma": 134.1444,
+      "cost": 0.3495932829380035
+    },
+    {
+      "group": "A038",
+      "source": {
+        "id": "ar2_A038_hair0",
+        "person_id": "c004_p05",
+        "game_id": "v21_amateur_A038",
+        "review_id": "A038",
+        "variant": "hs_home",
+        "age": 18,
+        "level": "hs",
+        "glasses": false,
+        "native_path": "/workspace/generated_images/exec-9dfe3202-903b-4050-907b-994965b05d3c.png",
+        "crop": [
+          6,
+          6,
+          621,
+          621
+        ],
+        "source": "minimal_hair_only_correction_of_original_hs_identity",
+        "normalized_path": "/dev/shm/v21b-work/normalized_a2_hair/ar2_A038_hair0.png",
+        "native_edge": 615,
+        "translation_origin_xy": [
+          0,
+          0
+        ],
+        "center_256": [
+          130.85757446289062,
+          117.7197036743164
+        ],
+        "status": "normalized_not_approved"
+      },
+      "guard_max": 0.38131529092788696,
+      "same_identity_reference_min": 0.7581677436828613,
+      "headroom_256": 9,
+      "background_corner_rgb": [
+        141.0,
+        140.0,
+        143.0
+      ],
+      "background_luma": 140.4292,
+      "cost": 0.36615193605422974
+    },
+    {
+      "group": "B8_BG",
+      "source": {
+        "id": "br2_candidate8_hs_flat2",
+        "person_id": "b_direct_pool_0091_0",
+        "variant": "hs_home",
+        "age": 17,
+        "level": "hs",
+        "glasses": true,
+        "native_path": "/workspace/generated_images/exec-3c6216c2-9229-401d-aabd-3950378f66e5.png",
+        "crop": [
+          8,
+          8,
+          1246,
+          1246
+        ],
+        "source": "candidate8_background_flat_gray_106_106_109",
+        "normalized_path": "/dev/shm/v21b-work/normalized_bg2/br2_candidate8_hs_flat2.png",
+        "native_edge": 1238,
+        "translation_origin_xy": [
+          0,
+          0
+        ],
+        "center_256": [
+          130.70730590820312,
+          117.95649719238281
+        ],
+        "status": "normalized_not_approved"
+      },
+      "guard_max": 0.3568785786628723,
+      "same_identity_reference_min": 0.8025274276733398,
+      "headroom_256": 5,
+      "background_corner_rgb": [
+        102.0,
+        102.0,
+        102.0
+      ],
+      "background_luma": 102.0,
+      "cost": 0.3695283786628723
+    }
+  ]
+}

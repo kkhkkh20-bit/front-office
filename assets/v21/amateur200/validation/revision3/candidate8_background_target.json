@@ -1,0 +1,71 @@
+{
+  "corner_rgb_by_variant": {
+    "hs_home": [
+      138.5,
+      138.5,
+      137.0
+    ],
+    "univ": [
+      101.0,
+      102.0,
+      106.5
+    ],
+    "seoul_comets": [
+      107.0,
+      107.0,
+      109.0
+    ],
+    "seoul_hounds": [
+      118.0,
+      117.0,
+      120.0
+    ],
+    "incheon_seagulls": [
+      105.0,
+      104.0,
+      107.0
+    ],
+    "suwon_sparks": [
+      110.0,
+      110.5,
+      114.0
+    ],
+    "goyang_storm": [
+      100.0,
+      100.0,
+      104.0
+    ],
+    "daejeon_redfox": [
+      108.0,
+      108.0,
+      110.0
+    ],
+    "gwangju_blazes": [
+      108.0,
+      107.0,
+      109.0
+    ],
+    "daegu_thunders": [
+      102.0,
+      103.0,
+      107.0
+    ],
+    "busan_waves": [
+      106.0,
+      106.0,
+      109.0
+    ],
+    "changwon_anchors": [
+      106.0,
+      106.0,
+      111.0
+    ]
+  },
+  "target_corner_rgb": [
+    106.0,
+    106.0,
+    109.0
+  ],
+  "original_hs_native": "/dev/shm/v21b-work/repo/assets/v21/amateur200/review/stage_b_families/normalized/b_direct_pool_0091_0__hs_home.png",
+  "univ_native": "/dev/shm/v21b-work/repo/assets/v21/amateur200/review/stage_b_families/normalized/b_direct_pool_0091_0__univ.png"
+}

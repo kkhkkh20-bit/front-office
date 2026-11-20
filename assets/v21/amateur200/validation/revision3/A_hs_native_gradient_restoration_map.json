@@ -1,0 +1,2002 @@
+[
+  {
+    "photo_id": "c000_p00__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.3031005859375,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.3031005859375,
+      "1": 0.3696085611979167,
+      "2": 0.3032023111979167,
+      "3": 0.4101155598958333,
+      "4": 0.5524698893229166,
+      "5": 0.3032023111979167,
+      "6": 0.3032023111979167,
+      "7": 0.3032023111979167,
+      "8": 0.3032023111979167,
+      "9": 0.3032023111979167,
+      "10": 0.3513997395833333,
+      "11": 0.4101155598958333
+    }
+  },
+  {
+    "photo_id": "c000_p02__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.24188232421875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.24188232421875,
+      "1": 0.30694580078125,
+      "2": 0.3052978515625,
+      "3": 0.52630615234375,
+      "4": 0.3087361653645833,
+      "5": 0.3475341796875,
+      "6": 0.3693644205729167,
+      "7": 0.3810017903645833,
+      "8": 0.4224039713541667,
+      "9": 0.46649169921875,
+      "10": 0.5624796549479166,
+      "11": 0.52630615234375
+    }
+  },
+  {
+    "photo_id": "c000_p03__hs_home",
+    "mode": 5,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.046305338541666664,
+      "1": 0.055318196614583336,
+      "2": 0.046305338541666664,
+      "3": 0.06654866536458333,
+      "4": 0.046305338541666664,
+      "5": 0.0,
+      "6": 0.046305338541666664,
+      "7": 0.046305338541666664,
+      "8": 0.046305338541666664,
+      "9": 0.046305338541666664,
+      "10": 0.06654866536458333,
+      "11": 0.06654866536458333
+    }
+  },
+  {
+    "photo_id": "c000_p04__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.033243815104166664,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.29779052734375,
+      "1": 0.2549235026041667,
+      "2": 0.1453857421875,
+      "3": 0.17704264322916666,
+      "4": 0.23335774739583334,
+      "5": 0.1453857421875,
+      "6": 0.1453857421875,
+      "7": 0.1453857421875,
+      "8": 0.033243815104166664,
+      "9": 0.30023193359375,
+      "10": 0.27301025390625,
+      "11": 0.17704264322916666
+    }
+  },
+  {
+    "photo_id": "c011_p04__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0057373046875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.042724609375,
+      "1": 0.055704752604166664,
+      "2": 0.08138020833333333,
+      "3": 0.008443196614583334,
+      "4": 0.15443929036458334,
+      "5": 0.08138020833333333,
+      "6": 0.08138020833333333,
+      "7": 0.07904052734375,
+      "8": 0.0057373046875,
+      "9": 0.035135904947916664,
+      "10": 0.0306396484375,
+      "11": 0.008443196614583334
+    }
+  },
+  {
+    "photo_id": "c000_p07__hs_home",
+    "mode": 5,
+    "decoded_RGB_MAE_against_frozen_A128": 0.15598551432291666,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.4640706380208333,
+      "1": 0.4666748046875,
+      "2": 0.40771484375,
+      "3": 0.3458048502604167,
+      "4": 0.4771525065104167,
+      "5": 0.15598551432291666,
+      "6": 0.34857177734375,
+      "7": 0.4183349609375,
+      "8": 0.5086873372395834,
+      "9": 0.3810017903645833,
+      "10": 0.3408610026041667,
+      "11": 0.3458048502604167
+    }
+  },
+  {
+    "photo_id": "c000_p08__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.21012369791666666,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.2623697916666667,
+      "1": 0.3630574544270833,
+      "2": 0.31536865234375,
+      "3": 0.4835408528645833,
+      "4": 0.21012369791666666,
+      "5": 0.2762858072916667,
+      "6": 0.3247884114583333,
+      "7": 0.314208984375,
+      "8": 0.2848917643229167,
+      "9": 0.22682698567708334,
+      "10": 0.3345743815104167,
+      "11": 0.4835408528645833
+    }
+  },
+  {
+    "photo_id": "c000_p09__hs_home",
+    "mode": 10,
+    "decoded_RGB_MAE_against_frozen_A128": 0.08730061848958333,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.23325602213541666,
+      "1": 0.22519938151041666,
+      "2": 0.20432535807291666,
+      "3": 0.1536865234375,
+      "4": 0.22664388020833334,
+      "5": 0.17826334635416666,
+      "6": 0.19563802083333334,
+      "7": 0.19364420572916666,
+      "8": 0.10965983072916667,
+      "9": 0.26080322265625,
+      "10": 0.08730061848958333,
+      "11": 0.1536865234375
+    }
+  },
+  {
+    "photo_id": "c001_p00__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c001_p02__hs_home",
+    "mode": 9,
+    "decoded_RGB_MAE_against_frozen_A128": 0.03076171875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.07061767578125,
+      "1": 0.24031575520833334,
+      "2": 0.24196370442708334,
+      "3": 0.08778889973958333,
+      "4": 0.07356770833333333,
+      "5": 0.24196370442708334,
+      "6": 0.24196370442708334,
+      "7": 0.24196370442708334,
+      "8": 0.041971842447916664,
+      "9": 0.03076171875,
+      "10": 0.19571940104166666,
+      "11": 0.08778889973958333
+    }
+  },
+  {
+    "photo_id": "c001_p03__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.13047281901041666,
+      "2": 0.13047281901041666,
+      "3": 0.13047281901041666,
+      "4": 0.13047281901041666,
+      "5": 0.13047281901041666,
+      "6": 0.13047281901041666,
+      "7": 0.13047281901041666,
+      "8": 0.13047281901041666,
+      "9": 0.13047281901041666,
+      "10": 0.0,
+      "11": 0.13047281901041666
+    }
+  },
+  {
+    "photo_id": "c001_p04__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.020792643229166668,
+      "2": 0.020792643229166668,
+      "3": 0.020792643229166668,
+      "4": 0.020792643229166668,
+      "5": 0.020792643229166668,
+      "6": 0.020792643229166668,
+      "7": 0.020792643229166668,
+      "8": 0.020792643229166668,
+      "9": 0.020792643229166668,
+      "10": 0.0,
+      "11": 0.020792643229166668
+    }
+  },
+  {
+    "photo_id": "c001_p05__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.041605631510416664,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.05511474609375,
+      "1": 0.3707478841145833,
+      "2": 0.2699178059895833,
+      "3": 0.3960164388020833,
+      "4": 0.3769734700520833,
+      "5": 0.3271280924479167,
+      "6": 0.052998860677083336,
+      "7": 0.041605631510416664,
+      "8": 0.34613037109375,
+      "9": 0.4032796223958333,
+      "10": 0.33660888671875,
+      "11": 0.3960164388020833
+    }
+  },
+  {
+    "photo_id": "c001_p06__hs_home",
+    "mode": 6,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0928955078125,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.16583251953125,
+      "1": 0.21720377604166666,
+      "2": 0.16599527994791666,
+      "3": 0.3023274739583333,
+      "4": 0.15663655598958334,
+      "5": 0.16599527994791666,
+      "6": 0.0928955078125,
+      "7": 0.17317708333333334,
+      "8": 0.1136474609375,
+      "9": 0.12599690755208334,
+      "10": 0.27606201171875,
+      "11": 0.3023274739583333
+    }
+  },
+  {
+    "photo_id": "c001_p07__hs_home",
+    "mode": 6,
+    "decoded_RGB_MAE_against_frozen_A128": 0.20176188151041666,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.247802734375,
+      "1": 0.5127970377604166,
+      "2": 0.4816691080729167,
+      "3": 0.4383951822916667,
+      "4": 0.23897298177083334,
+      "5": 0.4816691080729167,
+      "6": 0.20176188151041666,
+      "7": 0.4904581705729167,
+      "8": 0.5125325520833334,
+      "9": 0.2679646809895833,
+      "10": 0.409912109375,
+      "11": 0.4383951822916667
+    }
+  },
+  {
+    "photo_id": "c001_p09__hs_home",
+    "mode": 2,
+    "decoded_RGB_MAE_against_frozen_A128": 0.022440592447916668,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.1168212890625,
+      "1": 0.1168212890625,
+      "2": 0.022440592447916668,
+      "3": 0.1168212890625,
+      "4": 0.027486165364583332,
+      "5": 0.022440592447916668,
+      "6": 0.022440592447916668,
+      "7": 0.1168212890625,
+      "8": 0.1168212890625,
+      "9": 0.1168212890625,
+      "10": 0.022440592447916668,
+      "11": 0.1168212890625
+    }
+  },
+  {
+    "photo_id": "c002_p00__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.03460693359375,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.056009928385416664,
+      "1": 0.13505045572916666,
+      "2": 0.11014811197916667,
+      "3": 0.12347412109375,
+      "4": 0.06583658854166667,
+      "5": 0.06601969401041667,
+      "6": 0.08321126302083333,
+      "7": 0.03460693359375,
+      "8": 0.24961344401041666,
+      "9": 0.15622965494791666,
+      "10": 0.14084879557291666,
+      "11": 0.12347412109375
+    }
+  },
+  {
+    "photo_id": "c002_p01__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.24318440755208334,
+      "2": 0.24318440755208334,
+      "3": 0.15655517578125,
+      "4": 0.0478515625,
+      "5": 0.16507975260416666,
+      "6": 0.24318440755208334,
+      "7": 0.16507975260416666,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.15655517578125,
+      "11": 0.15655517578125
+    }
+  },
+  {
+    "photo_id": "c002_p02__hs_home",
+    "mode": 10,
+    "decoded_RGB_MAE_against_frozen_A128": 0.12003580729166667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.12941487630208334,
+      "1": 0.1744384765625,
+      "2": 0.14656575520833334,
+      "3": 0.14406331380208334,
+      "4": 0.15138753255208334,
+      "5": 0.14656575520833334,
+      "6": 0.14656575520833334,
+      "7": 0.14656575520833334,
+      "8": 0.14656575520833334,
+      "9": 0.14656575520833334,
+      "10": 0.12003580729166667,
+      "11": 0.14406331380208334
+    }
+  },
+  {
+    "photo_id": "c002_p03__hs_home",
+    "mode": 2,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.00244140625,
+      "1": 0.37042236328125,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.00225830078125,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c002_p04__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c002_p05__hs_home",
+    "mode": 6,
+    "decoded_RGB_MAE_against_frozen_A128": 0.055094401041666664,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.16048177083333334,
+      "1": 0.14117431640625,
+      "2": 0.14577229817708334,
+      "3": 0.3904825846354167,
+      "4": 0.4001057942708333,
+      "5": 0.07212320963541667,
+      "6": 0.055094401041666664,
+      "7": 0.14892578125,
+      "8": 0.14908854166666666,
+      "9": 0.32550048828125,
+      "10": 0.3443400065104167,
+      "11": 0.3904825846354167
+    }
+  },
+  {
+    "photo_id": "c002_p06__hs_home",
+    "mode": 2,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.058024088541666664,
+      "1": 0.031270345052083336,
+      "2": 0.0,
+      "3": 0.10255940755208333,
+      "4": 0.1109619140625,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.07236735026041667,
+      "8": 0.08579508463541667,
+      "9": 0.08841959635416667,
+      "10": 0.12713623046875,
+      "11": 0.10255940755208333
+    }
+  },
+  {
+    "photo_id": "c002_p07__hs_home",
+    "mode": 9,
+    "decoded_RGB_MAE_against_frozen_A128": 0.20265706380208334,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.3630777994791667,
+      "1": 0.3012491861979167,
+      "2": 0.4477945963541667,
+      "3": 0.4137776692708333,
+      "4": 0.3357747395833333,
+      "5": 0.4477945963541667,
+      "6": 0.4477945963541667,
+      "7": 0.2570597330729167,
+      "8": 0.22735595703125,
+      "9": 0.20265706380208334,
+      "10": 0.2873331705729167,
+      "11": 0.4137776692708333
+    }
+  },
+  {
+    "photo_id": "c002_p08__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.07352701822916667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.3132731119791667,
+      "1": 0.3845621744791667,
+      "2": 0.3999430338541667,
+      "3": 0.3204549153645833,
+      "4": 0.07352701822916667,
+      "5": 0.3999430338541667,
+      "6": 0.39642333984375,
+      "7": 0.3999430338541667,
+      "8": 0.09525553385416667,
+      "9": 0.13234456380208334,
+      "10": 0.1717529296875,
+      "11": 0.3204549153645833
+    }
+  },
+  {
+    "photo_id": "c002_p09__hs_home",
+    "mode": 10,
+    "decoded_RGB_MAE_against_frozen_A128": 0.16343180338541666,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.4223429361979167,
+      "1": 0.2617390950520833,
+      "2": 0.4221598307291667,
+      "3": 0.3050944010416667,
+      "4": 0.2574869791666667,
+      "5": 0.4221598307291667,
+      "6": 0.4221598307291667,
+      "7": 0.4031778971354167,
+      "8": 0.2674967447916667,
+      "9": 0.3351847330729167,
+      "10": 0.16343180338541666,
+      "11": 0.3050944010416667
+    }
+  },
+  {
+    "photo_id": "c003_p02__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.029947916666666668,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.007731119791666667,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c003_p03__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c003_p04__hs_home",
+    "mode": 2,
+    "decoded_RGB_MAE_against_frozen_A128": 0.07295735677083333,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.2693277994791667,
+      "1": 0.0814208984375,
+      "2": 0.07295735677083333,
+      "3": 0.23173014322916666,
+      "4": 0.1632080078125,
+      "5": 0.07295735677083333,
+      "6": 0.07295735677083333,
+      "7": 0.13437906901041666,
+      "8": 0.24593098958333334,
+      "9": 0.2741292317708333,
+      "10": 0.2748616536458333,
+      "11": 0.23173014322916666
+    }
+  },
+  {
+    "photo_id": "c003_p06__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c003_p07__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0023600260416666665,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0023600260416666665,
+      "1": 0.0859375,
+      "2": 0.08394368489583333,
+      "3": 0.02178955078125,
+      "4": 0.24074300130208334,
+      "5": 0.08394368489583333,
+      "6": 0.08394368489583333,
+      "7": 0.08394368489583333,
+      "8": 0.08394368489583333,
+      "9": 0.08394368489583333,
+      "10": 0.052754720052083336,
+      "11": 0.02178955078125
+    }
+  },
+  {
+    "photo_id": "c003_p08__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.04962158203125,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0684814453125,
+      "1": 0.16263834635416666,
+      "2": 0.08978271484375,
+      "3": 0.1134033203125,
+      "4": 0.13616943359375,
+      "5": 0.08978271484375,
+      "6": 0.08978271484375,
+      "7": 0.08978271484375,
+      "8": 0.04962158203125,
+      "9": 0.17472330729166666,
+      "10": 0.17329915364583334,
+      "11": 0.1134033203125
+    }
+  },
+  {
+    "photo_id": "c003_p09__hs_home",
+    "mode": 2,
+    "decoded_RGB_MAE_against_frozen_A128": 0.034566243489583336,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.21832275390625,
+      "1": 0.2854207356770833,
+      "2": 0.034566243489583336,
+      "3": 0.3043009440104167,
+      "4": 0.2797648111979167,
+      "5": 0.034566243489583336,
+      "6": 0.034566243489583336,
+      "7": 0.034566243489583336,
+      "8": 0.034566243489583336,
+      "9": 0.034566243489583336,
+      "10": 0.21372477213541666,
+      "11": 0.3043009440104167
+    }
+  },
+  {
+    "photo_id": "c004_p00__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.1239013671875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.2589314778645833,
+      "1": 0.29583740234375,
+      "2": 0.26580810546875,
+      "3": 0.295166015625,
+      "4": 0.15987141927083334,
+      "5": 0.26580810546875,
+      "6": 0.26580810546875,
+      "7": 0.26580810546875,
+      "8": 0.1239013671875,
+      "9": 0.20855712890625,
+      "10": 0.18436686197916666,
+      "11": 0.295166015625
+    }
+  },
+  {
+    "photo_id": "c004_p01__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.053670247395833336,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.06915283203125,
+      "1": 0.0836181640625,
+      "2": 0.07354736328125,
+      "3": 0.23811848958333334,
+      "4": 0.0753173828125,
+      "5": 0.07354736328125,
+      "6": 0.07354736328125,
+      "7": 0.053670247395833336,
+      "8": 0.10557047526041667,
+      "9": 0.07790120442708333,
+      "10": 0.07454427083333333,
+      "11": 0.23811848958333334
+    }
+  },
+  {
+    "photo_id": "c004_p02__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.01141357421875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.01141357421875,
+      "1": 0.04034423828125,
+      "2": 0.018229166666666668,
+      "3": 0.12583414713541666,
+      "4": 0.2540486653645833,
+      "5": 0.018229166666666668,
+      "6": 0.018229166666666668,
+      "7": 0.018229166666666668,
+      "8": 0.3028971354166667,
+      "9": 0.2844441731770833,
+      "10": 0.2676798502604167,
+      "11": 0.12583414713541666
+    }
+  },
+  {
+    "photo_id": "c004_p04__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.07285563151041667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.23695882161458334,
+      "1": 0.3285929361979167,
+      "2": 0.23695882161458334,
+      "3": 0.35260009765625,
+      "4": 0.07285563151041667,
+      "5": 0.16294352213541666,
+      "6": 0.13846842447916666,
+      "7": 0.3104654947916667,
+      "8": 0.2833048502604167,
+      "9": 0.24318440755208334,
+      "10": 0.35260009765625,
+      "11": 0.35260009765625
+    }
+  },
+  {
+    "photo_id": "c004_p05__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.001953125,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.001953125,
+      "1": 0.001953125,
+      "2": 0.001953125,
+      "3": 0.001953125,
+      "4": 0.007039388020833333,
+      "5": 0.001953125,
+      "6": 0.007039388020833333,
+      "7": 0.001953125,
+      "8": 0.001953125,
+      "9": 0.001953125,
+      "10": 0.001953125,
+      "11": 0.001953125
+    }
+  },
+  {
+    "photo_id": "c004_p06__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.24698893229166666,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.48529052734375,
+      "1": 0.4479573567708333,
+      "2": 0.5421549479166666,
+      "3": 0.6062418619791666,
+      "4": 0.24698893229166666,
+      "5": 0.5573323567708334,
+      "6": 0.5903727213541666,
+      "7": 0.5582682291666666,
+      "8": 0.4984334309895833,
+      "9": 0.63787841796875,
+      "10": 0.6491292317708334,
+      "11": 0.6062418619791666
+    }
+  },
+  {
+    "photo_id": "c004_p07__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.035380045572916664,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.035380045572916664,
+      "1": 0.14790852864583334,
+      "2": 0.035380045572916664,
+      "3": 0.035380045572916664,
+      "4": 0.13911946614583334,
+      "5": 0.035380045572916664,
+      "6": 0.035380045572916664,
+      "7": 0.035380045572916664,
+      "8": 0.035380045572916664,
+      "9": 0.035380045572916664,
+      "10": 0.035380045572916664,
+      "11": 0.035380045572916664
+    }
+  },
+  {
+    "photo_id": "c004_p08__hs_home",
+    "mode": 1,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.02691650390625,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.01324462890625,
+      "4": 0.02935791015625,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.01324462890625
+    }
+  },
+  {
+    "photo_id": "c004_p09__hs_home",
+    "mode": 9,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.06660970052083333,
+      "1": 0.11802164713541667,
+      "2": 0.10237630208333333,
+      "3": 0.06646728515625,
+      "4": 0.08135986328125,
+      "5": 0.10237630208333333,
+      "6": 0.10237630208333333,
+      "7": 0.10237630208333333,
+      "8": 0.026590983072916668,
+      "9": 0.0,
+      "10": 0.028727213541666668,
+      "11": 0.06646728515625
+    }
+  },
+  {
+    "photo_id": "c005_p00__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.056925455729166664,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.056925455729166664,
+      "1": 0.2803548177083333,
+      "2": 0.26861572265625,
+      "3": 0.33843994140625,
+      "4": 0.23903401692708334,
+      "5": 0.26861572265625,
+      "6": 0.26861572265625,
+      "7": 0.19474283854166666,
+      "8": 0.293212890625,
+      "9": 0.09177652994791667,
+      "10": 0.280517578125,
+      "11": 0.33843994140625
+    }
+  },
+  {
+    "photo_id": "c005_p01__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.00555419921875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.043009440104166664,
+      "1": 0.09073893229166667,
+      "2": 0.012288411458333334,
+      "3": 0.10302734375,
+      "4": 0.08498128255208333,
+      "5": 0.012288411458333334,
+      "6": 0.012288411458333334,
+      "7": 0.00555419921875,
+      "8": 0.018412272135416668,
+      "9": 0.023966471354166668,
+      "10": 0.044169108072916664,
+      "11": 0.10302734375
+    }
+  },
+  {
+    "photo_id": "c005_p02__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0355224609375,
+      "4": 0.0355224609375,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0355224609375,
+      "11": 0.0355224609375
+    }
+  },
+  {
+    "photo_id": "c005_p03__hs_home",
+    "mode": 3,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0374755859375,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.044047037760416664,
+      "1": 0.12955729166666666,
+      "2": 0.13096110026041666,
+      "3": 0.0374755859375,
+      "4": 0.10184733072916667,
+      "5": 0.13096110026041666,
+      "6": 0.13096110026041666,
+      "7": 0.040568033854166664,
+      "8": 0.037984212239583336,
+      "9": 0.11041259765625,
+      "10": 0.045654296875,
+      "11": 0.0374755859375
+    }
+  },
+  {
+    "photo_id": "c005_p04__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.043192545572916664,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.12080891927083333,
+      "1": 0.11732991536458333,
+      "2": 0.09163411458333333,
+      "3": 0.18477376302083334,
+      "4": 0.24479166666666666,
+      "5": 0.09163411458333333,
+      "6": 0.09163411458333333,
+      "7": 0.043192545572916664,
+      "8": 0.07291666666666667,
+      "9": 0.07291666666666667,
+      "10": 0.06707763671875,
+      "11": 0.18477376302083334
+    }
+  },
+  {
+    "photo_id": "c005_p06__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.2526448567708333,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.3023681640625,
+      "1": 0.4691569010416667,
+      "2": 0.522705078125,
+      "3": 0.4274495442708333,
+      "4": 0.2801717122395833,
+      "5": 0.522705078125,
+      "6": 0.522705078125,
+      "7": 0.522705078125,
+      "8": 0.2526448567708333,
+      "9": 0.45684814453125,
+      "10": 0.4330240885416667,
+      "11": 0.4274495442708333
+    }
+  },
+  {
+    "photo_id": "c005_p08__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.13844807942708334,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.2599283854166667,
+      "1": 0.3017781575520833,
+      "2": 0.2881266276041667,
+      "3": 0.3107503255208333,
+      "4": 0.22772216796875,
+      "5": 0.2881266276041667,
+      "6": 0.2881266276041667,
+      "7": 0.13844807942708334,
+      "8": 0.22666422526041666,
+      "9": 0.24507649739583334,
+      "10": 0.33062744140625,
+      "11": 0.3107503255208333
+    }
+  },
+  {
+    "photo_id": "c005_p09__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0389404296875,
+      "1": 0.0101318359375,
+      "2": 0.0101318359375,
+      "3": 0.038736979166666664,
+      "4": 0.044169108072916664,
+      "5": 0.0101318359375,
+      "6": 0.0101318359375,
+      "7": 0.0389404296875,
+      "8": 0.0,
+      "9": 0.01605224609375,
+      "10": 0.01605224609375,
+      "11": 0.038736979166666664
+    }
+  },
+  {
+    "photo_id": "c006_p00__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.17738850911458334,
+      "1": 0.2964680989583333,
+      "2": 0.18745930989583334,
+      "3": 0.25457763671875,
+      "4": 0.07505289713541667,
+      "5": 0.18745930989583334,
+      "6": 0.18745930989583334,
+      "7": 0.18745930989583334,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.21470133463541666,
+      "11": 0.25457763671875
+    }
+  },
+  {
+    "photo_id": "c006_p01__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.043701171875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.15128580729166666,
+      "1": 0.086669921875,
+      "2": 0.13157145182291666,
+      "3": 0.11012776692708333,
+      "4": 0.060546875,
+      "5": 0.13157145182291666,
+      "6": 0.13157145182291666,
+      "7": 0.043701171875,
+      "8": 0.11016845703125,
+      "9": 0.10524495442708333,
+      "10": 0.08467610677083333,
+      "11": 0.11012776692708333
+    }
+  },
+  {
+    "photo_id": "c006_p02__hs_home",
+    "mode": 5,
+    "decoded_RGB_MAE_against_frozen_A128": 0.3276570638020833,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.4651082356770833,
+      "1": 0.4246012369791667,
+      "2": 0.45599365234375,
+      "3": 0.4608357747395833,
+      "4": 0.400634765625,
+      "5": 0.3276570638020833,
+      "6": 0.4334513346354167,
+      "7": 0.4076944986979167,
+      "8": 0.4110921223958333,
+      "9": 0.4514567057291667,
+      "10": 0.3990681966145833,
+      "11": 0.4608357747395833
+    }
+  },
+  {
+    "photo_id": "c006_p03__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.037577311197916664,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.037577311197916664,
+      "1": 0.14424641927083334,
+      "2": 0.05224609375,
+      "3": 0.22198486328125,
+      "4": 0.0855712890625,
+      "5": 0.05224609375,
+      "6": 0.0693359375,
+      "7": 0.05224609375,
+      "8": 0.062296549479166664,
+      "9": 0.037760416666666664,
+      "10": 0.043111165364583336,
+      "11": 0.22198486328125
+    }
+  },
+  {
+    "photo_id": "c006_p04__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.09141031901041667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.2746988932291667,
+      "1": 0.3239542643229167,
+      "2": 0.2760416666666667,
+      "3": 0.3594156901041667,
+      "4": 0.21246337890625,
+      "5": 0.2760416666666667,
+      "6": 0.2760416666666667,
+      "7": 0.3718668619791667,
+      "8": 0.09141031901041667,
+      "9": 0.23350016276041666,
+      "10": 0.3480428059895833,
+      "11": 0.3594156901041667
+    }
+  },
+  {
+    "photo_id": "c006_p06__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c006_p07__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c007_p01__hs_home",
+    "mode": 5,
+    "decoded_RGB_MAE_against_frozen_A128": 0.09735107421875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.14723714192708334,
+      "1": 0.3384195963541667,
+      "2": 0.2769368489583333,
+      "3": 0.4657796223958333,
+      "4": 0.11867268880208333,
+      "5": 0.09735107421875,
+      "6": 0.129638671875,
+      "7": 0.3979695638020833,
+      "8": 0.3247273763020833,
+      "9": 0.3824666341145833,
+      "10": 0.4116007486979167,
+      "11": 0.4657796223958333
+    }
+  },
+  {
+    "photo_id": "c007_p02__hs_home",
+    "mode": 10,
+    "decoded_RGB_MAE_against_frozen_A128": 0.09385172526041667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.11081949869791667,
+      "1": 0.30242919921875,
+      "2": 0.2056884765625,
+      "3": 0.16790771484375,
+      "4": 0.31878662109375,
+      "5": 0.2056884765625,
+      "6": 0.2056884765625,
+      "7": 0.2056884765625,
+      "8": 0.13179524739583334,
+      "9": 0.2056884765625,
+      "10": 0.09385172526041667,
+      "11": 0.16790771484375
+    }
+  },
+  {
+    "photo_id": "c007_p03__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.16072591145833334,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.16072591145833334,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c007_p05__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.091064453125,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.25933837890625,
+      "1": 0.13557942708333334,
+      "2": 0.20233154296875,
+      "3": 0.2927042643229167,
+      "4": 0.22342936197916666,
+      "5": 0.20233154296875,
+      "6": 0.20233154296875,
+      "7": 0.14845784505208334,
+      "8": 0.091064453125,
+      "9": 0.20497639973958334,
+      "10": 0.24416097005208334,
+      "11": 0.2927042643229167
+    }
+  },
+  {
+    "photo_id": "c007_p06__hs_home",
+    "mode": 5,
+    "decoded_RGB_MAE_against_frozen_A128": 0.4501139322916667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 1.0113118489583333,
+      "1": 1.1498209635416667,
+      "2": 0.9643961588541666,
+      "3": 1.8654988606770833,
+      "4": 0.998291015625,
+      "5": 0.4501139322916667,
+      "6": 0.7805379231770834,
+      "7": 1.1583048502604167,
+      "8": 1.3919474283854167,
+      "9": 1.3777669270833333,
+      "10": 1.62530517578125,
+      "11": 1.8654988606770833
+    }
+  },
+  {
+    "photo_id": "c007_p07__hs_home",
+    "mode": 5,
+    "decoded_RGB_MAE_against_frozen_A128": 0.4341837565104167,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.44677734375,
+      "1": 0.5644327799479166,
+      "2": 0.5673421223958334,
+      "3": 0.841064453125,
+      "4": 0.46600341796875,
+      "5": 0.4341837565104167,
+      "6": 0.5010986328125,
+      "7": 0.6065470377604166,
+      "8": 0.69342041015625,
+      "9": 0.7832438151041666,
+      "10": 0.7773640950520834,
+      "11": 0.841064453125
+    }
+  },
+  {
+    "photo_id": "c007_p08__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.07655843098958333,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.25,
+      "1": 0.2890625,
+      "2": 0.4522908528645833,
+      "3": 0.3582560221354167,
+      "4": 0.22719319661458334,
+      "5": 0.4522908528645833,
+      "6": 0.4522908528645833,
+      "7": 0.3061930338541667,
+      "8": 0.07655843098958333,
+      "9": 0.17763264973958334,
+      "10": 0.11319986979166667,
+      "11": 0.3582560221354167
+    }
+  },
+  {
+    "photo_id": "c008_p00__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c008_p01__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c008_p02__hs_home",
+    "mode": 2,
+    "decoded_RGB_MAE_against_frozen_A128": 0.31646728515625,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.3740641276041667,
+      "1": 0.4820556640625,
+      "2": 0.31646728515625,
+      "3": 0.6201171875,
+      "4": 0.4795125325520833,
+      "5": 0.4704386393229167,
+      "6": 0.4648640950520833,
+      "7": 0.4022216796875,
+      "8": 0.5444742838541666,
+      "9": 0.4946695963541667,
+      "10": 0.4583943684895833,
+      "11": 0.6201171875
+    }
+  },
+  {
+    "photo_id": "c008_p03__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.035359700520833336,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.06365966796875,
+      "1": 0.17746988932291666,
+      "2": 0.24802652994791666,
+      "3": 0.129150390625,
+      "4": 0.06463623046875,
+      "5": 0.24802652994791666,
+      "6": 0.24802652994791666,
+      "7": 0.05731201171875,
+      "8": 0.035359700520833336,
+      "9": 0.05938720703125,
+      "10": 0.09236653645833333,
+      "11": 0.129150390625
+    }
+  },
+  {
+    "photo_id": "c008_p04__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c008_p05__hs_home",
+    "mode": 2,
+    "decoded_RGB_MAE_against_frozen_A128": 0.053141276041666664,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0775146484375,
+      "1": 0.0634765625,
+      "2": 0.053141276041666664,
+      "3": 0.2763264973958333,
+      "4": 0.07753499348958333,
+      "5": 0.23876953125,
+      "6": 0.3027547200520833,
+      "7": 0.11086018880208333,
+      "8": 0.3148193359375,
+      "9": 0.3205769856770833,
+      "10": 0.3126627604166667,
+      "11": 0.2763264973958333
+    }
+  },
+  {
+    "photo_id": "c008_p06__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c008_p07__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.018310546875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.018310546875,
+      "1": 0.0228271484375,
+      "2": 0.034993489583333336,
+      "3": 0.4378865559895833,
+      "4": 0.28631591796875,
+      "5": 0.14628092447916666,
+      "6": 0.08913167317708333,
+      "7": 0.3995361328125,
+      "8": 0.3965047200520833,
+      "9": 0.4251912434895833,
+      "10": 0.4193318684895833,
+      "11": 0.4378865559895833
+    }
+  },
+  {
+    "photo_id": "c008_p08__hs_home",
+    "mode": 9,
+    "decoded_RGB_MAE_against_frozen_A128": 0.4076334635416667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.460205078125,
+      "1": 0.5158487955729166,
+      "2": 0.4676717122395833,
+      "3": 0.5753173828125,
+      "4": 0.5185953776041666,
+      "5": 0.4516194661458333,
+      "6": 0.46148681640625,
+      "7": 0.46685791015625,
+      "8": 0.48712158203125,
+      "9": 0.4076334635416667,
+      "10": 0.5105387369791666,
+      "11": 0.5753173828125
+    }
+  },
+  {
+    "photo_id": "c008_p09__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.11263020833333333,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.22528076171875,
+      "1": 0.22721354166666666,
+      "2": 0.14609781901041666,
+      "3": 0.2503662109375,
+      "4": 0.260009765625,
+      "5": 0.1424560546875,
+      "6": 0.15273030598958334,
+      "7": 0.11263020833333333,
+      "8": 0.2543538411458333,
+      "9": 0.3127644856770833,
+      "10": 0.2676798502604167,
+      "11": 0.2503662109375
+    }
+  },
+  {
+    "photo_id": "c009_p00__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.029520670572916668,
+      "3": 0.03082275390625,
+      "4": 0.029520670572916668,
+      "5": 0.029520670572916668,
+      "6": 0.029520670572916668,
+      "7": 0.029520670572916668,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.03082275390625
+    }
+  },
+  {
+    "photo_id": "c009_p01__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0506591796875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.15218098958333334,
+      "1": 0.16530354817708334,
+      "2": 0.13596598307291666,
+      "3": 0.16377766927083334,
+      "4": 0.0506591796875,
+      "5": 0.13869222005208334,
+      "6": 0.07206217447916667,
+      "7": 0.10573323567708333,
+      "8": 0.18540445963541666,
+      "9": 0.14056396484375,
+      "10": 0.18693033854166666,
+      "11": 0.16377766927083334
+    }
+  },
+  {
+    "photo_id": "c009_p03__hs_home",
+    "mode": 1,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.045511881510416664,
+      "1": 0.0,
+      "2": 0.045511881510416664,
+      "3": 0.045511881510416664,
+      "4": 0.0,
+      "5": 0.048970540364583336,
+      "6": 0.045511881510416664,
+      "7": 0.045511881510416664,
+      "8": 0.045511881510416664,
+      "9": 0.045511881510416664,
+      "10": 0.048970540364583336,
+      "11": 0.045511881510416664
+    }
+  },
+  {
+    "photo_id": "c009_p04__hs_home",
+    "mode": 10,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0904541015625,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.13625081380208334,
+      "1": 0.1304931640625,
+      "2": 0.13106282552083334,
+      "3": 0.11362711588541667,
+      "4": 0.15641276041666666,
+      "5": 0.13612874348958334,
+      "6": 0.2869059244791667,
+      "7": 0.2661336263020833,
+      "8": 0.20933024088541666,
+      "9": 0.22267659505208334,
+      "10": 0.0904541015625,
+      "11": 0.11362711588541667
+    }
+  },
+  {
+    "photo_id": "c009_p05__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "c009_p06__hs_home",
+    "mode": 2,
+    "decoded_RGB_MAE_against_frozen_A128": 0.07476806640625,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.07924397786458333,
+      "1": 0.16453043619791666,
+      "2": 0.07476806640625,
+      "3": 0.2569376627604167,
+      "4": 0.2080078125,
+      "5": 0.07476806640625,
+      "6": 0.0810546875,
+      "7": 0.09661865234375,
+      "8": 0.15303548177083334,
+      "9": 0.21683756510416666,
+      "10": 0.16585286458333334,
+      "11": 0.2569376627604167
+    }
+  },
+  {
+    "photo_id": "c003_p01__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.10935465494791667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.10935465494791667,
+      "1": 0.11928304036458333,
+      "2": 0.14923095703125,
+      "3": 0.2641805013020833,
+      "4": 0.2815144856770833,
+      "5": 0.3096110026041667,
+      "6": 0.13885498046875,
+      "7": 0.16495768229166666,
+      "8": 0.18304443359375,
+      "9": 0.37310791015625,
+      "10": 0.39898681640625,
+      "11": 0.2641805013020833
+    }
+  },
+  {
+    "photo_id": "c009_p08__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.172607421875,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.5201416015625,
+      "1": 0.58380126953125,
+      "2": 0.46429443359375,
+      "3": 0.417236328125,
+      "4": 0.3519490559895833,
+      "5": 0.3192138671875,
+      "6": 0.3192138671875,
+      "7": 0.172607421875,
+      "8": 0.3194783528645833,
+      "9": 0.3431193033854167,
+      "10": 0.3394571940104167,
+      "11": 0.417236328125
+    }
+  },
+  {
+    "photo_id": "c009_p09__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.11057535807291667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.11057535807291667,
+      "1": 0.11057535807291667,
+      "2": 0.11057535807291667,
+      "3": 0.14436848958333334,
+      "4": 0.3569539388020833,
+      "5": 0.4417317708333333,
+      "6": 0.4350789388020833,
+      "7": 0.5005900065104166,
+      "8": 0.2820231119791667,
+      "9": 0.31195068359375,
+      "10": 0.31195068359375,
+      "11": 0.14436848958333334
+    }
+  },
+  {
+    "photo_id": "c010_p00__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.13970947265625,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.13970947265625,
+      "1": 0.3738199869791667,
+      "2": 0.18603515625,
+      "3": 0.478515625,
+      "4": 0.21818033854166666,
+      "5": 0.2105712890625,
+      "6": 0.14687093098958334,
+      "7": 0.3988444010416667,
+      "8": 0.4270222981770833,
+      "9": 0.2588094075520833,
+      "10": 0.3837483723958333,
+      "11": 0.478515625
+    }
+  },
+  {
+    "photo_id": "c010_p01__hs_home",
+    "mode": 1,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.027547200520833332,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.027547200520833332,
+      "4": 0.048055013020833336,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.025716145833333332,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.025716145833333332,
+      "11": 0.027547200520833332
+    }
+  },
+  {
+    "photo_id": "c010_p02__hs_home",
+    "mode": 7,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0267333984375,
+      "1": 0.2609456380208333,
+      "2": 0.06693522135416667,
+      "3": 0.16361490885416666,
+      "4": 0.035380045572916664,
+      "5": 0.06693522135416667,
+      "6": 0.073486328125,
+      "7": 0.0,
+      "8": 0.13588460286458334,
+      "9": 0.057210286458333336,
+      "10": 0.16807047526041666,
+      "11": 0.16361490885416666
+    }
+  },
+  {
+    "photo_id": "c010_p03__hs_home",
+    "mode": 1,
+    "decoded_RGB_MAE_against_frozen_A128": 0.10162353515625,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.13804117838541666,
+      "1": 0.10162353515625,
+      "2": 0.14084879557291666,
+      "3": 0.3548787434895833,
+      "4": 0.11287434895833333,
+      "5": 0.19712320963541666,
+      "6": 0.20747884114583334,
+      "7": 0.20485432942708334,
+      "8": 0.2604777018229167,
+      "9": 0.127197265625,
+      "10": 0.33624267578125,
+      "11": 0.3548787434895833
+    }
+  },
+  {
+    "photo_id": "c011_p00__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.02783203125,
+      "4": 0.0,
+      "5": 0.02783203125,
+      "6": 0.011555989583333334,
+      "7": 0.011555989583333334,
+      "8": 0.0,
+      "9": 0.011555989583333334,
+      "10": 0.011555989583333334,
+      "11": 0.02783203125
+    }
+  },
+  {
+    "photo_id": "c011_p01__hs_home",
+    "mode": 6,
+    "decoded_RGB_MAE_against_frozen_A128": 0.2768758138020833,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.468505859375,
+      "1": 0.5255533854166666,
+      "2": 0.5217488606770834,
+      "3": 0.4101969401041667,
+      "4": 0.2880859375,
+      "5": 0.3095296223958333,
+      "6": 0.2768758138020833,
+      "7": 0.3504842122395833,
+      "8": 0.390380859375,
+      "9": 0.3267822265625,
+      "10": 0.4221598307291667,
+      "11": 0.4101969401041667
+    }
+  },
+  {
+    "photo_id": "c011_p02__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.15531412760416666,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.15580240885416666,
+      "1": 0.21734619140625,
+      "2": 0.3370564778645833,
+      "3": 0.3024495442708333,
+      "4": 0.15531412760416666,
+      "5": 0.22682698567708334,
+      "6": 0.23793538411458334,
+      "7": 0.29217529296875,
+      "8": 0.4217122395833333,
+      "9": 0.3720296223958333,
+      "10": 0.2797444661458333,
+      "11": 0.3024495442708333
+    }
+  },
+  {
+    "photo_id": "c011_p03__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.041707356770833336,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.08331298828125,
+      "1": 0.2410888671875,
+      "2": 0.135986328125,
+      "3": 0.15177408854166666,
+      "4": 0.041707356770833336,
+      "5": 0.135986328125,
+      "6": 0.135986328125,
+      "7": 0.135986328125,
+      "8": 0.049479166666666664,
+      "9": 0.10294596354166667,
+      "10": 0.06955973307291667,
+      "11": 0.15177408854166666
+    }
+  },
+  {
+    "photo_id": "c011_p05__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.09409586588541667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.12312825520833333,
+      "1": 0.12312825520833333,
+      "2": 0.12312825520833333,
+      "3": 0.3213297526041667,
+      "4": 0.09409586588541667,
+      "5": 0.26885986328125,
+      "6": 0.22792561848958334,
+      "7": 0.24729410807291666,
+      "8": 0.21653238932291666,
+      "9": 0.24178059895833334,
+      "10": 0.2359619140625,
+      "11": 0.3213297526041667
+    }
+  },
+  {
+    "photo_id": "n000__hs_home",
+    "mode": 8,
+    "decoded_RGB_MAE_against_frozen_A128": 0.1407470703125,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.34405517578125,
+      "1": 0.3777872721354167,
+      "2": 0.4140421549479167,
+      "3": 0.3311971028645833,
+      "4": 0.1741943359375,
+      "5": 0.3546549479166667,
+      "6": 0.3901570638020833,
+      "7": 0.3546549479166667,
+      "8": 0.1407470703125,
+      "9": 0.291259765625,
+      "10": 0.2820231119791667,
+      "11": 0.3311971028645833
+    }
+  },
+  {
+    "photo_id": "n002__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.15586344401041666,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.1712646484375,
+      "1": 0.2696736653645833,
+      "2": 0.20880126953125,
+      "3": 0.3240152994791667,
+      "4": 0.15586344401041666,
+      "5": 0.20880126953125,
+      "6": 0.20880126953125,
+      "7": 0.22088623046875,
+      "8": 0.23356119791666666,
+      "9": 0.22088623046875,
+      "10": 0.158935546875,
+      "11": 0.3240152994791667
+    }
+  },
+  {
+    "photo_id": "n008__hs_home",
+    "mode": 5,
+    "decoded_RGB_MAE_against_frozen_A128": 0.017985026041666668,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.11240641276041667,
+      "1": 0.25439453125,
+      "2": 0.07063802083333333,
+      "3": 0.3973185221354167,
+      "4": 0.21437581380208334,
+      "5": 0.017985026041666668,
+      "6": 0.060262044270833336,
+      "7": 0.30462646484375,
+      "8": 0.2638753255208333,
+      "9": 0.2532145182291667,
+      "10": 0.3902587890625,
+      "11": 0.3973185221354167
+    }
+  },
+  {
+    "photo_id": "n009__hs_home",
+    "mode": 1,
+    "decoded_RGB_MAE_against_frozen_A128": 0.09165445963541667,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.09712727864583333,
+      "1": 0.09165445963541667,
+      "2": 0.14292399088541666,
+      "3": 0.25885009765625,
+      "4": 0.11600748697916667,
+      "5": 0.14292399088541666,
+      "6": 0.14292399088541666,
+      "7": 0.14292399088541666,
+      "8": 0.09688313802083333,
+      "9": 0.13741048177083334,
+      "10": 0.15106201171875,
+      "11": 0.25885009765625
+    }
+  },
+  {
+    "photo_id": "n012__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.030924479166666668,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.2656453450520833,
+      "1": 0.19643147786458334,
+      "2": 0.23286946614583334,
+      "3": 0.2501627604166667,
+      "4": 0.030924479166666668,
+      "5": 0.23286946614583334,
+      "6": 0.19820149739583334,
+      "7": 0.18308512369791666,
+      "8": 0.26348876953125,
+      "9": 0.19964599609375,
+      "10": 0.0780029296875,
+      "11": 0.2501627604166667
+    }
+  },
+  {
+    "photo_id": "c003_p00__hs_home",
+    "mode": 4,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0230712890625,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.2555948893229167,
+      "1": 0.24973551432291666,
+      "2": 0.2737630208333333,
+      "3": 0.06740315755208333,
+      "4": 0.0230712890625,
+      "5": 0.2737630208333333,
+      "6": 0.24818929036458334,
+      "7": 0.24818929036458334,
+      "8": 0.11781819661458333,
+      "9": 0.10052490234375,
+      "10": 0.04412841796875,
+      "11": 0.06740315755208333
+    }
+  },
+  {
+    "photo_id": "n019__hs_home",
+    "mode": 3,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0128173828125,
+      "1": 0.0128173828125,
+      "2": 0.0128173828125,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0128173828125,
+      "6": 0.0128173828125,
+      "7": 0.0128173828125,
+      "8": 0.0128173828125,
+      "9": 0.0128173828125,
+      "10": 0.0,
+      "11": 0.0
+    }
+  },
+  {
+    "photo_id": "n020__hs_home",
+    "mode": 0,
+    "decoded_RGB_MAE_against_frozen_A128": 0.0,
+    "selection_metric": "minimum pixel reconstruction error to existing delivered photo, no recognition-score objective",
+    "all_mode_errors": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0,
+      "10": 0.0,
+      "11": 0.0
+    }
+  }
+]

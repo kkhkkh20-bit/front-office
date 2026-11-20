@@ -1,6 +1,6 @@
 {
   "schema_version": "v21-amateur-1",
-  "revision": "v21b-stage-A-1",
+  "revision": "v21b-stage-A-3",
   "identity_count": 100,
   "photo_count": 1200,
   "variant_keys": [
@@ -38726,5 +38726,14 @@
       }
     }
   ],
-  "identity_age_lock_sha256": "a3fbff50ddc24bdb8ab5bb0943c629011a2c3d4de5ebdef51d6f71f9179ee437"
+  "identity_age_lock_sha256": "a3fbff50ddc24bdb8ab5bb0943c629011a2c3d4de5ebdef51d6f71f9179ee437",
+  "revision3_corrected_A_review_ids": [
+    "A062",
+    "A047",
+    "A038",
+    "A083",
+    "A061",
+    "A069",
+    "A093"
+  ]
 }

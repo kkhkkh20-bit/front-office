@@ -1,0 +1,154 @@
+{
+  "schema_version": "v21b-stage-a-validation-1",
+  "production_complete": false,
+  "stage_a_complete": true,
+  "asset_validation_passed": true,
+  "human_age_review": "pending",
+  "human_age_approved_count": 0,
+  "identity_count": 100,
+  "photo_count": 1200,
+  "runtime_sheet_count": 36,
+  "sheets_ready": [
+    "A"
+  ],
+  "remaining_stage_b_identities": 100,
+  "levels": {
+    "hs": 60,
+    "univ": 40
+  },
+  "ages": {
+    "17": 22,
+    "18": 18,
+    "19": 20,
+    "20": 11,
+    "21": 18,
+    "22": 11
+  },
+  "glasses_count": 11,
+  "glasses_percentage": 11,
+  "age_direction": "성인 직전 골격에 앳된 인상, 정상 비율, 약한 미소",
+  "same_identity_minimum": 0.6142896413803101,
+  "different_representatives_maximum": 0.39827150106430054,
+  "existing_representatives_maximum": 0.3920787572860718,
+  "reference_gallery_count": 486,
+  "resolutions": {
+    "128": {
+      "same_identity_all_pairs": {
+        "comparison_count": 6600,
+        "minimum": 0.6142896413803101,
+        "worst_pair": [
+          "c004_p08__univ",
+          "c004_p08__suwon_sparks"
+        ],
+        "passed": true
+      },
+      "different_representatives": {
+        "comparison_count": 4950,
+        "maximum": 0.39827150106430054,
+        "nearest_pair": [
+          "c004_p02__hs_home",
+          "c009_p01__hs_home"
+        ],
+        "passed": true
+      },
+      "existing_representatives": {
+        "gallery_count": 486,
+        "comparison_count": 48600,
+        "gallery_resolution": 128,
+        "maximum": 0.37935882806777954,
+        "nearest_pair": [
+          "c011_p05__hs_home",
+          "v6d60_051"
+        ],
+        "passed": true
+      }
+    },
+    "256": {
+      "same_identity_all_pairs": {
+        "comparison_count": 6600,
+        "minimum": 0.6404463052749634,
+        "worst_pair": [
+          "c001_p02__hs_home",
+          "c001_p02__daejeon_redfox"
+        ],
+        "passed": true
+      },
+      "different_representatives": {
+        "comparison_count": 4950,
+        "maximum": 0.394157737493515,
+        "nearest_pair": [
+          "c001_p05__hs_home",
+          "c003_p07__hs_home"
+        ],
+        "passed": true
+      },
+      "existing_representatives": {
+        "gallery_count": 486,
+        "comparison_count": 48600,
+        "gallery_resolution": 256,
+        "maximum": 0.3920787572860718,
+        "nearest_pair": [
+          "c010_p02__hs_home",
+          "v18_176"
+        ],
+        "passed": true
+      }
+    },
+    "384": {
+      "same_identity_all_pairs": {
+        "comparison_count": 6600,
+        "minimum": 0.6496931910514832,
+        "worst_pair": [
+          "c004_p08__univ",
+          "c004_p08__seoul_comets"
+        ],
+        "passed": true
+      },
+      "different_representatives": {
+        "comparison_count": 4950,
+        "maximum": 0.3967851996421814,
+        "nearest_pair": [
+          "c002_p05__hs_home",
+          "c003_p04__hs_home"
+        ],
+        "passed": true
+      },
+      "existing_representatives": {
+        "gallery_count": 486,
+        "comparison_count": 48600,
+        "gallery_resolution": 256,
+        "maximum": 0.3849916458129883,
+        "nearest_pair": [
+          "c011_p05__hs_home",
+          "v6c100_051"
+        ],
+        "passed": true
+      }
+    }
+  },
+  "face_center": {
+    "definition": "arithmetic mean of five detected landmarks; maximum absolute deviation per axis, converted to 256px coordinates",
+    "anchor_source": "v18 production200 canonical seoul_comets 200-person median",
+    "anchor_256": [
+      130.98235626,
+      118.22048492
+    ],
+    "threshold_256_px": 4,
+    "maximum_deviation_256_px": 1.3270202679882743,
+    "failed_measurements": 0
+  },
+  "native_sources": {
+    "unique_files": 233,
+    "minimum_retained_native_photo_edge": 384,
+    "upscaled_photos": 0,
+    "native_originals_preserved": true
+  },
+  "identity_age_lock_sha256": "a3fbff50ddc24bdb8ab5bb0943c629011a2c3d4de5ebdef51d6f71f9179ee437",
+  "measurement_protocol": "validation/protocol.json",
+  "detailed_validation": "validation/stage_a/numeric_validation.json",
+  "pixel_verification": "validation/stage_a/runtime_pixel_equivalence.json",
+  "photo_provenance": "validation/stage_a/photo_provenance.json",
+  "canonical_comparison_scope": "hs_home representatives only; all within-stage pairs and representative vs486 canonical existing identities.384 uses existing256 gallery because legacy sets have no384 canonical gallery.",
+  "same_identity_comparison_scope": "Every pair among all12 variants, at128/256/384. No score transformation, no threshold relaxation.",
+  "assistant_visual_review": "screened; human age approval pending"
+}

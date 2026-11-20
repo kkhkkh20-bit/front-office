@@ -1,0 +1,33 @@
+[
+  {
+    "photo_id": "c002_p05__hs_home",
+    "restoration": "restore only previously artificial top canvas from existing384px background; retained native photograph including face, hair, cap and body untouched",
+    "canvas_top_native_px": 17,
+    "photograph_upscale": false,
+    "face_warp": false
+  },
+  {
+    "photo_id": "c003_p04__hs_home",
+    "restoration": "restore only previously artificial top canvas from existing384px background; retained native photograph including face, hair, cap and body untouched",
+    "canvas_top_native_px": 8,
+    "photograph_upscale": false,
+    "face_warp": false
+  },
+  {
+    "photo_id": "c004_p08__suwon_sparks",
+    "restoration": "restore only previously artificial top canvas from existing384px background; retained native photograph including face, hair, cap and body untouched",
+    "canvas_top_native_px": 47,
+    "photograph_upscale": false,
+    "face_warp": false
+  },
+  {
+    "photo_id": "c004_p08__suwon_sparks",
+    "whole_photo_native_integer_translation": [
+      0,
+      1
+    ],
+    "criterion": "deterministic median landmark-center residual across128/256/384, no recognition-score search",
+    "photograph_upscale": false,
+    "face_warp": false
+  }
+]

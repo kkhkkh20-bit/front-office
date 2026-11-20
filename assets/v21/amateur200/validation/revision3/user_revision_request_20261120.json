@@ -1,0 +1,36 @@
+{
+  "base_commit": "82c948056ed72f9cc4d02baba3510a3c91eb4445",
+  "stage_a_replace": [
+    "A062",
+    "A047",
+    "A038",
+    "A083",
+    "A061",
+    "A069",
+    "A093"
+  ],
+  "stage_a_preserve": [
+    "id",
+    "index",
+    "age",
+    "level"
+  ],
+  "b_review_changes": {
+    "Q071": "remove top skin-colored strip or exclude",
+    "Q042": "cap missing; repair or exclude",
+    "Q047": "cap missing; repair or exclude",
+    "Q064": "cap missing; repair or exclude",
+    "Q074": "cap missing; repair or exclude",
+    "Q067": "gray/bleached hair; repair or exclude",
+    "Q083": "gray/bleached hair; repair or exclude",
+    "Q075": "orange lighting; neutralize or exclude",
+    "Q054": "striped jersey; plain amateur kit or exclude",
+    "Q055": "striped jersey; plain amateur kit or exclude",
+    "Q001": "match head scale to A median",
+    "Q024": "match head scale to A median",
+    "Q033": "match head scale to A median"
+  },
+  "b_first8_candidate8": "match hs_home background brightness to his other 11 variants",
+  "generation_scope": "continue B 100 and A seven replacements together",
+  "current_status": "in progress"
+}

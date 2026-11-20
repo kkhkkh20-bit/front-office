@@ -1,0 +1,109 @@
+{
+  "revision": 3,
+  "baseline_commit": "82c948056ed72f9cc4d02baba3510a3c91eb4445",
+  "A_corrected_ids": [
+    "A062",
+    "A047",
+    "A038",
+    "A083",
+    "A061",
+    "A069",
+    "A093"
+  ],
+  "A_runtime_sheet_count": 36,
+  "A_validation_passed": true,
+  "A_identity_age_lock_sha256": "a3fbff50ddc24bdb8ab5bb0943c629011a2c3d4de5ebdef51d6f71f9179ee437",
+  "B_runtime_sheet_count": 0,
+  "B_complete_candidate_families": 17,
+  "B_candidate_family_photos": 204,
+  "B_changes": {
+    "Q071": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0263_2",
+      "replacement_person_id": null
+    },
+    "Q042": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0204_0",
+      "replacement_person_id": null
+    },
+    "Q047": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0217_2",
+      "replacement_person_id": null
+    },
+    "Q064": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0256_0",
+      "replacement_person_id": null
+    },
+    "Q074": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0268_2",
+      "replacement_person_id": null
+    },
+    "Q067": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0257_3",
+      "replacement_person_id": null
+    },
+    "Q083": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_native_pool_0284_0",
+      "replacement_person_id": "b_native_pool_0284_0"
+    },
+    "Q075": {
+      "status": "excluded_from_final_selection",
+      "original_photo_id": "b_native_pool_0271_1",
+      "replacement_person_id": null
+    },
+    "Q054": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_native_pool_0233_1",
+      "replacement_person_id": "b_native_pool_0233_1"
+    },
+    "Q055": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_native_pool_0233_2",
+      "replacement_person_id": "b_native_pool_0233_2"
+    },
+    "Q001": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_direct_pool_0276_2",
+      "replacement_person_id": "b_direct_pool_0276_2"
+    },
+    "Q024": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_base_pool_0083_3",
+      "replacement_person_id": "b_base_pool_0083_3"
+    },
+    "Q033": {
+      "status": "corrected_full12_individual_exports_pass",
+      "original_photo_id": "b_native_pool_0002_3",
+      "replacement_person_id": "b_native_pool_0002_3"
+    },
+    "candidate8_hs_home": {
+      "status": "corrected",
+      "person_id": "b_direct_pool_0091_0",
+      "background_rgb_before": [
+        138.5,
+        138.5,
+        137
+      ],
+      "background_rgb_after": [
+        102,
+        102,
+        102
+      ],
+      "other_variant_corner_luma_range": [
+        100,
+        118
+      ]
+    }
+  },
+  "production_complete": false,
+  "human_age_review": "pending",
+  "visual_followup": [
+    "A061 cap crown/top margin: additional wardrobe-only correction pending"
+  ]
+}

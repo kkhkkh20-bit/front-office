@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "frame",
+    "cohort": 0,
+    "native_path": "/workspace/generated_images/exec-a1784da5-60d6-48ff-86d2-856a9c396fea.png"
+  },
+  {
+    "kind": "frame",
+    "cohort": 1,
+    "native_path": "/workspace/generated_images/exec-daeda6af-7589-4b02-8eed-65da61af747b.png"
+  },
+  {
+    "kind": "frame",
+    "cohort": 2,
+    "native_path": "/workspace/generated_images/exec-f5820535-7b5f-4e17-80e4-262d082f861f.png"
+  },
+  {
+    "kind": "frame",
+    "cohort": 3,
+    "native_path": "/workspace/generated_images/exec-46d470f4-a63b-4da6-9bfb-0f527118cf6c.png"
+  },
+  {
+    "kind": "new",
+    "cohort": 0,
+    "native_path": "/workspace/generated_images/exec-0ae5a1de-5f1a-40d5-9ef6-2f8aaace850c.png"
+  },
+  {
+    "kind": "new",
+    "cohort": 1,
+    "native_path": "/workspace/generated_images/exec-a0c6beee-1a6a-44ec-8269-01e9968bdaf4.png"
+  }
+]
