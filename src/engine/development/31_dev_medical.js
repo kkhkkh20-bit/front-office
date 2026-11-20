@@ -86,7 +86,7 @@ function trnBase0(){ const per=period(); if(per!=='pre'&&per!=='season')return; 
     if(!regs[p.team]){ const d=depth(p.team); regs[p.team]=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }
     if(!p.tg||p.tg.y!==G.year)p.tg={y:G.year,s:0}; if(p.tg.s>=TB_YCAP)continue;
     const f=tbFactors(p,regs[p.team]); const amt=TB_K*f.play*f.room*f.will*f.fac*f.coach*f.mgr*f.age*rnd(.6,1.4)*eliteGrowF(ovr(p)); const ks=TRN_TOOLS[trnG(p)]; const cap=Math.max(p.pot,ovr(p))+2;
-    const o0=ovr(p); for(const k of ks){ if(p.r[k]>=cap)continue; p.tg.s+=addR(p,k,amt*(ks.length===3?1.6:1)); } if(ovr(p)>Math.max(p.pot,o0)+.05)setOvr(p,Math.max(p.pot,o0)); } } /* 잠재력은 넘을 수 없다 */
+    growYearBase(p); const gr0={...p.r}; const o0=ovr(p); for(const k of ks){ if(p.r[k]>=cap)continue; p.tg.s+=addR(p,k,amt*(ks.length===3?1.6:1)); } if(ovr(p)>Math.max(p.pot,o0)+.05)setOvr(p,Math.max(p.pot,o0)); growYearCap(p,gr0); /* 한 해 육성 상한(04_growth YEAR_GROW_CAP) */ } } /* 잠재력은 넘을 수 없다 */
 /* 연수 결과: 크게 늘거나, 조금 늘거나, 그대로거나, 다치거나 폼이 흐트러진다 */
 const jB=w=>{ const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<11172&&c%28>0; }; const jIGa=w=>w+(jB(w)?'이':'가'), jEulReul=w=>w+(jB(w)?'을':'를');
 const OVS_TOOLN={stf:'구위',ctl:'제구',sta:'체력',con:'컨택',pow:'장타',eye:'선구',def:'수비',spd:'주루'};
@@ -96,14 +96,14 @@ function ovsOutlookWord(F){return !F?'':F.big>=.15?'큰 성장 기대':F.big>=.0
 function ovsRiskWord(F){const r=F?F.inj+F.form:0;return r>=.16?'높음':r>=.09?'보통':'낮음';}
 /* 연수 상승폭은 화면 점수(100점 척도)로 정한다: 크게 늘어도 +2~+5, 드물게 +7(플레이 테스트 3차: 한 번에 +13). 내부 척도는 구간마다 기울기가 달라 화면 기준으로 되돌려 계산한다 */
 function ovsUp(x,g){ const t=Math.min(100,dvRaw(x)+g); let lo=x,hi=80; if(dvRaw(hi)<=t)return hi; for(let i=0;i<30;i++){ const m=(lo+hi)/2; if(dvRaw(m)<t)lo=m; else hi=m; } return clamp(Math.floor(lo*10)/10,20,80); }
-function ovsRoll(p,o,coachDv){const room=Math.max(0,p.pot-ovr(p)),before=Object.fromEntries(o[p.isP?'P':'B'].map(k=>[k,p.r[k]]));const {big,inj,form,good}=ovsForecast(p,o,coachDv);
+function ovsRoll(p,o,coachDv){growYearBase(p);const gr0={...p.r};const room=Math.max(0,p.pot-ovr(p)),before=Object.fromEntries(o[p.isP?'P':'B'].map(k=>[k,p.r[k]]));const {big,inj,form,good}=ovsForecast(p,o,coachDv);
   const ks=o[p.isP?'P':'B']; const k=ks[Math.floor(R()*ks.length)]; const sc=Math.min(1,room/6+.4); const v0=p.isP?veloOf(p):null; const x=R(); let r;
   if(x<inj){ const raw=ri(14,60),h=p.team!=null&&!milServing(p)?medOf(p.team).hosp:'none',days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{ovs:1}});r={t:'inj',k,txt:`훈련 강도를 이기지 못하고 다쳤습니다. 약 ${days}일 재활이 필요합니다.${p.injOut>days?' 기존 부상 재활은 예정대로 이어갑니다.':''}`}; }
   else if(x<inj+form){ p.r[k]=clamp(p.r[k]-rnd(1,3),20,80); r={t:'form',k,txt:`${jEulReul(OVS_TOOLN[k])} 손보다 폼이 흐트러졌습니다. 다시 잡는 데 시간이 걸립니다.`}; }
   else if(x<inj+form+big){ p.r[k]=ovsUp(p.r[k],R()<.1?rnd(5.5,7):Math.max(2,rnd(2,5)*sc)); if(!p.ovsPot){ p.pot=Math.min(80,p.pot+rnd(.5,2)); p.ovsPot=G.year; } /* 연수로 잠재력이 오르는 건 선수마다 한 번(공략 방지: 해마다 보내 잠재력을 쌓던 것) */ const v1=p.isP?veloOf(p):null; r={t:'big',k,txt:k==='stf'&&v1>v0?`직구 평균 ${v0}km/h에서 ${v1}km/h로 올라 돌아왔습니다.`:`${jIGa(OVS_TOOLN[k])} 확실히 달라져 돌아왔습니다.`}; }
   else if(x<inj+form+big+good){ for(const kk of ks)p.r[kk]=ovsUp(p.r[kk],Math.max(1,rnd(1,3)*sc)*1.4/ks.length); r={t:'good',k,txt:`${ks.map(z=>OVS_TOOLN[z]).join('·')}에서 성장이 확인됐습니다.`}; }
   else r={t:'flat',k,txt:'큰 변화는 없었습니다.'};
-  roundR(p);const after=Object.fromEntries(Object.keys(before).map(k=>[k,p.r[k]]));const changes=Object.keys(before).map(k=>OVS_TOOLN[k]+' '+dv(before[k])+'→'+dv(after[k])).join(' · ');r.txt+=' '+changes+'.';(p.ovsH=p.ovsH||[]).push({y:G.year,k:o.l,t:r.t,before,after,text:r.txt});if(p.ovsH.length>20)p.ovsH.shift();return r; }
+  roundR(p);growYearCap(p,gr0); /* 한 해 육성 상한(04_growth YEAR_GROW_CAP) */ const after=Object.fromEntries(Object.keys(before).map(k=>[k,p.r[k]]));const changes=Object.keys(before).map(k=>OVS_TOOLN[k]+' '+dv(before[k])+'→'+dv(after[k])).join(' · ');r.txt+=' '+changes+'.';(p.ovsH=p.ovsH||[]).push({y:G.year,k:o.l,t:r.t,before,after,text:r.txt});if(p.ovsH.length>20)p.ovsH.shift();return r; }
 /* 가을 교육리그 참가 선수: 25세 이하 국내 선수 가운데 능력이 낮은 순 22명(미계약·입단 전·부상·복무 제외). 결과 계산·신청 안내·자동 신청이 같은 명단을 쓴다 */
 function fallPool(tid){ return domestic(tid).filter(p=>p.age<=25&&!p.hold&&!(p.joinY>G.year)&&!(p.injOut>0) /* 미계약·입단 전 선수 제외(검수 11-07) */&&!(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)).sort((a,b)=>ovr(a)-ovr(b)).slice(0,22); }
 /* 안내용: 참가 명단 가운데 효과가 큰 순(더 클 여지가 큰 순, 우리 구단은 스카우트 추정) */
@@ -130,8 +130,8 @@ function fallAutoStatus(){ if(G.unemp)return '일시 중지: 구단을 맡고 �
   if(!fallOpen())return dobj(G.day).m<9?'처리 예정: 9월 1일에 신청이 열립니다':'신청 마감: 10월 10일까지 정하지 않아 올해 불참합니다';
   const k=fallFit(G.user,'jp'); return k?`처리 예정: ${FALL[k].l} 신청 · 다음 월요일에 다시 확인합니다`:`대기: ${fallEntryWhy(G.user,'ul')}`; }
 function fallRollLegacy(tid,k,chosen){ const F=FALL[k]; const L=[]; const ps=chosen||fallPool(tid);
-  for(const p of ps){ const ks=TRN_TOOLS[trnG(p)]; const g=rnd(0,.7)*F.g*Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3); for(const kk of ks)p.r[kk]=clamp(p.r[kk]+g*rnd(.5,1.2),20,80);
-    if(R()<.04*F.g){ const kk=ks[Math.floor(R()*ks.length)]; p.r[kk]=clamp(p.r[kk]+rnd(2,4),20,80); L.push(`${p.name}(${OVS_TOOLN[kk]})`); } roundR(p); }
+  for(const p of ps){ growYearBase(p); const gr0={...p.r}; const ks=TRN_TOOLS[trnG(p)]; const g=rnd(0,.7)*F.g*Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3); for(const kk of ks)p.r[kk]=clamp(p.r[kk]+g*rnd(.5,1.2),20,80);
+    if(R()<.04*F.g){ const kk=ks[Math.floor(R()*ks.length)]; p.r[kk]=clamp(p.r[kk]+rnd(2,4),20,80); L.push(`${p.name}(${OVS_TOOLN[kk]})`); } roundR(p); growYearCap(p,gr0); /* 한 해 육성 상한 */ }
   return {n:ps.length,hot:L}; }
 /* 교육리그 참가자는 개막 때 확정한다. 기존 종료일 명단의 난수는 그대로 소비하되 실제 참가일만 반영한다. */
 function fallRoll(tid,k){campAttendanceMigrate();const P=G.campA?.y===G.year&&G.campA.league;if(!P)return fallRollLegacy(tid,k);if(P.results?.[tid])return JSON.parse(JSON.stringify(P.results[tid]));const old=fallPool(tid),seen=new Set(old.map(p=>p.id)),extra=Object.keys(P.t[tid]||{}).map(id=>G.players[id]).filter(p=>p&&p.team===tid&&!seen.has(p.id)),hot=[];let n=0,unknown=0;for(const p of [...old,...extra]){const f=campAttendanceFraction(p,tid,'league');if(f===1&&seen.has(p.id)){const x=fallRollLegacy(tid,k,[p]);n++;if(P.t[tid]?.[p.id]?.compatFull)unknown++;hot.push(...x.hot);continue;}const q=JSON.parse(JSON.stringify(p)),run=()=>fallRollLegacy(tid,k,[q]),result=seen.has(p.id)?run():withRng(rngHash('campLeagueGrow',G.year,tid,p.id),run);if(f<=0)continue;n++;if(P.t[tid]?.[p.id]?.compatFull)unknown++;for(const key in p.r)p.r[key]=clamp(Math.round((p.r[key]+(q.r[key]-p.r[key])*f)*10)/10,20,80);if(u01('campLeagueHot'+G.year,p.id)<f)hot.push(...result.hot);}P.results=P.results||{};const result={n,hot,...(unknown?{unknown}:{})};P.results[tid]=result;return result;}
@@ -226,7 +226,7 @@ function dailyCost(){ try{ smCheck(); }catch(e){} const m=G.mgr[G.user]; if(m&&!
 function vetSelfTrain(young){ const out=[]; const V=domestic(G.user).filter(p=>p.age>=28&&p.age<=35&&p.sal>=300&&!(p.injOut>0)&&!milServing(p)&&!p.hold&&!(G.ovs||[]).some(x=>x.pid===p.id));
   for(const p of V){ initPers(p); if(R()>=.15+p.pers.pro/100)continue; /* 프로 의식이 높을수록 스스로 간다 */ const ks=p.isP?['stf','ctl','sta']:['con','pow','eye']; const k=pick(ks);
     if(R()<.04){ const raw=ri(7,21),h=medOf(p.team).hosp,days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{train:1}});out.push(`${p.name}: 개인 훈련 중 가벼운 부상(약 ${p.injOut}일)`); continue; }
-    const d=Math.round(rnd(.3,1.2)*10)/10; p.r[k]=clamp(p.r[k]+d,20,80); out.push(`${p.name}: 미국·일본에서 자비로 개인 훈련. ${OVS_TOOLN[k]} 감각을 끌어올렸습니다`); }
+    const d=Math.round(rnd(.3,1.2)*10)/10; growYearBase(p); const gr0={...p.r}; p.r[k]=clamp(p.r[k]+d,20,80); growYearCap(p,gr0); /* 한 해 육성 상한 */ out.push(`${p.name}: 미국·일본에서 자비로 개인 훈련. ${OVS_TOOLN[k]} 감각을 끌어올렸습니다`); }
   const lead=V.filter(p=>out.some(t=>t.startsWith(p.name+': 미국')))[0];
   if(lead&&young.length){ for(const y of young)y.mor=clamp((y.mor??60)+3,0,100); lead.mor=clamp((lead.mor??60)+2,0,100); out.push(`${lead.name}이(가) 연수생 ${young.map(y=>y.name).join(', ')}와(과) 함께 훈련하며 후배들을 챙겼습니다. 연수생 기분 상승.`); }
   return out; }

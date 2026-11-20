@@ -21,7 +21,8 @@ function campFocusAi(tid,kind){ const m=mgrOf(tid); if(kind==='fall')return 'ski
   if(pl==='build')return u<.5?'skill':'balance'; if(pl==='win')return u<.3?'game':u<.55?'fitness':'balance'; if(pl==='tight')return u<.4?'fitness':'balance'; return u<.15?'game':u<.3?'fitness':'balance'; }
 function addPitch(p,q){ const have=new Set(arsenalAll(p,p.r.stf).map(x=>x[0])); /* 보유 구종(계투라 안 쓰는 구종 포함)은 새로 익히지 않는다 */ const L=PITCHES.filter(k=>!have.has(k)); if(!L.length)return null; const k=L[Math.floor(u01('np'+G.year+(p.addP||[]).length,p.id)*L.length)];
   (p.addP=p.addP||[]).push({k,q:Math.round(q*10)/10,y:G.year}); return k; }
-function campGrow(p,kind,focus){ const ev=[]; if(p.hold||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
+function campGrow(p,kind,focus){ growYearBase(p); const gr0={...p.r}; const ev=campGrow0(p,kind,focus); growYearCap(p,gr0); return ev; } /* 한 해 육성 상한(04_growth YEAR_GROW_CAP): 겨울 성장과 합쳐 +5까지 */
+function campGrow0(p,kind,focus){ const ev=[]; if(p.hold||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
   const f=tbFactors(p,null); const ks=TRN_TOOLS[trnG(p)]; const o0=ovr(p), cap=Math.max(p.pot,o0)+4; const base=(CAMP_AMT[kind][focus]??1)*(p.age<=26?1:p.age<=30?.45:.15);
   let amt=base*f.room*f.will*f.fac*f.coach*f.mgr*rnd(.5,1.5)*(kind==='spring'&&p.team!=null?sprcGrowMul(p.team):1); /* 캠프 장소·날씨·훈련 강도(97_spring_camp.js) */ let tot=0;
   /* 확 늘어나는 선수 */ if(p.age<=25&&p.pot-ovr(p)>=4&&R()<(focus==='skill'?.05:.03)*f.will){ amt+=rnd(2,4); ev.push({t:'big'}); }

@@ -213,7 +213,7 @@ function ntPlayGame(T,g,N,d){ g.hc=ntRef(T,g.h); g.ac=ntRef(T,g.a); if(!g.hc||!g
 function ntTourDay(N,d){ const T=N.tour; if(!T||T.done)return; for(const g of T.games)if(!g.done&&!g.skip&&g.d===d)ntPlayGame(T,g,N,d);
   if(T.games.every(g=>g.done||g.skip)||d>=KD(...NT_EV[T.k].res))ntTourFinish(T); }
 /* 최종 순위와 한국 성적(lv 1 우승·금, 2 준우승·은, 3 4강·동, 4 그 밖) */
-function ntTourFinish(T){ if(T.done)return; T.done=true; const F=T.games.filter(g=>g.st==='F'&&g.done)[0], B=T.games.filter(g=>g.st==='B'&&g.done)[0]; const rank={};
+function ntTourFinish(T){ if(T.done)return; T.done=true; try{ potIntlUp(T); }catch(e){} /* 국제대회 성적 보상 잠재력(65_cur_eval) */ const F=T.games.filter(g=>g.st==='F'&&g.done)[0], B=T.games.filter(g=>g.st==='B'&&g.done)[0]; const rank={};
   if(F){ rank[F.win==='h'?F.hc:F.ac]=1; rank[F.win==='h'?F.ac:F.hc]=2; }
   if(B){ rank[B.win==='h'?B.hc:B.ac]=3; rank[B.win==='h'?B.ac:B.hc]=4; } else for(const g of T.games.filter(x=>x.st==='SF'&&x.done)){ const l=g.win==='h'?g.ac:g.hc; if(!rank[l])rank[l]=3; }
   T.rank=rank; const kr=rank.KR; T.lv=kr&&kr<=3?kr:4;
