@@ -173,6 +173,11 @@ table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}
  #app .roster-heading>div:has(>.rcnt){order:2;flex-basis:100%!important}
  #app .shell:has(.subhead.notitle) main.content .roster-heading:has(.rcnt){padding-right:0}
  #app .shell:has(.subhead.notitle) main.content .roster-heading:has(.rcnt)>.rh-tools{margin-right:var(--metaw,36px)}
+ /* 사용자 11-20: 위 칸을 도구가 너무 차지한다. 정식 수는 정원 줄에 있으니 칩을 빼고, 1군·육성 수와 두 단추를 한 줄에 */
+ #app .roster-heading:has(.rcnt)>.rh-tools{flex-wrap:nowrap;gap:4px;min-width:0}
+ #app .roster-heading:has(.rcnt)>.rh-tools>.chipn.rh-reg{display:none}
+ #app .roster-heading:has(.rcnt)>.rh-tools>.chipn{padding:3px 6px;white-space:nowrap}
+ #app .roster-heading:has(.rcnt)>.rh-tools>.btn.small{min-height:32px;height:32px;padding:0 8px;font-size:12px;white-space:nowrap}
 }
 #app main.ws-up .roster-heading:has(.rcnt){display:flex!important;min-height:0;margin:0}
 #app main.ws-up .roster-heading:has(.rcnt)>:not(:has(.rcnt)),#app main.ws-up .roster-heading>div:has(>.rcnt)>:not(.rcnt){display:none!important}
