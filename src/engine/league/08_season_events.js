@@ -203,8 +203,10 @@ function settlementCore(){
     if(HO){ const add=(A,o)=>{ for(const [l,v] of Object.entries(o)){ const r=A.find(x=>x[0]===l); if(r)r[1]+=v; else A.push([l,v]); } }; add(inc,HO.inc); add(exp,HO.exp); }
     const gap=sum(exp.map(x=>x[1]))-sum(inc.map(x=>x[1]))+capital;
     let support=0; const supCap=supportCap(t);
-    /* 구단 보유 현금이 30억을 넘으면 적자의 일부(초과분의 절반까지)를 먼저 자체 자금으로 메운다 */
-    const selfC=gap>0?Math.min(gap,Math.max(0,t.cash-3000)*.5):0;
+    /* 구단 보유 현금이 30억을 넘으면 적자의 일부(초과분의 절반까지)를 먼저 자체 자금으로 메운다.
+       아직 쓰지 않은 우승 포상 FA 특별 자금(champFundEarmark)은 영입용으로 묶인 돈이라 보유 현금에서 뺀다(유보금 회수 기준과 같게, 11-20) */
+    const ear=champFundEarmark(t.id), cash0=t.cash;
+    const selfC=finSelfCover(gap,t.cash,ear);
     if(!t.indie&&gap-selfC>0){ support=Math.min(gap-selfC,supCap); inc.push(['모기업 지원(적자 보전)',support]); }
     if(selfC>0)fins_self[t.id]=Math.round(selfC);
     /* AI 구단 부채 정리: 지원이 적자만 메우면 FA 보상금·방출 위약금으로 생긴 마이너스 현금이 영영 회복되지 않는다.
@@ -214,7 +216,7 @@ function settlementCore(){
     /* 흑자 조정(사용자 11-12, 실제 KBO: 구단 자체 수익이 늘면 모기업 광고·지원금을 줄인다. 2024년 9개 모기업 구단 지원금 2,312억→2,215억, 자체 매출 3,835억→4,610억).
        시즌 흑자가 나면 모기업이 그만큼 광고·후원을 덜 집행한다(수익 우선 60%·홍보 50%·성적 우선 40%). 독립구단은 투자사가 흑자의 50%를 배당으로 가져간다.
        예전에는 흑자가 모두 구단 현금으로 쌓여 수십 년 플레이에서 한 해 수백억 흑자·현금이 생겼다 */
-    const ear=champFundEarmark(t.id),returns=financeCashReturns(t.id,y,t.cash,sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1])),{relief,capital,ear,owner:ownerBasis.owner});
+    const returns=financeCashReturns(t.id,y,t.cash,sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1])),{relief,capital,ear,owner:ownerBasis.owner});
     if(returns.back>0){exp.push([t.indie?`투자사 배당(시즌 흑자의 ${Math.round(returns.rate*100)}%)`:`모기업 광고·후원 조정(흑자의 ${Math.round(returns.rate*100)}%)`,returns.back]);t._back=returns.back;}
     const net=sum(inc.map(x=>x[1]))-sum(exp.map(x=>x[1]));
     t.cash+=net;
@@ -224,13 +226,13 @@ function settlementCore(){
     const sweep=returns.sweep;if(sweep>0){const T=Math.round(RES_CAP*EI)+ear+capital;t.cash-=sweep;if(t.id===ME()&&!G.unemp)mail('구단주실',`모기업, 구단 유보금 ${money(sweep)} 회수`,`구단 보유 현금이 ${money(t.cash+sweep)}으로 유보금 상한 ${money(T)}을(를) 넘었습니다. 모기업이 넘은 돈의 60%(${money(sweep)})를 회수했습니다. 남은 현금은 ${money(t.cash)}입니다.\n\n${FIN_RET_NOTE}`,{kind:'구단주'});}
     /* 모기업 지원 조정: 구단에 쓰지 않은 돈이 쌓여 있으면, 다음 시즌 모기업 지원 한도를 그만큼 줄인다(돈을 가져가지는 않는다).
        50억(경제 지수 반영)을 넘는 부분의 35~60%, 수익형 구단주가 가장 많이 줄인다. 쌓인 돈은 구단이 그대로 쓸 수 있다 */
-    let cut0=t.supCut&&t.supCut.y===y?t.supCut.amt:0;
-    if(!t.indie){ const th=Math.round(5000*EI); t.supCut=null; if(t.cash>th){ const r=t.owner==='profit'?.6:t.owner==='pr'?.45:.35; const cut=Math.min(Math.round((t.cash-th)*r),Math.round(16000*EI*.8)); t.supCut={y:y+1,amt:cut};
-      if(t.id===ME())mail('구단주실',`다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`구단 보유 현금이 ${money(t.cash)}으로 ${money(th)}을(를) 넘었습니다. 모기업은 "구단에 쓰지 않은 돈이 있으니 그만큼 지원을 줄이겠다"며 ${y+1}시즌 지원 한도를 ${money(cut)} 줄입니다. 돈을 가져가지는 않습니다. 쌓인 돈은 시설 투자나 선수 영입에 그대로 쓸 수 있습니다.`,{kind:'구단주'}); } }
+    let cut0=t.supCut&&t.supCut.y===y?t.supCut.amt:0, cutN=null;
+    if(!t.indie){ t.supCut=null; const C=finSupCutCalc(t,y,t.cash,ear,fins_self[t.id]||0); if(C.amt>0){ const cut=C.amt; t.supCut={y:y+1,amt:cut}; cutN=C;
+      if(t.id===ME())mail('구단주실',`다음 시즌 모기업 지원 한도 ${money(cut)} 축소`,`구단 보유 현금이 ${money(t.cash)}${C.ear>0?`(아직 쓰지 않은 우승 포상 FA 특별 자금 ${money(C.ear)}은 빼고 ${money(t.cash-C.ear)})`:''}으로 ${money(C.th)}을(를) 넘었습니다. 모기업은 "구단에 쓰지 않은 돈이 있으니 그만큼 지원을 줄이겠다"며 ${y+1}시즌 지원 한도를 ${money(cut)} 줄입니다.${C.self>0?` 올해 구단 현금으로 적자 ${money(C.self)}을(를) 메운 만큼은 덜 줄였습니다.`:''} 돈을 가져가지는 않습니다. 쌓인 돈은 시설 투자나 선수 영입에 그대로 쓸 수 있습니다.`,{kind:'구단주'}); } else if(C.raw>0)cutN=C; }
     /* 시설 관리: 빚이 크면 유지·보수를 미뤄 시설 하나가 한 단계 낡는다(30%) */
     if(t.cash<-3000&&R()<.3){ try{ facNeglect(t); }catch(e){} }
     t.pop=clamp(1+(t.pop-1)*.85+(wp-.5)*.5+(mkt-2000)/45000+(ps.champ===t.id?.06:0)+(G.mgr[t.id]&&G.mgr[t.id].fame>=70?.03:0)+localStarPop(t.id),.7,1.45);
-    fins[t.id]={att,inc,exp,net,cash:t.cash,tax,support,supCap,supCut:cut0,selfC:fins_self[t.id]||0,div,sweep,back:t._back||0,capital,...ownerBasis}; delete t._back;
+    fins[t.id]={att,inc,exp,net,cash:t.cash,cash0,ear,tax,support,supCap,supCut:cut0,selfC:fins_self[t.id]||0,div,sweep,back:t._back||0,capital,...(()=>{ const CF=champFundAll().find(F=>(F.tid??G.user)===t.id&&F.y===y); return CF?{champF:{amt:CF.amt||0,open:!CF.used&&!CF.done,half:CF.assessed??Math.round((CF.amt||0)/2)}}:{}; })(),...(cutN?{cutN:{amt:cutN.amt,raw:cutN.raw,self:cutN.self,th:cutN.th,basis:cutN.basis}}:{}),...ownerBasis}; delete t._back;
   }
   if(G.hoL)for(const k of Object.keys(G.hoL))if(+k.split(':')[0]<=y)delete G.hoL[k];
   const u=team(G.user),lateGM=gmJoinedAfterSeason(G.user,y); const uo=order.find(x=>x.tid===G.user); const wp=uo.w/Math.max(1,uo.w+uo.l);

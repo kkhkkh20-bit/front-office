@@ -286,8 +286,17 @@ function resultBody0(){
     </div><div class="res2-b"><div class="eyebrow">결산</div>${finTable(f)}
     </div><div class="res2-c"><div class="eyebrow">시즌 리더</div><div class="list">${L.leaders.map(l=>{const p=G.players[l.id]; return `<button class="item" data-a="player" data-v="${l.id}" ${p||(G.arch&&G.arch[l.id])?'':'disabled'}><span class="nm">${l.k} · ${esc(l.nm||(p?p.name:'은퇴 선수'))}</span><span class="sub">${l.t!=null&&G.teams[l.t]?tname(l.t):p&&p.team!=null?tname(p.team):''}</span><span class="rt num">${l.v}</span></button>`}).join('')}</div></div></div>`;
 }
+/* 결산 요약(11-20): 보유 현금 전후와 적자를 누가 메웠는지, 회수·다음 시즌 한도 축소 이유, 우승 특별 자금. 옛 결산 기록(cash0 없음)은 표만 */
+function finSummary(f){ if(!f||f.cash0==null)return ''; const L=[], sup=f.support||0, net=f.net||0, D=Math.max(0,sup-net), own=Math.max(0,-net);
+  if(D>0)L.push(`적자 ${money(D)} 중 구단 현금 ${money(own)}${f.supCap||sup?` · 모기업 지원 ${money(sup)}(한도 ${money(f.supCap||0)} 중)`:''}`);
+  if(f.sweep>0)L.push(`모기업 유보금 회수 ${money(f.sweep)}(쓰지 않고 쌓인 현금이 상한을 넘은 몫)`);
+  if(f.back>0)L.push(`흑자 조정 ${money(f.back)}(흑자가 난 만큼 모기업 광고·후원을 덜 집행)`);
+  const C=f.cutN; if(C&&C.amt>0)L.push(`다음 시즌 지원 한도 ${money(C.amt)} 축소: 보유 현금${f.ear>0?'(우승 특별 자금 제외)':''} ${money(C.basis)}이 기준 ${money(C.th)}을 넘었습니다${C.self>0?`. 올해 구단 현금으로 적자를 메운 ${money(C.self)}만큼 덜 줄였습니다`:''}`);
+  else if(C&&C.raw>0)L.push(`올해 구단 현금으로 적자를 메워 다음 시즌 지원 한도는 줄이지 않습니다`);
+  const F=f.champF; if(F&&F.amt>0)L.push(`우승 포상 FA 특별 자금 ${money(F.amt)}${F.open?`(이번 겨울 외부 FA를 영입하지 않으면 2월 1일에 절반 ${money(F.half)} 반환)`:'(FA 영입에 사용)'}`);
+  return `<p class="fin-sum">보유 현금 ${money(f.cash0)} → <b>${money(f.cash)}</b></p>${L.length?`<ul class="fin-why small">${L.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}`; }
 function finTable(f){
-  return `<dl class="kv">${f.inc.map(x=>`<dt>${x[0]}</dt><dd>+${money(x[1])}</dd>`).join('')}${f.exp.map(x=>`<dt>${x[0]}</dt><dd>-${money(x[1])}</dd>`).join('')}
+  return finSummary(f)+`<dl class="kv">${f.inc.map(x=>`<dt>${x[0]}</dt><dd>+${money(x[1])}</dd>`).join('')}${f.exp.map(x=>`<dt>${x[0]}</dt><dd>-${money(x[1])}</dd>`).join('')}
     <dt class="tot">순이익</dt><dd class="tot" style="color:${f.net>=0?'var(--good)':'var(--bad)'}">${f.net>=0?'+':''}${money(f.net)}</dd>${f.selfC?`<dt>적자 자체 충당(보유 현금)</dt><dd>${money(f.selfC)}</dd>`:''}${f.div?`<dt>투자사 배당(${money(INDIE_DIV_T)} 초과분의 ${Math.round(INDIE_DIV_R*100)}%)</dt><dd>${money(f.div)}</dd>`:''}
     <dt>관중</dt><dd>${Math.round(f.att/1e4)}만 명</dd>${f.supCap?`<dt>모기업 적자 보전 한도</dt><dd>${money(f.supCap)}${f.supCut?` <span class="small muted">(쌓인 현금 때문에 ${money(f.supCut)} 줄어든 한도)</span>`:''}</dd>`:''}<dt>시즌 후 보유 현금</dt><dd>${money(f.cash)}</dd></dl>${f.div||f.sweep||(f.exp||[]).some(x=>/조정|배당|회수/.test(x[0]))?`<p class="small muted">${FIN_RET_NOTE}</p>`:''}`;
 }

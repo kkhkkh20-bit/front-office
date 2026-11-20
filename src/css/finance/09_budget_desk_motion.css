@@ -230,3 +230,7 @@ button.chipn.lk{cursor:pointer;font:inherit;font-size:12px}button.chipn.lk:hover
  .own-d>.card{padding:8px 12px}
 }
 @media(min-width:1100px){.own-plan{display:flex;flex-direction:column}.own-plan>.ologs{flex:1 1 auto;min-height:0;overflow:auto}}
+/* 결산 요약(11-20): 보유 현금 전후와 설명 */
+.fin-sum{margin:0 0 4px;font-size:14px;overflow-wrap:anywhere}
+.fin-why{margin:0 0 8px;padding-left:18px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
+.fin-why li{margin:1px 0}
