@@ -1,13 +1,36 @@
 /* ===== 스토브리그 ===== */
 /* 은퇴 기준(결산 뒤 비시즌): 국내 선수. 화면의 '은퇴 유력'과 9월 1일 은퇴 예상 소식이 같은 기준을 쓴다(커뮤니티 건의 11-11) */
-const RET_AGE=40, RET_VET_AGE=35, RET_VET_O=40, RET_MID_AGE=32, RET_MID_O=34; /* 한 기준(점검 11-17: 표시는 45·35 미만, 실제 은퇴는 44·34 미만으로 어긋나 있었다) */ /* 베테랑 기준 44→40(11-20 노화 곡선, 구단주 결정): 35세 이상도 40 이상이면 더 뛴다. AI 베테랑 방출(VET_REL_O)도 같은 값 */ const VET_REL_O=RET_VET_O;
+const RET_AGE=40, RET_VET_AGE=37, RET_FREE_AGE=35, RET_VET_O=40, RET_MID_AGE=32, RET_MID_O=34; /* 한 기준(점검 11-17: 표시는 45·35 미만, 실제 은퇴는 44·34 미만으로 어긋나 있었다) */ /* 베테랑 기준 44→40(11-20 노화 곡선, 구단주 결정): 35세 이상도 40 이상이면 더 뛴다. AI 베테랑 방출(VET_REL_O)도 같은 값 */ const VET_REL_O=RET_VET_O;
 /* 40세 정년 완화(11-20, 구단주 결정): 40세부터 바로 은퇴하던 것을 기량으로 가른다. 40세 이상은 나이마다 베테랑 기준(RET_VET_O 40)보다 2씩 높은 기준(40세 42·41세 44·42세 46·43세 48·44세 50) 미만이면 은퇴하고, 45세(RET_CAP)에는 누구나 은퇴한다.
    우리·AI 구단 같은 식, 난수 없음. 은퇴 면담으로 한 해 미루는 것도 45세 전까지만(retDelayOk) */
 const RET_CAP=45, RET_OLD_STEP=2; const retOldO=a=>RET_VET_O+(a-RET_AGE+1)*RET_OLD_STEP;
 function retireVetRule(p,o){ o=o??ovr(p); return p.age>=RET_CAP||(p.age>=RET_AGE&&o<retOldO(p.age))||(p.age>=RET_VET_AGE&&o<RET_VET_O); } /* 나이·기량 은퇴(계약과 무관): FA 자격의 은퇴 예상도 같은 함수 */
-function retireRule(p,o){ o=o??ovr(p); return retireVetRule(p,o)||(p.age>=RET_MID_AGE&&o<RET_MID_O&&!p.faC); }
+/* KBO 비율 기준(11-20 구단주 결정, 2026 최고령 최형우 42세·40대 현역이 시즌마다 몇 명): 35~36세(RET_FREE_AGE~RET_VET_AGE-1)는 능력으로 강제 은퇴하지 않는다. 이 나이는 FA 미계약·무적 기간만으로 은퇴한다.
+   베테랑 기준 40(RET_VET_O)은 37세부터(예전 35세부터), 계약 없는 약체 기준 34(RET_MID_O)는 32~34세에만. 우리·AI 같음 */
+function retireRule(p,o){ o=o??ovr(p); return retireVetRule(p,o)||(p.age>=RET_MID_AGE&&p.age<RET_FREE_AGE&&o<RET_MID_O&&!p.faC); }
 const retDelayOk=p=>p.retDelay===G.year&&p.age<RET_CAP; /* 은퇴 면담으로 한 해 더 뛰기로 한 선수(45세 전까지) */
-function retireLikely(p){ if(!p||p.foreign||p.team==null||retDelayOk(p))return false; return retireRule(p); }
+/* 노장 2군 장기 체류(11-20 사용자): 35세 이상 국내 선수가 한 시즌을 거의 2군에서만 보내면(1군 100타석·30이닝 미만, 2군 100타석·30이닝 이상) 비시즌에 스스로 은퇴하거나 트레이드를 요청한다.
+   은퇴 확률 35세 35%·36세 45%·37세 이상 55%(선수·해마다 고정 난수, 주 난수 R() 호출 수 불변). 은퇴하지 않으면 트레이드 요청: 우리 구단은 소식함 요청(트레이드 명단에 올리기), AI 구단은 트레이드 블록에 올린다(출전 불만과 같은 표시). 우리·AI 같은 규칙. 은퇴 면담으로 미룬 해는 빼고 */
+const VET_FARM_AGE=35, VET_FARM_RET=[.35,.45,.55];
+function vetFarmLong(p,y){ if(!p||p.foreign||p.team==null||p.age<VET_FARM_AGE||!p.hist)return false; const a=seasonTotal(p,y,'1군')||{}, f=seasonTotal(p,y,'퓨처스')||{}, hurt=(p.injOut||0)>=60; /* 오래 다쳐 재활 중인 노장도 같다(박병호·오승환 사례) */ return p.isP?(a.outs||0)<90&&((f.outs||0)>=90||hurt):(a.pa||0)<100&&((f.pa||0)>=100||hurt); }
+function vetFarmPick(p){ const k=Math.min(VET_FARM_RET.length-1,p.age-VET_FARM_AGE); return withRng(rngHash('vetFarm',G.year,p.id),()=>R())<VET_FARM_RET[k]?'ret':'treq'; }
+function vetFarmTreq(p){ if(p.team===G.user&&!G.unemp){ if(p.listed||(p.treq&&!p.treq.done))return; p.treq={day:G.day}; mail(p.name,'트레이드 요청',`올해 거의 한 시즌을 2군에서 보냈습니다. 제 나이에 남은 시간이 많지 않습니다. 1군에서 뛸 수 있는 팀이 있으면 보내 주십시오. 내년에도 이대로라면 은퇴를 생각하겠습니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'트레이드 명단에 올리기',a:'listP',v:p.id},{l:'방출해 준다',a:'release',v:p.id},{l:'남아 달라고 설득',a:'keepP',v:p.id},{l:'선수 보기',a:'player',v:p.id}]}); return; } /* 방출하면 무적 선수로 다른 구단을 찾고, 아무도 데려가지 않으면 은퇴한다(freeYear) */
+  if(hasNtc(p)||p.aiListed)return; p.aiListed=true; p.aiWhy='mood'; p.aiLd=G.day; try{ wire('구단 사정',`${tshort(p.team)} ${p.name}(${posLabel(p)}, ${p.age}세), 2군 생활 끝에 트레이드 요청`,{tid:p.team,ref:p.id}); }catch(e){} }
+/* 은퇴 예고 시즌(11-20 사용자, 실제 사례: 박용택 2020·이대호 2022·추신수 2024는 시즌 전에 "올해가 마지막"이라고 밝히고 시즌 뒤 은퇴했다).
+   2월 1일, 37세 이상·1군 10시즌 이상 국내 선수 중 아직 은퇴 기준에 걸리지 않은 선수가 나이에 따라(37세 15%·38세 25%·39세 35%·40세 이상 50%) 이번 시즌이 마지막이라고 구단에 알린다.
+   그 시즌은 평소처럼 뛰고 시즌 뒤 은퇴한다(은퇴 투어·은퇴식은 기존 장치). 선수·해마다 고정 난수(주 난수 R() 호출 수 불변). 우리·AI 같은 규칙 */
+const LAST_AGE=37, LAST_TEN=10, LAST_P=[.15,.25,.35,.5];
+const lastSeason=p=>!!p&&p.lastY===G.year;
+function lastTen(p){ return new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2).map(h=>h.y)).size; }
+function lastSeasonDecl(){ for(const p of Object.values(G.players)){ if(p.foreign||p.team==null||p.prospect||p.age<LAST_AGE||p.lastY!=null||(p.joinY>G.year)||retireRule(p)||lastTen(p)<LAST_TEN)continue;
+    const k=Math.min(LAST_P.length-1,p.age-LAST_AGE); if(withRng(rngHash('lastY',G.year,p.id),()=>R())>=LAST_P[k])continue; p.lastY=G.year;
+    try{ story(p,`${G.year} "올해가 마지막 시즌" 은퇴 예고`,'move'); }catch(e){}
+    try{ news('리그',`${tshort(p.team)} ${p.name}(${p.age}세), "올해가 마지막 시즌"`,`${p.name}이(가) 구단에 이번 시즌을 끝으로 은퇴하겠다고 알렸습니다. 올해는 평소처럼 뛰고 시즌이 끝나면 유니폼을 벗습니다.`,p.team===G.user?1:0,{tid:p.team,ref:p.id}); }catch(e){}
+    if(p.team===G.user&&!G.unemp)try{ mail(p.name,'올해가 마지막 시즌입니다',`${p.name}(${posLabel(p)}, ${p.age}세)이(가) 단장실을 찾아와 이번 시즌을 끝으로 은퇴하겠다고 말했습니다.\n\n"마지막 해도 똑같이 준비하겠습니다. 끝까지 팀에 보탬이 되고 싶습니다."\n\n시즌은 평소처럼 뛰고, 시즌이 끝나면 은퇴합니다. 9월에 은퇴 투어를 열지 묻습니다.`,{kind:'선수',ref:p.id,face:p.id}); }catch(e){} } }
+/* 노장의 은퇴 요청(11-20 사용자, 실제 사례: 김강민·박병호·오승환은 출전 감소·부상·기량 저하로 시즌 중·뒤 구단에 은퇴 의사를 전했다): 2군 장기 체류 노장이 은퇴를 고르는 경우(vetFarmPick)도 은퇴 유력으로 보고,
+   우리 구단이면 9월 은퇴 면담(retTalk)으로 받아들일지·한 해 더 설득할지 고른다. AI는 같은 규칙으로 비시즌에 은퇴한다 */
+const vetRetAsk=p=>vetFarmLong(p,G.year)&&vetFarmPick(p)==='ret';
+function retireLikely(p){ if(!p||p.foreign||p.team==null)return false; if(lastSeason(p))return true; if(retDelayOk(p))return false; return retireRule(p)||vetRetAsk(p); }
 /* 선수단 표시 태그(커뮤니티 건의 11-11): 원클럽맨·FA 예정·은퇴 유력·포스팅 후보 */
 function lifeTags(p){ const T=[]; if(!p||p.foreign)return T; try{ const R=(p.hist||[]).filter(h=>h.lvl==='1군'&&!h.y2); const ys=new Set(R.map(h=>h.y)); if(p.team!=null&&ys.size>=10&&R.every(h=>h.t===p.team))T.push({l:'원클럽맨',c:'good',d:`한 구단에서만 1군 ${ys.size}시즌`}); }catch(e){}
   try{ if(p.team!=null&&!p.prospect&&faUpcoming(p).length)T.push({l:'FA 예정',c:'warn',d:'이번 시즌이 끝나면 FA 자격'}); }catch(e){}
@@ -20,7 +43,7 @@ function retTalkP(p){ return clamp(.3+((p.mor??60)-60)/150+(ovr(p)>=48?.15:0)-(p
 function retireNotice(){ if(G.unemp)return; const L=playersOf(G.user).filter(retireLikely); if(!L.length)return; mail('운영팀',`시즌 뒤 은퇴가 유력한 선수 ${L.length}명`,L.map(p=>`· ${p.name}(${posLabel(p)}, ${p.age}세, 연봉 ${money(p.sal)})`).join('\n')+'\n\n나이와 능력으로 보아 이번 시즌이 끝나면 유니폼을 벗을 가능성이 큽니다.',{kind:'선수'});
   const star=L.filter(p=>{ const ys=new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)); return ys.size>=8||p.fr; }).sort((a,b)=>(b.svc||0)-(a.svc||0))[0];
   { const ten=p=>new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)).size; /* 선수가 먼저 은퇴 의사를 밝힌다(사용자 11-11): 우리 구단 1군 3시즌 이상 뛴 선수, 많아야 3명 */
-    for(const q of L.filter(p=>p.age<RET_CAP&&p.retDelay!==G.year&&ten(p)>=3).sort((a,b)=>ten(b)-ten(a)).slice(0,3)){ if((G.evs||[]).some(x=>x.k==='retTalk'&&!x.done&&x.data&&x.data.pid===q.id))continue; const pr=retTalkP(q);
+    for(const q of L.filter(p=>p.age<RET_CAP&&p.retDelay!==G.year&&!lastSeason(p)&&ten(p)>=3).sort((a,b)=>ten(b)-ten(a)).slice(0,3)){ if((G.evs||[]).some(x=>x.k==='retTalk'&&!x.done&&x.data&&x.data.pid===q.id))continue; const pr=retTalkP(q);
       evNew('retTalk',`${q.name}: "이번 시즌을 끝으로 은퇴하고 싶습니다"`,`${q.name}(${posLabel(q)}, ${q.age}세, 우리 구단 ${(()=>{ let n=ten(q); try{ const c=careerOf(q); if(!G.fd&&c.teams.size<=1)n=Math.max(n,q.svc||0); }catch(e){} return n; })()}시즌)이(가) 면담을 청해 이번 시즌을 끝으로 유니폼을 벗고 싶다고 말했습니다. 말려 볼 수도 있고, 뜻을 존중할 수도 있습니다. (말리면 마음을 바꿀 가능성 약 ${Math.round(pr*100)}% · 기분·능력·나이에 따라 다름)`,[{l:'한 해 더 뛰자고 말린다',fx:'마음을 바꾸면 이번 겨울 은퇴하지 않습니다. 실패하면 기분 하락'},{l:'뜻을 존중한다',fx:'선수 기분 상승. 시즌 뒤 은퇴하고, 은퇴식은 그때 다시 묻습니다'}],{def:1,exp:14,data:{pid:q.id},from:q.name,ref:q.id}); } } /* 은퇴 면담 */
   if(star&&!(G.evlog||[]).some(x=>x.k==='retTour'&&x.y===G.year)){ const c=Math.round(150*ecoIdx()); evNew('retTour',`${star.name} 은퇴 투어를 열까요?`,`${star.name}(${star.age}세)이(가) 이번 시즌을 끝으로 은퇴를 고민하고 있습니다. 구단에서 오래 뛴 선수라 마지막 원정 경기마다 상대 구단과 함께 작별 행사를 여는 은퇴 투어를 제안합니다.`,[{l:'은퇴 투어',fx:`행사비 ${money(c)} · 팬 여론 호전 · 선수 기분 크게 상승`},{l:'시즌 뒤 은퇴식만',fx:'따로 행사를 열지 않습니다'}],{def:1,exp:10,data:{pid:star.id,c},from:'홍보팀'}); } }
 function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)fdReview(); }catch(e){} for(const t of G.teams){ if(t.id!==ME()&&t.cash<-5000)try{ aiPlanSet(t,'tight','빚 누적'); }catch(e){ t.mode='rebuild'; } }
@@ -30,7 +53,8 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
     if(p.foreign&&p.team!=null&&(p.age>=40||(p.age>=37&&ovr(p)<52))){ retired.push({name:p.name,team:p.team,age:p.age}); try{ story(p,`${p.age}세로 은퇴`,'move'); }catch(e){} try{ retireRecord(p); }catch(e){} /* 국내 선수와 같이 은퇴 기록·명예의 전당 심사(검수 11-09zp) */ for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; p.team=null; p.fleft=true; p.retY=G.year; continue; }
     if(p.team==null||p.foreign||p.joinY>G.year)continue;
     const o=ovr(p);
-    if(retireRule(p,o)&&!retDelayOk(p)){ /* 은퇴 면담으로 한 해 더 뛰기로 한 선수는 올해 은퇴하지 않는다(45세 전까지) */ try{ legendRetire(p); }catch(e){} retired.push({name:p.name,team:p.team,age:p.age}); const rec=retireRecord(p); try{ obs.push(obFromPlayer(p,rec)); }catch(e){} for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; dropP(p.id); }
+    const vf=lastSeason(p)?'ret':!retDelayOk(p)&&!retireRule(p,o)&&vetFarmLong(p,G.year)?vetFarmPick(p):null; /* 은퇴 예고 선수는 시즌 뒤 은퇴 */ if(vf==='treq')vetFarmTreq(p); /* 노장 2군 장기 체류 */
+    if((retireRule(p,o)&&!retDelayOk(p))||vf==='ret'){ /* 은퇴 면담으로 한 해 더 뛰기로 한 선수는 올해 은퇴하지 않는다(45세 전까지) */ if(vf==='ret'&&!lastSeason(p)&&!retireRule(p,o))try{ story(p,`${G.year} 출전 기회가 줄어 스스로 은퇴`,'move'); }catch(e){} try{ legendRetire(p); }catch(e){} retired.push({name:p.name,team:p.team,age:p.age}); const rec=retireRecord(p); try{ obs.push(obFromPlayer(p,rec)); }catch(e){} for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; dropP(p.id); }
   }
   const all=Object.values(G.players).filter(p=>p.team!=null&&!(p.joinY>G.year));
   /* FA 등록일수(실제는 시즌 145일 이상 1군 등록): 게임에서는 1군에서 시즌 대부분을 보낸 해를 인정(야수 85경기·260타석, 투수 40경기·90이닝·선발 16경기 중 하나). 팀당 한 해 16명 안팎이 채운다 */
@@ -405,7 +429,7 @@ function faClose(){
       if(ready&&lt&&p.age<=35&&ovr(p)>=42){ const an=round5(Math.max(low,Math.min(p.ask.annual,(fl-capPay(lt.id))*.6))); faSign(p,[{tid:lt.id,annual:an,years:p.age<=31?2:1}]); if(p.team===lt.id){ floorN++; continue; } } }
     /* 아무도 찾지 않은 선수: 유니폼을 벗는다 */
     F.pool=F.pool.filter(x=>x!==id);
-    p.agBad=G.year; /* 미계약은 나쁜 협상: 다음 겨울에 에이전트를 바꾸기도 한다 */ if(p.age<=35&&ovr(p)>=33){ mvLog('FA 미계약',p,from,null,'FA 시장 종료 · 무적 선수'); toFree(p,'FA 미계약 · 무적 선수'); gone++; continue; } /* 2년 동안 다른 구단을 기다린다 */
+    p.agBad=G.year; /* 미계약은 나쁜 협상: 다음 겨울에 에이전트를 바꾸기도 한다 */ if((p.age<=35||!retireVetRule(p))&&ovr(p)>=33){ mvLog('FA 미계약',p,from,null,'FA 시장 종료 · 무적 선수'); /* 저니맨(11-20 사용자): 36세 이상도 은퇴 기준에 안 걸리면 무적 선수로 다른 구단을 기다리고, 아무도 데려가지 않으면 새해에 은퇴한다(freeYear) */ toFree(p,'FA 미계약 · 무적 선수'); gone++; continue; } /* 2년 동안 다른 구단을 기다린다 */
     wire('FA',`${p.name}(${p.age}세)이(가) 새 팀을 찾지 못하고 은퇴했습니다.`,{ref:p.id}); if(from===ME())note('FA',`우리 구단 출신 FA ${p.name}이(가) 계약하지 못하고 은퇴했습니다.`);
     { let rec=null; try{ rec=retireRecord(p); }catch(e){} try{ p.team=from; obFromPlayer(p,rec); p.team=null; }catch(e){} } dropP(id); gone++; } /* 정상 은퇴와 같이 통산 기록·명예의 전당 심사 */
   F.closed=true; F.cheapN=cheap; F.retN=gone;

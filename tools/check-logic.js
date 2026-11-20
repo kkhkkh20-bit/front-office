@@ -5,6 +5,7 @@
 const fs=require('fs'), path=require('path');
 globalThis.__promotion1021Ui=()=>{const s=fs.readFileSync(path.join(__dirname,'..','src/ui/uladder/04_uladder_series_ui.js'),'utf8');return 'const esc=x=>String(x??""),ulKind=t=>t.kind,ulPct=n=>n.toFixed(3),ulSg=n=>String(n);\n'+s.slice(s.indexOf('function ulL5Html('),s.indexOf('/* ---- 일정·결과'))+'\n;({ulStandXHtml})';};
 
+globalThis.__daily1120Src=()=>fs.readFileSync(path.join(__dirname,'../src/engine/progression/07_daily.js'),'utf8');
 globalThis.__ladderLive1019Ui=()=>fs.readFileSync(path.join(__dirname,'../src/ui/uladder/01_uladder_ui.js'),'utf8');
 globalThis.__ladderPhase1020Ui=()=>fs.readFileSync(path.join(__dirname,'../src/ui/uladder/05_uladder_auto.js'),'utf8');
 globalThis.__faSupportUiSrc=()=>{const s=fs.readFileSync(path.join(__dirname,'..','src/ui/players/39_player_sheet.js'),'utf8');return 'const UI={},esc=x=>String(x);\n'+s.slice(s.indexOf('function pitchCard('),s.indexOf('/* 최근 3년 한눈에:',s.indexOf('function pitchCard(')))+'\n;({UI,pitchCard})';};
@@ -3237,15 +3238,39 @@ T('[감독 지시] 투수 보호 요청을 처음 거절당해도 관계(선수�
 T('[위임 11-17] 부단장 1차 검토는 받은 제안의 현금을 트레이드 값과 같은 식(cashVal·cashCost)으로 본다',()=>{ fresh(); const U=team(G.user); const o=otherT(); const a=domestic(o).find(p=>!p.ys), b=domestic(G.user).find(p=>!p.ys); const base={id:'t',from:o,give:[a.id],get:[b.id]};
   const d0=troDiff(base), d1=troDiff({...base,cash:-700}), d2=troDiff({...base,cash:700}); ok(Math.abs(d1-d0-cashVal(U,700))<1e-9,'받는 현금 값이 cashVal과 다름: '+(d1-d0)+' vs '+cashVal(U,700)); ok(Math.abs(d0-d2-cashCost(U,-700))<1e-9,'주는 현금 값이 cashCost와 다름'); });
 T('[은퇴 11-17] 은퇴 유력 표시와 실제 은퇴가 같은 기준(retireRule)을 쓴다: 35세 40은 둘 다 아니고, 39는 둘 다 맞다',()=>{ fresh(); const p=domestic(G.user).find(q=>!q.faC&&!q.ys); ok(p,'준비 실패'); const so=x=>{ setOvr(p,x); return ovr(p); };
-  p.age=35; let o=so(40.3); ok(o>=40,'준비 실패: 40 맞추기 '+o); ok(!retireLikely(p)&&!retireRule(p,o),'35세 40을 은퇴로 봄(실제 은퇴 기준 40 미만)'); o=so(39.4); ok(o<40,'준비 실패: 39 맞추기 '+o); /* setOvr이 40을 39.9대로 맞춰 경계에 걸려 소수 여유를 둔다 */ ok(retireLikely(p)&&retireRule(p,o),'35세 39를 은퇴로 보지 않음'); /* 베테랑 기준 44→40(11-20 노화 곡선 구단주 결정): 예전 44/43 */
+  p.age=37; let o=so(40.3); ok(o>=40,'준비 실패: 40 맞추기 '+o); ok(!retireLikely(p)&&!retireRule(p,o),'37세 40을 은퇴로 봄(실제 은퇴 기준 40 미만)'); o=so(39.4); ok(o<40,'준비 실패: 39 맞추기 '+o); /* setOvr이 40을 39.9대로 맞춰 경계에 걸려 소수 여유를 둔다 */ ok(retireLikely(p)&&retireRule(p,o),'37세 39를 은퇴로 보지 않음'); /* 사양 변경(11-20 KBO 비율 기준, 구단주 결정): 베테랑 기준 40은 37세부터. 예전 이 검사는 35세 40/39 */
+  p.age=35; o=so(30.4); ok(!retireLikely(p)&&!retireRule(p,o),'35세는 능력으로 강제 은퇴하지 않아야 함(11-20 사양 변경)'); /* 베테랑 기준 44→40(11-20 노화 곡선 구단주 결정): 예전 44/43 */
   p.age=33; o=so(34.3); ok(o>=34,'준비 실패: 34 맞추기 '+o); ok(!retireLikely(p),'33세 34를 은퇴 유력으로 표시'); o=so(33.4); ok(retireLikely(p),'33세 33을 은퇴 유력으로 표시하지 않음');
   ok(String(offseason).includes('retireRule(p,o)'),'비시즌 은퇴가 같은 함수를 쓰지 않음'); });
 T('[은퇴 11-20] 노화 곡선: 베테랑 은퇴 기준 40(RET_VET_O)은 우리·AI 선수 모두 같고, AI 베테랑 방출도 같은 40 미만',()=>{ fresh(); ok(RET_VET_O===40&&VET_REL_O===RET_VET_O,'베테랑 기준 '+RET_VET_O+'/'+VET_REL_O);
   const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
-  for(const p of [me,ai]){ p.age=36; setOvr(p,40.2); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 40을 은퇴로 봄'); setOvr(p,39.4); ok(retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 39를 은퇴로 보지 않음'); }
+  for(const p of [me,ai]){ p.age=37; setOvr(p,40.2); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 40을 은퇴로 봄'); setOvr(p,39.4); ok(retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 39를 은퇴로 보지 않음'); p.age=36; setOvr(p,30.4); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 30을 능력으로 은퇴시킴'); } /* 사양 변경(11-20 KBO 비율 기준): 35~36세 능력 은퇴 없음, 기준 40은 37세부터. 예전 이 검사는 36세 40/39 */
   ok(String(contractStart).includes('ovr(p)<VET_REL_O')&&!/ovr\(p\)<44/.test(String(contractStart)),'AI 베테랑 방출이 예전 44 기준');
   ok(String(faUpcoming).includes('if(retireVetRule(p))continue;'),'FA 자격의 은퇴 예상이 은퇴 기준과 다름'); /* 11-20 정년 완화: 같은 기준을 한 함수(retireVetRule)로 묶었다. 예전 식 'p.age>=RET_AGE||(p.age>=RET_VET_AGE&&ovr(p)<RET_VET_O)' */
-  for(const a of [35,36,37,38,39])for(const o of [39.4,40.2]){ const q={age:a,r:me.r,isP:me.isP}; ok(retireVetRule(q,o)===(o<RET_VET_O),a+'세 '+o+' FA 은퇴 예상이 35~39세 기준 40과 다름'); } });
+  for(const a of [35,36,37,38,39])for(const o of [30.4,39.4,40.2]){ const q={age:a,r:me.r,isP:me.isP}; ok(retireVetRule(q,o)===(a>=37&&o<RET_VET_O),a+'세 '+o+' FA 은퇴 예상이 기준(35~36세 없음·37~39세 40)과 다름'); } });
+T('[은퇴 11-20] KBO 비율 기준: 35~36세는 능력으로 강제 은퇴하지 않고, 35세 이상은 방출·FA 미계약 뒤 아무도 데려가지 않으면 은퇴한다(우리·AI 같음)',()=>{ fresh(); ok(RET_VET_AGE===37&&RET_FREE_AGE===35,'나이 상수 '+RET_VET_AGE+'/'+RET_FREE_AGE);
+  const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
+  for(const p of [me,ai]){ const w=p.team===G.user?'우리':'AI'; for(const a of [35,36]){ p.age=a; setOvr(p,33.4); ok(!retireRule(p)&&!retireLikely(p),w+' '+a+'세 33을 능력으로 은퇴'); } p.age=34; setOvr(p,33.4); ok(retireRule(p),w+' 34세 계약 없는 33(32~34세 약체 기준)이 은퇴하지 않음'); }
+  ok(String(faClose).includes('if((p.age<=35||!retireVetRule(p))&&ovr(p)>=33)'),'FA 미계약 노장이 은퇴 기준과 무관하게 은퇴'); ok(/\(p\.age<=35\|\|!retireVetRule\(p\)\)/.test(String(freeAiMonthly)),'AI 무적 영입이 나이만으로 노장을 막음');
+  ok(String(freeYear).includes('p.age>=RET_FREE_AGE')&&!/p\.age>=38/.test(String(freeYear)),'무적 노장 은퇴 나이가 35세가 아님');
+  const mk=(a)=>{ const q=domestic(otherT()).find(x=>x!==ai&&!x.faC&&!x.ys&&!x.foreign&&x.team!=null); q.age=a; setOvr(q,50); toFree(q,'점검'); q.freeSince=G.year; delete q.wv; ok(isFree(q),'준비 실패: 무적 아님'); return q; };
+  const y34=mk(34), y35=mk(35), y36=mk(36); y34.freeDay=y35.freeDay=G.day-FREE_VET_DAYS-1; y36.freeDay=G.day-30; freeYear(); ok(G.players[y34.id]&&isFree(y34),'34세 무적 선수가 바로 은퇴'); ok(!G.players[y35.id],'넉 달 넘게 아무도 안 데려간 35세 무적 노장이 은퇴하지 않음'); ok(G.players[y36.id]&&isFree(y36),'방금 풀린 36세 노장이 다른 구단을 기다리지 못하고 은퇴(저니맨)'); });
+T('[은퇴 11-20] 은퇴 예고 시즌: 37세 이상·1군 10시즌 이상 노장이 2월 1일 "올해가 마지막"을 알리고 시즌 뒤 은퇴한다(고정 난수, 우리·AI 같음). 2군 노장의 은퇴 요청은 9월 은퇴 면담으로 온다',()=>{ fresh(); ok(LAST_AGE===37&&LAST_TEN===10&&LAST_P.join()==='0.15,0.25,0.35,0.5','상수 '+LAST_P);
+  const me=domestic(G.user).find(q=>!q.isP&&!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.isP&&!q.faC&&!q.ys); ok(me&&ai,'준비 실패'); const y=G.year;
+  for(const p of [me,ai]){ p.hist=(p.hist||[]).filter(h=>h.lvl!=='1군'); for(let k=1;k<=12;k++)p.hist.push({...bz(),y:y-k,t:p.team,lvl:'1군',pa:400,ab:350,g:100}); setOvr(p,55); delete p.lastY; }
+  const rng=FO_RNG; let n=0, hit=0; try{ FO_RNG=()=>{ n++; return FO_RNG0(); }; for(let t=0;t<40;t++){ for(const p of [me,ai]){ p.age=40; delete p.lastY; } G.year=y+t; lastSeasonDecl(); hit+=[me,ai].filter(p=>p.lastY===G.year).length; } }finally{ FO_RNG=rng; G.year=y; } ok(n===0,'주 난수 '+n+'번 씀'); ok(hit>=20&&hit<=60,'40세 은퇴 예고 비율 '+hit+'/80');
+  for(const p of [me,ai]){ const w=p.team===G.user?'우리':'AI'; delete p.lastY; p.age=36; lastSeasonDecl(); ok(p.lastY==null,w+' 36세가 은퇴 예고'); p.lastY=G.year; p.age=38; setOvr(p,60); ok(retireLikely(p)&&!retireRule(p),w+' 은퇴 예고 선수가 은퇴 유력으로 안 보임'); p.retDelay=G.year; ok(retireLikely(p),w+' 은퇴 예고 선수가 면담 유예로 빠짐'); delete p.retDelay; }
+  ok(String(offseason).includes("const vf=lastSeason(p)?'ret'"),'은퇴 예고 선수가 시즌 뒤 은퇴하지 않음'); ok(String(retireNotice).includes('!lastSeason(p)'),'은퇴 예고 선수에게 은퇴 면담을 또 엶');
+  ok(__daily1120Src().includes('if(od.m===2&&od.d===1)try{ lastSeasonDecl(); }'),'2월 1일에 은퇴 예고를 보지 않음');
+  for(const p of [me,ai]){ delete p.lastY; p.age=36; setOvr(p,55); p.hist=p.hist.filter(h=>h.y!==y); p.hist.push({...bz(),y,t:p.team,lvl:'퓨처스',pa:300,ab:260,g:80}); ok(retireLikely(p)===(vetFarmPick(p)==='ret'),(p.team===G.user?'우리':'AI')+' 2군 노장 은퇴 요청이 은퇴 유력과 다름'); } });
+T('[은퇴 11-20] 노장 2군 장기 체류: 35세 이상이 한 시즌을 거의 2군에서 보내면 비시즌에 스스로 은퇴하거나 트레이드를 요청한다(고정 난수, 우리·AI 같음)',()=>{ fresh(); ok(VET_FARM_AGE===35&&VET_FARM_RET.join()==='0.35,0.45,0.55','상수 '+VET_FARM_RET);
+  const me=domestic(G.user).find(q=>!q.isP&&!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.isP&&!q.faC&&!q.ys&&!hasNtc(q)); ok(me&&ai,'준비 실패'); const y=G.year;
+  for(const p of [me,ai]){ const w=p.team===G.user?'우리':'AI'; p.hist=(p.hist||[]).filter(h=>h.y!==y); p.age=36; p.hist.push({...bz(),y,t:p.team,lvl:'퓨처스',pa:300,ab:260,g:80}); p.hist.push({...bz(),y,t:p.team,lvl:'1군',pa:40,ab:35,g:15}); ok(vetFarmLong(p,y),w+' 2군 장기 체류를 못 알아봄'); p.age=34; ok(!vetFarmLong(p,y),w+' 34세를 노장으로 봄'); p.age=36; p.hist.push({...bz(),y,t:p.team,lvl:'1군',pa:200,ab:180,g:50}); ok(!vetFarmLong(p,y),w+' 1군에서 뛴 노장을 2군 체류로 봄'); }
+  const rng=FO_RNG; let n=0, k={ret:0,treq:0}; const P=[]; try{ FO_RNG=()=>{ n++; return FO_RNG0(); }; for(let i=0;i<600;i++){ const q={id:'vf'+i,age:35+(i%3)}; const a=vetFarmPick(q), b=vetFarmPick(q); ok(a===b,'같은 해·같은 선수 결과가 다름'); k[a]++; P.push([q.age,a]); } }finally{ FO_RNG=rng; } ok(n===0,'주 난수 '+n+'번 씀');
+  const r=a=>{ const L=P.filter(x=>x[0]===a); return L.filter(x=>x[1]==='ret').length/L.length; }; ok(r(35)>.25&&r(35)<.45&&r(37)>.45&&r(37)<.65,'은퇴 비율 '+[r(35),r(36),r(37)].map(x=>x.toFixed(2)));
+  me.listed=false; delete me.treq; const m0=(G.mail||[]).length; vetFarmTreq(me); ok(me.treq&&(G.mail||[]).length===m0+1&&G.mail.some(x=>x.t==='트레이드 요청'||x.title==='트레이드 요청'||JSON.stringify(x).includes('트레이드 요청')),'우리 노장 트레이드 요청이 소식함에 안 옴');
+  delete ai.aiListed; vetFarmTreq(ai); ok(ai.aiListed&&ai.aiWhy==='mood','AI 노장이 트레이드 블록에 안 오름');
+  ok(String(offseason).includes('vetFarmLong(p,G.year)?vetFarmPick(p)')&&String(offseason).includes("vf==='ret'"),'비시즌에 노장 2군 체류를 보지 않음'); });
 T('[은퇴 11-20] 정년 완화: 40세 이상은 나이마다 기준(40세 42·41세 44·42세 46·43세 48·44세 50) 미만이면 은퇴, 45세는 누구나 은퇴. 우리·AI 같음, 은퇴 면담 유예도 45세 전까지',()=>{ fresh(); ok(RET_AGE===40&&RET_CAP===45&&RET_VET_O===40,'기준 상수 '+RET_AGE+'/'+RET_CAP+'/'+RET_VET_O);
   const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
   const exp={40:42,41:44,42:46,43:48,44:50};

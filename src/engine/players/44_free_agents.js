@@ -47,19 +47,19 @@ function signFree(id,tid){ tid=tid??G.user; const p=G.players[id], why=freeWhy(p
 /* 소속 없이 해를 넘겨 새해 입대 검사(milNewYear)를 피한 28세 이상 미필: 새 구단에 들어가면 2주 뒤 현역(무적 계약·웨이버 양수) */
 function milLate(p,tid){ try{ milInit(p); if(milFree(p)&&p.age>=28&&!(p.mil&&p.mil.app)){ enlist(p,'현역',G.day+14); if(tid===G.user)mail('운영팀',`${p.name} 현역 입대 예정 · ${dmd(G.day+14)}`,`${p.name}은(는) 입대 연기 한도(28세)를 넘긴 미필 선수라 합류 2주 뒤 현역으로 입대합니다.`,{kind:'병역',ref:p.id}); } }catch(e){} }
 /* 새해: 2년 동안 계약하지 못한 선수, 38세 이상은 은퇴 */
-function freeYear(){ let n=0; for(const p of freeList()){ if(G.year-p.freeSince>=FREE_YEARS||p.age>=38||ovr(p)<26){ story(p,'무적 선수로 지내다 은퇴','move'); let rec=null; try{ rec=retireRecord(p); }catch(e){} try{ obFromPlayer(p,rec); }catch(e){} if(Array.isArray(G.retired))G.retired.push({name:p.name,team:null,age:p.age}); dropP(p.id); n++; /* 정상 은퇴와 같이 통산 기록·명예의 전당 심사를 거친다 */ } } try{ freeIndie(); }catch(e){} return n; }
+function freeYear(){ let n=0; for(const p of freeList()){ if(G.year-p.freeSince>=FREE_YEARS||(p.age>=RET_FREE_AGE&&(p.freeDay==null||G.day-p.freeDay>=FREE_VET_DAYS))||ovr(p)<26){ /* 11-20 노장 방출(사용자): 35세 이상은 방출·FA 미계약 뒤 FREE_VET_DAYS(약 넉 달) 넘게 아무도 데려가지 않았으면 새해에 은퇴한다(예전 38세 일괄). 그보다 늦게 풀린 노장은 다음 시즌 무적 시장에서 한 번 더 기다린다. 우리·AI 출신 같음 */ story(p,'무적 선수로 지내다 은퇴','move'); let rec=null; try{ rec=retireRecord(p); }catch(e){} try{ obFromPlayer(p,rec); }catch(e){} if(Array.isArray(G.retired))G.retired.push({name:p.name,team:null,age:p.age}); dropP(p.id); n++; /* 정상 은퇴와 같이 통산 기록·명예의 전당 심사를 거친다 */ } } try{ freeIndie(); }catch(e){} return n; }
 /* 독립리그·입단 테스트 출신(카페 11-09e): KBO 구단은 방출 선수뿐 아니라 독립리그(경기도·스코어본 등)에서 뛰거나 입단 테스트를 보는 선수를 해마다 몇 명씩 데려간다.
    장기 플레이에서 방출이 은퇴로 바로 이어지는 고참이 늘면 무적 시장이 20명대로 마르므로, 새해마다 최소 FREE_MIN명이 되게 채우고 그보다 많아도 FREE_NEW명은 새로 나온다.
    나이 22~30세(지명받지 못했거나 방출된 뒤 독립리그에서 뛰는 연령대), 능력 38±5(28~52): 신인 보충(fillRoster 34 안팎)보다 조금 위, 리그 중간값(45 안팎)보다 아래라 대부분 백업 경쟁이고 가끔 1군 자원이 나온다.
    못 데려가면 다른 무적 선수처럼 2년 뒤 은퇴하므로 시장이 끝없이 늘지 않는다 */
-const FREE_MIN=50, FREE_NEW=5;
+const FREE_MIN=50, FREE_NEW=5, FREE_VET_DAYS=120;
 function freeIndie(){ const k=Math.max(FREE_NEW,FREE_MIN-freeList().length);
   for(let i=0;i<k;i++){ const age=ri(22,30), b=clamp(N(38,5),28,52); const p=newPlayer({age,base:b,pot:b+ri(0,age<=25?10:4)}); p.freeSince=G.year; p.tryK='indie'; /* 연말 공개 트라이아웃에도 나온다(94_tryout) */ story(p,R()<.6?'독립리그에서 뛰며 프로 입단을 준비':'구단 입단 테스트 응시','move'); } }
 /* 매달 1일: 부상자가 많거나 자리가 빈 AI 구단은 쓸 만한 무적 선수를 데려간다 */
 function freeAiMonthly(){ if(!freeOpen())return; const L=freeList().sort((a,b)=>ovr(b)-ovr(a)); if(!L.length)return;
   for(const t of G.teams){ if(t.id===ME())continue; const n=rosterN(t.id); if(n>=ROSTER_MAX-1)continue; const hurt=playersOf(t.id).filter(p=>p.injOut>14).length;
     if(n>=ROSTER_MAX-6&&hurt<3)continue; const own=domestic(t.id).map(ovr).sort((a,b)=>b-a); const bar=own[Math.min(own.length-1,35)]||35;
-    const basic=p=>p.team==null&&ovr(p)>=bar&&p.age<=35; if(!L.some(basic))continue; R(); /* 예전 무작위(50%) 자리: 후보별로 다시 뽑지 않고 한 번만 소비한다 */
+    const basic=p=>p.team==null&&ovr(p)>=bar&&(p.age<=35||!retireVetRule(p)); /* 저니맨(11-20 사용자, 고효준 사례: 방출된 노장도 쓸 만하면 여러 구단을 옮겨 다닌다): 36세 이상도 은퇴 기준에 안 걸리면 같은 기준(구단 상위 36명 수준·빈자리)으로 데려간다. 요구 연봉은 최저연봉 근처(freeAsk) */ if(!L.some(basic))continue; R(); /* 예전 무작위(50%) 자리: 후보별로 다시 뽑지 않고 한 번만 소비한다 */
     const c=L.find(p=>basic(p)&&!freeWhy(p,t.id)); if(!c)continue;
     /* AI 판단 점검 #14: 그 자리(투수/야수)가 실제로 비었을 때만 데려온다. 같은 쪽 부상자가 둘 이상이거나, 정원 여유가 많고 같은 쪽 국내 선수가 46%에 못 미치거나, 확실히 나은 선수(기준선 +4)일 때 */
     const side=playersOf(t.id).filter(p=>p.isP===c.isP), hs=side.filter(p=>p.injOut>14).length, D=domestic(t.id).filter(p=>!p.ys), thin=D.filter(p=>p.isP===c.isP).length<D.length*.46;
