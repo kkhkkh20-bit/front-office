@@ -65,8 +65,8 @@ function budget(){ const EY=sponSeason(); /* 예산표 전체를 그 시즌 경�
   /* 시즌 예산 확정: 구단주 지원(신뢰에 따른 한도·목표)과 예상 수입(입장·중계·광고·스폰서)은 시즌을 시작할 때(목표 확정·1월 1일 계획·결산 직후) 그해 몫으로 정한다.
      시즌 중에 신뢰가 오르거나 수입이 늘어도 단장이 쓸 수 있는 돈(예산 여유)은 늘지 않는다. 늘어난 수입은 구단(모기업) 몫이고, 구단주에게 추가 지원을 요청할 근거가 된다.
      예산을 늘리는 길은 구단주 승인(추가 지원)뿐이다. 실제 결산(적자 보전)은 실제 수입·지출로 한다 */
-  const LK=G.bLocks=G.bLocks||{}; if(G.bLock){ if(!LK[G.bLock.tid])LK[G.bLock.tid]=G.bLock; delete G.bLock; } /* 확정 기준은 구단별로 보관한다: 다른 구단을 거쳐 돌아와도 그 시즌 기준이 바뀌지 않게(검수 11-06) */ let lock=LK[G.user]&&LK[G.user].fy===fy?LK[G.user]:null; if(!lock&&!G.unemp)lock=LK[G.user]={fy,tid:G.user,I,capB:cap-grantNow,gf:gfW,d:G.day,eco:ecoIdx(fy)}; if(lock&&lock.eco&&lock.eco!==ecoIdx(fy)){ lock.capB=Math.round(lock.capB*ecoIdx(fy)/lock.eco); lock.eco=ecoIdx(fy); } /* 12월 이사회가 상한을 정하면 확정 한도도 그 경제 지수로 맞춘다(검수 11-09y) */
-  if(lock&&gfW!==lock.gf&&settled&&fy>G.year&&!(G.supPlan&&G.supPlan.y===fy))lock.gf=gfW; /* 겨울 기준은 1월 1일 계획 전 임시값: 이미 잡힌 저장도 같은 전망으로(1월 1일 planSup이 다시 정한다) */
+  const LK=G.bLocks=G.bLocks||{}; if(G.bLock){ if(!LK[G.bLock.tid])LK[G.bLock.tid]=G.bLock; delete G.bLock; } /* 확정 기준은 구단별로 보관한다: 다른 구단을 거쳐 돌아와도 그 시즌 기준이 바뀌지 않게(검수 11-06) */ let lock=LK[G.user]&&LK[G.user].fy===fy?LK[G.user]:null; if(!lock&&!G.unemp)lock=LK[G.user]={fy,tid:G.user,I,capB:cap-grantNow,gf:gfW,d:G.day,eco:ecoIdx(fy),...(gfW!==gf?{wp:1}:{})}; if(lock&&lock.eco&&lock.eco!==ecoIdx(fy)){ lock.capB=Math.round(lock.capB*ecoIdx(fy)/lock.eco); lock.eco=ecoIdx(fy); } /* 12월 이사회가 상한을 정하면 확정 한도도 그 경제 지수로 맞춘다(검수 11-09y) */
+  if(lock&&!lock.wp&&settled&&fy>G.year&&!(G.supPlan&&G.supPlan.y===fy)){ lock.gf=gfW; lock.wp=1; } /* 겨울 기준은 처음 한 번만 정한다(이미 잡힌 옛 저장도 한 번). 그 뒤 지출은 예산 여유를 줄인다: 지출마다 다시 정하면 늘어난 적자를 구단주 몫으로 다시 채워 지출이 공짜가 됐다(CI 11-20 외국인·FA). 1월 1일 planSup이 다시 정한다 */
   /* 독립구단은 모기업이 없어 늘어난 수입이 곧 쓸 수 있는 돈이다: 스폰서 계약·관중 증가가 예산 여유에 바로 들어간다(플레이 테스트 11-13: 연 77억 스폰서 뒤에도 두 달 그대로) */
   const IL=t.indie?I:(lock?lock.I:I), capL=lock?lock.capB+grantNow:cap, goalL=t.indie?0:(lock?Math.round(lock.gf*lock.capB)+grantNow:goalSup);
   const gapL=E-IL, selfCL=finSelfCover(gapL,cash,ear), needL=gapL-selfCL;
