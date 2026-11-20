@@ -15,6 +15,8 @@ for(const [width,height] of [[1440,900],[390,844]]){const touch=width<1100,ctx=a
     const snap=JSON.stringify(G),r=rosterParts(G.user,true); if(JSON.stringify(G)!==snap)throw new Error('rosterParts가 상태를 바꿈'); A.go('roster'); return {...r,L:undefined,mxN:r.L.mx.map(id=>G.players[id].name)}; });
   assert.equal(exp.now,60,'준비: 지금 60'); assert.ok(exp.rk>=9&&exp.mb===1&&exp.out===1&&exp.mx===1,'준비: 내역 '+JSON.stringify(exp)); assert.equal(exp.next,exp.now+exp.rk+exp.nx+exp.mb-exp.out,'다음 개막 = 지금 + 합류 − 입대');
   await p.waitForTimeout(300); const P=p.locator('[data-rcnt]').first(); assert.ok(await P.isVisible(),'정원 패널이 보이지 않음 '+width);
+  /* 카페 11-20(정원표를 한 줄로): 휴대폰 세로는 한 줄 요약만 보이고 내역·경고는 '내역'을 눌러 펼친다. 펼치기 전 접힘을 확인하고, 펼친 뒤 같은 숫자를 본다 */
+  if(touch){ assert.ok(!(await P.locator('[data-k="mx"]').isVisible()),'390: 펼치기 전에는 내역이 접혀 있어야 함'); const tg=P.locator('.rcnt-tog'); assert.ok(await tg.isVisible(),'390: 내역 버튼이 없음'); await tg.tap(); await p.waitForTimeout(150); }
   const num=async k=>+(await P.locator(`[data-n="${k}"]`).first().innerText()).replace(/[^0-9]/g,'');
   for(const k of ['now','next','rk','nx','mb','out','mx'])assert.equal(await num(k),exp[k],`${width} 패널 ${k} 숫자가 rosterParts와 다름`);
   assert.equal(await num('max'),await p.evaluate(()=>ROSTER_MAX));
