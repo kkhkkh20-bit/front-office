@@ -352,7 +352,7 @@ function advSetCard(){ const on=!!G.advAsk; return `<section class="card"><div c
 
 /* 신인 지명권 얹기(KBO 2020~): 다음 드래프트와 그다음 드래프트 지명권(카페 11-18), 선수와 맞바꿀 때만. 연도별로 나눠 보이고, 고른 지명권은 '(구단) 연도 N라운드'로 적는다 */
 function pkRow(tr){ if(G.draft&&!G.draft.done)return ''; const P=pkNorm(tr.pk);
-  const chip=(side,k,on)=>{ const {rd,o}=pkParse(k); const own=side==='give'?G.user:tr.tid; return `<button data-a="pkT" data-v="${side}:${k}" class="${on?'on':''}" title="${esc(pkName(k))}">${rd}R${o!==own?`(${esc(tshort(o))})`:''}</button>`; };
+  const chip=(side,k,on)=>{ const {rd,o}=pkParse(k); const own=side==='give'?G.user:tr.tid; const N=pkDispNo(k); return `<button data-a="pkT" data-v="${side}:${k}" class="${on?'on':''}" title="${esc(pkName(k)+' · '+N.why)}">${rd}R${o!==own?`(${esc(tshort(o))})`:''} <span class="pk-no${N.fixed?'':' muted'}">${N.fixed?'':'~'}${N.n}번</span></button>`; }; /* 카페 11-20 23152152: 상대 지명권이 몇 번째 순번인지 보이게(확정이면 그 순번, 아니면 예상 ~N번) */
   const rows=(side,tid)=>{ const H=pkHeldF(tid); return pkYears().map(y=>{ const L=H.filter(k=>pkParse(k).y===y); return `<div class="pk-y"><span class="small muted">${y}</span><div class="chips">${L.map(k=>chip(side,k,P[side].includes(k))).join('')||'<span class="small muted">없음</span>'}</div></div>`; }).join(''); };
   const sel=[...P.give.map(k=>'보냄 '+pkName(k)),...P.get.map(k=>'받음 '+pkName(k))];
   return `<div class="tcash"><span class="small">신인 지명권 · ${pkYears().join('·')} 드래프트</span>
