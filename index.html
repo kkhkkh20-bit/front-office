@@ -99,6 +99,9 @@ main.content{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-b
 /* 휴대폰·태블릿: 소식함은 하단 탭 하나로(상단 아이콘과 겹치던 것, UI 검수 2026-11-15 1-5). 하단 탭에 확인할 소식 수를 숫자로 */
 .bnav .bcnt{position:absolute;top:2px;left:54%;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:var(--bad);color:#fff;font:700 var(--ui-caption)/18px var(--f-num);text-align:center}
 @media (max-width:979px){ body:not(.fm) .shell .top .tbar>.mailbtn[data-a="inbox"]{display:none} }
+
+/* 전체 화면(휴대폰 노치·상태 표시줄 영역까지 쓰는 viewport-fit=cover)에서 윗부분이 잘리던 문제(카페 11-20 랄프): 맨 위 안전 영역만큼 내린다(휴대폰 머리글 .top은 이미 그 아래에 붙는다). 안전 영역이 없는 화면(PC·일반 브라우저)은 0이라 그대로 */
+#app{padding-top:env(safe-area-inset-top,0px)}
 /* 패널 */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0}
 .card>h2.sec:first-child,.card>.row.between:first-child,.card>.eyebrow:first-child,details.card>summary{margin:-12px -12px 2px;padding:8px 12px;background:var(--head);border-bottom:1px solid var(--line);border-radius:4px 4px 0 0;min-height:38px;flex-shrink:0}
@@ -3447,6 +3450,9 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibx-fsep{flex:none;width:1px;height:16px;background:var(--line);margin:0 4px}
 .ibx-unread-only.on{background:var(--warn,#d9822b);border-color:var(--warn,#d9822b)}
 @media (max-width:1099px){ .ibx-from{margin:0 0 8px} }
+
+/* 보낸이 필터 접기(카페 11-20) */
+.ibx-fwrap{margin:-4px 0 10px}.ibx-fwrap>.ibx-fsum{cursor:pointer;color:var(--muted,#9aa7b4);padding:6px 2px;list-style:none}.ibx-fwrap>.ibx-fsum::-webkit-details-marker{display:none}.ibx-fwrap>.ibx-fsum::after{content:" ▾"}.ibx-fwrap[open]>.ibx-fsum::after{content:" ▴"}.ibx-fwrap>.ibx-from{margin:4px 0 0}
 /* 창단 드래프트 지명 직후 카드 · 창단 지명 평가 */
 .fde-rv{width:min(400px,100%)}
 .fde-ts{display:flex;flex-wrap:wrap;gap:6px}
@@ -4570,7 +4576,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card){display:flex!important;flex-direction:column;gap:6px}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card)>*{flex:none}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-face{flex:1 1 0;min-height:120px;height:auto;max-height:clamp(190px,30vh,320px);padding:0;display:block;overflow:hidden;background:linear-gradient(160deg,var(--pt,var(--team-dk,#1a2430)),#0d1217 85%)}
-  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face>.av{position:absolute;inset:0;width:100%;height:100%;max-height:none;max-width:none;margin:0;aspect-ratio:auto;object-fit:cover;object-position:50% 0;border:0;border-radius:0;background:none}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face>.av{position:absolute;inset:0;width:100%;height:100%;max-height:none;max-width:none;margin:0;aspect-ratio:auto;object-fit:cover;object-position:50% 35%;border:0;border-radius:0;background:none} /* 카드 내용이 길어 사진 칸이 납작해져도 얼굴이 남게 위가 아닌 얼굴 쪽을 기준으로 자른다(카페 11-20: 모자만 보임). 정사각형 칸에서는 같다 */
   #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face>.av.ini{display:grid;place-items:center;font-size:56px}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face::after{height:22%}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-no{left:8px;top:8px;padding:2px 7px;border-radius:4px;background:rgba(5,8,12,.62);line-height:1.1}
@@ -18054,7 +18060,10 @@ function proStaleFix(){ if(!G||!G.players)return 0; let n=0; const fdLive=!!(G.f
     if(p.fdPool&&!fdLive){ p.fdPool=false; f=true; }
     if(p.ovsWait){ delete p.ovsWait; f=true; }
     if(f)n++; }
-  return n; }
+  obsProDrop(); return n; }
+/* 렉 제보(카페 11-20, 2032년 저장): 아마추어 관찰 기록(obsView: 구단별 스카우트 사본·의견, obsBy)은 아마추어·신인 후보 때만 쓴다(67_scout_trip obsViewRows·obsScoutFor).
+   지명·계약으로 후보가 아니게 된 선수에 남아 저장 용량의 1/4(약 5MB)을 차지하고 자동 저장 압축을 느리게 했다. 후보가 아닌 선수에서 지운다. 난수 없음·멱등·사람·AI 구단 공통 */
+function obsProDrop(){ if(!G||!G.players)return 0; let n=0; for(const p of Object.values(G.players)){ if(!p||p.prospect)continue; if(p.obsView){ delete p.obsView; n++; } if(p.obsBy){ delete p.obsBy; n++; } } return n; }
 /* 예전 후보는 인물·능력·관찰·메모를 그대로 두고 학교/권역 표시만 보완한다. */
 function migrateDraftPool(){
   const d=G.draft, live=!!(d&&!d.done), done=!!(d&&d.done&&(d.y==null||d.y===G.year));
@@ -22147,7 +22156,10 @@ function recruitReport(c){ const k=c.k; const rk=slotRanks(G.user)[k]; const d=d
       hint=`${TN} 후보 ${C.length}명은 있습니다(예: ${nmx}). 하지만 우리 핵심 선수를 빼고는 상대 요구를 맞출 수 없습니다.${coreIn.length?` ${coreIn.join(', ')}을(를) 넣으면 ${tshort(x.t.id)}이(가) 검토합니다.`:' 핵심 선수를 넣어도 맞추기 어렵습니다.'}${C.length>1?` 다른 후보 ${Math.min(C.length,30)-1}명도 같은 이유로 묶음이 맞지 않았습니다.`:''}`; } }
   return {list:out,hint,open,rank:rk.rank}; }
 function slotGain(k,p){ return k==='SP'?spV(p):k==='RP'?penV(p):posScore(p,k); }
-function tradeSuggest(force,only){ if(!tradeOpen())return [];
+/* 렉 제보(카페 11-20 야구왕 "추천받기를 누르면 화면이 멈춘다"): 후보 거래마다 evalTrade가 리그 자리표 열쇠(slotsRosterKey: 모든 소속 선수 해시)를 새로 만들어
+   후반 시즌(2032년 저장)에 첫 추천이 24초 걸렸다. findPackages처럼 한 번의 추천 동안 자리표·선수단 계산을 한 번만 한다(결과·난수 동일) */
+function tradeSuggest(force,only){ if(_rosM)return tradeSuggest0(force,only); rosterMemoOn(); try{ return slotsHold(()=>tradeSuggest0(force,only)); } finally{ rosterMemoOff(); } }
+function tradeSuggest0(force,only){ if(!tradeOpen())return [];
   const key='v5:'+(G.trades||[]).length+':'+(only||'')+':'+playersOf(G.user).map(p=>p.id).reduce((a,b)=>(a*31+b)%1000003,7);
   if(!force&&G.tsug&&G.tsug.key===key&&G.tsug.day>G.day-7){ const L=G.tsug.list.filter(tsugValid); if(L.length||G.tsug.day===G.day)return L; }
   const rk=slotRanks(G.user); const d=depth(G.user); const core=myCoreIds(); const seed=(G.tsugN=(G.tsugN||0)+(force?1:0));
@@ -39651,7 +39663,9 @@ function advNextStop(per){ if(G.unemp)return ''; const g=nextGames(1)[0]; if(g&&
 function advMenu(per,b){ const game=!G.unemp&&(per==='season'||per==='post')&&nextGames(1).length>0, d1=G.day+1;
   const L=[{a:'adv',v:'day',l:'하루',s:`${dmd(d1)}(${WD[dobj(d1).w]})까지`,disabled:!!b},
     game&&{a:'adv',v:'next',l:'다음 경기',s:'한 경기만 진행',disabled:!!b},
-    !G.unemp&&{a:'advMore',v:'',l:'길게',s:'1주일 · 한 달 · 주요 일정 전날',disabled:!!b},
+    !G.unemp&&{a:'advPick',v:'week',l:'1주일',s:`${dmd(G.day+7)}까지 · 중요한 소식이 오면 멈춤`,disabled:!!b},
+    !G.unemp&&{a:'advPick',v:'mon',l:'한 달',s:`${dmd(G.day+30)}까지 · 중요한 소식이 오면 멈춤`,disabled:!!b},
+    !G.unemp&&{a:'advMore',v:'',l:'주요 일정 전날',s:'드래프트·FA·개막 같은 일정 전날까지 고르기',disabled:!!b}, /* 카페 11-20: '길게' 안에 1주일·한 달을 넣어 두 번 눌러야 했다. 자주 쓰는 길이는 바로 고르게 꺼내 둔다 */
     !G.unemp&&{a:'calOpen',v:'',l:'날짜 지정',s:'캘린더에서 고른 날까지'},
     per==='season'&&game&&{a:'matchOpen',v:'',l:'중계 선택',s:'다음 경기를 중계로 볼지 고르기',disabled:!!b},
     {a:'stopCfg',v:'',l:'멈춤 조건',s:'어떤 소식에서 멈출지'}];
@@ -42538,7 +42552,9 @@ function ibFromList(f){ const n={}; for(const m of mailFilter(f))n[m.from]=(n[m.
 function ibSub(f,list){ const F=UI.mfFrom; if(F&&list.length&&!list.some(m=>m.from===F))UI.mfFrom=null; /* 분류를 바꿔 그 보낸이가 없으면 필터를 푼다 */
   return list.filter(m=>(!UI.mfFrom||m.from===UI.mfFrom)&&(!UI.mfUnread||!m.read)); }
 function ibFromChips(f){ const L=ibFromList(f); if(!L.length)return ''; const top=L.slice(0,10), cur=UI.mfFrom;
-  return `<div class="chips ibx-from" role="group" aria-label="보낸이·읽음 필터"><button data-a="mfFrom" data-v="" class="${cur?'':'on'}">모든 보낸이</button>${top.map(([k,n])=>`<button data-a="mfFrom" data-v="${esc(k)}" class="${cur===k?'on':''}">${esc(k)}<i>${n}</i></button>`).join('')}${cur&&!top.some(x=>x[0]===cur)?`<button data-a="mfFrom" data-v="${esc(cur)}" class="on">${esc(cur)}</button>`:''}<span class="ibx-fsep"></span><button data-a="mfUnread" class="ibx-unread-only ${UI.mfUnread?'on':''}" aria-pressed="${!!UI.mfUnread}">읽지 않음만</button></div>`; }
+  /* 카페 11-20: 보낸이 칩이 화면을 많이 차지해 지저분했다. 기본은 한 줄로 접고, 펼치면 칩(펼침 상태는 화면 상태 UI.mfOpen) */
+  const sum=`<summary class="ibx-fsum small">보낸이 필터 · <b>${esc(cur||'전체')}</b>${UI.mfUnread?' · 안 읽음만':''}</summary>`;
+  return `<details class="ibx-fwrap"${UI.mfOpen?' open':''} ontoggle="UI.mfOpen=this.open">${sum}<div class="chips ibx-from" role="group" aria-label="보낸이·읽음 필터"><button data-a="mfFrom" data-v="" class="${cur?'':'on'}">모든 보낸이</button>${top.map(([k,n])=>`<button data-a="mfFrom" data-v="${esc(k)}" class="${cur===k?'on':''}">${esc(k)}<i>${n}</i></button>`).join('')}${cur&&!top.some(x=>x[0]===cur)?`<button data-a="mfFrom" data-v="${esc(cur)}" class="on">${esc(cur)}</button>`:''}<span class="ibx-fsep"></span><button data-a="mfUnread" class="ibx-unread-only ${UI.mfUnread?'on':''}" aria-pressed="${!!UI.mfUnread}">읽지 않음만</button></div></details>`; }
 function ibList(f){ let list=ibSub(f,mailFilter(f)); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
   list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep||ibDecide(m)||(m.acts&&m.acts.length&&!mailDone(m)))return true; /* 진행 중인 일은 같은 제목이어도 따로(검수 11-07) */ const k=m.from+'|'+m.subj+'|'+m.body; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */

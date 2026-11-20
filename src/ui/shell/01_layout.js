@@ -80,7 +80,9 @@ function advNextStop(per){ if(G.unemp)return ''; const g=nextGames(1)[0]; if(g&&
 function advMenu(per,b){ const game=!G.unemp&&(per==='season'||per==='post')&&nextGames(1).length>0, d1=G.day+1;
   const L=[{a:'adv',v:'day',l:'하루',s:`${dmd(d1)}(${WD[dobj(d1).w]})까지`,disabled:!!b},
     game&&{a:'adv',v:'next',l:'다음 경기',s:'한 경기만 진행',disabled:!!b},
-    !G.unemp&&{a:'advMore',v:'',l:'길게',s:'1주일 · 한 달 · 주요 일정 전날',disabled:!!b},
+    !G.unemp&&{a:'advPick',v:'week',l:'1주일',s:`${dmd(G.day+7)}까지 · 중요한 소식이 오면 멈춤`,disabled:!!b},
+    !G.unemp&&{a:'advPick',v:'mon',l:'한 달',s:`${dmd(G.day+30)}까지 · 중요한 소식이 오면 멈춤`,disabled:!!b},
+    !G.unemp&&{a:'advMore',v:'',l:'주요 일정 전날',s:'드래프트·FA·개막 같은 일정 전날까지 고르기',disabled:!!b}, /* 카페 11-20: '길게' 안에 1주일·한 달을 넣어 두 번 눌러야 했다. 자주 쓰는 길이는 바로 고르게 꺼내 둔다 */
     !G.unemp&&{a:'calOpen',v:'',l:'날짜 지정',s:'캘린더에서 고른 날까지'},
     per==='season'&&game&&{a:'matchOpen',v:'',l:'중계 선택',s:'다음 경기를 중계로 볼지 고르기',disabled:!!b},
     {a:'stopCfg',v:'',l:'멈춤 조건',s:'어떤 소식에서 멈출지'}];
