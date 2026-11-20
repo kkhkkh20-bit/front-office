@@ -4570,7 +4570,7 @@ body .sheet.psh.pf-screen{width:calc(100vw / var(--z,1));max-width:none}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card){display:flex!important;flex-direction:column;gap:6px}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card)>*{flex:none}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card)>.pf-fm-face{flex:1 1 0;min-height:120px;height:auto;max-height:clamp(190px,30vh,320px);padding:0;display:block;overflow:hidden;background:linear-gradient(160deg,var(--pt,var(--team-dk,#1a2430)),#0d1217 85%)}
-  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face>.av{position:absolute;inset:0;width:100%;height:100%;max-height:none;max-width:none;margin:0;aspect-ratio:auto;object-fit:cover;object-position:50% 0;border:0;border-radius:0;background:none}
+  #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face>.av{position:absolute;inset:0;width:100%;height:100%;max-height:none;max-width:none;margin:0;aspect-ratio:auto;object-fit:cover;object-position:50% 35%;border:0;border-radius:0;background:none} /* 카드 내용이 길어 사진 칸이 납작해져도 얼굴이 남게 위가 아닌 얼굴 쪽을 기준으로 자른다(카페 11-20: 모자만 보임). 정사각형 칸에서는 같다 */
   #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face>.av.ini{display:grid;place-items:center;font-size:56px}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-face::after{height:22%}
   #sheet .pf-overview .pf-fmcard:is(.ph,.card) .pf-fm-no{left:8px;top:8px;padding:2px 7px;border-radius:4px;background:rgba(5,8,12,.62);line-height:1.1}
