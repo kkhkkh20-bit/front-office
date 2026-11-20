@@ -115,7 +115,7 @@ function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
     const ti=trnI(p); { if(!p.trI||p.trI.y!==G.year)p.trI={y:G.year,s:0,n:0}; p.trI.s+=p.boy>G.day?0:TRNI[ti].g; p.trI.n++; } /* 훈련 불참(시위) 주는 훈련 효과 없음 */ /* 그 시즌 훈련한 주의 평균 강도 → 겨울 성장(develop). 모든 구단(사용자 11-13) */
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; { const T=G.trn&&G.trn[p.id]; if(T&&T.by==='gm'&&T.f===f&&T.aw!=null)T.aw++; } /* 회고·보고의 훈련 주수: 비시즌·부상·연수 주는 빼고 실제 훈련한 주만(검수 11-09o) */ const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
     const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:p.age<=33?.35:.2; /* 34세 이상도 지시를 받아들였으면 실제로 한다(효과는 작다) */
-    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4)*TRNI[ti].g*eliteGrowF(ovr(p)); const got=addR(p,k,add); /* 정상급 꼬리 억제(10_draft) */
+    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4)*TRNI[ti].g*eliteGrowF(ovr(p)); growYearBase(p); const gr0={...p.r}; let got=addR(p,k,add); /* 정상급 꼬리 억제(10_draft) */ if(growYearCap(p,gr0))got=Math.round((p.r[k]-gr0[k])*10)/10; /* 한 해 육성 상한(04_growth YEAR_GROW_CAP): 잘린 만큼은 집중 훈련 누적에도 세지 않는다 */
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
 /* 겨울 기회비용: 집중 훈련으로 얻은 만큼(×1.1) 같은 묶음의 다른 항목 성장이 준다.

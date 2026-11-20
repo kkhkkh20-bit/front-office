@@ -103,12 +103,14 @@ function injApply(p,k,days){ const I=INJ[k]; const hosp=p.team!=null&&!milServin
   if(has||perm||fx.v||fx.fail){ /* 되찾을 수 없는 손실만 있어도 기록(검수 11-07) */ (p.injFx=p.injFx||[]).push(fx); if(!has)fx.need=0; }
   return fx; }
 /* 실전량만큼 손실을 되찾는다 */
-function injRecover(p,u){ if(!p.injFx||!p.injFx.length||!(u>0))return; for(const fx of p.injFx){ if(!fx.need||fx.got>=fx.need)continue;
-    fx.got+=Math.min(u,fx.need-fx.got);
+function injRecover(p,u){ if(!p.injFx||!p.injFx.length||!(u>0))return; growYearBase(p); const grA={...p.r}; for(const fx of p.injFx){ if(!fx.need||(fx.got>=fx.need&&!fx.hold))continue; /* hold: 한 해 +5 상한(04_growth YEAR_GROW_CAP)에 걸려 아직 못 되찾은 몫이 남은 후유증. 실전량을 다 채운 뒤에도 이어서 되찾는다 */
+    const gr0={...p.r}; if(fx.got<fx.need)fx.got+=Math.min(u,fx.need-fx.got);
     /* 누적 회복 목표와 이미 반영한 양의 차이만 0.1 단위로 반영한다(경기당 증분이 작아도 반올림에 사라지지 않고, 넘치지도 않는다) */
     fx.ap=fx.ap||{}; for(const s in fx.L){ const tgt=fx.L[s]*Math.min(1,fx.got/fx.need), d=Math.round((tgt-(fx.ap[s]||0))*10)/10; if(d){ p.r[s]=clamp(p.r[s]+d,20,80); fx.ap[s]=(fx.ap[s]||0)+d; } }
-    if(fx.got>=fx.need){ fx.done=G.year; if(p.team===G.user&&Object.values(fx.L).some(x=>x>.3))note('회복',`${p.name}이(가) ${fx.n} 후유증을 털어냈습니다.${Object.values(fx.P).some(x=>x>.3)?' 다만 일부는 돌아오지 않았습니다.':''}`,p.id); } }
-  roundR(p); p.injFx=p.injFx.filter(fx=>!(fx.done&&fx.done<G.year-1)); }
+    { const a1={...p.r}; if(growYearCap(p,gr0)){ for(const s in fx.L){ const back=Math.round((a1[s]-p.r[s])*10)/10; if(back>0)fx.ap[s]=Math.round(((fx.ap[s]||0)-back)*10)/10; } } /* 상한에 잘린 회복분은 반영한 양(ap)에서 빼 둔다: 버리지 않고 다음에(해가 바뀌면 새 상한 안에서) 이어 되찾는다. 난수 없음 */
+      const left=Object.keys(fx.L).some(s=>fx.L[s]*Math.min(1,fx.got/fx.need)-(fx.ap[s]||0)>=.05); if(left)fx.hold=1; else delete fx.hold; }
+    if(fx.got>=fx.need&&!fx.hold&&!fx.done){ fx.done=G.year; if(p.team===G.user&&Object.values(fx.L).some(x=>x>.3))note('회복',`${p.name}이(가) ${fx.n} 후유증을 털어냈습니다.${Object.values(fx.P).some(x=>x>.3)?' 다만 일부는 돌아오지 않았습니다.':''}`,p.id); } }
+  roundR(p); if(p.gy&&p.gy.y===G.year)growTrim(p,grA,p.gy.o+YEAR_GROW_CAP); /* 0.1 단위 반올림으로 생긴 초과분도 한 해 상한 안으로 */ p.injFx=p.injFx.filter(fx=>!(fx.done&&fx.done<G.year-1)); }
 function injFxNow(p){ return (p.injFx||[]).filter(fx=>fx.need&&fx.got<fx.need); }
 /* 화면용 후유증 설명 */
 function injFxText(p){ const out=[], h=injEpisode(p), F=p.injFx||[]; const fx0=p.injOut>0?(F.find(fx=>h&&fx.injId===h.id)||[...F].reverse().find(fx=>fx.k===p.injK)):null;

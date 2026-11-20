@@ -517,6 +517,7 @@ function lateYearTurn(){ if(dobj(G.day).y<=G.year||seasonYearPending())return;
 }
 function newYear(){
   if(seasonYearPending())return false;
+  try{ potPerfSeason(); }catch(e){} /* 시즌 결산: 성적 보상 잠재력(65_cur_eval, 난수 없음). 시상 확정 뒤·겨울 성장 전 */
   try{ compactPlayers(); }catch(e){}
   try{ gmRelYear(); }catch(e){} try{ relsYear(); }catch(e){} /* 인물 관계도 같은 비율로 되돌림(84b_person_rels) */
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */
@@ -526,7 +527,7 @@ function newYear(){
   try{ warFreeze(G.year); }catch(e){} /* 능력치가 바뀌기 전에 올해 WAR을 고정 */
   const before={}; for(const p of domestic(G.user))before[p.id]=ovr(p);
   try{ trnYearNote(G.year); }catch(e){} /* 집중훈련 회고는 겨울 성장·노화 전 능력으로 */
-  for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)){ if(p.devQ)for(let j=p.devQ.i;j<3;j++)devQApply(p,j); /* 지난 시즌 남은 분기 몫 정리 */ const B={...p.r}; develop(p); try{ devSplit(p,B); }catch(e){} } } /* 분기 성장: 겨울엔 일부, 나머지는 시즌 중 세 번(04_growth) */ /* 소속 없는 FA·무적 선수도 나이를 먹는다 */ try{ abroadDev(); }catch(e){}
+  for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)){ if(p.devQ){ p.gy={y:G.year+1,o:Math.floor(ovr(p)*100+1e-6)/100,pre:1}; /* 남은 분기 몫도 새해 +5 안에 센다(04_growth develop이 이어받는다) */ for(let j=p.devQ.i;j<3;j++)devQApply(p,j); } /* 지난 시즌 남은 분기 몫 정리 */ const B={...p.r}; develop(p); try{ devSplit(p,B); }catch(e){} } } /* 분기 성장: 겨울엔 일부, 나머지는 시즌 중 세 번(04_growth) */ /* 소속 없는 FA·무적 선수도 나이를 먹는다 */ try{ abroadDev(); }catch(e){}
   if(G.draftClass)for(const id of G.draftClass){ const p=G.players[id]; if(p&&p.prospect)dropP(id); }
   draftRefsPrune();
   G.year++; try{ ovlNewYear(); }catch(e){} /* 해외 리그 새 시즌·해외파 올해 기록 미리 만들기 */ try{ trnNewYear(); }catch(e){} try{ posYear(); }catch(e){} syncMinSal(); for(const p of Object.values(G.players))if(!p.foreign&&p.sal>0&&p.sal<MIN_SAL)p.sal=MIN_SAL; /* 군 복무·해외 등 소속이 잠시 비어 있는 선수도 함께 올린다 */

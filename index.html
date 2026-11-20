@@ -15838,12 +15838,35 @@ const REALK_LO=.38, BLUE_FLOOR_P=.35, BLOOM_P=.035;
 /* 상무 복무 중 한 해(겨울 develop) 종합 성장 상한(원래 능력 단위, 카페 11-19 꺼끼꺼: 상무 25세 선발 62→78).
    점검(시드 7, 22~25세 유망주): 상무 복무와 구단 소속이 같은 성장 함수를 한 번씩만 탄다(겨울 develop → 분기 devQ, 상무는 캠프·기본 훈련 제외). 중복 적용은 없었다.
    다만 복무 중에는 구단 성장 잡음(평균 -0.25)·출전 비중이 빠져 develop 평균이 0.4 높고 꼬리(p99 5.4, 최대 7.6)도 구단(p99 5.1)보다 길어, 구단 p99 수준인 5에서 자른다. 우리·AI 같은 식 */
-const MIL_GROW_CAP=5;
+const MIL_GROW_CAP=5; /* 한 해 상한(YEAR_GROW_CAP)과 같은 값 */
+/* 겨울 한 해 성장 상한(11-19 성장 점검, 모든 구단·모든 선수 같은 식. 상무 상한과 같은 방식으로 능력별 변화를 같은 비율로 줄이고 난수는 쓰지 않는다).
+   제보: 27세 안팎 선수가 한 겨울에 원래 능력 45→75(표시 58→98). 성장 구간 마지막 1~2년에 성장률이 0.4~0.65까지 올라 남은 잠재력을 한 번에 채웠고, 환경 배수(출전×시설×감독×코치×감독 지목×성격×훈련 강도)가 상한 없이 곱해졌다.
+   - WIN_GROW_CAP: 처음에는 6(구단 소속 겨울 성장 p99 5.1)이었고, 구단주 결정(11-19)으로 한 해 상한 YEAR_GROW_CAP 5와 같게 했다(아래). 능력 하나는 WIN_SUB_CAP 7.5(종합 상한의 1.5배)까지.
+   - 잘린 몫은 버리지 않고 p.gcar(원래 능력 단위, 최대 GROW_CARRY_MAX=상한 두 해 몫)로 남겨 다음 겨울들에 상한 안에서 이어 큰다: 늦깎이는 +4~6이 두세 해 이어지는 모양. 잠재력 정리(성장 구간 끝)도 그만큼은 남긴다.
+   - GROW_RATE_HI .40: 성장 구간 마지막 두 해의 성장률 천장(예전 .65). 처음 잡은 .30은 24~26세 연간 성장이 예전보다 +0.11에 그치고 27~29세가 0.14 더 떨어져(시드 7·11, 5시즌) .40으로 올렸다: 24~26세 +0.20, 27~29세 -0.07, 겨울 한 해 최대는 그대로 +6. 바닥 GROW_RATE_LO .10(정체형·30대 늦깎이 대기 구간은 예전 .04)은 10대 후반~20세의 몫을 조금 올려 성장을 여러 해에 편다.
+   - GROW_ENV_CAP 2: 곱해진 환경 배수 상한. 측정(시드 7, 10구단 모두 AI, 첫 겨울 성장 구간 국내 선수 504명): 중앙값 0.81·p90 1.09·p99 1.44·최대 1.99.
+     어느 구단에서든 실제로 나오는 범위(최대 약 2)는 그대로 두고, 한 구단이 모든 요소를 최고로 쌓았을 때만 나오는 그 너머(이론상 약 5배)를 막는다. 예전 저장: 새 값이 없으면 예전과 같고 지금 능력은 그대로다 */
+/* 한 해 육성 상한(구단주 결정 11-19: "80 스케일 기준 육성 오버롤 한 시즌 최대 +5. 5를 넘을 수 없다").
+   한 해 = 겨울 성장(develop, 분기로 나눠 반영되는 몫 포함) + 스프링캠프 + 시즌 중 기본 훈련 + 마무리캠프·교육리그·해외 연수·자매 구단 파견·자비 훈련. 이 모두를 합친 종합 능력(ovr, 내부 20~80) 상승이 +5(YEAR_GROW_CAP)를 넘지 않는다.
+   - 기준점 p.gy={y:해, o:그해 시작 종합 능력}. develop이 해가 바뀌기 직전에 다음 해 기준점을 남기고(그해 첫 성장), 기준점이 없는 선수(예전 저장·그해 새로 온 선수)는 그해 첫 성장 직전 값으로 잡는다.
+   - 겨울 성장은 종전처럼 능력별 변화를 같은 비율로 줄이고(상무 포함 +5), 그 뒤 성장 경로는 growYearCap이 이번에 오른 몫만 줄인다. 아직 반영 안 된 분기 몫(p.devQ)도 올해 몫으로 센다.
+   - 능력 하나는 겨울에 +7.5(WIN_SUB_CAP, 종합 상한의 1.5배)까지. 잘린 겨울 몫은 종전처럼 p.gcar로 넘겨 다음 해 +5 안에서 이어 큰다. 캠프·훈련에서 잘린 몫은 넘기지 않는다.
+   - 난수를 쓰지 않는다(각 성장 경로의 난수 호출은 그대로). 모든 구단·모든 선수 같은 식. 부상 후유증 회복(45_injuries injRecover)도 같은 상한 안에서만 되찾고(구단주 11-19: 예외 없음), 상한에 걸려 못 되찾은 몫은 버리지 않고 남겨 두었다가 다음 해에 이어 되찾는다 */
+const YEAR_GROW_CAP=5, GROW_OVR_K={P:['stf','ctl','sta'],B:['con','pow','eye','spd','def']}; /* 종합 능력(ovr)에 들어가는 능력 */
+function growYearBase(p){ if(!p.gy||p.gy.y!==G.year)p.gy={y:G.year,o:Math.floor(growProj(p)*100+1e-6)/100}; return p.gy.o; } /* 기준점은 내림: 반올림으로 +5를 0.01이라도 넘지 않게 */
+function growProj(p){ const Q=p.devQ; if(!Q||!Q.D||!Q.w)return ovr(p); let rem=0; for(let j=Q.i;j<3;j++)rem+=Q.w[j]||0; if(!rem)return ovr(p); const r={...p.r}; for(const k in Q.D)if(r[k]!=null)r[k]=clamp(r[k]+Q.D[k]*rem,20,80); return ovr({...p,r}); } /* 남은 분기 몫까지 반영한 올해 끝 예상 종합 능력 */
+function growTrim(p,r0,lim){ for(let i=0;i<400&&growProj(p)>lim+1e-9;i++){ let bk=null,bd=1e-6; for(const k of (p.isP?GROW_OVR_K.P:GROW_OVR_K.B)){ if(p.r[k]==null)continue; const d=p.r[k]-(r0[k]??p.r[k]); if(d>bd){ bd=d; bk=k; } } if(!bk)break; p.r[bk]=Math.round((p.r[bk]-.1)*10)/10; } } /* 반올림으로 남은 초과분: 이번에 가장 많이 오른 능력부터 0.1씩 */
+function growYearCap(p,r0){ if(!p||!p.r||!r0||!p.gy||p.gy.y!==G.year)return 0; const lim=p.gy.o+YEAR_GROW_CAP; const now=growProj(p); if(now<=lim+1e-9)return 0;
+  const r1={...p.r}; for(const k in p.r)if(r0[k]!=null&&r1[k]>r0[k])p.r[k]=r0[k]; const low=growProj(p); /* 이번에 오른 몫을 뺀 값 */ const f=now>low?clamp((lim-low)/(now-low),0,1):0;
+  for(const k in p.r)if(r0[k]!=null&&r1[k]>r0[k])p.r[k]=Math.floor((r0[k]+(r1[k]-r0[k])*f)*10+1e-6)/10; growTrim(p,r0,lim); (p.gy.c=(p.gy.c||0)+1); return now-growProj(p); }
+const WIN_GROW_CAP=YEAR_GROW_CAP, WIN_SUB_CAP=7.5, GROW_CARRY_MAX=10, GROW_RATE_HI=.40, GROW_RATE_LO=.10, GROW_ENV_CAP=2;
+/* 젊은 선수 성장 잡음(11-19: 성장이 너무 더디다는 제보). 26세 이하는 해마다 깎이던 평균 -0.25를 0으로, 퇴보 폭 1.5~4.5를 1.2~3.8로(퇴보 확률은 그대로). 27세부터와 전성기·노화는 예전 그대로 */
+const YOUNG_NOISE_AGE=26, YOUNG_NOISE_MU=0, YOUNG_SLUMP=[1.2,3.8];
 function develop(p){
   try{ proDrift(p); }catch(e){} try{ hidReveal(p); }catch(e){}
   if(!p.dt)p.dt=rollDT(); const T=dtSpan(p); const o=ovr(p),potBefore=p.pot; const age=p.age; initPers(p); const pg=persGrowF(p); /* 외국인도 국내 선수와 같은 성장 규칙(사용자 11-11) */ const potCap=()=>Math.max(p.pot,o); /* 잠재력은 넘을 수 없다(원래 능력이 더 높으면 그대로) */
   const svc=p.mil&&p.mil.until&&p.mil.from<=G.day&&p.mil.until>G.day?p.mil.unit:null;
-  const r0=svc==='상무'?{...p.r}:null; /* 상무 한 해 성장 상한(MIL_GROW_CAP)용 시작 능력 */
+  const r0={...p.r}; /* 겨울 한 해 성장 상한(WIN_GROW_CAP, 상무는 MIL_GROW_CAP)용 시작 능력 */ { const pre=p.gy&&p.gy.pre&&p.gy.y===G.year+1?p.gy.o:null, fo=Math.floor(o*100+1e-6)/100; p.gy={y:G.year+1,o:pre!=null?Math.min(pre,fo):fo}; } /* pre: 해 넘김(09_stoveleague)이 지난 시즌 남은 분기 몫을 반영하기 전에 잡아 둔 값. 그 몫도 새해 첫날 한 번에 오르므로 새해 +5 안에 센다 */ /* 다음 해(겨울 성장이 속한 해)의 기준점: 캠프·훈련도 이 값 +5 안에서만(YEAR_GROW_CAP) */
   /* 군 복무 중에는 우리 구단 시설·코치·감독이 아니라 상무 야구단(또는 군) 환경에서 지낸다. 현역은 야구 훈련을 하지 못한다 */
   const play=svc==='현역'?.55:svc==='상무'?1:p.team!=null?playShare(p):.85, fac=svc?MIL_FAC[svc]||MIL_FAC['현역']:p.team!=null?facEff(p):FAC[2];
   const club=p.team!=null&&!svc; const ti=club&&p.trI&&p.trI.n&&(p.trI.y===G.year||p.trI.y===G.year-1)?p.trI.s/p.trI.n:1; delete p.trI; /* 그 시즌 평균 훈련 강도(76_dev_plan) */ const devMgr=club&&G.mgr?mgrOf(p.team):null,yf=devMgr?1+(devMgr.youth-50)/150:1;
@@ -15859,8 +15882,8 @@ function develop(p){
   const potEff=p.realK!=null?p.potB+Math.max(0,p.pot-p.potB)*p.realK:p.pot;
   const gap=Math.max(0,potEff-o); let base=0;
   if(age<=T.grow){
-    const rate=clamp((p.dt==='early'?1.25:p.dt==='late'?(T.vl&&age<=28?.35:.85):p.dt==='stall'?.35:1)/(T.grow-age+1.5),.04,.65); /* 남은 성장 연수에 맞춰 조금씩: 18세 1순위도 20대 중반에 정점(예전엔 남은 잠재력의 20~34%를 해마다 채워 20~21세에 리그 정상급이 됐다) */
-    const env=play*fac.g*yf*(club&&G.coach?coachDevMult(p):1)*(club?mpickMult(p):1)*pg*ti; base=gap*rate*(p.ovsEnv?1:WINTER_F)*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F). 해외파(ovsEnv)는 우리 캠프에 가지 않으니 한 해 몫을 겨울에 다 받는다(11-17: 캠프 몫 30%를 통째로 잃어 해외 유망주·젊은 빅리거가 국내 또래보다 덜 컸다) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
+    const tf=p.dt==='early'?1.25:p.dt==='late'?(T.vl&&age<=28?.35:.85):p.dt==='stall'?.35:1; const rate=clamp(tf/(T.grow-age+1.5),tf>=.85?GROW_RATE_LO:.04,GROW_RATE_HI); /* 남은 성장 연수에 맞춰 조금씩: 18세 1순위도 20대 중반에 정점(예전엔 남은 잠재력의 20~34%를 해마다 채워 20~21세에 리그 정상급이 됐다) */
+    const env0=play*fac.g*yf*(club&&G.coach?coachDevMult(p):1)*(club?mpickMult(p):1)*pg*ti, env=Math.min(env0,GROW_ENV_CAP); p.devLog.env=+env0.toFixed(3); if(env0>GROW_ENV_CAP)p.devLog.reasons.push('env-cap'); base=gap*rate*(p.ovsEnv?1:WINTER_F)*rnd(.65,1.35)*(p.dt==='stall'?Math.pow(env,.3):env)+N(0,1); /* 겨울(1월 1일) 성장. 일부는 스프링·마무리캠프로 옮겼다(WINTER_F). 해외파(ovsEnv)는 우리 캠프에 가지 않으니 한 해 몫을 겨울에 다 받는다(11-17: 캠프 몫 30%를 통째로 잃어 해외 유망주·젊은 빅리거가 국내 또래보다 덜 컸다) */ /* 정체형: 환경을 아무리 갖춰 줘도 효과가 작다 */
     // 잠재력 변화: 정체형은 해마다 깎이고, 많이 뛰고 좋은 시설이면 가끔 터진다
     if(p.dt==='stall')p.pot-=rnd(.5,2.5);
     if(R()<.05*play*fac.g)p.pot+=ri(3,7);
@@ -15874,8 +15897,8 @@ function develop(p){
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
   if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.28:.2)+Math.max(0,10-pr)*.02+Math.max(0,(p.pers.temp||10)-13)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
-    if(x<dn){ const s=-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; p.devLog.reasons.push('slump'); } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
-  if(age<=29&&!svc)base+=N(-.25,.9); /* 젊은 선수도 해마다 들쭉날쭉: 성장 구간에서도 정체·후퇴가 섞인다 */
+    if(x<dn){ const s=age<=YOUNG_NOISE_AGE?-rnd(YOUNG_SLUMP[0],YOUNG_SLUMP[1]):-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; p.devLog.reasons.push('slump'); } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
+  if(age<=29&&!svc)base+=N(age<=YOUNG_NOISE_AGE?YOUNG_NOISE_MU:-.25,.9); /* 젊은 선수도 해마다 들쭉날쭉: 성장 구간에서도 정체·후퇴가 섞인다 */
   if(base>0&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } if(base>0&&!p.prospect)base*=eliteGrowF(o); /* 정상급 꼬리 억제(10_draft) */ /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
@@ -15898,11 +15921,13 @@ function develop(p){
   if(svc==='현역')p.devLog.reasons.push('military');
   if(svc==='현역')for(const k in p.r)p.r[k]=clamp(p.r[k]-rnd(.5,2.2),20,80);
   roundR(p);
+  { const car=p.gcar>0&&svc!=='현역'&&age<T.fall?p.gcar:0; if(car>0){ for(const k in p.r)p.r[k]=clamp(p.r[k]+car,20,80); roundR(p); p.devLog.reasons.push('carry'); } if(svc!=='현역')delete p.gcar; } /* 지난 겨울 상한에 잘린 몫을 이어 받는다(난수 없음). 현역 복무 중에는 그대로 둔다 */
   if(ovr(p)>potCap()+.05)setOvr(p,potCap()); /* 잠재력 돌파는 없다 */
-  if(r0){ const g=ovr(p)-o; if(g>MIL_GROW_CAP){ const f=MIL_GROW_CAP/g; for(const k in p.r)if(r0[k]!=null)p.r[k]=clamp(r0[k]+(p.r[k]-r0[k])*f,20,80); roundR(p); p.devLog.reasons.push('military-cap'); } } /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
+  { const mil=svc==='상무', lim=p.gy.o+(mil?MIL_GROW_CAP:WIN_GROW_CAP), cap=Math.max(0,lim-o); const g=ovr(p)-o; if(g>cap+1e-9){ const f=cap/g; for(const k in p.r)if(r0[k]!=null)p.r[k]=clamp(r0[k]+(p.r[k]-r0[k])*f,20,80); roundR(p); growTrim(p,r0,lim); p.devLog.reasons.push(mil?'military-cap':'winter-cap'); if(!mil){ const c=Math.min(GROW_CARRY_MAX,g-cap); p.gcar=Math.max(.1,Math.round(c*10)/10); } }
+    if(!mil){ let cut=false; for(const k in p.r)if(r0[k]!=null&&p.r[k]-r0[k]>WIN_SUB_CAP){ p.r[k]=r0[k]+WIN_SUB_CAP; cut=true; } if(cut){ roundR(p); p.devLog.reasons.push('sub-cap'); } } } /* 모든 선수: 겨울 한 해 종합 +5·능력 하나 +7.5까지(상무도 5, 넘친 몫 이월 없음) */ /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
   const no=ovr(p);
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
-  if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0));
+  if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0)+(p.gcar||0)+(p.potUp&&p.potUp.y===G.year?p.potUp.v:0)); /* 올해 성적 보상으로 오른 잠재력(65_cur_eval potPerfSeason·potIntlUp)은 이번 정리에서 지켜 준다 */ /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
   p.pot=clamp(Math.max(p.pot,no),20,80);if(p.pot<potBefore)p.devLog.reasons.push('potential-reassessment');
   if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0);
   (p.oh=p.oh||[]).push({y:G.year,o:Math.round(no)}); if(p.oh.length>12)p.oh.shift();
@@ -15923,7 +15948,7 @@ function devQWeights(){ const a=[0,1,2].map(()=>Math.max(.05,N(1,.6))); if(R()<.
   const S=a.reduce((x,y)=>x+y,0); return S>.3?a.map(x=>+(x/S).toFixed(3)):[.34,.33,.33]; }
 function devSplit(p,B){ if(!p||!B)return; const D={}; let any=false; for(const k in p.r){ if(B[k]==null)continue; const d=p.r[k]-B[k]; if(Math.abs(d)<.05)continue; const w0=d>0?.35:.5; p.r[k]=B[k]+d*w0; D[k]=+(d*(1-w0)).toFixed(3); any=true; }
   if(!any){ delete p.devQ; return; } p.devQ={y:G.year+1,D,w:devQWeights(),i:0}; }
-function devQApply(p,i){ const Q=p.devQ; if(!Q||Q.i!==i)return 0; const o=ovr(p); const w=Q.w[i]; const active=milServing(p)&&p.mil.unit==='현역'; if(active)for(const k in Q.D)if(Q.D[k]>0)Q.D[k]=0; /* 현역으로 입대한 뒤에는 구단 환경에서 예약한 성장분이 남거나 전역 뒤 되살아나지 않는다. 하락분은 유지한다. */ for(const k in Q.D){ if(p.r[k]==null)continue; const d=Q.D[k]*w; p.r[k]=clamp(p.r[k]+(active?Math.min(0,d):d),20,99); } Q.i=i+1; if(Q.i>=3)delete p.devQ; return ovr(p)-o; }
+function devQApply(p,i){ const Q=p.devQ; if(!Q||Q.i!==i)return 0; const o=ovr(p); const w=Q.w[i]; const active=milServing(p)&&p.mil.unit==='현역'; if(active)for(const k in Q.D)if(Q.D[k]>0)Q.D[k]=0; /* 현역으로 입대한 뒤에는 구단 환경에서 예약한 성장분이 남거나 전역 뒤 되살아나지 않는다. 하락분은 유지한다. */ const gr0={...p.r}; for(const k in Q.D){ if(p.r[k]==null)continue; const d=Q.D[k]*w; p.r[k]=clamp(p.r[k]+(active?Math.min(0,d):d),20,99); } Q.i=i+1; if(Q.i>=3)delete p.devQ; if(p.gy&&p.gy.y===G.year)growYearCap(p,gr0); /* 분기 몫의 반올림·가중치 합 오차도 한 해 +5 안에서(YEAR_GROW_CAP) */ return ovr(p)-o; }
 function devQDaily(){ const day=G.day; const i=DEVQ_D.findIndex(([m,d])=>KD(m,d)===day); if(i<0)return; const mine=[];
   for(const p of Object.values(G.players)){ if(!p.devQ)continue; if(p.devQ.y!==G.year){ if(p.devQ.y<G.year){ for(let j=p.devQ.i;j<3;j++)devQApply(p,j); } continue; } /* 지난 해 남은 몫(예전 저장·날짜 건너뜀)은 한꺼번에 */
     const dd=devQApply(p,i); if(p.team===G.user&&!G.unemp&&Math.abs(dd)>=.6)mine.push({p,dd}); }
@@ -16756,6 +16781,7 @@ function seriesNews(d){ if(G.unemp||G._serN===d)return;const L=seriesGames(d),la
   if(t){G._serN=d;G._serKey=token;wire('경기',t,{tid:G.user});} }
 /* ===== 시즌 구간 이벤트 ===== */
 function openingDay(){
+  try{ potBaseAll(true); }catch(e){} /* 시즌 기준 잠재력(65_cur_eval POT_UP): 개막일 값이 그 시즌 구간을 정한다 */
   /* 시범경기 등판 순서를 지우고 개막전은 1선발부터 */
   for(const p of Object.values(G.players))if(p.isP&&p.team!=null){ delete p.lastStart; } for(const t of G.teams)t.rot=0;
   for(const t of G.teams) G.sea.fspend[t.id]=sum(forPayOf(t.id).map(p=>p.sal))+fDeadOf(t.id,G.year); /* 개막 전에 방출한 선수의 보장 연봉 포함 */
@@ -17746,6 +17772,7 @@ function lateYearTurn(){ if(dobj(G.day).y<=G.year||seasonYearPending())return;
 }
 function newYear(){
   if(seasonYearPending())return false;
+  try{ potPerfSeason(); }catch(e){} /* 시즌 결산: 성적 보상 잠재력(65_cur_eval, 난수 없음). 시상 확정 뒤·겨울 성장 전 */
   try{ compactPlayers(); }catch(e){}
   try{ gmRelYear(); }catch(e){} try{ relsYear(); }catch(e){} /* 인물 관계도 같은 비율로 되돌림(84b_person_rels) */
   for(const p of Object.values(G.players))p.fat=0; /* 겨울을 지나면 피로는 모두 풀린다 */
@@ -17755,7 +17782,7 @@ function newYear(){
   try{ warFreeze(G.year); }catch(e){} /* 능력치가 바뀌기 전에 올해 WAR을 고정 */
   const before={}; for(const p of domestic(G.user))before[p.id]=ovr(p);
   try{ trnYearNote(G.year); }catch(e){} /* 집중훈련 회고는 겨울 성장·노화 전 능력으로 */
-  for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)){ if(p.devQ)for(let j=p.devQ.i;j<3;j++)devQApply(p,j); /* 지난 시즌 남은 분기 몫 정리 */ const B={...p.r}; develop(p); try{ devSplit(p,B); }catch(e){} } } /* 분기 성장: 겨울엔 일부, 나머지는 시즌 중 세 번(04_growth) */ /* 소속 없는 FA·무적 선수도 나이를 먹는다 */ try{ abroadDev(); }catch(e){}
+  for(const p of Object.values(G.players)){ if(p.devY===G.year){ delete p.devY; continue; } if(p.team!=null||(!p.prospect&&!p.foreign&&!p.fdPool)){ if(p.devQ){ p.gy={y:G.year+1,o:Math.floor(ovr(p)*100+1e-6)/100,pre:1}; /* 남은 분기 몫도 새해 +5 안에 센다(04_growth develop이 이어받는다) */ for(let j=p.devQ.i;j<3;j++)devQApply(p,j); } /* 지난 시즌 남은 분기 몫 정리 */ const B={...p.r}; develop(p); try{ devSplit(p,B); }catch(e){} } } /* 분기 성장: 겨울엔 일부, 나머지는 시즌 중 세 번(04_growth) */ /* 소속 없는 FA·무적 선수도 나이를 먹는다 */ try{ abroadDev(); }catch(e){}
   if(G.draftClass)for(const id of G.draftClass){ const p=G.players[id]; if(p&&p.prospect)dropP(id); }
   draftRefsPrune();
   G.year++; try{ ovlNewYear(); }catch(e){} /* 해외 리그 새 시즌·해외파 올해 기록 미리 만들기 */ try{ trnNewYear(); }catch(e){} try{ posYear(); }catch(e){} syncMinSal(); for(const p of Object.values(G.players))if(!p.foreign&&p.sal>0&&p.sal<MIN_SAL)p.sal=MIN_SAL; /* 군 복무·해외 등 소속이 잠시 비어 있는 선수도 함께 올린다 */
@@ -17984,7 +18011,7 @@ function playerLoadDefaults(p){if(!p.dt)p.dt=playerLoadValue(p,'dt',()=>rollDT()
 /* 캠프를 다시 여는 것이 아니라 그해 누락된 컨디션만 채운다. 이미 쌓인 피로·소모·경기 기록은 손대지 않는다. */
 function formLoadFix(){for(const p of Object.values(G.players)){if(p.team==null)continue;const old=p.sf;if(old&&(old.y==null||old.y===G.year)){if(old.y==null)old.y=G.year;if(old.v!=null&&old.lk!=null&&old.m!=null)continue;}const sf=playerLoadValue(p,'form:'+G.year,()=>{const sd=p.foreign?3:p.age>=33?2.4:2,x=R(),v=x<.09?N(-4.2,1.1):x<.15?N(3.4,1):N(0,sd);return {y:G.year,v:clamp(v*FORM_K,-6.5,6),m:0,lk:clamp(N(0,.012)*FORM_K,-.03,.03)};});if(old&&old.y===G.year){for(const k of ['v','m','lk'])if(old[k]==null)old[k]=sf[k];}else p.sf=sf;}G.formY=G.year;}
 function migrateDraft(){ worldReset(); try{ psCatchUp(G.day+1); }catch(e){} /* 불러온 저장의 지난 포스트시즌 차전은 다음 진행일로(검수 11-09zo) */ try{ syncMinSal(); }catch(e){} /* 불러온 해의 최저 연봉(검수 11-06: 2027년 세이브를 열자마자 2026년 기준으로 계약됨) */ /* 불러오기·가져오기 뒤 항상 부르는 자리 */
-  if(!G)return; try{ bdMigrate(); }catch(e){} /* 생년월일(04b_birth): 난수 없이 빈 값만 채운다(멱등) */ champEventsInit(); try{ psArchiveMetaMigrate(); }catch(e){} try{ awardListFix(); }catch(e){} try{ retirementMigrate(); }catch(e){} try{ awardHistoryMigrate(); }catch(e){} try{ storyCountersMigrate(); }catch(e){} /* 우승·시상·은퇴·이정표의 결정적 옛 저장 정리(검수 11-18 #614~643) */ try{ postFix(); }catch(e){} try{ ovsInquiryFix(); }catch(e){} try{ ovsMigrate(); }catch(e){} try{ ovsSeasonRecordFix(); }catch(e){} /* 해외 신청·이력·수상 누락의 결정적 옛 저장 정리(검수 11-18 #584~613) */ try{ mailMigrate(); }catch(e){} try{ persMigrate(); }catch(e){} try{ nameMigrate(); }catch(e){} try{ amMigrate(); }catch(e){ console.error(e); } try{ amLeagueMigrate(); }catch(e){ console.error(e); } try{ franSelFix(); }catch(e){} /* 이직·야인 뒤 남은 전 구단 프랜차이즈 직접 지정(검수 11-17 #189) */ try{ amProLeakFix(); }catch(e){ console.error(e); } /* 카페 11-17: 프로 선수에 붙은 지명 뒤 아마 기록 줄 정리 */ try{ ntSaveFix(); }catch(e){ console.error(e); } try{ psRecordMigrate(); }catch(e){} /* 대표 통산 기록을 거부권 칸(p.ntc)에서 p.ntcr로(검수 11-17 #213) */ /* 카페 11-17: 프로 선수에 붙은 지명 뒤 아마 기록 줄 정리 */ try{ ciMigrate(); }catch(e){ console.error(e); } /* 이름 변경 대기·이름 이력 날짜·연고 이전 구장 수리(87_club_identity) */ try{ gmInit(); }catch(e){} try{ legMigrate(); }catch(e){} try{ legStadMigrate(); }catch(e){} try{ gmClubMigrate(); }catch(e){} try{ jobMigrate(); }catch(e){} try{ personalMigrate(); }catch(e){} try{ userLogMigrate(); }catch(e){} /* 경력·제안·개인 기록의 결정적 옛 저장 정리(검수 11-18 #554~583) */ try{ agInit(); }catch(e){ console.error(e); } /* 옛 저장(에이전시 8곳)을 에이전시 12곳·담당자 27명으로 옮긴다(결정적) */ if(!G.coach){ try{ coachInit(); }catch(e){} } else { try{ coachFill(); }catch(e){} } try{ fTmpStaleFix(); }catch(e){ console.error(e); } /* 옛 저장 수리: 이미 정리된 부상 대체 선수의 결정 버튼·다시 다친 원 선수 복귀 결정을 닫는다(검수 11-17 #233·#235) */ try{ futAggFix(); }catch(e){ console.error(e); } /* 옛 2군 합산 줄 WAR·wRC+ 고정(검수 11-17 #209·#210) */ try{ mcfMigrate(); }catch(e){} /* 감독이 바뀐 뒤 남은 전임 감독 상태 정리(검수 11-17) */ try{ rainMigrate(); }catch(e){ console.error(e); } try{ promoMigrate(); }catch(e){ console.error(e); } try{ ownershipIndieFix(); }catch(e){ console.error(e); } /* 검수 11-17: 우천 순연 표시·행사 예약·투자사 구단 매각 문구 수리(여러 번 불러도 같다) */ try{ coachRulesMigrate(); }catch(e){} /* 코치 영입 공통 규칙(89d): 떠난 코치를 가리키는 대행·옛 제안 정리 */ try{ trStintFix(); }catch(e){ console.error(e); } if(G.goals&&!G.goals.v&&G.goals.y===G.year){ /* 검수 11-17 #197: 트레이드 성과는 그 거래로 시작한 소속 기간만 */ /* 카페 11-17: 프로 선수에 붙은 지명 뒤 아마 기록 줄 정리 */ try{ const t=team(G.user); const base=projSupport(); const mm=t.owner==='profit'?.85:t.owner==='pr'?1:1.15; G.goals.sup=Math.max(G.goals.sup,Math.round(clamp(base*mm+.05,.2,1)*100)/100); }catch(e){} G.goals.v=2; } if(G.spend&&G.spend.coach==null)G.spend.coach=0; G.shortlist=G.shortlist||[]; for(const t of G.teams||[]){ const d=TEAM_DEF.find(x=>x.code===t.code); if(d)t.hue=d.hue; }
+  if(!G)return; try{ potBaseAll(false); }catch(e){} /* 시즌 기준 잠재력: 예전 저장은 처음 불러온 날 값으로 한 번만(65_cur_eval) */ try{ bdMigrate(); }catch(e){} /* 생년월일(04b_birth): 난수 없이 빈 값만 채운다(멱등) */ champEventsInit(); try{ psArchiveMetaMigrate(); }catch(e){} try{ awardListFix(); }catch(e){} try{ retirementMigrate(); }catch(e){} try{ awardHistoryMigrate(); }catch(e){} try{ storyCountersMigrate(); }catch(e){} /* 우승·시상·은퇴·이정표의 결정적 옛 저장 정리(검수 11-18 #614~643) */ try{ postFix(); }catch(e){} try{ ovsInquiryFix(); }catch(e){} try{ ovsMigrate(); }catch(e){} try{ ovsSeasonRecordFix(); }catch(e){} /* 해외 신청·이력·수상 누락의 결정적 옛 저장 정리(검수 11-18 #584~613) */ try{ mailMigrate(); }catch(e){} try{ persMigrate(); }catch(e){} try{ nameMigrate(); }catch(e){} try{ amMigrate(); }catch(e){ console.error(e); } try{ amLeagueMigrate(); }catch(e){ console.error(e); } try{ franSelFix(); }catch(e){} /* 이직·야인 뒤 남은 전 구단 프랜차이즈 직접 지정(검수 11-17 #189) */ try{ amProLeakFix(); }catch(e){ console.error(e); } /* 카페 11-17: 프로 선수에 붙은 지명 뒤 아마 기록 줄 정리 */ try{ ntSaveFix(); }catch(e){ console.error(e); } try{ psRecordMigrate(); }catch(e){} /* 대표 통산 기록을 거부권 칸(p.ntc)에서 p.ntcr로(검수 11-17 #213) */ /* 카페 11-17: 프로 선수에 붙은 지명 뒤 아마 기록 줄 정리 */ try{ ciMigrate(); }catch(e){ console.error(e); } /* 이름 변경 대기·이름 이력 날짜·연고 이전 구장 수리(87_club_identity) */ try{ gmInit(); }catch(e){} try{ legMigrate(); }catch(e){} try{ legStadMigrate(); }catch(e){} try{ gmClubMigrate(); }catch(e){} try{ jobMigrate(); }catch(e){} try{ personalMigrate(); }catch(e){} try{ userLogMigrate(); }catch(e){} /* 경력·제안·개인 기록의 결정적 옛 저장 정리(검수 11-18 #554~583) */ try{ agInit(); }catch(e){ console.error(e); } /* 옛 저장(에이전시 8곳)을 에이전시 12곳·담당자 27명으로 옮긴다(결정적) */ if(!G.coach){ try{ coachInit(); }catch(e){} } else { try{ coachFill(); }catch(e){} } try{ fTmpStaleFix(); }catch(e){ console.error(e); } /* 옛 저장 수리: 이미 정리된 부상 대체 선수의 결정 버튼·다시 다친 원 선수 복귀 결정을 닫는다(검수 11-17 #233·#235) */ try{ futAggFix(); }catch(e){ console.error(e); } /* 옛 2군 합산 줄 WAR·wRC+ 고정(검수 11-17 #209·#210) */ try{ mcfMigrate(); }catch(e){} /* 감독이 바뀐 뒤 남은 전임 감독 상태 정리(검수 11-17) */ try{ rainMigrate(); }catch(e){ console.error(e); } try{ promoMigrate(); }catch(e){ console.error(e); } try{ ownershipIndieFix(); }catch(e){ console.error(e); } /* 검수 11-17: 우천 순연 표시·행사 예약·투자사 구단 매각 문구 수리(여러 번 불러도 같다) */ try{ coachRulesMigrate(); }catch(e){} /* 코치 영입 공통 규칙(89d): 떠난 코치를 가리키는 대행·옛 제안 정리 */ try{ trStintFix(); }catch(e){ console.error(e); } if(G.goals&&!G.goals.v&&G.goals.y===G.year){ /* 검수 11-17 #197: 트레이드 성과는 그 거래로 시작한 소속 기간만 */ /* 카페 11-17: 프로 선수에 붙은 지명 뒤 아마 기록 줄 정리 */ try{ const t=team(G.user); const base=projSupport(); const mm=t.owner==='profit'?.85:t.owner==='pr'?1:1.15; G.goals.sup=Math.max(G.goals.sup,Math.round(clamp(base*mm+.05,.2,1)*100)/100); }catch(e){} G.goals.v=2; } if(G.spend&&G.spend.coach==null)G.spend.coach=0; G.shortlist=G.shortlist||[]; for(const t of G.teams||[]){ const d=TEAM_DEF.find(x=>x.code===t.code); if(d)t.hue=d.hue; }
   for(const k in G.mgr)mgrFix(G.mgr[k]); (G.mmarket||[]).forEach(mgrFix);
   if(!G.r68){ G.r68=true; for(const t of G.teams){ if(t.id===G.user)continue; const add=fillRoster(t.id,54); for(const p of add)delete p.dev; }
     const ua=fillRoster(G.user,ROSTER_MIN); if(ua.length)mail('운영팀','소속선수 한도 확대',`협회 규정의 소속선수 한도에 맞춰 정식 등록 한도가 ${ROSTER_MAX}명으로 늘었습니다. 최소 인원(${ROSTER_MIN}명)을 맞추려고 2군 선수 ${ua.length}명을 등록했습니다.`,{kind:'운영'}); }
@@ -23397,7 +23424,7 @@ function trnBase0(){ const per=period(); if(per!=='pre'&&per!=='season')return; 
     if(!regs[p.team]){ const d=depth(p.team); regs[p.team]=new Set([...d.start,...d.sp,...d.pen.slice(0,4)].map(x=>x.id)); }
     if(!p.tg||p.tg.y!==G.year)p.tg={y:G.year,s:0}; if(p.tg.s>=TB_YCAP)continue;
     const f=tbFactors(p,regs[p.team]); const amt=TB_K*f.play*f.room*f.will*f.fac*f.coach*f.mgr*f.age*rnd(.6,1.4)*eliteGrowF(ovr(p)); const ks=TRN_TOOLS[trnG(p)]; const cap=Math.max(p.pot,ovr(p))+2;
-    const o0=ovr(p); for(const k of ks){ if(p.r[k]>=cap)continue; p.tg.s+=addR(p,k,amt*(ks.length===3?1.6:1)); } if(ovr(p)>Math.max(p.pot,o0)+.05)setOvr(p,Math.max(p.pot,o0)); } } /* 잠재력은 넘을 수 없다 */
+    growYearBase(p); const gr0={...p.r}; const o0=ovr(p); for(const k of ks){ if(p.r[k]>=cap)continue; p.tg.s+=addR(p,k,amt*(ks.length===3?1.6:1)); } if(ovr(p)>Math.max(p.pot,o0)+.05)setOvr(p,Math.max(p.pot,o0)); growYearCap(p,gr0); /* 한 해 육성 상한(04_growth YEAR_GROW_CAP) */ } } /* 잠재력은 넘을 수 없다 */
 /* 연수 결과: 크게 늘거나, 조금 늘거나, 그대로거나, 다치거나 폼이 흐트러진다 */
 const jB=w=>{ const c=w.charCodeAt(w.length-1)-0xAC00; return c>=0&&c<11172&&c%28>0; }; const jIGa=w=>w+(jB(w)?'이':'가'), jEulReul=w=>w+(jB(w)?'을':'를');
 const OVS_TOOLN={stf:'구위',ctl:'제구',sta:'체력',con:'컨택',pow:'장타',eye:'선구',def:'수비',spd:'주루'};
@@ -23407,14 +23434,14 @@ function ovsOutlookWord(F){return !F?'':F.big>=.15?'큰 성장 기대':F.big>=.0
 function ovsRiskWord(F){const r=F?F.inj+F.form:0;return r>=.16?'높음':r>=.09?'보통':'낮음';}
 /* 연수 상승폭은 화면 점수(100점 척도)로 정한다: 크게 늘어도 +2~+5, 드물게 +7(플레이 테스트 3차: 한 번에 +13). 내부 척도는 구간마다 기울기가 달라 화면 기준으로 되돌려 계산한다 */
 function ovsUp(x,g){ const t=Math.min(100,dvRaw(x)+g); let lo=x,hi=80; if(dvRaw(hi)<=t)return hi; for(let i=0;i<30;i++){ const m=(lo+hi)/2; if(dvRaw(m)<t)lo=m; else hi=m; } return clamp(Math.floor(lo*10)/10,20,80); }
-function ovsRoll(p,o,coachDv){const room=Math.max(0,p.pot-ovr(p)),before=Object.fromEntries(o[p.isP?'P':'B'].map(k=>[k,p.r[k]]));const {big,inj,form,good}=ovsForecast(p,o,coachDv);
+function ovsRoll(p,o,coachDv){growYearBase(p);const gr0={...p.r};const room=Math.max(0,p.pot-ovr(p)),before=Object.fromEntries(o[p.isP?'P':'B'].map(k=>[k,p.r[k]]));const {big,inj,form,good}=ovsForecast(p,o,coachDv);
   const ks=o[p.isP?'P':'B']; const k=ks[Math.floor(R()*ks.length)]; const sc=Math.min(1,room/6+.4); const v0=p.isP?veloOf(p):null; const x=R(); let r;
   if(x<inj){ const raw=ri(14,60),h=p.team!=null&&!milServing(p)?medOf(p.team).hosp:'none',days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{ovs:1}});r={t:'inj',k,txt:`훈련 강도를 이기지 못하고 다쳤습니다. 약 ${days}일 재활이 필요합니다.${p.injOut>days?' 기존 부상 재활은 예정대로 이어갑니다.':''}`}; }
   else if(x<inj+form){ p.r[k]=clamp(p.r[k]-rnd(1,3),20,80); r={t:'form',k,txt:`${jEulReul(OVS_TOOLN[k])} 손보다 폼이 흐트러졌습니다. 다시 잡는 데 시간이 걸립니다.`}; }
   else if(x<inj+form+big){ p.r[k]=ovsUp(p.r[k],R()<.1?rnd(5.5,7):Math.max(2,rnd(2,5)*sc)); if(!p.ovsPot){ p.pot=Math.min(80,p.pot+rnd(.5,2)); p.ovsPot=G.year; } /* 연수로 잠재력이 오르는 건 선수마다 한 번(공략 방지: 해마다 보내 잠재력을 쌓던 것) */ const v1=p.isP?veloOf(p):null; r={t:'big',k,txt:k==='stf'&&v1>v0?`직구 평균 ${v0}km/h에서 ${v1}km/h로 올라 돌아왔습니다.`:`${jIGa(OVS_TOOLN[k])} 확실히 달라져 돌아왔습니다.`}; }
   else if(x<inj+form+big+good){ for(const kk of ks)p.r[kk]=ovsUp(p.r[kk],Math.max(1,rnd(1,3)*sc)*1.4/ks.length); r={t:'good',k,txt:`${ks.map(z=>OVS_TOOLN[z]).join('·')}에서 성장이 확인됐습니다.`}; }
   else r={t:'flat',k,txt:'큰 변화는 없었습니다.'};
-  roundR(p);const after=Object.fromEntries(Object.keys(before).map(k=>[k,p.r[k]]));const changes=Object.keys(before).map(k=>OVS_TOOLN[k]+' '+dv(before[k])+'→'+dv(after[k])).join(' · ');r.txt+=' '+changes+'.';(p.ovsH=p.ovsH||[]).push({y:G.year,k:o.l,t:r.t,before,after,text:r.txt});if(p.ovsH.length>20)p.ovsH.shift();return r; }
+  roundR(p);growYearCap(p,gr0); /* 한 해 육성 상한(04_growth YEAR_GROW_CAP) */ const after=Object.fromEntries(Object.keys(before).map(k=>[k,p.r[k]]));const changes=Object.keys(before).map(k=>OVS_TOOLN[k]+' '+dv(before[k])+'→'+dv(after[k])).join(' · ');r.txt+=' '+changes+'.';(p.ovsH=p.ovsH||[]).push({y:G.year,k:o.l,t:r.t,before,after,text:r.txt});if(p.ovsH.length>20)p.ovsH.shift();return r; }
 /* 가을 교육리그 참가 선수: 25세 이하 국내 선수 가운데 능력이 낮은 순 22명(미계약·입단 전·부상·복무 제외). 결과 계산·신청 안내·자동 신청이 같은 명단을 쓴다 */
 function fallPool(tid){ return domestic(tid).filter(p=>p.age<=25&&!p.hold&&!(p.joinY>G.year)&&!(p.injOut>0) /* 미계약·입단 전 선수 제외(검수 11-07) */&&!(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day)).sort((a,b)=>ovr(a)-ovr(b)).slice(0,22); }
 /* 안내용: 참가 명단 가운데 효과가 큰 순(더 클 여지가 큰 순, 우리 구단은 스카우트 추정) */
@@ -23441,8 +23468,8 @@ function fallAutoStatus(){ if(G.unemp)return '일시 중지: 구단을 맡고 �
   if(!fallOpen())return dobj(G.day).m<9?'처리 예정: 9월 1일에 신청이 열립니다':'신청 마감: 10월 10일까지 정하지 않아 올해 불참합니다';
   const k=fallFit(G.user,'jp'); return k?`처리 예정: ${FALL[k].l} 신청 · 다음 월요일에 다시 확인합니다`:`대기: ${fallEntryWhy(G.user,'ul')}`; }
 function fallRollLegacy(tid,k,chosen){ const F=FALL[k]; const L=[]; const ps=chosen||fallPool(tid);
-  for(const p of ps){ const ks=TRN_TOOLS[trnG(p)]; const g=rnd(0,.7)*F.g*Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3); for(const kk of ks)p.r[kk]=clamp(p.r[kk]+g*rnd(.5,1.2),20,80);
-    if(R()<.04*F.g){ const kk=ks[Math.floor(R()*ks.length)]; p.r[kk]=clamp(p.r[kk]+rnd(2,4),20,80); L.push(`${p.name}(${OVS_TOOLN[kk]})`); } roundR(p); }
+  for(const p of ps){ growYearBase(p); const gr0={...p.r}; const ks=TRN_TOOLS[trnG(p)]; const g=rnd(0,.7)*F.g*Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3); for(const kk of ks)p.r[kk]=clamp(p.r[kk]+g*rnd(.5,1.2),20,80);
+    if(R()<.04*F.g){ const kk=ks[Math.floor(R()*ks.length)]; p.r[kk]=clamp(p.r[kk]+rnd(2,4),20,80); L.push(`${p.name}(${OVS_TOOLN[kk]})`); } roundR(p); growYearCap(p,gr0); /* 한 해 육성 상한 */ }
   return {n:ps.length,hot:L}; }
 /* 교육리그 참가자는 개막 때 확정한다. 기존 종료일 명단의 난수는 그대로 소비하되 실제 참가일만 반영한다. */
 function fallRoll(tid,k){campAttendanceMigrate();const P=G.campA?.y===G.year&&G.campA.league;if(!P)return fallRollLegacy(tid,k);if(P.results?.[tid])return JSON.parse(JSON.stringify(P.results[tid]));const old=fallPool(tid),seen=new Set(old.map(p=>p.id)),extra=Object.keys(P.t[tid]||{}).map(id=>G.players[id]).filter(p=>p&&p.team===tid&&!seen.has(p.id)),hot=[];let n=0,unknown=0;for(const p of [...old,...extra]){const f=campAttendanceFraction(p,tid,'league');if(f===1&&seen.has(p.id)){const x=fallRollLegacy(tid,k,[p]);n++;if(P.t[tid]?.[p.id]?.compatFull)unknown++;hot.push(...x.hot);continue;}const q=JSON.parse(JSON.stringify(p)),run=()=>fallRollLegacy(tid,k,[q]),result=seen.has(p.id)?run():withRng(rngHash('campLeagueGrow',G.year,tid,p.id),run);if(f<=0)continue;n++;if(P.t[tid]?.[p.id]?.compatFull)unknown++;for(const key in p.r)p.r[key]=clamp(Math.round((p.r[key]+(q.r[key]-p.r[key])*f)*10)/10,20,80);if(u01('campLeagueHot'+G.year,p.id)<f)hot.push(...result.hot);}P.results=P.results||{};const result={n,hot,...(unknown?{unknown}:{})};P.results[tid]=result;return result;}
@@ -23537,7 +23564,7 @@ function dailyCost(){ try{ smCheck(); }catch(e){} const m=G.mgr[G.user]; if(m&&!
 function vetSelfTrain(young){ const out=[]; const V=domestic(G.user).filter(p=>p.age>=28&&p.age<=35&&p.sal>=300&&!(p.injOut>0)&&!milServing(p)&&!p.hold&&!(G.ovs||[]).some(x=>x.pid===p.id));
   for(const p of V){ initPers(p); if(R()>=.15+p.pers.pro/100)continue; /* 프로 의식이 높을수록 스스로 간다 */ const ks=p.isP?['stf','ctl','sta']:['con','pow','eye']; const k=pick(ks);
     if(R()<.04){ const raw=ri(7,21),h=medOf(p.team).hosp,days=Math.max(1,Math.round(raw*hospF(h,{injK:null})));injStart(p,{days,hosp:h,extra:{train:1}});out.push(`${p.name}: 개인 훈련 중 가벼운 부상(약 ${p.injOut}일)`); continue; }
-    const d=Math.round(rnd(.3,1.2)*10)/10; p.r[k]=clamp(p.r[k]+d,20,80); out.push(`${p.name}: 미국·일본에서 자비로 개인 훈련. ${OVS_TOOLN[k]} 감각을 끌어올렸습니다`); }
+    const d=Math.round(rnd(.3,1.2)*10)/10; growYearBase(p); const gr0={...p.r}; p.r[k]=clamp(p.r[k]+d,20,80); growYearCap(p,gr0); /* 한 해 육성 상한 */ out.push(`${p.name}: 미국·일본에서 자비로 개인 훈련. ${OVS_TOOLN[k]} 감각을 끌어올렸습니다`); }
   const lead=V.filter(p=>out.some(t=>t.startsWith(p.name+': 미국')))[0];
   if(lead&&young.length){ for(const y of young)y.mor=clamp((y.mor??60)+3,0,100); lead.mor=clamp((lead.mor??60)+2,0,100); out.push(`${lead.name}이(가) 연수생 ${young.map(y=>y.name).join(', ')}와(과) 함께 훈련하며 후배들을 챙겼습니다. 연수생 기분 상승.`); }
   return out; }
@@ -24389,6 +24416,12 @@ function postStart(p,day){ G.posting=G.posting||[];const promise=p.postPromise==
    예전 문턱(국내 능력 60)은 창단 직후 국내 선수 580명 중 5명이라 4시즌에 포스팅이 1번이었다. 56은 상위 약 18명(김혜성·고우석급 포함). MLB 응찰 확률·연봉은 2020~2025 계약에 맞춘 추정(불확실) */
 const POST_T={o:56,feeSell:300}; /* feeSell: 포스팅 비용 예상(만 달러)이 이만큼이면 우승 도전 구단도 보낸다 */
 const postPm=o=>o>=66?.9:o>=62?.8:o>=59?.55:o>=57?.25:.1; /* MLB 구단이 계약을 내밀 확률. 11-17: 62~65 70→80%, 59~61 45→55%(김혜성·송성문급 포스팅이 빅리그 계약을 받는 실제 흐름. MLB 국내 선수 3~5명) */
+/* MLB 국내 선수 수 완충(11-19 성장 점검): 설계 목표는 빅리그에 3~5명인데 12시즌에 14명까지 쌓였고 해마다 상위 40명 가운데 5~6명이 빠져나갔다.
+   국내 구단을 거쳐 MLB에 가 있는 선수가 MLB_SOFT_N(6)명 이상이면, 빅리그급 스타(국내 능력 MLB_STAR_O 63 이상)가 아닌 경계선 선수에게 MLB 구단이 계약을 내밀 확률과 해외 FA로 떠날 확률을
+   한 명 넘칠 때마다 25%p씩 줄인다(6명 .5, 7명 .25, 8명부터 .15). 스타는 그대로 간다. 모든 구단 선수에게 같은 식이고 화면 예상(postEst)도 같은 값을 쓴다. 난수는 쓰지 않는다(확률만 바뀜) */
+const MLB_SOFT_N=6, MLB_STAR_O=63;
+function mlbDomN(){ return (G.abroad||[]).filter(a=>!a.back&&!a.foreign&&!a.cand&&a.lg==='MLB'&&a.from!=null).length; }
+function mlbFullF(o){ if(o>=MLB_STAR_O)return 1; const n=mlbDomN(); return n<MLB_SOFT_N?1:clamp(.75-(n-MLB_SOFT_N+1)*.25,.15,1); }
 const postAmt0=o=>350+(o-58)*140; /* MLB 보장 연봉 중심(만 달러): 58 약 350(김혜성 3년 1250), 62 약 900(김하성 4년 2800), 67 약 1600(이정후 6년 1억1300) */
 const postYrs=o=>o>=66?[4,6]:o>=62?[2,4]:[1,3];
 /* 선수가 포스팅을 원하는가: 메이저리그 의지에 MLB가 원할 만한 실력이 더해진다(잘할수록 덜 망설인다). 우리와 AI 구단 선수가 같은 기준 */
@@ -24399,7 +24432,7 @@ const postStar=p=>clamp((ovr(p)-59)*5,0,30);
 function postWant(p){ return mlbOf(p)+postPull(p)+postStar(p)>=52; }
 /* 포스팅 예상(해외 활성화 2-3): 실제 결과 식(postPm·postAmt0·postYrs·ovsAgeT)의 기대 범위. 미국 스카우트가 보는 능력에 공개 오차(선수·해마다 고정)를 얹어 우리와 AI 구단이 같은 값을 본다.
    n: 관심 구단 수 범위, amt: 보장 연봉 범위(만 달러), yrs: 기간 범위, fee: 포스팅 비용 범위(만 달러), lv: 관심 정도 */
-function postEst(p){ const o=ovr(p)+hn('post'+G.year,p.id)*1.2, A=ovsAgeT(p.age), pM=postPm(o)*A.m, Y=postYrs(o).map(y=>Math.min(A.y,y));if(!A.m&&!A.n)return {pM:0,n:[0,0],amt:[0,0],yrs:[0,0],fee:[0,0],lv:'없음',none:true};
+function postEst(p){ const o=ovr(p)+hn('post'+G.year,p.id)*1.2, A=ovsAgeT(p.age), pM=postPm(o)*A.m*mlbFullF(o), Y=postYrs(o).map(y=>Math.min(A.y,y));if(!A.m&&!A.n)return {pM:0,n:[0,0],amt:[0,0],yrs:[0,0],fee:[0,0],lv:'없음',none:true};
   const a0=postAmt0(o)*A.f, amt=[Math.round(clamp(a0-130,100,2500)/10)*10,Math.round(clamp(a0+130,100,2500)/10)*10];
   const n=pM>=.8?[4,8]:pM>=.6?[2,5]:pM>=.4?[1,3]:pM>=.2?[0,2]:[0,1];
   return {pM,n,amt,yrs:Y,fee:[postFee(amt[0]*Y[0]),postFee(amt[1]*Y[1])],lv:pM>=.6?'높음':pM>=.4?'보통':pM>=.2?'낮음':'거의 없음'}; }
@@ -24410,7 +24443,7 @@ function postFee(amtTot){ const a=amtTot; const f=Math.min(a,2500)*.2+Math.max(0
 /* 해외 복귀 협상 정리: 우리 구단 몫이 아니거나(이직·야인) 결정할 이벤트가 없이 기한이 지난 선수는 원소속 구단(AI) 판단으로 끝낸다(예전에 꼬여 저장된 선수 복구 포함) */
 function ovsBackSweep(){ ovsBackStateFix(); for(const p of Object.values(G.players)){ if(!ovsBackReady(p))continue; if(p.retFrom!==G.user||G.unemp)ovsBackAI(p); } }
 function ovsDaily(){try{postFix();}catch(e){}try{ ovsBackSweep(); }catch(e){} if(!G.ovl||OVL_LGS.some(l=>!G.ovl[l]))try{ ovlInit(); }catch(e){} /* 예전 저장: 해외 리그는 다음 날짜 진행 때 만든다(불러오기만으로 난수를 쓰지 않게) */ for(const x of G.posting||[]){ if(x.done||G.day<x.day)continue; x.done=true; const p=G.players[x.pid]; if(!p||!postSame(p,x)||milServing(p)){ x.res='취소'; x.void=true; if(p&&x.tid===G.user&&!G.unemp)note('운영팀',`${p.name}의 포스팅 신청이 ${p.team!==x.tid?`${tname(p.team)}(으)로 옮겨`:'군 복무로'} 무효가 됐습니다.`,p.id); continue; } /* 신청 뒤 이적·이탈: 신청 무효(새 구단이 다시 신청할 수 있게) */ const o=ovr(p);
-    const pm=postPm(o);
+    const pm=postPm(o)*mlbFullF(o); /* MLB에 국내 선수가 이미 많으면 경계선 선수는 계약 제안이 준다(스타는 그대로) */
     /* 제안 목록: MLB·NPB 구단별 기간·연봉(만 달러). 선수는 MLB 꿈(mlb)과 금액을 보고 고르거나 모두 거절한다(커뮤니티 요청 11-07: 금액·거절 사유·리그를 보여 달라) */
     const A=ovsAgeT(p.age); const offs=[]; { const nM=R()<pm*A.m?1+(R()<pm*.6?1:0)+(R()<pm*.3?1:0):0, nN=R()<(o>=POST_T.o+1?.45:.15)*A.n?1+(R()<.3?1:0):0; const used=new Set(); const club=L=>{ let c; do c=pick(L); while(used.has(c)&&used.size<L.length); used.add(c); return c; };
       for(let i=0;i<nM;i++){ const Y=postYrs(o); const yrs=Math.min(A.y,ri(Y[0],Y[1])); offs.push({lg:'MLB',club:club(MLBT),yrs,amt:Math.round(clamp((postAmt0(o)+N(0,80))*A.f,100,2500)),minor:(o<POST_T.o+3||p.age>=34)&&R()<.5}); }
@@ -24432,7 +24465,7 @@ function ovsAgeT(age){ return age<=27?{y:6,f:1,m:1,n:1}:age<=29?{y:5,f:.95,m:1,n
 /* 해외 FA: 9시즌을 채운 FA 선수는 해외로 갈 수 있다. 해외 활성화 5: 빅리그급 스타 몫(postStar, 능력 60부터 65면 +30)도 포스팅과 같은 식으로 더한다(우리·AI 구단 선수 같게) */
 const ovsFAP=(p,o=ovr(p))=>clamp(mlbOf(p)+postPull(p)+postStar(p),0,100)/100*(o>=64?.8:.45);
 function ovsFA(pool){ for(const id of [...pool]){ const p=G.players[id]; if(!p||p.foreign||p.svc<9||p.age>33||milServing(p))continue; const o=ovr(p); if(o<POST_T.o+1)continue; mlbOf(p);
-    if(R()<ovsFAP(p,o)){ /* 의지는 포스팅(postWant)과 같은 식: 잘할수록 해외 구단이 부르니 덜 망설인다 */ const lg=o>=POST_T.o+4&&R()<.8?'MLB':'NPB'; /* 11-17: 능력 61·70% → 60·80%(해외 FA 빅리그 행이 드물어 MLB 국내 선수가 2명으로 자주 줄었다) */ const A=ovsAgeT(p.age); const yrs=Math.min(A.y,ri(1,3)); const amt=Math.round(lg==='MLB'?clamp(postAmt0(o)*.85*A.f,100,2000):clamp((o-53)*40,80,500)); ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'해외 FA'); const i=pool.indexOf(id); if(i>=0)pool.splice(i,1); } } }
+    if(R()<ovsFAP(p,o)*mlbFullF(o)){ /* 의지는 포스팅(postWant)과 같은 식: 잘할수록 해외 구단이 부르니 덜 망설인다 */ const lg=o>=POST_T.o+4&&R()<.8?'MLB':'NPB'; /* 11-17: 능력 61·70% → 60·80%(해외 FA 빅리그 행이 드물어 MLB 국내 선수가 2명으로 자주 줄었다) */ const A=ovsAgeT(p.age); const yrs=Math.min(A.y,ri(1,3)); const amt=Math.round(lg==='MLB'?clamp(postAmt0(o)*.85*A.f,100,2000):clamp((o-53)*40,80,500)); ovsLeave(p,lg,pick(lg==='MLB'?MLBT:NPBT),yrs,amt,'해외 FA'); const i=pool.indexOf(id); if(i>=0)pool.splice(i,1); } } }
 /* 해외파의 한 해: 그 리그 수준으로 기록을 만들고, 계약이 끝나면 일부는 돌아온다 */
 function abroadYear(){ const NW=[]; for(const a of G.abroad||[]){ if(a.back)continue; if(a.foreign||a.cand){ try{ ovsForeignYear(a,NW); }catch(e){} continue; } const y1=a.y1??a.y+1; if(G.year<y1)continue; /* 아직 해외 시즌을 보내지 않았다(이번 겨울에 떠남) */ if((a.lines||[]).some(l=>l.y===G.year)){ delete a.cur; continue; } /* 같은 시즌 기록 두 번 만들지 않기 */ let p; try{ p=JSON.parse(a.pj); }catch(e){ continue; } if(!p)continue;
     if(a.ci==null)a.ci=ovlIdx(a.lg,a.club); const av=ovsAv(a,p); /* 재활 중인 기간만큼 못 뛴다 */ const line=ovsFinish(a,ovsTake(a,p,{ci:a.ci,av,gt:ovsGt(a)}),p,NW); /* 리그 수준은 LEAGUE_LV 표(ovsAdj), 기준 능력에 못 미치면 트리플A·NPB 2군 */ const ok=line.lvl===a.lg; a.lines.push(line);
@@ -25925,15 +25958,13 @@ function facRecalc(){ const it=G.fac.it; const avg=sum(FACK.map(k=>it[k]))/FACK.
 function facUpkeep(){ const bu=BUS[busLv()].up; if(!G.fac||!G.fac.it)return FAC_UPKEEP[facLv(G.user)]+bu; return sum(FACK.map(k=>FACI[k].up[G.fac.it[k]]))+bu+(typeof facCityUp==='function'?facCityUp(team(G.user)):0); } /* 지자체 약속(지역 채용) 몫 포함 */ /* 버스 운영비 포함 */
 function facOf(k){ return G.fac&&G.fac.it?G.fac.it[k]||0:1; }
 /* 성장·노화 배수: 모든 구단이 세부 시설을 쓴다(다른 구단 시설은 team.fi, 66_fac_ai.js) */
-function facEff(p){ if(p.team==null)return FAC[2]; const mine=p.team===G.user; const S=mine?G.fac:(()=>{ try{ return facSt(p.team); }catch(e){ return null; } })(); if(!S||!S.it)return FAC[facLv(p.team)];
+function facEff(p){ if(p.team==null)return FAC[2]; let S=null; try{ S=p.team===G.user?G.fac:facSt(p.team); }catch(e){ S=null; } /* 어느 구단 시설 상태를 읽을지만 다르다(우리 구단은 G.fac, 다른 구단은 team.fi). 계산식은 아래 하나 */ if(!S||!S.it)return FAC[facLv(p.team)];
   const fo=k=>Math.max(0,facImpact(S.it[k]||0)-facDis(S,k)); /* 공사 중인 시설은 훈련 효율이 잠시 떨어진다(57_club_econ) */
   const young=p.age<=23; const futP=(()=>{ const a=seasonTotal(p,G.year,'1군'), f=seasonTotal(p,G.year,'퓨처스'); return f&&(!a||(p.isP?(f.outs||0)>(a.outs||0):(f.pa||0)>(a.pa||0))); })();
-  /* 다른 구단: 예전 종합 등급 효과(1단계 .88 ~ 5단계 1.12)를 세부 시설 평균으로 이어 쓰고, 숙소·2군 구장·웨이트는 구단 평균과의 차이만큼 더한다.
-     그래서 투자하면 바로 효과가 오르고, 시작 시점 리그 균형은 예전과 같다 */
-  if(!mine){ const av=sum(FACK.map(fo))/FACK.length, c=1+av*4/3;
-    const g=.94+av*.03+ /* 우리 구단 식과 같은 기울기(시설 1단계당 약 .03). 시작 시점(평균 2단계 안팎)은 예전과 같고, 3단계 이상에서 우리 구단보다 더 크게 오르던 것(예전 .82+.06×종합)을 맞췄다(11-12) */(young?(fo('dorm')-av)*.015:0)+(futP?(fo('fut')-av)*.02:0), d=1.15-.05*c-(fo('weight')-av)*.01;
-    return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
-  const g=.94+fo('indoor')*.01+fo('lab')*.012*(1+anaPow('trk')*.08)+(young?fo('dorm')*.012:0)+(futP?fo('fut')*.016:0); /* 전부 최고 단계여도 성장 배수 약 1.12~1.13(예전 1.19 안팎): 예전 종합 5단계 시설(1.12)과 같은 천장 */
+  /* 모든 구단 같은 식(11-19 성장 점검, 구단주 원칙: 사용자 = AI). 예전에는 다른 구단만 세부 시설 평균으로 계산해(.94+평균×.03, 숙소·2군 구장은 평균과의 차이만) 같은 단계에서 젊은 2군 선수가 우리 구단에서 4~6% 더 컸다.
+     시설마다 맡은 몫이 있는 우리 구단 식을 모든 구단에 쓴다: 실내 연습장·랩(트래킹 분석팀이 받쳐 줌)·숙소(23세 이하)·2군 구장(2군 위주 선수)이 성장, 웨이트·재활이 노화. 분석팀 몫도 그 구단 분석팀(anaPow)으로 잰다 */
+  let trk=0; try{ trk=anaPow('trk',p.team); }catch(e){ trk=0; }
+  const g=.94+fo('indoor')*.01+fo('lab')*.012*(1+trk*.08)+(young?fo('dorm')*.012:0)+(futP?fo('fut')*.016:0); /* 전부 최고 단계여도 성장 배수 약 1.12~1.13(예전 1.19 안팎): 예전 종합 5단계 시설(1.12)과 같은 천장 */
   const d=1.05-fo('weight')*.025-fo('rehab')*.012;
   return {l:`세부 시설(종합 ${S.lv}단계)`,g:Math.round(g*1000)/1000,d:Math.round(d*1000)/1000}; }
 function buildFacItem(k){ facInit(); const F=FACI[k]; if(!F)return '없는 시설입니다.'; const lv=G.fac.it[k]; { const e=facCanStart(G.user,k); if(e)return e; } /* 선행 조건·큰 공사 한 곳(57_club_econ) */
@@ -26660,12 +26691,14 @@ function injApply(p,k,days){ const I=INJ[k]; const hosp=p.team!=null&&!milServin
   if(has||perm||fx.v||fx.fail){ /* 되찾을 수 없는 손실만 있어도 기록(검수 11-07) */ (p.injFx=p.injFx||[]).push(fx); if(!has)fx.need=0; }
   return fx; }
 /* 실전량만큼 손실을 되찾는다 */
-function injRecover(p,u){ if(!p.injFx||!p.injFx.length||!(u>0))return; for(const fx of p.injFx){ if(!fx.need||fx.got>=fx.need)continue;
-    fx.got+=Math.min(u,fx.need-fx.got);
+function injRecover(p,u){ if(!p.injFx||!p.injFx.length||!(u>0))return; growYearBase(p); const grA={...p.r}; for(const fx of p.injFx){ if(!fx.need||(fx.got>=fx.need&&!fx.hold))continue; /* hold: 한 해 +5 상한(04_growth YEAR_GROW_CAP)에 걸려 아직 못 되찾은 몫이 남은 후유증. 실전량을 다 채운 뒤에도 이어서 되찾는다 */
+    const gr0={...p.r}; if(fx.got<fx.need)fx.got+=Math.min(u,fx.need-fx.got);
     /* 누적 회복 목표와 이미 반영한 양의 차이만 0.1 단위로 반영한다(경기당 증분이 작아도 반올림에 사라지지 않고, 넘치지도 않는다) */
     fx.ap=fx.ap||{}; for(const s in fx.L){ const tgt=fx.L[s]*Math.min(1,fx.got/fx.need), d=Math.round((tgt-(fx.ap[s]||0))*10)/10; if(d){ p.r[s]=clamp(p.r[s]+d,20,80); fx.ap[s]=(fx.ap[s]||0)+d; } }
-    if(fx.got>=fx.need){ fx.done=G.year; if(p.team===G.user&&Object.values(fx.L).some(x=>x>.3))note('회복',`${p.name}이(가) ${fx.n} 후유증을 털어냈습니다.${Object.values(fx.P).some(x=>x>.3)?' 다만 일부는 돌아오지 않았습니다.':''}`,p.id); } }
-  roundR(p); p.injFx=p.injFx.filter(fx=>!(fx.done&&fx.done<G.year-1)); }
+    { const a1={...p.r}; if(growYearCap(p,gr0)){ for(const s in fx.L){ const back=Math.round((a1[s]-p.r[s])*10)/10; if(back>0)fx.ap[s]=Math.round(((fx.ap[s]||0)-back)*10)/10; } } /* 상한에 잘린 회복분은 반영한 양(ap)에서 빼 둔다: 버리지 않고 다음에(해가 바뀌면 새 상한 안에서) 이어 되찾는다. 난수 없음 */
+      const left=Object.keys(fx.L).some(s=>fx.L[s]*Math.min(1,fx.got/fx.need)-(fx.ap[s]||0)>=.05); if(left)fx.hold=1; else delete fx.hold; }
+    if(fx.got>=fx.need&&!fx.hold&&!fx.done){ fx.done=G.year; if(p.team===G.user&&Object.values(fx.L).some(x=>x>.3))note('회복',`${p.name}이(가) ${fx.n} 후유증을 털어냈습니다.${Object.values(fx.P).some(x=>x>.3)?' 다만 일부는 돌아오지 않았습니다.':''}`,p.id); } }
+  roundR(p); if(p.gy&&p.gy.y===G.year)growTrim(p,grA,p.gy.o+YEAR_GROW_CAP); /* 0.1 단위 반올림으로 생긴 초과분도 한 해 상한 안으로 */ p.injFx=p.injFx.filter(fx=>!(fx.done&&fx.done<G.year-1)); }
 function injFxNow(p){ return (p.injFx||[]).filter(fx=>fx.need&&fx.got<fx.need); }
 /* 화면용 후유증 설명 */
 function injFxText(p){ const out=[], h=injEpisode(p), F=p.injFx||[]; const fx0=p.injOut>0?(F.find(fx=>h&&fx.injId===h.id)||[...F].reverse().find(fx=>fx.k===p.injK)):null;
@@ -29910,6 +29943,50 @@ function projFit(isP){ const key=G.year+':'+Math.floor(G.day/14)+':'+(isP?1:0); 
     if(X.length<25)return null; const n=X.length, mx=sum(X)/n, my=sum(Y)/n; let sxy=0,sxx=0; for(let i=0;i<n;i++){ sxy+=(X[i]-mx)*(Y[i]-my); sxx+=(X[i]-mx)**2; }
     const b=sxx?sxy/sxx:0, a=my-b*mx; let ss=0; for(let i=0;i<n;i++)ss+=(Y[i]-(a+b*X[i]))**2; return {a,b,r:Math.sqrt(ss/Math.max(1,n-2)),n,y}; };
   const F=G.pjFit=G.pjFit||{}, kk=isP?'p':'b'; let v=fit(G.year); if(v)F[kk]=v; else v=F[kk]&&F[kk].y===G.year-1?F[kk]:null; /* 지난해 표본은 지난해에 그 능력으로 낸 성적으로 맞춘 식을 쓴다(작년 기록을 올해 능력과 짝짓지 않는다, 검수 11-06) */ _pjC={g:G,[key]:v}; return v; }
+/* ===== 성적으로 오르는 실제 잠재력(구단주 결정 11-19, 시즌 기준 잠재력 구간 방식) =====
+   화면의 잠재력은 지금처럼 스카우트 추정치이고, 이 장치는 실제 잠재력(p.pot)을 올린다. 내부 20~80 척도. 난수를 쓰지 않는다(결정적). 모든 구단 같은 식. 능력의 한 해 +5 상한과는 별개다.
+   1) 시즌 기준 잠재력 p.potBase={y,v}: 정규시즌 개막일(겨울 성장 뒤)의 p.pot. 시즌 중 잠재력이 올라도 그 시즌 구간은 이 값으로 정한다.
+      예전 저장·시즌 중 불러온 저장은 처음 불러온 날의 p.pot을 한 번만 적는다(다시 불러와도 그대로). 지난 시즌 소급은 없다.
+   2) 시즌 결산(해 넘김 첫머리, 시상 확정 뒤·겨울 성장 전) 상승량 = 구간 상한 × 성적 보상 비율.
+      구간 상한(POT_UP.bands): 기준 60 이하 +2.5(특별 조건 +3) / 60 초과~64 +1.5 / 64 초과~68 +1.2 / 68 초과~69.5 +0.8 / 69.5 초과는 대상 아님.
+      특별 조건: 그해 MVP·신인왕·골든글러브·개인 타이틀 1위, 또는 기대 대비 성적 z가 POT_UP.spZ 이상. 60 이하 구간에서만 상한이 3이 된다(다른 구간은 그대로).
+   3) 성적 보상 비율: 운에 덜 흔들리는 지표로 잰 '기대 대비 초과' 표준점수 z와 표본으로 정한다.
+      타자 = 삼진율(낮을수록)·볼넷율·순장타율(ISO), 투수 = FIP(삼진·볼넷·피홈런)와 9이닝당 삼진-볼넷. 지표마다 그해 리그 선수들의 '종합 능력 → 지표' 직선 맞춤(projFit과 같은 방식)이 기대값이고,
+      초과분을 그 맞춤의 흩어짐으로 나눈 값을 합친다(타자 셋은 ÷√3, 투수 둘은 평균). 2군 성적은 2군 선수끼리 맞춘 식으로 재고 표본을 절반으로 친다(1군·2군을 표본 가중 평균).
+      비율 = (z - z0) ÷ (z1 - z0)을 0~1로 자른 값 × (표본 ÷ 온전한 표본, 최대 1). z가 z0 미만(기대 이하·비슷)이거나 표본이 최소 미만이면 0. 성적이 나쁘다고 깎지 않는다. 나이 제한 없음(구간이 제한).
+   4) 국제대회(WBC·올림픽·프리미어12·아시안게임) 출전 성적은 따로 최대 +1.2(한 해 한 번, 자격은 그해 기준 잠재력 69.5 이하). 이 장치로 오르는 잠재력은 72를 넘지 않는다.
+   5) 잠재력은 80을 넘지 않고 현재 능력보다 낮아지지 않는다. 그해 오른 몫(p.potUp)은 겨울 성장의 잠재력 정리에서 한 해 지켜 준다(04_growth) */
+const POT_UP={bands:[[60,2.5],[64,1.5],[68,1.2],[69.5,.8]],sp:3,spZ:2.6,z0:.8,z1:2,min:{b:120,p:120},full:{b:350,p:300},fut:.5,intl:1.2,top:72,minUp:.3};
+function potBaseSet(p,force){ if(force||!p.potBase||p.potBase.y!==G.year)p.potBase={y:G.year,v:Math.round(p.pot*10)/10}; return p.potBase.v; }
+function potBaseAll(force){ if(!G||!G.players)return; for(const p of Object.values(G.players))if(p&&p.team!=null&&!p.prospect&&p.pot!=null)potBaseSet(p,force); }
+function potBandCap(v,special){ if(v<=POT_UP.bands[0][0])return special?POT_UP.sp:POT_UP.bands[0][1]; for(const [hi,c] of POT_UP.bands)if(v<=hi)return c; return 0; }
+/* 지표: kind 'per'(운에 덜 흔들리는 지표, 실제 계산에 씀) | 'res'(결과 지표 OPS·평균자책점, 비교 측정용). [값, 방향] */
+function potVals(h,isP,kind){ if(isP){ const o=h.outs||0; if(!o)return null; if(kind==='res')return [[h.er*27/o,-1]]; return [[(13*(h.hr||0)+3*((h.bb||0)+(h.hbp||0))-2*(h.so||0))*3/o+3.2,-1],[((h.so||0)-(h.bb||0))*27/o,1]]; }
+  const pa=h.pa||0, ab=h.ab||0; if(!pa||!ab)return null; if(kind==='res')return [[bRate(h).ops,1]]; return [[(h.so||0)/pa,-1],[(h.bb||0)/pa,1],[((h.d||0)+2*(h.tr||0)+3*(h.hr||0))/ab,1]]; }
+function potFitLv(isP,lvl,kind){ const X=[],Y=[]; const need=isP?(lvl==='1군'?150:90):(lvl==='1군'?200:120); for(const p of Object.values(G.players)){ if(p.team==null||!!p.isP!==!!isP||!p.hist)continue; const h=seasonTotal(p,G.year,lvl); if(!h||!(((isP?h.outs:h.pa)||0)>=need))continue; const v=potVals(h,isP,kind); if(!v)continue; X.push(ovr(p)); Y.push(v.map(x=>x[0])); }
+  const n=X.length; if(n<25)return null; const mx=sum(X)/n; let sxx=0; for(let i=0;i<n;i++)sxx+=(X[i]-mx)**2; const c=[];
+  for(let k=0;k<Y[0].length;k++){ const my=sum(Y.map(y=>y[k]))/n; let sxy=0; for(let i=0;i<n;i++)sxy+=(X[i]-mx)*(Y[i][k]-my); const b=sxx?sxy/sxx:0, a=my-b*mx; let ss=0; for(let i=0;i<n;i++)ss+=(Y[i][k]-(a+b*X[i]))**2; c.push({a,b,r:Math.sqrt(ss/Math.max(1,n-2))}); }
+  return {c,n,y:G.year}; }
+function potFits(kind){ kind=kind||'per'; const F={}; for(const k of ['b','p']){ F[k]={}; for(const lvl of ['1군','퓨처스'])F[k][lvl]=potFitLv(k==='p',lvl,kind); } F.kind=kind; return F; }
+/* 한 선수의 올해 기대 대비 초과 {z, n}: 1군·2군을 표본(2군 절반)으로 가중 평균 */
+function potPerfZ(p,F){ const fits=F[p.isP?'p':'b'], kind=F.kind||'per'; let zs=0,w=0; const cur=ovr(p); for(const lvl of ['1군','퓨처스']){ const f=fits[lvl]; if(!f)continue; const h=seasonTotal(p,G.year,lvl); if(!h)continue; const n=(p.isP?h.outs:h.pa)||0; if(!(n>0))continue; const v=potVals(h,!!p.isP,kind); if(!v)continue;
+    let z=0,ok=true; v.forEach(([x,s],i)=>{ const c=f.c[i]; if(!c||!(c.r>0)){ ok=false; return; } z+=s*(x-(c.a+c.b*cur))/c.r; }); if(!ok)continue; z=p.isP?z/v.length:z/Math.sqrt(v.length); const ww=n*(lvl==='1군'?1:POT_UP.fut); zs+=clamp(z,-4,4)*ww; w+=ww; }
+  return w>0?{z:zs/w,n:w}:{z:0,n:0}; }
+function potUpRatio(isP,z,n){ const kk=isP?'p':'b'; if(!(n>=POT_UP.min[kk])||!(z>=POT_UP.z0))return 0; return clamp((z-POT_UP.z0)/(POT_UP.z1-POT_UP.z0),0,1)*Math.min(1,n/POT_UP.full[kk]); }
+function potUpAdd(p,amt,o){ const b=p.pot; const np=Math.round(clamp(Math.max(Math.min(p.pot+amt,Math.max(p.pot,POT_UP.top)),ovr(p)),20,80)*10)/10; if(!(np>b))return 0; p.pot=np; const up=Math.round((np-b)*10)/10; const U=p.potUp&&p.potUp.y===G.year?p.potUp:{y:G.year,v:0,b:o.b}; U.v=Math.round((U.v+up)*10)/10; if(o.iv)U.iv=up; if(o.s)U.s=1; if(o.sp)U.sp=1; p.potUp=U; return up; }
+function potAwardIds(y){ const S=new Set(); try{ const A=G.awards&&G.awards[y]; if(A){ if(A.mvp&&A.mvp.id!=null)S.add(String(A.mvp.id)); if(A.roy&&A.roy.id!=null)S.add(String(A.roy.id)); for(const k in (A.gg||{}))if(A.gg[k]&&A.gg[k].id!=null)S.add(String(A.gg[k].id)); } for(const id of awTitleHolders(y))S.add(String(id)); }catch(e){} return S; }
+function potPerfSeason(){ const out=[]; const F=potFits('per'), AW=potAwardIds(G.year);
+  for(const p of Object.values(G.players)){ if(p.team==null||p.prospect||p.joinY>G.year||!p.hist||p.pot==null)continue; if(p.potUp&&p.potUp.y===G.year&&p.potUp.s)continue; const base=potBaseSet(p); if(!potBandCap(base,false))continue;
+    const {z,n}=potPerfZ(p,F); const q=potUpRatio(!!p.isP,z,n); if(!q)continue; const sp=AW.has(String(p.id))||z>=POT_UP.spZ; const amt=Math.round(potBandCap(base,sp)*q*10)/10; if(!(amt>=POT_UP.minUp))continue;
+    const up=potUpAdd(p,amt,{b:base,s:1,sp:sp&&base<=POT_UP.bands[0][0]}); if(!up)continue; out.push({id:p.id,tid:p.team,age:p.age,b:base,v:up,z:+z.toFixed(2),n:Math.round(n),sp:sp?1:0,pot:p.pot}); try{ story(p,G.year+' 성적 보상으로 잠재력 재평가'); }catch(e){}
+    if(p.team===G.user&&!G.unemp)try{ note('육성',p.name+' 잠재력 상승(올 시즌 성적 보상)',p.id); }catch(e){} }
+  return out; }
+/* 국제대회 성적 보상: 대회가 끝날 때(84b ntTourFinish). 타자 8타석 이상 OPS .850→1.100, 투수 3이닝 이상 평균자책점 3.00→1.00 사이를 0~1로 보고 최대 +1.2(구단주 11-19: 예전 .750→1.000·4.00→1.50은 출전 선수 대부분이 상한을 받아 문턱을 올림) */
+function potIntlUp(T){ const out=[]; if(!T||!T.st)return out; for(const key in T.st){ const p=G.players[key]; if(!p||p.team==null||p.pot==null||(p.ntKey&&p.ntKey!==p.id))continue; if(p.potUp&&p.potUp.y===G.year&&p.potUp.iv)continue; const base=potBaseSet(p); if(!potBandCap(base,false))continue;
+    const S=T.st[key]; let q=0; if(S.P){ const o=S.outs||0; if(o>=9)q=clamp((3-(S.er||0)*27/o)/2,0,1); } else if((S.pa||0)>=8&&S.ab){ const obp=((S.h||0)+(S.bb||0))/S.pa, slg=((S.h||0)+(S.d||0)+2*(S.tr||0)+3*(S.hr||0))/S.ab; q=clamp((obp+slg-.85)/.25,0,1); }
+    const amt=Math.round(POT_UP.intl*q*10)/10; if(!(amt>=POT_UP.minUp))continue; const up=potUpAdd(p,amt,{b:base,iv:1}); if(!up)continue; out.push({id:p.id,tid:p.team,v:up,b:base}); try{ story(p,G.year+' 국제대회 활약으로 잠재력 재평가'); }catch(e){}
+    if(p.team===G.user&&!G.unemp)try{ note('육성',p.name+' 잠재력 상승(국제대회 성적 보상)',p.id); }catch(e){} }
+  return out; }
 /* 올해 KBO 예상: 가운데 값과 범위(대략 3명 중 2명이 들어오는 폭) */
 function projKBO(p,cur,sd){ if(cur==null)return null; const f=projFit(p.isP); if(!f)return null; const m=f.a+f.b*cur; const s=Math.sqrt(f.r*f.r+(f.b*(sd||0))**2);
   const lo=Math.min(m-s,m+s), hi=Math.max(m-s,m+s); if(p.isP){ const L=Math.max(1,lo), M=Math.max(L,m), H=Math.max(M+.3,hi); /* 하한을 1.00으로 막으면 가운데·상한도 그 위로(범위가 뒤집히지 않게) */ return {k:'era',m:M,lo:L,hi:H,txt:`평균자책점 ${L.toFixed(2)}~${H.toFixed(2)}`,mid:M.toFixed(2),n:f.n,y:f.y}; } const oL=Math.max(0,lo), oM=Math.max(oL,m), oH=Math.max(oM,hi); return {k:'ops',m:oM,lo:oL,hi:oH,txt:`OPS ${fmt3(oL)}~${fmt3(oH)}`, /* OPS는 0 아래로 내려가지 않는다 */mid:fmt3(oM),n:f.n,y:f.y}; }
@@ -31658,7 +31735,8 @@ function gmBgApply(){ const P=G.gmP; if(!P||P.bgDone)return; P.bgDone=true; try{
   else if(P.bg==='data'){ G.pr.press=clamp(G.pr.press+3,0,100); for(const a of (typeof anaList==='function'?anaList():[]))a.loy=clamp((a.loy??50)+10,0,100); }
   else if(P.bg==='corp'){ t.trust=clamp((t.trust??55)+5,0,100); } }catch(e){} }
 function meName(){ return (G&&G.gmP&&G.gmP.name)||''; }
-function meAge(){ const P=G.gmP; return P&&P.age?P.age+(G.year-(P.y0||G.year)):null; }
+function meAge(){ const P=G.gmP; if(!P||!P.age)return null; if(P.ageFix!=null)return P.ageFix; return P.age+(G.year-(P.ay0??P.y0??G.year)); } /* 나이 고정(카페 11-20): 켜면 그 나이에 멈추고, 끄면 그 나이부터 다시 먹는다 */
+function gmAgeFixToggle(){ const P=G.gmP; if(!P||!P.age)return; if(P.ageFix!=null){ P.age=P.ageFix; P.ay0=G.year; delete P.ageFix; } else P.ageFix=meAge(); }
 function meInc(k,n){ if(G.unemp)return; const M=meInit(); M[k]=(M[k]||0)+(n??1); }
 /* 다른 구단 단장 기록(사람에게 붙는다: 단장이 바뀌면 새로 시작) */
 function gmSt(tid){ const g=tid===ME()?null:team(tid).gm; /* 야인이면 전 구단 새 AI 단장 실적도 센다(검수 11-08) */ if(!g)return null; g.st=g.st||{fa:0,faBig:0,mgrFire:0}; return g.st; }
@@ -31708,9 +31786,9 @@ function aiGmTags(tid){ const s=aiGmStats(tid); if(!s)return []; const L=[];
 /* 기사에서 단장을 부르는 말: 별명이 붙었으면 '트레이드 귀재' 광주 단장처럼 */
 function meCall(){ let n=''; try{ n=meNick(); }catch(e){} return n?`'${n}' ${tshort(G.user)} 단장`:`${tshort(G.user)} 단장`; }
 /* ===== 단장 세대 교체(100년 플레이): 단장도 나이를 먹는다. 물러날 때 구단·세계는 그대로 두고 후임 단장으로 이어 한다.
- 물러난 단장은 G.gmLine(단장 계보)에 남는다. 65세부터 구단주가 해마다 세대 교체를 묻고, 78세가 되는 해 1월 1일에는 구단이 정한 후임에게 넘어간다 */
-const GM_SUCC_ASK=65, GM_SUCC_FORCE=78;
-function gmRetired(){ const a=meAge(); return a!=null&&a>=GM_SUCC_FORCE; }
+ 물러난 단장은 G.gmLine(단장 계보)에 남는다. 65세부터 구단주가 해마다 세대 교체를 묻는다. 정년은 없다(카페 11-20: 은퇴·후임은 단장이 고른다) */
+const GM_SUCC_ASK=65;
+function gmRetired(){ return false; }
 function gmSuccInfo(){ const P=G.gmP||{}, C=G.myC||{}; const from=Math.min(G.year,...[G.gmSince,C.y0,P.y0,...(C.seas||[]).map(s=>s.y),...(C.stints||[]).map(s=>s.y0)].filter(Number.isFinite)); /* 계보의 기간은 마지막 구단이 아니라 이 사람의 전체 경력이다. */ const H=(G.history||[]).filter(h=>h.y>=from&&h.y<G.year+1);
   return {name:P.name||'단장',face:P.face||null,female:!!P.female,mod:P.mod||null,bg:P.bg||null,tid:G.user,from,to:G.year,age:meAge(),champ:H.filter(h=>h.champ===G.user).length,seas:H.length,rep:G.rep??50}; }
 function gmSucceed(np,why){ if(G.user==null||!G.gmP)return '지금은 넘길 수 없습니다.'; const wasU=!!G.unemp; if(!wasU&&(period()==='season'||period()==='post'))return '시즌이 끝난 뒤(10월 말~3월)에 넘길 수 있습니다.';
@@ -31732,11 +31810,9 @@ function gmSucceed(np,why){ if(G.user==null||!G.gmP)return '지금은 넘길 수
   mail('구단주실',`${G.gmP.name} 단장 취임`,`${old.name} 단장이 ${old.from}~${old.to}년 ${old.seas}시즌을 마치고 물러났습니다. 이제 ${G.gmP.name} 단장(${G.gmP.age}세)이 구단을 맡습니다.\n선수단·시설·재정·코치진은 그대로 이어집니다. 명성은 새로 쌓아야 합니다(지금 ${G.rep}). 단장 계약은 ${G.myC.y0}~${G.myC.y1}년.\n물러난 단장은 단장 화면의 '단장 계보'에 남습니다.`,{imp:true,kind:'경력'});
   return ''; }
 function gmAutoSucc(){ return {name:(()=>{ try{ return genName(); }catch(e){ return '김단장'; } })(),age:ri(40,48),bg:pick(['player','scout','data','corp']),female:R()<.15}; }
-/* 1월 1일: 65세부터 해마다 묻고, 78세면 구단이 정한 후임에게 넘긴다(시즌 밖이라 바로 넘길 수 있다) */
-function gmAgeYear(){ if(!G.gmP)return; const a=meAge(); if(a==null)return;
-  if(a>=GM_SUCC_FORCE){ const run=()=>gmSucceed(gmAutoSucc(),'정년'),r=G.unemp?withRng(G.year*1009+(G.gmLine||[]).length*31,run):run(); if(!r)return; }
-  if(a===GM_SUCC_FORCE-1)stop('구단',`단장님은 내년 1월 1일(${GM_SUCC_FORCE}세)에 정년으로 물러나고, 후임 단장이 이어받습니다. 단장 개인 경력 화면은 후임 기준으로 새로 시작하고, 지금 단장의 재임 기록(시즌·우승)은 단장 > 세대 교체의 단장 계보에 남습니다. 후임을 직접 정하려면 올해 12월 31일까지 정하세요. 지금 상태를 남기려면 빈 슬롯에 따로 저장해 두세요.`); /* 실제 자동 교체일 이전의 선택 기한을 안내한다. */
-  if(a>=GM_SUCC_ASK)mail(G.unemp?'경력 관리':'구단주실',`후임 단장을 정하실 수 있습니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 ${a>=GM_SUCC_FORCE-1?'올해 12월 31일까지':'시즌이 끝난 뒤'} 후임을 직접 정하고 물러날 수 있습니다. ${G.unemp?'후임도 소속 구단 없이 새 제의를 기다립니다.':'선수단·시설·재정은 그대로 후임에게 이어집니다.'}\n${GM_SUCC_FORCE}세가 되는 해 1월 1일에는 후임에게 자동으로 넘어갑니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
+/* 1월 1일: 65세부터 해마다 묻는다(나이 고정이면 묻지 않는다). 강제 교체는 없다 */
+function gmAgeYear(){ if(!G.gmP||G.gmP.ageFix!=null)return; const a=meAge(); if(a==null)return;
+  if(a>=GM_SUCC_ASK)mail(G.unemp?'경력 관리':'구단주실',`후임 단장을 정하실 수 있습니다`,`단장님이 올해 ${a}세가 됩니다. 원하시면 시즌이 끝난 뒤 후임을 직접 정하고 물러날 수 있습니다. ${G.unemp?'후임도 소속 구단 없이 새 제의를 기다립니다.':'선수단·시설·재정은 그대로 후임에게 이어집니다.'}\n정년은 없습니다. 계속하셔도 됩니다.`,{kind:'경력',acts:[{l:'후임 정하기',a:'go',v:'me'}]}); }
 
 /* 구단별 누적 경기는 이직·복귀와 세대 교체를 거쳐 보존한다. 옛 저장은 상세 시즌·현재 재임 카운터로 복원한다. */
 function gmClubMigrate(beforeGame=false){ if(!G||G.user==null)return; const M=G.gmClubGames=G.gmClubGames||{}, totals={}, add=(tid,n)=>{if(tid!=null)totals[tid]=(totals[tid]||0)+Math.max(0,n||0);}, count=s=>(s.w||0)+(s.l||0)+(s.t||0);
@@ -31872,7 +31948,7 @@ function trnWeek(){ const per=period(); if(per!=='pre'&&per!=='season')return;
     const ti=trnI(p); { if(!p.trI||p.trI.y!==G.year)p.trI={y:G.year,s:0,n:0}; p.trI.s+=p.boy>G.day?0:TRNI[ti].g; p.trI.n++; } /* 훈련 불참(시위) 주는 훈련 효과 없음 */ /* 그 시즌 훈련한 주의 평균 강도 → 겨울 성장(develop). 모든 구단(사용자 11-13) */
     const f=trnPlan(p); p.trnF=f; if(f==='bal')continue; { const T=G.trn&&G.trn[p.id]; if(T&&T.by==='gm'&&T.f===f&&T.aw!=null)T.aw++; } /* 회고·보고의 훈련 주수: 비시즌·부상·연수 주는 빼고 실제 훈련한 주만(검수 11-09o) */ const D=TRN[trnG(p)][f]; if(!D||!D.k.length)continue; const k=D.k[0];
     const room=trnRoom(p,k); if(room<=0)continue; const cf=.85+(coachToolV(p,k)-50)/100*.8; /* 그 항목 지도 능력(제구 훈련이면 제구 지도) */ const af=p.age<=24?1.3:p.age<=28?1:p.age<=31?.6:p.age<=33?.35:.2; /* 34세 이상도 지시를 받아들였으면 실제로 한다(효과는 작다) */
-    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4)*TRNI[ti].g*eliteGrowF(ovr(p)); const got=addR(p,k,add); /* 정상급 꼬리 억제(10_draft) */
+    const add=.06*trnLearn(p)*clamp(cf,.7,1.3)*af*clamp(room/8,.15,1.2)*rnd(.6,1.4)*TRNI[ti].g*eliteGrowF(ovr(p)); growYearBase(p); const gr0={...p.r}; let got=addR(p,k,add); /* 정상급 꼬리 억제(10_draft) */ if(growYearCap(p,gr0))got=Math.round((p.r[k]-gr0[k])*10)/10; /* 한 해 육성 상한(04_growth YEAR_GROW_CAP): 잘린 만큼은 집중 훈련 누적에도 세지 않는다 */
     if(!p.trD||p.trD.y!==G.year)p.trD={y:G.year,f:k,s:0,by:{}}; p.trD.s+=got; p.trD.by[k]=(p.trD.by[k]||0)+got; } }
 /* 겨울 성장 때 비용: 집중하느라 쌓인 만큼 다른 항목의 오름폭을 줄인다(develop에서 부른다) */
 /* 겨울 기회비용: 집중 훈련으로 얻은 만큼(×1.1) 같은 묶음의 다른 항목 성장이 준다.
@@ -31969,7 +32045,7 @@ function rpWeek(){ if(G.bprole)for(const id in G.bprole){ const x=G.bprole[id], 
       else if(x.k==='sp2'){ if(p.r.sta>=thr||y-x.y>=2){ G.rplan[p.id]={k:'done',tid:t.id,y}; /* 마친 기록을 남겨 다음 주 신인 배정에서 다시 수업으로 보내지 않는다(검수 11-08) */ if(t.id===G.user&&!(G.prole&&G.prole[p.id]&&G.prole[p.id].k==='sp2'))grad.push(p); } /* 단장 요청이 남아 있으면 실제 보직은 그대로라 '마침' 메일을 보내지 않는다. 그 선수는 아래 '선발 수업 성과' 메일로 전환을 묻는다(검수 11-06) */ else if(p.age>25){ G.rplan[p.id]={k:'done',tid:t.id,y}; } } /* 체력이 선발 기준에 닿거나 두 시즌을 채우면 수업을 마치고 선발 경쟁에 들어간다 */
       else if(x.k==='auto'&&x.y<y)delete G.rplan[p.id]; } }
   /* 2군 선발 수업 중이면 2군에서 선발로 나간다 */
-  for(const p of Object.values(G.players)){ if(!p.isP||p.team==null||p.e1)continue; if(rpPlanOf(p.team,p)==='sp2'){ p.role='SP'; if(per==='season'&&healthy(p)&&!isAway(p)){ /* 대표팀 차출 중에도 구단 수업 효과 없음(검수 11-08) */ const rm=trnRoom(p,'sta'); if(rm>0)addR(p,'sta',.05*clamp(rm/8,.2,1)); } } /* 체력 성장 여력이 없으면 오르지 않는다(검수 11-06) */ } /* 선발로 길게 던지며 체력이 붙는다 */
+  for(const p of Object.values(G.players)){ if(!p.isP||p.team==null||p.e1)continue; if(rpPlanOf(p.team,p)==='sp2'){ p.role='SP'; if(per==='season'&&healthy(p)&&!isAway(p)){ /* 대표팀 차출 중에도 구단 수업 효과 없음(검수 11-08) */ const rm=trnRoom(p,'sta'); if(rm>0){ growYearBase(p); const gr0={...p.r}; addR(p,'sta',.05*clamp(rm/8,.2,1)); growYearCap(p,gr0); /* 한 해 육성 상한(04_growth) */ } } } /* 체력 성장 여력이 없으면 오르지 않는다(검수 11-06) */ } /* 선발로 길게 던지며 체력이 붙는다 */
   if(myNew.length){ const m=G.mgr[G.user]; const fm=(coachesOf(G.user)||{}).fm; const row=p=>{ const k=G.rplan[p.id].k; return `${p.name}(${p.age}세): ${k==='sp2'?'2군 선발 수업':k==='rp'?'계투로 시작':'선발 경쟁'} · ${rpWhy(p,G.user)}`; };
     /* 1군에서 쓸 투수는 1군 감독이, 2군 선발 수업은 2군 감독이 맡아 말한다(커뮤니티 11-12: 1군 감독이 2군 보직을 정하는 것처럼 보였다) */
     const L1=myNew.filter(p=>G.rplan[p.id].k!=='sp2').map(row), L2=myNew.filter(p=>G.rplan[p.id].k==='sp2').map(row);
@@ -32181,7 +32257,8 @@ function campFocusAi(tid,kind){ const m=mgrOf(tid); if(kind==='fall')return 'ski
   if(pl==='build')return u<.5?'skill':'balance'; if(pl==='win')return u<.3?'game':u<.55?'fitness':'balance'; if(pl==='tight')return u<.4?'fitness':'balance'; return u<.15?'game':u<.3?'fitness':'balance'; }
 function addPitch(p,q){ const have=new Set(arsenalAll(p,p.r.stf).map(x=>x[0])); /* 보유 구종(계투라 안 쓰는 구종 포함)은 새로 익히지 않는다 */ const L=PITCHES.filter(k=>!have.has(k)); if(!L.length)return null; const k=L[Math.floor(u01('np'+G.year+(p.addP||[]).length,p.id)*L.length)];
   (p.addP=p.addP||[]).push({k,q:Math.round(q*10)/10,y:G.year}); return k; }
-function campGrow(p,kind,focus){ const ev=[]; if(p.hold||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
+function campGrow(p,kind,focus){ growYearBase(p); const gr0={...p.r}; const ev=campGrow0(p,kind,focus); growYearCap(p,gr0); return ev; } /* 한 해 육성 상한(04_growth YEAR_GROW_CAP): 겨울 성장과 합쳐 +5까지 */
+function campGrow0(p,kind,focus){ const ev=[]; if(p.hold||p.injOut>0||(p.mil&&p.mil.from<=G.day&&p.mil.until>G.day))return ev;
   const f=tbFactors(p,null); const ks=TRN_TOOLS[trnG(p)]; const o0=ovr(p), cap=Math.max(p.pot,o0)+4; const base=(CAMP_AMT[kind][focus]??1)*(p.age<=26?1:p.age<=30?.45:.15);
   let amt=base*f.room*f.will*f.fac*f.coach*f.mgr*rnd(.5,1.5)*(kind==='spring'&&p.team!=null?sprcGrowMul(p.team):1); /* 캠프 장소·날씨·훈련 강도(97_spring_camp.js) */ let tot=0;
   /* 확 늘어나는 선수 */ if(p.age<=25&&p.pot-ovr(p)>=4&&R()<(focus==='skill'?.05:.03)*f.will){ amt+=rnd(2,4); ev.push({t:'big'}); }
@@ -33408,7 +33485,7 @@ function ntPlayGame(T,g,N,d){ g.hc=ntRef(T,g.h); g.ac=ntRef(T,g.a); if(!g.hc||!g
 function ntTourDay(N,d){ const T=N.tour; if(!T||T.done)return; for(const g of T.games)if(!g.done&&!g.skip&&g.d===d)ntPlayGame(T,g,N,d);
   if(T.games.every(g=>g.done||g.skip)||d>=KD(...NT_EV[T.k].res))ntTourFinish(T); }
 /* 최종 순위와 한국 성적(lv 1 우승·금, 2 준우승·은, 3 4강·동, 4 그 밖) */
-function ntTourFinish(T){ if(T.done)return; T.done=true; const F=T.games.filter(g=>g.st==='F'&&g.done)[0], B=T.games.filter(g=>g.st==='B'&&g.done)[0]; const rank={};
+function ntTourFinish(T){ if(T.done)return; T.done=true; try{ potIntlUp(T); }catch(e){} /* 국제대회 성적 보상 잠재력(65_cur_eval) */ const F=T.games.filter(g=>g.st==='F'&&g.done)[0], B=T.games.filter(g=>g.st==='B'&&g.done)[0]; const rank={};
   if(F){ rank[F.win==='h'?F.hc:F.ac]=1; rank[F.win==='h'?F.ac:F.hc]=2; }
   if(B){ rank[B.win==='h'?B.hc:B.ac]=3; rank[B.win==='h'?B.ac:B.hc]=4; } else for(const g of T.games.filter(x=>x.st==='SF'&&x.done)){ const l=g.win==='h'?g.ac:g.hc; if(!rank[l])rank[l]=3; }
   T.rank=rank; const kr=rank.KR; T.lv=kr&&kr<=3?kr:4;
@@ -37151,8 +37228,8 @@ function sisFlDepart(F){ if(!F||F.y!==G.year||F.go)return; const ids=F.ids.filte
 function sisFlRun(F=sisFlOf(G.user)){ const S=sisInit(); if(!F||F.y!==G.year||!F.go)return; sisFlDrop(F); for(const id of F.ids){const p=G.players[id];if(p&&p.sisFlAway&&p.sisFlAway.tid===F.tid&&p.sisFlAway.cid===F.cid)delete p.sisFlAway;} const c=OCL_BY[F.cid]; const b=(55-c.f2)/5; /* 상대 2군이 강할수록 기록이 덜 나온다 */ const L=[];
   for(const id of F.ids){ const p=G.players[id]; if(!p||p.team!==F.tid||isAway(p))continue; let line;
     if(p.isP){ const o=simPit(p,ri(30,54),b); line=`${Math.floor(o.outs/3)}이닝 평균자책 ${(o.er*27/Math.max(1,o.outs)).toFixed(2)} 삼진 ${o.so}`; } else { const o=simBat(p,ri(50,70),b); line=`타율 ${exhF3(o.h/Math.max(1,o.ab))} ${o.hr}홈런 볼넷 ${o.bb}`; }
-    const ks=TRN_TOOLS[trnG(p)], room=Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3), g=rnd(.4,1.3)*room*(c.fac/75); for(const k of ks)p.r[k]=clamp(p.r[k]+g*rnd(.6,1.2),20,80);
-    let hot=''; if(R()<.1){ const k=pick(ks); p.r[k]=clamp(p.r[k]+rnd(2,4),20,80); hot=` · ${OVS_TOOLN[k]}이(가) 눈에 띄게 좋아짐`; } roundR(p); p.mor=clamp((p.mor??60)+2,0,100); L.push(`${p.name}(${posLabel(p)}): ${line}${hot}`); }
+    growYearBase(p); const gr0={...p.r}; const ks=TRN_TOOLS[trnG(p)], room=Math.min(1,Math.max(0,p.pot-ovr(p))/6+.3), g=rnd(.4,1.3)*room*(c.fac/75); for(const k of ks)p.r[k]=clamp(p.r[k]+g*rnd(.6,1.2),20,80);
+    let hot=''; if(R()<.1){ const k=pick(ks); p.r[k]=clamp(p.r[k]+rnd(2,4),20,80); hot=` · ${OVS_TOOLN[k]}이(가) 눈에 띄게 좋아짐`; } roundR(p); growYearCap(p,gr0); /* 한 해 육성 상한 */ p.mor=clamp((p.mor??60)+2,0,100); L.push(`${p.name}(${posLabel(p)}): ${line}${hot}`); }
   if(L.length)sisAdd(F.tid,F.cid,4); if(F.tid===G.user&&!G.unemp&&L.length)mail('육성팀',`${c.n} 가을 교육리그 결과`,`${c.n} 2군·육성군과 약 5주 동안 실전을 치르고 돌아왔습니다.\n\n${L.join('\n')}\n\n상대 2군 전력 ${c.f2} · 시설 ${c.fac}. 시설이 좋을수록 성장 폭이 큽니다. 관계 개선.`,{kind:'연수'}); return L; }
 /* 코치 교육·해외 연수: 실제 인물·지원 구단·출국일을 고정하고 한 번만 귀국 정산한다. */
 const COACH_STUDY={dom:{l:'국내 지도자 교육',days:14,cost:10,gain:[1,1]},jp:{l:'일본 코치 연수',days:42,cost:40,gain:[1,3]},us:{l:'미국 코치 연수',days:42,cost:60,gain:[1,3]}};
@@ -51851,9 +51928,10 @@ function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge()
   if(!can)return line?csec('단장 계보',line):'';
   const off=G.unemp||period()!=='season'&&period()!=='post';
   const body=UI.gsucc?`<p class="small">후임 단장을 정합니다. ${G.unemp?'후임도 소속 구단 없이 새 제의를 기다립니다.':'선수단·시설·재정·코치진은 그대로 이어집니다.'} 명성은 새로 쌓습니다.</p>${gpForm('gmSuccGo','이 사람에게 넘기기')}<button class="btn block" data-a="gmSuccAsk" style="margin-top:6px">취소</button>`
-    :`<div class="row between"><p class="small muted">${a!=null?`지금 ${a}세. `:''}${GM_SUCC_FORCE}세가 되는 해 1월 1일에는 후임에게 넘어갑니다.${G.unemp?' 후임도 소속 구단 없이 시작합니다.':off?'':' 시즌이 끝난 뒤 넘길 수 있습니다.'}</p><button class="btn small${a>=GM_SUCC_ASK?' primary':''}" data-a="gmSuccAsk"${off?'':' disabled'}>후임에게 넘기기</button></div>`;
+    :`<div class="row between"><p class="small muted">${a!=null?`지금 ${a}세${G.gmP.ageFix!=null?'(나이 고정)':''}. `:''}정년은 없습니다. 원하실 때 후임을 정하고 물러날 수 있습니다.${G.unemp?' 후임도 소속 구단 없이 시작합니다.':off?'':' 시즌이 끝난 뒤 넘길 수 있습니다.'}</p><button class="btn small${a>=GM_SUCC_ASK?' primary':''}" data-a="gmSuccAsk"${off?'':' disabled'}>후임에게 넘기기</button></div><div class="row between"><p class="small muted">${G.gmP.ageFix!=null?'나이가 멈춰 있습니다. 끄면 이 나이부터 다시 한 살씩 먹습니다.':'켜면 지금 나이에서 더 먹지 않습니다.'}</p><button class="btn small" data-a="gmAgeFix">${G.gmP.ageFix!=null?'나이 고정 끄기':'나이 고정 켜기'}</button></div>`;
   return csec('세대 교체 · 단장 계보',body+line); }
 Object.assign(A,{
+  gmAgeFix(){ gmAgeFixToggle(); save(); render(); },
   fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
   dr1Pk(v){ UI.dr1Pk=+v||0; render(); },
   fdStr(v){ UI.fdStr=+v?1:0; render(); },
@@ -52328,6 +52406,14 @@ const PATCH=[
     '선수단 화면 맨 위에 「지금 정식 60 · 다음 개막 71 / 한도 68」처럼 두 숫자를 나란히 보여 줍니다. FA·무적 선수·트라이아웃 계약은 다음 개막 인원으로 정원을 따집니다.',
     '바로 아래에 올해 지명한 신인, 내년 입단 계약, 개막 전 전역, 개막 전 입대 인원을 적었습니다. 숫자를 누르면 누가 들어가는지 이름이 펼쳐집니다. 개막 뒤에야 돌아오는 군 복무 선수는 세지 않는다는 것도 따로 적었습니다.',
     '다음 개막 인원이 한도에 차면 몇 명을 정리해야 계약할 수 있는지 한 줄로 알려 줍니다. FA 시장·협상 화면·무적 선수·트라이아웃 화면에도 같은 한 줄 요약(다음 개막 71/68 · 지금 60 + 합류 예정 11)이 휴대폰에서도 보입니다.'
+  ]},
+  {id:'2026-11-19-growth-rules',d:'11월 19일',t:'성장이 여러 해에 걸쳐 이어지고, 잘한 선수는 잠재력이 오릅니다',items:[
+    '한 해 성장 상한: 한 선수의 종합 능력은 한 해에 원래 능력 기준 +5까지만 오릅니다(겨울 성장·스프링캠프·시즌 중 훈련·마무리캠프·교육리그·해외 연수·부상 후유증 회복을 모두 합쳐서, 상무 포함 모든 구단 같음). 겨울에 상한에 걸려 못 큰 몫은 사라지지 않고 다음 해들에 이어서 큽니다. 늦게 터지는 선수는 한 번에 폭등하지 않고 두세 해에 걸쳐 올라옵니다.',
+    '성적으로 오르는 잠재력: 시즌이 끝나면, 지금 능력으로 기대되는 것보다 뚜렷이 잘한 선수(타자는 삼진·볼넷·장타, 투수는 삼진·볼넷·피홈런 기준)는 실제 잠재력이 오릅니다. 시즌 시작 때 잠재력이 낮을수록 많이 오르고(원래 능력 기준 한 시즌 최대 +2.5, MVP·골든글러브·타이틀·신인왕이나 최상위 성적이면 +3), 이미 높은 선수는 조금만 오르거나 오르지 않습니다. 국제대회에서 아주 잘하면 따로 조금 더 오릅니다(타자는 OPS 1.100, 투수는 평균자책점 1.00 이상이어야 최대 +1.2이고, 타자 OPS .850·투수 평균자책점 3.00보다 못하면 오르지 않습니다). 성적이 나쁘다고 깎이지는 않으며 모든 구단 같습니다.',
+    '성장 구간 마지막 1~2년에 남은 잠재력이 한꺼번에 채워지던 것을 여러 해로 폈고, 출전·시설·감독·코치·성격·훈련 강도가 모두 좋을 때 곱해지는 효과에 상한을 뒀습니다.',
+    '26세 이하 선수는 해마다 조금씩 깎이던 몫을 없애고 퇴보 폭을 줄였습니다. 젊은 선수가 전보다 꾸준히 큽니다. 전성기와 노화는 그대로입니다.',
+    '훈련 시설 효과를 우리 구단과 다른 구단이 같은 식으로 계산합니다(실내 연습장·랩·숙소·2군 구장이 성장, 웨이트·재활이 노화).',
+    '메이저리그에 국내 선수가 이미 6명 이상 가 있으면, 스타가 아닌 경계선 선수는 계약 제안을 받기 어려워집니다. 스타는 그대로 도전합니다. 포스팅 예상 화면도 같은 값을 보여 줍니다.'
   ]},
   {id:'2026-11-19-staff-window',d:'11월 19일',t:'코치·스태프 이적은 계약 정리 기간에만, 영입은 다른 구단과 경쟁합니다',items:[
     '코치·스태프 이적 시기: 다른 구단과 계약 중인 코치·스카우트·분석원은 포스트시즌이 끝난 날부터 12월 31일까지(계약 정리 기간)에만 옮길 수 있습니다. 1·2월에 오던 다른 구단의 영입 제안과 1~3월 빼 오기를 없앴고, 올해 계약한 사람은 그해에는 제안 대상이 아닙니다. 우리·다른 구단 같은 규칙이며, 무소속 후보 영입과 빈자리 채우기는 언제든 됩니다.',
