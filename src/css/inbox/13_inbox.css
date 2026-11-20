@@ -19,6 +19,8 @@
 .ibx-list.m{position:static;max-height:none;overflow:visible}
 .ibx-day{position:sticky;top:0;z-index:1;padding:6px 12px;font:600 12px var(--f-ui);letter-spacing:.02em;color:var(--dim);background:var(--head,#1f2a35);border-bottom:1px solid var(--line)}
 .ibr{display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;align-items:center;width:100%;padding:9px 12px 9px 10px;background:none;border:0;border-left:3px solid transparent;border-bottom:1px solid #ffffff08;color:var(--muted);text-align:left;cursor:pointer;font:inherit}
+/* perf (11-21): rows outside the list viewport skip style/layout/paint (240+ mails in a late save); rows are one fixed height (content 44px at both widths; padding differs), auto keeps the measured size */
+.ibx-list .ibr{content-visibility:auto;contain-intrinsic-block-size:auto 44px}
 .ibr .av{width:32px;height:32px;font-size:12px}
 .ibr:hover{background:#ffffff06}
 .ibr.cur{background:var(--panel2);border-left-color:var(--team-hi,#4fa3ff)}

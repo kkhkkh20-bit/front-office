@@ -330,6 +330,7 @@ function injure(p,day,ctx){ ctx=ctx||{}; day=day??G.day;
   const episode=injStart(p,{days,day,k,hosp:p.team!=null&&!milServing(p)?medOf(p.team).hosp:'none',extra:{farm:!!ctx.farm}}); if(days>=40)p.inj=Math.min(.45,p.inj+.02); /* 퓨처스 소급 진단도 실제 다친 날을 쓴다. */
   if(I.ucl)p.ucl=1; if(I.tj)delete p.ucl; delete p.reInj;
   const fx=injApply(p,k,days);fx.injId=episode.id;
+  try{ milSocial(p,k,days); }catch(e){ console.error(e); } /* 미필 선수의 큰 수술: 사회복무요원으로 재활과 복무를 겹친다(20_military, 모든 구단 같은 규칙) */
   const ret=injRetTxt(p), seasonOut=period()==='season'&&G.day+p.injOut>(G.cal.end||KD(10,5));
   if(days>=30)story(p,`${I.n}(으)로 약 ${days>=300?Math.round(days/30)+'개월':days+'일'} 이탈`,'inj');
   if(p.team===G.user&&days>=30&&period()==='season'&&(ovr(p)>=55||p.sal>=800))news('선수',`${tshort(G.user)} 악재, ${p.name} ${I.surg?'수술':'장기 이탈'}`,`${p.name}이(가) ${I.n}(으)로 ${days>=300?Math.round(days/30)+'개월':'약 '+days+'일'} 빠집니다.${seasonOut?' 사실상 시즌 아웃입니다.':''}`,-1,{ref:p.id});

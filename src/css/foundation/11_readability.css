@@ -523,3 +523,22 @@ td.num.warn{color:var(--warn,#d90)} td.num.bad{color:var(--bad,#c33)}
 .iv-o .iv-hint{display:block;margin-top:4px;font-size:var(--ui-caption);color:var(--muted);font-weight:400;line-height:1.45} /* 언론 플레이 선택지 효과(플레이테스트 4 #16) */
 /* 관중석 증설 카드(35c): 선택지 사이 얇은 구분선 */
 .stadx .stadx-o{border-top:1px solid var(--line);padding-top:6px;display:grid;gap:4px}.stadx .stadx-o .row.between{gap:8px;flex-wrap:wrap}.stadx .stadx-o p{margin:0}
+
+/* 새 게임 난이도·진행 방식 카드(사용자 11-21): 고른 항목에 따라 단추 높이가 움직이지 않게 위에서부터 쌓고, 단추는 같은 너비의 구간 단추로, 설명은 높이가 고정된 상자로 */
+.mbg>.card.sopt{margin:0;display:flex;flex-direction:column;justify-content:flex-start;gap:12px;padding:18px}
+.sopt .sec{margin:0}
+.sopt-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px;border:1px solid var(--line2);border-radius:10px;background:var(--panel2)}
+.sopt-seg button{min-height:40px;border:0;border-radius:7px;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;padding:0 10px}
+.sopt-seg button:hover{color:var(--ink);background:rgba(127,127,127,.12)}
+.sopt-seg button.on{background:var(--acc);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.sopt-desc{margin:0;min-height:7.6em;padding:10px 12px;border-radius:8px;background:rgba(127,127,127,.08);border-left:3px solid var(--acc);color:var(--muted);font-size:13px;line-height:1.55}
+@media(max-width:639px){.sopt-desc{min-height:0}}
+.sopt-desc .gl{display:inline;min-height:0;padding:0;width:auto}
+
+/* 새 게임 시작 화면(사용자 11-21): 시작 방식 두 장을 크게, 난이도는 아래 한쪽에 작게. 진행 방식·첫 시즌 안내는 게임 안 설정(권한·첫 시즌 안내 숨기기)에서 */
+.mbg>.mbig{min-height:168px;align-content:start}
+.sdiff-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 12px;margin-top:14px}
+.sdiff-l{font-size:13px;font-weight:700;color:var(--muted)}
+.sdiff-row .sopt-seg{width:240px}
+.sdiff-row .sopt-seg button{min-height:32px}
+.sdiff-d{flex-basis:100%;text-align:right;font-size:12px;color:var(--muted)}

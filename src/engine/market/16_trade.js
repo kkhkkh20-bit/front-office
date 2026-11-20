@@ -153,7 +153,7 @@ function tradeYrFrac(){ const C=G.cal, per=period(); if(per!=='season'||!C)retur
 /* 거래로 바뀌는 연봉: 겨울·개막 전은 합의한 다음 시즌 연봉(capInfo와 같게, 검수 11-08b), yr은 올해 예산에 잡히는 몫(시즌 중이면 남은 기간만, 검수 11-06). 확인창·결재 문서·구단주 승인이 같은 값을 쓴다(검수 11-09v) */
 function tradeSalChg(give,get){ const P=id=>G.players[id]; const nx=preSeason(sponSeason()), sv=id=>P(id)?(nx?salNext(P(id)):P(id).sal):0; const fr=tradeYrFrac(); const d=sum(get.map(sv))-sum(give.map(sv)); return {d,yr:Math.round(d*fr),fr,nx}; }
 /* 거래 전후 예산 여유: 선수를 잠시 옮겨 budget()을 다시 계산한다(확인창·결재 문서·구단주 승인이 같은 값을 쓴다) */
-function roomAfter(give,get){ const rm=_rosM; _rosM=null; try{ return roomAfter0(give,get); } finally{ _rosM=rm; } } /* 선수를 잠시 옮겨 계산하는 동안 명단 기억(rosterMemo)을 쓰지 않는다 */
+function roomAfter(give,get){ return viewMemo('ra'+give+'|'+get,()=>{ const rm=_rosM; _rosM=null; try{ return roomAfter0(give,get); } finally{ _rosM=rm; } }); } /* 선수를 잠시 옮겨 계산하는 동안 명단 기억(rosterMemo)을 쓰지 않는다 */
 function roomAfter0(give,get){ const b0=budget(); const sv=[]; const mv=(id,t)=>{ const p=G.players[id]; if(!p)return; sv.push([p,p.team,p.tLog]); if(!p.foreign&&period()==='season')p.tLog=(p.tLog||[]).concat({y:G.year,d:G.day,f:p.team,t}); p.team=t; }; /* 시즌 중이면 결산처럼 남은 기간 연봉만(검수 11-06) */
   const other=get.length&&G.players[get[0]]?G.players[get[0]].team:-9; give.forEach(id=>mv(id,other)); get.forEach(id=>mv(id,G.user));
   let b1=b0; try{ b1=budget(); }finally{ sv.reverse().forEach(([p,t,l])=>{ p.team=t; if(l===undefined)delete p.tLog; else p.tLog=l; }); } return {before:Math.round(b0.roomGoal),after:Math.round(b1.roomGoal),dE:Math.round(b1.E-b0.E),dI:Math.round(b1.I-b0.I),cash0:Math.round(b0.endCash),cash1:Math.round(b1.endCash)}; }
@@ -240,6 +240,7 @@ function evalTrade0(tid,give,get,cash,pk,actorTid,relOv){ const actor=actorTid??
     /* 리그 전체 눈치: 한 시즌에 우리가 트레이드를 많이 할수록(세 번째부터) 다른 단장들도 값을 올린다. KBO는 구단당 한 해 트레이드가 몇 건 안 된다 */
     { const nA=trades.filter(mine).length; if(nA>=2){ need+=repeatedV*.12*rk*(nA-1); parts.repV+=repeatedV*.12*rk*(nA-1); if(repeatedV)parts.rep+=.12*rk*(nA-1); } }
     if(HARD())need+=Math.max(1.5,outV)*.25; /* 하드 모드: 다른 단장들이 25% 더 요구한다 */
+    if(SOFT()&&actor===G.user)need-=Math.max(1.5,outV)*.15; /* 쉬움: 우리와의 거래만 15% 덜 요구한다. 아래 최소 이득(plainV 3%)·관문·독주 견제는 그대로라 공짜 거래는 안 된다 */
     { const S=startersOf(tid); const D=domTradeTax(t,actor,get.some(id=>S.has(id)&&!(P(id)&&P(id).aiListed)),bench); if(D.k>0&&!lstOnly){ const dv=trDomBase(premiumV,bench)*D.k*(fit?TR_TUNE.fitDom:1); need+=dv; domX={k:D.k,refuse:D.refuse,v:dv}; parts.dom=D.k; parts.domV=dv; } } /* 독주 견제(86b_dynasty): 우리가 독주 구단이면 경쟁 구단은 값을 올리고, 우승 경쟁 중인 구단은 주전을 내주지 않는다. 리빌딩 구단은 팔되 비싸게 */
     const core=new Set(domestic(tid).filter(q=>!q.ys&&!q.aiListed).sort((a,b)=>ovr(b)-ovr(a)).slice(0,3).map(q=>q.id)); if(get.some(id=>core.has(id))){ need+=Math.max(1,outV)*.2; parts.core=true; } }
   /* 한 명의 주축을 여러 명의 B급과 바꾸지 않는다: 받는 선수 중 가장 좋은 선수가 내주는 주축의 75%는 돼야 한다 */

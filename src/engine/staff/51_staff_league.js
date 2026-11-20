@@ -148,7 +148,7 @@ function stBidMailsDone(s){ for(const m of (G.mail||[]).slice(0,300)){ if(!m.sub
 /* 영입 경쟁: 기한이 지나면 경쟁 구단으로 간다 */
 function stBidExpire(){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ for(const s of [...mkt]){ if(!s.bid||s.bid.exp>=G.day)continue; const t=s.bid.t, bs=s.bid.sal; delete s.bid; if(stJoin(kind,s,t,bs))stResMail(kind,s,false,t,bs,false); } } }
 function stBidDrop(id){ for(const [kind,mkt] of [['sc',G.scoutMarket||[]],['an',G.amarket||[]]]){ const s=mkt.find(x=>x.id===id); if(s&&s.bid){ const t=s.bid.t, bs=s.bid.sal; delete s.bid; const j=stJoin(kind,s,t,bs); stBidMailsDone(s); return `${s.name} 영입을 포기했습니다.${j?` ${tshort(t)}로 갑니다.`:''}`; } } return '이미 끝난 일입니다.'; }
-function stDaily(){ try{ stBidExpire(); }catch(e){} try{ stBidMailsDone(null); }catch(e){} const o=dobj(G.day); if(o.d===1)try{ stAiMonthly(); }catch(e){} if((o.m===11||o.m===12)&&o.d===15){ try{ stRaid(); }catch(e){} stRaidAuto(); }
+function stDaily(){ try{ stBidExpire(); }catch(e){} try{ stBidMailsDone(null); }catch(e){} try{ scVacWarn(); }catch(e){} const o=dobj(G.day); if(o.d===1)try{ stAiMonthly(); }catch(e){} if((o.m===11||o.m===12)&&o.d===15){ try{ stRaid(); }catch(e){} stRaidAuto(); }
   for(const r of (G.stRaid||[]).filter(r=>r.exp<G.day)){ const s=(r.k==='sc'?G.scouts:anaList()).find(x=>x.id===r.id); if(s&&stScore(s,G.user,s.sal,true)>=stScore(s,r.tid,r.sal,false)){ G.stRaid=G.stRaid.filter(x=>x!==r); note('스태프',`${s.name}은(는) 고민 끝에 남기로 했습니다.`); } else note('스태프',stLeave(r)); } }
 /* 새해: 경험이 쌓여 성장(젊을수록), 노장은 감각이 떨어지고 은퇴, 충성도 상승, 연봉은 실력에 맞춰 재계약 */
 function stYear(){ stInit(); const all=[...G.scouts.map(s=>['sc',s,G.user]),...anaList().map(a=>['an',a,G.user])]; for(const tid in G.lgStaff){ for(const s of G.lgStaff[tid].sc)all.push(['sc',s,+tid]); for(const a of G.lgStaff[tid].an)all.push(['an',a,+tid]); }
@@ -200,6 +200,12 @@ function scVacUser(){ if(G.unemp)return []; if(!scVacNeed()){ scVacFullNote(); r
   mail('운영팀',`스카우트 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 스카우트 빈자리를 스카우트 시장에서 채웠습니다.\n${ln.join('\n')}\n\nAI 구단과 같은 기준입니다. 구단 형편에 맞는 인원보다 적을 때, 연봉 여력 안에서 능력이 가장 높은 후보를 데려와 담당이 빈 아마추어 지역부터 맡겼습니다. 설정 > 권한에서 다시 가져올 수 있습니다.`,{kind:'스태프',acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]});
   return got; }
 /* 스카우트 빈자리 소식: 받은편지함 '위임하기' 버튼(mailDelegOpts)이 이 업무로 이어지게 */
+/* 스카우트 공석 알림(카페 11-20 쌉싸코 '20시즌 넘으면 지명 선수가 미확인'): 22시즌 측정에서 우리 구단만 아마추어 스카우트가 3→1명으로 줄고(AI 평균 5~6명) 다시 채워지지 않아
+   지명 선수 능력 확인률이 92%→52%까지 떨어졌다. 빈자리 보강을 맡기지 않은 구단에 담당 없는 아마추어 지역이 생기면(은퇴·이적·해고 어느 쪽이든) 그 지역 묶음이 바뀔 때마다 한 번 알린다.
+   메일에는 '위임하기 · 스카우트 빈자리 보강' 버튼이 붙는다(scVacMail). 난수를 쓰지 않는다 */
+function scVacWarn(){ if(G.unemp||!G.scouts||autoOn('svac')||!G.cal)return; const gap=scVacGap(); if(!gap.length){ delete G.svacWarn; return; } const key=gap.join(','); if(G.svacWarn===key)return; G.svacWarn=key;
+  const n=(G.scouts||[]).filter(x=>(x.role||'am')==='am').length, full=(G.scouts||[]).length>=scoutMax();
+  scVacMail(mail('운영팀',`아마추어 스카우트 공석: ${gap.join(', ')}`,`${gap.join(', ')} 지역을 맡은 아마추어 스카우트가 없습니다(지금 아마추어 스카우트 ${n}명). 이 지역 고교·대학 선수는 관찰이 쌓이지 않아 드래프트 보드에서 능력·잠재력이 '미확인'으로 남습니다.\n\n${full?'스카우트 정원이 찼습니다. 프로·해외 담당을 아마추어로 돌리거나 한 명을 정리한 뒤 영입하세요.':'스카우트 화면에서 영입하거나, 아래 위임하기로 운영팀에 맡기면 AI 구단과 같은 기준으로 빈자리를 바로 채웁니다.'}`,{imp:true,kind:'스태프',acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]})); }
 function scVacMail(m){ if(m&&typeof m==='object'&&m.id)m.auto=[...new Set([...(m.auto||[]),'svac'])]; return m; }
 function stAiStaff(){ if(G.unemp&&G.user==null)return; const L=stInit(); try{ stBidSettle(); }catch(e){} const m=dobj(G.day).m, off=m>=11||m<=2; const ids=Object.keys(L).map(Number).sort(()=>R()-.5); const moved=[]; /* 능력 4 이상은 리그 전체에서 한 달에 한 명만 AI가 데려간다(우리에게도 기회가 남게) */
   for(const tid of ids){ const t=team(tid); if(!t||tid===G.user)continue; const S=L[tid]; const P=stAiPlan(t);

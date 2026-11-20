@@ -169,7 +169,7 @@ function settlementCore(){
   const fins={}; const fins_self={};
   for(const t of G.teams){
     const o=order.find(x=>x.tid===t.id); const wp=o.w/Math.max(1,o.w+o.l);
-    const P=prOf(t.id), fanM=t.id===G.user&&G.pr?(0.9+G.pr.fan/500):1, adM=(P?(0.85+P.fan/333)*(0.95+P.press/1000):1)*(t.id===ME()&&HARD()?.9:1); /* 하드 모드: 광고·상품 수입 -10% */
+    const P=prOf(t.id), fanM=t.id===G.user&&G.pr?(0.9+G.pr.fan/500):1, adM=(P?(0.85+P.fan/333)*(0.95+P.press/1000):1)*(t.id===ME()&&HARD()?.9:t.id===ME()&&SOFT()?1.05:1); /* 하드 모드: 광고·상품 수입 -10%, 쉬움 +5% */
     const AT=G.sea.att&&G.sea.att[t.id]; const S=stadOf(t.id); const SPj=stadProj(t.id); const att=SPj.att||Math.round(1e6*t.market*(.62+t.pop*.38+(wp-.5)*1.4)*fanM);
     const MK=G.mktT&&G.mktT[t.id], mkt=t.id===ME()?G.marketing:MK&&MK.fy===y?MK.v:2000; /* 야인 기간 전 소속 구단은 AI 구단과 같은 방식(스폰서·마케팅)으로 결산한다. 그해 단장이 정해 두고 떠난 마케팅 예산은 그해 결산까지 유지(검수 11-09h) */
     const HO=G.hoL&&G.hoL[y+':'+t.id]; if(HO)t.cash-=HO.net; /* 이직 때 먼저 넣은 현금은 되돌리고 아래 명세로 다시 넣는다(검수 11-09h) */
@@ -250,7 +250,7 @@ function settlementCore(){
   { const pen=capOverOwner(u,y); if(pen){ delta+=pen; why.push([`샐러리캡 초과(${Math.round(capInfo(G.user).over/capInfo(G.user).cap*100)}%)`,pen]); } }
   const gy=lateGM?{d:0,lines:['시즌 종료 뒤 부임해 당해 평가는 전임 단장에게 귀속됩니다.']}:goalYearEnd(rkNow,fin); delta+=gy.d; why.push(['구단주 목표(순위·재정·여론)',gy.d]); if(!G.unemp&&!lateGM)try{ const op=opPromSettle(G.user,y,rkNow); if(op){ delta+=op; why.push(['다시 설득하며 한 성적 약속',op]); } }catch(e){} /* 94_owner_push */ const pz=(G.pr?(G.pr.press-50)/10:0); delta+=pz; why.push(['언론 논조',pz]);
   if(ex&&delta<-5){ const cap=-5-(u.cash<0?5:0); if(delta<cap){ why.push([`창단 ${ex}년차 유예(감점 한도)`,cap-delta]); delta=cap; } } /* 유예 중 결산 감점은 -5까지(자금 마이너스면 -10까지) */
-  if(lateGM){delta=0;why.splice(0,why.length,['시즌 종료 뒤 부임(당해 평가 제외)',0]);}delta=Math.round(HARD()&&delta<0?delta*1.3:delta); const before=u.trust; u.trust=clamp(u.trust+delta,0,100);
+  if(lateGM){delta=0;why.splice(0,why.length,['시즌 종료 뒤 부임(당해 평가 제외)',0]);}delta=Math.round(HARD()&&delta<0?delta*1.3:SOFT()&&delta<0?delta*.8:delta); const before=u.trust; u.trust=clamp(u.trust+delta,0,100);
   const grace=ex&&!expFinDisaster(G.user); { const fl=Math.min(15,before); if(grace&&u.trust<fl){ why.push([`창단 ${ex}년차 유예(성적 경질 없음)`,fl-u.trust]); u.trust=fl; delta=u.trust-before; } } /* 유예 중에는 경질선(12) 위에서 멈춘다. 재정 사고(현금 -80억 아래)는 예외 */
   const notes=[];
   for(const tr of G.trades.filter(x=>x.y===y&&!x.revealed)){ tr.revealed=true; if(tr.diff>7&&(tr.me??G.user)===ME()){ /* 전 구단에서 한 거래는 지금 구단 관계·결산에 넣지 않는다(검수 11-09h) */ const t=team(tr.with); t.rel=clamp(t.rel-6,0,100); notes.push(`${tname(tr.with)} 단장이 지난 트레이드에서 손해를 봤다고 판단해 관계가 나빠졌습니다.`);} }

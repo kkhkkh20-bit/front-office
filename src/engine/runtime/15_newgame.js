@@ -1,7 +1,7 @@
 /* ===== 새 게임 ===== */
-/* 시작 세계(지난 시즌 2025 사전 경기 포함)를 만드는 동안에는 경기 후반 불 끄기 교체(06_game lateFire)를 쓰지 않는다: 새 게임 시작 세계와 난수 흐름이 불펜 규칙 추가 전과 같게 */
+/* 시작 세계(지난 시즌 2025 사전 경기 포함)를 만드는 동안에는 경기 후반 불 끄기 교체(06_game lateFire)와 사회복무요원 전환(20_military milSocOk)을 쓰지 않는다: 새 게임 시작 세계와 난수 흐름이 두 규칙 추가 전과 같게 */
 let WORLD_BUILD=0;
-function buildWorld(opts){ WORLD_BUILD++; try{ return buildWorld0(opts); } finally{ WORLD_BUILD--; } }
+function buildWorld(opts){ WORLD_BUILD++; MIL_SOC_OFF++; try{ return buildWorld0(opts); } finally{ WORLD_BUILD--; MIL_SOC_OFF--; } }
 function buildWorld0(opts){ const lite=!!(opts&&opts.lite); /* lite: 지난 시즌(2025) 경기를 치르지 않은 가벼운 세계(대회·유저 래더 경기장용. 커리어는 쓰지 않음) */ const userTid=0; worldReset();
   G={ver:4,year:2026,day:0,user:userTid,teams:[],players:{},nextId:1,history:[],log:[],lg:{},lineup:{},mail:[],stops:[],games:[],offers:[],mgr:{},mmarket:[],med:{prev:1,hosp:'none'},spend:{scout:0,mgr:0,med:0,hosp:0,dev:0,intl:0,fac:0},intl:{us:1,la:0,jp:0,tw:0,au:0},fac:{lv:2,build:null},devProg:[],ovs:[],tut:{step:0,done:false},tutFlags:{},
      scouts:[],scoutMarket:[],marketing:2000,draft:null,fa:null,trades:[],last:null,gameOver:null,contract:null,fmarket:[],live:null}; syncMinSal(); /* 최저 연봉은 연도에 따른 전역 값: 2027년 이후 저장을 불러온 뒤 새 게임을 만들면 33(2027년 값)이 남아 2026년 세계의 연봉·생성이 달라졌다 */

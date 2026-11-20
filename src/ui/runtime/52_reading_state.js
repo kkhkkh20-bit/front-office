@@ -9,7 +9,7 @@ function rememberReading(host){if(!host?.dataset.readingContext)return;const con
  /* 휴대폰: 스크롤로 접힌 위쪽 머리(wsSet)도 기억한다. 다시 그릴 때 펼쳐지면 목록이 그만큼 밀려 '맨 위로 튄다'(카페 11-13: 학교 후원·인맥 관리) */
  const mn=host.querySelector('main.ws-frame,main.inbox-workspace');UI._wsKeep=UI._wsKeep||{};UI._wsKeep[host.id]=mn&&mn._wsy?{c:context,y:mn._wsy,mx:mn._wsMx}:null;
  /* 위 목록에 없는 안쪽 스크롤 칸(관계도 여러 명 선택 목록·인물 카드 묶음 등)도 기억한다. 같은 모양(태그·클래스)의 몇 번째 칸인지로 다시 찾는다(모바일 점검 11-13: 체크할 때마다 맨 위로) */
- UI.readingScrollX=UI.readingScrollX||{};const X=[];for(const el of host.querySelectorAll('[class]')){if(el.scrollTop<=0||el.matches(READING_SCROLL)||el.matches('main.ws-frame'))continue;const cls=el.getAttribute('class');X.push({t:el.tagName,c:cls,i:readingSameIndex(host,el,cls),y:el.scrollTop});if(X.length>=12)break;}UI.readingScrollX[context]=X;
+ UI.readingScrollX=UI.readingScrollX||{};const X=[];const skipR=host.querySelector('.ibx-list .ibr')?new Set(host.querySelectorAll('.ibx-list .ibr *')):null; /* inbox row insides never scroll; reading their scrollTop forced one layout per off-screen row (content-visibility rows, perf 11-21) */for(const el of host.querySelectorAll('[class]')){if(skipR&&skipR.has(el))continue;if(el.scrollTop<=0||el.matches(READING_SCROLL)||el.matches('main.ws-frame'))continue;const cls=el.getAttribute('class');X.push({t:el.tagName,c:cls,i:readingSameIndex(host,el,cls),y:el.scrollTop});if(X.length>=12)break;}UI.readingScrollX[context]=X;
 }
 function readingSameAll(host,tag,cls){return [...host.getElementsByClassName(cls.trim().split(/\s+/)[0]||'')].filter(e=>e.tagName===tag&&e.getAttribute('class')===cls);}
 function readingSameIndex(host,el,cls){return readingSameAll(host,el.tagName,cls).indexOf(el);}
