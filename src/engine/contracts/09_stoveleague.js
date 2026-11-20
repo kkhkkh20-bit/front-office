@@ -323,6 +323,10 @@ function faBestOf(p,offers){ let b=null,bs=-1; for(const o of offers){ const s=f
 /* faScore를 항목별로 푼 값(곱하면 faScore와 같다): 계약에서 밀린 까닭을 사용자에게 그대로 알려 주는 데 쓴다. 식을 바꾸면 faScore와 함께 바꾼다(규칙 점검이 둘을 맞춰 본다) */
 function faScoreParts(p,o){ const ag=agNeg(p); const lk=ag.self?2:1; const home=1.08+(ag.self?.04:0)+((p.pers?p.pers.loy:10)-10)/100*lk+((p.mor??60)-60)/300; const ng=G.fa&&G.fa.neg&&G.fa.neg[p.id]; const U=ME(); const A=faAppeal(p,o.tid);
   return {money:o.annual*(1+.06*(o.years-1)),home:o.tid===p.faFrom?home:1,neg:o.tid===U&&ng?(ng.deal?1.06:ng.hot?1.02:1)*(.9+ng.mood/500):1,rel:1+(agRel(ag,o.tid)-50)/1000*(ag.size==='big'?2:1)*(ag.style==='rel'?2:1),deal:1+agDealBonus(ag,o.tid)*.25,appeal:A.f,ap:A.parts,dom:domFaPull(p,o.tid),hard:o.tid===U&&HARD()?.92:1}; }
+/* 같은 돈이어도 선수가 그 구단(B)을 우리(M)보다 더 쳐 주는 까닭들(faScoreParts 두 개): [비율 차이, 이름]. 실패 안내(faLostWhy)와 협상실의 다른 구단 조건 안내가 같은 표를 쓴다 */
+function faWhyW(M,B){ const W=[]; if(B.home/M.home>1.005)W.push([B.home/M.home-1,'원소속 구단에 남고 싶은 마음']);
+  { const d=B.appeal/M.appeal-1; if(d>.005){ const lab=l=>l.startsWith('명성')?'명성':l.startsWith('연고')||l.startsWith('고향')?'연고':l, mv={}, bv={}; for(const [l,v] of M.ap)mv[lab(l)]=(mv[lab(l)]||0)+v; for(const [l,v] of B.ap)bv[lab(l)]=(bv[lab(l)]||0)+v; const ks=[...new Set([...Object.keys(mv),...Object.keys(bv)])].filter(k=>(bv[k]||0)-(mv[k]||0)>=.01).sort((x,y)=>((bv[y]||0)-(mv[y]||0))-((bv[x]||0)-(mv[x]||0))); W.push([d,`그 구단의 매력${ks.length?`(${ks.slice(0,3).join('·')})`:''}`]); } }
+  if(B.rel/M.rel>1.005)W.push([B.rel/M.rel-1,'에이전트와 그 구단의 친분']); if(B.deal/M.deal>1.005)W.push([B.deal/M.deal-1,'에이전트의 그 구단 계약 실적']); if(M.neg<.995)W.push([1/M.neg-1,'우리와의 협상 분위기']); if(B.dom/M.dom>1.005)W.push([B.dom/M.dom-1,'독주하는 구단을 꺼리는 마음']); if(M.hard<1)W.push([1/M.hard-1,'하드 모드 불이익']); return W; }
 /* 우리 제안이 비교 끝에 밀린 까닭(제보 11-19: 금액은 우리가 가장 높았는데 다른 구단과 더 낮은 금액에 계약하고, 안내는 '밀렸습니다'뿐).
    돈이 모자랐으면 그렇게, 돈은 앞섰는데 졌으면 무엇이 얼마나 더 컸는지와 같은 기간에 앞서려면 필요했던 연봉을 적는다. 계약 직전(소속을 바꾸기 전)에 부른다.
    now: 시장 보고에 쓰는 현재형(금액은 우리가 높은데 뒤질 때만) */
@@ -333,9 +337,7 @@ function faLostWhy(p,mine,best,now){ try{ if(!p||!mine||!best||mine.tid===best.t
   const need=Math.ceil(mine.annual*sb/sm/5)*5, needTxt=mine.terms?'':` ${mine.years}년 계약이면 연 ${money(need)} 이상이어야 앞섰습니다.`;
   if(now&&M.money<B.money)return ''; /* 시장 보고(now): 돈이 모자란 경우는 에이전트가 이미 상대 조건을 말한다 */
   if(M.money<B.money*.995&&M.money*sb/sm<=B.money*1.005)return ` 우리 제안(${my})은 금액·기간에서 밀렸습니다.${needTxt}`; /* 돈 차이가 전부일 때 */
-  const W=[]; if(B.home/M.home>1.005)W.push([B.home/M.home-1,'원소속 구단에 남고 싶은 마음']);
-  { const d=B.appeal/M.appeal-1; if(d>.005){ const lab=l=>l.startsWith('명성')?'명성':l.startsWith('연고')||l.startsWith('고향')?'연고':l, mv={}, bv={}; for(const [l,v] of M.ap)mv[lab(l)]=(mv[lab(l)]||0)+v; for(const [l,v] of B.ap)bv[lab(l)]=(bv[lab(l)]||0)+v; const ks=[...new Set([...Object.keys(mv),...Object.keys(bv)])].filter(k=>(bv[k]||0)-(mv[k]||0)>=.01).sort((x,y)=>((bv[y]||0)-(mv[y]||0))-((bv[x]||0)-(mv[x]||0))); W.push([d,`그 구단의 매력${ks.length?`(${ks.slice(0,3).join('·')})`:''}`]); } }
-  if(B.rel/M.rel>1.005)W.push([B.rel/M.rel-1,'에이전트와 그 구단의 친분']); if(B.deal/M.deal>1.005)W.push([B.deal/M.deal-1,'에이전트의 그 구단 계약 실적']); if(M.neg<.995)W.push([1/M.neg-1,'우리와의 협상 분위기']); if(B.dom/M.dom>1.005)W.push([B.dom/M.dom-1,'독주하는 구단을 꺼리는 마음']); if(M.hard<1)W.push([1/M.hard-1,'하드 모드 불이익']);
+  const W=faWhyW(M,B);
   W.sort((x,y)=>y[0]-x[0]); const why=W.slice(0,3).map(w=>`${w[1]}(${pc(w[0])}%)`).join(', ');
   if(now)return ` 금액은 단장님 제안이 더 높지만${why?`, 선수는 ${why}을(를) 더 크게 봅니다`:' 선수 평가에서는 밀립니다'}.${mine.terms?'':` ${mine.years}년 계약이면 연 ${money(need)} 이상이어야 앞섭니다.`}`;
   if(M.money>=B.money)return ` 우리 제안(${my})이 금액으로는 더 좋았지만${why?`, 선수는 ${why}을(를) 더 크게 봤습니다`:' 선수 평가에서 밀렸습니다'}.${needTxt}`;

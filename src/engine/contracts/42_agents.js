@@ -234,6 +234,20 @@ function agMatchOffer(id){ const p=G.players[id]; { const n0=G.fa&&G.fa.neg&&G.f
   const unit=faScore(p,{tid:G.user,annual:100,years:rv.years})/100; const need=round5(faScore(p,rv)*1.02/Math.max(.01,unit)+2); const n=G.fa.neg&&G.fa.neg[id];
   if(!(unit>0)||!isFinite(need))return null; return {annual:Math.max(need,n&&n.counter&&n.counter.years===rv.years?n.counter.annual:0),years:rv.years}; }
 
+/* 다른 구단 최고 조건 풀이(제보 11-20 FC서울: 요구 연 7.6억인데 '최고 조건 넘기기'는 연 30.65억, 다른 구단 3년 연 40억이라더니 연봉 20억에 계약).
+   한 기준으로 보여 준다: 그 구단 조건은 기간 · 연평균(상한 반영 = 계약금 포함 총액 ÷ 기간) · 총액, 계약하면 AI 계약과 같은 식(aiFaSplit)으로 계약금+연봉으로 나뉜다.
+   우리가 앞서려면 필요한 '환산 연봉'(계약금은 연평균으로 친 값, 협상 테이블의 요구와 같은 기준)과, 같은 돈이어도 선수가 그 구단을 더 쳐 주는 까닭(faWhyW).
+   보여 주는 값만 계산한다: 난수·상태를 바꾸지 않는다. 협상이 결렬됐으면 null(agMatchOffer와 같은 조건) */
+function faRivalView(id){ const F=G.fa, p=G.players[id]; if(!F||!p||!F.ai||p.team!=null)return null; const mo=agMatchOffer(id); if(!mo)return null;
+  const L=Object.entries(F.ai[id]||{}).map(([tid,o])=>({tid:+tid,annual:o.annual,years:o.years})).filter(o=>faAiOk(o.tid,p,o)); const rv=faBestOf(p,L); if(!rv)return null;
+  const sp=aiFaSplit(p,rv); const M=faScoreParts(p,{tid:G.user,annual:rv.annual,years:rv.years}), B=faScoreParts(p,rv); const ag=agNeg(p);
+  const D=termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years}), dv=Math.round(termsVal(D,D)); const dBeats=faScore(p,{tid:G.user,annual:dv,years:D.years})>=faScore(p,rv)*1.01;
+  return {tid:rv.tid,named:!ag.self&&agRel(ag)>=60,own:rv.tid===p.faFrom,years:rv.years,avg:rv.annual,tot:rv.annual*rv.years,bonus:sp.bonus,sal:sp.annual,need:mo.annual,needY:mo.years,why:faWhyW(M,B),dem:dv,demY:D.years,dBeats}; }
+/* '다른 구단 넘기기' 묶음: 요구 묶음 모양(역할·거부권·계약금 비중) 그대로, 다른 구단 최고 조건 기간에 맞춰 앞서는 환산 연봉까지 올린다.
+   요구 기준(faWantFor)보다 낮아지지 않는다. 상한·예산 결재는 제안할 때 똑같이 받는다(faCapCheck·faFundsCheck) */
+function faBeatTerms(id){ const p=G.players[id]; const V=faRivalView(id); if(!p||!V)return null; const y=V.needY; const D=termsDemand(p,'fa',{annual:faWantA(p),years:p.ask.years});
+  const want=faWantFor(p,G.user)*.97/(1+.06*(y-1)); const tgt=Math.max(V.need,Math.ceil(want/5)*5+5); const T=termsDemand(p,'fa',{annual:tgt,years:y}); delete T.ov; T.role=D.role; T.ntc=D.ntc;
+  for(let i=0;i<400&&termsVal(T,D)<tgt;i++)T.annual+=5; return T; }
 /* 에이전트가 있는 선수: 담당자가 정해진 선수만(agCat·agSeasonTick). 그 밖의 선수는 본인이 직접 협상한다(수수료 없음) */
 function hasAgent(p){ return !!agentOf(p); }
 function agWho(p){ const ag=agentOf(p); if(!ag)return `${p.name} 본인`; return `${ag.name} 에이전트(${ag.firm})`; }
