@@ -156,7 +156,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
      sv: 큰 리드로 올라왔다가 세이브 상황(리드 1~3점 또는 동점 주자가 누상·타석·대기 타석)이 됐거나, 세이브 상황에 올라와 2점 이상 줬다 → 마무리(없으면 필승조)
      run: 2점 이상 줘서 동점~4점 리드로 좁혀졌다 → 필승조 · cl: 마무리가 동점을 허용했거나 3점 이상 줬다 → 필승조
      게임 상태로만 정한다(난수 없음). 바꿀 필승조·마무리가 없으면(이미 던졌거나 연투·피로 한도) 그대로 둔다. 모든 구단 같은 규칙, 퓨처스 제외 */
-  function lateFire(fs,L,nr){ const c=fs.cur, x=c&&fs.box.get(c.id); if(!x||fs.farm||fs.curIsSP)return null; const e0=fs.entry[c.id]??L, r0=(fs.entryR||{})[c.id]||0, drop=e0-L, svs=(l,n)=>l>=1&&(l<=3||l<=n+2);
+  function lateFire(fs,L,nr){ const c=fs.cur, x=c&&fs.box.get(c.id); if(!x||fs.farm||fs.curIsSP||WORLD_BUILD>0)return null; /* 새 게임 시작 세계(2025 사전 경기)에서는 쓰지 않는다 */ const e0=fs.entry[c.id]??L, r0=(fs.entryR||{})[c.id]||0, drop=e0-L, svs=(l,n)=>l>=1&&(l<=3||l<=n+2);
     if(c===fs.pen[0])return (e0>=1&&L<=0)||drop>=3?'cl':null;
     if(svs(L,nr)&&(!svs(e0,r0)||drop>=2))return 'sv';
     if(drop>=2&&L>=0&&L<=4)return 'run';

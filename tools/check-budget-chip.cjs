@@ -13,6 +13,7 @@ const chip=()=>p.evaluate(()=>{const c=[...document.querySelectorAll('#app .chip
     full:money(budget().roomGoal),short:moneyShort(budget().roomGoal),over:document.documentElement.scrollWidth>innerWidth+1,W:innerWidth,H:innerHeight,rowR:rr&&rr.top<r.bottom&&rr.bottom>r.top?Math.round(rr.right):null};});
 for(const [w,h] of SIZES){await p.setViewportSize({width:w,height:h});await p.waitForTimeout(200);let pos=null;
  for(const s of SCREENS){await go(s);await p.waitForTimeout(60);const c=await chip(),m=w+' '+s+' '+JSON.stringify(c);
+  if(w<700){ assert.equal(c.n,0,'휴대폰 세로는 예산 여유 칩을 빼고 탭 줄을 넓힌다(사용자 11-20: 탭이 잘릴 거면 남은 예산은 빼기) '+m); const tr=await p.evaluate(()=>{ const n=document.querySelector('#app main.content :is(.ws-tab-row,.subtabs,.ibx-tabs)'); return n?[Math.round(n.getBoundingClientRect().right),innerWidth]:null; }); if(tr!=null)assert.ok(tr[0]>=tr[1]-60,'탭 줄이 오른쪽 끝(물음표 단추 앞)까지 '+tr+' '+m); continue; }
   assert.equal(c.n,1,'예산 여유 칩 하나가 보여야 함 '+m);assert.ok(c.hit,'칩이 가려지지 않고 눌림 '+m);assert.ok(c.r[0]>=0&&c.r[2]<=c.W&&c.r[1]>=0&&c.r[3]<=c.H,'칩이 화면 안 '+m);assert.ok(!c.over,'가로 넘침 없음 '+m);
   if(w>=1100)assert.ok(c.inFm&&!c.mini&&c.txt.replace(/^-/,'')===c.full.replace(/^-/,''),'PC는 하위 탭 줄 오른쪽 긴 꼴 '+m);
   else if(w<980){assert.ok(c.inSub&&c.mini&&c.txt.replace(/^-/,'')===c.short.replace(/^-/,''),'휴대폰은 짧은 꼴 '+m);if(c.rowR!=null)assert.ok(c.rowR<=c.r[0]+1,'탭 줄이 칩 밑으로 들어가지 않음 '+m);}
@@ -20,7 +21,7 @@ for(const [w,h] of SIZES){await p.setViewportSize({width:w,height:h});await p.wa
   const k=c.r[0]+','+c.r[1];if(pos==null)pos=k;assert.equal(k,pos,'모든 화면에서 같은 자리 '+m);}
  console.log('예산 여유 칩',w+'x'+h,SCREENS.length,'개 화면 같은 자리 · 보임 통과');}
 /* 돈을 쓰면 바로 바뀐다: 코치 영입(전체 다시 그림), 코치 연수(창만 다시 그림), 시설 공사 */
-for(const [w,h] of [[1366,768],[390,844]]){await p.setViewportSize({width:w,height:h});await p.waitForTimeout(200);
+for(const [w,h] of [[1366,768],[768,1024]]){await p.setViewportSize({width:w,height:h});await p.waitForTimeout(200); /* 휴대폰 세로는 칩이 없다(11-20): 짧은 꼴 갱신은 세로 태블릿에서 본다 */
  await go('staff:smkt');const c0=await chip();
  const hired=await p.evaluate(()=>{const r0=budget().roomGoal;const c=(G.cmarket||[]).filter(x=>x.sal>0).sort((a,b)=>b.sal-a.sal)[0];if(!c)return null;A.hireCoach(c.id+':3');if(UI.cfm)A.cfmOk();return {r0,r1:budget().roomGoal,name:c.name,ok:!(G.cmarket||[]).some(x=>x.id===c.id)};});
  assert.ok(hired&&hired.ok&&hired.r1!==hired.r0,w+' 코치 영입으로 예산 여유가 바뀜 '+JSON.stringify(hired));
@@ -31,7 +32,7 @@ for(const [w,h] of [[1366,768],[390,844]]){await p.setViewportSize({width:w,heig
  await p.evaluate(()=>{closeSheets();UI.cfm=null;cfmRender();A.go('home');});}
 /* 코치 연수는 11월 1일~12월 15일에만 보낼 수 있어 날짜를 옮겨 따로 본다(창만 다시 그리는 지출) */
 await p.evaluate(()=>{G.day=dnum(G.year,11,1);G.ps=null;G.res=null;closeSheets();render();});
-for(const [w,h] of [[1366,768],[390,844]]){await p.setViewportSize({width:w,height:h});await p.waitForTimeout(200);
+for(const [w,h] of [[1366,768],[768,1024]]){await p.setViewportSize({width:w,height:h});await p.waitForTimeout(200);
  await p.evaluate(()=>{const d=G.day;for(const T of coachStudyTickets().filter(T=>T.tid===G.user)){G.day=T.to;sisCtBack(T);}G.day=d;}); /* 앞 크기에서 보낸 코치를 돌려받는다(동시에 한 명만) */
  await go('staff:coach');const st=await p.evaluate(()=>{const C=coachesOf(G.user);const role=Object.keys(C).find(k=>C[k]&&!coachStudyOf(C[k].id)&&coachStudyOptions(k)?.fields.length&&coachStudyOptions(k).programs.some(x=>!coachStudyCheck(C[k].id,x.k,coachStudyOptions(k).fields[0].k)));if(!role)return {why:Object.keys(C).filter(k=>C[k]).map(k=>coachStudyCheck(C[k].id,'dom',coachStudyOptions(k)?.fields[0]?.k)).filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i)};A.coachStudyOpen(role);const s=UI.coachStudy,O=coachStudyOptions(role),P=O.programs.filter(x=>!coachStudyCheck(s.id,x.k,s.focus)).sort((a,b)=>b.cost-a.cost)[0];const r0=budget().roomGoal,n0=UI._rN;UI._cfmPass=true;try{A.coachStudySend([G.user,s.id,P.k,s.focus].join(':'));}finally{UI._cfmPass=false;}return {r0,r1:budget().roomGoal,cost:P.cost,sheetOnly:!!document.querySelector('#sheet [id^="coach-study-"]'),msg:UI.coachStudyMsg&&UI.coachStudyMsg[s.id]};});
  assert.ok(st&&st.r1!==st.r0,w+' 코치 연수 비용이 예산 여유에 잡힘 '+JSON.stringify(st));
