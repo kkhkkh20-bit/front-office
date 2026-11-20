@@ -3450,6 +3450,9 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .ibx-fsep{flex:none;width:1px;height:16px;background:var(--line);margin:0 4px}
 .ibx-unread-only.on{background:var(--warn,#d9822b);border-color:var(--warn,#d9822b)}
 @media (max-width:1099px){ .ibx-from{margin:0 0 8px} }
+
+/* 보낸이 필터 접기(카페 11-20) */
+.ibx-fwrap{margin:-4px 0 10px}.ibx-fwrap>.ibx-fsum{cursor:pointer;color:var(--muted,#9aa7b4);padding:6px 2px;list-style:none}.ibx-fwrap>.ibx-fsum::-webkit-details-marker{display:none}.ibx-fwrap>.ibx-fsum::after{content:" ▾"}.ibx-fwrap[open]>.ibx-fsum::after{content:" ▴"}.ibx-fwrap>.ibx-from{margin:4px 0 0}
 /* 창단 드래프트 지명 직후 카드 · 창단 지명 평가 */
 .fde-rv{width:min(400px,100%)}
 .fde-ts{display:flex;flex-wrap:wrap;gap:6px}
@@ -39660,7 +39663,9 @@ function advNextStop(per){ if(G.unemp)return ''; const g=nextGames(1)[0]; if(g&&
 function advMenu(per,b){ const game=!G.unemp&&(per==='season'||per==='post')&&nextGames(1).length>0, d1=G.day+1;
   const L=[{a:'adv',v:'day',l:'하루',s:`${dmd(d1)}(${WD[dobj(d1).w]})까지`,disabled:!!b},
     game&&{a:'adv',v:'next',l:'다음 경기',s:'한 경기만 진행',disabled:!!b},
-    !G.unemp&&{a:'advMore',v:'',l:'길게',s:'1주일 · 한 달 · 주요 일정 전날',disabled:!!b},
+    !G.unemp&&{a:'advPick',v:'week',l:'1주일',s:`${dmd(G.day+7)}까지 · 중요한 소식이 오면 멈춤`,disabled:!!b},
+    !G.unemp&&{a:'advPick',v:'mon',l:'한 달',s:`${dmd(G.day+30)}까지 · 중요한 소식이 오면 멈춤`,disabled:!!b},
+    !G.unemp&&{a:'advMore',v:'',l:'주요 일정 전날',s:'드래프트·FA·개막 같은 일정 전날까지 고르기',disabled:!!b}, /* 카페 11-20: '길게' 안에 1주일·한 달을 넣어 두 번 눌러야 했다. 자주 쓰는 길이는 바로 고르게 꺼내 둔다 */
     !G.unemp&&{a:'calOpen',v:'',l:'날짜 지정',s:'캘린더에서 고른 날까지'},
     per==='season'&&game&&{a:'matchOpen',v:'',l:'중계 선택',s:'다음 경기를 중계로 볼지 고르기',disabled:!!b},
     {a:'stopCfg',v:'',l:'멈춤 조건',s:'어떤 소식에서 멈출지'}];
@@ -42547,7 +42552,9 @@ function ibFromList(f){ const n={}; for(const m of mailFilter(f))n[m.from]=(n[m.
 function ibSub(f,list){ const F=UI.mfFrom; if(F&&list.length&&!list.some(m=>m.from===F))UI.mfFrom=null; /* 분류를 바꿔 그 보낸이가 없으면 필터를 푼다 */
   return list.filter(m=>(!UI.mfFrom||m.from===UI.mfFrom)&&(!UI.mfUnread||!m.read)); }
 function ibFromChips(f){ const L=ibFromList(f); if(!L.length)return ''; const top=L.slice(0,10), cur=UI.mfFrom;
-  return `<div class="chips ibx-from" role="group" aria-label="보낸이·읽음 필터"><button data-a="mfFrom" data-v="" class="${cur?'':'on'}">모든 보낸이</button>${top.map(([k,n])=>`<button data-a="mfFrom" data-v="${esc(k)}" class="${cur===k?'on':''}">${esc(k)}<i>${n}</i></button>`).join('')}${cur&&!top.some(x=>x[0]===cur)?`<button data-a="mfFrom" data-v="${esc(cur)}" class="on">${esc(cur)}</button>`:''}<span class="ibx-fsep"></span><button data-a="mfUnread" class="ibx-unread-only ${UI.mfUnread?'on':''}" aria-pressed="${!!UI.mfUnread}">읽지 않음만</button></div>`; }
+  /* 카페 11-20: 보낸이 칩이 화면을 많이 차지해 지저분했다. 기본은 한 줄로 접고, 펼치면 칩(펼침 상태는 화면 상태 UI.mfOpen) */
+  const sum=`<summary class="ibx-fsum small">보낸이 필터 · <b>${esc(cur||'전체')}</b>${UI.mfUnread?' · 안 읽음만':''}</summary>`;
+  return `<details class="ibx-fwrap"${UI.mfOpen?' open':''} ontoggle="UI.mfOpen=this.open">${sum}<div class="chips ibx-from" role="group" aria-label="보낸이·읽음 필터"><button data-a="mfFrom" data-v="" class="${cur?'':'on'}">모든 보낸이</button>${top.map(([k,n])=>`<button data-a="mfFrom" data-v="${esc(k)}" class="${cur===k?'on':''}">${esc(k)}<i>${n}</i></button>`).join('')}${cur&&!top.some(x=>x[0]===cur)?`<button data-a="mfFrom" data-v="${esc(cur)}" class="on">${esc(cur)}</button>`:''}<span class="ibx-fsep"></span><button data-a="mfUnread" class="ibx-unread-only ${UI.mfUnread?'on':''}" aria-pressed="${!!UI.mfUnread}">읽지 않음만</button></div></details>`; }
 function ibList(f){ let list=ibSub(f,mailFilter(f)); const seen={}; UI._ibDup={}; const keep=UI.mailFocus||UI.ibSel||UI.ibOpen;
   list=list.filter(m=>{ if(m.oid||(m.acts&&m.acts.length&&!m.read)||m.id===keep||ibDecide(m)||(m.acts&&m.acts.length&&!mailDone(m)))return true; /* 진행 중인 일은 같은 제목이어도 따로(검수 11-07) */ const k=m.from+'|'+m.subj+'|'+m.body; if(seen[k]!=null){ (UI._ibDup[seen[k]]=UI._ibDup[seen[k]]||[]).push(m.id); return false; } seen[k]=m.id; return true; });
   return list; } /* G.mail은 새 소식이 앞: 화면도 최신부터 */
