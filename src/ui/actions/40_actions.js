@@ -78,6 +78,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   meetDo(v){ if(UI.meet){UI.meet.optsY=document.querySelector('.mt-opts')?.scrollTop||0;UI.meet.topic=v;}meetDo(v);render(); },
   ngtOpen(v){ const [k,id]=String(v).split(':'); UI._ngtY=0; ngtOpen(k,+id); },
   ngtSet(v){ const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=sheetScrollY(); ngtSet(v); renderSheet(); },
+  ngtBeat(){ const N=UI.ngt; if(!N||N.k!=='fa')return; UI._ngtY=sheetScrollY(); const T=faBeatTerms(N.id); if(!T){ N.msg='넘길 다른 구단 제안이 없습니다.'; renderSheet(); return; } N.T=ngtClean({...T,optC:N.T.optC,pm:{...(N.T.pm||{})}}); N.ed='beat'; N.kept=false; N.msg=`다른 구단 최고 조건보다 앞서는 조건으로 채웠습니다(${termsTxt(N.T,true)}).`; renderSheet(); },
   ngtDemand(){ const N=UI.ngt; if(!N)return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=sheetScrollY(); const D=ngtDemand(N); N.T=ngtClean({...D,years:N.T.years===D.years||N.k==='fa'?D.years:N.T.years,optC:N.T.optC}); if(N.k==='ext')N.T.role=null; N.ed='dem'; N.kept=false; renderSheet(); },
   ngtSubmit(){ if(!contractMoneyValid())return; const s=document.querySelector('#sheet .sheet.ngt'); UI._ngtY=0; ngtSubmit(); save(); render(); renderSheet(); },
   ngtCounter(){ UI._ngtY=0; ngtCounter(); save(); render(); renderSheet(); },

@@ -36,6 +36,11 @@ function pkSeasonProg(){ try{ const r=G.sea&&G.sea.rec; if(!r||(G.sea.y!=null&&G
    y가 다음 드래프트면 예전 pkSlot과 같은 식, 그 뒤 해는 지금 순위(10경기 전엔 지난 시즌 순서)로. 올해 확정 순서는 그대로 */
 function pkProjIdx(o,rd,y){ if(y===pkYear())return pkSlot(o,rd); let ord; const D=draftOrders(); if(pkSeasonProg()*144>=10||!D)ord=standingsNow().map(x=>x.tid).reverse(); else ord=[...D.r2];
   if(rd===1)ord=penOrder(ord,G.teams.filter(t=>t.pickPen===y).map(t=>t.id)); const i=ord.indexOf(o); return i<0?5:i; }
+/* 화면 표시용 순번(라운드 안 1부터): 올해 드래프트 순서가 정해졌으면 확정, 아니면 지금 순위 역순 어림(pkProjIdx와 같은 식).
+   첫 시즌처럼 경기가 거의 없고 지난 순서도 없으면 시즌 전 전력 예상(G.proj)의 역순으로 보인다(표시만, 거래 가치 계산은 그대로). 난수 없음 */
+function pkDispNo(k){ const {rd,o,y}=pkParse(k); const fixed=y===pkYear()&&pkYear()===G.year&&!!draftOrders(); let i, why;
+  if(fixed){ i=pkSlot(o,rd); why='확정 순번'; } else if(pkSeasonProg()*144<10&&!draftOrders()&&Array.isArray(G.proj)&&G.proj.includes(o)){ const ord=[...G.proj].reverse(); i=(rd===1?penOrder(ord,G.teams.filter(t=>t.pickPen===y).map(t=>t.id)):ord).indexOf(o); why='예상 순번(시즌 전 전력 예상의 역순)'; } else { i=pkProjIdx(o,rd,y); why=y>pkYear()?'예상 순번(지금 순위 역순 · 먼 해라 바뀌기 쉬움)':'예상 순번(지금 순위의 역순)'; }
+  return {n:(i<0?5:i)+1,fixed,why}; }
 function pkSlotY(o,rd,y){ const i=pkProjIdx(o,rd,y); if(!(y>G.year))return i; const n=G.teams.length, mid=(n-1)/2; const w=y===G.year+1?.5+.45*pkSeasonProg():.4; return mid+(i-mid)*w; }
 /* 시간 할인: 그 드래프트까지 남은 해(올해 0, 내년 1, 후년 2). 순번이 정해지지 않았고 후보도 아직 모른다 */
 const PK_DISC=[1,.92,.82];
