@@ -1,9 +1,51 @@
 {
-  "production_complete": false,
-  "runtime_B_identities": 0,
+  "production_complete": true,
+  "runtime_B_identities": 100,
   "generated_uniform_boards": 121,
-  "passed_complete_uniform_families": 81,
+  "passed_complete_uniform_families": 100,
   "complete_cohort_reports": [
+    {
+      "cohort": 10,
+      "photo_count": 33,
+      "identity_count": 3,
+      "same_person_min": {
+        "128": 0.7551888227462769,
+        "256": 0.7726202607154846,
+        "384": 0.8192480802536011
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.0141921953906348,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": 9,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.7439818382263184,
+        "256": 0.8068767786026001,
+        "384": 0.7847750186920166
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.0828262307031196,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
+    {
+      "cohort": 8,
+      "photo_count": 88,
+      "identity_count": 8,
+      "same_person_min": {
+        "128": 0.7849223613739014,
+        "256": 0.8517943620681763,
+        "384": 0.8599653244018555
+      },
+      "same_person_failures": [],
+      "center_deviation_max": 1.1169845558984264,
+      "passed": true,
+      "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
+    },
     {
       "cohort": 7,
       "photo_count": 88,
@@ -131,5 +173,6 @@
       "scope": "actual WebP carrier atlas prototype; final all-B runtime atlas recheck still required"
     }
   ],
-  "next": "Finish remaining uniform generation and carrier checks, then final B36 actual runtime atlas verification. A100 and A7 corrections complete."
+  "next": "Human age review pending; game integration belongs to Claude.",
+  "final_runtime_validation": "validation/stage_b/numeric_validation.json"
 }

@@ -1,0 +1,202 @@
+{
+  "requested_B_changes": [
+    {
+      "review_id": "Q071",
+      "seed_id": "pool_0263_2",
+      "status": "excluded_with_all_same_seed_aliases",
+      "game_id": null
+    },
+    {
+      "review_id": "Q042",
+      "seed_id": "pool_0204_0",
+      "status": "excluded_with_all_same_seed_aliases",
+      "game_id": null
+    },
+    {
+      "review_id": "Q047",
+      "seed_id": "pool_0217_2",
+      "status": "excluded_with_all_same_seed_aliases",
+      "game_id": null
+    },
+    {
+      "review_id": "Q064",
+      "seed_id": "pool_0256_0",
+      "status": "excluded_with_all_same_seed_aliases",
+      "game_id": null
+    },
+    {
+      "review_id": "Q074",
+      "seed_id": "pool_0268_2",
+      "status": "excluded_with_all_same_seed_aliases",
+      "game_id": null
+    },
+    {
+      "review_id": "Q067",
+      "seed_id": "pool_0257_3",
+      "status": "excluded_with_all_same_seed_aliases",
+      "game_id": null
+    },
+    {
+      "review_id": "Q075",
+      "seed_id": "pool_0271_1",
+      "status": "excluded_with_all_same_seed_aliases",
+      "game_id": null
+    },
+    {
+      "review_id": "Q054",
+      "seed_id": "pool_0233_1",
+      "game_id": "v21_amateur_B012",
+      "B_label": "B012",
+      "status": "corrected_full12_final_runtime_atlas_pass"
+    },
+    {
+      "review_id": "Q055",
+      "seed_id": "pool_0233_2",
+      "game_id": "v21_amateur_B013",
+      "B_label": "B013",
+      "status": "corrected_full12_final_runtime_atlas_pass"
+    },
+    {
+      "review_id": "Q083",
+      "seed_id": "pool_0284_0",
+      "game_id": "v21_amateur_B014",
+      "B_label": "B014",
+      "status": "corrected_full12_final_runtime_atlas_pass"
+    },
+    {
+      "review_id": "Q001",
+      "seed_id": "pool_0276_2",
+      "game_id": "v21_amateur_B009",
+      "B_label": "B009",
+      "status": "corrected_full12_final_runtime_atlas_pass"
+    },
+    {
+      "review_id": "Q024",
+      "seed_id": "pool_0083_3",
+      "game_id": "v21_amateur_B010",
+      "B_label": "B010",
+      "status": "corrected_full12_final_runtime_atlas_pass"
+    },
+    {
+      "review_id": "Q033",
+      "seed_id": "pool_0002_3",
+      "game_id": "v21_amateur_B011",
+      "B_label": "B011",
+      "status": "corrected_full12_final_runtime_atlas_pass"
+    }
+  ],
+  "candidate8": {
+    "game_id": "v21_amateur_B008",
+    "status": "hs_home_background_corrected",
+    "measurement": [
+      {
+        "variant": "hs_home",
+        "corner_RGB_median": [
+          104.0,
+          104.0,
+          108.0
+        ]
+      },
+      {
+        "variant": "univ",
+        "corner_RGB_median": [
+          101.0,
+          102.0,
+          106.0
+        ]
+      },
+      {
+        "variant": "seoul_comets",
+        "corner_RGB_median": [
+          107.0,
+          108.0,
+          111.0
+        ]
+      },
+      {
+        "variant": "seoul_hounds",
+        "corner_RGB_median": [
+          117.0,
+          117.0,
+          120.0
+        ]
+      },
+      {
+        "variant": "incheon_seagulls",
+        "corner_RGB_median": [
+          104.0,
+          104.0,
+          107.0
+        ]
+      },
+      {
+        "variant": "suwon_sparks",
+        "corner_RGB_median": [
+          109.0,
+          110.0,
+          113.0
+        ]
+      },
+      {
+        "variant": "goyang_storm",
+        "corner_RGB_median": [
+          100.0,
+          100.0,
+          104.0
+        ]
+      },
+      {
+        "variant": "daejeon_redfox",
+        "corner_RGB_median": [
+          109.0,
+          108.0,
+          110.0
+        ]
+      },
+      {
+        "variant": "gwangju_blazes",
+        "corner_RGB_median": [
+          108.0,
+          107.0,
+          109.0
+        ]
+      },
+      {
+        "variant": "daegu_thunders",
+        "corner_RGB_median": [
+          103.0,
+          103.0,
+          107.0
+        ]
+      },
+      {
+        "variant": "busan_waves",
+        "corner_RGB_median": [
+          106.0,
+          105.0,
+          110.0
+        ]
+      },
+      {
+        "variant": "changwon_anchors",
+        "corner_RGB_median": [
+          107.0,
+          108.0,
+          111.0
+        ]
+      }
+    ]
+  },
+  "A_corrected": [
+    "A062",
+    "A047",
+    "A038",
+    "A083",
+    "A061",
+    "A069",
+    "A093"
+  ],
+  "A_identity_age_level_index_lock_preserved": true,
+  "final_runtime_validation": "validation.json",
+  "asset_validation_passed": true
+}

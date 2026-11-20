@@ -1,0 +1,7 @@
+{
+  "actual_B_runtime_cells_verified": 3600,
+  "passed": true,
+  "A_atlas_bytes_unchanged_from_revision3": true,
+  "A_prior_verified_cells": 3600,
+  "raw_vectors_reused_only_on_exact_decoded_full_photo_RGB_SHA256_equality": true
+}

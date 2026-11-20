@@ -1,0 +1,305 @@
+[
+  {
+    "preview_id": "P174",
+    "id": "b_pool_0004_1__daegu_thunders",
+    "seed_id": "pool_0004_1",
+    "age": 21,
+    "level": "univ",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-0df70f8f-8e1c-4e6b-aa2b-117180f879e7.png",
+    "crop": [
+      3,
+      455,
+      432,
+      884
+    ],
+    "source": "correct_contact_sheet_row_boundary_crop_to_remove_neighbor_jersey_strip",
+    "visual_review": "pending",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_daegu_row_boundary/b_pool_0004_1__daegu_thunders.png",
+    "native_edge": 429,
+    "translation_origin_xy": [
+      1,
+      -21
+    ],
+    "center_256": [
+      130.84620666503906,
+      118.18431091308594
+    ],
+    "status": "normalized_not_approved",
+    "review_id": "B076",
+    "must_keep": false,
+    "first8_family_index": null,
+    "bundle": "alias",
+    "measurement_photo_id": "br3_frame_03_3",
+    "old_gallery_max": 0.29250776767730713,
+    "active_A100_max": 0.3807005286216736,
+    "detected_face_width_256": 102.75334167480469,
+    "bottom_extension_256": 0.0,
+    "needs_master_framing_repair": true,
+    "previous_assistant_face_pass": false,
+    "assistant_face_review": "pending",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "feature_index": 148,
+    "source_photo_id": "alt_native_pool_0004_1",
+    "variant": "daegu_thunders",
+    "canonical_screen_batch": 8,
+    "canonical_screen_index": 31,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3922596573829651,
+    "guard_old": 0.333906352519989,
+    "guard_B17": 0.3398464322090149,
+    "actual_photos": {
+      "id": "br3_frame_03_3",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch08/br3_frame_03_3_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch08/br3_frame_03_3_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch08/br3_frame_03_3_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C149",
+    "master_photo_id": "br3_frame_03_3",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B076",
+    "source_person_id": "b_pool_0004_1",
+    "index": 175,
+    "sheet": "B",
+    "cohort": 7
+  },
+  {
+    "id": "b_pool_0275_0__daegu_thunders",
+    "seed_id": "pool_0275_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-0df70f8f-8e1c-4e6b-aa2b-117180f879e7.png",
+    "crop": [
+      446,
+      455,
+      875,
+      884
+    ],
+    "source": "correct_contact_sheet_row_boundary_crop_to_remove_neighbor_jersey_strip",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_daegu_row_boundary/b_pool_0275_0__daegu_thunders.png",
+    "native_edge": 429,
+    "translation_origin_xy": [
+      -2,
+      -21
+    ],
+    "center_256": [
+      131.04348754882812,
+      118.4640121459961
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 89,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3928459584712982,
+    "guard_old": 0.33271729946136475,
+    "guard_B17": 0.3472687005996704,
+    "measurement_photo_id": "b_native_pool_0275_0",
+    "actual_photos": {
+      "id": "b_native_pool_0275_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0275_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0275_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0275_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C151",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 150,
+    "master_photo_id": "b_native_pool_0275_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B077",
+    "review_id": "B077",
+    "source_person_id": "b_pool_0275_0",
+    "index": 176,
+    "sheet": "B",
+    "variant": "daegu_thunders",
+    "cohort": 7
+  },
+  {
+    "id": "b_pool_0250_0__incheon_seagulls",
+    "seed_id": "pool_0250_0",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-9d193807-b822-4f2d-856c-6e6b8fb07ce3.png",
+    "crop": [
+      3,
+      476,
+      411,
+      884
+    ],
+    "source": "correct_contact_sheet_unequal_row_boundary_crop_to_remove_neighbor_jersey_strip",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_incheon_row_boundary/b_pool_0250_0__incheon_seagulls.png",
+    "native_edge": 408,
+    "translation_origin_xy": [
+      14,
+      -16
+    ],
+    "center_256": [
+      131.237060546875,
+      117.92503356933594
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 15,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.39915668964385986,
+    "guard_old": 0.3619045615196228,
+    "guard_B17": 0.3501250743865967,
+    "measurement_photo_id": "b_native_pool_0250_0",
+    "actual_photos": {
+      "id": "b_native_pool_0250_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0250_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0250_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch04/b_native_pool_0250_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C186",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 185,
+    "master_photo_id": "b_native_pool_0250_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B092",
+    "review_id": "B092",
+    "source_person_id": "b_pool_0250_0",
+    "index": 191,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 9
+  },
+  {
+    "id": "b_pool_0057_0__incheon_seagulls",
+    "seed_id": "pool_0057_0",
+    "age": 17,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-9d193807-b822-4f2d-856c-6e6b8fb07ce3.png",
+    "crop": [
+      446,
+      476,
+      854,
+      884
+    ],
+    "source": "correct_contact_sheet_unequal_row_boundary_crop_to_remove_neighbor_jersey_strip",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B_incheon_row_boundary/b_pool_0057_0__incheon_seagulls.png",
+    "native_edge": 408,
+    "translation_origin_xy": [
+      14,
+      -16
+    ],
+    "center_256": [
+      130.94094848632812,
+      118.7340316772461
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 1,
+    "canonical_screen_index": 16,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.3994234502315521,
+    "guard_old": 0.3243628740310669,
+    "guard_B17": 0.3803037405014038,
+    "measurement_photo_id": "b_base_pool_0057_0",
+    "actual_photos": {
+      "id": "b_base_pool_0057_0",
+      "128": "/dev/shm/v21b-work/B_canonical_pool/batch01/b_base_pool_0057_0_128.png",
+      "256": "/dev/shm/v21b-work/B_canonical_pool/batch01/b_base_pool_0057_0_256.png",
+      "384": "/dev/shm/v21b-work/B_canonical_pool/batch01/b_base_pool_0057_0_384.png"
+    },
+    "review_status": "pending_human_visual_review",
+    "canonical_preview_id": "C187",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 186,
+    "master_photo_id": "b_base_pool_0057_0",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B093",
+    "review_id": "B093",
+    "source_person_id": "b_pool_0057_0",
+    "index": 192,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 9
+  },
+  {
+    "id": "b_pool_0245_2__incheon_seagulls",
+    "seed_id": "pool_0245_2",
+    "age": 19,
+    "level": "hs",
+    "glasses": false,
+    "native_path": "/workspace/generated_images/exec-6f6cdbc7-d793-435a-9d6f-8f7067b4ff39.png",
+    "crop": [
+      3,
+      469,
+      418,
+      884
+    ],
+    "source": "correct_contact_sheet_unequal_row_boundary_crop_no_neighbor_strip",
+    "normalized_path": "/dev/shm/v21b-work/normalized_B100_incheon_boundary/b_pool_0245_2__incheon_seagulls.png",
+    "native_edge": 415,
+    "translation_origin_xy": [
+      12,
+      -11
+    ],
+    "center_256": [
+      130.8033447265625,
+      118.29960632324219
+    ],
+    "status": "normalized_not_approved",
+    "canonical_screen_batch": 4,
+    "canonical_screen_index": 2,
+    "canonical_screen_status": "candidate_only_actual_final_B_atlas_recheck_still_required",
+    "guard_A": 0.38501089811325073,
+    "guard_old": 0.3584372103214264,
+    "guard_B17": 0.2945689558982849,
+    "measurement_photo_id": "br3_noglasses_r2_1",
+    "actual_photos": {
+      "id": "br3_noglasses_r2_1",
+      "128": "/dev/shm/v21b-work/B_glasses_r2_canonical/br3_noglasses_r2_1_128.png",
+      "256": "/dev/shm/v21b-work/B_glasses_r2_canonical/br3_noglasses_r2_1_256.png",
+      "384": "/dev/shm/v21b-work/B_glasses_r2_canonical/br3_noglasses_r2_1_384.png"
+    },
+    "review_status": "manual_visual_pass_same_person_glasses_removed",
+    "canonical_preview_id": "C197",
+    "source_photo_id": "b_native_pool_0245_2",
+    "assistant_visual_review": {
+      "status": "pass",
+      "reason": null,
+      "basis": "manual inspection of canonical C001-C190 complete headshots"
+    },
+    "bottom_extension_256": 0.0,
+    "feature_index": 196,
+    "master_photo_id": "br3_noglasses_r2_1",
+    "existing_family_person_id": null,
+    "source_review_id": null,
+    "game_id": "v21_amateur_B100",
+    "review_id": "B100",
+    "source_person_id": "b_pool_0245_2",
+    "index": 199,
+    "sheet": "B",
+    "variant": "incheon_seagulls",
+    "cohort": 10
+  }
+]

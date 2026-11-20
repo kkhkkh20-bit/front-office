@@ -1,5 +1,5 @@
 {
-  "status": "INDIVIDUAL_PHOTO_FAMILY_REVIEW_NOT_RUNTIME",
+  "status": "HISTORICAL_INDIVIDUAL_FAMILY_REVIEW_SUPERSEDED_BY_FINAL_B100_RUNTIME",
   "production_complete": false,
   "human_age_review": "pending",
   "family_count": 17,
@@ -8575,5 +8575,7 @@
       "status": "FULL_FAMILY_INDIVIDUAL_EXPORT_PASS_NOT_FINAL_RUNTIME_ATLAS"
     }
   ],
-  "revision": 3
+  "revision": 3,
+  "superseded_by": "manifest.json",
+  "current_runtime_validation": "validation/stage_b/numeric_validation.json"
 }

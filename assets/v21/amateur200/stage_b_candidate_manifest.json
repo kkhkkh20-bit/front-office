@@ -1,5 +1,5 @@
 {
-  "status": "INCOMPLETE_FACE_MASTER_REVIEW_NOT_RUNTIME",
+  "status": "HISTORICAL_Q_CANDIDATE_REVIEW_SUPERSEDED_BY_FINAL_B100_RUNTIME",
   "candidate_count": 91,
   "production_complete": false,
   "human_age_review": "pending",
@@ -4005,5 +4005,7 @@
       ]
     }
   },
-  "current_change_manifest": "revision3_review.json"
+  "current_change_manifest": "revision3_review.json",
+  "superseded_by": "manifest.json",
+  "current_runtime_validation": "validation/stage_b/numeric_validation.json"
 }

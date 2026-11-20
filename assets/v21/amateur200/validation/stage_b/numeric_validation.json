@@ -1,0 +1,136 @@
+{
+  "schema_version": "v21b-complete-validation-1",
+  "production_complete": true,
+  "stage_a_complete": true,
+  "stage_b_complete": true,
+  "asset_validation_passed": true,
+  "human_age_review": "pending",
+  "human_age_approved_count": 0,
+  "identity_count": 200,
+  "photo_count": 2400,
+  "runtime_sheet_count": 72,
+  "sheets_ready": [
+    "A",
+    "B"
+  ],
+  "remaining_stage_b_identities": 0,
+  "levels": {
+    "hs": 120,
+    "univ": 80
+  },
+  "ages": {
+    "17": 26,
+    "22": 16,
+    "19": 69,
+    "18": 25,
+    "21": 36,
+    "20": 28
+  },
+  "glasses_count": 23,
+  "reference_gallery_count": 486,
+  "resolutions": {
+    "128": {
+      "same_identity_all_pairs": {
+        "comparison_count": 13200,
+        "minimum": 0.6061884164810181,
+        "worst_pair": [
+          "c004_p08__univ",
+          "c004_p08__suwon_sparks"
+        ],
+        "passed": true
+      },
+      "different_representatives": {
+        "comparison_count": 19900,
+        "maximum": 0.3995189368724823,
+        "nearest_pair": [
+          "c009_p06__hs_home",
+          "b_pool_0273_0__hs_home"
+        ],
+        "passed": true
+      },
+      "existing_representatives": {
+        "gallery_count": 486,
+        "comparison_count": 97200,
+        "gallery_resolution": 128,
+        "maximum": 0.3936682939529419,
+        "nearest_pair": [
+          "b_pool_0022_0__hs_home",
+          "v18_165"
+        ],
+        "passed": true
+      }
+    },
+    "256": {
+      "same_identity_all_pairs": {
+        "comparison_count": 13200,
+        "minimum": 0.6336751580238342,
+        "worst_pair": [
+          "c004_p08__univ",
+          "c004_p08__suwon_sparks"
+        ],
+        "passed": true
+      },
+      "different_representatives": {
+        "comparison_count": 19900,
+        "maximum": 0.3991968035697937,
+        "nearest_pair": [
+          "c005_p04__hs_home",
+          "b_pool_0045_1__hs_home"
+        ],
+        "passed": true
+      },
+      "existing_representatives": {
+        "gallery_count": 486,
+        "comparison_count": 97200,
+        "gallery_resolution": 256,
+        "maximum": 0.39723366498947144,
+        "nearest_pair": [
+          "b_pool_0022_0__hs_home",
+          "v18_165"
+        ],
+        "passed": true
+      }
+    },
+    "384": {
+      "same_identity_all_pairs": {
+        "comparison_count": 13200,
+        "minimum": 0.6495645046234131,
+        "worst_pair": [
+          "c004_p08__univ",
+          "c004_p08__seoul_comets"
+        ],
+        "passed": true
+      },
+      "different_representatives": {
+        "comparison_count": 19900,
+        "maximum": 0.3993172347545624,
+        "nearest_pair": [
+          "c000_p00__hs_home",
+          "b_pool_0057_0__hs_home"
+        ],
+        "passed": true
+      },
+      "existing_representatives": {
+        "gallery_count": 486,
+        "comparison_count": 97200,
+        "gallery_resolution": 256,
+        "maximum": 0.3983461856842041,
+        "nearest_pair": [
+          "b_pool_0224_3__hs_home",
+          "v18_142"
+        ],
+        "passed": true
+      }
+    }
+  },
+  "failures": [],
+  "face_center_max_deviation_256": 1.3185562176953027,
+  "face_center_anchor_256": [
+    130.98235626,
+    118.22048492
+  ],
+  "face_center_tolerance_256": 4,
+  "same_identity_minimum": 0.6061884164810181,
+  "different_representatives_maximum": 0.3995189368724823,
+  "existing_representatives_maximum": 0.3983461856842041
+}

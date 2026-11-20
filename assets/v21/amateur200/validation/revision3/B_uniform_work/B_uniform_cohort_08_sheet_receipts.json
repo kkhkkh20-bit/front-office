@@ -1,0 +1,167 @@
+[
+  {
+    "variant": "seoul_hounds",
+    "size": 128,
+    "sha256": "63a7516a00c3cc8fb1c859b12989b1d26c72f31d5040a7b1ff7440c8b2273ebc"
+  },
+  {
+    "variant": "seoul_hounds",
+    "size": 256,
+    "sha256": "63d7f0af1511aa4c24c951a5a02e28347c35d077bb871bf7683bc9b4ff13b722"
+  },
+  {
+    "variant": "seoul_hounds",
+    "size": 384,
+    "sha256": "38beddf986c12836e6bd75420e61c8026dc68f9de6ab803287d7febd07007550"
+  },
+  {
+    "variant": "incheon_seagulls",
+    "size": 128,
+    "sha256": "6c6190c8767508ef8e9fc738c997a3760c493e3dcef0624f460b7c2a2274a7d7"
+  },
+  {
+    "variant": "incheon_seagulls",
+    "size": 256,
+    "sha256": "7ea54a4c6b8bcd40acbeafebeb35907b30a4685ddc4d87a522c88253c813c27a"
+  },
+  {
+    "variant": "incheon_seagulls",
+    "size": 384,
+    "sha256": "cc4317b24fab51ce139b710750bf4d3ab758522e2c9ce283b1efbac173734b11"
+  },
+  {
+    "variant": "suwon_sparks",
+    "size": 128,
+    "sha256": "c361a8ab4d8afd60b1cd48589477e2b1913d3c0aad9055c8da6169bdf4a6c620"
+  },
+  {
+    "variant": "suwon_sparks",
+    "size": 256,
+    "sha256": "41b3e5b4695ba1b5c4cb5e09d9495fdf98901975ca52dd2ecf35c96bf69b75d2"
+  },
+  {
+    "variant": "suwon_sparks",
+    "size": 384,
+    "sha256": "7c35b86ea46e2d17d7030c089a6d8a58cb4e98c600300438b0e9b47ebcbd1d55"
+  },
+  {
+    "variant": "goyang_storm",
+    "size": 128,
+    "sha256": "828b19b5cf5393ad63b95068eff1190fa523e6bb65f9de97836a882176ff6cbd"
+  },
+  {
+    "variant": "goyang_storm",
+    "size": 256,
+    "sha256": "d14f69268c79a71394dadbf00a78ff10f58faf8125f97617ffac2e9aa3760844"
+  },
+  {
+    "variant": "goyang_storm",
+    "size": 384,
+    "sha256": "c1737c4ed19406613ef5d0edbf8399570c5048ddb2b35ac1dd3517f497196e87"
+  },
+  {
+    "variant": "daejeon_redfox",
+    "size": 128,
+    "sha256": "f6f1281b6e574e34292a838b7c813774bf6e3012457e23a753a768fd3cdefa22"
+  },
+  {
+    "variant": "daejeon_redfox",
+    "size": 256,
+    "sha256": "c6e35209863d5ef9a7156207d53db9800d9ddc56b34075ffac131f2d82eba68a"
+  },
+  {
+    "variant": "daejeon_redfox",
+    "size": 384,
+    "sha256": "21f27c74f5980561fb4a0af1844a40cefcb6be5bcc2d7e54ea64874396bac778"
+  },
+  {
+    "variant": "gwangju_blazes",
+    "size": 128,
+    "sha256": "0940876721fa0a9ae36128090458fc07e99676d4c9e8dad234544b7dbd281fba"
+  },
+  {
+    "variant": "gwangju_blazes",
+    "size": 256,
+    "sha256": "7e39b5b52a1798ef5864f8ceba03f398241959e34b29bf540101db97382654ae"
+  },
+  {
+    "variant": "gwangju_blazes",
+    "size": 384,
+    "sha256": "4a7af04baf3514ce89025f42a8d87c29c53e56f9b94c25da8b3b1b6cc1f708a4"
+  },
+  {
+    "variant": "daegu_thunders",
+    "size": 128,
+    "sha256": "01e3fbe6b0a128e97daa13905a33990744536e8e0ace1c87adf14fd3390fcd47"
+  },
+  {
+    "variant": "daegu_thunders",
+    "size": 256,
+    "sha256": "c872d58a42d2cab31b84cb3f3c3547486ecbb2de6fc1881294e39c98b920a0e2"
+  },
+  {
+    "variant": "daegu_thunders",
+    "size": 384,
+    "sha256": "99703baa13bd211ad239c8503218155b30a0cb975eca8c1ae0aea7e5c0a4068c"
+  },
+  {
+    "variant": "busan_waves",
+    "size": 128,
+    "sha256": "3551088af1b1e27ebb553559e365c4143220821df4ac03b34e1cfbc60475b895"
+  },
+  {
+    "variant": "busan_waves",
+    "size": 256,
+    "sha256": "5833b39d971ce6678c3df077aaa83bb72e9a50f4c21dfef411e42f4c9a7a370c"
+  },
+  {
+    "variant": "busan_waves",
+    "size": 384,
+    "sha256": "7b9d9096b935414af5afd594271d692979fe8dac21c4a5f80c32cd9de83b265c"
+  },
+  {
+    "variant": "changwon_anchors",
+    "size": 128,
+    "sha256": "4f546526a1606b4c4cc09050514612b7994aa919aaa1f25f71b5d9ce5ccefe5f"
+  },
+  {
+    "variant": "changwon_anchors",
+    "size": 256,
+    "sha256": "7359544dd79b8eecfb9ad4f92c27f79cd70dabf4181cfa58111dd89c8dad31ff"
+  },
+  {
+    "variant": "changwon_anchors",
+    "size": 384,
+    "sha256": "9ddb750f3d889ce3be2b544c02fa4842b8c4c9e7417470c2073125767a56e6f8"
+  },
+  {
+    "variant": "univ",
+    "size": 128,
+    "sha256": "dfe995e60232693fb840159048fee38d4c8686a36bcda08e7b799c03b431cbde"
+  },
+  {
+    "variant": "univ",
+    "size": 256,
+    "sha256": "ae6790d64c5d948726b95a80b1cf1d4da54d5c4d51ee99781f0bdbe8fbcafb71"
+  },
+  {
+    "variant": "univ",
+    "size": 384,
+    "sha256": "090450fa43a42be4f193b113f4383ffc08ce37d1cfc5c6db1cf2848b352f86b4"
+  },
+  {
+    "variant": "seoul_comets",
+    "size": 128,
+    "sha256": "50c088b571238002ba183ba7a8ac1ca97d235c06e54f6f5d49235f04e962be9f"
+  },
+  {
+    "variant": "seoul_comets",
+    "size": 256,
+    "sha256": "52adfc6d85e79b961b9046735faf6623f9488912f6d215886cf75e1bf7517421"
+  },
+  {
+    "variant": "seoul_comets",
+    "size": 384,
+    "sha256": "0da05e66b8379a5d2f497e7a0f13b0aacae2d5d7ddd760d7616a92f197e51b7f"
+  }
+]

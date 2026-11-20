@@ -1,0 +1,8 @@
+{
+  "checked_photos": 1200,
+  "minimum_native_edge": 388,
+  "native_whole_photo_crop_translation_rgb_exact": true,
+  "upsampled": false,
+  "face_warp": false,
+  "failures": []
+}

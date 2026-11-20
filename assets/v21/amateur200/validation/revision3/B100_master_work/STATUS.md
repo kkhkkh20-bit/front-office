@@ -1,1 +1,1 @@
-B100 provisional master checkpoint: actual three WebP atlases passed. See B100_hs_selected_validation.json. Earlier failed photographic trials retained for provenance and never used as runtime. Remaining83 new identities need11 wardrobe variants each. A100 revision3 complete; B100 runtime incomplete.
+Historical B100 master-selection checkpoint. Final B100 runtime is now complete; root manifest.json and validation/stage_b/numeric_validation.json are authoritative. Earlier failed trials remain for provenance. Human age review pending.

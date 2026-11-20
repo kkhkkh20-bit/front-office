@@ -10,6 +10,7 @@ from reconstruct_A_native import encode
 W=Path('/dev/shm/v21b-work');R=W/'repo/assets/v21/amateur200';SIZES=[128,256,384]
 def main():
  people=json.load(open(W/'B100_stage3_selected_people.json'));rows=json.load(open(W/'B_current_variant_sources.json'));variants=json.load(open(R/'manifest.json'))['variant_keys'];assert len(rows)==1200 and len({c['id'] for c in rows})==1200
+ (W/'B_final_source_snapshot.json').write_text(json.dumps([{'id':c['id'],'normalized_native_sha256':hashlib.sha256(Path(c['normalized_path']).read_bytes()).hexdigest(),'native_path':c['native_path'],'crop':c['crop'],'translation_origin_xy':c['translation_origin_xy']} for c in rows],indent=2))
  pool=[('B100_hs_selected_embeddings.npz','B100_hs_selected_embeddings.json')]+[(f'B_uniform_cohort_{k:02}_embeddings.npz',f'B_uniform_cohort_{k:02}_embeddings.json') for k in range(11)]+[('B_uniform_existing17_embeddings.npz','B_uniform_existing17_embeddings.json')];cache={s:{} for s in SIZES}
  for nz,jz in pool:
   z=np.load(W/nz);ix={str(k):i for i,k in enumerate(z['ids'])};ee={s:z[f'e{s}'] for s in SIZES};mm=json.load(open(W/jz));assert not mm['errors']
