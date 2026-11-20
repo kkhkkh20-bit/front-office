@@ -5,8 +5,11 @@
 /* 노화 곡선 조정(구단주 결정 11-20, 측정 main 9bbea5d2: 정상형 하락이 29세 무렵 시작·은퇴 중앙값 35세·40세 도달 없음).
    1) 프로의식에 따른 하락 시작 보정을 한 단계 줄임(dtSpan) 2) 성장 구간 뒤(전성기·노화) 퇴보 확률 3분의 1(AGE_SLUMP_F, 처음 절반이었으나 구단주 추가 요구 "전성기가 오래 유지되어야 한다"로 더 낮춤), 전성기 기대값 +0.15→+0.3(PEAK_MU), 잠재력 정리 여유 +1→+2(POT_TIDY_PEAK)
    3) 노화 하락 기울기 .6→.4(AGE_DECL_K), 신체 노화 .24→.16(AGE_PHYS_K), 베테랑 은퇴·AI 베테랑 방출 기준 44→40(09_stoveleague). 모든 구단·모든 선수 같은 식, 난수 호출 수는 그대로 */
+/* 11-20 노장 비율(구단주 결정 "다시 맞춰 줘": 40세 이상 현역 3~5명·38세 이상 주전급 3~6명): 기술형 베테랑은 전성기·하락 시작을 한 해·두 해 늦추고(33·35) 기술 능력이 느는 나이를 36→38세(VET_SKILL_AGE)로.
+   능력 높은 노장(34세 이상·종합 AGE_ELITE_O 이상)은 노화 하락 폭을 AGE_ELITE_F배로(엘리트 완만 하락). 모든 구단·모든 선수 같은 식, 배수만 바꿔 난수 호출 수는 그대로 */
+const VET_SKILL_AGE=38, AGE_ELITE_O=50, AGE_ELITE_F=.6;
 const AGE_DECL_K=.4, AGE_PHYS_K=.16, AGE_SLUMP_F=1/3, PEAK_MU=.3, POT_TIDY_PEAK=2;
-const DT={norm:{l:'정상 성장형',grow:28,peak:31,fall:33},early:{l:'조기 완성형',grow:25,peak:29,fall:31},late:{l:'대기만성형',grow:30,peak:33,fall:35},stall:{l:'정체형',grow:26,peak:30,fall:32},vet:{l:'기술형 베테랑',grow:28,peak:32,fall:33}}; /* KBO 전성기는 29세 전후부터: 모든 유형을 2년 늦췄다(사용자 11-07) */
+const DT={norm:{l:'정상 성장형',grow:28,peak:31,fall:33},early:{l:'조기 완성형',grow:25,peak:29,fall:31},late:{l:'대기만성형',grow:30,peak:33,fall:35},stall:{l:'정체형',grow:26,peak:30,fall:32},vet:{l:'기술형 베테랑',grow:28,peak:33,fall:35}}; /* KBO 전성기는 29세 전후부터: 모든 유형을 2년 늦췄다(사용자 11-07) */
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
 function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군는 60%만 인정
@@ -103,13 +106,13 @@ function develop(p){
     let dk=base+N(0,(k==='eye'||k==='ctl'?.6:1));
     if(age>=T.fall-1){ // 노화: 신체 능력이 먼저 떨어진다
       dk-=PHYS[k]*(age-T.fall+2)*AGE_PHYS_K*fac.d;
-      if(p.dt==='vet'&&PHYS[k]<=0&&age<=36)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
+      if(p.dt==='vet'&&PHYS[k]<=0&&age<=VET_SKILL_AGE)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
     }
     if(dk>0&&club)dk*=coachToolMult(p,k);
     if(dk>0&&k==='sta'&&p.isP)dk*=staUseF(p); /* 체력은 길게 던져야 붙는다: 계투로만 던진 투수는 체력이 덜 큰다 */
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k]&&dk>0){dk=Math.max(0,dk-tc[k]);if(!p.devLog.reasons.includes('training-opportunity'))p.devLog.reasons.push('training-opportunity');} /* 성장 기회만 줄인다. 이미 퇴보 중인 능력은 더 깎지 않는다. */
-    if(dk<0&&age>=T.fall-1&&svc!=='현역'){dk*=agK;if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging');}
+    if(dk<0&&age>=T.fall-1&&svc!=='현역'){dk*=agK*(age>=34&&o>=AGE_ELITE_O?AGE_ELITE_F:1);if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging');}
     if(dk<0&&age>=T.fall-1&&svc!=='현역'){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }

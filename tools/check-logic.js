@@ -3251,7 +3251,7 @@ T('[은퇴 11-20] 노화 곡선: 베테랑 은퇴 기준 40(RET_VET_O)은 우리
 T('[성장 11-20] 노화 곡선: 프로의식 하락 시작 보정 한 단계 축소(-2/-1/0/0/+1), 전성기·노화 퇴보 확률 3분의 1·전성기 기대값 +0.3, 하락 기울기 .4·신체 노화 .16',()=>{ fresh(); const base=domestic(G.user).find(q=>!q.isP&&!q.prospect&&!q.foreign); ok(base,'준비 실패');
   const mk=(dt,pro)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt=dt; p.pers.pro=pro; return p; };
   const want={5:31,6:31,7:32,9:32,10:33,12:33,13:33,16:33,17:34,20:34}; for(const pr in want){ const T=dtSpan(mk('norm',+pr)); ok(T.fall===want[pr]&&T.grow===28&&T.peak===Math.min(31,T.fall-1),'정상형 프로의식 '+pr+': '+JSON.stringify(T)); }
-  ok(dtSpan(mk('early',8)).fall===30&&dtSpan(mk('vet',18)).fall===34,'다른 유형 보정 다름');
+  ok(dtSpan(mk('early',8)).fall===30&&dtSpan(mk('vet',18)).fall===36,'다른 유형 보정 다름'); /* 사양 변경(11-20 노장 비율): 기술형 하락 시작 33→35라 프로의식 18 기술형은 34→36 */
   ok(AGE_DECL_K===.4&&AGE_PHYS_K===.16&&Math.abs(AGE_SLUMP_F-1/3)<1e-9&&PEAK_MU===.3&&POT_TIDY_PEAK===2,'상수 다름');
   const sl=age=>{ __seed(7); let n=0; const N0=600; for(let i=0;i<N0;i++){ const p=mk('norm',12); p.pers.temp=10; p.age=age; p.id=base.id; delete p.mil; G.players[p.id]=p; develop(p); if(p.devLog.reasons.includes('slump'))n++; } G.players[base.id]=base; return n/N0; };
   const y=sl(27), pk=sl(30); ok(y>.15&&y<.25,'성장 구간 퇴보 비율 '+y.toFixed(3)+'(기대 .2)'); ok(pk>.035&&pk<.1,'전성기 퇴보 비율 '+pk.toFixed(3)+'(기대 .067, 3분의 1)');
@@ -10751,6 +10751,10 @@ T('[은퇴 11-20] 노장 2군 장기 체류: 35세 이상이 한 시즌을 거�
   me.listed=false; delete me.treq; const m0=(G.mail||[]).length; vetFarmTreq(me); ok(me.treq&&(G.mail||[]).length===m0+1&&G.mail.some(x=>x.t==='트레이드 요청'||x.title==='트레이드 요청'||JSON.stringify(x).includes('트레이드 요청')),'우리 노장 트레이드 요청이 소식함에 안 옴');
   delete ai.aiListed; vetFarmTreq(ai); ok(ai.aiListed&&ai.aiWhy==='mood','AI 노장이 트레이드 블록에 안 오름');
   ok(String(offseason).includes('vetFarmLong(p,G.year)?vetFarmPick(p)')&&String(offseason).includes("vf==='ret'"),'비시즌에 노장 2군 체류를 보지 않음'); });
+T('[성장 11-20] 노장 비율: 기술형 베테랑 전성기 33·하락 35·기술 성장 38세까지, 34세 이상 능력 50 이상은 노화 하락 0.6배(같은 난수로 비교, 우리·AI 같음)',()=>{ fresh(); ok(DT.vet.peak===33&&DT.vet.fall===35&&VET_SKILL_AGE===38&&AGE_ELITE_O===50&&AGE_ELITE_F===.6,'상수 다름');
+  for(const tid of [G.user,otherT()]){ const base=domestic(tid).find(q=>!q.isP&&!q.prospect&&!q.foreign&&!q.mil); ok(base,'준비 실패'); const run=(o)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt='norm'; p.age=37; initPers(p); p.pers.pro=10; setOvr(p,o); delete p.declP; G.players[p.id]=p; const s0=__rngState(); __seed(11); const b=ovr(p); develop(p); const d=ovr(p)-b+Object.values(p.declP||{}).reduce((a,x)=>a+x,0)*.3; G.players[base.id]=base; return d; };
+    const hi=run(52), lo=run(48); ok(hi<0&&lo<0&&Math.abs(hi)<Math.abs(lo),(tid===G.user?'우리':'AI')+' 능력 높은 노장 하락이 완만하지 않음 '+hi.toFixed(2)+'/'+lo.toFixed(2)); }
+  ok(/age<=VET_SKILL_AGE/.test(String(develop)),'기술형 기술 성장 나이 상수 미사용'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
