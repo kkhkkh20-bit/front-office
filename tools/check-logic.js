@@ -4175,7 +4175,7 @@ T('[사단 변화] 같은 감독 밑에서 두 시즌을 넘기고 사이가 좋
   relAdd(mk,ck,-250,'col',null,true); for(let i=0;i<30&&c.clan===m.id;i++){ relAdd(mk,ck,-250,'col',null,true); clanYear(); } ok(c.clan!==m.id,'사이가 틀어져도 사단에 남음'); });
 T('[사단 동반 사임] 경질된 감독의 사단 코치는 함께 떠나 시장에서 기다리고, 감독이 새 구단에 부임하면 따라간다(우리·AI 같음, 사용자 11-16)',()=>{ fresh(); const tid=G.teams.find(x=>x.id!==G.user).id, C=G.coach[tid], m=G.mgr[tid]; m.age=50; m.fame=60; delete m.act; delete m.interim; const mk=relKeyOf(m,'mgr');
   const a=C.pc, b=C.bc; for(const x of [a,b]){ x.clan=m.id; x.yrs=2; x.cs=G.year; relAdd(mk,relKeyOf(x,'coach'),150,'clan',mk,true); }
-  let gone=false; for(let i=0;i<30&&!gone;i++){ G.mgr[tid]=m; C.pc=a; C.bc=b; for(const x of [a,b]){ x.clan=m.id; x.yrs=2; delete x.folM; } G.cmarket=G.cmarket.filter(x=>x!==a&&x!==b); const n=mgrNew(tid,false,'fire'); ok(G.mgr[tid]===n&&n!==m,'후임 감독 없음'); gone=[a,b].some(x=>G.cmarket.includes(x)&&x.folM&&x.folM.id===m.id); }
+  const ipc=ipMgrCands; ipMgrCands=()=>[]; /* 11-20: 수석코치·2군 감독 내부 승격은 다른 길이다(승격된 코치 자리는 일부러 비워 둔다, 73_firings·74_internal_promo). 후임이 내부 승격이면 그 자리가 비어 '빈자리가 채워지지 않음'으로 잘못 걸렸다(main 씨앗 10: 수석코치 자리). 이 시나리오는 사단 코치만 보므로 외부 후임만 쓴다 */ let gone=false; try{ for(let i=0;i<30&&!gone;i++){ G.mgr[tid]=m; C.pc=a; C.bc=b; for(const x of [a,b]){ x.clan=m.id; x.yrs=2; delete x.folM; } G.cmarket=G.cmarket.filter(x=>x!==a&&x!==b); const n=mgrNew(tid,false,'fire'); ok(G.mgr[tid]===n&&n!==m,'후임 감독 없음'); gone=[a,b].some(x=>G.cmarket.includes(x)&&x.folM&&x.folM.id===m.id); } }finally{ ipMgrCands=ipc; }
   ok(gone,'경질된 감독을 따라 나간 사단 코치가 없음'); ok(CKEYS.every(k=>G.coach[tid][k]),'AI 구단 코치 빈자리가 채워지지 않음');
   const f=[a,b].filter(x=>G.cmarket.includes(x)&&x.folM); for(let i=0;i<24;i++){ G.cmMonth=null; coachMarketMonth(); } ok(f.every(x=>G.cmarket.includes(x)),'기다리는 사단 코치가 월간 시장 정리로 사라짐');
   G.exMgr=[m]; m.exY=G.year-1; m.exT=tid; G.mmarket=G.mmarket.filter(x=>x.id!==m.id); exMgrMarket(); ok(G.mmarket.includes(m),'전 감독이 후보로 나오지 않음'); ok(f.every(x=>m.clan.includes(x)),'후보 감독 사단에 기다리던 코치가 없음');
@@ -10430,7 +10430,7 @@ T('[성장 11-19 환경 배수 상한] 곱해진 환경 배수(출전×시설×�
   ok(GROW_RATE_HI<=.4&&GROW_ENV_CAP<=2.5,'상수가 느슨함'); G.players[p0.id]=p0;
 });
 T('[성장 11-19 시설 동등] 같은 선수·같은 세부 시설 단계·같은 트래킹 분석력이면 우리 구단과 AI 구단의 시설 성장·노화 배수(facEff)가 같고, 겨울 성장(develop)도 같다(사용자 = AI)',()=>{ fresh(); facInit();
-  const ai=otherT(), S=facSt(ai); ok(S&&S.it,'준비: AI 구단 세부 시설'); const a0=anaPow, e0=effPro, U0=JSON.stringify(G.fac), A0=JSON.stringify(S), m0=mpickMult, c0=coachDevMult, t0=coachToolMult, y0=playShare, g0=G.mgr;
+  const ai=otherT(), S=facSt(ai); ok(S&&S.it,'준비: AI 구단 세부 시설'); const a0=anaPow, e0=effPro, U0=JSON.stringify(G.fac), A0=JSON.stringify(S), m0=mpickMult, c0=coachDevMult, t0=coachToolMult, y0=playShare, g0=G.mgr, d0=proDrift;
   const base=Object.values(G.players).find(p=>p.team===G.user&&!p.foreign&&!p.prospect&&!p.isP&&!p.mil); ok(base,'준비: 우리 야수'); const keep=base.hist;
   try{ anaPow=()=>4; let diff=0;
     for(const lv of [0,1,2,3,4]){ for(const k of FACK){ G.fac.it[k]=Math.min(lv,FACI[k].lv.length-1); S.it[k]=G.fac.it[k]; } G.fac.bld={}; S.bld={}; G.fac.dn={}; S.dn={};
@@ -10438,10 +10438,10 @@ T('[성장 11-19 시설 동등] 같은 선수·같은 세부 시설 단계·같�
         base.team=G.user; const u=facEff(base); base.team=ai; const a=facEff(base); base.team=G.user; ok(u.g===a.g&&u.d===a.d,'시설 '+lv+'단계 '+age+'세 '+(fut?'2군':'1군')+': 우리 '+u.g+'/'+u.d+' ≠ AI '+a.g+'/'+a.d); if(lv>=3&&age===20&&fut)diff=u.g; } }
     ok(diff>1.05,'준비: 젊은 2군 선수 시설 배수 '+diff);
     /* 겨울 성장까지: 시설 말고 구단마다 다른 사람 요인(감독·코치·지목·출전)은 같게 놓고 같은 난수로 */
-    mpickMult=()=>1; coachDevMult=()=>1; coachToolMult=()=>1; playShare=()=>1; effPro=()=>12; G.mgr=null; base.age=20; base.hist=[{y:G.year,lvl:'퓨처스',t:0,pa:300,ab:270,h:70,g:80}];
+    mpickMult=()=>1; coachDevMult=()=>1; coachToolMult=()=>1; playShare=()=>1; effPro=()=>12; G.mgr=null; proDrift=()=>0; /* 11-20: 구단 문화(proDrift, 동료 프로의식으로 성실성이 바뀜)도 구단마다 다른 사람 요인이라 같게 둔다. 빠져 있어 씨앗에 따라 같은 선수가 우리 4.42 / AI 0.53처럼 갈렸다(main 씨앗 2·3) */ base.age=20; base.hist=[{y:G.year,lvl:'퓨처스',t:0,pa:300,ab:270,h:70,g:80}];
     const grow=(tid,sd)=>{ const p=JSON.parse(JSON.stringify(base)); p.hist=base.hist; G.players[p.id]=p; p.team=tid; setOvr(p,45); p.dt='norm'; p.pers={pro:12,amb:12,loy:10,temp:8}; p.pot=70; p.potB=45; p.realK=1; delete p.bloomY; delete p.gcar; delete p.trD; delete p.trI; const o=ovr(p); withRng(rngHash('facpar1119',sd),()=>develop(p)); return +(ovr(p)-o).toFixed(2); };
     let pos=0; for(let sd=0;sd<8;sd++){ const gu=grow(G.user,sd), ga=grow(ai,sd); ok(gu===ga,'같은 시설인데 겨울 성장이 다름: 우리 '+gu+' / AI '+ga); if(gu>1)pos++; } ok(pos>=3,'준비: 성장한 경우가 너무 적음 '+pos);
-  } finally { anaPow=a0; effPro=e0; mpickMult=m0; coachDevMult=c0; coachToolMult=t0; playShare=y0; G.mgr=g0; base.hist=keep; G.players[base.id]=base; Object.assign(G.fac,JSON.parse(U0)); Object.assign(S,JSON.parse(A0)); }
+  } finally { anaPow=a0; effPro=e0; mpickMult=m0; coachDevMult=c0; coachToolMult=t0; playShare=y0; G.mgr=g0; proDrift=d0; base.hist=keep; G.players[base.id]=base; Object.assign(G.fac,JSON.parse(U0)); Object.assign(S,JSON.parse(A0)); }
 });
 T('[해외 11-19 MLB 완충] 국내 구단을 거쳐 MLB에 가 있는 선수가 MLB_SOFT_N(6)명 이상이면 경계선 선수(국내 능력 63 미만)의 MLB 계약 제안·해외 FA 진출 확률이 줄고(6명 절반, 7명 4분의 1), 스타는 그대로 가며, 아마추어 직행·외국인은 세지 않는다(모든 구단 선수 같은 식)',()=>{ fresh();
   const A0=G.abroad, l0=ovsLeave; const mk=(n,x)=>Array.from({length:n},(_,i)=>Object.assign({lg:'MLB',from:i%10,back:false,lines:[]},x||{}));
