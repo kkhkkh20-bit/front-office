@@ -64,7 +64,7 @@ const TRADE_RULE={
   eval:(d,c,x)=>{ x.ev=evalTrade(d.to,d.give,d.get,x.cash,x.pk); },
   size:(d,c,x)=>{ if(!tradeSizeOk(x.ev))return {ok:false,msg:`${tfull(team(d.to))} 로스터 사정이 바뀌어 성사되지 않았습니다(정식 ${x.ev.theirN}명).`}; },
   capHard:(d,c,x)=>{ if(x.ev.capT&&x.ev.capT.hard)return {ok:false,msg:`${tfull(team(d.to))} 단장: 그사이 연봉 사정이 바뀌어 구단주가 허락하는 한도를 넘게 됐습니다. 이 제안을 지킬 수 없습니다.`}; }, /* 소프트캡(13_roster aiCapTake): 한도 안이면 세금만큼 값으로 따진다(evalTrade) */
-  value:(d,c,x)=>{ const ev=x.ev, tol=c.strict?0:Math.max(1.5,ev.outV)*.15; if(!ev.ok&&((ev.dom&&ev.dom.refuse)||ev.gain<ev.need-tol))return {ok:false,msg:`${tfull(team(d.to))} 단장: 다시 따져 보니 이 조건으로는 어렵겠습니다.`}; }, /* 공략 방지: AI 제안도 직접 협상과 같은 값(evalTrade)으로 판정. strict: 제안을 만들 때는 evalTrade가 받아들이는 조건만, 수락할 때는 역제안과 같은 여유(.15) */
+  value:(d,c,x)=>{ if(c.keep)return; /* 카페 11-20: 보낸 제안은 오가는 선수가 실제로 바뀌지 않으면 기한까지 지킨다(09_stoveleague offerMoved) */ const ev=x.ev, tol=c.strict?0:Math.max(1.5,ev.outV)*.15; if(!ev.ok&&((ev.dom&&ev.dom.refuse)||ev.gain<ev.need-tol))return {ok:false,msg:`${tfull(team(d.to))} 단장: 다시 따져 보니 이 조건으로는 어렵겠습니다.`}; }, /* 공략 방지: AI 제안도 직접 협상과 같은 값(evalTrade)으로 판정. strict: 제안을 만들 때는 evalTrade가 받아들이는 조건만, 수락할 때는 역제안과 같은 여유(.15) */
   distinct:d=>{ if(d.from===d.to||new Set(d.give).size!==d.give.length||new Set(d.get).size!==d.get.length)return {ok:false}; },
   eligible:d=>{ const ok=(ids,tid)=>ids.every(id=>tradeEligible(G.players[id],{tid,ntc:false})); if(!ok(d.give,d.from)||!ok(d.get,d.to))return {ok:false}; }, /* 거부권은 아래 ntcAi(우리와 같은 동의 절차) */
   pkAi:(d,c,x)=>{ if(pkCheck(d.to,d.give,d.get,x.pk,d.from))return {ok:false}; },

@@ -616,13 +616,19 @@ function aiOfferFrom(t){if(!offerContactOk(t.id))return false; const U=team(G.us
   { const key=off.from+':'+[...off.give].sort().join(',')+':'+off.get.join(','); G.offSeen=G.offSeen||{}; if(G.offSeen[key]!=null&&G.day-G.offSeen[key]<40)return false; G.offSeen[key]=G.day; } /* 같은 제안을 한 달 안에 되풀이하지 않는다 */
   G.offerContact=G.offerContact||{};G.offerContact[t.id+':*']=G.day;G.offerContact['p:'+tg.p.id]=G.day;
   try{ off.pot=offScoutNote(off); }catch(e){} try{ off.why=mgrFitWhy(t.id,tg.p); }catch(e){}
-  G.offers=(G.offers||[]).concat(off);
+  G.offers=(G.offers||[]).concat(offerStamp(off));
   if(autoTradeOffer(off))return true; /* 업무 맡기기: 부단장이 거절. 맡기지 않았으면 진행을 멈추지 않는 소식으로 보낸다(할 일 목록·만료 임박 알림에 뜬다) */
   mail(FROM['트레이드']||'프런트',`${tshort(t.id)} 트레이드 제안: ${best.map(x=>x.p.name).join('·')} ↔ ${tg.p.name}`,`${off.asst?off.asst+'\n':''}${off.why?`${off.why}을(를) 찾는다는 감독 요청을 받고 움직인 제안입니다.\n`:''}${tname(t.id)} 단장이 ${best.map(x=>x.p.name).join(', ')}을(를) 주고 ${tg.p.name}을(를) 원한다는 트레이드를 제안했습니다.${oc?` 현금 ${money(oc)}도 함께 보냅니다.`:''} ${off.exp<G.day+3?'트레이드 마감일까지':'3일 안에'} 답해야 합니다.${gmHeat(t.id)>=.4?' 성적 압박을 받는 단장이라 적극적입니다.':''}${pl==='build'&&tg.p.age<=25?' 몇 년 뒤를 보고 어린 선수를 모으는 구단입니다.':pl==='tight'?' 연봉을 줄이려는 구단입니다.':pl==='win'&&tg.p.age>=27?' 올해 우승을 노려 당장 뛸 선수를 찾는 구단입니다.':''}${(()=>{ const x=aiSay(t.id,'pitch'); return x?`\n${gmOf(t.id).name} 단장: "${x}"`:''; })()}${off.pot?`\n\n[잠재력 추정 보고]\n${off.pot}`:''}`,{kind:'트레이드',acts:kindActs('트레이드')}); /* 제목은 거래 요약(플레이 테스트 11-13: 설명 문장이 제목) */ if(G.mail[0]){ G.mail[0].oid=off.id; G.mail[0].auto=['tro']; } return true;
 }
 /* 받은 제안이 지금 성사될 수 있는지(거부권·소속·상대 정원·샐러리캡). 막히면 사유, 되면 null.
    수락할 때와 AI가 제안을 만들 때 같은 판정을 쓴다: 예전에는 만들 때 이 검사를 안 해 수락하면 샐러리캡으로 취소되는 제안이 잦았다 */
-function offerBlockMsg(o,strict){ const r=tradeLegal({from:G.user,to:o.from,give:o.get,get:o.give,cash:o.cash,pk:o.pk},{path:'offer',strict}); return r.ok?null:r.msg; } /* 우리는 o.get을 보내고 o.give를 받는다. 검사 목록·문구는 16b_trade_rules(TRADE_RULES.offer). strict: 제안을 만들 때는 evalTrade가 받아들이는 조건만, 수락할 때는 역제안과 같은 여유(.15) */
+/* 카페 11-20(리아네트): AI가 보낸 제안을 다음 날 '다시 따져 보니'로 거둬 갔다. 매일 다시 매기는 값에는 그날 기분(hn)과 주전·백업·빈자리 판정처럼 하루 새 바뀌는 몫이 있어,
+   제안 때 겨우 넘은 값이 이튿날 15% 여유 밖으로 밀렸다(시뮬 3시드: 철회 3건 모두 선수 능력·부상 변화 없음). 보낼 때 오가는 선수의 능력·부상을 남겨 두고(난수 없음),
+   그게 실제로 바뀐 때만 값으로 다시 따진다. 정원·샐러리캡·거부권·소속 같은 성사 조건은 그대로 매일 본다. 옛 저장의 제안(기록 없음)은 예전처럼 */
+function offerStamp(o){ const v={}; for(const id of [...(o.give||[]),...(o.get||[])]){ const p=G.players[id]; if(p)v[id]=[+ovr(p).toFixed(1),p.injOut||0]; } o.v0=v; return o; }
+/* 우리가 보낼 선수의 능력이 1 넘게 떨어졌거나 새로 다쳤을 때, 상대가 줄 선수의 능력이 1.5 넘게 올랐을 때 */
+function offerMoved(o){ const v=o.v0||{}; for(const id of o.get||[]){ const p=G.players[id], a=v[id]; if(!p||!a)return true; if(ovr(p)<a[0]-1||(p.injOut||0)>a[1]+3)return true; } for(const id of o.give||[]){ const p=G.players[id], a=v[id]; if(!p||!a)return true; if(ovr(p)>a[0]+1.5)return true; } return false; }
+function offerBlockMsg(o,strict){ const r=tradeLegal({from:G.user,to:o.from,give:o.get,get:o.give,cash:o.cash,pk:o.pk},{path:'offer',strict,keep:!strict&&!!o.v0&&!offerMoved(o)}); return r.ok?null:r.msg; } /* 우리는 o.get을 보내고 o.give를 받는다. 검사 목록·문구는 16b_trade_rules(TRADE_RULES.offer). strict: 제안을 만들 때는 evalTrade가 받아들이는 조건만, 수락할 때는 역제안과 같은 여유(.15) */
 function answerOffer(id,yes){
   const o=(G.offers||[]).find(x=>x.id===id); if(!o)return {ok:false,msg:'제안이 없습니다.'};
   G.offers=G.offers.filter(x=>x.id!==id); offerMailDone(o.id);

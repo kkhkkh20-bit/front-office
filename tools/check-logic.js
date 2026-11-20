@@ -10755,6 +10755,12 @@ T('[성장 11-20] 노장 비율: 기술형 베테랑 전성기 33·하락 35·�
   for(const tid of [G.user,otherT()]){ const base=domestic(tid).find(q=>!q.isP&&!q.prospect&&!q.foreign&&!q.mil); ok(base,'준비 실패'); const run=(o)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt='norm'; p.age=37; initPers(p); p.pers.pro=10; setOvr(p,o); delete p.declP; G.players[p.id]=p; const s0=__rngState(); __seed(11); const b=ovr(p); develop(p); const d=ovr(p)-b+Object.values(p.declP||{}).reduce((a,x)=>a+x,0)*.3; G.players[base.id]=base; return d; };
     const hi=run(52), lo=run(48); ok(hi<0&&lo<0&&Math.abs(hi)<Math.abs(lo),(tid===G.user?'우리':'AI')+' 능력 높은 노장 하락이 완만하지 않음 '+hi.toFixed(2)+'/'+lo.toFixed(2)); }
   ok(/age<=VET_SKILL_AGE/.test(String(develop)),'기술형 기술 성장 나이 상수 미사용'); });
+T('[카페 11-20 제안 철회] 보낸 트레이드 제안은 오가는 선수가 그대로면 다음 날 값으로 철회하지 않는다',()=>{fresh();const b=otherT(),p=domestic(b).find(x=>!x.ys),q=domestic(G.user).find(x=>!x.ys);p.injOut=0;q.injOut=0;const mk=()=>({id:'keep1120',from:b,give:[p.id],get:[q.id],exp:G.day+3,day:G.day});const old=evalTrade,W=m=>/다시 따져/.test(m||'');try{evalTrade=(...x)=>({...old(...x),ok:false,gain:-5,need:5,outV:5,dom:null,capT:null,theirN:54});
+  const o0=mk();ok(W(offerBlockMsg(o0)),'준비 실패: 기록 없는(옛 저장) 제안이 값으로 막히지 않음');
+  const o=offerStamp(mk());ok(!W(offerBlockMsg(o)),'선수 변화 없이 그날 값만 바뀌었는데 철회');ok(W(offerBlockMsg(o,true)),'제안을 만들 때(strict)는 값 판정을 건너뛰면 안 됨');
+  q.injOut=10;ok(W(offerBlockMsg(o)),'우리 선수가 다쳤는데 값으로 다시 따지지 않음');q.injOut=0;
+  const o2=offerStamp(mk());o2.v0[p.id][0]-=3;ok(W(offerBlockMsg(o2)),'상대가 줄 선수 능력이 올랐는데 다시 따지지 않음');
+}finally{evalTrade=old;}});
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
