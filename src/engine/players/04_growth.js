@@ -2,7 +2,14 @@
 /* ===== 성장과 노화 =====
  성장 유형(숨김): norm 정상형, early 조기 완성형, late 대기만성형, stall 정체형, vet 기술형(신체는 늙어도 기술이 는다)
  성장 속도 = 남은 잠재력 × 유형별 나이 곡선 × 출전 시간 × 훈련 시설 × 감독 육성 성향 */
-const DT={norm:{l:'정상 성장형',grow:28,peak:31,fall:33},early:{l:'조기 완성형',grow:25,peak:29,fall:31},late:{l:'대기만성형',grow:30,peak:33,fall:35},stall:{l:'정체형',grow:26,peak:30,fall:32},vet:{l:'기술형 베테랑',grow:28,peak:32,fall:33}}; /* KBO 전성기는 29세 전후부터: 모든 유형을 2년 늦췄다(사용자 11-07) */
+/* 노화 곡선 조정(구단주 결정 11-20, 측정 main 9bbea5d2: 정상형 하락이 29세 무렵 시작·은퇴 중앙값 35세·40세 도달 없음).
+   1) 프로의식에 따른 하락 시작 보정을 한 단계 줄임(dtSpan) 2) 성장 구간 뒤(전성기·노화) 퇴보 확률 3분의 1(AGE_SLUMP_F, 처음 절반이었으나 구단주 추가 요구 "전성기가 오래 유지되어야 한다"로 더 낮춤), 전성기 기대값 +0.15→+0.3(PEAK_MU), 잠재력 정리 여유 +1→+2(POT_TIDY_PEAK)
+   3) 노화 하락 기울기 .6→.4(AGE_DECL_K), 신체 노화 .24→.16(AGE_PHYS_K), 베테랑 은퇴·AI 베테랑 방출 기준 44→40(09_stoveleague). 모든 구단·모든 선수 같은 식, 난수 호출 수는 그대로 */
+/* 11-20 노장 비율(구단주 결정 "다시 맞춰 줘": 40세 이상 현역 3~5명·38세 이상 주전급 3~6명): 기술형 베테랑은 전성기·하락 시작을 한 해·두 해 늦추고(33·35) 기술 능력이 느는 나이를 36→38세(VET_SKILL_AGE)로.
+   능력 높은 노장(34세 이상·종합 AGE_ELITE_O 이상)은 노화 하락 폭을 AGE_ELITE_F배로(엘리트 완만 하락). 모든 구단·모든 선수 같은 식, 배수만 바꿔 난수 호출 수는 그대로 */
+const VET_SKILL_AGE=38, AGE_ELITE_O=50, AGE_ELITE_F=.6;
+const AGE_DECL_K=.4, AGE_PHYS_K=.16, AGE_SLUMP_F=1/3, PEAK_MU=.3, POT_TIDY_PEAK=2;
+const DT={norm:{l:'정상 성장형',grow:28,peak:31,fall:33},early:{l:'조기 완성형',grow:25,peak:29,fall:31},late:{l:'대기만성형',grow:30,peak:33,fall:35},stall:{l:'정체형',grow:26,peak:30,fall:32},vet:{l:'기술형 베테랑',grow:28,peak:33,fall:35}}; /* KBO 전성기는 29세 전후부터: 모든 유형을 2년 늦췄다(사용자 11-07) */
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
 function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군는 60%만 인정
@@ -14,7 +21,7 @@ function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군�
 function persGrowF(p){ initPers(p); const pr=effPro(p), am=p.pers.amb; /* 리더들이 만든 선수단 문화가 반영된 프로의식 */ const bad=p.badY&&p.badY.y===G.year?p.badY.n:0; return clamp(.5+(pr-4)/16*.7+(am-4)/16*.25,.5,1.45)*(1-.08*Math.min(3,bad)); }
 /* 성장 구간: 대기만성형 일부는 30대 초반에 터진다. 프로의식이 낮으면 일찍 꺾이고(초반 반짝 뒤 하락), 높으면 오래 버틴다 */
 function dtSpan(p){ const T=DT[p.dt]||DT.norm; initPers(p); const pr=p.pers.pro; const vl=p.dt==='late'&&u01('vlate',p.id)<.35; const g=vl?32:T.grow, pk=vl?35:T.peak, fa=vl?36:T.fall;
-  const adj=pr<=6?-3:pr<=9?-2:pr<=12?-1:pr>=17?1:0; return {grow:Math.min(g,fa+adj-1),peak:Math.min(pk,fa+adj-1),fall:fa+adj,vl}; }
+  const adj=pr<=6?-2:pr<=9?-1:pr<=12?0:pr>=17?1:0; /* 11-20 노화 곡선(구단주 결정): 한 단계 줄였다(예전 -3/-2/-1/0/+1). 프로의식 평균(9.5)에서 하락 시작이 설계값보다 1.5년 일찍 오던 것 */ return {grow:Math.min(g,fa+adj-1),peak:Math.min(pk,fa+adj-1),fall:fa+adj,vl}; }
 /* 숨은 재능이 1군 기록으로 드러난다: 스카우트 평가가 바로잡히고, 우리 선수면 소식함에 알린다 */
 function hidReveal(p){ if(!p.hidT||p.hidR||p.prospect)return; const L=(p.hist||[]).filter(h=>h.lvl==='1군'); const pa=sum(L.map(h=>h.pa||0)), outs=sum(L.map(h=>h.outs||0)); if(pa<150&&outs<180)return; p.hidR=G.year;
   const d=p.draft; story(p,`${G.year} 스카우트가 놓친 재능이 1군에서 드러남${d?`(${d.y} ${d.rd}라운드 지명)`:''}`);
@@ -65,7 +72,7 @@ function develop(p){
   /* 잠재력 실현율(숨김, 사용자 11-12: 잠재력만 믿고 모으면 망할 수도 있어야 한다. 잠재력만큼 크는 선수는 드물다).
      처음 성장할 때 정한다: 약 30%는 불발(잠재력까지 남은 몫의 30~60%), 50%는 부분(60~90%), 20%만 거의 다(90~100%). 프로의식이 좋을수록 높다.
      스카우트가 보는 잠재력(p.pot)은 그대로라 별 다섯 유망주도 안 터질 수 있다. 실현 상한 = 기준 능력 + (잠재력-기준)×실현율 */
-  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<REALK_LO?rnd(.25,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.035-Math.max(0,((p.pers&&p.pers.temp)||10)-13)*.02+(((p.pers&&p.pers.amb)||10)-10)*.012; /* 좋은 선수: 프로의식·야망 높고 예민도 낮음 */ /* 멘탈이 실현율을 크게 가른다(사용자 11-12): 성실성 4면 -0.21, 16이면 +0.21, 예민하면 더 낮게 */ if(p.blue&&p.pot<66&&R()<BLUE_FLOOR_P)k=Math.max(k,rnd(.5,.7)); /* 대어(그해 신인 잠재력 상위 셋): 아마추어 시절부터 검증돼 불발이 드물다(10_draft). 국가대표감 이상은 그대로 둬서 S급은 여전히 드물게 */ /* 드래프트 보정(11-17): 하한 0.62~0.8을 늘 주던 것을 35%만, 0.5~0.7로. 1~3순위도 실패할 수 있다(구단주: 모든 1라운더가 성공하는 것도 아니고) */ p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; if(R()<BLOOM_P)p.bloomY=G.year+ri(1,4); }
+  if(p.realK==null&&!p.foreign&&age<=25){ const u=R(); let k=u<REALK_LO?rnd(.25,.6):u<.8?rnd(.6,.9):rnd(.9,1); k+=((p.pers&&p.pers.pro!=null?p.pers.pro:10)-10)*.035-Math.max(0,((p.pers&&p.pers.temp)||10)-13)*.02+(((p.pers&&p.pers.amb)||10)-10)*.012; /* 좋은 선수: 프로의식·야망 높고 예민도 낮음 */ /* 멘탈이 실현율을 크게 가른다(사용자 11-12): 성실성 4면 -0.21, 16이면 +0.21, 예민하면 더 낮게 */ if(p.blue&&p.pot<66&&R()<BLUE_FLOOR_P)k=Math.max(k,rnd(.5,.7)); /* 대어(그해 신인 잠재력 상위 셋): 아마추어 시절부터 검증돼 불발이 드물다(10_draft). 국가대표감 이상은 그대로 둬서 S급은 여전히 드물게 */ /* 드래프트 보정(11-17): 하한 0.62~0.8을 늘 주던 것을 35%만, 0.5~0.7로. 1~3순위도 실패할 수 있다(구단주: 모든 1라운더가 성공하는 것도 아니고) */ if(p.starT)k=Math.max(k,STAR_REALK); /* 세대 재능(10_draft starTail): 실현율 하한 */ p.realK=Math.round(clamp(k,.2,1)*100)/100; p.potB=Math.round(o*10)/10; if(R()<BLOOM_P)p.bloomY=G.year+ri(1,4); }
   /* 늦게 터지는 재능(11-17 드래프트 보정): 처음 성장 때 BLOOM_P 확률로 1~4년 뒤 잠재력이 60~68(원래 척도, 이미 높으면 +4~8)·실현율 0.85 이상이 되고, 그해 겨울에 남은 여지의 25~40%가 한꺼번에 큰다(30대 늦깎이와 같은 방식). 지명 순번·출신과 무관하다.
      KBO 골든글러브 국내 수상자 2011–2025(51명, 위키백과 'KBO 골든글러브'와 선수별 드래프트 순위)는 단일 드래프트로 환산해 1라운드 27.5%·2라운드 29.4%·3라운드 5.9%·4~6라운드 21.6%·7라운드 이하 7.8%·미지명 7.8%에서 나왔다.
      게임은 지명 때 잠재력이 결과를 거의 정해 특급의 80% 넘게 1라운드였다. 26세가 지나면 없어진다 */
@@ -82,15 +89,15 @@ function develop(p){
     if(R()<(p.dt==='stall'?.12:.05))p.pot-=ri(3,8);
     if(p.dt==='late'&&age>=27)p.pot+=rnd(0,1.5);
     if(T.vl&&svc!=='현역'&&age>=30&&gap>=3&&R()<.22*pg){ base+=gap*rnd(.35,.7); p.boomY=G.year+1; story(p,`${G.year} ${age}세에 늦깎이로 터짐`); } /* 30대 초반에 터지는 대기만성형 */
-  } else if(age<=T.peak){ base=N(.15,1.1)+(p.dt==='late'?gap*.25*play*fac.g*pg:0); }
-  else { base=-(age-T.fall+1)*.6*fac.d*(club&&G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=36?-2.4:-3.6)-(age>=37?.8:0); if(age<T.fall)base=N(-.2,1); }
+  } else if(age<=T.peak){ base=N(PEAK_MU,1.1)+(p.dt==='late'?gap*.25*play*fac.g*pg:0); }
+  else { base=-(age-T.fall+1)*AGE_DECL_K*fac.d*(club&&G.coach?1.15-.15*coachDevMult(p):1)-.2+N(0,1.1); base=Math.max(base,age<=36?-2.4:-3.6)-(age>=37?.8:0); if(age<T.fall)base=N(-.2,1); }
   if(bl)base+=gap*rnd(.25,.4)*eliteGrowF(o+gap*.4); /* 늦게 터진 재능: 그해 한꺼번에(정상급 수 억제는 같은 식) */
   /* 해마다 같은 방향으로 크지 않는다: 11%는 퇴보(슬럼프·나쁜 습관·폼 붕괴), 6%는 각성. 정체형은 퇴보가 더 잦다.
      퇴보해도 잠재력은 남아 있어서 젊으면 다음 해에 일부 되찾는다 */
-  if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=(st?.28:.2)+Math.max(0,10-pr)*.02+Math.max(0,(p.pers.temp||10)-13)*.012, up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
+  if(age<=33){ const x=R(), st=p.dt==='stall'; const pr=p.pers.pro; const dn=((st?.28:.2)+Math.max(0,10-pr)*.02+Math.max(0,(p.pers.temp||10)-13)*.012)*(age>T.grow?AGE_SLUMP_F:1), /* 성장 구간 뒤(전성기·노화)는 퇴보 확률 3분의 1(11-20) */ up=(st?.02:.06)*(pr>=14?1.3:pr<=7?.6:1); /* 실제 KBO는 한 해에 오른 선수보다 떨어진 선수가 많은 해도 흔하다(사용자 11-12): 퇴보 11%→20%(프로의식 낮으면 더) */ /* 프로의식이 낮으면 퇴보가 잦고 각성은 드물다 */
     if(x<dn){ const s=age<=YOUNG_NOISE_AGE?-rnd(YOUNG_SLUMP[0],YOUNG_SLUMP[1]):-rnd(1.5,4.5); base+=s; p.slumpY=G.year+1; p.devLog.reasons.push('slump'); } else if(x<dn+up){ base+=rnd(1.5,4); p.boomY=G.year+1; } }
   if(age<=29&&!svc)base+=N(age<=YOUNG_NOISE_AGE?YOUNG_NOISE_MU:-.25,.9); /* 젊은 선수도 해마다 들쭉날쭉: 성장 구간에서도 정체·후퇴가 섞인다 */
-  if(base>0&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } if(base>0&&!p.prospect)base*=eliteGrowF(o); /* 정상급 꼬리 억제(10_draft) */ /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */
+  if(base>0&&!p.prospect){ const lf=growLevelF(); if(lf!==1)base*=lf; } if(base>0&&!p.prospect)base*=eliteGrowF(o,p); /* 정상급 꼬리 억제(10_draft) */ /* 리그 수준 유지(커뮤니티 피드백 11-11: 상향 평준화) */
   /* FA로이드: FA를 한 해 앞둔 첫 FA 후보는 동기부여로 한 번 더 큰다(대어가 시장에 나오게) */
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
   const tc=svc?(delete p.trD,null):typeof trnCost==='function'?trnCost(p):null; /* 복무 중 겨울에는 입대 전 집중 훈련 비용을 매기지 않는다(검수 11-09zy) */ /* 훈련 방향 비용: 한 항목에 집중한 만큼 다른 항목의 성장 기회가 준다 */
@@ -98,14 +105,14 @@ function develop(p){
   for(const k in p.r){
     let dk=base+N(0,(k==='eye'||k==='ctl'?.6:1));
     if(age>=T.fall-1){ // 노화: 신체 능력이 먼저 떨어진다
-      dk-=PHYS[k]*(age-T.fall+2)*.24*fac.d;
-      if(p.dt==='vet'&&PHYS[k]<=0&&age<=36)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
+      dk-=PHYS[k]*(age-T.fall+2)*AGE_PHYS_K*fac.d;
+      if(p.dt==='vet'&&PHYS[k]<=0&&age<=VET_SKILL_AGE)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
     }
     if(dk>0&&club)dk*=coachToolMult(p,k);
     if(dk>0&&k==='sta'&&p.isP)dk*=staUseF(p); /* 체력은 길게 던져야 붙는다: 계투로만 던진 투수는 체력이 덜 큰다 */
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k]&&dk>0){dk=Math.max(0,dk-tc[k]);if(!p.devLog.reasons.includes('training-opportunity'))p.devLog.reasons.push('training-opportunity');} /* 성장 기회만 줄인다. 이미 퇴보 중인 능력은 더 깎지 않는다. */
-    if(dk<0&&age>=T.fall-1&&svc!=='현역'){dk*=agK;if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging');}
+    if(dk<0&&age>=T.fall-1&&svc!=='현역'){dk*=agK*(age>=34&&o>=AGE_ELITE_O?AGE_ELITE_F:1);if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging');}
     if(dk<0&&age>=T.fall-1&&svc!=='현역'){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }
@@ -118,7 +125,7 @@ function develop(p){
     if(!mil){ let cut=false; for(const k in p.r)if(r0[k]!=null&&p.r[k]-r0[k]>WIN_SUB_CAP){ p.r[k]=r0[k]+WIN_SUB_CAP; cut=true; } if(cut){ roundR(p); p.devLog.reasons.push('sub-cap'); } } } /* 모든 선수: 겨울 한 해 종합 +5·능력 하나 +7.5까지(상무도 5, 넘친 몫 이월 없음) */ /* 상무 복무 중 겨울 한 해 성장 꼬리를 자른다(난수 없이 능력별 변화를 같은 비율로 줄임) */
   const no=ovr(p);
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
-  if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+1+(T.vl?2:0)+(p.gcar||0)+(p.potUp&&p.potUp.y===G.year?p.potUp.v:0)); /* 올해 성적 보상으로 오른 잠재력(65_cur_eval potPerfSeason·potIntlUp)은 이번 정리에서 지켜 준다 */ /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
+  if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+(age>T.grow?POT_TIDY_PEAK:1)+(T.vl?2:0)+(p.gcar||0)+(p.potUp&&p.potUp.y===G.year?p.potUp.v:0)); /* 올해 성적 보상으로 오른 잠재력(65_cur_eval potPerfSeason·potIntlUp)은 이번 정리에서 지켜 준다 */ /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
   p.pot=clamp(Math.max(p.pot,no),20,80);if(p.pot<potBefore)p.devLog.reasons.push('potential-reassessment');
   if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0);
   (p.oh=p.oh||[]).push({y:G.year,o:Math.round(no)}); if(p.oh.length>12)p.oh.shift();

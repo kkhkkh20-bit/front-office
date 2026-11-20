@@ -31,7 +31,7 @@ async function tcPng(d){ const W=1080,H=1350, c=document.createElement('canvas')
   const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,P[0]); g.addColorStop(.32,P[2]||'#111'); g.addColorStop(1,'#0b0f14'); x.fillStyle=g; x.fillRect(0,0,W,H);
   try{ const B=typeof BADGE_IMG!=='undefined'?BADGE_IMG[d.tid]:null; const src=B&&(B.c||B.s||B.src); if(src&&d.tid===G.user){ const im=new Image(); im.src=src; await new Promise(r=>{ im.onload=r; im.onerror=r; setTimeout(r,1500); }); if(im.naturalWidth)x.drawImage(im,60,60,150,150); } }catch(e){}
   x.fillStyle='rgba(255,255,255,.85)'; x.font=`600 30px ${F}`; x.fillText(`${d.y} 시즌 · 프런트야구`,240,100);
-  x.fillStyle='#fff'; x.font=`800 72px ${F}`; x.fillText(`${tfull(d)}`,240,175);
+  x.fillStyle='#fff'; { const nm=`${tfull(d)}`, maxW=W-240-50; let fs=72; x.font=`800 ${fs}px ${F}`; while(fs>34&&x.measureText(nm).width>maxW){ fs-=2; x.font=`800 ${fs}px ${F}`; } x.fillText(nm,240,175,maxW); } /* 14자 구단 이름이 1080px 밖으로 잘리던 문제(외부 검토 11-20): 글자 크기를 줄여 오른쪽 여백 안에 맞춘다 */
   x.font=`500 32px ${F}`; x.fillStyle='rgba(255,255,255,.9)'; x.fillText(d.st?`${d.st.w}승 ${d.st.l}패${d.st.t?` ${d.st.t}무`:''} · ${d.st.rk}위`:'',240,225);
   let yy=290; x.font=`500 30px ${F}`; for(const s of [tcGmTxt(d.gm),`우승 ${d.champs.length}회${d.champs.length?` (${d.champs.slice(-4).join(', ')})`:''}`,d.star?`올해의 스타 ${d.star.n} ${d.star.pos} · WAR ${d.star.w}`:'']){ if(!s)continue; x.fillText(s,60,yy); yy+=44; }
   const col=(t,L,x0,y0)=>{ x.fillStyle='#fff'; x.font=`800 34px ${F}`; x.fillText(t,x0,y0); let y1=y0+16; x.font=`500 28px ${F}`;
