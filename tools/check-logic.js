@@ -2757,16 +2757,41 @@ T('[아시안게임] 금메달 확률(사용자 제보 11-15): 보통 전력 한
   const T=N.tour; ok(T.pen.TW>0&&T.pen.JPA>0,'아시안게임 대만·일본 사회인야구 전력 감소 '+JSON.stringify(T.pen));
   const ref=ntKRef(), O=s=>ntOdds('ag',s).g; ok(O(ref-4.8)>=.72&&O(ref-4.8)<=.88,'보통 전력 확률 '+O(ref-4.8).toFixed(2)); ok(O(ref-9)<O(ref-4.8)-.15,'주축이 빠진 약한 대표팀은 확률이 낮다 '+O(ref-9).toFixed(2)); ok(O(ref)<=.93,'상한');
   ok(ntOdds('ag',ref-4.8).s>O(ref-4.8)&&ntOdds('ag',ref-4.8).b<=.99,'은·동 누적 확률'); });
-T('[아시안게임] 병역법 개정: 통과 전에는 금메달이 특례, 통과(늦어도 2032) 뒤 아시안게임 금메달은 특례가 없고 올림픽 메달은 그대로, 이미 받은 특례는 유지',()=>{ fresh(); const e=NT_EV.ag, D=a=>KD(a[0],a[1]);
-  ok(!G.agExOff&&e.ex==='gold','예전 저장·새 게임: 아시안게임 금메달 특례 있음'); G.year=2026; ok(!agExLawCheck(),'2026년에는 개정을 굴리지 않는다');
-  G.day=D(e.ann); ntAnnounce('ag'); let N=G.nt; ok((G.mail||[]).some(m=>JSON.stringify(m).includes('2026 아시안게임 대표팀 명단')&&JSON.stringify(m).includes('병역 특례(체육요원)를 받습니다')),'발표 안내: 금메달이면 특례');
-  const sq=N.ids.map(id=>G.players[id]); const free=sq.filter(milFree); ok(free.length>0,'미필 선수 포함'); ok(ntResult('ag',0)==='금메달','강제 금메달'); ok(free.every(p=>p.mil&&p.mil.exempt),'통과 전: 금메달 미필 선수 특례');
-  G.year=2027; G.agExY=2027; ok(!agExLawCheck()&&!G.agExOff,'한 해에 한 번만 굴린다'); ok(AG_EX_LAW.from===2027&&AG_EX_LAW.p>0&&AG_EX_LAW.p<.5,'해마다 확률 '+AG_EX_LAW.p);
-  G.year=AG_EX_LAW.by; G.agExY=null; const nn=(G.news||[]).length; lgrDaily(KD(...AG_EX_LAW.d)); ok(G.agExOff===AG_EX_LAW.by,'늦어도 '+AG_EX_LAW.by+'년에는 통과 '+G.agExOff); ok((G.news||[]).length>nn&&(G.news||[]).some(x=>String(x.t||'').includes('병역법')),'리그 소식');
-  ok(e.ex==null&&NT_EV.oly.ex==='top3','아시안게임 특례 없음 · 올림픽 3위 이내 그대로'); ok(free.every(p=>p.mil&&p.mil.exempt),'이미 받은 특례는 유지'); ok(ntMilB('ag')===0&&ntMilB('oly')>0,'아시안게임은 미필 가산 없음');
-  G.year=2034; G.nt=null; G.day=D(e.ann); ntAnnounce('ag'); N=G.nt; const m=(G.mail||[]).find(x=>JSON.stringify(x).includes('2034 아시안게임 대표팀 명단')); ok(m&&JSON.stringify(m).includes('병역법 개정'),'발표 안내에 특례 폐지');
-  const f2=N.ids.map(id=>G.players[id]).filter(milFree); ok(f2.length>0,'2034 미필 선수 포함'); ok(ntResult('ag',0)==='금메달','강제 금메달'); ok(f2.every(milFree),'통과 뒤: 아시안게임 금메달은 특례 아님');
-  G.year=2036; G.nt=null; ntAnnounce('oly'); N=G.nt; const f3=N.ids.map(id=>G.players[id]).filter(milFree); ok(f3.length>0,'올림픽 미필 선수 포함'); ntResult('oly',0); ok(f3.every(p=>p.mil&&p.mil.exempt),'올림픽 메달은 여전히 특례'); });
+/* 카페 11-20: 예전 병역법 개정(2027년부터 해마다 30%, 늦어도 2032년 통과, 영구 폐지) 시나리오를 여론 규칙으로 바꿨다. 같은 흐름(특례 → 없어짐 → 올림픽 그대로 → 이미 받은 특례 유지)에 재인정을 더해 검사한다 */
+T('[아시안게임] 병역 특례 여론(카페 11-20): 2034년 전에는 멈추지 않고, 특례 노림 선발 뒤 논란이면 다음 대회 불인정, 여론이 회복되면 다시 인정, 올림픽·이미 받은 특례는 그대로',()=>{ fresh(); const e=NT_EV.ag, D=a=>KD(a[0],a[1]);
+  ok(!G.agExOff&&e.ex==='gold','새 게임: 아시안게임 금메달 특례 있음'); ok(AG_EX.from>=2034,'논란은 2034년 대회부터 '+AG_EX.from);
+  G.year=2026; G.day=D(e.ann); ntAnnounce('ag'); let N=G.nt; ok((G.mail||[]).some(m=>JSON.stringify(m).includes('2026 아시안게임 대표팀 명단')&&JSON.stringify(m).includes('병역 특례(체육요원)를 받습니다')),'발표 안내: 금메달이면 특례');
+  ok(N.farm&&N.farm.u>0&&N.farm.b>=0&&N.farm.b<=N.farm.u,'특례 노림 발탁 측정 '+JSON.stringify(N.farm)); ok(agExTxt().includes('인정'),'상태 문구: '+agExTxt());
+  const sq=N.ids.map(id=>G.players[id]); const free=sq.filter(milFree); ok(free.length>0,'미필 선수 포함'); ok(ntResult('ag',0)==='금메달','강제 금메달'); ok(free.every(p=>p.mil&&p.mil.exempt),'금메달 미필 선수 특례'); ok(!G.agExOff&&N.ctrvP===0,'2034년 전 대회는 논란으로 멈추지 않는다');
+  for(let y=2027;y<=2033;y++){ G.year=y; lgrDaily(KD(...AG_EX.d)); } ok(!G.agExOff&&e.ex==='gold','예전 개정 기한(2032)이 지나도 특례 유지'); ok(G.agLawR!=null&&G.agLawR<=AG_EX_LAW.by,'예전 추첨은 같은 때 끝나고 결과를 쓰지 않는다 '+G.agLawR);
+  const y0=G.agEx.y; G.year=2033; ok(!agExLawCheck()&&G.agEx.y===y0,'한 해에 한 번만');
+  /* 특례 노림 선발이 심하고 여론이 나쁘면 논란 확률이 높다(60%): 대회 연도별 고정 씨앗이라 같은 상황이면 같은 결과 */
+  let off=null; for(let y=2034;y<2120&&!off;y+=4){ G.year=y; N.farm={u:20,b:10}; G.agEx.op=10; if(agExAfter(N,free))off=y; } ok(off&&G.agExOff===off,'논란으로 불인정 '+off); ok(N.ctrvP===.6,'확률 상한 '+N.ctrvP);
+  ok((G.news||[]).some(x=>String(x.t||'').includes('특례 불인정')),'리그 소식'); ok(e.ex==null&&NT_EV.oly.ex==='top3','아시안게임 특례 없음 · 올림픽 3위 이내 그대로'); ok(free.every(p=>p.mil&&p.mil.exempt),'이미 받은 특례는 유지'); ok(ntMilB('ag')===0&&ntMilB('oly')>0,'불인정이면 아시안게임 미필 가산 없음'); ok(agExTxt().includes('논란으로 불인정'),'상태 문구: '+agExTxt());
+  { const a=JSON.stringify(G.agEx); G.agExOff=null; G.year=off; N.farm={u:20,b:10}; G.agEx.op=10; const r=agExAfter(N,free); ok(r===true&&G.agExOff===off,'같은 상황이면 같은 결과(결정적)'); G.agEx=JSON.parse(a); }
+  G.year=off+4; G.nt=null; G.day=D(e.ann); ntAnnounce('ag'); N=G.nt; const m=(G.mail||[]).find(x=>JSON.stringify(x).includes((off+4)+' 아시안게임 대표팀 명단')); ok(m&&JSON.stringify(m).includes('선발 논란'),'발표 안내에 불인정 사유'); ok(!N.farm,'불인정 대회는 특례 노림 측정 없음');
+  const f2=N.ids.map(id=>G.players[id]).filter(milFree); ok(f2.length>0,'불인정 대회 미필 선수 포함'); ok(ntResult('ag',0)==='금메달','강제 금메달'); ok(f2.every(milFree),'불인정 대회 금메달은 특례 아님');
+  /* 회복: 해마다 여론 +8, 4년 뒤 여론 55 이상이면 60%, 8년이면 반드시 */
+  G.agEx.op=10; let back=null; for(let y=off+1;y<=off+AG_EX.max&&!back;y++){ G.year=y; lgrDaily(KD(...AG_EX.d)); if(!G.agExOff)back=y; } ok(back&&back>=off+AG_EX.cool&&back<=off+AG_EX.max,'다시 인정 '+back+' (논란 '+off+')'); ok(e.ex==='gold'&&ntMilB('ag')>0,'다시 인정되면 금메달 특례·미필 가산');
+  ok((G.news||[]).some(x=>String(x.t||'').includes('다시 인정')),'재인정 소식');
+  G.year=back+3; G.nt=null; ntAnnounce('oly'); N=G.nt; const f3=N.ids.map(id=>G.players[id]).filter(milFree); ok(f3.length>0,'올림픽 미필 선수 포함'); ntResult('oly',0); ok(f3.every(p=>p.mil&&p.mil.exempt),'올림픽 메달은 언제나 특례'); });
+T('[아시안게임] 옛 저장: 병역법 개정으로 없어진 특례는 논란 불인정으로 옮겨 회복 규칙을 따르고, 옮기기는 두 번 해도 같다(난수 없음)',()=>{ fresh(); delete G.agEx; G.agExOff=2028; delete G.agLawR; G.agExY=2028; G.year=2029;
+  agExSt(); const a=JSON.stringify([G.agEx,G.agLawR,G.agExOff]); agExSt(); ok(JSON.stringify([G.agEx,G.agLawR,G.agExOff])===a,'두 번 불러도 같다'); ok(G.agEx.op===40&&G.agLawR===2028&&G.agExOff===2028,'불인정·옛 추첨 끝 '+a);
+  let back=null; for(let y=2029;y<=2028+AG_EX.max&&!back;y++){ G.year=y; agExLawCheck(); if(!G.agExOff)back=y; } ok(back&&back>=2028+AG_EX.cool,'옛 저장도 다시 인정 '+back); });
+T('[병역] 사회복무요원(카페 11-20): 미필 국내 선수가 토미존 같은 큰 수술을 받으면 사회복무요원(21개월)으로 복무해 재활과 겹치고, 둘 다 끝나야 돌아온다. AI 구단도 같다',()=>{ fresh(); G.day=G.cal.open+30;
+  const pick=(tid,f)=>Object.values(G.players).find(p=>p.team===tid&&!p.foreign&&!p.ys&&p.isP&&!(p.injOut>0)&&p.age<=27&&p.age>=21&&f(p));
+  const p=pick(G.user,()=>true); ok(p,'우리 구단 미필 투수'); p.mil=null; const m0=(G.mail||[]).length;
+  istHurt(p,'tj',420); ok(p.mil&&p.mil.unit===MIL_SOC&&p.mil.from===G.day+1&&p.mil.until-p.mil.from===MIL_SOC_DAYS&&p.mil.soc==='tj','사회복무요원 복무 '+JSON.stringify(p.mil)); ok(MIL_SOC_DAYS>MIL_DAYS,'상무·현역보다 길다');
+  ok((G.mail||[]).slice(0).some(m=>String(m.subj||'').includes('사회복무요원')&&String(m.body||'').includes('재활')),'우리 구단 메일'); ok(!milFree(p),'미필 목록에서 빠진다');
+  G.day++; milDaily(); ok(milServing(p)&&isAway(p)&&!p.e1,'복무 시작: 로스터에서 빠진다'); ok(milText(p).includes('사회복무요원 복무 중')&&milText(p).includes('소집 해제'),'병역 표시 '+milText(p)); ok(milState(p).k==='svc','검색표 복무 중'); ok(milTrainTxt(p).includes('사회복무요원'),'훈련 안내');
+  ok(p.injOut>0&&G.day+p.injOut<p.mil.until,'재활이 복무와 겹친다'); const until=p.mil.until; G.day=until; milDaily(); ok(p.mil.done&&p.mil.unit===MIL_SOC&&!milServing(p)&&!milFree(p),'소집 해제 뒤 군필');
+  /* AI 구단: 상무 지원 중이면 지원을 거두고 사회복무요원으로 */
+  const ai=G.teams.find(t=>t.id!==G.user).id, q=pick(ai,x=>x.id!==p.id); ok(q,'AI 미필 투수'); q.mil={app:'dec'}; istHurt(q,'tj',400); ok(q.mil.unit===MIL_SOC&&!q.mil.app,'AI 구단도 같은 규칙 '+JSON.stringify(q.mil));
+  /* 입대 전 예약(상무 합격)은 사회복무로 바꾸고, 복무 중·군필·외국인·28세·작은 부상은 그대로 */
+  const r=pick(ai,x=>x.id!==q.id); r.mil={unit:'상무',from:G.day+30,until:G.day+30+MIL_DAYS}; istHurt(r,'labrum',360); ok(r.mil.unit===MIL_SOC&&r.mil.from===G.day+1,'입대 예정 상무 → 사회복무요원');
+  const s=pick(ai,x=>![q.id,r.id].includes(x.id)); s.mil={unit:'상무',from:G.day-30,until:G.day-30+MIL_DAYS}; const sm=JSON.stringify(s.mil); istHurt(s,'tj',400); ok(JSON.stringify(s.mil)===sm,'이미 상무 복무 중이면 그대로');
+  const t=pick(ai,x=>![q.id,r.id,s.id].includes(x.id)); t.mil=null; istHurt(t,'blister',10); ok(milFree(t),'작은 부상은 해당 없음'); t.age=28; t.injOut=0; istHurt(t,'tj',400); ok(milFree(t)&&!(t.mil&&t.mil.unit),'28세는 해당 없음');
+  const u=pick(ai,x=>![q.id,r.id,s.id,t.id].includes(x.id)); u.mil={done:true}; istHurt(u,'tj',400); ok(u.mil.done&&!u.mil.unit,'군필은 그대로'); });
 T('[국가대표] 우리 선수 차출 거부: 대체 선수가 들어오고 팬·언론 여론과 선수 사기가 떨어진다. 소집 뒤에는 거부할 수 없다',()=>{ fresh(); G.year=2026; G.day=KD(6,11); ntAnnounce('ag'); const N=G.nt;
   let id=N.ids.find(x=>G.players[x].team===G.user); if(id==null){ const p=domestic(G.user).filter(q=>ntU25(q)&&ntBucket(q)==='P')[0]; const out=N.ids.find(x=>ntBucket(G.players[x])==='P'); N.ids[N.ids.indexOf(out)]=p.id; id=p.id; }
   const p=G.players[id]; prInit(); const f0=G.pr.fan, m0=p.mor??60; const msg=ntRefuse(id); ok(/거부/.test(msg),msg); ok(!N.ids.includes(id)&&N.ref.includes(id),'명단에서 빠짐'); ok(N.ids.length===24,'대체 선수로 24명 유지'); ok(G.pr.fan<f0,'팬 여론 하락'); ok((p.mor??60)<m0,'선수 사기 하락');
