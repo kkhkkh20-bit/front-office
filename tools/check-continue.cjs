@@ -3,13 +3,13 @@ const assert=require('node:assert/strict'),path=require('node:path');
 const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
 (async()=>{const server=await startHtmlServer(path.resolve(__dirname,'../index.html'));let browser;
 try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||'/usr/bin/chromium'});const p=await browser.newPage({viewport:{width:1366,height:768}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
-await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.fOkY=G.year;G.scoutAuto=false;UI.title=false;A.go('staff:scouts');});
+await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.tut={done:true,step:99};G.medSet=true;G.fOkY=G.year;G.scoutAuto=false;UI.title=false;window.__stInterest0=stInterest;stInterest=()=>[];A.go('staff:scouts');}); /* 스카우트 영입 경쟁(#285): 세계에 따라 화면 첫 쪽 후보 하나를 다른 구단이 가져가 20회 안에 8명을 못 채웠다(이 점검은 채용·배치·위임 흐름을 본다). 준비만 고침: 채용 단계에서는 경쟁 구단을 비우고, 채운 뒤 되돌린다 */
 await p.locator('[data-a="smkGo"][data-v="sc"]').first().click();const tried=new Set();let attempts=0;
 while(await p.evaluate(()=>G.scouts.length<SCOUT_MAX)){
  const offers=p.locator('[data-a="hireScout"][data-v$=":0.2"]:visible');let selected=null;
  for(let i=0;i<await offers.count();i++){const v=await offers.nth(i).getAttribute('data-v');if(!tried.has(v)){tried.add(v);selected=offers.nth(i);break;}}
  assert.ok(selected&&attempts++<20,'실제 채용 후보에서 스카우트 정원 충원');await selected.click();if(await p.locator('#cfm [data-a="cfmOk"]').count())await p.locator('#cfm [data-a="cfmOk"]').click();
-}
+}await p.evaluate(()=>{stInterest=window.__stInterest0;});
 await p.evaluate(()=>{const t=TUT.find(s=>s.k==='scout');window._scoutOld=mail('스카우트팀장',t.subj,t.body,{kind:'업무',imp:true,acts:[{l:t.btn,a:t.go[0],v:t.go[1]}]}).id;A.go('staff:scouts');});
 await p.locator('input[data-a="scoutAuto"]').check();let state=await p.evaluate(()=>({n:G.scouts.length,max:SCOUT_MAX,auto:G.scoutAuto,need:scoutWorkStatus().needs,alert:subAlert('staff','scouts'),tut:TUT.find(s=>s.k==='scout').check(),mail:mailStatus(G.mail.find(m=>m.id===_scoutOld)),pending:ibNeedList().some(m=>m.id===_scoutOld),proposal:!!document.querySelector('.schief [data-a="scoutPlanGo"]')}));assert.ok(state.n===state.max&&state.auto&&!state.need&&!state.alert&&state.tut&&state.mail&&!state.pending&&!state.proposal,JSON.stringify(state));
 console.log('실제 스카우트 채용',attempts,'회 제안 → '+state.n+'명 충원·팀장 위임·겨울 해외/프로 배치·잘못된 공백 알림 해제 통과');
