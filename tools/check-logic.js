@@ -8489,7 +8489,7 @@ T('[유저 레더] 래더 v2 누적(사용자 11-17): 리그가 끝나면 우리
   const run=()=>{ const L=ulMakeLeague({}).league; while(L.next<L.sched.length)ulRunRound(L); const me=k=>Object.values(L[k]).filter(x=>String(x.key).startsWith('me:')); const sb=me('bat').reduce((a,x)=>a+x.pa,0), sp=me('pit').reduce((a,x)=>a+x.outs,0); const res=ulFinish(); return {L,res,sb,sp}; };
   const a=run(), se=C.ulSeason(Date.now()).id; const B=C.ulPsRows(G.uld.ps,'b',{}), P=C.ulPsRows(G.uld.ps,'p',{});
   ok(B.length>=9&&B.reduce((s,x)=>s+x.pa,0)===a.sb,'타자 타석 합 '+[B.length,B.reduce((s,x)=>s+x.pa,0),a.sb]); ok(P.length>=5&&P.reduce((s,x)=>s+x.outs,0)===a.sp&&a.sp>=27*24,'투수 아웃 합 '+[P.reduce((s,x)=>s+x.outs,0),a.sp]);
-  ok(B.every(x=>x.ops>=0&&x.ops<3&&x.obp<=1&&x.splits.length===1&&x.splits[0].sid===se),'타율·OPS·시즌 칸'); ok(P.every(x=>x.ip&&(x.era==null||x.era>=0))&&P.some(x=>x.pos==='SP')&&P.some(x=>x.pos==='RP'),'투수 역할 '+P.map(x=>x.pos));
+  /* OPS 상한은 출루율 1 + 장타율 4 = 5. 예전 상한 3은 대수비·대타로 1타석에 2루타 이상을 친 선수(OPS 3~5, 실제 야구에서 가능)를 실패로 봤다(11-21, 경기 후반 교체 추가 뒤 32회 중 2회) */ ok(B.every(x=>x.ops>=0&&x.ops<=5&&x.obp<=1&&x.splits.length===1&&x.splits[0].sid===se),'타율·OPS·시즌 칸'); ok(P.every(x=>x.ip&&(x.era==null||x.era>=0))&&P.some(x=>x.pos==='SP')&&P.some(x=>x.pos==='RP'),'투수 역할 '+P.map(x=>x.pos));
   ok(C.ulPsRows(G.uld.ps,'b',{tier:1}).length===0&&C.ulPsRows(G.uld.ps,'b',{tier:0,season:se}).length===B.length&&C.ulPsRows(G.uld.ps,'b',{season:'S0'}).length===0,'단계·시즌 거르기');
   const pos=B[0].pos; ok(C.ulPsRows(G.uld.ps,'b',{pos}).every(x=>x.pos===pos),'포지션 거르기');
   const O=Object.values(G.uld.opp); ok(O.length===9&&O.every(o=>o.n===1&&o.w+o.l+o.t===3&&o.prof&&o.m&&o.m.v===1),'상대 9팀 '+O.map(o=>o.n+':'+(o.w+o.l+o.t)));
