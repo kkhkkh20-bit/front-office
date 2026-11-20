@@ -3242,21 +3242,6 @@ T('[은퇴 11-17] 은퇴 유력 표시와 실제 은퇴가 같은 기준(retireR
   p.age=35; o=so(30.4); ok(!retireLikely(p)&&!retireRule(p,o),'35세는 능력으로 강제 은퇴하지 않아야 함(11-20 사양 변경)'); /* 베테랑 기준 44→40(11-20 노화 곡선 구단주 결정): 예전 44/43 */
   p.age=33; o=so(34.3); ok(o>=34,'준비 실패: 34 맞추기 '+o); ok(!retireLikely(p),'33세 34를 은퇴 유력으로 표시'); o=so(33.4); ok(retireLikely(p),'33세 33을 은퇴 유력으로 표시하지 않음');
   ok(String(offseason).includes('retireRule(p,o)'),'비시즌 은퇴가 같은 함수를 쓰지 않음'); });
-T('[은퇴 11-20] 노화 곡선: 베테랑 은퇴 기준 40(RET_VET_O)은 우리·AI 선수 모두 같고, AI 베테랑 방출도 같은 40 미만',()=>{ fresh(); ok(RET_VET_O===40&&VET_REL_O===RET_VET_O,'베테랑 기준 '+RET_VET_O+'/'+VET_REL_O);
-  const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
-  for(const p of [me,ai]){ p.age=37; setOvr(p,40.2); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 40을 은퇴로 봄'); setOvr(p,39.4); ok(retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 39를 은퇴로 보지 않음'); p.age=36; setOvr(p,30.4); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 30을 능력으로 은퇴시킴'); } /* 사양 변경(11-20 KBO 비율 기준): 35~36세 능력 은퇴 없음, 기준 40은 37세부터. 예전 이 검사는 36세 40/39 */
-  ok(String(contractStart).includes('ovr(p)<VET_REL_O')&&!/ovr\(p\)<44/.test(String(contractStart)),'AI 베테랑 방출이 예전 44 기준');
-  ok(String(faUpcoming).includes('if(retireVetRule(p))continue;'),'FA 자격의 은퇴 예상이 은퇴 기준과 다름'); /* 11-20 정년 완화: 같은 기준을 한 함수(retireVetRule)로 묶었다. 예전 식 'p.age>=RET_AGE||(p.age>=RET_VET_AGE&&ovr(p)<RET_VET_O)' */
-  for(const a of [35,36,37,38,39])for(const o of [30.4,39.4,40.2]){ const q={age:a,r:me.r,isP:me.isP}; ok(retireVetRule(q,o)===(a>=37&&o<RET_VET_O),a+'세 '+o+' FA 은퇴 예상이 기준(35~36세 없음·37~39세 40)과 다름'); } });
-T('[성장 11-20] 노화 곡선: 프로의식 하락 시작 보정 한 단계 축소(-2/-1/0/0/+1), 전성기·노화 퇴보 확률 3분의 1·전성기 기대값 +0.3, 하락 기울기 .4·신체 노화 .16',()=>{ fresh(); const base=domestic(G.user).find(q=>!q.isP&&!q.prospect&&!q.foreign); ok(base,'준비 실패');
-  const mk=(dt,pro)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt=dt; p.pers.pro=pro; return p; };
-  const want={5:31,6:31,7:32,9:32,10:33,12:33,13:33,16:33,17:34,20:34}; for(const pr in want){ const T=dtSpan(mk('norm',+pr)); ok(T.fall===want[pr]&&T.grow===28&&T.peak===Math.min(31,T.fall-1),'정상형 프로의식 '+pr+': '+JSON.stringify(T)); }
-  ok(dtSpan(mk('early',8)).fall===30&&dtSpan(mk('vet',18)).fall===36,'다른 유형 보정 다름'); /* 사양 변경(11-20 노장 비율): 기술형 하락 시작 33→35라 프로의식 18 기술형은 34→36 */
-  ok(AGE_DECL_K===.4&&AGE_PHYS_K===.16&&Math.abs(AGE_SLUMP_F-1/3)<1e-9&&PEAK_MU===.3&&POT_TIDY_PEAK===2,'상수 다름');
-  const sl=age=>{ __seed(7); let n=0; const N0=600; for(let i=0;i<N0;i++){ const p=mk('norm',12); p.pers.temp=10; p.age=age; p.id=base.id; delete p.mil; G.players[p.id]=p; develop(p); if(p.devLog.reasons.includes('slump'))n++; } G.players[base.id]=base; return n/N0; };
-  const y=sl(27), pk=sl(30); ok(y>.15&&y<.25,'성장 구간 퇴보 비율 '+y.toFixed(3)+'(기대 .2)'); ok(pk>.035&&pk<.1,'전성기 퇴보 비율 '+pk.toFixed(3)+'(기대 .067, 3분의 1)');
-  /* 퇴보 확률만 바꿨고 같은 R() 한 번으로 정한다: 성장 구간(27세)과 전성기(30세)의 주 난수 호출 수 차이가 바꾸기 전과 같다(퇴보 여부와 무관하게 같은 흐름) */
-  ok(String(develop).includes('*(age>T.grow?AGE_SLUMP_F:1)')&&String(develop).includes('base=N(PEAK_MU,1.1)')&&String(develop).includes('(age>T.grow?POT_TIDY_PEAK:1)'),'전성기 퇴보·잠재력 정리 규칙이 develop에 없음'); });
 T('[위임] 스태프 빼가기를 맡겨도 별 4개 이상이라도 기존 연봉의 1.5배를 넘는 조건이면 단장 승인을 받는다',()=>{ fresh(); stInit(); const s=(G.scouts||[]).find(x=>x.skill>=1); ok(s,'준비 실패'); s.skill=4; const tid=G.teams.find(t=>t.id!==G.user).id; G.stRaid=[{id:s.id,k:'sc',tid,sal:round5(s.sal*2),d:G.day}]; G.auto=G.auto||{}; G.auto.raid=true; const sal0=s.sal;
   autoRaid(); ok(s.sal===sal0&&(G.stRaid||[]).some(r=>r.id===s.id),'한도를 넘는 인상인데 운영팀이 바로 붙잡음'); });
 T('[데이터 보고] 월간 전력 분석 보고에 득실·피타고리안·최근 흐름·백분위 상하위가 붙고, 통계 화면으로 이어 준다',()=>{ fresh(); simTo(()=>period()==='season'&&((G.sea.tl||[])[G.user]||[]).length>=12); ok(typeof dataLines==='function','함수 없음'); ok(anaList().length>0,'분석원 없음');
@@ -10706,6 +10691,21 @@ T('[카페 11-19 선발 순번] 선발 요청한 유망주가 기존 선발 앞 
   a2.r.stf=base+raw; roleSync(U); ok(depth(U).sp[0]===A[0],'작은 평가 차이로 1·2선발이 뒤바뀜'); a2.r.stf=base+keep; roleSync(U); ok(t.spO.ids[0]===a2.id,'뚜렷한 차이인데 순번이 바뀌지 않음'); a2.r.stf=base+raw; roleSync(U); ok(depth(U).sp[0]===a2,'바뀐 순번이 작은 차이로 되돌아감');
   t.spO.y=G.year-1; ok(depth(U).sp.map(p=>p.id).join()===(()=>{ const sv=t.spO; delete t.spO; const z=depth(U).sp.map(p=>p.id).join(); t.spO=sv; return z; })(),'지난 시즌 순번 기억이 새 시즌에 남음');
   ok(__rngState()===r0,'선발 순번 계산이 주 난수를 씀'); });
+T('[은퇴 11-20] 노화 곡선: 베테랑 은퇴 기준 40(RET_VET_O)은 우리·AI 선수 모두 같고, AI 베테랑 방출도 같은 40 미만',()=>{ fresh(); ok(RET_VET_O===40&&VET_REL_O===RET_VET_O,'베테랑 기준 '+RET_VET_O+'/'+VET_REL_O);
+  const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
+  for(const p of [me,ai]){ p.age=37; setOvr(p,40.2); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 40을 은퇴로 봄'); setOvr(p,39.4); ok(retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 39를 은퇴로 보지 않음'); p.age=36; setOvr(p,30.4); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 30을 능력으로 은퇴시킴'); } /* 사양 변경(11-20 KBO 비율 기준): 35~36세 능력 은퇴 없음, 기준 40은 37세부터. 예전 이 검사는 36세 40/39 */
+  ok(String(contractStart).includes('ovr(p)<VET_REL_O')&&!/ovr\(p\)<44/.test(String(contractStart)),'AI 베테랑 방출이 예전 44 기준');
+  ok(String(faUpcoming).includes('if(retireVetRule(p))continue;'),'FA 자격의 은퇴 예상이 은퇴 기준과 다름'); /* 11-20 정년 완화: 같은 기준을 한 함수(retireVetRule)로 묶었다. 예전 식 'p.age>=RET_AGE||(p.age>=RET_VET_AGE&&ovr(p)<RET_VET_O)' */
+  for(const a of [35,36,37,38,39])for(const o of [30.4,39.4,40.2]){ const q={age:a,r:me.r,isP:me.isP}; ok(retireVetRule(q,o)===(a>=37&&o<RET_VET_O),a+'세 '+o+' FA 은퇴 예상이 기준(35~36세 없음·37~39세 40)과 다름'); } });
+T('[성장 11-20] 노화 곡선: 프로의식 하락 시작 보정 한 단계 축소(-2/-1/0/0/+1), 전성기·노화 퇴보 확률 3분의 1·전성기 기대값 +0.3, 하락 기울기 .4·신체 노화 .16',()=>{ fresh(); const base=domestic(G.user).find(q=>!q.isP&&!q.prospect&&!q.foreign); ok(base,'준비 실패');
+  const mk=(dt,pro)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt=dt; p.pers.pro=pro; return p; };
+  const want={5:31,6:31,7:32,9:32,10:33,12:33,13:33,16:33,17:34,20:34}; for(const pr in want){ const T=dtSpan(mk('norm',+pr)); ok(T.fall===want[pr]&&T.grow===28&&T.peak===Math.min(31,T.fall-1),'정상형 프로의식 '+pr+': '+JSON.stringify(T)); }
+  ok(dtSpan(mk('early',8)).fall===30&&dtSpan(mk('vet',18)).fall===36,'다른 유형 보정 다름'); /* 사양 변경(11-20 노장 비율): 기술형 하락 시작 33→35라 프로의식 18 기술형은 34→36 */
+  ok(AGE_DECL_K===.4&&AGE_PHYS_K===.16&&Math.abs(AGE_SLUMP_F-1/3)<1e-9&&PEAK_MU===.3&&POT_TIDY_PEAK===2,'상수 다름');
+  const sl=age=>{ __seed(7); let n=0; const N0=600; for(let i=0;i<N0;i++){ const p=mk('norm',12); p.pers.temp=10; p.age=age; p.id=base.id; delete p.mil; G.players[p.id]=p; develop(p); if(p.devLog.reasons.includes('slump'))n++; } G.players[base.id]=base; return n/N0; };
+  const y=sl(27), pk=sl(30); ok(y>.15&&y<.25,'성장 구간 퇴보 비율 '+y.toFixed(3)+'(기대 .2)'); ok(pk>.035&&pk<.1,'전성기 퇴보 비율 '+pk.toFixed(3)+'(기대 .067, 3분의 1)');
+  /* 퇴보 확률만 바꿨고 같은 R() 한 번으로 정한다: 성장 구간(27세)과 전성기(30세)의 주 난수 호출 수 차이가 바꾸기 전과 같다(퇴보 여부와 무관하게 같은 흐름) */
+  ok(String(develop).includes('*(age>T.grow?AGE_SLUMP_F:1)')&&String(develop).includes('base=N(PEAK_MU,1.1)')&&String(develop).includes('(age>T.grow?POT_TIDY_PEAK:1)'),'전성기 퇴보·잠재력 정리 규칙이 develop에 없음'); });
 /* 11-20 정년 완화·세대 재능·노장 은퇴: 새 시나리오는 맨 끝에 둔다(CI 조각 배정이 기존 시나리오 순서로 정해져, 중간에 넣으면 기존 기준 시나리오가 다른 조각으로 옮겨 간다) */
 T('[은퇴 11-20] 정년 완화: 40세 이상은 나이마다 기준(40세 42·41세 44·42세 46·43세 48·44세 50) 미만이면 은퇴, 45세는 누구나 은퇴. 우리·AI 같음, 은퇴 면담 유예도 45세 전까지',()=>{ fresh(); ok(RET_AGE===40&&RET_CAP===45&&RET_VET_O===40,'기준 상수 '+RET_AGE+'/'+RET_CAP+'/'+RET_VET_O);
   const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
