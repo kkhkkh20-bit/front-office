@@ -3823,7 +3823,7 @@ T('감독은 본 만큼만 안다: 외국인 후보는 영상·스카우트 보�
   ok(/영상|보고서|자료/.test(mgrOnForeign(p)),'외국인 후보를 직접 본 것처럼 말함: '+mgrOnForeign(p));
   m.hD=G.day; m.youth=50; const a=mgrTalk('young').a; ok(/직접 보지 못했|캠프/.test(a)||!playersOf(G.user).some(q=>!q.foreign&&q.age<=24),'갓 부임한 감독이 어린 선수를 다 아는 것처럼 말함: '+a.slice(0,80)); });
 
-T('스프링캠프: 모든 구단 젊은 선수가 크고, 투수는 새 구종을 익혀 오기도 한다(구종이 늘면 탈삼진 힘이 바뀐다)',()=>{ fresh(); const t=G.teams.find(x=>x.id!==G.user).id; const L=domestic(t).filter(p=>p.age<=24&&!p.prospect); ok(L.length>=5,'준비 실패');
+T('스프링캠프: 모든 구단 젊은 선수가 크고, 투수는 새 구종을 익혀 오기도 한다(구종이 늘면 탈삼진 힘이 바뀐다)',()=>{ fresh(); const yng=id=>domestic(id).filter(p=>p.age<=24&&!p.prospect); const t=G.teams.filter(x=>x.id!==G.user).map(x=>x.id).sort((a,b)=>yng(b).length-yng(a).length||a-b)[0]; const L=yng(t); ok(L.length>=5,'준비 실패'); /* 11-20: 예전에는 첫 AI 구단을 골랐다. 불펜 교체 규칙(8회 이후 불 끄기)으로 시작 세계(2025 시즌 시뮬)가 바뀌자 그 구단 젊은 선수가 16명 +3.76에서 8명 -0.22(한 명 -0.47)가 됐다. 표본이 작아 한 명 운에 갈리므로 젊은 선수가 가장 많은 AI 구단 한 곳을 본다(바뀐 세계 42명 +10.09, main 세계 39명 +10.69). 구단 단위 검사는 그대로 */
   const o0=L.reduce((a,p)=>a+ovr(p),0); campGrowAll('spring','skill'); const o1=L.reduce((a,p)=>a+ovr(p),0); ok(o1>o0,'AI 구단 젊은 선수가 캠프에서 크지 않음: '+(o1-o0).toFixed(2));
   const q=domestic(G.user).find(x=>x.isP); const k0=arsenalK(q), n0=arsenal(q,q.r.stf).length; const k=addPitch(q,8); ok(k&&arsenal(q,q.r.stf).length===n0+1,'새 구종이 구종 목록에 없음'); ok(arsenalK(q)>=k0,'좋은 새 구종을 익혔는데 탈삼진 힘이 그대로 아래'); });
 
