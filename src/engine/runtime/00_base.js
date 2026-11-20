@@ -33,6 +33,7 @@ const dvRaw=FrontOfficeCore.dvRaw;
    날마다 흔들리지 않게 고정 상수로 둔다: 시작 세계 50~52, 시즌 중 52~53.5, LV_UP(국내 상위 300명 +3)이 몇 해에 걸쳐 차면 더 오른다(설계 노트 docs/design/world-scale-plan-2026-11-18.md). 정수라 화면 차이(a−b)는 예전과 같다 */
 /* 하드 모드(11-12): 새 게임에서 고른다. AI에게 보너스를 주지 않고 우리 구단 환경을 까다롭게(거래 웃돈·FA 선호·수입·구단주 인내) */
 const HARD=()=>typeof G!=='undefined'&&!!G&&!!G.cfg&&!!G.cfg.hard;
+const SOFT=()=>typeof G!=='undefined'&&!!G&&!!G.cfg&&!!G.cfg.soft&&!G.cfg.hard; /* 쉬움(사용자 11-21): 우리와 하는 트레이드에서 다른 단장들이 덜 요구한다. 그 밖의 규칙·AI끼리 거래는 보통과 같다 */
 const dv20=()=>typeof G!=='undefined'&&!!G&&!!G.cfg&&G.cfg.scale==='2080';
 const DV_K=52; /* 측정(11-18, 시드 3·5·11): 주전 평균 개막 전 50.4~52.1, 시즌 중 51.7~53.9(시드 평균 약 52.5). 52면 시즌 중 리그 주전 평균이 50~51로 보인다 */
 const dvKbo=x=>Math.max(20,Math.min(80,Math.round(50+x-DV_K)));

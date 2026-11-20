@@ -64,7 +64,8 @@ function gmOf(tid){ if(tid===ME())return null; /* 야인이면 전 구단도 그
 function gmTrait(tid){ const g=tid===ME()?null:team(tid).gm; return g&&!g.interim?g.trait:null; }
 function gmInit(){ for(const t of G.teams){ if(t.id!==G.user&&!t.gm)t.gm=mkGM(t.id); } if(G.rep==null)G.rep=50; G.gmc=G.gmc||{}; G.jobs=G.jobs||[]; G.lgTrades=G.lgTrades||[]; try{ aiPlanEnsure(); }catch(e){} }
 function relLabel(r){ return r>=80?'막역한 사이':r>=65?'친한 편':r>=45?'무난한 사이':r>=30?'서먹한 사이':'껄끄러운 사이'; }
-function teamNeeds(tid){ const rk=slotRanks(tid); const weak=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r).filter(x=>x.r>=6).slice(0,2).map(x=>x.k);
+function teamNeeds(tid){ return viewMemo('tn'+tid,()=>teamNeeds0(tid)); } /* perf: once per team per screen draw (01_rules viewMemo) */
+function teamNeeds0(tid){ const rk=slotRanks(tid); const weak=PSLOTS.filter(k=>k!=='DH').map(k=>({k,r:rk[k].rank})).sort((a,b)=>b.r-a.r).filter(x=>x.r>=6).slice(0,2).map(x=>x.k);
   const t=team(tid); const c=teamCtx(t); const ci=capInfo(tid); const money=t.indie||ci.over>0||t.owner==='profit'?'tight':ci.cap-ci.pay>2500?'rich':'normal';
   return {weak,contend:c.contend,money,rk}; }
 function needText(tid){ const n=teamNeeds(tid); const pt=planTalk(team(tid)); return `${pt||(n.contend?'우승 경쟁':'리빌딩')} · ${n.weak.length?n.weak.map(k=>SLOTK[k]).join('·')+' 보강 원함':'급한 자리 없음'} · 연봉 ${n.money==='tight'?'여유 없음':n.money==='rich'?'여유 많음':'보통'}`; }
