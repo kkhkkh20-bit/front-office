@@ -182,5 +182,5 @@ table.rt.rt :is(th,td).rtc-cur{text-align:center;padding-right:26px!important}
 @media(max-width:699px){
  .rcnt{padding:3px 8px;gap:3px}#app .rcnt-tog{display:inline-flex;align-items:center;min-height:32px;padding:0 8px}
  .rcnt:not(.more)>:is(.rcnt-parts,.rcnt-warn){display:none}
- .rcnt-top{flex-wrap:nowrap;align-items:center;font-size:12.5px;gap:5px;white-space:nowrap}.rcnt-top b{font-size:14px}.rcnt-h{font-size:11px;padding:0 4px}
+ .rcnt-top{flex-wrap:nowrap;align-items:center;font-size:12px;gap:5px;white-space:nowrap}.rcnt-top b{font-size:13px}.rcnt-h{font-size:12px;padding:0 4px} /* 공통 글꼴 단계(12·13·16·20·24) */
 }
