@@ -14,6 +14,9 @@ step "모바일 훈련·의료 상세·시설 재원 안내"
 node tools/check-mobile-care-1121.cjs || fail=1
 node tools/check-mobile-care-ui-1121.cjs || fail=1
 node tools/check-training-layout-1121.cjs || fail=1
+node tools/check-ui-home-clarity-1121.cjs || fail=1
+node tools/check-ui-inbox-clarity-1121.cjs || fail=1
+node tools/check-ui-finance-clarity-1121.cjs || fail=1
 if [ "${SKIP_RULE_CHECK:-0}" != "1" ]; then
   step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1
 fi

@@ -21,7 +21,7 @@ function guideItems(){ const ph=guidePhase(); let L=[];
   const c=G.cal, C=G.contract, gy=guideY(), d=G.day;
   if(ph==='season'){ const dr=(G.dlog&&G.dlog[G.year])||(G.draft&&G.draft.done&&G.draft.y===G.year);
     L=[{k:'ev',t:'결정·요청에 답하기',why:'감독·선수 요청과 결정은 소식함으로 옵니다. 답하지 않으면 기한이 지나 기본안으로 정해집니다.',ok:(guideAuto('ev')&&guideAuto('mgr'))||d>=c.open+21,go:['tab','inbox'],deleg:['ev','mgr']},
-       {k:'trade',t:'트레이드 마감 전 보강',why:'7월 31일이 지나면 시즌이 끝날 때까지 트레이드를 할 수 없습니다. 받은 제안 응답은 부단장에게 맡길 수 있습니다.',ok:d>KD(7,31),go:['goWork','트레이드'],prog:'7월 31일까지',deleg:['tro']},
+       {k:'trade',t:'트레이드 마감 전 보강',why:'7월 31일이 지나면 시즌이 끝날 때까지 트레이드를 할 수 없습니다.',ok:d>KD(7,31),go:['goWork','트레이드'],prog:'7월 31일까지',deleg:['tro']},
        {k:'fdl',t:'외국인 교체 마감',why:'다쳤거나 부진한 외국인은 8월 15일 마감 전에 바꿉니다.',ok:d>KD(8,15),go:['goWork','외국인선수'],prog:'8월 15일까지'},
        {k:'draft',t:'신인 드래프트',why:'지명은 단장이 직접 합니다. 스카우트 배치를 팀장에게 맡기면 후보 보고가 알아서 쌓입니다.',ok:!!dr||d>c.draft+3,go:['goWork','신인드래프트'],prog:dmd(c.draft),deleg:['scout']}]; }
   else if(ph==='post'){ const inPs=!!(G.ps&&(G.ps.seeds||G.ps.teams||[]).some(x=>(x&&x.tid!=null?x.tid:x)===G.user));
@@ -34,8 +34,8 @@ function guideItems(){ const ph=guidePhase(); let L=[];
   for(const x of L)if(x.deleg)x.deleg=x.deleg.filter(k=>!guideAuto(k)); return L; }
 function guideRoute(){ try{ return UI.tab+':'+(typeof curSub==='function'?curSub(UI.tab)||'':''); }catch(e){ return UI.tab; } }
 /* 홈 카드 아랫줄: 쉬운 진행 켜기·끄기 */ /* 강조(primary) 버튼은 화면당 하나: 홈은 경기 버튼이 맡는다(디자인 점검) */
-function guideEasyLine(){ if(typeof AUTO_AREAS==='undefined')return ''; const on=guideEasy();
-  return `<div class="hw-easy${on?' on':''}"><span>${on?'<b>쉬운 진행</b> 켜짐 · 반복 업무는 비서와 팀장이 맡습니다':'<b>어렵다면</b> 반복 업무(연봉·재계약·일상 결정·감독 요청·스카우트 배치·코치 빈자리)를 비서에게'}</span><button class="btn small" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다. 설정 › 권한에서 하나씩 바꿀 수도 있습니다.':'드래프트·FA·외국인 영입·트레이드 협상은 계속 단장이 합니다. 설정 › 권한에서 언제든 다시 가져옵니다.'}">${on?'끄기':'쉬운 진행 켜기'}</button></div>`; }
+function guideEasyLine(){ if(typeof AUTO_AREAS==='undefined')return ''; const on=guideEasy(), areas=AUTO_AREAS.filter(([k])=>!AUTO_OPTIN.has(k)), n=areas.filter(([k])=>guideAuto(k)).length;
+  return `<div class="hw-easy${on?' on':''}"><span><b>반복 업무 위임</b> · ${on?'켜짐':n?'일부 위임':'꺼짐'}</span><button class="btn small" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다.':'비서·팀장에게 반복 업무를 맡깁니다.'}">${on?'직접 하기':'모두 맡기기'}</button><span class="small" style="flex-basis:100%">드래프트·FA·외국인 영입·트레이드 협상은 직접</span><details style="flex-basis:100%"><summary>위임 범위</summary><div>${areas.map(([,label])=>esc(label)).join(' · ')}</div><div>설정 › 권한에서 개별 업무를 바꿀 수 있습니다. ‘직접 하기’를 누르면 맡긴 업무를 모두 가져옵니다.</div></details></div>`; }
 /* '하기'로 간 화면 맨 위 한 줄 띠 */
 function guideBar(){ const g=UI.guide; if(!g||!guideOn()||UI.sheet!=null||UI.person||UI.teamSh!=null)return ''; if(typeof draftFocusOn==='function'&&draftFocusOn())return ''; /* 드래프트 집중 모드(카페 11-19) */ if(g.route!==guideRoute())return '';
   const L=guideItems(), x=L.find(i=>i.k===g.k); if(!x)return ''; const next=L.find(i=>!i.ok&&i.k!==x.k);
@@ -48,7 +48,7 @@ const GUIDE_MAIL=[
   {k:'off',when:()=>guidePhase()==='off'&&!!G.contract&&!G.contract.done,subj:'연봉 협상과 재계약은 맡기셔도 됩니다',auto:['sal','fre'],body:()=>`스토브리그 일정입니다. FA 영입은 단장님이 직접 하시고, 아래 두 가지는 맡기실 수 있습니다.\n\n· 국내 연봉 협상: 1월 5일에 확정됩니다. 맡기시면 운영팀이 산정안과 요구액 중간쯤에서 합의합니다.\n· 외국인 재계약: 맡기시면 운영팀이 성적이 괜찮은 선수만 잡고 나머지는 보류권을 쥔 채 결별합니다.\n\n직접 하시면 더 아낄 수 있지만, 처음이시면 맡기셔도 시즌 운영에 지장이 없습니다.`}];
 function guideMailTick(){ if(!guideOn()||G.fdWait||(G.fd&&!G.fd.done))return; const S=G.guideMail=G.guideMail||{};
   for(const x of GUIDE_MAIL){ if(S[x.k]||!x.when())continue; S[x.k]=G.day; const need=x.auto.filter(k=>!guideAuto(k)); if(!need.length)continue;
-    const m=mail(`비서 ${SEC}`,x.subj,x.body(),{kind:'업무',face:'sec',acts:guideEasy()?[]:[{l:'쉬운 진행 켜기',a:'easyMode',v:'1'}]}); m.auto=need; } }
+    const m=mail(`비서 ${SEC}`,x.subj,x.body(),{kind:'업무',face:'sec',acts:guideEasy()?[]:[{l:'반복 업무 모두 맡기기',a:'easyMode',v:'1'}]}); m.auto=need; } }
 /* 설정 카드 */
 /* 생일 알림(구단주 11-19 생년월일): 소식함 위 줄에 우리 선수 생일을 보일지. 화면 표시만 바꾼다(G.cfg.bdayOff) */
 function bdayCfgCard(){ const off=!!(G.cfg&&G.cfg.bdayOff); return `<section class="card"><h2 class="sec">선수 생일 알림</h2><div class="chips">${[['0','보기'],['1','숨기기']].map(([v,l])=>`<button data-a="bdayOff" data-v="${v}" class="${(off?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">우리 구단 선수의 생일이면 소식함 위 줄에 짧게 알려 줍니다(지난 사흘 안). 경기·성장에는 영향이 없습니다.</p></section>`; }
@@ -56,7 +56,7 @@ function guideCfgCard(){ const off=!!(G.cfg&&G.cfg.guideOff); return `<section c
 Object.assign(A,{
   guideGo(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.go)return; if(x.k==='review'){ G.tutFlags=G.tutFlags||{}; G.tutFlags.review=true; } UI.guide={k:x.k}; A[x.go[0]]?.(x.go[1]); UI.guide={k:x.k,route:guideRoute()}; render(); },
   guideDeleg(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.deleg||!x.deleg.length)return; const L=x.deleg.map(k=>handOff(k)); toast(L.length>1?`${x.t}: ${x.deleg.length}가지 업무를 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`:L[0]); save(); render(); },
-  easyMode(v){ const on=v==='1'; autoAll(on); toast(on?'쉬운 진행을 켰습니다. 연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강은 비서와 팀장이 맡습니다. 설정 › 권한에서 하나씩 다시 가져올 수 있습니다.':'맡긴 업무를 모두 다시 직접 합니다.'); save(); render(); },
+  easyMode(v){ const on=v==='1'; autoAll(on); toast(on?'반복 업무를 비서·팀장에게 맡겼습니다. 설정 › 권한에서 바꿀 수 있습니다.':'맡긴 업무를 모두 다시 직접 합니다.'); save(); render(); },
   guideClose(){ UI.guide=null; render(); },
   bdayOff(v){ G.cfg=G.cfg||{}; G.cfg.bdayOff=v==='1'; save(); render(); },
   guideOff(v){ G.cfg=G.cfg||{}; G.cfg.guideOff=v==='1'; if(G.cfg.guideOff)UI.guide=null; save(); render(); },
