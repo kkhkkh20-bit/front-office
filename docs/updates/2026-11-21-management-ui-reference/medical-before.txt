@@ -1,0 +1,45 @@
+FAIL PC retains 20% practical recovery after a return 60 days ago
+AssertionError [ERR_ASSERTION]: recovering player absent from current medical table
+    at /workspace/front-office-management-ui-reference/tools/check-medical-recovery-visible-1121.cjs:25:254
+    at test (/workspace/front-office-management-ui-reference/tools/check-medical-recovery-visible-1121.cjs:24:29)
+    at Object.<anonymous> (/workspace/front-office-management-ui-reference/tools/check-medical-recovery-visible-1121.cjs:25:1)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+FAIL injured player appears once with remaining days; healthy player stays out
+AssertionError [ERR_ASSERTION]: one current row per player 1
+
+0 !== 1
+
+    at /workspace/front-office-management-ui-reference/tools/check-medical-recovery-visible-1121.cjs:26:161
+    at test (/workspace/front-office-management-ui-reference/tools/check-medical-recovery-visible-1121.cjs:24:29)
+    at Object.<anonymous> (/workspace/front-office-management-ui-reference/tools/check-medical-recovery-visible-1121.cjs:26:1)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+PASS phone retains existing recovery text and 20% progress
+FAIL PC preserves current ineligibility and military qualifiers
+AssertionError [ERR_ASSERTION]: current status hidden: {"hold":true}
+    at /workspace/front-office-management-ui-reference/tools/check-medical-recovery-visible-1121.cjs:28:243
+    at test (/workspace/front-office-management-ui-reference/tools/check-medical-recovery-visible-1121.cjs:24:29)
+    at Object.<anonymous> (/workspace/front-office-management-ui-reference/tools/check-medical-recovery-visible-1121.cjs:28:1)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+PASS completed aftereffects stay out of the current recovery rows
+PASS foreign-team and future-join recovery stays outside our current medical list
+3 passed, 3 failed
+
+CHECK_EXIT=1
