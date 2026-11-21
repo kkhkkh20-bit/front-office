@@ -26,6 +26,10 @@ function addAward(p,label,tid){const aw=p.aw=p.aw||[],added=!aw.includes(label);
 /* 최근 소식과 영구 연대기를 분리한다. 화면 조회는 게임·난수·저장 상태를 바꾸지 않는다. */
 let _chronGame=null,_chronIds=null,_chronSources=null;
 const chronIdentity=x=>x.source?'s:'+x.tid+':'+x.source+(x.k==='rebrand'&&/^rebrand:\d+:\d+$/.test(x.source)?':'+JSON.stringify([x.d,x.t]):''):x.id?'i:'+x.id:'l:'+JSON.stringify([x.tid,x.y,x.d,x.k,x.t,x.ref??null]);
+/* KBO 최종 순위(카페 11-21): 한국시리즈 우승 1위, 준우승 2위, 나머지는 정규시즌 순서. h.order(정규시즌 순서)는 그대로 둔다(신인 드래프트는 정규시즌 역순).
+   옛 저장도 h.champ·h.runner만 있으면 읽을 때 계산한다(저장·난수 없음). 우승팀이 없는 해(시작용 2025시즌 등)는 정규시즌 순서 그대로 */
+function kboFinalOrder(h){const o=(h&&h.order)||[],id=x=>x&&typeof x==='object'?x.tid:x;if(!h||h.champ==null)return o.slice();const top=[h.champ,h.runner].filter(t=>t!=null&&o.some(x=>id(x)===t));return top.map(t=>o.find(x=>id(x)===t)).concat(o.filter(x=>!top.includes(id(x))));}
+function kboFinalRank(h,tid){const i=kboFinalOrder(h).findIndex(x=>(x&&typeof x==='object'?x.tid:x)===tid);return i<0?0:i+1;}
 function clubSeasonResult(h,tid){if(h.champ===tid)return '한국시리즈 우승';if(h.runner===tid)return '한국시리즈 준우승';let known=false;for(const [k,l] of [['ks','한국시리즈'],['po','플레이오프'],['spo','준플레이오프'],['wc','와일드카드']]){const r=h.ps&&h.ps[k];if(!Array.isArray(r))continue;known=true;if(r.slice(0,2).includes(tid))return l+' 진출';}return known?'정규시즌 종료':'포스트시즌 기록 없음';}
 /* 이름 전이는 같은 시즌에도 여러 번 생긴다. 보존된 실제 일자와 전이만 복원하고 알 수 없는 날짜는 만들지 않는다. */
 function legacyClubIdentityChron(tid,existing=[]){ const H=(G.tnames||{})[tid]||[],L=[]; for(let i=1;i<H.length;i++){ const a=H[i-1],b=H[i]; if(!Number.isFinite(b.d0)||a.city===b.city&&a.nick===b.nick)continue;
