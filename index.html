@@ -20433,13 +20433,17 @@ function scoutDeparture(p,from,to){if(from!==G.user||from===to||G.unemp||p.prosp
 function scoutFormerReport(p){if(p.team===G.user||p.prospect||p.foreign)return null;const s=p.proScoutPast?.[G.user],d=exOwnD(p),x=[...(p.tLog||[])].reverse().find(z=>z.f===G.user);if(d==null||!s||!s.r||s.d==null||x&&x.d!==s.d)return null;const r=JSON.parse(JSON.stringify(s.r));return {...r,who:`우리 팀 시절 자료 · ${dstr(s.d)} 당시 평가 보관 · 떠난 지 ${G.day-s.d}일`,historical:true,asOf:s.d};}
 function scoutDraftEstimate(p){if(p.dEst)return {...p.dEst,tid:p.dEst.tid??p.draft?.tid,y:p.dEst.y??p.draft?.y};if(!p.prospect&&p.acq?.k==='draft'&&p.acq.ep==null&&p.draft)return {ofp:null,sd:99,who:'지명 당시 잠재력 미확인',tid:p.acq.tid??p.draft.tid,y:p.draft.y,d:p.acq.d};return null;}
 function domesticScoutMigrate(){for(const p of Object.values(G.players||{})){const d=scoutDraftEstimate(p);if(!p.dEst&&d)p.dEst=d;if(p.proScoutPast)for(const [k,s] of Object.entries(p.proScoutPast))if(!s||!Number.isFinite(s.d)||!s.r||typeof s.r!=='object')delete p.proScoutPast[k];}}
+/* 지금 구단을 맡기 전(이직·후임 취임 전)에 그 구단이 지명한 기록인가. 첫 구단은 게임 시작 해부터 내 구단이라 해당 없음. 저장 값만 읽는다 */
+function scoutInherited(d){ const s=G.gmSinceD; if(s==null||!(G.gmSince>(G.startY??G.gmSince)||(G.myC?.stints||[]).some(x=>x&&x.tid!==G.user)))return false; /* 다른 구단 재임 기록이 있어야 '맡기 전'이 있다 */ return d.d!=null?d.d<s:d.y!=null&&d.y<G.gmSince; }
 function ownSd(p,sc){ const b=sc?scSd(sc,p):SCOUT_SD[0]; const fw=p.gmFw&&p.gmFw.y===G.year&&p.gmFw.t===G.user?1-.06*Math.min(3,p.gmFw.n||0):1; /* 단장이 2군 경기에서 직접 본 선수 */ return clamp(b*anaEff(G.user).sdm*(1-Math.min(.45,ownObs(p)*.15))*fw*sprcEvalSdF(p,G.user),1.5,8); } /* 스프링캠프 강팀 연습경기에 나간 선수(97_spring_camp.js sprcEvalSdF) */
 /* 겉 포장: 외국인은 1년 보고 뽑으므로 '장래'를 말하지 않고 올해 기량만 말한다. 갓 지명한 우리 신인은 첫 실전 전까지 지명 당시 스카우트 평가를 유지한다 */
 function scoutReport(p){ const past=scoutFormerReport(p);if(past)return past;let r=scoutReport1(p); if(!r)return r;
   if(p.foreign){ let c=r.cur; /* 계약 전 후보: 잠재력 칸이 현재 능력 추정보다 정확해 보이지 않게, 기록과 합치고 조사 전 흐림을 얹은 종합 추정을 쓴다(사용자 11-13: 잠재력만 봐도 실력이 드러나 관찰 명단을 쓸 이유가 없었다) */ if(p.team==null&&c!=null&&typeof fScout==='function'){ try{ const f=fScout(p,r); if(f&&f.raw!=null)c=clamp(Math.round(f.raw),20,80); }catch(e){} } r=Object.assign({},r,{ofp:c,role:c!=null?roleOf(c,p):null,tools:(r.tools||[]).map(t=>({...t,fut:t.cur})),notes:(r.notes||[]).filter(n=>!/다 자라지|더 자랄 여지|잠재력/.test(n)),eta:null,now1:true}); }
   else if(scoutDraftEstimate(p)){const d=scoutDraftEstimate(p),date=d.d!=null?dstr(d.d):d.y!=null?`${d.y}년 지명 당시`:'지명 시점 미상',source=d.tid!=null?tname(d.tid):'지명 구단 미상';r={...r,draftEstimate:d};
-    const original=p.team===G.user&&d.tid===G.user&&ownObs(p)===0&&p.age<29&&(!p.acq||p.acq.k==='draft'||p.acq.k==='fd');
-    if(original){const known=Number.isFinite(d.ofp)&&d.sd<50,o=known?Math.max(r.cur??0,d.ofp):null,c0=r.cur??Math.round(ovr(p));r={...r,ofp:o,sd:known?d.sd:99,conf:known?sdConf(d.sd):'미확인',who:`${d.who||'평가자 미상'} · ${source} ${date} 평가(현재 관찰과 구분)`,role:known?roleOf(o,p):null,risk:known?r.risk:'판단 불가',tools:(r.tools||[]).map(t=>({...t,fut:known&&p.age<=26?clamp(Math.round(t.cur+(o-c0)*.9),t.cur,80):t.cur})),notes:[...(r.notes||[]).filter(n=>!/다 자라지|자랄 여지/.test(n)),...(known&&p.age<=26&&o-c0>=10?[`지명 당시에는 ${roleOf(o,p)}까지 기대했습니다. 실전 기록이 쌓이면 코치진이 다시 평가합니다.`]:[])]};}
+    const inherited=p.team===G.user&&d.tid===G.user&&!(Number.isFinite(d.ofp)&&d.sd<50)&&scoutInherited(d); /* 이직·후임으로 맡은 구단이 내가 오기 전에 지명한 선수: 지명 평가가 없어도 구단 스카우트·코치진이 아는 우리 선수다(카페 11-21 beeseo: 광주 2군 전원 '판단 불가') */
+    const original=!inherited&&p.team===G.user&&d.tid===G.user&&ownObs(p)===0&&p.age<29&&(!p.acq||p.acq.k==='draft'||p.acq.k==='fd');
+    if(inherited)r={...r,draftEstimate:d};
+    else if(original){const known=Number.isFinite(d.ofp)&&d.sd<50,o=known?Math.max(r.cur??0,d.ofp):null,c0=r.cur??Math.round(ovr(p));r={...r,ofp:o,sd:known?d.sd:99,conf:known?sdConf(d.sd):'미확인',who:`${d.who||'평가자 미상'} · ${source} ${date} 평가(현재 관찰과 구분)`,role:known?roleOf(o,p):null,risk:known?r.risk:'판단 불가',tools:(r.tools||[]).map(t=>({...t,fut:known&&p.age<=26?clamp(Math.round(t.cur+(o-c0)*.9),t.cur,80):t.cur})),notes:[...(r.notes||[]).filter(n=>!/다 자라지|자랄 여지/.test(n)),...(known&&p.age<=26&&o-c0>=10?[`지명 당시에는 ${roleOf(o,p)}까지 기대했습니다. 실전 기록이 쌓이면 코치진이 다시 평가합니다.`]:[])]};}
     else r={...r,notes:[...(r.notes||[]),`과거 지명 평가 · ${source} · ${date} · ${d.who||'평가자 미상'} · 잠재력 추정 ${dvG(d.ofp)}점. 당시 자료이며 현재 구단의 관찰 판단과 다릅니다.`]};
   }
   return r; }
@@ -52656,6 +52660,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-21-own-pot-after-move',d:'11월 21일',t:'다른 구단 단장으로 옮겨도 새 구단 선수의 잠재력을 우리 선수처럼 평가합니다',items:[
+    '단장 스카우트·이직으로 새 구단을 맡으면, 내가 오기 전에 그 구단이 지명한 젊은 선수들이 잠재력 "판단 불가"로 나오던 문제를 고쳤습니다. 이제 구단 스카우트·코치진이 아는 우리 선수로 보고 잠재력을 추정합니다.',
+    '오차와 신뢰도는 원래 구단 단장과 같은 기준(스카우트 능력·분석원·우리 팀에서 지켜본 시즌 수)이고, 떠나보낸 선수는 전처럼 떠날 때의 평가를 보관합니다.'
+  ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
     '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',
     '인원이 더 늘어나는 거래와, 정원 안 구단이 68명을 넘게 되는 거래는 전처럼 막습니다. 안내에 지금 인원과 거래 뒤 인원을 함께 보여 줍니다. AI 구단끼리도 같은 규칙입니다.'

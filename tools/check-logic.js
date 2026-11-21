@@ -10854,6 +10854,14 @@ T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 �
   G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
   G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
   G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
+T('[카페 11-21 이직 후 우리 선수 잠재력] 다른 구단으로 옮기면 새 구단 선수 잠재력을 우리 선수처럼 추정하고, 떠나보낸 선수는 보관 평가를 쓴다 [이직잠재력]',()=>{fresh();G.day=KD(11,1);myCInit();const U=G.user,V=otherT(),W=G.teams.find(t=>t.id!==U&&t.id!==V).id;
+  const Q=Object.values(G.players).find(p=>p.team===U&&!p.foreign&&!p.prospect);ok(Q,'준비: 옛 구단 선수');const q0=scoutReport(Q);Q.team=W;Q.tLog=(Q.tLog||[]).concat({f:U,t:W,d:G.day,y:G.year});scoutDeparture(Q,U,W);ok(scoutReport(Q).historical&&scoutReport(Q).ofp===q0.ofp,'준비: 옛 구단을 떠난 선수 보관 평가');
+  const young=Object.values(G.players).filter(p=>p.team===V&&!p.foreign&&!p.prospect&&p.age<=25);ok(young.length>=3,'준비: 새 구단 젊은 선수 '+young.length);
+  for(const p of young){acqStamp(p,'draft',V,{rd:2,no:3});p.draft={tid:V,y:G.year-1,rd:2,no:3,d:G.day-60};p.acq.d=G.day-60;delete p.dEst;delete p.acq.ep;} /* AI 구단 신인 지명과 같은 기록(doPick→acqStamp, 우리 지명 평가 없음) */ domesticScoutMigrate(); ok(young.every(p=>scoutDraftEstimate(p)?.tid===V&&scoutDraftEstimate(p).ofp==null),'준비: AI 지명 선수 미확인 지명 기록'); /* 불러오기 때와 같은 복원 */
+  G.jobs=[];jobOffer(V,false,{sal:250,yrs:2});jobAnswer(V,true);ok(G.user===V,'이직 실패');
+  const rs=__rngState(),own=Object.values(G.players).filter(p=>p.team===V&&!p.foreign&&!p.prospect);const bad=own.filter(p=>scoutReport(p).ofp==null);ok(!bad.length,'새 구단 우리 선수 잠재력 판단 불가 '+bad.length+'/'+own.length+': '+bad.slice(0,3).map(p=>p.name+' '+p.age+'세').join(', '));ok(__rngState()===rs,'평가가 경기 난수를 씀');
+  ok(Q.proScoutPast&&Q.proScoutPast[U]&&Q.proScoutPast[U].r.ofp===q0.ofp,'옛 구단 시절 보관 평가가 사라짐');
+  const D=young[0],d0=scoutReport(D);ok(d0.ofp!=null&&d0.sd<99,'새 구단 지명 선수 오차 없음');D.team=W;D.tLog=(D.tLog||[]).concat({f:V,t:W,d:G.day,y:G.year});scoutDeparture(D,V,W);const d1=scoutReport(D);ok(d1.historical&&d1.ofp===d0.ofp,'새 구단에서 떠나보낸 선수가 보관 평가를 쓰지 않음');});
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
