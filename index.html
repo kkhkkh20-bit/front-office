@@ -40085,7 +40085,7 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
         ${canCont?`<button class="fb-button primary" data-a="tsCont"><b>이어하기</b><span>${tn?esc(tn):`슬롯 ${cs}`}${act&&(act.date||act.y)?` · ${esc(act.date||act.y+'년')}`:''}</span></button>`:''}
         <button class="fb-button ${canCont?'':'primary'}" data-a="tsGo" data-v="mode"><b>새 게임</b>${canCont?'':'<span>단장 취임 또는 창단 드래프트로 시작합니다</span>'}</button>
         <button class="fb-button" data-a="tsGo" data-v="slots"><b>불러오기</b><span>저장은 이 기기에만 · 다른 기기는 기기 옮기기</span></button>${LADDER_ON?`<button class="fb-button" data-a="ladOpen"><b>단장 대전</b><span>같은 선수 풀로 구단을 만들어 다른 단장과 겨룹니다</span></button>`:''}
-        ${cupEventOn()?`<button class="fb-button" data-a="tsGo" data-v="cuphof"><b>프런트컵 명예의 전당</b><span>유저 대회 역대 우승 팀과 로스터</span></button>`:''}
+        <button class="fb-button" data-a="tsGo" data-v="cuphof"><b>프런트컵 명예의 전당</b><span>유저 대회 역대 우승 팀과 로스터</span></button>
         <button class="fb-button" data-a="tsGo" data-v="settings"><b>설정</b></button>
       </nav>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}
       ${inFrame()&&isIOS()?`<p class="small ts-warn">Safari에서는 설정의 '파일로 내보내기'로 가끔 백업해 두세요. <a href="${esc(location.href)}" target="_blank" rel="noopener">새 탭에서 열기</a></p>`:''}
@@ -46081,7 +46081,9 @@ function clubProfileOverview(tid){ const t=team(tid), F=clubProfileFact, R=G.sea
   const training=csec('훈련 시설',`<dl class="club-profile-facts">${FACK.map(k=>{const lv=fac?.it?.[k], b=fac?.bld?.[k]; return F(FACI[k].l,lv!=null?`${lv}단계 · ${esc(FACI[k].lv[lv]||'')}${b?`<small>${b.lv}단계 공사 중 · ${dmdA(b.done)} 완공 예정</small>`:''}`:null);}).join('')}${F('구단 버스',tid===G.user?esc(BUS[G.bus??1]?.l||''):t.bus!=null?esc(BUS[t.bus]?.l||''):null)}</dl>${fac?.hist?.length?`<details><summary>시설 투자 이력 ${fac.hist.length}건</summary><div class="club-profile-ledger">${fac.hist.slice().reverse().map(h=>`<p><span>${h.d!=null?`${dobj(h.d).y} ${dmd(h.d)}`:''} ${esc(facHistLbl(h))}</span><b>${h.c!=null?money(h.c):''}</b></p>`).join('')}</div></details>`:''}`);
   return `<div class="club-profile-grid">${ownershipCard(tid)}${identity}${cash}${stadium}${training}${uniRow(tid)?csec('유니폼',uniRow(tid)):''}</div>`; }
 /* 얼굴 첫 배정(avImg→face6Idx)은 저장 상태를 쓰므로, 이미 배정된 초상만 읽는다. */
-function clubProfileAvatar(p){ const i=G.f6?.[p.id], fv=typeof FACE6!=='undefined'&&(FACE6.v==='6c'?3:2); if(p.img||i!=null&&G.f6v===fv&&G.f6r?.[p.team+':'+i]===p.id)return avImg(p); return `<span class="av ini" aria-hidden="true">${esc((p.name||'?').slice(0,1))}</span>`; }
+function clubProfileAvatar(p){ const i=G.f6?.[p.id], fv=typeof FACE6!=='undefined'&&(FACE6.v==='6c'?3:2); if(p.img||i!=null&&G.f6v===fv&&G.f6r?.[p.team+':'+i]===p.id||G.f6off||typeof face6Idx!=='function')return avImg(p); return `<span class="av ini" aria-hidden="true">${esc((p.name||'?').slice(0,1))}</span>`; } /* 그리기는 G를 바꾸지 않는다(공개 프로필 조회 무변경 검사). 사진 배정은 화면을 여는 동작(clubFaceAssign)에서 */
+/* 카페 11-21(타구단 선수단 얼굴이 이름 첫 글자로만 나옴): 공개 구단 기록을 열거나 선수단 탭을 누를 때(동작) 그 구단 선수 사진을 선수 창·명단과 같은 규칙으로 미리 배정한다. 난수·경기 결과와 무관 */
+function clubFaceAssign(tid){ try{ if(typeof face6Idx!=='function'||G.f6off)return; for(const p of playersOf(tid))if(!p.img)face6Idx(p); }catch(e){} }
 function clubProfileRoster(tid){ const ps=playersOf(tid).slice().sort((a,b)=>Number(b.e1)-Number(a.e1)||Number(b.isP)-Number(a.isP)||String(a.name).localeCompare(b.name,'ko'));
   const row=p=>`<button class="club-profile-player" data-a="player" data-v="${p.id}">${clubProfileAvatar(p)}<span><b>${esc(p.name)}</b><small>${esc(posLabel(p))} · ${p.age}세 · ${p.e1?'1군':p.ys?'육성':'2군'}${p.foreign?' · '+esc(p.foreign):''}</small></span><span><b>${money(p.sal)}</b><small>${esc(ctText(p))}${p.injOut>0?' · 부상 '+p.injOut+'일':''}</small></span></button>`;
   /* 포지션별 보기(일고회장 11-12: 팀 선수들 볼 때): 전체는 포지션 묶음으로, 칩으로 한 묶음만 */
@@ -47570,8 +47572,8 @@ function castOpenFail(i,why,err){ try{ console.error(err); }catch(e){} UI._castH
 function castPark(){ const c=UI.cast, g=c&&G.games[c.g]; if(!c||!c.hold||c.fin||!g||(c.k||0)>=(g.pbp||[]).length)return false; try{ sndStopAll(); }catch(e){} c.wasPlay=!!c.play&&!c.pre; c.play=false; CT.tok++; CT.run=false; c.parked=1; UI.castRet=c; UI.cast=null; try{ save(); }catch(e){} return true; }
 function closeTop(){ if(meetOver()){ UI.sheet=null; UI.person=null; renderSheet(); return true; } if(UI.sheet!=null&&(UI.person||UI.cw||UI.ivSh)){ UI.sheet=null; renderSheet(); return true; } return false; }
 const A={
-  teamInspect(v){ const tid=Number(v); if(!G.teams.some(t=>t.id===tid))return; if(tid===G.user&&!G.unemp){ UI.clubInspect=null; return A.go('club:info'); } if(UI.clubInspect!==tid)UI.clubInspectTab=UI.clubInspectTabs?.[tid]||'overview'; closeSheets(); UI.fromMail=null; UI.clubInspect=tid; UI.tab='club'; render(); window.scrollTo(0,0); },
-  teamInspectTab(v){ if(!CLUB_PROFILE_TABS.some(x=>x[0]===v)||UI.clubInspect==null)return; UI.clubInspectTab=v; UI.clubInspectTabs=UI.clubInspectTabs||{}; UI.clubInspectTabs[UI.clubInspect]=v; closeSheets(); render(); },
+  teamInspect(v){ const tid=Number(v); if(!G.teams.some(t=>t.id===tid))return; if(tid===G.user&&!G.unemp){ UI.clubInspect=null; return A.go('club:info'); } if(UI.clubInspect!==tid)UI.clubInspectTab=UI.clubInspectTabs?.[tid]||'overview'; closeSheets(); UI.fromMail=null; UI.clubInspect=tid; UI.tab='club'; clubFaceAssign(tid); render(); window.scrollTo(0,0); },
+  teamInspectTab(v){ if(!CLUB_PROFILE_TABS.some(x=>x[0]===v)||UI.clubInspect==null)return; UI.clubInspectTab=v; UI.clubInspectTabs=UI.clubInspectTabs||{}; UI.clubInspectTabs[UI.clubInspect]=v; if(v==='roster')clubFaceAssign(UI.clubInspect); closeSheets(); render(); },
   teamInspectExit(){ UI.clubInspect=null; A.go('league:stand'); },
   clubRecordSort(v){ const [tid,kind,sort]=String(v).split(':'); const allowed=kind==='bat'?['war','h','hr','rbi','sb']:kind==='pit'?['war','w','sv','so','outs']:[]; if(!allowed.includes(sort))return; UI.clubRecordViews=UI.clubRecordViews||{}; const view=UI.clubRecordViews[tid]=UI.clubRecordViews[tid]||{}; view[kind]={sort,page:0}; const y=document.querySelector('.club-profile-body')?.scrollTop||0; render(); const el=document.querySelector('.club-profile-body'); if(el)el.scrollTop=y; },
   clubRecordPage(v){ const [tid,kind,page]=String(v).split(':'); if(!['bat','pit'].includes(kind))return; UI.clubRecordViews=UI.clubRecordViews||{}; const view=UI.clubRecordViews[tid]=UI.clubRecordViews[tid]||{}; view[kind]=Object.assign({sort:'war'},view[kind],{page:Math.max(0,+page||0)}); const y=document.querySelector('.club-profile-body')?.scrollTop||0; render(); const el=document.querySelector('.club-profile-body'); if(el)el.scrollTop=y; },
@@ -52663,8 +52665,8 @@ const PATCH=[
     '세이브 상황에 올라온 투수가 2점 이상 주거나, 2점 이상 줘서 동점~4점 차로 좁혀져도 필승조로 바꿉니다. 마무리가 동점을 허용하거나 3점 이상 주면 마무리도 내립니다.',
     '연투·피로 한도는 그대로 지킵니다. 올릴 마무리·필승조가 없으면 지금 투수에게 맡깁니다. 우리 구단과 다른 구단 모두 같은 기준입니다.'
   ]},
-  {id:'2026-11-21-cup-title',d:'11월 21일',t:'처음 화면의 프런트컵 메뉴는 대회가 진행 중일 때만 보입니다',items:[
-    '프런트컵 접수·진행 기간에만 처음 화면에 명예의 전당 메뉴가 나옵니다. 평소에는 설정 › 정보와 구단 › 프런트컵에서 볼 수 있습니다.'
+  {id:'2026-11-21-club-faces',d:'11월 21일',t:'다른 구단 선수단 화면에서 얼굴이 이름 첫 글자로 나오던 문제를 고쳤습니다',items:[
+    '구단 정보 › 선수단에서 아직 다른 화면에서 본 적 없는 선수도 선수 창·명단과 같은 얼굴 사진으로 보입니다.'
   ]},
   {id:'2026-11-21-soft-mode',d:'11월 21일',t:'새 게임 난이도에 쉬움이 생겼습니다(쉬움·보통·어려움)',items:[
     '새 게임 난이도를 쉬움·보통·어려움 중에서 고릅니다. 예전 하드는 어려움으로 이름만 바뀌었습니다.',
@@ -55558,8 +55560,6 @@ function cupNowEntry(name){ let e=null; try{ if(G&&!G.unemp)e=cupEntryNow({name:
 const cupDl=d=>FrontOfficeCore.cupKstMs(d)||0; /* 마감(한국시간 글) → ms. 없는 날짜는 0(마감 없음으로 보지 않게 화면은 '접수 중'만) */
 /* 지금 대회 단계: 0 없음 · 1 접수 중 · 2 마감(주최자 준비) · 3 진행(연재 공개 중) · 4 결과 공개 */
 function cupStage(){ const c=CUP.cfg, P=CUP.pub&&c&&CUP.pub.id===c.id?CUP.pub:null; if(!c)return 0; if(P&&P.day>=7)return 4; if(P&&P.day)return 3; const dl=cupDl(c.deadline); return c.open!==false&&(!dl||Date.now()<dl)?1:2; }
-/* 처음 화면의 프런트컵 메뉴는 대회가 진행 중일 때만(구단주 11-21): 접수 중·마감·1~6일차 공개(cupStage 1~3). 대회가 없거나 7일차까지 다 공개되면 숨긴다(명예의 전당은 설정 › 정보에서 늘 본다) */
-function cupEventOn(){ try{ cupProbe(); cupPubLoad(); const s=cupStage(); return s>=1&&s<=3; }catch(e){ return false; } }
 function cupEntsLoad(){ if(CUP.entsSt||!xfAvail()||cupStage()!==1)return; CUP.entsSt='loading'; cupApi('/entries').then(({r,j})=>{ CUP.ents=r.ok&&j&&Array.isArray(j.entries)?j:null; },()=>{}).finally(()=>{ CUP.entsSt='ok'; try{ render(); }catch(e){} }); }
 function cupStatusHtml(){ const c=CUP.cfg; if(!c)return ''; const k=cupStage(), P=CUP.pub&&CUP.pub.id===c.id?CUP.pub:null, dl=cupDl(c.deadline), left=dl-Date.now();
   const lt=left>0&&left<365*864e5?(left>864e5?`D-${Math.floor(left/864e5)}`:`${Math.floor(left/36e5)}시간 ${Math.floor(left%36e5/6e4)}분`):'';
