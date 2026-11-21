@@ -10792,6 +10792,20 @@ T('[성장 11-20] 노장 비율: 기술형 베테랑 전성기 33·하락 35·�
   for(const tid of [G.user,otherT()]){ const base=domestic(tid).find(q=>!q.isP&&!q.prospect&&!q.foreign&&!q.mil); ok(base,'준비 실패'); const run=(o)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt='norm'; p.age=37; initPers(p); p.pers.pro=10; setOvr(p,o); delete p.declP; G.players[p.id]=p; const s0=__rngState(); __seed(11); const b=ovr(p); develop(p); const d=ovr(p)-b+Object.values(p.declP||{}).reduce((a,x)=>a+x,0)*.3; G.players[base.id]=base; return d; };
     const hi=run(52), lo=run(48); ok(hi<0&&lo<0&&Math.abs(hi)<Math.abs(lo),(tid===G.user?'우리':'AI')+' 능력 높은 노장 하락이 완만하지 않음 '+hi.toFixed(2)+'/'+lo.toFixed(2)); }
   ok(/age<=VET_SKILL_AGE/.test(String(develop)),'기술형 기술 성장 나이 상수 미사용'); });
+T('[카페 11-21 정원 초과 구단 트레이드] 이미 정원(68)을 넘은 구단도 인원을 줄이는 트레이드는 받을 수 있고, 늘리는 트레이드와 정원 안 구단이 넘게 되는 트레이드는 그대로 막는다(AI끼리도 같은 규칙)',()=>{ fresh();
+  const tid=G.teams.find(t=>t.id!==G.user).id, other=G.teams.find(t=>t.id!==G.user&&t.id!==tid).id;
+  const cnt=q=>q&&tradeCntN(q.id)&&!q.foreign; const pool=playersOf(other).filter(cnt).sort((a,b)=>ovr(a)-ovr(b));
+  while(rosterN(tid)<71){ const q=pool.shift(); ok(q,'준비 실패: 옮길 선수 부족'); q.team=tid; }
+  ok(rosterN(tid)===71,'준비 실패: 상대 71명 '+rosterN(tid));
+  const mine=playersOf(G.user).filter(cnt).sort((a,b)=>ovr(a)-ovr(b)).map(q=>q.id), theirs=playersOf(tid).filter(cnt).sort((a,b)=>ovr(a)-ovr(b)).map(q=>q.id);
+  const e=evalTrade(tid,mine.slice(0,4),theirs.slice(0,6),0); ok(e.theirN0===71&&e.theirN===69,'인원 계산 '+[e.theirN0,e.theirN]); ok(tradeSizeOk(e),'71→69로 줄이는 거래를 정원 초과로 막음');
+  const r=proposeTrade(tid,mine.slice(0,4),theirs.slice(0,6),0); ok(!/로스터가 68명을 넘게/.test(r.msg||''),'제출에서 정원 초과로 막음: '+r.msg);
+  const up=evalTrade(tid,mine.slice(0,6),theirs.slice(0,4),0); ok(up.theirN===73&&!tradeSizeOk(up),'71→73으로 늘리는 거래를 통과시킴 '+up.theirN);
+  const r2=proposeTrade(tid,mine.slice(0,6),theirs.slice(0,4),0); ok(!r2.ok&&/로스터가 68명을 넘게.*71명 → 73명/.test(r2.msg||''),'늘리는 거래 안내 '+r2.msg);
+  const same=evalTrade(tid,mine.slice(0,5),theirs.slice(0,5),0); ok(same.theirN===71&&tradeSizeOk(same),'인원 그대로(71→71)인 거래를 막음');
+  const tid2=G.teams.find(t=>t.id!==G.user&&t.id!==tid&&t.id!==other&&rosterN(t.id)<=ROSTER_MAX).id; const n2=rosterN(tid2), m2=playersOf(G.user).filter(cnt).map(q=>q.id), t2=playersOf(tid2).filter(cnt).map(q=>q.id);
+  const k=ROSTER_MAX-n2+1; const over=evalTrade(tid2,m2.slice(0,k),[],0); ok(over.theirN===ROSTER_MAX+1&&!tradeSizeOk(over),'정원 안 구단이 69명이 되는 거래를 통과시킴 '+[n2,over.theirN]);
+});
 /* 카페 11-20 불펜: 8회 이후 큰 리드가 세이브 상황으로 좁혀지면 이닝 중에도 마무리를, 마무리가 동점을 주면 필승조를 올린다. 원정 9회 타석을 고정해 본다 */
 function lf1120Game(seq9,seed,prep,mid){const {h,a,d}=rr536_setup();if(prep)prep(h,d);const old={outcome,runAdvance,dpF,stealTry},cnt={};for(const t of [h,a])G.mgr[t].small=0;
   outcome=(b,p,dv,fp,fs)=>{const n=cnt[fs.tid]=(cnt[fs.tid]||0)+1;LBIP=null;if(fs.tid===a)return n<=6?'HR':'K';return n<=24?'K':(seq9[n-25]||'K');};runAdvance=()=>({send:true,safe:true});dpF=()=>0;stealTry=()=>0;

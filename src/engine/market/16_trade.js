@@ -258,7 +258,7 @@ function evalTrade0(tid,give,get,cash,pk,actorTid,relOv){ const actor=actorTid??
   if(plainV>0)need=bench?Math.max(need,plainV*(mid?TR_TUNE.midMargin:TR_BENCH.margin),mid?TR_TUNE.midMin:TR_BENCH.min):Math.max(need,plainV*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%(비주전 거래는 1.5%, 그래도 최소 0.15)는 더 받아야 한다(예전 -10%까지 손해 감수) */
   const pkGate=tid!==actor?pkGateWhy(t,pk.get,give):''; if(pkGate)parts.pkGate=true; /* 상위 5순번 지명권 관문: 값 비교 전에(소유자 11-18, 96_pick_trade) */
   const gain=inV-outV; const ok=!pkGate&&gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); /* 견제 집계는 실제 제출한 제안에만 남긴다(tradeEvalLog). */
-  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{}),...(pkGate?{pkGate}:{})};
+  return {gain,need,ok,theirN,theirN0:base.n,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{}),...(pkGate?{pkGate}:{})};
 }
 /* FA 신청을 앞둔 선수: 시즌 결산 뒤 FA 공시(스토브리그 시작) 전까지는 트레이드할 수 없다. 데려가도 곧 FA로 나가는 선수를 지명권·유망주와 바꾸던 허점(커뮤니티 11-12) */
 let _faLk={k:null,s:null};
@@ -292,8 +292,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if(!isCtr&&nt.seen[sig]!=null)return {ok:false,msg:`${gmn}: 그 안은 ${dsh(nt.seen[sig])}에 이미 답을 드렸습니다. 조건을 바꿔서 오시죠.`,dup:true};
   if(!isCtr&&!ni.left)return {ok:false,msg:`${gmn}: 이번 달은 더 시간을 내기 어렵습니다. ${ni.next}에 다시 연락 주십시오.${ni.free?'':' (우리와 맞대결하는 기간에는 경기장에서 따로 만날 수 있습니다)'}`,closed:true};
   const e=evalTrade(tid,give,get,cash,pk);
-  if(e.theirN>ROSTER_MAX)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다. 받을 선수를 늘려 주세요.`};
-  if(e.theirN<ROSTER_MIN)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다.`};
+  if(!tradeSizeOk(e))return {ok:false,msg:e.theirN>ROSTER_MAX?`${tfull(t)} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다(지금 ${e.theirN0}명 → ${e.theirN}명). 받을 선수를 늘리거나 보낼 선수를 줄여 주세요.`:`${tfull(t)} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다(지금 ${e.theirN0}명 → ${e.theirN}명).`};
   if(e.capT&&e.capT.hard)return {ok:false,cap:true,msg:aiCapMsg(t,e.capT)};
   if(e.pkGate)return {ok:false,gate:true,msg:`${gmn}: ${e.pkGate}${aiQ(tid,'no')}`}; /* 상위 지명권 관문: 친분을 깎지 않고 역제안도 하지 않는다 */
   if(isCtr&&!e.ok&&!(e.dom&&e.dom.refuse)&&!(e.capT&&e.capT.hard)&&e.gain>=e.need-Math.max(1.5,e.outV)*.15)e.ok=true; /* 자기가 낸 조건을 맞춰 오면 그날그날 기분(일일 변동)으로 뒤집지 않는다(커뮤니티 피드백 11-07) */
