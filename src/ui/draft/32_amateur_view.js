@@ -6,8 +6,8 @@ function amLnkP(x){ if(x.kind==='p'&&G.players[x.id])return `<button class="lnk"
 function amEnvLine(y){ const w=amEnvWord(y,'hs'); if(!w)return ''; const c=w.c, m=w.m; return `<p><b>${y} 고교야구: ${esc(w.w)}</b></p><p class="small">타율 ${fmt3(c.avg)}${m?` (최근 평균 ${fmt3(m.avg)})`:''} · 평균자책점 ${c.era.toFixed(2)}${m?` (${m.era.toFixed(2)})`:''} · 타석당 홈런 ${c.hr.toFixed(2)}%${m?` (${m.hr.toFixed(2)}%)`:''} · ${c.g}경기</p>`; }
 /* 기록 1위: 부문마다 작은 카드(위 5명)를 격자로(사용자 11-17: 넓은 표에 순위·이름·값이 화면 끝까지 퍼져 길게 이어졌다). keys로 부문을 고른다 */
 const AM_LCATS=[['타율',0,'avg',x=>fmt3(x.v)],['OPS',0,'ops',x=>fmt3(x.v)],['홈런',0,'hr',x=>x.v],['도루',0,'sb',x=>x.v],['평균자책점',1,'era',x=>x.v.toFixed(2)],['탈삼진',1,'so',x=>x.v],['승리',1,'w',x=>x.v],['타점',0,'rbi',x=>x.v]];
-function amLeadTbl(y,lvl,gr,keys,cls){ const C=keys?AM_LCATS.filter(c=>keys.includes(c[2])):AM_LCATS, c0=lvl==='col'?'대':'고';
-  const card=([t,isP,k,f])=>{ const L=amLeaders(y,lvl,!!isP,k,5,gr); return `<div class="am-lc"><div class="am-lc-h">${t}</div>${L.length?`<table class="am-lt"><tbody>${L.map((x,i)=>`<tr><td class="r">${i+1}</td><td class="n">${amLnkP(x)} <span class="am-sc">${amLnkS(x.sch)} ${c0}${x.gr}</span></td><td class="num">${f(x)}</td></tr>`).join('')}</tbody></table>`:'<p class="small muted am-none">기록 없음</p>'}</div>`; };
+function amLeadTbl(y,lvl,gr,keys,cls,n=5){ const C=keys?AM_LCATS.filter(c=>keys.includes(c[2])):AM_LCATS, c0=lvl==='col'?'대':'고';
+  const card=([t,isP,k,f])=>{ const L=amLeaders(y,lvl,!!isP,k,n,gr); return `<div class="am-lc"><div class="am-lc-h">${t}</div>${L.length?`<table class="am-lt"><tbody>${L.map((x,i)=>`<tr><td class="r">${i+1}</td><td class="n">${amLnkP(x)} <span class="am-sc">${amLnkS(x.sch)} ${c0}${x.gr}</span></td><td class="num">${f(x)}</td></tr>`).join('')}</tbody></table>`:'<p class="small muted am-none">기록 없음</p>'}</div>`; };
   return `<div class="am-lg${cls?' '+cls:''}">${C.map(card).join('')}</div>`; }
 /* 주말리그·U-리그 순위: 조마다 작은 카드 */
 function amStandTbl(S,g,h){ const L=amStand(S,g,h); return `<div class="am-lc"><div class="am-lc-h">${esc(g)}</div><table class="am-lt am-st"><thead><tr><th class="r">#</th><th>학교</th><th class="num">승</th><th class="num">패</th><th class="num">무</th><th class="num">득실</th></tr></thead><tbody>${L.length?L.map((x,i)=>`<tr><td class="r">${i+1}</td><td class="n">${amLnkS(x.n)}</td><td class="num">${x.w}</td><td class="num">${x.l}</td><td class="num">${x.d}</td><td class="num">${x.rs-x.ra>0?'+':''}${x.rs-x.ra}</td></tr>`).join(''):'<tr><td colspan="6" class="small muted">경기 없음</td></tr>'}</tbody></table></div>`; }
@@ -15,7 +15,7 @@ function amTourBox(T){ if(!T)return ''; const nR=T.rd.length; const lab=i=>{ con
   const show=T.rd.map((r,i)=>({r,i})).filter(x=>x.i>=nR-3);
   return `<div class="am-lc am-tc"><div class="am-lc-h row between"><span>${esc(T.n)}</span><span class="small">${T.ch?`우승 ${amLnkS(T.ch)} · 준우승 ${T.ru?amLnkS(T.ru):'-'}`:`진행 중 · ${T.cur.filter(Boolean).length}개교 남음`}</span></div>${show.slice().reverse().map(({r,i})=>`<div class="am-rd"><b>${lab(i)}</b><span>${r.filter(x=>x[1]).map(x=>`<span class="am-gm">${esc(x[0])} <b>${x[2]}:${x[3]}</b> ${esc(x[1])}${x[4]<9?` <i>${x[4]}회 콜드</i>`:x[4]>9?` <i>${x[4]}회</i>`:''}</span>`).join('')}</span></div>`).join('')}</div>`; } /* 결승부터 위로, 경기마다 한 칸(사용자 11-17) */
 function amHubPage(){ const S=amSeasonOf(), y=S?S.y:G.year-1;
-  const it=inTabs('amhub',[['sum','요약'],['lg','주말리그'],['tour','전국대회'],['col','대학'],['ply','선수'],['sch','학교']]);
+  const it=inTabs('amhub',[['sum','요약'],['lg','주말리그'],['tour','전국대회'],['rec','기록'],['aw','수상'],['col','대학'],['ply','유망주'],['sch','학교']]);
   if(UI.amSch)return amSchoolView(UI.amSch); if(UI.amP)return amPlayerView(UI.amP);
   if(!S&&!(G.amH||[]).length)return it.bar+'<p class="small muted">아직 아마추어 시즌 기록이 없습니다. 3월 둘째 주말에 고교 주말리그가 시작합니다.</p>';
   let body='';
@@ -27,11 +27,37 @@ function amHubPage(){ const S=amSeasonOf(), y=S?S.y:G.year-1;
     body=`<div class="am-sum"><div class="am-sum-l">${info}</div>${csec(`${y} ${lv==='col'?'대학':'고교'} 기록 1위`,amLeadTbl(y,lv),seg)}</div>`; }
   else if(it.cur==='lg'){ const h2=S&&S.rec2&&Object.keys(S.rec2).length>0, h=UI.amHalf||(h2?2:1);
     body=S?csec(`${S.y} 고교 주말리그`,`<div class="am-grid am-g4">${amGroups().map(([g])=>amStandTbl(S,g,h)).join('')}</div><p class="small muted am-note">권역별로 전반기·후반기 한 바퀴씩 돕니다. 황금사자기는 전반기, 청룡기는 후반기 권역 상위 학교가 나갑니다(모두 32개교).</p>`,`<div class="seg am-seg">${[[1,'전반기'],[2,'후반기']].map(([v,l])=>`<button class="${h===v?'on':''}" data-a="amHalf" data-v="${v}">${l}</button>`).join('')}</div>`):''; }
-  else if(it.cur==='tour'){ body=S?csec(`${S.y} 전국대회`,`<div class="am-grid am-g3">${AM_TOURS().map(t=>S.tour[t.k]?amTourBox(S.tour[t.k]):`<div class="am-lc am-tc"><div class="am-lc-h">${esc(t.n)}</div><p class="small muted am-none">${t.a[0]}월 ${t.a[1]}일 시작</p></div>`).join('')}${amU18Box()}</div>`):''; }
+  else if(it.cur==='tour'){ body=S?csec(`${S.y} 전국대회`,`<div class="am-grid am-g3">${AM_TOURS().map(t=>S.tour[t.k]?amTourBox(S.tour[t.k])+amTourLeadBox(S,S.tour[t.k]):`<div class="am-lc am-tc"><div class="am-lc-h">${esc(t.n)}</div><p class="small muted am-none">${t.a[0]}월 ${t.a[1]}일 시작</p></div>`).join('')}${amU18Box()}</div>`):''; }
   else if(it.cur==='col'){ body=S?`<div class="am-col">${csec(`${S.y} 대학야구`,`<div class="am-grid am-g3">${amColGroups().map(([g])=>amStandTbl(S,g)).join('')}${S.tour.ct?amTourBox(S.tour.ct):`<div class="am-lc am-tc"><div class="am-lc-h">${esc(AM_COLT.n)}</div><p class="small muted am-none">${AM_COLT.a[0]}월 ${AM_COLT.a[1]}일 시작</p></div>`}</div>`)}${csec('대학 기록 1위',amLeadTbl(S.y,'col'))}</div>`:''; }
+  else if(it.cur==='rec'){ body=amRecPage(S,y); }
+  else if(it.cur==='aw'){ body=amAwardPage(S); }
   else if(it.cur==='ply'){ body=amPlyPage(y); }
   else if(it.cur==='sch'){ const SL=schList(); body=csec('고교 야구부',`<div class="am-grid am-g3">${AREA.map(a=>`<div class="am-lc"><div class="am-lc-h">${esc(a.k)} <span class="muted small">${a.hs.length}개교</span></div><div class="am-schg">${a.hs.map(n=>{ const o=SL[n]; const t=amLvTrend(o); return `<span class="am-si">${amLnkS(n)}<b class="${/▲/.test(t)?'up':/▼/.test(t)?'dn':''}">${o?o.lv:'-'}${t}</b></span>`; }).join('')}</div></div>`).join('')}</div><p class="small muted am-note">숫자는 팀 전력입니다. 성적·감독·신입생에 따라 해마다 바뀝니다. ▲▼는 최근 3년 사이 4 이상 오르내린 학교입니다.</p>`); }
   return it.bar+body; }
+/* ===== 대회 기록·수상(사용자 11-21: 리그처럼 대회 OPS·타점 순위, 수상자, 역대 기록) ===== */
+/* 대회 기록 줄의 선수 이름: 드래프트 후보(G.players)는 선수 창, 저학년은 아마 선수 카드, 그 밖(야구부원)은 이름만 */
+function amLnkE(e){ if(!e)return '-'; if(e.ref&&G.players[e.ref])return `<button class="lnk" data-a="player" data-v="${e.ref}">${esc(e.n)}</button>`; if((e.kind==='e'||e.kind==='f')&&e.id!=null)return `<button class="lnk" data-a="amP" data-v="${e.id}">${esc(e.n)}</button>`; return esc(e.n); }
+const amTlFmt=(k,v)=>k==='avg'||k==='ops'?fmt3(v):k==='era'?Number(v).toFixed(2):String(v);
+const amWhoE=(e,lvl)=>`${amLnkE(e)} <span class="am-sc">${amLnkS(e.s)} ${lvl==='col'?'대':'고'}${e.g}${e.P?' 투수':''}</span>`;
+function amTlCard(S,T,k,isP,t,n,lvl){ const L=amTlLeaders(S,T,k,isP,n); return `<div class="am-lc"><div class="am-lc-h">${t}</div>${L.length?`<table class="am-lt"><tbody>${L.map((e,i)=>`<tr><td class="r">${i+1}</td><td class="n">${amWhoE(e,lvl)}</td><td class="num">${amTlFmt(k,e.v)}</td></tr>`).join('')}</tbody></table>`:'<p class="small muted am-none">기록 없음</p>'}</div>`; }
+/* 전국대회 칸 아래: 최우수 선수와 대회 기록 1위(OPS·타점·홈런·평균자책점·탈삼진 위 3명) */
+function amTourLeadBox(S,T){ if(!T||(!T.ld&&!(S.tl&&S.tl[T.k])))return ''; const lvl=T.k==='ct'?'col':'hs';
+  const cats=[['ops',0,'OPS'],['rbi',0,'타점'],['hr',0,'홈런'],['era',1,'평균자책점'],['so',1,'탈삼진']];
+  const row=([k,isP,t])=>{ const L=amTlLeaders(S,T,k,isP,3); return L.length?`<div class="am-rd"><b>${t}</b><span>${L.map(e=>`<span class="am-gm">${amLnkE(e)} <i>${esc(e.s)}</i> <b>${amTlFmt(k,e.v)}</b></span>`).join('')}</span></div>`:''; };
+  return `<div class="am-lc am-tc"><div class="am-lc-h row between"><span>${esc(T.n)} 기록</span><span class="small">${T.mvp?`최우수 선수 ${amWhoE(T.mvp,lvl)}`:T.ch?'':'진행 중'}</span></div>${cats.map(row).join('')}</div>`; }
+/* 기록 하위 탭: 시즌 전체(고교·대학, 학년별) 또는 대회 하나를 골라 부문별 위 10명 */
+function amRecPage(S,y){ if(!S)return '<p class="small muted">아직 기록이 없습니다.</p>'; const lv=UI.amLv==='col'?'col':'hs', gr=UI.amGr||0;
+  const Ts=AM_TOURS().concat([AM_COLT]).filter(t=>S.tour[t.k]), sc=Ts.some(t=>t.k===UI.amRs)?UI.amRs:'sea';
+  const seg1=`<div class="seg am-seg">${[['sea','시즌 전체'],...Ts.map(t=>[t.k,t.n])].map(([v,l])=>`<button class="${sc===v?'on':''}" data-a="amRs" data-v="${v}">${esc(l)}</button>`).join('')}</div>`;
+  if(sc!=='sea'){ const T=S.tour[sc], tl=T.k==='ct'?'col':'hs'; return csec(`${S.y} ${esc(T.n)} 개인 기록`,`${T.mvp?`<p class="small">최우수 선수 ${amWhoE(T.mvp,tl)}${T.ch?` · 우승 ${amLnkS(T.ch)}`:''}</p>`:''}<div class="am-lg">${AM_TL_CATS.map(([k,isP,t])=>amTlCard(S,T,k,isP,t,10,tl)).join('')}</div><p class="small muted am-note">타율·OPS는 팀 경기당 2타석, 평균자책점은 팀 경기당 1이닝 이상 던진 선수만 순위에 넣습니다.</p>`,seg1); }
+  const seg2=`<div class="seg am-seg">${[['hs','고교'],['col','대학']].map(([v,l])=>`<button class="${lv===v?'on':''}" data-a="amLv" data-v="${v}">${l}</button>`).join('')}</div><div class="seg am-seg">${[[0,'전체'],[1,'1학년'],[2,'2학년'],[3,'3학년'],...(lv==='col'?[[4,'4학년']]:[])].map(([v,l])=>`<button class="${gr===v?'on':''}" data-a="amGr" data-v="${v}">${l}</button>`).join('')}</div>`;
+  return csec(`${y} ${lv==='col'?'대학':'고교'} 시즌 기록 순위`,amLeadTbl(y,lv,gr||null,null,'',10),seg1+seg2); }
+/* 수상 하위 탭: 올해 대회 우승·최우수 선수, 지난 시즌 개인상, 역대 기록(G.amH 30년) */
+function amAwardPage(S){ const H=(G.amH||[]).slice().reverse(), Tn=k=>((AM_TOURS().concat([AM_COLT]).find(t=>t.k===k)||{}).n)||k;
+  const cur=S&&S.y===G.year&&!S.done?csec(`${S.y} 전국대회`,`<div class="am-grid am-g3">${AM_TOURS().concat([AM_COLT]).map(t=>{ const T=S.tour[t.k]; const lvl=t.k==='ct'?'col':'hs'; return `<div class="am-lc"><div class="am-lc-h">${esc(t.n)}</div>${T&&T.ch?`<p class="small">우승 <b>${amLnkS(T.ch)}</b> · 준우승 ${T.ru?amLnkS(T.ru):'-'}</p>${T.mvp?`<p class="small">최우수 선수 ${amWhoE(T.mvp,lvl)}</p>`:''}`:`<p class="small muted am-none">${T?'진행 중':`${t.a[0]}월 ${t.a[1]}일 시작`}</p>`}</div>`; }).join('')}</div>`):'';
+  const awL=(A,lvl)=>AM_AW.filter(([k])=>A&&A[k]).map(([k,isP,t])=>`<span class="am-gm"><b>${t}</b> ${amWhoE(A[k],lvl)} ${amTlFmt(k,A[k].v)}</span>`).join('');
+  const yr=h=>{ const ch=Object.keys(h.ch||{}); const mv=h.mvp||{}; return `<div class="am-lc"><div class="am-lc-h">${h.y}</div>${ch.map(k=>{ const m=mv[k]; return `<div class="am-rd"><b>${esc(Tn(k))}</b><span><span class="am-gm">우승 ${amLnkS(h.ch[k][0])}${h.ch[k][1]?` · 준우승 ${esc(h.ch[k][1])}`:''}</span>${m?`<span class="am-gm">최우수 ${esc(m[0])} <i>${esc(m[1])} ${m[2]}학년${m[3]?' 투수':''}</i></span>`:''}</span></div>`; }).join('')}${h.aw?`<div class="am-rd"><b>고교 개인상</b><span>${awL(h.aw.hs,'hs')}</span></div><div class="am-rd"><b>대학 개인상</b><span>${awL(h.aw.col,'col')}</span></div>`:''}</div>`; };
+  return cur+(H.length?csec('역대 우승·수상',`<div class="am-grid am-g2">${H.map(yr).join('')}</div><p class="small muted am-note">개인상은 시즌 전체 기록 1위입니다(타율·평균자책점은 규정 타석·이닝 이상). 최우수 선수는 우승 학교에서 대회 활약이 가장 큰 선수입니다.</p>`):'<p class="small muted">아직 지난 시즌 기록이 없습니다.</p>'); }
 /* U-18 청소년 대표(68_u18): 명단·결과·지난 대회 */
 function amU18Box(){ const U=G.u18&&G.u18.y>=G.year-1?G.u18:null, H=(G.u18H||[]).filter(h=>!U||h.y!==U.y).slice(0,3), rk=r=>r===1?'우승':r===2?'준우승':r===3?'3위':r===4?'4위':r===5?'슈퍼 라운드 탈락':'조별 탈락';
   const hist=H.length?`<p class="small muted">${H.map(h=>`${h.y} ${rk(h.rank)}`).join(' · ')}</p>`:'';
@@ -70,9 +96,9 @@ function amPlayerView(id){ const e=amPipe().L[id]||(typeof id==='string'&&id[0]=
   return `${back}${csec(esc(e.n),`<p class="small">${amLnkS(e.s)} ${amGrade(e,G.year)>(e.c?4:3)?'졸업':amGrade(e,G.year)+'학년'}${e.dep?' 부원':''} · ${e.P?'투수':POSK[e.pos]||e.pos} · ${esc(e.t)}투${esc(e.b)}타 · ${e.ht}cm ${e.wt}kg · ${e.gy} 드래프트 대상</p>
     <p class="small">스카우트 평가: ${amWord(e)}${u18Of(e)?' · <span class="pill acc">U-18 대표</span>':''}</p><p class="small">학년별: ${amTrendHtml(e,!!e.P,!!e.c,true)}</p><p class="small">${esc(amObsTxt(e))}${e.gy-G.year>0?` · 졸업까지 ${e.gy-G.year}년이 남아 범위가 넓습니다.`:''}</p>${e.ai&&e.ig<=G.year?`<p class="small muted">${esc(e.ai)}</p>`:''}
     <p><button class="btn small" data-a="amFollow" data-v="${e.id}">${fol?'관심 해제':'관심 선수'}</button></p>`)}${csec('학년별 기록',amYearTable(p))}`; }
-const amGoHub=()=>{ UI.it=Object.assign(UI.it||{},{scoutpg:'am'}); if(UI.tab==='staff'&&UI.sub&&UI.sub.staff==='scouts'&&!UI.modal)render(); else A.go('staff:scouts'); };
+const amGoHub=()=>{ if(UI.tab==='league'&&UI.lseg==='am'&&!UI.modal){ render(); return; } UI.it=Object.assign(UI.it||{},{scoutpg:'am'}); if(UI.tab==='staff'&&UI.sub&&UI.sub.staff==='scouts'&&!UI.modal)render(); else A.go('staff:scouts'); };
 Object.assign(A,{ amSch(v){ UI.amSch=v; UI.amP=null; amGoHub(); }, amP(v){ UI.amP=String(v)[0]==='f'?String(v):+v; UI.amSch=null; amGoHub(); },
-  amBack(){ UI.amSch=null; UI.amP=null; render(); }, amHalf(v){ UI.amHalf=+v; render(); }, amLv(v){ UI.amLv=v==='col'?'col':'hs'; render(); }, amGr(v){ UI.amGr=+v; render(); },
+  amBack(){ UI.amSch=null; UI.amP=null; render(); }, amHalf(v){ UI.amHalf=+v; render(); }, amRs(v){ UI.amRs=v; render(); }, amLv(v){ UI.amLv=v==='col'?'col':'hs'; render(); }, amGr(v){ UI.amGr=+v; render(); },
   amFollow(v){ const id=String(v).startsWith('s:')||String(v)[0]==='f'?String(v):+v; const on=amFollow(id); toast(on?'관심 목록에 넣었습니다.':'관심 목록에서 뺐습니다.'); save(); render(); } });
 /* 학년별 흐름 한 줄: 고1 .812 · 고2 .905↑ · 고3 .701↓ (타자 OPS, 투수 ERA). full이면 타율·K/9까지 */
 function amTrendHtml(x,isP,col,full){ const T=amTrend(x,isP); if(!T.length)return '<span class="muted">기록 없음</span>'; const c=col?'대':'고';
