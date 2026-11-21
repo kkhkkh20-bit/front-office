@@ -31,7 +31,7 @@ const QUICK=process.env.QUICK==='1';
     if(d){ if(d.mode!=='CSS1Compat')add('문서','표준 모드가 아님(doctype 없음)'); if(!/utf-8/i.test(d.cs))add('문서','문자셋이 UTF-8이 아님: '+d.cs); if(!d.vp)add('문서','viewport 메타가 없어 휴대폰에서 PC 화면으로 보임'); if(W<600&&d.w>W+20)add('문서',`휴대폰 폭 ${W}인데 화면 폭이 ${d.w}`); } }
   /* 2) 새 게임: 실제 버튼으로 */
   where='구단 고르기'; try{ await pg.click('[data-a="tsGo"][data-v="mode"]',{timeout:60000}); await pg.waitForTimeout(300); await pg.click('[data-a="smode"][data-v="fd"]',{timeout:120000}); /* 시작 방식 화면에서 리그를 미리 만든다(수 초 동안 화면이 멈춤) */ await pg.waitForTimeout(300); await blank(); await pg.click('[data-a="fdPk"][data-v="5"]',{timeout:3000}); await pg.waitForTimeout(200); await pg.click('[data-a="start"]',{timeout:3000}); await pg.waitForTimeout(300);
-    where='단장 소개'; await blank(); await pg.fill('#gp-name','점검단장'); await pg.click('[data-a="gpStart"]'); await pg.waitForTimeout(600); }catch(e){ add('진행 실패',e.message); }
+    where='단장 소개'; await blank(); await pg.fill('#gp-name','점검단장'); await pg.click('[data-a="gpStart"]'); await pg.waitForFunction(()=>!UI.title,null,{timeout:300000}); /* 11-21: 리그는 Worker에서 만들고, 먼저 누른 시작은 다 만든 뒤 이어진다 */ await pg.waitForTimeout(600); }catch(e){ add('진행 실패',e.message); }
   /* itch 껍데기에서 옛 저장 옮겨 오기: 저장이 없을 때 itch 주소에서 온 저장만 받는다(다른 주소·이미 저장이 있으면 무시) */
   { where='옛 저장 옮겨 오기'; const r=await ev(()=>{ const keep={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keep[k]=localStorage.getItem(k); } localStorage.clear();
       const BODY=packG(); /* 읽을 수 없는 본문은 옮기지 않으므로(검수 11-09zr #18) 실제 저장 본문으로 시험한다 */ const items={[META]:JSON.stringify({active:1,slots:{1:{tid:3,name:'점검',date:'x',y:2027,at:1}}}),[slotKey(1)]:BODY};

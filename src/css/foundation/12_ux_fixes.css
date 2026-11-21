@@ -799,3 +799,19 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 /* 한 구역의 ⓘ를 하나로 합친 뒤(mergeHints) 말풍선이 길어질 수 있어 화면 안에서 스크롤 */
 #tipb{max-height:min(60vh,440px);overflow:auto}
 .cfm[tabindex="-1"]:focus{outline:none}
+
+/* 새 게임 구단 고르기 순서(구단주 11-21): ① 구단 ② 지명 순번 ③ 단장 소개. 어느 쪽을 먼저 골라도 되고, 아래 '다음' 단추가 왜 꺼져 있는지 적는다 */
+.fdset{display:flex;gap:6px;list-style:none;margin:4px 0 10px;padding:0}
+.fdset li{flex:1;min-width:0;display:grid;gap:1px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
+.fdset li b{font-size:13px;white-space:nowrap}.fdset li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fdset li.on{color:var(--text,#e2e8ed);border-color:var(--acc,#4a7dff);box-shadow:inset 0 0 0 1px var(--acc,#4a7dff)}
+.fdset li.done{color:var(--text,#e2e8ed)}.fdset li.done b::after{content:' ✓';color:var(--good,#3fb871)}
+.tmk-wait{display:grid;gap:8px;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:5px;padding:12px;color:var(--ink);cursor:pointer}.tmk-wait:hover{border-color:var(--acc,#8b5cf6)}
+.tmk.sel,.tmk-wait.sel{border-color:var(--good,#3fb871);box-shadow:inset 0 0 0 2px var(--good,#3fb871)}.tp-sel{margin-left:auto;align-self:flex-start;flex:none}
+.fdpk.need{box-shadow:inset 0 0 0 2px var(--warn,#e0a030)}
+.fdgo{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel,#151b22);box-shadow:0 -6px 16px rgba(0,0,0,.25)}
+.fdgo-s{min-width:0;flex:1 1 160px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-size:13px}
+.fdgo-b{flex:none}.fdgo-b.off{opacity:.5;filter:saturate(.3)}.fdgo-why{flex-basis:100%;color:var(--warn,#e0a030)}
+.wl-run{padding:10px 4px}.wl-run p{margin:0 0 6px}.wl-run>div{flex:1;min-width:0}
+.wl-bar{display:block;height:6px;border-radius:3px;background:var(--line,#2a333e);overflow:hidden}.wl-bar b{display:block;height:100%;width:0;background:var(--acc,#4a7dff);transition:width .3s}
+.tmk-wait .tp-sum{margin:0}

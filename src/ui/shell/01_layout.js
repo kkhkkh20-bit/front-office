@@ -208,10 +208,31 @@ async function importText(t,to,opt={}){
  saveOpenGame(g,slot,meta());UI.tab='home';UI.readingOpen={};UI.readingScroll={};UI.impMsg='불러왔습니다.';render();return true;
 }
 
-function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; setTimeout(()=>{ const G0=G; try{ buildWorld(); UI.world=G; try{ G.fdOrd=fdOrder(); }catch(e){} /* 창단 드래프트 순서는 구단을 고르기 전에 한 번 정해 두고(구단 카드와 실제가 같고 겹치지 않게) 시작 때 그대로 쓴다 */
-    /* 구단마다 취임 첫날 예산을 미리 계산해 재정 압박 구단을 표시한다 */
-    try{ const js=JSON.stringify(UI.world); for(const x of UI.world.preview){ G=JSON.parse(js); claimTeam(x.tid); x.room=Math.round(budget().roomGoal); try{ x.fin=fdFin(x.tid); x.ownN=bossOf(x.tid).own.name; }catch(e){} } }catch(e){ console.error(e); }
-  }catch(e){ console.error(e); UI.worldErr=true; } finally{ G=G0; UI.worldBusy=false; render(); } },60); }
+/* 새 게임 리그 만들기(창단 드래프트·단장 취임 공용). 2025 시즌 144경기를 치르는 buildWorld가 화면 스레드를 PC 11초·휴대폰(CPU 4배 느림) 38초 멈춰
+   '새 게임' 뒤 버튼이 안 눌렸다(구단주 11-21). 같은 엔진 코드(worldForPick)를 Worker에서 돌리고, 화면은 그동안 구단·순번을 고를 수 있다.
+   Worker를 못 쓰면(file:// 등) 예전처럼 화면 스레드에서 만든다. 만드는 코드·난수 순서는 그대로다. __wbPre/__wbDone: 점검용(같은 씨앗으로 세계 비교) */
+function worldDone(W,err,fromJ){ UI.worldBusy=false; UI.worldW=null; if(err){ UI.worldErr=true; } else { UI.world=W; UI.worldJ=!!fromJ; UI.worldPct=1; }
+  const go=UI.gpWait; UI.gpWait=false; if(UI.title){ render(); if(go&&UI.sstep==='prof'&&!err)try{ A.gpStart(); }catch(e){ console.error(e); } } }
+function worldPctShow(f){ UI.worldPct=f; if(typeof document==='undefined')return; const pc=Math.max(1,Math.min(99,Math.round(f*100)));
+  document.querySelectorAll('[data-wpct]').forEach(el=>{ if(el.dataset.wpct==='bar')el.style.width=pc+'%'; else el.textContent=pc+'%'; }); }
+function worldSync(){ UI.worldBusy=true; setTimeout(()=>{ let W=null; try{ W=worldForPick(); }catch(e){ console.error(e); return worldDone(null,true); } worldDone(W); },60); }
+function worldWorker(){ try{ if(typeof Worker==='undefined'||typeof URL==='undefined'||!URL.createObjectURL||typeof Blob==='undefined')return false;
+    const el=document.getElementById('engine'); if(!el)return false; const urls=[];
+    const eng=el.src?new URL(el.src,location.href).href:(()=>{ const u=URL.createObjectURL(new Blob([el.textContent],{type:'text/javascript'})); urls.push(u); return u; })();
+    let tn=null; try{ tn=teamNamesPreset(); }catch(e){}
+    const src=(typeof window.__wbPre==='string'?window.__wbPre+'\n':'')+'var __TN=null;function teamNamesPreset(){return __TN;}\nimportScripts('+JSON.stringify(eng)+');\n'
+      +'onmessage=function(e){ __TN=e.data&&e.data.tn||null; var last=0; try{ var W=worldForPick(function(f){ var n=Date.now(); if(n-last>120){ last=n; postMessage({p:f}); } }); postMessage({j:JSON.stringify(W),nm:_nmSet?Array.from(_nmSet):null,nd:_nmDay,post:typeof __wbPost==="function"?__wbPost():null}); }catch(err){ postMessage({err:String(err&&err.stack||err)}); } };';
+    const u=URL.createObjectURL(new Blob([src],{type:'text/javascript'})); urls.push(u); const w=new Worker(u); UI.worldW=w; UI.worldBusy=true;
+    const end=()=>{ try{ w.terminate(); }catch(e){} urls.forEach(x=>{ try{ URL.revokeObjectURL(x); }catch(e){} }); };
+    w.onmessage=e=>{ if(UI.worldW!==w)return end(); const d=e.data||{}; if(d.p!=null)return worldPctShow(d.p);
+      end(); if(d.err!=null||typeof d.j!=='string'){ console.error(d.err); UI.worldW=null; return worldSync(); } /* Worker에서 실패하면 화면 스레드에서 한 번 더 */
+      let W=null; try{ W=JSON.parse(d.j); }catch(x){ UI.worldW=null; return worldSync(); } try{ worldReset(); _nmSet=d.nm?new Set(d.nm):null; _nmDay=d.nd??null; }catch(x){} /* 화면 스레드에서 만들 때와 같게: 엔진 캐시를 비우고, 그날 쓴 이름 목록(genName 중복 피하기)은 Worker 것을 이어받는다. 안 하면 취임 때 뽑는 이름·인물이 달라졌다 */
+      try{ if(typeof window.__wbDone==='function')window.__wbDone(d.post); }catch(x){} worldDone(W,false,true); };
+    w.onerror=ev=>{ try{ ev.preventDefault(); }catch(x){} if(UI.worldW!==w)return; end(); UI.worldW=null; worldSync(); };
+    w.postMessage({tn}); return true; }catch(e){ UI.worldW=null; return false; } }
+function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldErr=false; UI.worldPct=0; if(!worldWorker())worldSync(); }
+/* 저장이 하나도 없는 처음 방문자: 처음 화면에서 미리 만들어 둔다(새 게임을 누를 때쯤이면 끝나 있다). 자동 점검 브라우저(webdriver)는 __wbTitle을 켤 때만 */
+function worldEarly(){ try{ if(UI._wbE||UI.world||UI.worldBusy||typeof Worker==='undefined')return; UI._wbE=1; if(navigator.webdriver&&!window.__wbTitle)return; const m=meta(); if(SLOT_IDS.some(n=>slotUsed(n,m)))return; setTimeout(()=>{ if(UI.title&&!UI.world&&!UI.worldBusy)ensureWorld(); },1200); }catch(e){} }
 const SLK={C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익',CF:'중견',RF:'우익',DH:'지명',SP:'선발',RP:'불펜',P:'투수'};
 const G0Y=()=>2026; const eok=v=>`${Math.round(v/100)}억`;
 /* 창단 지명 순번 고르기(구단 고르기 전). 조건은 FD_SLOT(11_founding_draft.js) */
@@ -220,12 +241,12 @@ function dr1Pick(){ const n=(UI.world&&UI.world.teams?UI.world.teams.length:G&&G
   return `<section class="card dr1pk"><h2 class="sec">1년차 신인 드래프트 순번</h2><p class="small muted">첫 시즌 신인 드래프트에서 우리 구단의 지명 순서를 고릅니다(1·2라운드 모두 그 자리). 자동은 지난 시즌 순위 역순이고, 2년차부터는 실제 순위 역순입니다.</p>
     <div class="chips optrow" role="group" aria-label="1년차 신인 드래프트 순번"><button type="button" data-a="dr1Pk" data-v="0" class="${cur?'':'on'}">자동</button>${Array.from({length:n},(_,i)=>`<button type="button" data-a="dr1Pk" data-v="${i+1}" class="${cur===i+1?'on':''}">${i+1}순위</button>`).join('')}</div></section>`; }
 function fdSlotPick(){ if(typeof FD_SLOT==='undefined')return ''; const cur=UI.fdPk||0, pc=d=>d<0?`${Math.round(-d*100)}% 감액`:d>0?`${Math.round(d*100)}% 증액`:'그대로';
-  return `<section class="card fdpk${UI.fdNeed?' need':''}"><h2 class="sec">창단 지명 순번</h2><p class="small">${UI.fdNeed?'<b class="bad">먼저 순번을 고르세요.</b> ':''}${UI.fdStr?'모든 라운드가 같은 순서입니다: 1R 1→10, 2R 1→10 … 앞 순번 이득이 쌓이므로 순번 조건이 두 배입니다. 앞 순번은 긴축, 뒤 순번은 지원 보너스':'라운드마다 순서가 뒤집힙니다: 1R 1→10, 2R 10→1, 3R 1→10 … 앞 순번은 긴축, 뒤 순번은 지원 보너스'}(${FD_AUST_Y}시즌) ${hiI('1순위는 전체 1번을 갖는 대신 2라운드는 맨 끝(전체 20번)입니다. 10순위는 10번과 11번을 연달아 뽑습니다. '+'1~3순위는 구단주가 수익 우선으로 바뀌고 시설·추가 지원 승인 가능성이 낮아집니다. 독립구단(고양)은 모기업 지원이 없어 시작 현금만 달라집니다. 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다.')}</p>
+  return `<section class="card fdpk${UI.fdNeed?' need':''}"><h2 class="sec">② 창단 지명 순번</h2><p class="small">${UI.fdNeed?`<b class="bad">${UI.fdTid!=null&&TEAM_DEF[UI.fdTid]?esc(tshortD(UI.fdTid))+'을(를) 골랐습니다. 이제 ':''}지명 순번(1~10순위)을 고르세요.</b> `:''}${UI.fdStr?'모든 라운드가 같은 순서입니다: 1R 1→10, 2R 1→10 … 앞 순번 이득이 쌓이므로 순번 조건이 두 배입니다. 앞 순번은 긴축, 뒤 순번은 지원 보너스':'라운드마다 순서가 뒤집힙니다: 1R 1→10, 2R 10→1, 3R 1→10 … 앞 순번은 긴축, 뒤 순번은 지원 보너스'}(${FD_AUST_Y}시즌) ${hiI('1순위는 전체 1번을 갖는 대신 2라운드는 맨 끝(전체 20번)입니다. 10순위는 10번과 11번을 연달아 뽑습니다. '+'1~3순위는 구단주가 수익 우선으로 바뀌고 시설·추가 지원 승인 가능성이 낮아집니다. 독립구단(고양)은 모기업 지원이 없어 시작 현금만 달라집니다. 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다.')}</p>
     <div class="chips optrow" role="group" aria-label="지명 방식"><button type="button" data-a="fdStr" data-v="0" class="${UI.fdStr?'':'on'}">지그재그</button><button type="button" data-a="fdStr" data-v="1" class="${UI.fdStr?'on':''}">같은 순서</button></div><div class="chips optrow" role="group">${Object.keys(FD_SLOT).map(k=>`<button type="button" data-a="fdPk" data-v="${k}" class="${+k===cur?'on':''}" aria-pressed="${+k===cur}">${k}순위</button>`).join('')}</div>
-    ${cur?(()=>{ const A=fdSlotA(cur,!!UI.fdStr), s0=((UI.world.preview.find(x=>!TEAM_DEF[x.tid].indie)||{}).fin||{}).sup||0, ds=Math.round(s0*A.d), dc=A.cash-4000, sg=v=>v>0?`+${eok(v)}`:v<0?`-${eok(-v)}`:'변화 없음';
+    ${cur&&UI.world?(()=>{ const A=fdSlotA(cur,!!UI.fdStr), s0=((UI.world.preview.find(x=>!TEAM_DEF[x.tid].indie)||{}).fin||{}).sup||0, ds=Math.round(s0*A.d), dc=A.cash-4000, sg=v=>v>0?`+${eok(v)}`:v<0?`-${eok(-v)}`:'변화 없음';
       return `<div class="fdpk-now"><b>${cur}순위 선택</b><span>모기업 지원 한도 <b>${eok(s0)} → ${eok(s0+ds)}</b> <em class="${ds<0?'bad':ds>0?'ok':''}">${sg(ds)}</em> · 해마다, ${FD_AUST_Y}시즌</span><span>시작 현금 <b>40억 → ${eok(A.cash)}</b> <em class="${dc<0?'bad':dc>0?'ok':''}">${sg(dc)}</em></span><span>${FD_AUST_Y}시즌 합계 <b class="${ds<0?'bad':ds>0?'ok':''}">${sg(ds*FD_AUST_Y+dc)}</b>${A.strict?' · 구단주 수익 우선':''}</span><span class="fdpk-seq">우리 지명: ${[0,1,2,3,4].map(r=>{ const pos=r%2&&!UI.fdStr?11-cur:cur; return `${r+1}R <b>${pos}번째</b>(전체 ${r*10+pos})`; }).join(' · ')} …</span></div>`; })():''}<details class="frule"><summary class="small">순번별 조건 전체</summary><div class="tw"><table><thead><tr><th>순번</th><th>모기업 지원 한도(${FD_AUST_Y}시즌)</th><th>시작 현금</th></tr></thead><tbody>${Object.keys(FD_SLOT).map(k=>[k,fdSlotA(k,!!UI.fdStr)]).map(([k,A])=>`<tr${+k===cur?' class="on"':''}><td>${k}순위${A.strict?' · 긴축':''}</td><td>${pc(A.d)}</td><td>${eok(A.cash)}</td></tr>`).join('')}</tbody></table></div></details></section>`; }
 function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d,i)=>`<button class="item wa" data-a="start" data-v="${i}">${badge(i,34)}<span class="nm"><b>${tfull(d)}</b></span><span class="rt small muted">선택</span></button>`).join('')}</div>`;
-  if(!UI.world){ ensureWorld(); return `<div class="worldload"><span class="spin"></span><p>리그를 만드는 중입니다. 10개 구단 선수단을 만들고 지난 시즌 144경기를 치르고 있습니다.</p></div>`; }
+  if(!UI.world){ ensureWorld(); return worldWaitView(); }
   const P=[...UI.world.preview].sort((a,b)=>a.proj-b.proj); const OL={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
   const card=x=>{ const d=TEAM_DEF[x.tid]; const over=x.pay>x.cap; const mv=x.prev-x.proj; const tight=over||(x.room!=null&&x.room<0);
     return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${tfull(d)}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · ${gl('시장 규모')} ${Math.round(d.market*100)}</span></div>
@@ -239,17 +260,29 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
     const fdAdj=x=>{ const f=x.fin||{}, A=UI.fdPk&&typeof FD_SLOT!=='undefined'?fdSlotA(UI.fdPk,!!UI.fdStr):null; if(!A)return f; const ds=TEAM_DEF[x.tid].indie?0:Math.round((f.sup||0)*A.d); return {...f,sup:(f.sup||0)+ds,avail:(f.avail||0)+ds,cash:A.cash}; };
     const P2=[...UI.world.preview].sort((a,b)=>(fdAdj(b).avail||0)-(fdAdj(a).avail||0));
     const fcard=x=>{ const d=TEAM_DEF[x.tid]; const f=fdAdj(x); const ri=P2.indexOf(x), ok=ri<3, mid=ri<7; /* 난이도는 10개 구단 안에서 자금 여유 순위로(모두 캡을 넘겨 다 '쉬움'으로 보이던 문제) */ const age=G0Y()-(STAD_BUILT[x.tid]||2000);
-      return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${tfull(d)}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · ${gl('시장 규모')} ${Math.round(d.market*100)}</span></div>
+      return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}${UI.fdTid===x.tid?' sel':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${tfull(d)}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · ${gl('시장 규모')} ${Math.round(d.market*100)}</span></div>${UI.fdTid===x.tid?'<em class="pill good tp-sel">선택한 구단</em>':''}
         <div class="tp-r tp-rf ${ok?'hi':mid?'mid':'lo'}"><i>샐러리캡 대비 여유</i><b>${(f.avail||0)>=(f.cap||0)?'+':'-'}${eok(Math.abs((f.avail||0)-(f.cap||0)))}</b><span>연봉 예산 ${eok(Math.max(0,f.avail||0))} · 자금 ${ri+1}위</span></div></div>
         <p class="tp-sum">${(()=>{ return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
         <div class="tp-g"><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
           <span><i>모기업 지원 한도</i><b class="${d.indie?'wk':''}">${d.indie?'없음':eok(f.sup||0)}</b></span><span><i>선수 연봉 외 지출</i><b>${eok(f.other||0)}</b></span>
           <span><i>보유 현금</i><b>${eok(f.cash||0)}</b></span><span><i>홈구장</i><b>${(STAD_NM&&STAD_NM[x.tid])?esc(STAD_NM[x.tid])+' · ':''}${(STAD_CAP[x.tid]||0).toLocaleString()}석 · ${age}년 된 구장</b></span></div>${typeof uniRow==='function'?`<div class="tp-uni">${uniRow(x.tid,{sz:64})}</div>`:''}
-        <div class="tp-t">${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
-    return `<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 구단마다 다른 것은 시장 크기와 구장(입장·광고 수입)이고, 고양은 모기업 지원이 없습니다. 카드의 돈은 고른 순번 조건을 반영한 값입니다. 먼저 창단 지명 순번을 고르고, 그다음 구단을 고릅니다.</p>${fdSlotPick()}${dr1Pick()}<details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">우리 순번은 위에서 고르고, 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다. 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
-    <div class="tpg cmp">${P2.map(fcard).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button></div>`; }
-  return `<p class="small muted">구단마다 전력이 달라 난이도가 다릅니다(예상 1~3위 쉬움, 4~7위 보통, 8~10위 어려움). 외국인 선수와 감독은 취임 후 새로 데려옵니다. ${hiI('예상 순위는 전력분석팀 추정치로, 비슷한 수준의 외국인 선수를 데려온다고 보고 계산했습니다.')}</p>
+        <div class="tp-t">${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">${UI.fdTid===x.tid?'선택됨':'이 구단 선택'}</button></div></div>`; };
+    return `${fdSetSteps()}<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 구단마다 다른 것은 시장 크기와 구장(입장·광고 수입)이고, 고양은 모기업 지원이 없습니다. 카드의 돈은 고른 순번 조건을 반영한 값입니다. 구단과 순번은 어느 쪽을 먼저 골라도 됩니다.</p>${fdSlotPick()}${dr1Pick()}<details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">우리 순번은 위에서 고르고, 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다. 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
+    <div class="tpg cmp">${P2.map(fcard).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button></div>${fdGoBar()}`; }
+  return `${takeSteps()}<p class="small muted">구단마다 전력이 달라 난이도가 다릅니다(예상 1~3위 쉬움, 4~7위 보통, 8~10위 어려움). 외국인 선수와 감독은 취임 후 새로 데려옵니다. ${hiI('예상 순위는 전력분석팀 추정치로, 비슷한 수준의 외국인 선수를 데려온다고 보고 계산했습니다.')}</p>
     ${dr1Pick()}<div class="tpg cmp">${P.map(card).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button><span class="small muted">선수단은 새 게임마다 무작위로 만들어집니다.</span></div>`; }
+/* 시작 순서 표시(구단주 11-21: 순번을 먼저 안 고르면 구단을 눌러도 아무 일이 없는 것 같았다). 구단·순번은 어느 쪽을 먼저 골라도 되고, 둘 다 고르면 '다음'이 켜진다 */
+function tshortD(tid){ const d=TEAM_DEF[tid]; return d?tfull(d):''; }
+function fdSetSteps(){ const t=UI.fdTid, k=UI.fdPk||0, S=[['① 구단',t!=null&&TEAM_DEF[t]?tshortD(t):'카드에서 고르기',t!=null],['② 지명 순번',k?k+'순위':'1~10순위 고르기',!!k],['③ 단장 소개','이름 정하고 시작',false]];
+  const on=S.findIndex(x=>!x[2]); return `<ol class="fdset" aria-label="창단 준비 순서">${S.map((x,i)=>`<li class="${x[2]?'done':i===on?'on':''}"><b>${x[0]}</b><span>${esc(x[1])}</span></li>`).join('')}</ol>`; }
+function fdGoWhy(){ const t=UI.fdTid!=null&&TEAM_DEF[UI.fdTid], k=UI.fdPk; return !t&&!k?'구단과 지명 순번을 고르면 켜집니다':!t?'구단 카드를 눌러 고르세요':!k?'② 지명 순번(1~10순위)을 고르세요':''; }
+function fdGoBar(){ const why=fdGoWhy(); return `<div class="fdgo" role="region" aria-label="다음 단계"><span class="fdgo-s">${UI.fdTid!=null&&TEAM_DEF[UI.fdTid]?`${badge(UI.fdTid,18)} <b>${esc(tshortD(UI.fdTid))}</b>`:'<b>구단 미선택</b>'} · <b>${UI.fdPk?UI.fdPk+'순위':'순번 미선택'}</b></span><button class="btn primary fdgo-b${why?' off':''}" data-a="fdGo" aria-disabled="${!!why}">다음: 단장 소개</button>${why?`<span class="fdgo-why small">${why}</span>`:''}</div>`; }
+function takeSteps(){ return `<ol class="fdset" aria-label="취임 순서"><li class="on"><b>① 구단</b><span>카드를 누르면 바로 다음</span></li><li><b>② 단장 소개</b><span>이름 정하고 시작</span></li></ol>`; }
+/* 리그를 만드는 동안(Worker): 구단 카드(.tmk-wait, 완성 카드 .tmk와 구분)는 기본 정보만 보이고 바로 누를 수 있다. 창단은 순번도 먼저 고를 수 있다. 숫자는 다 만들면 채워진다 */
+function worldWaitView(){ const fd=UI.smode!=='take', pc=Math.max(1,Math.min(99,Math.round((UI.worldPct||0)*100)));
+  const card=(d,i)=>`<div class="tmk-wait${fd&&UI.fdTid===i?' sel':''}" role="button" tabindex="0" data-a="start" data-v="${i}"><div class="tp-h">${badge(i,38)}<div><b>${tfull(d)}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · ${gl('시장 규모')} ${Math.round((d.market||1)*100)}</span></div>${fd&&UI.fdTid===i?'<em class="pill good tp-sel">선택한 구단</em>':''}</div><p class="tp-sum muted">${fd?'예산 여유 계산 중…':'전력·예상 순위 계산 중…'}</p><div class="tp-t"><button class="btn small" data-a="start" data-v="${i}">${fd&&UI.fdTid===i?'선택됨':'이 구단 선택'}</button></div></div>`;
+  return `${fd?fdSetSteps():takeSteps()}<div class="worldload wl-run" role="status"><span class="spin"></span><div><p>리그를 만드는 중입니다 <b data-wpct="txt">${pc}%</b>. 기다리지 않고 ${fd?'구단과 순번을':'구단을'} 먼저 골라도 됩니다. ${fd?'예산':'전력'} 숫자는 다 만들면 나옵니다.</p><i class="wl-bar"><b data-wpct="bar" style="width:${pc}%"></b></i></div></div>
+    ${fd?fdSlotPick():''}${dr1Pick()}<div class="tpg cmp">${TEAM_DEF.map(card).join('')}</div>${fd?fdGoBar():''}`; }
 function inFrame(){ try{ return window.self!==window.top; }catch(e){ return true; } }
 /* 백업 권유: 다른 사이트 안(itch 등)에서 실행 중이면, 마지막 백업(파일·코드 내보내기)에서 게임 날짜로 60일이 지날 때마다 상단에 띄운다. '나중에'는 30일 뒤 */
 function needBackup(){ try{ if(!G||!inFrame())return false; if(G.bkAt==null){ G.bkAt=G.day; return false; } return G.day-G.bkAt>=60; }catch(e){ return false; } }
@@ -274,7 +307,7 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
   const act=live?{tid:G.user,date:dstr(G.day)}:cs!=null?(m.slots[cs]||{name:`슬롯 ${cs}`}):null; const canCont=!!act;
   const foot=`<p class="small muted" style="margin-top:14px">${NOT_AFFIL} 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
   const back=(v,l)=>`<button class="lnk tsback" data-a="tsGo" data-v="${v}">← ${l}</button>`;
-  if(st==='main'){ const tn=act&&act.tid!=null&&TEAM_DEF[act.tid]?`${tfull(TEAM_DEF[act.tid])}`:(act&&act.name)||'';
+  if(st==='main'){ worldEarly(); const tn=act&&act.tid!=null&&TEAM_DEF[act.tid]?`${tfull(TEAM_DEF[act.tid])}`:(act&&act.name)||'';
     return `<main class="fb-title" aria-label="프런트야구 시작 화면"><div class="fb-title-content">
       <div class="fb-brand"><h1 class="fb-wordmark"><span class="fb-sr">프런트야구</span></h1></div>
       <nav class="fb-menu" aria-label="시작 메뉴">
@@ -301,7 +334,7 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
   if(st==='prof'&&UI.pickT!=null)return gpStartView();
   if(UI.smode!=='take')UI.smode='fd'; const fd=UI.smode==='fd';
   return `<div class="gut"><div class="wrap" style="max-width:760px">${back('mode','시작 방식')}
-  ${fd?fdSteps(1):''}<h2 class="ts-h">${fd?'창단 드래프트 · 함께할 구단을 고르세요':'단장 취임 · 맡을 구단을 고르세요'}</h2>
+  <h2 class="ts-h">${fd?'창단 드래프트 · 구단과 지명 순번을 고르세요':'단장 취임 · 맡을 구단을 고르세요'}</h2>
 
   ${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)} <button class="lnk" data-a="tsGo" data-v="slots">저장 슬롯 보기</button></div>`:''}<section class="card">${pickTeams()}</section>${foot}</div></div>`;
 }

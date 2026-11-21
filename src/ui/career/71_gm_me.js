@@ -25,7 +25,8 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
 /* 새 게임: 구단을 고르면 단장 정보부터 */
 function gpStartView(){ const v=UI.pickT; const d=TEAM_DEF[v];
   return `<div class="gut"><div class="wrap" style="max-width:640px"><button class="lnk tsback" data-a="tsGo" data-v="team">← 구단 다시 고르기</button>
-    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(tfull(d))} · `:''}단장 소개</h2><section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
+    ${UI.smode!=='take'?`<ol class="fdset" aria-label="창단 준비 순서"><li class="done"><b>① 구단</b><span>${esc(d?tfull(d):'')}</span></li><li class="done"><b>② 지명 순번</b><span>${UI.fdPk?UI.fdPk+'순위':'-'}</span></li><li class="on"><b>③ 단장 소개</b><span>이름 정하고 시작</span></li></ol>`:`<ol class="fdset" aria-label="취임 순서"><li class="done"><b>① 구단</b><span>${esc(d?tfull(d):'')}</span></li><li class="on"><b>② 단장 소개</b><span>이름 정하고 시작</span></li></ol>`}
+    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(tfull(d))} · `:''}단장 소개</h2>${!UI.world&&UI.worldBusy?`<div class="worldload wl-run gp-wait" role="status"><span class="spin"></span><div><p>리그를 만드는 중입니다 <b data-wpct="txt">${Math.max(1,Math.min(99,Math.round((UI.worldPct||0)*100)))}%</b>. ${UI.gpWait?'<b>다 만들면 바로 시작합니다.</b> 그동안 단장 정보를 더 고쳐도 됩니다.':'시작을 먼저 눌러 두면 다 만드는 대로 바로 시작합니다.'}</p><i class="wl-bar"><b data-wpct="bar" style="width:${Math.max(1,Math.min(99,Math.round((UI.worldPct||0)*100)))}%"></b></i></div></div>`:''}<section class="card">${gpForm('gpStart',UI.gpWait&&!UI.world?'준비되면 바로 시작(대기 중)':'이 단장으로 시작')}</section></div></div>`; }
 /* 사이드바 '단장 프로필' */
 /* 야인이어도 돌아보는 경력: 시즌별 재임 구단·순위·성적, 퇴임 시점 마지막 시즌 결산 */
 function meCareerSeasons(C){ const S=(C&&C.seas||[]).slice().reverse(); if(!S.length)return ''; return csec('시즌별 경력',`<div class="tw"><table><thead><tr><th>시즌</th><th>구단</th><th>순위</th><th>성적</th><th></th></tr></thead><tbody>${S.map(x=>`<tr><td>${x.y}</td><td>${badge(x.tid,14)} ${esc(tshort(x.tid))}</td><td>${x.rank!=null?`${x.rank}위`:'-'}${x.part?` <span class="muted">(시즌 중 ${esc(x.how||'이직')})</span>`:''}</td><td>${x.w}승 ${x.l}패${x.t?` ${x.t}무`:''}</td><td>${x.ch===1?'<span class="pill good">우승</span>':x.ch===2?'<span class="pill">준우승</span>':''}</td></tr>`).join('')}</tbody></table></div>`); }
@@ -57,7 +58,8 @@ function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge()
   return csec('세대 교체 · 단장 계보',body+line); }
 Object.assign(A,{
   gmAgeFix(){ gmAgeFixToggle(); save(); render(); },
-  fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
+  fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); if(UI.fdTid!=null)document.querySelector('.fdgo')?.scrollIntoView({block:'nearest'}); }, /* 구단을 먼저 골랐으면 '다음' 단추가 보이게 */
+  fdGo(){ const why=fdGoWhy(); if(why){ if(UI.fdTid==null){ toast(why); document.querySelector('.tpg')?.scrollIntoView({block:'start'}); } else { UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); } return; } A.start(UI.fdTid); },
   dr1Pk(v){ UI.dr1Pk=+v||0; render(); },
   fdStr(v){ UI.fdStr=+v?1:0; render(); },
   scHomeAuto(){ toast(scHomeAuto()); save(); render(); },
@@ -65,15 +67,15 @@ Object.assign(A,{
   fenceD(v){ const [k,x]=String(v).split(':'); UI.fenceD=UI.fenceD||{}; UI.fenceD[k]=+x; UI.fenceMsg=''; render(); },
   fenceReset(){ UI.fenceD={}; UI.fenceMsg=''; render(); },
   fenceGo(){ const e=fenceSet(fenceTarget(G.user)); UI.fenceMsg=e||'담장 공사를 마쳤습니다. 다음 경기부터 반영됩니다.'; UI.fenceOk=!e; if(!e){ UI.fenceD={}; save(); } render(); },
-  start(v){ if(UI.smode!=='take'&&UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
+  start(v){ if(UI.smode!=='take'){ UI.fdTid=+v; if(typeof FD_SLOT!=='undefined'&&!UI.fdPk&&!UI.worldErr){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } } /* 창단: 순번보다 구단을 먼저 눌러도 고른 것으로 남기고 순번을 묻는다(구단주 11-21: 눌러도 아무 일이 없어 보였다) */ UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
   gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; delete g.img; render(); },
   gpSex(v){ const g=gpSync(); g.female=v==='f'; g.face='gm'+Math.floor(Math.random()*1e6); delete g.mod; UI.gpSeeds=null; render(); },
   gpAge(v){ const g=gpSync(); g.age=clamp((g.age||40)+(+v),30,65); render(); },
   gpBg(v){ const g=gpSync(); g.bg=v; render(); },
   gpVoice(v){ const g=gpSync(); g.voice=g.voice===v?null:v; render(); },
-  gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; const P={...g}; if(!UI.newSlot&&!SLOT_IDS.some(n=>!meta().slots[n])){ UI.gpMsg=`저장 슬롯 ${SLOTS}개가 모두 찼습니다. 처음 화면 → 불러오기에서 슬롯 하나를 '덮어쓰고 새 게임'으로 쓰거나 지운 뒤 다시 시작하세요. 정한 단장 정보는 남겨 둡니다.`; render(); return; } /* 슬롯이 없으면 얼굴·이름을 지우지 않고 알린다(전에는 조용히 멈추고 얼굴만 새로 뽑혔다) */
-    UI.gp=null; const how={mode:UI.smode==='take'?'take':'fd',diff:UI.diff==='hard'||UI.diff==='soft'?UI.diff:'norm',easy:!!UI.easy,guide:!UI.guideNo}; /* startGo가 UI.smode를 지우므로 먼저 잡아 둔다 */ const ok=A.startGo(UI.pickT); if(ok&&G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age,...how}); }catch(e){} } },
+  gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; if(!UI.world&&UI.worldBusy){ UI.gpWait=true; render(); return; } /* 리그를 아직 만드는 중(Worker): 눌러 둔 채로 기다렸다가 다 만들면 바로 시작(01_layout.js worldDone) */ const P={...g}; if(!UI.newSlot&&!SLOT_IDS.some(n=>!meta().slots[n])){ UI.gpMsg=`저장 슬롯 ${SLOTS}개가 모두 찼습니다. 처음 화면 → 불러오기에서 슬롯 하나를 '덮어쓰고 새 게임'으로 쓰거나 지운 뒤 다시 시작하세요. 정한 단장 정보는 남겨 둡니다.`; render(); return; } /* 슬롯이 없으면 얼굴·이름을 지우지 않고 알린다(전에는 조용히 멈추고 얼굴만 새로 뽑혔다) */
+    UI.gp=null; const how={mode:UI.smode==='take'?'take':'fd',diff:UI.diff==='hard'||UI.diff==='soft'?UI.diff:'norm',easy:!!UI.easy,guide:!UI.guideNo}; /* startGo가 UI.smode를 지우므로 먼저 잡아 둔다 */ UI._sgQuick=true; let ok=false; try{ ok=A.startGo(UI.pickT); }finally{ UI._sgQuick=false; } if(ok&&G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age,...how}); }catch(e){} } },
   gpEdit(){ UI.gpEdit=!UI.gpEdit; if(UI.gpEdit)UI.gp=G.gmP?{...G.gmP,age:meAge()||G.gmP.age}:gpDefault(); UI.gpMsg=''; render(); },
   gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?G.gmP.age:g.age; /* 취임한 단장은 나이를 못 고친다: 고치면 정년을 피할 수 있었다(검수 11-09zc) */ const done=!!(G.gmP&&G.gmP.bgDone); G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,voice:GMV[g.voice]?g.voice:null,female:g.female,face:g.face,mod:g.mod||null,img:g.img||null,y0,bgDone:done}; if(!done)gmBgApply(); UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
   gmSuccAsk(){ UI.gsucc=!UI.gsucc; UI.gp=UI.gsucc?gpDefault():null; UI.gpMsg=''; render(); },
