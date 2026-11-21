@@ -10792,6 +10792,20 @@ T('[성장 11-20] 노장 비율: 기술형 베테랑 전성기 33·하락 35·�
   for(const tid of [G.user,otherT()]){ const base=domestic(tid).find(q=>!q.isP&&!q.prospect&&!q.foreign&&!q.mil); ok(base,'준비 실패'); const run=(o)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt='norm'; p.age=37; initPers(p); p.pers.pro=10; setOvr(p,o); delete p.declP; G.players[p.id]=p; const s0=__rngState(); __seed(11); const b=ovr(p); develop(p); const d=ovr(p)-b+Object.values(p.declP||{}).reduce((a,x)=>a+x,0)*.3; G.players[base.id]=base; return d; };
     const hi=run(52), lo=run(48); ok(hi<0&&lo<0&&Math.abs(hi)<Math.abs(lo),(tid===G.user?'우리':'AI')+' 능력 높은 노장 하락이 완만하지 않음 '+hi.toFixed(2)+'/'+lo.toFixed(2)); }
   ok(/age<=VET_SKILL_AGE/.test(String(develop)),'기술형 기술 성장 나이 상수 미사용'); });
+T('[카페 11-21 정원 초과 구단 트레이드] 이미 정원(68)을 넘은 구단도 인원을 줄이는 트레이드는 받을 수 있고, 늘리는 트레이드와 정원 안 구단이 넘게 되는 트레이드는 그대로 막는다(AI끼리도 같은 규칙)',()=>{ fresh();
+  const tid=G.teams.find(t=>t.id!==G.user).id, other=G.teams.find(t=>t.id!==G.user&&t.id!==tid).id;
+  const cnt=q=>q&&tradeCntN(q.id)&&!q.foreign; const pool=playersOf(other).filter(cnt).sort((a,b)=>ovr(a)-ovr(b));
+  while(rosterN(tid)<71){ const q=pool.shift(); ok(q,'준비 실패: 옮길 선수 부족'); q.team=tid; }
+  ok(rosterN(tid)===71,'준비 실패: 상대 71명 '+rosterN(tid));
+  const mine=playersOf(G.user).filter(cnt).sort((a,b)=>ovr(a)-ovr(b)).map(q=>q.id), theirs=playersOf(tid).filter(cnt).sort((a,b)=>ovr(a)-ovr(b)).map(q=>q.id);
+  const e=evalTrade(tid,mine.slice(0,4),theirs.slice(0,6),0); ok(e.theirN0===71&&e.theirN===69,'인원 계산 '+[e.theirN0,e.theirN]); ok(tradeSizeOk(e),'71→69로 줄이는 거래를 정원 초과로 막음');
+  const r=proposeTrade(tid,mine.slice(0,4),theirs.slice(0,6),0); ok(!/로스터가 68명을 넘게/.test(r.msg||''),'제출에서 정원 초과로 막음: '+r.msg);
+  const up=evalTrade(tid,mine.slice(0,6),theirs.slice(0,4),0); ok(up.theirN===73&&!tradeSizeOk(up),'71→73으로 늘리는 거래를 통과시킴 '+up.theirN);
+  const r2=proposeTrade(tid,mine.slice(0,6),theirs.slice(0,4),0); ok(!r2.ok&&/로스터가 68명을 넘게.*71명 → 73명/.test(r2.msg||''),'늘리는 거래 안내 '+r2.msg);
+  const same=evalTrade(tid,mine.slice(0,5),theirs.slice(0,5),0); ok(same.theirN===71&&tradeSizeOk(same),'인원 그대로(71→71)인 거래를 막음');
+  const tid2=G.teams.find(t=>t.id!==G.user&&t.id!==tid&&t.id!==other&&rosterN(t.id)<=ROSTER_MAX).id; const n2=rosterN(tid2), m2=playersOf(G.user).filter(cnt).map(q=>q.id), t2=playersOf(tid2).filter(cnt).map(q=>q.id);
+  const k=ROSTER_MAX-n2+1; const over=evalTrade(tid2,m2.slice(0,k),[],0); ok(over.theirN===ROSTER_MAX+1&&!tradeSizeOk(over),'정원 안 구단이 69명이 되는 거래를 통과시킴 '+[n2,over.theirN]);
+});
 T('[카페 11-20 제안 철회] 보낸 트레이드 제안은 오가는 선수가 그대로면 다음 날 값으로 철회하지 않는다',()=>{fresh();const b=otherT(),p=domestic(b).find(x=>!x.ys),q=domestic(G.user).find(x=>!x.ys);p.injOut=0;q.injOut=0;const mk=()=>({id:'keep1120',from:b,give:[p.id],get:[q.id],exp:G.day+3,day:G.day});const old=evalTrade,W=m=>/다시 따져/.test(m||'');try{evalTrade=(...x)=>({...old(...x),ok:false,gain:-5,need:5,outV:5,dom:null,capT:null,theirN:54});
   const o0=mk();ok(W(offerBlockMsg(o0)),'준비 실패: 기록 없는(옛 저장) 제안이 값으로 막히지 않음');
   const o=offerStamp(mk());ok(!W(offerBlockMsg(o)),'선수 변화 없이 그날 값만 바뀌었는데 철회');ok(W(offerBlockMsg(o,true)),'제안을 만들 때(strict)는 값 판정을 건너뛰면 안 됨');
