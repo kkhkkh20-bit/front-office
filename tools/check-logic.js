@@ -11013,6 +11013,31 @@ T('[카페 11-21 2차 드래프트 보상선수] 보호명단을 낸 뒤 FA 보�
   for(let i=0;i<40&&S.stage==='pick';i++){ if(S.seq[S.cur]&&S.seq[S.cur].tid===U&&S.wait===S.cur)sdPick(null); else sd2Daily(++G.day); }
   ok(S.stage==='done','준비 실패: 드래프트가 끝나지 않음'); ok(q.team===U&&r.team===C,'보상선수가 2차 드래프트로 옮김: '+q.team+'/'+r.team);
   const old=sdPool(B).find(x=>!sdExempt(x)); old.acq={k:'보상선수',y:G.year-1,d:dnum(G.year-1,11,20),tid:B}; ok(!sdExempt(old),'지난 겨울 보상선수까지 계속 자동 보호함(이번 회차만 제외)'); });
+T('[카페 11-21 업셋 우승 최종 순위] 한국시리즈 우승 1위·준우승 2위, 나머지는 정규시즌 순서. 신인 드래프트는 최종 순위의 역순(2018 SK 우승 → 2020 2차 지명 10번째)',()=>{ fresh(); const ids=G.teams.map(t=>t.id), y=G.year-1, order=ids.map((tid,i)=>({tid,w:90-i*3,l:50+i*3,t:0})), reg=order.map(o=>o.tid).join();
+  const r0=__rngState(), c0=__rngCalls();
+  const h={y,order,champ:ids[2],runner:ids[0],ps:{wc:[ids[3],ids[4],1,0],spo:[ids[2],ids[3],3,1],po:[ids[2],ids[1],3,2],ks:[ids[2],ids[0],4,2]}}, f=kboFinalOrder(h).map(o=>o.tid);
+  ok(kboFinalRank(h,ids[2])===1&&f[0]===ids[2],'정규 3위 업셋 우승팀이 최종 1위가 아님: '+f.join());
+  ok(kboFinalRank(h,ids[0])===2,'한국시리즈에서 진 정규 1위가 최종 2위가 아님');
+  ok(kboFinalRank(h,ids[1])===3,'정규 2위(2019 SK처럼)가 최종 3위가 아님: '+kboFinalRank(h,ids[1]));
+  ok(f.slice(3).join()===ids.slice(3).join(),'우승·준우승 밖 구단이 정규시즌 순서가 아님');
+  ok(order.map(o=>o.tid).join()===reg,'정규시즌 순서(h.order)를 바꿈');
+  const h2={y,order,champ:ids[0],runner:ids[1],ps:{wc:[ids[3],ids[4],1,0],spo:[ids[3],ids[2],3,2],po:[ids[1],ids[3],3,1],ks:[ids[0],ids[1],4,1]}};
+  ok(kboFinalRank(h2,ids[3])===4&&kboFinalRank(h2,ids[2])===3,'준플레이오프 업셋 뒤 플레이오프에서 진 정규 4위의 순위가 바뀜');
+  ok(kboFinalOrder(h2).map(o=>o.tid).join()===reg,'정규 1위 우승·2위 준우승인데 순서가 바뀜');
+  const h3={y,order,champ:ids[1],runner:ids[4]}; ok(kboFinalRank(h3,ids[1])===1&&kboFinalRank(h3,ids[4])===2&&kboFinalRank(h3,ids[0])===3&&kboFinalRank(h3,ids[2])===4,'2위 우승·5위 준우승 최종 순위 틀림');
+  const old=JSON.parse(JSON.stringify({y,order,champ:ids[2],runner:ids[0]})); ok(kboFinalRank(old,ids[2])===1&&kboFinalRank(old,ids[1])===3&&JSON.stringify(old.order)===JSON.stringify(order),'옛 저장(우승·준우승만 저장)에서 읽을 때 최종 순위를 못 만듦');
+  ok(kboFinalOrder({y,order,champ:null,runner:null}).map(o=>o.tid).join()===reg,'한국시리즈가 없는 해(시작용 시즌)의 순서가 바뀜');
+  ok(kboFinalRank(h,9999)===0,'없는 구단에 순위');
+  ok(__rngState()===r0&&__rngCalls()===c0,'최종 순위 계산이 난수를 씀');
+  /* old→new(카페 11-21 후속): 드래프트는 정규시즌 역순 → KBO 최종 순위 역순. 2018 정규 두산1·SK2·한화3·넥센4, SK 우승·두산 준우승 → 2020 2차 지명 …키움(7)·한화(8)·두산(9)·SK(10) */
+  G.history=[...(G.history||[]).filter(x=>x.y!==y),h]; G.dr1=null; const c1=__rngState(), c2=__rngCalls(); const d1=draftOrders();
+  ok(d1.r2.join()===[...ids.slice(3).reverse(),ids[1],ids[0],ids[2]].join(),'2라운드 지명 순서가 최종 순위 역순이 아님(우승팀 마지막·준우승 9번째·정규 2위 8번째): '+d1.r2.join());
+  ok(d1.r2[d1.r2.length-1]===ids[2]&&d1.r2[d1.r2.length-2]===ids[0],'업셋 우승팀이 마지막 순번이 아니거나 준우승한 정규 1위가 9번째가 아님');
+  const k18=[ids[1],ids[0],ids[3],ids[2],...ids.slice(4)].map((tid,i)=>({tid,w:93-i*3,l:51+i*3,t:0})); /* 정규 1두산=ids[1], 2SK=ids[0], 3한화=ids[3], 4넥센=ids[2] */
+  G.history=[...G.history.filter(x=>x.y!==y),{y,order:k18,champ:ids[0],runner:ids[1]}]; const d18=draftOrders().r2; ok(d18.slice(-4).join()===[ids[2],ids[3],ids[1],ids[0]].join(),'2018→2020 예(키움·한화·두산·SK 순)와 다름: '+d18.join());
+  G.history=[...G.history.filter(x=>x.y!==y),{y,order,champ:ids[0],runner:ids[1]}]; ok(draftOrders().r2.join()===[...ids].reverse().join(),'정규 1위 우승·2위 준우승이면 정규시즌 역순과 같아야 함: '+draftOrders().r2.join());
+  G.history=[...G.history.filter(x=>x.y!==y),{y,order}]; ok(draftOrders().r2.join()===[...ids].reverse().join(),'한국시리즈 기록이 없는 해(옛 저장·시작용 시즌)는 정규시즌 역순이어야 함');
+  ok(order.map(o=>o.tid).join()===reg,'드래프트 계산이 정규시즌 순서(h.order)를 바꿈'); ok(__rngState()===c1&&__rngCalls()===c2,'드래프트 순서 계산이 난수를 씀'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

@@ -29,12 +29,12 @@ function pkHeld(tid){ const y=pkYear(), L=[]; for(let rd=1;rd<=DRAFT_ROUNDS;rd++
 function pkHeldF(tid){ const L=[]; for(const y of pkYears())for(let rd=1;rd<=DRAFT_ROUNDS;rd++)for(const t of G.teams)if(pkOwner(y,rd,t.id)===tid)L.push(pkKey(rd,t.id,y)); return L; }
 function pkName(k){ const {rd,o,y}=pkParse(k); return `${tshort(o)} ${y} ${rd}라운드`; }
 /* 예상 순번(0이 첫 순번): 올해 드래프트 전이면 정해진 순서, 끝났으면 지금 순위의 역순 */
-function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; let o=D?(rd===1?D.r1:D.r2):standingsNow().map(x=>x.tid).reverse(); if(!D&&rd===1)o=penOrder(o,G.teams.filter(t=>t.pickPen===pkYear()).map(t=>t.id)); /* 이미 확정된 다음 드래프트 순번 하락 제재: 실제 순번과 같은 식(검수 11-07, 11-08d: 두 구단이 같은 순번으로 잡힘) */ let i=o.indexOf(orig); if(i<0)i=5; return i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
+function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; let o=D?(rd===1?D.r1:D.r2):draftBaseOrder(); if(!D&&rd===1)o=penOrder(o,G.teams.filter(t=>t.pickPen===pkYear()).map(t=>t.id)); /* 이미 확정된 다음 드래프트 순번 하락 제재: 실제 순번과 같은 식(검수 11-07, 11-08d: 두 구단이 같은 순번으로 잡힘) */ let i=o.indexOf(orig); if(i<0)i=5; return i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
 /* 올 시즌 진행 정도(0~1): 팀당 평균 경기 수 / 144 */
 function pkSeasonProg(){ try{ const r=G.sea&&G.sea.rec; if(!r||(G.sea.y!=null&&G.sea.y!==G.year))return 0; const g=G.teams.map(t=>{ const x=r[t.id]||{}; return (x.w||0)+(x.l||0)+(x.t||0); }); return clamp(g.reduce((a,b)=>a+b,0)/g.length/144,0,1); }catch(e){ return 0; } }
 /* 미래 지명권의 예상 순번(카페 11-18): 그 드래프트 순서를 정할 시즌이 아직 덜 끝났으면 지금 전력(순위, 시즌 초엔 지난 순서)으로 어림하고 가운데 쪽으로 당겨 본다.
    y가 다음 드래프트면 예전 pkSlot과 같은 식, 그 뒤 해는 지금 순위(10경기 전엔 지난 시즌 순서)로. 올해 확정 순서는 그대로 */
-function pkProjIdx(o,rd,y){ if(y===pkYear())return pkSlot(o,rd); let ord; const D=draftOrders(); if(pkSeasonProg()*144>=10||!D)ord=standingsNow().map(x=>x.tid).reverse(); else ord=[...D.r2];
+function pkProjIdx(o,rd,y){ if(y===pkYear())return pkSlot(o,rd); let ord; const D=draftOrders(); if(pkSeasonProg()*144>=10||!D)ord=draftBaseOrder(); else ord=[...D.r2];
   if(rd===1)ord=penOrder(ord,G.teams.filter(t=>t.pickPen===y).map(t=>t.id)); const i=ord.indexOf(o); return i<0?5:i; }
 /* 화면 표시용 순번(라운드 안 1부터): 올해 드래프트 순서가 정해졌으면 확정, 아니면 지금 순위 역순 어림(pkProjIdx와 같은 식).
    첫 시즌처럼 경기가 거의 없고 지난 순서도 없으면 시즌 전 전력 예상(G.proj)의 역순으로 보인다(표시만, 거래 가치 계산은 그대로). 난수 없음 */

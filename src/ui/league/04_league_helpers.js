@@ -8,6 +8,10 @@ function h2hOf(tid,opp){ return wlOf(tlOf(tid).filter(x=>x[4]===opp)); }
 const wlStr=r=>`${r.w}-${r.l}${r.t?'-'+r.t:''}`;
 const pctStr=(o,L)=>{ if(!(o.w+o.l))return '-'; const p=o.w/(o.w+o.l), t=fmt3(p); if(L&&L.some(x=>x!==o&&x.w+x.l&&fmt3(x.w/(x.w+x.l))===t&&Math.abs(x.w/(x.w+x.l)-p)>1e-9))return p.toFixed(4).replace(/^0/,''); return t; }; /* 셋째 자리까지 같은데 실제 승률이 다르면 넷째 자리까지(카페 11-14: 순위가 뒤바뀐 것처럼 보임) */
 function standOrder(){ const per=period(); if(per==='season'||per==='post'||preSettle())return {live:true,y:G.year,order:per!=='season'&&G.ps&&G.ps.order&&G.ps.order.length?G.ps.order:standingsNow()}; /* 정규시즌이 끝나면 순위 결정전 결과가 반영된 순서(시드와 같게, 검수 11-06) */ const lh=G.history[G.history.length-1]; return {live:false,y:lh?lh.y:G.year-1,order:lh?lh.order.concat(G.teams.filter(t=>!(t.born>G.year)&&!lh.order.some(o=>o.tid===t.id)).map(t=>({tid:t.id,w:0,l:0,t:0}))):standingsNow()}; } /* 지난 시즌 뒤 들어온 신생 구단도 목록에(89_league_expansion). 단 11월 특별지명으로 들어와 아직 첫 시즌(t.born)이 오지 않은 구단은 끝난 시즌 순위에 넣지 않는다(검수 11-17 #161: 0승 0패 구단) */
+/* KBO 최종 순위로 볼 시즌(카페 11-21): 올해 한국시리즈가 끝났으면 올해(결산 전, 보던 중계가 없을 때), 아니면 가장 최근에 끝난 시즌. 한국시리즈 우승팀이 없으면 null(정규시즌 순서가 곧 최종) */
+function finalStandSrc(){ const P=G.ps; if(P&&P.done&&P.champ!=null&&(P.order||[]).length&&!(G.last&&G.last.y>=G.year)&&!(typeof spoilG==='function'&&spoilG()))return {y:G.year,order:P.order,champ:P.champ,runner:P.runner,ps:P.res||{},cur:true};
+  const H=[...(G.history||[])].reverse().find(h=>h.order&&h.order.length); return H&&H.champ!=null?H:null; }
+function finalStandRows(h){ return kboFinalOrder(h).map((o,i)=>{ const tid=o.tid??o, reg=h.order.findIndex(x=>(x.tid??x)===tid)+1; return {o,tid,rank:i+1,reg,res:h.champ===tid?'한국시리즈 우승':h.runner===tid?'한국시리즈 준우승':(typeof clubSeasonResult==='function'?clubSeasonResult(h,tid):'').replace(/^(정규시즌 종료|포스트시즌 기록 없음)$/,'')}; }); }
 /* 결산이 끝난 뒤(다음 시즌)와 개막 전에는 지난 시즌 대신 새 시즌 0승 0패와 예상 순위를 보인다(사용자 11-09). 그 시즌 연도, 아니면 0 */
 function preSeasonY(){ const per=period(); if(per==='pre')return G.year; if(per==='off'&&!preSettle()&&G.last&&G.last.y>=G.year)return G.year+1; return 0; }
 /* 화면 순위: 승률이 같으면 공동이지만, 순위 결정전으로 갈린 두 팀은 결정전 결과 순서(검수 11-09l) */
