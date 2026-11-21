@@ -59,8 +59,8 @@ function ngtPromRows(N,D){ const p=G.players[N.id]; const T=N.T, P=T.pm||{}, V=D
     R.push(row('출전량',`시즌 끝에 1군 기록으로 확인 · 부상으로 빠진 만큼 기준을 낮춥니다`,lv,pc(P.pt>0?(V.pt||[])[P.pt-1]||0:0),null,`<div class="ng-chips" role="group" aria-label="출전 기준">${Object.keys(K).map(k=>`<button class="chip${k===c?' on':''}" data-a="ngtSet" data-v="pm.ptc:=${k}">${PM_PTL[k]} 기준</button>`).join('')}</div>`)); }
   R.push(row('다음 시즌 보강',`그 자리에 1군급(능력 ${PM_SG_MIN}+) 선수를 데려와야 합니다 · 다음 시즌 끝에 확인`,btn('pm.sg','','없음',!P.sg)+Object.keys(PM_SG).map(k=>btn('pm.sg',k,PM_SG[k].replace(' 투수',''),P.sg===k)).join(''),pc(P.sg?V.sg||0:0),null));
   if(N.k==='ext'){ let ok=false; try{ ok=!postDone(p); }catch(e){} const ns=[2,3,4].filter(n=>n<=(T.years||1)&&(p.svc||0)+n>=7&&p.age+n<=33); /* 포스팅은 7시즌 이상·대략 32세까지(35_abroad postingSeason) */
-    if(ok&&ns.length)R.push(row('포스팅 허락','그해 겨울 선수가 원하면 해외 진출을 허락합니다',btn('pm.po',0,'없음',!(P.po>0))+ns.map(n=>btn('pm.po',n,`${n}년 뒤`,P.po===n)).join(''),pc(P.po>0?(V.po||0)*(P.po<=2?1:P.po===3?.75:.5):0),null)); }
-  const v=pmVal(T,D); return `${R.join('')}<p class="small muted ng-pmn">약속은 계약서에 없는 구두 약속입니다. 약속 가치 합계 +${(Math.round(v*1000)/10)}%(최대 8%). 어기면 선수 기분과 에이전트 친분이 떨어지고, 에이전트는 다음 협상에서 이를 기억합니다.</p>`; }
+    if(ok&&ns.length)R.push(row('포스팅 허용 조항','계약서 조항: 그해 겨울 선수가 원하면 반드시 포스팅을 허락합니다(거절·연기 불가, 트레이드해도 승계)',btn('pm.po',0,'없음',!(P.po>0))+ns.map(n=>btn('pm.po',n,`${n}년 뒤`,P.po===n)).join(''),pc(P.po>0?(V.po||0)*(P.po<=2?1:P.po===3?.75:.5):0),null)); }
+  const v=pmVal(T,D); return `${R.join('')}<p class="small muted ng-pmn">포스팅 허용을 뺀 약속은 계약서에 없는 구두 약속입니다. 약속 가치 합계 +${(Math.round(v*1000)/10)}%(최대 8%). 어기면 선수 기분과 에이전트 친분이 떨어지고, 에이전트는 다음 협상에서 이를 기억합니다.</p>`; }
 /* 요구 대비 지금 조건(정확한 숫자 대신 말로). 제안하기 전에는 판정하지 않고 '제안서' 상태만 알려 준다 */
 function ngtGap(N,D){ const p=G.players[N.id]; let r;
   if(N.k==='fa'){ const P=ngtPrev(N); if(P&&P.r!=null)return [P.brk||P.st==='bad'||P.st==='far'?'bad':P.st==='counter'?'warn':'good',faPreviewTxt(P)]; r=offScore({annual:termsVal(N.T,D),years:N.T.years})/(faWantFor(p,G.user)*.97); } /* FA: 엔진과 같은 표로 예상 반응(수락 가능·역제안 예상·분위기 하락·결렬 위험) */
