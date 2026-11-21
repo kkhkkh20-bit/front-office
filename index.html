@@ -801,12 +801,12 @@ button.ggf-m{cursor:pointer}button.ggf-m:hover{filter:brightness(1.12)}button.gg
 .ggf-m em,.asf-p em{display:inline-flex;align-items:center;gap:3px}.ggf-m em .badge,.asf-p em .badge,.ggf-m em img,.asf-p em img{width:16px;height:16px;flex:none} /* 수상자·올스타 구단 마크 */
 body .ltile .l1>span>i{display:flex;align-items:center;gap:4px;white-space:nowrap;word-break:keep-all} /* 사진을 키운 뒤에도 구단 별칭은 한 줄(별칭만 써서 짧다) */
 @media (max-width:620px){ .ltile .l1{display:grid;grid-template-columns:52px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center} .ltile .l1>.av{grid-row:1 / span 2} .ltile .l1>em{grid-column:2;justify-self:start;line-height:1.1} } /* 휴대폰: 사진을 키운 대신 기록 숫자는 이름 아래(겹치지 않게) */
-/* 해외 리그(16b_ovs_league): 지구별로 접는 순위표, 휴대폰 390px에서 가로 스크롤 없이 */
-.ovl-d{border:1px solid var(--line);border-radius:4px;background:var(--panel2);margin:6px 0}.ovl-d>summary{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:8px 10px;cursor:pointer}
-.ovl-d .tbl-wrap{margin:0 6px 6px}.ovl-t{width:100%;table-layout:fixed}.ovl-t th:first-child,.ovl-t td.ovl-c{width:auto;text-align:left}.ovl-t th:not(:first-child),.ovl-t td:not(.ovl-c){width:44px;text-align:right}
-.ovl-c{white-space:normal;word-break:keep-all}.ovl-af{display:inline-block;margin-left:5px;font-size:var(--ui-caption);color:var(--muted)}.ovl-al{display:block;font-size:12px}.ovl-al .lnk{padding:0;margin-right:6px}
-.ovl-ch td{vertical-align:top;white-space:normal;word-break:keep-all}.ovl-chl{padding:1px 0}.ovl-ch td,.ovl-ch th{text-align:left}.ovl-ch td:first-child{width:52px;white-space:nowrap}
-@media(max-width:420px){.ovl-t th:not(:first-child),.ovl-t td:not(.ovl-c){width:36px;font-size:12px}.ovl-c .pill{font-size:var(--ui-caption);padding:0 4px}}
+/* 해외 리그 허브(16b_ovs_league 11-21): 리그별 순위·주요 선수·기록 순위·우승 역대는 아마추어 기록 카드(am-lc·am-lt)를 쓴다. .ovl-d는 세계 선수 구단 접기 */
+.ovl-d{border:1px solid var(--line);border-radius:4px;background:var(--panel2);margin:6px 0}.ovl-d>summary{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:8px 10px;cursor:pointer}.ovl-d .tbl-wrap{margin:0 6px 6px}
+.ovh-hd{margin:6px 0}.ovh-note{margin:2px 0 6px}.ovh-st tr.me td.n{font-weight:600}.ovh-st tr.hl td{background:color-mix(in srgb,var(--acc) 18%,transparent)}.ovh-st td.n .am-sc{display:block;line-height:1.15}
+:is(.ovh-st,.ovh-pt) td.n .pill{font-size:10px;padding:0 4px;margin-left:3px;line-height:1.4}.ovh-pt td.n .am-sc{display:block;line-height:1.2;white-space:normal}.ovh-al{margin:4px 0 0;line-height:1.6}:is(.ovh-al,.ovh-aw,.ovh-pt) .lnk{padding:0;min-height:0}
+.ovh-ht td{vertical-align:top;white-space:normal;word-break:keep-all;text-align:left}.ovh-ht th{text-align:left}.ovh-ht td:first-child{width:52px;white-space:nowrap}.ovh-sub{display:block}.ovh-aw{margin:4px 0;padding-left:16px}
+@media(min-width:700px){.am-lg.ovh-lg{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}}
 /* 해외 리그 주목 선수: 타자·투수 표는 업무 화면 칸(ws-panel) 안에서 스크롤 */
 .ovt-h{margin:6px 0}.ovt-e{font-size:13px;padding:8px 0}.ovt-t{width:100%}.ovt-t th,.ovt-t td{text-align:right;white-space:nowrap}.ovt-t th:nth-child(-n+3),.ovt-t td:nth-child(-n+3){text-align:left}
 .ovt-t td.ovt-n{white-space:normal;min-width:150px}.ovt-n .pm-n .av{width:30px;height:30px;flex:none}.ovt-n .pm-n span{display:grid;line-height:1.3}.ovt-n .pm-n i{font-style:normal;font-size:12px;color:var(--muted)}.ovt-t tbody tr{cursor:pointer}
@@ -42216,19 +42216,58 @@ function pwrView(){ const P=G.pwr; if(!P||P.y!==G.year){ let R0=[]; try{ R0=proj
    경기를 돌리지 않는 가벼운 리그(35a_ovs_league). 화면은 읽기만 한다(만들기는 날짜 진행 때) */
 const ovsAwPills=(L,lg)=>(L&&L.aw||[]).map(k=>`<span class="pill warn">${esc(ovsAwNm(k,lg))}</span>`).join(' ');
 function ovlView(){ if(!G.ovl||OVL_LGS.some(l=>!G.ovl[l]))return csec('해외 리그','<p class="small muted">다음 날짜 진행 때 해외 리그 기록이 시작됩니다.</p>');
-  { const I=UI.it=UI.it||{}, o=I.ovlv; if(['MLB','AAA','NPB'].includes(o)){ I.ovlv='stand'; I.ovls=o; } else if(o==='etc'){ I.ovlv='stand'; I.ovls=I.ovle==='LMB'?'LMB':'CPBL'; } } /* 예전 탭(리그별 5개) → 순위 한 탭(해외 활성화 2-4) */
-  const t=inTabs('ovlv',[['alum','KBO 출신'],['top','주목 선수'],['world','세계 선수'],['stand','순위'],['champ','역대 우승'],['moves','진출 기록']],'alum');
-  if(t.cur==='stand'){ const e=inTabs('ovls',[['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['CPBL','CPBL'],['LMB','멕시코리그']],'MLB'); return t.bar+e.bar+ovlStandView(e.cur); }
+  { const I=UI.it=UI.it||{}, o=I.ovlv; if(['MLB','AAA','NPB'].includes(o)){ I.ovlv='stand'; I.ovls=o; } else if(o==='etc'){ I.ovlv='stand'; I.ovls=I.ovle==='LMB'?'LMB':'CPBL'; } else if(o==='champ'){ I.ovlv='stand'; I.ovlh='hist'; } } /* 예전 탭(리그별 5개·역대 우승) → 리그별 한 탭(해외 리그 허브 11-21) */
+  const t=inTabs('ovlv',[['alum','KBO 출신'],['stand','리그별'],['top','주목 선수'],['world','세계 선수'],['moves','진출 기록']],'alum');
+  if(t.cur==='stand')return t.bar+ovlHubView();
   if(t.cur==='top')return t.bar+ovlTopView();
   if(t.cur==='world')return t.bar+ovlWorldView(); /* 세계척도 P2·P3: 해외 구단 주목 선수(16d_world_view) */
-  if(t.cur==='champ')return t.bar+ovlChampView();
   if(t.cur==='moves')return t.bar+abroadView();
   return t.bar+ovlAlumView(); }
+/* 해외 리그 허브(사용자 11-21): 리그를 고르고 순위·주요 선수·기록 순위·우승 역대. 경기를 새로 돌리지 않고 있는 기록(G.ovl·해외파·후보·세계 주목 선수)만 읽는다 */
+const OVL_TABS=[['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['CPBL','CPBL'],['LMB','멕시코리그']];
+function ovlHubView(){ const e=inTabs('ovls',OVL_TABS,'MLB'), lg=e.cur, s=inTabs('ovlh',[['stand','순위'],['pl','주요 선수'],['rec','기록 순위'],['hist','우승·역대']],'stand');
+  return e.bar+ovlHubHead(lg)+s.bar+(s.cur==='pl'?ovlPlView(lg):s.cur==='rec'?ovlRecView(lg):s.cur==='hist'?ovlHistView(lg):ovlStandView(lg)); }
+function ovlHubHead(lg){ const L=G.ovl[lg], y=G.year, fr=ovlFrac(y), h=(L.h||[])[0], nA=new Set(Object.values(ovlAlumMap(lg,y)).flat().map(a=>a.id)).size;
+  const st=L.cur&&L.cur.y===y?(fr>0?`${y} 시즌 ${fr<1?`진행 중 ${Math.round(fr*100)}%`:'정규시즌 끝'}`:`${y} 시즌 개막 전`):`${y} 시즌`;
+  return `<p class="small ovh-hd"><b>${esc(OVL_LBL[lg])}</b> ${OVL_C[lg].length}개 구단 · 팀당 ${OVL_G[lg]}경기 · ${st}${h?` · ${h.y} 우승 ${esc(ovlNm(lg,h.ch))}`:''} · KBO 출신 ${nA}명${hiI(OVL_HELP[lg]||'')}</p>`; }
+/* 선수 이름·나이(주목 선수·리그 허브 공통). r.pool 해외 후보군 · r.wps 세계 주목 선수 · r.abr 해외파 · 그 밖은 외국인 시장 선수 */
+function ovlWho(r){ if(r.pool||r.wps)return {av:{id:r.id,name:r.name,age:r.age,isP:r.isP,foreign:'용병'},age:r.age}; if(!r.abr){ const p=G.players[r.id]; return {av:p,age:p.age}; } const a=(G.abroad||[]).find(z=>String(z.id)===String(r.id))||{}; let pj=null; try{ pj=a.pj?JSON.parse(a.pj):null; }catch(e){}
+  const av=G.players[a.id]||pj||{id:a.id,name:a.name,age:a.age,isP:a.isP,foreign:a.foreign}; return {av,age:a.foreign?a.age+(G.year-a.y):av.age}; }
+const ovlLnk=r=>r.pool?`<b>${esc(r.name)}</b>`:`<button class="lnk" data-a="${r.wps?'ovlWp':r.abr?'person':'player'}" data-v="${esc(String(r.abr?'abr:'+r.id:r.id))}">${esc(r.name)}</button>`;
+/* 리그 한 곳의 기록 선수: ovlTopPool(해외파·외국인 후보·해외 후보군) + 우리 스카우트에게 보이는 세계 주목 선수. NPB 2군은 뺀다 */
+function ovlLgPool(lg){ const P=ovlTopPool(), K=l=>l==='NPB 2군'?'':ovlKey(l), R=P.R.filter(r=>K(r.lvl)===lg), seen=new Set(R.map(r=>String(r.id))), KN={};
+  for(const e of (G.wps&&G.wps.L)||[]){ if(seen.has(String(e.i)))continue; const l=wpsLines(e).find(z=>z.y===P.y&&(!P.last||!z.live)); if(!l||K(l.lvl)!==lg)continue; if(KN[e.lg]==null)KN[e.lg]=wkKnow(G.user,e.lg); if(wkView(G.user,e,KN[e.lg]).s==='hide')continue;
+    seen.add(String(e.i)); R.push({id:e.i,wps:1,name:e.n,isP:!!e.P,pos:wpsPos(e),age:e.a,tag:'세계 주목',lvl:l.lvl,club:l.c!=null?ovlNm(lg,l.c):OVL_LBL[lg],h:l}); }
+  return Object.assign({},P,{R}); }
+const ovlTagC=t=>t==='KBO 출신'?'acc':'good';
+/* 주요 선수: 타자·투수 카드. 공개 기록 가치(ovsVal) 순, KBO 출신을 먼저 */
+function ovlPlView(lg){ const P=ovlLgPool(lg), N=30, C={};
+  for(const r of P.R)C[r.tag]=(C[r.tag]||0)+1;
+  const side=isP=>{ const L=P.R.filter(r=>r.isP===isP).map(r=>({r,v:ovsVal(r.h,isP)})).sort((a,b)=>(b.r.tag==='KBO 출신')-(a.r.tag==='KBO 출신')||b.v-a.v), S=L.slice(0,N);
+    const cells=r=>{ const h=r.h; if(isP){ const s=pRate(h); return [h.g||0,ipStr(h.outs||0),h.outs?s.era.toFixed(2):'-',h.so||0,h.outs?s.whip.toFixed(2):'-']; } const s=bRate(h); return [h.g||0,h.pa||0,fmt3(s.avg),h.hr||0,fmt3(s.ops)]; };
+    const head=isP?['경기','이닝','ERA','삼진','WHIP']:['경기','타석','타율','홈런','OPS'];
+    return `<div class="am-lc"><div class="am-lc-h">${isP?'투수':'타자'} ${L.length}명${L.length>N?` <span class="small muted">기록 상위 ${N}명</span>`:''}</div>${S.length?`<table class="am-lt ovh-pt"><thead><tr><th>선수</th>${head.map(h=>`<th class="num">${h}</th>`).join('')}</tr></thead><tbody>${S.map(({r})=>{ const w=ovlWho(r); return `<tr><td class="n">${ovlLnk(r)}${r.tag==='세계 주목'?'':` <span class="pill ${ovlTagC(r.tag)}">${esc(r.tag)}</span>`}<span class="am-sc">${w.age??'-'}세 · ${esc(r.pos)} · ${esc(r.club||'')}</span></td>${cells(r).map(c=>`<td class="num">${c}</td>`).join('')}</tr>`; }).join('')}</tbody></table>`:'<p class="small muted am-none">기록 없음</p>'}</div>`; };
+  const cnt=Object.entries(C).map(([t,n])=>`${esc(t)} ${n}`).join(' · ');
+  return csec(`${P.y} ${esc(OVL_LBL[lg])} 주요 선수`,`<p class="small muted ovh-note">${P.last?'시즌 초반이라 지난 시즌 기록 · ':''}게임이 기록을 쌓는 선수만(${cnt||'없음'}). 세계 주목 선수는 우리 스카우트가 아는 선수만 보입니다.</p><div class="am-grid ovh-pg">${side(false)}${side(true)}</div>`); }
+/* 기록 순위: 부문별 5위까지(KBO 기록 화면처럼). 비율 기록은 최소 타석·이닝(진행 비율만큼). 가벼운 기록 줄(ovpLineE)에는 타점·득점·승·세이브가 없어 그 부문은 없다 */
+const OVL_RC=[['타율',0,h=>h.ab?h.h/h.ab:0,fmt3,1],['출루율',0,h=>bRate(h).obp,fmt3,1],['OPS',0,h=>bRate(h).ops,fmt3,1],['홈런',0,h=>h.hr||0],['안타',0,h=>h.h||0],['도루',0,h=>h.sb||0],
+  ['평균자책',1,h=>-pRate(h).era,v=>(-v).toFixed(2),1],['WHIP',1,h=>-pRate(h).whip,v=>(-v).toFixed(2),1],['탈삼진',1,h=>h.so||0],['이닝',1,h=>h.outs||0,ipStr]];
+function ovlRecView(lg){ const P=ovlLgPool(lg);
+  const card=([t,isP,f,fm,q])=>{ const L=P.R.filter(r=>!!r.isP===!!isP&&(!q||(isP?(r.h.outs||0)>=P.minOuts:(r.h.pa||0)>=P.minPA))).map(r=>({r,v:f(r.h)})).filter(x=>q||x.v>0).sort((a,b)=>b.v-a.v).slice(0,5);
+    return `<div class="am-lc"><div class="am-lc-h">${t}</div>${L.length?`<table class="am-lt"><tbody>${L.map(({r,v},i)=>`<tr><td class="r">${i+1}</td><td class="n">${ovlLnk(r)} <span class="am-sc">${esc(r.club||'')}</span></td><td class="num">${fm?fm(v):v}</td></tr>`).join('')}</tbody></table>`:'<p class="small muted am-none">기록 없음</p>'}</div>`; };
+  return csec(`${P.y} ${esc(OVL_LBL[lg])} 기록 순위`,`<p class="small muted ovh-note">${P.last?'시즌 초반이라 지난 시즌 기록 · ':''}게임이 기록을 쌓는 선수(KBO 출신·외국인 후보·해외 후보군·세계 주목 선수)만 셉니다. 비율 기록은 ${P.minPA}타석·${ipStr(P.minOuts)}이닝 이상.</p><div class="am-lg ovh-lg">${OVL_RC.map(card).join('')}</div>`); }
+/* 우승·역대: 최근 10시즌 우승·준우승·정규시즌 최고 승률, 최다 우승, KBO 출신 시상 */
+function ovlHistView(lg){ const H=G.ovl[lg].h||[], g=OVL_G[lg], C={};
+  const best=h=>{ let i=0; h.w.forEach((w,k)=>{ if(w>h.w[i])i=k; }); return i; };
+  const rows=H.map(h=>{ C[h.ch]=(C[h.ch]||0)+1; const b=best(h); return `<tr><td>${h.y}</td><td><b>${esc(ovlNm(lg,h.ch))}</b> <span class="small muted">${esc(h.sr||'')}</span><span class="small muted ovh-sub">준우승 ${esc(ovlNm(lg,h.ru))}</span></td><td>${esc(ovlNm(lg,b))}<span class="small muted ovh-sub">${h.w[b]}승 ${g-h.w[b]}패${b===h.ch?' · 통합 우승':''}</span></td></tr>`; }).join('');
+  const most=Object.entries(C).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([i,n])=>`${esc(ovlNm(lg,+i))} ${n}회`).join(' · ');
+  const AW=[]; for(const a of G.abroad||[])for(const l of a.lines||[]){ if((l.aw||[]).length&&l.lvl!=='NPB 2군'&&ovlKey(l.lvl)===lg)AW.push({a,l}); } AW.sort((x,z)=>z.l.y-x.l.y);
+  const aw=AW.length?`<div class="eyebrow">KBO 출신 시상</div><ul class="ovh-aw small">${AW.slice(0,12).map(({a,l})=>`<li>${l.y} <button class="lnk" data-a="person" data-v="abr:${a.id}">${esc(a.name)}</button> ${ovsAwPills(l,lg)}${ovsClubNm(l)?` <span class="muted">${esc(ovsClubNm(l))}</span>`:''}</li>`).join('')}</ul>`:'';
+  return csec(`${esc(OVL_LBL[lg])} 우승·역대${hiI(`최근 ${OVL_KEEP}시즌까지 남깁니다. 정규시즌 1위는 리그 전체 최다승 구단입니다.`)}`,H.length?`<div class="tbl-wrap"><table class="tbl ovh-ht"><thead><tr><th>시즌</th><th>${esc(OVL_PS[lg])} 우승 · 준우승</th><th>정규시즌 1위</th></tr></thead><tbody>${rows}</tbody></table></div><p class="small muted">최다 우승 · ${most}</p>${aw}`:emptyState('아직 끝난 시즌이 없습니다.')+aw); }
 /* 주목 선수: 게임이 기록을 쌓는 선수(KBO 출신 해외파·외국인 후보·관찰 명단)의 리그별 TOP 10. 공개 기록만 보인다(ovlTop) */
 function ovlTopView(){ const P=ovlTopPool(), K=[['MLB','MLB'],['AAA','트리플A'],['NPB','NPB'],['etc','기타']], BB={}; for(const [k] of K)BB[k]=ovlTop(k,P);
   const lt=inTabs('ovlt',K.map(([k,l])=>[k,`${l} ${BB[k].bat.length+BB[k].pit.length}`]),K.map(([k])=>k).sort((a,b)=>(BB[b].bat.length+BB[b].pit.length)-(BB[a].bat.length+BB[a].pit.length))[0]), B=BB[lt.cur];
-  const who=r=>{ if(r.pool)return {av:{id:r.id,name:r.name,age:r.age,isP:r.isP,foreign:'용병'},age:r.age}; if(!r.abr){ const p=G.players[r.id]; return {av:p,age:p.age}; } const a=(G.abroad||[]).find(z=>String(z.id)===String(r.id))||{}; let pj=null; try{ pj=a.pj?JSON.parse(a.pj):null; }catch(e){}
-    const av=G.players[a.id]||pj||{id:a.id,name:a.name,age:a.age,isP:a.isP,foreign:a.foreign}; return {av,age:a.foreign?a.age+(G.year-a.y):av.age}; };
+  const who=ovlWho;
   const tg=r=>`<span class="pill${r.tag==='KBO 출신'?' acc':r.tag==='관찰 중'||ovqWatched(r.id)?' good':''}">${esc(ovqWatched(r.id)&&r.tag!=='관찰 중'?r.tag+' · 관찰':r.tag)}</span>`;
   const clubC=r=>{ const q=r.h||{}; return q.c!=null&&q.c>=0&&r.lvl!=='NPB 2군'&&OVL_C[ovlKey(r.lvl)]?ovqTeamBtn(r.lvl,q.c,r.club):esc(r.club); };
   const row=(r,i,cells)=>{ const w=who(r); return `<tr${r.pool?'':rowTap(r.abr?'person':'player',r.abr?'abr:'+r.id:r.id,r.name)}><td>${i+1}</td><td class="ovt-n"><span class="pm-n">${avImg(Object.assign({},w.av,{name:r.name}))}<span><b>${esc(r.name)}</b><i>${w.age??'-'}세 · ${esc(r.pos)} · ${clubC(r)}</i></span></span></td><td>${tg(r)}</td>${cells.map((c,k)=>`<td${k===0?' class="key"':''}>${c}</td>`).join('')}<td class="ovq-td">${ovqBtns(r.id,'ovq-tbl')}</td></tr>`; };
@@ -42245,15 +42284,14 @@ const OVL_HELP={MLB:'30개 구단, 팀당 162경기. 지구 1위 3팀과 승률 
   LMB:'20개 구단(북부·남부 10개씩), 팀당 90경기. 지구마다 4위까지 7전 4승으로 지구 우승을 가리고, 두 지구 우승팀이 세리에 델 레이에서 맞붙습니다.'};
 function ovlStandView(lg){ const ys=ovlYears(lg), nm=OVL_LBL[lg]; if(!ys.length)return csec(nm,emptyState('기록이 없습니다.'));
   const yt=inTabs('ovly'+lg,ys.slice(0,5).map(y=>[String(y),String(y)]),String(ys[0])); const y=+yt.cur; const T=ovlTable(lg,y); if(!T)return yt.bar;
-  const S=T.S, AL=ovlAlumMap(lg,y), pct=r=>r.w+r.l?fmt3(r.w/(r.w+r.l)):'-', g=OVL_G[lg];
-  const head=T.live?(T.gp?`정규시즌 진행 중 · 팀당 ${T.gp}경기(${g}경기 중)`:`${y} 시즌 개막 전 · 3월 말 개막`)+(T.gp>=g?' · 포스트시즌은 시즌을 마치면 발표':''):`${OVL_PS[lg]} <b>${esc(ovlNm(lg,S.ch))}</b> ${esc(S.sr||'')} · 준우승 ${esc(ovlNm(lg,S.ru))}`;
-  const pnL=lg==='LMB'?'지구 우승':lg==='CPBL'?'결승 진출':'리그 우승';
-  const D=T.div.map((d,k)=>{ const top=d.L[0], has=d.L.some(r=>AL[r.i]), key=`ovd_${lg}_${k}`, op=UI.open&&UI.open[key]!=null?UI.open[key]:has||lg==='NPB'||lg==='CPBL';
-    const rows=d.L.map((r,i)=>{ const A=AL[r.i]||[]; const tag=!T.live&&S.ch===r.i?' <span class="pill warn">우승</span>':!T.live&&(S.pn||[]).includes(r.i)?` <span class="pill acc">${pnL}</span>`:!T.live&&(S.po||[]).includes(r.i)?' <span class="pill">가을야구</span>':'';
-      const af=lg==='AAA'?`<span class="ovl-af">${esc(OVL_C.MLB[r.i][1])} 산하</span>`:'';
-      return `<tr class="${A.length?'me':''}"><td class="ovl-c">${i+1} ${esc(ovlNm(lg,r.i))}${af}${tag}${A.length?`<span class="ovl-al">${A.map(a=>`<button class="lnk" data-a="person" data-v="abr:${a.id}">${esc(a.name)}</button>`).join(' ')}</span>`:''}</td><td>${r.w}</td><td>${r.l}</td><td class="key">${pct(r)}</td><td>${i?r.gb.toFixed(1):'-'}</td></tr>`; }).join('');
-    return `<details class="ovl-d" data-k="${key}"${op?' open':''}><summary><b>${esc(d.nm)}</b><span class="small muted">1위 ${esc(ovlNm(lg,top.i))} ${top.w}승 ${top.l}패${has?' · KBO 출신 있음':''}</span></summary><div class="tbl-wrap"><table class="tbl ovl-t"><thead><tr><th>구단</th><th>승</th><th>패</th><th>승률</th><th>차</th></tr></thead><tbody>${rows}</tbody></table></div></details>`; }).join('');
-  return yt.bar+csec(`${y} ${esc(nm)}${hiI(OVL_HELP[lg]||'')}`,`<p class="small">${head}</p>${D}`); }
+  const S=T.S, AL=ovlAlumMap(lg,y), pct=r=>r.w+r.l?fmt3(r.w/(r.w+r.l)):'-', g=OVL_G[lg], hi=UI.ovlHi;
+  const head=T.live?(T.gp?`정규시즌 진행 중 · 팀당 ${T.gp}경기(${g}경기 중)`:`${y} 시즌 개막 전 · 3월 말 개막`)+(T.gp>=g?' · 포스트시즌은 시즌을 마치면 발표':''):`${OVL_PS[lg]} <b>${esc(ovlNm(lg,S.ch))}</b> ${esc(S.sr||'')} · 준우승 ${esc(ovlNm(lg,S.ru))} · PS 가을야구`;
+  const pnL=lg==='LMB'?'지구 우승':lg==='CPBL'?'결승':'리그 우승';
+  const card=d=>{ const rows=d.L.map((r,i)=>{ const A=AL[r.i]||[]; const tag=T.live?'':S.ch===r.i?' <span class="pill warn">우승</span>':(S.pn||[]).includes(r.i)?` <span class="pill acc">${pnL}</span>`:(S.po||[]).includes(r.i)?' <span class="pill">PS</span>':'';
+      return `<tr class="${A.length?'me':''}${hi===lg+':'+r.i?' hl':''}"><td class="r">${i+1}</td><td class="n">${esc(ovlNm(lg,r.i))}${tag}${lg==='AAA'?`<span class="am-sc">${esc(OVL_C.MLB[r.i][1])} 산하</span>`:''}</td><td class="num">${r.w+r.l}</td><td class="num">${r.w}</td><td class="num">${r.l}</td><td class="num key">${pct(r)}</td><td class="num">${i?r.gb.toFixed(1):'-'}</td><td class="num">${A.length||''}</td></tr>`; }).join('');
+    const al=d.L.flatMap(r=>(AL[r.i]||[]).map(a=>`<button class="lnk" data-a="person" data-v="abr:${a.id}">${esc(a.name)}</button> <span class="muted">${esc(OVL_C[lg][r.i][1])}</span>`));
+    return `<div class="am-lc"><div class="am-lc-h">${esc(d.nm)}</div><table class="am-lt am-st ovh-st"><thead><tr><th class="r">#</th><th>구단</th><th class="num">경기</th><th class="num">승</th><th class="num">패</th><th class="num">승률</th><th class="num">차</th><th class="num" title="그 시즌 이 구단에서 뛴 KBO 출신 선수">KBO</th></tr></thead><tbody>${rows}</tbody></table>${al.length?`<p class="small ovh-al">KBO 출신 · ${al.join(' · ')}</p>`:''}</div>`; };
+  return yt.bar+csec(`${y} ${esc(nm)} 순위`,`<p class="small">${head}</p><div class="am-grid${T.div.length>2?' am-g3':''} ovh-sg">${T.div.map(card).join('')}</div>`); }
 /* KBO 출신 해외파: 지금 해외에 있는 선수(국내 선수·KBO를 떠난 외국인·관찰하던 후보) */
 function ovlAlumView(){ const FT=inTabs('ovla',[['all','전체'],['mine','우리 구단 출신'],['kr','국내 선수'],['fo','외국인']],'all'), f=FT.cur, ft=FT.bar;
   const A=(G.abroad||[]).filter(a=>!a.back&&a.end==null&&(f==='all'||f==='mine'&&a.from===G.user||f==='kr'&&!a.foreign&&!a.cand||f==='fo'&&(a.foreign||a.cand)));
@@ -42287,11 +42325,6 @@ function ovsSumCard(){ const S=ovsSeasonSum(), nmB=a=>`<button class="lnk" data-
 function ovsFeedCard(){ const F=G.ovsFeed||[];
   const it=x=>`<li data-a="person" data-v="abr:${x.id}" role="button" tabindex="0"${x.p>=7?' class="hot"':''}><span class="small muted">${x.y!==G.year?x.y+' ':''}${esc(dmd(x.d))}</span><span>${esc(x.t)}</span></li>`;
   return csec(`해외파 소식${hiI('해외에서 뛰는 국내 선수의 한 주: 홈런·무실점·콜업·강등·부상·올스타·시상. KBO를 떠난 외국인·관찰했던 후보의 콜업·홈런·큰 시즌·한국행 추진도 함께 오릅니다. 우리 구단 출신과 해외 관찰 선수를 먼저 올립니다. 최근 40건까지 남습니다.')}`,F.length?`<ul class="ovs-feed">${F.map(it).join('')}</ul>`:emptyState('시즌이 시작되면 해외파 소식이 쌓입니다.')); }
-function ovlChampView(){ const K=['MLB','AAA','NPB','CPBL','LMB'], H=K.map(lg=>G.ovl[lg].h||[]); const ys=[...new Set(H.flat().map(h=>h.y))].sort((a,b)=>b-a);
-  const c=(lg,X)=>X?`<b>${esc(ovlNm(lg,X.ch))}</b><span class="small muted"> ${esc(X.sr||'')} · ${esc(ovlNm(lg,X.ru))}</span>`:'-';
-  const cnt=lg=>{ const C={}; for(const h of G.ovl[lg].h||[])C[h.ch]=(C[h.ch]||0)+1; return Object.entries(C).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([i,n])=>`${esc(ovlNm(lg,+i))} ${n}회`).join(' · '); };
-  return csec(`역대 우승${hiI(`최근 ${OVL_KEEP}시즌까지 남깁니다.`)}`,ys.length?`<div class="tbl-wrap"><table class="tbl ovl-ch"><thead><tr><th>시즌</th><th>우승 · 결승 점수 · 준우승</th></tr></thead><tbody>${ys.map(y=>`<tr><td>${y}</td><td>${K.map((lg,k)=>`<div class="ovl-chl"><span class="small muted">${esc(OVL_PS[lg])}</span> ${c(lg,H[k].find(h=>h.y===y))}</div>`).join('')}</td></tr>`).join('')}</tbody></table></div>
-    <p class="small muted">최다 우승 · ${K.map(lg=>`${OVL_LBL[lg]} ${cnt(lg)||'-'}`).join(' · ')}</p>`:emptyState('아직 끝난 시즌이 없습니다.')); }
 /* ----- 해외 활성화 5: 줄마다 할 수 있는 일(관찰 등록/해제 · 영입 문의 · 복귀 협상 · 구단 순위) ----- */
 const ovqWatched=id=>{ try{ return ovwOn(id)||fwatchOn(id); }catch(e){ return false; } };
 function ovqWhyShort(w){ w=String(w||''); if(!w)return ''; const y=w.match(/(\d{4})년부터/); return /12월 1일/.test(w)&&/교체/.test(w)?'교체 소진 · 12월 1일부터':/12월 1일/.test(w)?'12월 1일부터 문의':/개막 뒤/.test(w)?'시즌 중 교체 기간에 문의':y?`${y[1]}년부터 문의`:/MLB/.test(w)?'MLB에서 뛰는 중':/세라/.test(w)?'나이 많음':/보류권/.test(w)?'다른 구단 보류권':/시즌을 마친 뒤/.test(w)?'첫 해외 시즌 뒤':/다음 겨울/.test(w)?'다음 겨울에 문의':'문의 불가'; }
@@ -52075,9 +52108,8 @@ Object.assign(A,{
   ovwT(v){ const r=ovwToggle(ovqId(v)); save(); if(UI.person)renderSheet(); render(); if(r&&typeof toast==='function')toast(r); },
   ovqAsk(v){ const r=ovsInquire(G.user,ovqId(v)); if(!r.p||r.why){ if(typeof toast==='function')toast(r.why||'지금은 문의할 수 없습니다.'); if(UI.person)renderSheet(); render(); return; }
     save(); if(typeof toast==='function')toast(`${r.p.name}이(가) 외국인 시장에 나왔습니다. 영입 협상 창을 엽니다.`); closeSheets(); UI.negWin={k:'fm',id:r.p.id}; render(); renderSheet(); },
-  ovlTeam(v){ const [lg,c]=String(v).split(':'), ci=+c; UI.it=UI.it||{}; UI.it.ovlv='stand'; UI.it.ovls=lg; const ys=G.ovl&&G.ovl[lg]?ovlYears(lg):[]; if(ys.length)UI.it['ovly'+lg]=String(ys[0]);
-    const T=ys.length?ovlTable(lg,ys[0]):null; if(T){ const k=T.div.findIndex(d=>d.L.some(r=>r.i===ci)); if(k>=0){ UI.open=UI.open||{}; UI.open[`ovd_${lg}_${k}`]=true; } }
-    closeSheets(); A.go('league:ovs'); }
+  ovlTeam(v){ const [lg,c]=String(v).split(':'), ci=+c; UI.it=UI.it||{}; UI.it.ovlv='stand'; UI.it.ovls=lg; UI.it.ovlh='stand'; UI.ovlHi=lg+':'+ci; const ys=G.ovl&&G.ovl[lg]?ovlYears(lg):[]; if(ys.length)UI.it['ovly'+lg]=String(ys[0]); closeSheets(); A.go('league:ovs'); },
+  ovlWp(v){ const e=wpsGet(v); if(!e)return; UI.it=UI.it||{}; UI.it.ovlv='world'; UI.it.wpsl=e.lg; UI.open=UI.open||{}; UI.open['wp_'+e.i]=true; UI.open[`wpc_${e.lg}_${e.c}`]=true; closeSheets(); A.go('league:ovs'); if(typeof workspaceReveal==='function')setTimeout(()=>workspaceReveal(`details.wp[data-k="wp_${e.i}"]`),0); } /* 리그 허브의 세계 주목 선수 → 세계 선수 탭에서 그 선수를 펼친다 */
 });
 /* ---------- 해외 리그 > 세계 선수(세계척도 P2·P3 11-19): 해외 구단 주목 선수 · 스카우트 지식 · 관찰 기록 ----------
    엔진: 35e_world_players(G.wps), 35f_world_scout(지식·추정·추천). 화면은 읽기만 한다(관찰 등록은 기존 ovwT). */
@@ -52654,6 +52686,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-21-ovs-league-hub',d:'11월 21일',t:'해외 리그를 리그별로 자세히 볼 수 있습니다(MLB·트리플A·NPB·CPBL·멕시코리그)',items:[
+    '리그 > 해외 리그 > 리그별에서 리그를 고르면 순위·주요 선수·기록 순위·우승·역대를 KBO 화면처럼 볼 수 있습니다.',
+    '순위는 지구별로 경기·승·패·승률·승차와 구단마다 뛰는 KBO 출신 선수 수를 보여 줍니다. 주요 선수는 그 리그의 KBO 출신·외국인 후보·해외 후보군·세계 주목 선수의 올 시즌 기록입니다.',
+    '기록 순위는 타율·출루율·OPS·홈런·안타·도루, 평균자책·WHIP·탈삼진·이닝 부문별 5위까지입니다. 게임이 기록을 쌓는 선수만 셉니다(리그 모든 선수가 아닙니다).',
+    '우승·역대는 최근 10시즌 우승·준우승·정규시즌 1위와 KBO 출신 선수의 시상 기록입니다. 해외 리그 경기 결과는 전과 같습니다.'
+  ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
     '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',
     '인원이 더 늘어나는 거래와, 정원 안 구단이 68명을 넘게 되는 거래는 전처럼 막습니다. 안내에 지금 인원과 거래 뒤 인원을 함께 보여 줍니다. AI 구단끼리도 같은 규칙입니다.'
