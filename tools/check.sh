@@ -127,6 +127,7 @@ step "카페 11-19 표시: 트라이아웃·엔트리 꼬리표·별, 90점대 �
 step "카페 11-19: 소식함 보낸이·읽지 않음 필터, 아마추어 전 학년 목록·쪽 나누기·자동 관심"; node tools/check-inbox-amateur-1119.cjs || fail=1
 step "카페 11-19: 단장 일정 줄마다 취소·시즌 끝까지·매주 자동 잡기·관심 선수 학교"; node tools/check-calendar-plans-1119.cjs || fail=1
 step "카페 11-19: 신인 드래프트 화면(건너뛰기 확인 창·안내 글·머리글 배경·집중 모드)"; node tools/check-draft-screen-1119.cjs || fail=1
+step "카페 11-21: 신인 드래프트 후보 표 현재 능력 추정"; node tools/check-draft-cur-1121.cjs || fail=1
 step "직원 카드·관계·희망 보직"; node tools/check-staff.cjs || fail=1
 step "결재 키 입력·상세 복귀 리뷰"; node tools/check-review.cjs || fail=1
 step "모든 상세 화면 상단바"; node tools/check-topbar.cjs || fail=1
