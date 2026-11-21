@@ -10982,6 +10982,22 @@ T('[카페 11-21 FA 된 우리 선수 정보] 계약이 끝나 FA가 된 우리 
   const j=JSON.stringify(p.proScoutPast),rs=__rngState();domesticScoutMigrate();domesticScoutMigrate();ok(JSON.stringify(p.proScoutPast)===j&&__rngState()===rs,'복원 반복이 보관 평가/난수 변경');
   delete p.proScoutPast;const rs2=__rngState();domesticScoutMigrate();const a=JSON.stringify(p.proScoutPast);domesticScoutMigrate();ok(p.proScoutPast?.[U]&&JSON.stringify(p.proScoutPast)===a&&__rngState()===rs2,'옛 저장 FA 보관 복원 실패/반복 변경/난수 소비');ok(scoutReport(p).ofp!=null,'옛 저장 FA 평가 없음');
   G.day+=731;ok(!scoutReport(p).historical,'2년 지나도 보관 평가 유지');});
+T('[구단주 11-21 창단 드래프트 준비 속도] worldForPick(Worker용)은 예전 화면 쪽 순서(buildWorld→창단 순서→구단별 취임 첫날 예산)와 같은 세계·같은 난수 흐름·같은 이름 목록을 만들고 G를 되돌린다',()=>{ fresh(); const G0=G, seed=__rngState();
+  buildWorld(); const W=G; W.fdOrd=fdOrder(); { const js=JSON.stringify(W); for(const x of W.preview){ G=JSON.parse(js); claimTeam(x.tid); x.room=Math.round(budget().roomGoal); try{ x.fin=fdFin(x.tid); x.ownN=bossOf(x.tid).own.name; }catch(e){} } }
+  const a=JSON.stringify(Object.assign({},W,{amBootMs:0})), ra=__rngState(), na=JSON.stringify([..._nmSet||[]]), nda=_nmDay; G=G0;
+  __seed(seed); let ticks=0, last=-1, mono=true; const W2=worldForPick(f=>{ ticks++; if(f<last)mono=false; last=f; });
+  ok(G===G0,'worldForPick이 G를 되돌리지 않음'); ok(JSON.stringify(Object.assign({},W2,{amBootMs:0}))===a,'Worker용 세계가 예전 순서로 만든 세계와 다름'); ok(__rngState()===ra,'본 난수 흐름이 달라짐');
+  ok(JSON.stringify([..._nmSet||[]])===na&&_nmDay===nda,'그날 이름 목록(genName 중복 피하기)이 달라짐'); ok(Array.isArray(W2.fdOrd)&&W2.fdOrd.length===W2.teams.length&&W2.preview.every(x=>x.fin&&x.room!=null&&x.ownN),'창단 순서·구단별 예산이 빠짐');
+  ok(ticks>=20&&mono&&last<=1,'진행률 알림이 없거나 거꾸로 감 '+ticks+' '+last); });
+T('[구단주 11-21 1년차 신인 순번] 창단 게임 첫 시즌 신인 드래프트는 창단 지명 순서의 역순이다(창단 1순위 → 신인 마지막, 모든 구단 같은 규칙). 예전 저장의 지정 순번·취임 게임·다음 해는 그대로',()=>{ fresh(); const y=G.year, ids=G.teams.map(t=>t.id), n=ids.length;
+  const base=draftOrders(); ok(base&&base.r2.length===n,'준비: 지난 시즌 역순');
+  const ord=[...ids].sort((a,b)=>hn('o',a)-hn('o',b)); G.fdOrd=[...ord]; G.dr1F={y}; fdStart(); ok(JSON.stringify(G.dr1F.ord)===JSON.stringify(ord),'창단 지명 순서를 기억하지 않음 '+JSON.stringify(G.dr1F));
+  const r0=__rngCalls(); const d=draftOrders(); ok(__rngCalls()===r0,'순번 계산이 본 난수를 씀');
+  ok(JSON.stringify(d.r2)===JSON.stringify([...ord].reverse())&&JSON.stringify(d.r1)===JSON.stringify(d.r2),'신인 순번이 창단 순서의 역순이 아님 '+JSON.stringify([ord,d.r1,d.r2]));
+  for(const tid of [G.user,ord[0],ord[n-1]]){ const k=ord.indexOf(tid)+1; ok(d.r1.indexOf(tid)+1===n+1-k&&d.r2.indexOf(tid)+1===n+1-k,'창단 '+k+'순위 구단 '+tid+'의 신인 순번이 '+(n+1-k)+'이 아님(AI 포함)'); }
+  const keep=G.dr1F; G.dr1={y,slot:1,tid:G.user}; ok(draftOrders().r1[0]===G.user,'예전 저장의 1년차 지정 순번(G.dr1)이 사라짐'); delete G.dr1;
+  G.dr1F={y}; ok(JSON.stringify(draftOrders().r2)===JSON.stringify(base.r2),'창단 순서를 모르는 게임(취임·예전 저장)의 순번이 바뀜'); G.dr1F=keep;
+  G.year=y+1; G.history.push({y,order:[...ids].map(tid=>({tid}))}); ok(JSON.stringify(draftOrders().r2)===JSON.stringify([...ids].reverse()),'둘째 해에도 창단 역순을 씀'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

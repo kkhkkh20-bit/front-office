@@ -26,6 +26,7 @@ done
 END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
 step "상대 트레이드 제안·투구폼 저장"; node tools/check-offer-review.cjs || fail=1
 step "첫 접속·초기 파일 분리"; node tools/check-startup.cjs || fail=1
+step "새 게임 구단 고르기: Worker로 리그 만들기·구단/순번 순서·같은 세계(11-21)"; node tools/check-fd-setup-1121.cjs || fail=1
 step "계속·날짜 표시·스카우트 위임"; node tools/check-continue.cjs || fail=1
 step "동기·분할 진행 결과 일치"; node tools/check-advance-steps.cjs || fail=1
 step "캘린더 기간·실제 진행·중도 중단"; node tools/check-calendar-progress.cjs || fail=1

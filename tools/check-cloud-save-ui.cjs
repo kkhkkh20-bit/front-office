@@ -25,7 +25,7 @@ function fakeR2(){ const m=new Map(); return { m,
   /* 첫 기기(PC) */
   const ca=await b.newContext({viewport:{width:1366,height:768}}), pa=await ca.newPage(); pa.on('pageerror',e=>errs.push('A '+e.message)); await prep(pa);
   await pa.goto(server.url);await pa.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await pa.waitForTimeout(500);
-  await pa.click('[data-a="tsGo"][data-v="mode"]'); await pa.click('[data-a="smode"][data-v="take"]',{timeout:120000}); await pa.waitForSelector('.tmk',{timeout:120000}); await pa.click('.tmk [data-a="start"].btn'); await pa.fill('#gp-name','클라우드'); await pa.click('[data-a="gpStart"]'); await pa.waitForTimeout(1500);
+  await pa.click('[data-a="tsGo"][data-v="mode"]'); await pa.click('[data-a="smode"][data-v="take"]',{timeout:120000}); await pa.waitForSelector('.tmk',{timeout:120000}); await pa.click('.tmk [data-a="start"].btn'); await pa.fill('#gp-name','클라우드'); await pa.click('[data-a="gpStart"]'); await pa.waitForFunction(()=>!UI.title,null,{timeout:300000}); /* 11-21: 리그는 Worker에서 만들고, 먼저 누른 시작은 다 만든 뒤 이어진다 */ await pa.waitForTimeout(1500);
   await pa.evaluate(()=>{ saveNow(); G.tut={done:true,step:99}; closeSheets(); A.go('cfg:save'); });
   /* 1) R2 없음 */
   await pa.waitForFunction(()=>CL.st==='off',{},{timeout:20000}); await pa.evaluate(()=>render());
