@@ -1,0 +1,4 @@
+FAIL A new crowd reaction crossfades the old crowd without cutting the field impact: previous reaction keeps overlapping
+FAIL Mute/close stops active one-shots, layered bat sound, organ and loops; ended nodes disconnect: some playing/scheduled sources survive stopAll
+FAIL Delayed sounds belong to the exact playback and stop generation, including mute-then-unmute: sndLater is not defined
+PASS Preferences, impact volume/rate, visual crowd reaction and no-sound menus stay compatible

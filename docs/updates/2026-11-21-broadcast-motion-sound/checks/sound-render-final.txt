@@ -1,0 +1,3 @@
+before {"peak":0.8017258644104004,"tailRms":0.08778182656136727}
+after {"peak":0.7585575580596924,"tailRms":0}
+PASS real Web Audio: isolated impacts identical, crowd transitions rendered, stop leaves silence

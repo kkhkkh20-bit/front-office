@@ -13,7 +13,7 @@ function awArt(a,sz){ if(a.includes('우승 반지')){ const r=tro16('ring',sz,'
 function cardTier(o){ return o==null?'':o>=64?'t-gold':o>=57?'t-silver':o>=50?'t-bronze':''; }
 
 /* ---------- 효과음 ---------- */
-const SND={ctx:null,buf:{},loops:{}};
+const SND={ctx:null,buf:{},loops:{},voices:new Set(),epoch:0};
 /* 중계 화면에서만 소리를 낸다(메뉴·버튼 효과음은 계속 없음). 끄고 켜기는 중계 화면 '소리' 버튼, 이 브라우저에 기억 */
 function sndPref(){ try{ return localStorage.getItem('fo_snd')!=='0'; }catch(e){ return true; } }
 function sndOn(){ return sndPref()&&typeof UI!=='undefined'&&!!UI.cast; }
@@ -43,16 +43,21 @@ function sndSynth(c){ const sr=c.sampleRate, mk=(sec,fn,ch=1)=>{ const n=Math.fl
 /* 실제 녹음 효과음(CC0, Freesound. 출처는 assets/match3d/audio/README.md): 경기 화면 3D 묶음에 들어 있어 받아지면 합성음을 대신한다. 못 받으면 합성음 그대로 */
 function sndFiles(c){ if(SND.files||typeof Match3D==='undefined'||typeof Match3D.audioData!=='function')return; SND.files=Promise.resolve(Match3D.audioData()).then(async raw=>{ for(const [k,buf] of Object.entries(raw||{})){ try{ SND.buf[k]=await c.decodeAudioData(buf.slice(0)); }catch(e){} } if(SND.buf.amb1){ SND.buf.amb=SND.buf.amb1; if(UI.cast?.play&&!SND.loops.amb)sndLoop('amb','amb',.4,1.2); } }).catch(()=>{ SND.files=null; }); }
 function sndReady(){ if(!sndOn())return null; sndInit(); const c=SND.ctx; if(!c)return null; if(c.state==='suspended')c.resume(); sndFiles(c); return c; }
-function sfx(k,vol,rate){ if((k==='cheer_hit'||k==='cheer_big')&&typeof Match3D!=='undefined'&&Match3D.cheer)Match3D.cheer(k==='cheer_big'?1:.55,(vol==null?1:vol)>=.5); /* 함성이 날 때 3D 관중도 일어난다. 음량이 큰 쪽이 홈 공격(호출부 규칙) */ const c=sndReady(); if(k==='mitt'&&SND.buf.mitt1)k=Math.random()<.5?'mitt1':'mitt2'; /* 녹음 미트 두 가지를 번갈아 */ if(!c||!SND.buf[k])return null; if(k==='crack'&&(vol??1)>=.6){ if(SND.buf.thud){ const t=c.createBufferSource(), tg=c.createGain(); t.buffer=SND.buf.thud; tg.gain.value=(vol??1)*.35; t.connect(tg); tg.connect(SND.master); t.start(); } } /* 인플레이 타구: 짧은 '퍽' 몸통 소리를 겹친다. 예전에는 타격음을 0.88배로 낮추고 음정 있는 몸통 소리를 더해 알루미늄 배트처럼 '통' 울렸다(커뮤니티 11-17: 나무 배트 '딱'으로). 파울(작은 음량)은 가벼운 소리 그대로 */ const s=c.createBufferSource(); s.buffer=SND.buf[k]; if(rate)s.playbackRate.value=rate;
-  const g=c.createGain(); g.gain.value=vol??1; s.connect(g); g.connect(SND.master); s.start(); return {s,g}; }
+/* Own one-shot sources as well as loops; old reactions crossfade instead of stacking. */
+function sndEnd(v,fade=.04){ if(!v||!SND.ctx)return;const c=SND.ctx;try{v.g.gain.cancelScheduledValues(c.currentTime);v.g.gain.setValueAtTime(v.g.gain.value,c.currentTime);v.g.gain.linearRampToValueAtTime(0,c.currentTime+fade);for(const s of [].concat(v.s))s.stop(c.currentTime+fade+.01);}catch(e){}SND.voices.delete(v); }
+function sndTrack(s,g,group=''){ if(group)for(const old of SND.voices)if(old.group===group)sndEnd(old,.08);const v={s,g,group};SND.voices.add(v);const sources=[].concat(s);let left=sources.length;for(const node of sources)node.onended=()=>{try{node.disconnect();}catch(e){}if(--left===0){SND.voices.delete(v);try{g.disconnect();}catch(e){}}};return v; }
+/* Delayed cues cannot cross a pause, seek, speed change, mute or another replay. */
+function sndLater(fn,ms){ const owner=typeof UI==='undefined'?null:UI.cast,token=typeof CT==='undefined'?null:CT.tok,epoch=SND.epoch;if(!owner||!sndOn())return;return setTimeout(()=>{if(UI.cast===owner&&(typeof CT==='undefined'?null:CT.tok)===token&&SND.epoch===epoch&&sndOn())fn();},ms); }
+function sfx(k,vol,rate){ if((k==='cheer_hit'||k==='cheer_big')&&typeof Match3D!=='undefined'&&Match3D.cheer)Match3D.cheer(k==='cheer_big'?1:.55,(vol==null?1:vol)>=.5); /* 함성이 날 때 3D 관중도 일어난다. 음량이 큰 쪽이 홈 공격(호출부 규칙) */ const c=sndReady(); if(k==='mitt'&&SND.buf.mitt1)k=Math.random()<.5?'mitt1':'mitt2'; /* 녹음 미트 두 가지를 번갈아 */ if(!c||!SND.buf[k])return null; if(k==='crack'&&(vol??1)>=.6){ if(SND.buf.thud){ const t=c.createBufferSource(), tg=c.createGain(); t.buffer=SND.buf.thud; tg.gain.value=(vol??1)*.35; t.connect(tg); tg.connect(SND.master); sndTrack(t,tg); t.start(); } } /* 인플레이 타구: 짧은 '퍽' 몸통 소리를 겹친다. 예전에는 타격음을 0.88배로 낮추고 음정 있는 몸통 소리를 더해 알루미늄 배트처럼 '통' 울렸다(커뮤니티 11-17: 나무 배트 '딱'으로). 파울(작은 음량)은 가벼운 소리 그대로 */ const s=c.createBufferSource(); s.buffer=SND.buf[k]; if(rate)s.playbackRate.value=rate;
+  const g=c.createGain(); g.gain.value=vol??1; s.connect(g); g.connect(SND.master); sndTrack(s,g,/^(cheer_hit|cheer_big|ooh|sigh)$/.test(k)?'crowd':''); s.start(); return {s,g}; }
 function sndLoop(name,k,vol,fade){ if(SND.loops[name]&&SND.loops[name].k===k)return; sndStop(name,.2); const c=sndReady(); if(!c||!SND.buf[k])return; const s=c.createBufferSource(); s.buffer=SND.buf[k]; s.loop=true; if(s.buffer.duration>4){ s.loopStart=.06; s.loopEnd=s.buffer.duration-.06; } /* mp3 앞뒤 인코더 여백을 건너뛰어 이음매 없이 반복 */
-  const g=c.createGain(); g.gain.setValueAtTime(0,c.currentTime); g.gain.linearRampToValueAtTime(vol,c.currentTime+(fade??.8)); s.connect(g); g.connect(SND.master); s.start(); SND.loops[name]={s,g,k}; }
+  const g=c.createGain(); g.gain.setValueAtTime(0,c.currentTime); g.gain.linearRampToValueAtTime(vol,c.currentTime+(fade??.8)); s.connect(g); g.connect(SND.master); s.onended=()=>{try{s.disconnect();g.disconnect();}catch(e){}}; s.start(); SND.loops[name]={s,g,k}; }
 function sndStop(name,fade){ const L=SND.loops[name]; if(!L||!SND.ctx)return; const c=SND.ctx; const f=fade??.6; try{ L.g.gain.cancelScheduledValues(c.currentTime); L.g.gain.setValueAtTime(L.g.gain.value,c.currentTime); L.g.gain.linearRampToValueAtTime(0,c.currentTime+f); L.s.stop(c.currentTime+f+.05); }catch(e){} delete SND.loops[name]; }
-function sndStopAll(){ for(const k in SND.loops)sndStop(k,.3); try{ window.speechSynthesis&&speechSynthesis.cancel(); }catch(e){} }
+function sndStopAll(){ SND.epoch++;for(const v of SND.voices)sndEnd(v);for(const k in SND.loops)sndStop(k,.3); try{ window.speechSynthesis&&speechSynthesis.cancel(); }catch(e){} }
 /* 오르간: 야구장 전통 나팔 신호(차지) 음형. 직접 합성 */
 function organ(seq,vol){ const c=sndReady(); if(!c)return; let t=c.currentTime+.02;
   for(const [m,d] of seq){ if(m){ const f=440*Math.pow(2,(m-69)/12); const g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime((vol||.22),t+.02); g.gain.setValueAtTime((vol||.22),t+d*.85); g.gain.linearRampToValueAtTime(0,t+d);
-      g.connect(SND.master); for(const [mul,a] of [[1,1],[2,.5],[3,.25],[4,.12]]){ const o=c.createOscillator(); o.type='sine'; o.frequency.value=f*mul; const og=c.createGain(); og.gain.value=a; o.connect(og); og.connect(g); o.start(t); o.stop(t+d+.05); } }
+      g.connect(SND.master); const voices=[];for(const [mul,a] of [[1,1],[2,.5],[3,.25],[4,.12]]){ const o=c.createOscillator(); o.type='sine'; o.frequency.value=f*mul; const og=c.createGain(); og.gain.value=a; o.connect(og); og.connect(g);voices.push(o); o.start(t); o.stop(t+d+.05); } sndTrack(voices,g); }
     t+=d; } }
 const ORG_CHARGE=[[67,.16],[72,.16],[76,.16],[79,.3],[76,.14],[79,.6]];
 /* 심판 콜: 한국어 음성 합성(스트라이크 아웃·아웃·세이프)은 쓰지 않는다. 판정은 화면 자막과 효과음으로만 전한다(사용자 11-11). 부르는 곳은 그대로 둔다 */

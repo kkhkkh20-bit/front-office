@@ -1,22 +1,21 @@
 # Status (overwrite each session end; keep <4 KB)
 
-Updated: 2026-11-21. Current origin/main: 83de5da9.
+Updated: 2026-11-21. Latest fetched origin/main: 83de5da9.
 
-## Active broadcast preview
-- Worktree /workspace/front-office-broadcast-polish, branch codex/broadcast-polish-1121.
-- Started latest main, locally included frozen stadium PR #326 HEAD 7eee4e18 as preview baseline. Never modify that frozen branch for this work. Merge #326 first, then refresh this branch against main before any proposed final merge.
-- Changes: desktop pointer/fine 3D cards 264->92px (128 with alerts), existing full details on hover/keyboard; bounded projected pitch-ball sizing only. Engine bytes unchanged; no RNG/save/camera/flight-path changes.
-- Preview/report: docs/updates/2026-11-21-broadcast-polish/README.md and preview.html.
-- PASS: pre-fix failures reproduced, new HUD/ball/WebGL pitch tests; existing scene unit 10/10; cast info 626 PA; 3D state/continuity/memory; portrait/landscape 20 scenes; paused/playing late face-sheet refresh. Coordinates/camera identical in 16 before/after samples.
-- QUICK running: /workspace/work/broadcast-polish-1121/quick-final.log. Do not claim pass without CHECK_EXIT=0. Full suite/long season not run for this new branch; actual-phone sustained FPS/heat untested.
-- User requested predeploy comparison. Draft only; NO MERGE/DEPLOY until new preview approval AND required checks completed. Keep automation paused.
+## Active motion/sound preview (not deployed)
+- Worktree /workspace/front-office-broadcast-motion-sound; branch codex/broadcast-motion-sound-1121. Started origin/main, merged #336 frozen c655ddba locally as preview baseline. Do not modify parent PR branches.
+- New scope: full swing returns to ready stance only after full clip at effective rate. Crowd reactions crossfade instead of stack. One-shots/organ and delayed cues stop on mute/pause/seek/speed/player view/natural game end. Existing impact timbre/volumes, engine/RNG/save/module order unchanged.
+- Report: docs/updates/2026-11-21-broadcast-motion-sound/README.md. Actual audio A/B + WebGL pose captures.
+- PASS: pre-fix failures reproduced; sound ownership4/4; actual rig 450/900/1400ms with full follow-through/run/bunt/seek regressions; existing scene unit10/10; actual WebGL + AudioContext six UI lifecycle controls (including natural end), records unchanged; real WebAudio impact PCM identical and post-stop RMS0; builds2/static. Engine hash 4d0eceb5a6bbd9f967e8fc7731f169e7c3053ea7628cf2c630247d9eb11b92ce identical.
+- Independent motion review found no blocker. Sound reviewer found missing natural-end cleanup; fixed and actual end regression passed.
+- QUICK /workspace/work/broadcast-motion-sound-1121/quick-final.log running. Full/long-season/actual-phone sustained FPS+speaker audition unrun. Do not call complete/pass without final CHECK_EXIT=0 and required GitHub checks.
+- Draft preview only. No merge/deploy until user preview approval AND checks complete; refresh latest main and resolve parent dependencies first.
 
-## Other design holds
-- #326 codex/ingame-stadium-1121, frozen HEAD 7eee4e181f71a4b96e4087788bd1e0b8a722fc4f. Still draft/open. CI run 44870714242: rules 16/16 success, browser-and-sim and final check failure (trade listing paired comparison, scouting #77 49!=76). Do not bypass failures under this user's stricter safety rules.
-- #326 local QUICK/full still running: /workspace/work/stadium-design-1121/{quick,full}-after-main.log, final CHECK_EXIT unknown. Read final result before any completion claim.
-- Automation_40b1e3fa36e0819188edfceac78ca192 PAUSED. No repeat final-result notifications.
-- #328 codex/mobile-training-medical-1121 REJECTED by user (too much prose). No merge/deploy, no further design work without new direction. Uncommitted finance label in its isolated worktree also held. Do not carry its files here.
+## Parent design holds
+- #336 codex/broadcast-polish-1121 HEAD c655ddba (PC92px cards, bounded pitch visibility), draft. /workspace/work/broadcast-polish-1121/quick-final.log still running. Its local STATUS has PR link only, uncommitted; do not copy unreviewed changes from other worktrees.
+- #326 codex/ingame-stadium-1121 frozen HEAD 7eee4e181f71a4b96e4087788bd1e0b8a722fc4f. Draft/open. CI44870714242 rules16/16 success, browser-and-sim/final fail (trade listing paired comparison; scouting#77 49!=76). Do not bypass these failures under user's stricter safety rules.
+- #326 local QUICK/full /workspace/work/stadium-design-1121/{quick,full}-after-main.log still running, CHECK_EXIT unknown. Check results before any completion claim.
+- Automation_40b1e3fa36e0819188edfceac78ca192 PAUSED. Keep paused pending preview/checks; no repeat final-result notifications.
+- #328 codex/mobile-training-medical-1121 REJECTED (too much prose). No merge/deploy or resumed work without new direction. Its isolated uncommitted finance label also held. Not included here.
 
-## Known baseline failures / prior roadmap
-Trade listing same-player normal/listed/urgent; scouting #73/#77; cafe-1119 button height; check-match3d/in-game; FA nameFont; operations-20261110; contract-input 120!=123; calendar Space stop; budget-chip; trade-filters-small0b; community-rules 30!=80. These are not permission to waive this user's required checks.
-Prior roadmap: measure daily/rollover lag -> error sweep -> incremental refactor -> mobile 3D FPS/memory. Do not broaden this visual task into those engine changes. Fetch single origin branches; all-ref fetch is slow.
+Prior roadmap: measure daily/rollover lag -> known-failure sweep -> incremental refactor -> mobile3D FPS/memory. Do not broaden this visual/audio task into engine fixes. Fetch single origin branches; all-ref fetch slow.

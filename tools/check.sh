@@ -14,6 +14,11 @@ step "중계 선수 카드·투구 공 가독성"
 node tools/check-broadcast-ball-1121.cjs || fail=1
 node tools/check-broadcast-hud-1121.cjs || fail=1
 node tools/check-broadcast-pitch-1121.cjs || fail=1
+step "중계 스윙 복귀·효과음 재생 소유권"
+node tools/check-broadcast-swing-1121.cjs || fail=1
+node tools/check-broadcast-sound-1121.cjs || fail=1
+node tools/check-broadcast-sound-render-1121.cjs || fail=1
+node tools/check-broadcast-motion-sound-1121.cjs || fail=1
 step "구장 외형·중계 구장·행사 사진"; node tools/check-stadium-svg-1121.cjs && node tools/check-stadium-match-1121.cjs && node tools/check-event-art-1121.cjs || fail=1
 if [ "${SKIP_RULE_CHECK:-0}" != "1" ]; then
   step "규칙 점검(결과가 맞는지)"; node tools/check-logic.js || fail=1

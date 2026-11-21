@@ -1,0 +1,122 @@
+[
+  {
+    "at": 0,
+    "motion": "swing",
+    "time": 0,
+    "rate": 1,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 61992
+  },
+  {
+    "at": 250,
+    "motion": "swing",
+    "time": 0.25,
+    "rate": 1,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 61992
+  },
+  {
+    "at": 500,
+    "motion": "swing",
+    "time": 0.5,
+    "rate": 1,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 61992
+  },
+  {
+    "at": 750,
+    "motion": "swing",
+    "time": 0.75,
+    "rate": 1,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 61992
+  },
+  {
+    "at": 900,
+    "motion": "swing",
+    "time": 0.9,
+    "rate": 1,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 61992
+  },
+  {
+    "at": 1100,
+    "motion": "swing",
+    "time": 1.1,
+    "rate": 1,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 61992
+  },
+  {
+    "at": 1350,
+    "motion": "swing",
+    "time": 1.35,
+    "rate": 1,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 61992
+  },
+  {
+    "at": 1525,
+    "motion": "batting_stance",
+    "time": 0.04,
+    "rate": 1,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 0
+  },
+  {
+    "at": 1750,
+    "motion": "batting_stance",
+    "time": 0.04,
+    "rate": 0,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 0
+  },
+  {
+    "at": 2100,
+    "motion": "batting_stance",
+    "time": 0.04,
+    "rate": 0,
+    "camera": [
+      -0.6500000000000001,
+      1.9,
+      -5.2
+    ],
+    "returnAt": 0
+  }
+]
