@@ -22,7 +22,7 @@ try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABL
   await p.evaluate(()=>{save();render();});assert.equal(await p.evaluate(()=>G.mail.filter(m=>m.subj==='정규시즌은 이렇게 보내시면 됩니다').length),1,w+' 다시 저장해도 한 통');
   /* 소식함에서 위임하기 버튼 */
   await p.evaluate(id=>{UI.mailFocus=id;A.tab('inbox');},sm[0].id);await p.waitForTimeout(200);
-  const ib=await p.evaluate(()=>[...document.querySelectorAll('#app .ibm-acts [data-a]')].map(b=>b.dataset.a+':'+b.dataset.v));assert.ok(ib.includes('handOff:ev')||ib.some(x=>x.startsWith('handOff:')),w+' 소식에 위임하기 '+ib);assert.ok(await p.evaluate(()=>[...document.querySelectorAll('#app .ibm-acts [data-a="mailAct"]')].some(b=>/반복 업무 위임 켜기/.test(b.textContent))),w+' 소식에 쉬운 진행 켜기');await shot('season-inbox');
+  const ib=await p.evaluate(()=>[...document.querySelectorAll('#app .ibm-acts [data-a]')].map(b=>b.dataset.a+':'+b.dataset.v));assert.ok(ib.includes('handOff:ev')||ib.some(x=>x.startsWith('handOff:')),w+' 소식에 위임하기 '+ib);assert.ok(await p.evaluate(()=>[...document.querySelectorAll('#app .ibm-acts [data-a="mailAct"]')].some(b=>/반복 업무 모두 맡기기/.test(b.textContent))),w+' 소식에 쉬운 진행 켜기');await shot('season-inbox');
   await p.locator('#app .ibm-acts [data-a="handOff"][data-v="ev"]').first().click();assert.ok(await p.evaluate(()=>autoOn('ev')),w+' 소식에서 맡기기');
   /* 홈 카드 '비서에게 맡기기' */
   await go(()=>{});await p.locator('#app .hw-start [data-a="guideDeleg"]').first().click();await p.waitForTimeout(100);assert.ok(await p.evaluate(()=>autoOn('ev')&&autoOn('mgr')),w+' 카드에서 맡기기');

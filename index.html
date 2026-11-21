@@ -6160,6 +6160,17 @@ body .cs-prep-teams>section.cs-bcard{display:block;width:min(100%,900px);height:
 .hw-start .hw-ck li .btn.hw-ck-deleg{grid-column:2/4;grid-row:auto;justify-self:start}
 .hw-start .hw-easy{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 2px;padding:6px 8px;border:1px dashed var(--line,#2a3a48);border-radius:4px;font-size:var(--ui-caption)}
 .hw-start .hw-easy>span{flex:1 1 180px;min-width:0;color:var(--muted)}.hw-start .hw-easy b{color:var(--text,inherit)}.hw-start .hw-easy.on{border-style:solid;border-color:color-mix(in srgb,var(--good,#3fae6a) 50%,var(--line))}
+/* Keep the guide's controls visible; only the remaining task area scrolls by default. */
+#app .home-workspace .hw-start{display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+#app .home-workspace .hw-start>header,#app .home-workspace .hw-start>.hw-easy,#app .home-workspace .hw-start>p{flex:none}
+#app .home-workspace .hw-start>.hw-ck{flex:1 1 auto;min-height:76px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+#app .home-workspace .hw-start>.hw-easy{gap:4px 8px;margin:4px 8px;padding:5px 7px}
+#app .home-workspace .hw-start>.hw-easy>span{flex-basis:160px}
+#app .home-workspace .hw-start .hw-easy details{font-size:var(--ui-caption);line-height:1.4}
+#app .home-workspace .hw-start .hw-easy summary{min-height:26px;line-height:26px;cursor:pointer}
+#app .home-workspace .hw-start .hw-easy details>div{margin:4px 0}
+/* Expanded scope is one scrollable card, avoiding nested clipped help content. */
+#app .home-workspace .hw-start:has(.hw-easy details[open])>.hw-ck{flex:none;overflow:visible}
 /* 주요 속성과 시즌 성적은 한 화면에, 긴 평가와 이력은 사용자가 펼쳐 본다. */
 @media(min-width:1100px){
   body #sheet .sheet.pf-screen{padding-bottom:10px}
@@ -40840,7 +40851,7 @@ function homeStartPanel(){ if(!guideOn())return ''; const L=guideItems(); if(!L.
   /* 이번 시즌 할 일(UI 3단계 3-7, 사용자 11-17 첫 시즌 안내): 단계마다 할 일. 지금 할 일 하나만 '왜'와 '비서에게 맡기기'를 펼치고, 나머지는 한 줄, 끝낸 일은 한 줄로 접어 카드가 잘리지 않게 */
   const row=(x,i)=>`<li${i===0?' class="now"':''}><span class="hw-ck-m" aria-hidden="true"></span><b>${esc(x.t)}</b>${x.prog?`<small>${esc(x.prog)}</small>`:''}${x.go?`<button class="btn small" data-a="guideGo" data-v="${esc(x.k)}">${esc(action[x.k]||x.t)}</button>`:''}${i===0&&x.why?`<p class="hw-ck-why">${esc(x.why)}</p>`:''}${i===0&&x.deleg&&x.deleg.length?`<button class="btn small hw-ck-deleg" data-a="guideDeleg" data-v="${esc(x.k)}" title="${esc(x.deleg.map(k=>(AUTO_WHO[k]||'비서')+': '+((AUTO_AREAS.find(a=>a[0]===k)||[])[1]||k)).join(' · '))}">${esc(delegLabel(x))}</button>`:''}</li>`;
   const foot=ph==='pre'?`개막(${dmd(G.cal.open)}) 전까지 끝내면 됩니다.`:ph==='season'?'마감이 지나면 저절로 지워집니다.':ph==='post'?'포스트시즌이 끝나면 스토브리그 할 일이 나옵니다.':'첫 스토브리그가 끝나면 이 카드는 사라집니다.';
-  return `<section class="hw-panel hw-start"><header><h2>이번 시즌 할 일 <small class="muted">${GUIDE_PH[ph]||''} · ${n}/${L.length}</small></h2><button class="tc-i" data-a="guideOff" data-v="1" title="설정에서 다시 켤 수 있습니다">숨기기</button></header><ol class="hw-ck">${todo.map(row).join('')}${done.length?`<li class="ok hw-ck-done"><span class="hw-ck-m" aria-hidden="true">✓</span><b>${done.map(x=>esc(x.t)).join(' · ')}</b></li>`:''}</ol>${guideEasyLine()}<p class="small muted">${foot}</p></section>`; }
+  return `<section class="hw-panel hw-start"><header><h2>이번 시즌 할 일 <small class="muted">${GUIDE_PH[ph]||''} · ${n}/${L.length}</small></h2><button class="tc-i" data-a="guideOff" data-v="1" title="설정에서 다시 켤 수 있습니다">숨기기</button></header>${guideEasyLine()}<ol class="hw-ck">${todo.map(row).join('')}${done.length?`<li class="ok hw-ck-done"><span class="hw-ck-m" aria-hidden="true">✓</span><b>${done.map(x=>esc(x.t)).join(' · ')}</b></li>`:''}</ol><p class="small muted">${foot}</p></section>`; }
 function homeWorkspace(){
   // 메뉴·요약·페이지 버튼을 먼저 확보하고 카드 한 줄에 최소 220px을 배정한다.
   const device=innerWidth>=1100?'desktop':innerWidth>=700?'tablet':'mobile';
@@ -50288,7 +50299,7 @@ function guideItems(){ const ph=guidePhase(); let L=[];
 function guideRoute(){ try{ return UI.tab+':'+(typeof curSub==='function'?curSub(UI.tab)||'':''); }catch(e){ return UI.tab; } }
 /* 홈 카드 아랫줄: 쉬운 진행 켜기·끄기 */ /* 강조(primary) 버튼은 화면당 하나: 홈은 경기 버튼이 맡는다(디자인 점검) */
 function guideEasyLine(){ if(typeof AUTO_AREAS==='undefined')return ''; const on=guideEasy(), areas=AUTO_AREAS.filter(([k])=>!AUTO_OPTIN.has(k)), n=areas.filter(([k])=>guideAuto(k)).length;
-  return `<div class="hw-easy${on?' on':''}"><span><b>반복 업무 위임</b> · ${on?'켜짐':n?'일부 위임':'꺼짐'}</span><button class="btn small" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다.':'비서·팀장에게 반복 업무를 맡깁니다.'}">${on?'직접 하기':'모두 맡기기'}</button><span class="small" style="flex-basis:100%">드래프트·FA·외국인 영입·트레이드 협상은 직접</span><details style="flex-basis:100%"><summary>위임 범위</summary><div>${areas.map(([,label])=>esc(label)).join(' · ')}</div><div>설정 › 권한에서 개별 업무를 바꿀 수 있습니다. ‘직접 하기’를 누르면 맡긴 업무를 모두 가져옵니다.</div></details></div>`; }
+  return `<div class="hw-easy${on?' on':''}"><span><b>반복 업무 위임</b> · ${on?'켜짐':n?'일부 위임':'꺼짐'}</span><button class="btn small" data-a="easyMode" data-v="${on?'0':'1'}" title="${on?'맡긴 업무를 모두 다시 직접 합니다.':'비서·팀장에게 반복 업무를 맡깁니다.'}">${on?'직접 하기':'모두 맡기기'}</button><details style="flex-basis:100%"><summary>위임 범위 · 주요 결정은 직접</summary><div>드래프트·FA·외국인 영입·트레이드 협상은 직접</div><div>${areas.map(([,label])=>esc(label)).join(' · ')}</div><div>설정 › 권한에서 개별 업무를 바꿀 수 있습니다. ‘직접 하기’를 누르면 맡긴 업무를 모두 가져옵니다.</div></details></div>`; }
 /* '하기'로 간 화면 맨 위 한 줄 띠 */
 function guideBar(){ const g=UI.guide; if(!g||!guideOn()||UI.sheet!=null||UI.person||UI.teamSh!=null)return ''; if(typeof draftFocusOn==='function'&&draftFocusOn())return ''; /* 드래프트 집중 모드(카페 11-19) */ if(g.route!==guideRoute())return '';
   const L=guideItems(), x=L.find(i=>i.k===g.k); if(!x)return ''; const next=L.find(i=>!i.ok&&i.k!==x.k);
