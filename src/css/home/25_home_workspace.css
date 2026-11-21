@@ -247,3 +247,14 @@
 .hw-start .hw-ck li .btn.hw-ck-deleg{grid-column:2/4;grid-row:auto;justify-self:start}
 .hw-start .hw-easy{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 2px;padding:6px 8px;border:1px dashed var(--line,#2a3a48);border-radius:4px;font-size:var(--ui-caption)}
 .hw-start .hw-easy>span{flex:1 1 180px;min-width:0;color:var(--muted)}.hw-start .hw-easy b{color:var(--text,inherit)}.hw-start .hw-easy.on{border-style:solid;border-color:color-mix(in srgb,var(--good,#3fae6a) 50%,var(--line))}
+/* Keep the guide's controls visible; only the remaining task area scrolls by default. */
+#app .home-workspace .hw-start{display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+#app .home-workspace .hw-start>header,#app .home-workspace .hw-start>.hw-easy,#app .home-workspace .hw-start>p{flex:none}
+#app .home-workspace .hw-start>.hw-ck{flex:1 1 auto;min-height:76px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;grid-auto-rows:max-content;align-content:start}
+#app .home-workspace .hw-start>.hw-easy{gap:4px 8px;margin:4px 8px;padding:5px 7px}
+#app .home-workspace .hw-start>.hw-easy>span{flex-basis:160px}
+#app .home-workspace .hw-start .hw-easy details{font-size:var(--ui-caption);line-height:1.4}
+#app .home-workspace .hw-start .hw-easy summary{min-height:26px;line-height:26px;cursor:pointer}
+#app .home-workspace .hw-start .hw-easy details>div{margin:4px 0}
+/* Expanded scope is one scrollable card, avoiding nested clipped help content. */
+#app .home-workspace .hw-start:has(.hw-easy details[open])>.hw-ck{flex:none;overflow:visible}

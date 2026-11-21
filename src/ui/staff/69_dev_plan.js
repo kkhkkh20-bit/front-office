@@ -18,18 +18,16 @@ function trnCard(p){ if(p.team!==G.user||p.prospect||(p.joinY>G.year))return '';
 /* 운영 > 육성: 우리 선수 훈련 방향 한눈에. 줄마다 버튼으로 바로 고르고, 바꾼 것을 모아 한 번에 감독에게 제안한다 */
 function trnListBody(){ const ps=domestic(G.user).filter(p=>p.age<=33&&!(p.joinY>G.year)).sort((a,b)=>(a.isP-b.isP)||(ovr(b)-ovr(a)));
   const pend=UI.trnPend||{}; const nP=Object.keys(pend).length;
-  const row=p=>{ const T=G.trn&&G.trn[p.id]; const mine=T&&T.by==='gm'; const rec=trnCoachPick(p); const cur=mine?T.f:rec; const pk=pend[p.id]; const D=TRN[trnG(p)]; const o=mine?trnObs(p):null;
+  const row=p=>{ const T=G.trn&&G.trn[p.id]; const mine=T&&T.by==='gm'; const rec=trnCoachPick(p); const cur=mine?T.f:rec; const pk=pend[p.id]; const D=TRN[trnG(p)];
     const sel=pk||cur;
-    return `<div class="trn-row${pk?' pend':''}"><div class="trn-h"><button class="nm lnk" data-a="trnOpen" data-v="${p.id}">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button><span class="trn-gr small">${TRN_TOOLS[trnG(p)].filter(k=>k in p.r).map(k=>`${TOOLK[k]||k} <b class="g${dvGrade(p.r[k])}">${dvGrade(p.r[k])}</b>`).join(' · ')}</span>
-      <span class="small">${mine?'<span class="pill good">단장 요청</span>':'<span class="pill">코치진</span>'} 지금 <b>${D[cur].l}</b>${o?` · ${o.w}주 · 코치 평가: ${esc(o.prog)} · 실전: ${o.real.startsWith('기록 없음')?'기록 없음':'기록 있음'}`:''}${mine&&rec!==cur?` · <span class="muted">코치진 권장 ${D[rec].l}</span>`:''}</span></div>
-      <div class="seg trn-seg">${Object.entries(D).map(([k,v])=>`<button data-a="trnPick" data-v="${p.id}:${k}" class="${sel===k?'on':''}"${k===rec?' title="코치진 권장"':''}>${v.l}${k===rec?'<i class="trn-rec">코치안</i>':''}</button>`).join('')}</div>
-      <span class="small muted">훈련 강도 <b>${TRNI[trnI(p)].l}</b> · ${trnIByGm(p)?'<span class="pill good">단장 건의</span>':esc(trnIAuto(p).w)}</span></div>`; };
-  const bar=nP?`<div class="trn-bar"><span>${nP}명 바꿈</span><button class="btn small" data-a="trnPendClear">되돌리기</button><button class="btn small primary" data-a="trnApply">감독에게 제안하기</button></div>`:'';
-  return `<p class="small muted">훈련의 주안점은 감독과 코치진이 상의해 선수마다 하나씩 정합니다(다른 구단도 같은 방식). 바꾸고 싶은 선수의 버튼을 누른 뒤 '감독에게 제안하기'로 한 번에 요청하세요. 점(·)은 코치진 추천안입니다. 이름을 누르면 코치 의견과 최근 보고를 볼 수 있습니다.</p>
-  ${UI.trnApplyMsg?`<div class="note">${esc(UI.trnApplyMsg).replace(/\n/g,'<br>')}</div>`:''}${bar}
+    return `<div class="trn-row${pk?' pend':''}"><div class="trn-h"><button class="nm lnk" data-a="trnOpen" data-v="${p.id}" title="선수 능력·코치 의견·훈련 보고">${esc(p.name)} <span class="small muted">${posLabel(p)} · ${p.age}세</span></button>${pk?'<span class="pill warn">제안 대기</span>':mine?'<span class="pill good">단장 요청</span>':''}</div>
+      <details class="trn-focus"><summary><span class="small muted">훈련 방향</span><b>${pk&&pk!==cur?`<span class="muted">${D[cur].l} → </span>`:''}${D[sel].l}</b><span class="small muted">변경 ▾</span></summary><div class="seg trn-seg">${Object.entries(D).map(([k,v])=>`<button data-a="trnPick" data-v="${p.id}:${k}" class="${sel===k?'on':''}">${v.l}${k===rec?'<i class="trn-rec">추천</i>':''}</button>`).join('')}</div></details>
+      <div class="trn-brief small muted"><span>코치 추천 <b>${D[rec].l}</b></span><span>강도 <b>${TRNI[trnI(p)].l}</b>${trnIByGm(p)?' · 단장 건의':''}</span></div></div>`; };
+  const bar=`<div class="trn-bar" role="group" aria-label="훈련 제안"><span aria-live="polite">${nP?nP+'명 변경':'변경 없음'}</span><button class="btn small" data-a="trnPendClear"${nP?'':' disabled'}>취소</button><button class="btn small primary" data-a="trnApply"${nP?'':' disabled'}>감독에게 제안</button></div>`;
+  return `<div class="trn-planner">${UI.trnApplyMsg?`<div class="note">${esc(UI.trnApplyMsg).replace(/\n/g,'<br>')}</div>`:''}
   ${(()=>{ const mineL=ps.filter(p=>G.trn&&G.trn[p.id]&&G.trn[p.id].by==='gm'); const v=inTabs('trnv',[['B',`야수 ${ps.filter(p=>!p.isP).length}`],['P',`투수 ${ps.filter(p=>p.isP).length}`],['M',`단장 요청 ${mineL.length}`]],'B');
-    const L=v.cur==='M'?mineL:ps.filter(p=>v.cur==='P'?p.isP:!p.isP); return trnPolBox()+v.bar+`<div class="trn-list">${L.map(row).join('')||'<p class="small muted">없습니다.</p>'}</div>`; })()}${nP>3?bar:''}`; }
-Object.assign(A,{ trnPick(v){ const [id,f]=v.split(':'); const p=G.players[+id]; if(!p)return; const T=G.trn&&G.trn[p.id]; const cur=T&&T.by==='gm'?T.f:null; UI.trnPend=UI.trnPend||{}; if(f===cur)delete UI.trnPend[id]; else UI.trnPend[id]=f; /* 코치 추천과 같은 항목을 골라도 단장 요청으로 고정(선수별 화면과 같은 뜻) */ UI.trnApplyMsg=''; render(); },
+    const L=v.cur==='M'?mineL:ps.filter(p=>v.cur==='P'?p.isP:!p.isP); return trnPolBox()+`<details class="trn-help"><summary>훈련 도움말</summary><p>훈련 방향을 고른 뒤 <b>감독에게 제안</b>을 누르세요. 제안 전에는 실제 훈련이 바뀌지 않습니다.</p><p>기본 계획은 코치진이 정합니다. 선수 이름을 누르면 능력·코치 의견·최근 보고를 볼 수 있습니다.</p></details>`+v.bar+bar+`<div class="trn-cols"><span>선수</span><span>훈련 방향</span><span>코치 추천 · 강도</span></div><div class="trn-list">${L.map(row).join('')||'<p class="small muted">해당 선수가 없습니다.</p>'}</div>`; })()}</div>`; }
+Object.assign(A,{ trnPick(v,el){ const [id,f]=v.split(':'); const p=G.players[+id]; if(!p)return; const T=G.trn&&G.trn[p.id]; const cur=T&&T.by==='gm'?T.f:null; UI.trnPend=UI.trnPend||{}; if(f===cur)delete UI.trnPend[id]; else UI.trnPend[id]=f; /* 코치 추천과 같은 항목을 골라도 단장 요청으로 고정(선수별 화면과 같은 뜻) */ UI.trnApplyMsg=''; const menu=el&&el.closest('.trn-focus'); if(menu)menu.open=false; render(); },
   trnPendClear(){ UI.trnPend={}; render(); },
   trnApply(){ const L=trnSetMany(UI.trnPend||{}); UI.trnPend={}; UI.trnApplyMsg=L.join('\n'); save(); render(); } });
 Object.assign(A,{ trnSet(v){ const [id,f]=v.split(':'); const t=trnSet(+id,f); UI.trnMsg=t?{id:+id,t}:null; save(); if(UI.sheet!=null)renderSheet(); render(); },
@@ -38,9 +36,10 @@ Object.assign(A,{ trnSet(v){ const [id,f]=v.split(':'); const t=trnSet(+id,f); U
   trnPolSet(v){ UI.trnPolMsg=trnPolSet(v); save(); render(); } });
 /* 팀 육성 방침(단장이 정하는 것은 이것 하나): 코치진이 이 안에서 선수별 강도를 나눈다 */
 function trnPolBox(){ const cur=trnPol(); const ps=domestic(G.user).filter(p=>!milServing(p)&&!(p.joinY>G.year)); const n=[0,0,0,0]; for(const p of ps)n[trnI(p)]++;
-  return `<div class="trn-env"><b>육성 방침</b>${hiI('선수별 훈련 강도는 코치진이 정합니다.')}
+  const brief={rec:'성장 속도 ↓ · 부상·피로 관리',bal:'선수 상태에 맞춰 코치가 배분',grow:'성장 속도 ↑ · 부상 위험 ↑'};
+  return `<div class="trn-env trn-policy"><b>팀 훈련 강도</b>
   <div class="seg trn-seg">${Object.entries(TRNPOL).map(([k,v])=>`<button data-a="trnPolSet" data-v="${k}" class="${cur===k?'on':''}">${v.l}</button>`).join('')}</div>
-  <div class="small">${esc(TRNPOL[cur].d)}</div><div class="small muted">지금 배분: ${TRNI.map((t,i)=>`${t.l} ${n[i]}명`).join(' · ')}</div>${UI.trnPolMsg?`<div class="note">${esc(UI.trnPolMsg)}</div>`:''}</div>`; }
+  <div class="small muted">${brief[cur]}</div><details class="trn-policy-info"><summary class="small">강도별 인원·설명</summary><p class="small keep">${esc(TRNPOL[cur].d)}</p><div class="small muted">${TRNI.map((t,i)=>`${t.l} ${n[i]}명`).join(' · ')}</div></details>${UI.trnPolMsg?`<div class="note">${esc(UI.trnPolMsg)}</div>`:''}</div>`; }
 /* 훈련 강도(선수 화면 육성 탭): 코치가 정한 결과를 보여 주고, 단장 건의는 접힌 예외 항목. 부상 위험은 체력(선수 화면 세부 능력의 체력)·나이를 반영한 전체 위험 */
 function trnIBox(p){ const cur=trnI(p), gm=trnIByGm(p), a=trnIAuto(p); const lv=i=>{ const r=injStam(p)*trnIRisk(p,i); return r<.95?'낮음':r<1.25?'보통':'높음'; }; const T=TRNI[cur];
   return `<div class="trn-env"><b>훈련 강도</b> <span class="small muted">육성 방침 ${TRNPOL[trnPol()].l}</span>

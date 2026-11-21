@@ -11,7 +11,7 @@ try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABL
   await p.route('https://fonts.googleapis.com/**',r=>r.fulfill({body:'',contentType:'text/css'}));await p.goto(server.url);await p.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0);
   await p.evaluate(()=>{DEMO.on=false;newGame(6);fdStart();fdAdvance(false);let n=0;while(G.fd&&!G.fd.done&&n++<500)fdAdvance(true);hireMgr(G.mmarket[0].id,3);G.medSet=true;UI.title=false;UI.tab='home';UI.homePage=0;save();render();});
   const card=()=>p.evaluate(()=>{const c=document.querySelector('#app .hw-start');const sc=document.scrollingElement;if(!c)return {none:true,pageScroll:sc.scrollHeight>innerHeight+2};const now=c.querySelector('li.now');
-   return {title:c.querySelector('h2').textContent,now:now&&now.querySelector('b').textContent,why:now&&!!now.querySelector('.hw-ck-why'),deleg:now&&!!now.querySelector('[data-a="guideDeleg"]'),go:c.querySelectorAll('[data-a="guideGo"]').length,easy:!!c.querySelector('header [data-a="easyMode"]')&&!!c.querySelector('.hw-easy'),inView:c.getBoundingClientRect().top<innerHeight-40,fits:c.scrollHeight<=c.clientHeight+2||/(auto|scroll)/.test(getComputedStyle(c).overflowY),pageScroll:sc.scrollHeight>innerHeight+2};});
+   return {title:c.querySelector('h2').textContent,now:now&&now.querySelector('b').textContent,why:now&&!!now.querySelector('.hw-ck-why'),deleg:now&&!!now.querySelector('[data-a="guideDeleg"]'),go:c.querySelectorAll('[data-a="guideGo"]').length,easy:c.querySelectorAll('.hw-easy [data-a="easyMode"]').length===1,inView:c.getBoundingClientRect().top<innerHeight-40,fits:c.scrollHeight<=c.clientHeight+2||/(auto|scroll)/.test(getComputedStyle(c).overflowY),pageScroll:sc.scrollHeight>innerHeight+2};});
   const shot=async n=>{if(SHOT)await p.screenshot({path:path.join(SHOT,`phase-${n}-${w}.png`)});};
   const go=async js=>{await p.evaluate(js);await p.evaluate(()=>{UI.tab='home';UI.homePage=0;save();render();});await p.waitForTimeout(150);};
   /* 시즌 준비 */
@@ -22,7 +22,7 @@ try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABL
   await p.evaluate(()=>{save();render();});assert.equal(await p.evaluate(()=>G.mail.filter(m=>m.subj==='정규시즌은 이렇게 보내시면 됩니다').length),1,w+' 다시 저장해도 한 통');
   /* 소식함에서 위임하기 버튼 */
   await p.evaluate(id=>{UI.mailFocus=id;A.tab('inbox');},sm[0].id);await p.waitForTimeout(200);
-  const ib=await p.evaluate(()=>[...document.querySelectorAll('#app .ibm-acts [data-a]')].map(b=>b.dataset.a+':'+b.dataset.v));assert.ok(ib.includes('handOff:ev')||ib.some(x=>x.startsWith('handOff:')),w+' 소식에 위임하기 '+ib);assert.ok(await p.evaluate(()=>[...document.querySelectorAll('#app .ibm-acts [data-a="mailAct"]')].some(b=>/쉬운 진행 켜기/.test(b.textContent))),w+' 소식에 쉬운 진행 켜기');await shot('season-inbox');
+  const ib=await p.evaluate(()=>[...document.querySelectorAll('#app .ibm-acts [data-a]')].map(b=>b.dataset.a+':'+b.dataset.v));assert.ok(ib.includes('handOff:ev')||ib.some(x=>x.startsWith('handOff:')),w+' 소식에 위임하기 '+ib);assert.ok(await p.evaluate(()=>[...document.querySelectorAll('#app .ibm-acts [data-a="mailAct"]')].some(b=>/반복 업무 모두 맡기기/.test(b.textContent))),w+' 소식에 쉬운 진행 켜기');await shot('season-inbox');
   await p.locator('#app .ibm-acts [data-a="handOff"][data-v="ev"]').first().click();assert.ok(await p.evaluate(()=>autoOn('ev')),w+' 소식에서 맡기기');
   /* 홈 카드 '비서에게 맡기기' */
   await go(()=>{});await p.locator('#app .hw-start [data-a="guideDeleg"]').first().click();await p.waitForTimeout(100);assert.ok(await p.evaluate(()=>autoOn('ev')&&autoOn('mgr')),w+' 카드에서 맡기기');
@@ -35,7 +35,7 @@ try{browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABL
   await go(()=>{G.ps.done=true;G.day=KD(12,2);G.contract=G.contract&&!G.contract.done?G.contract:{y:G.year,done:false,neg:{},foreignEnd:[],foreignDrop:[]};});c=await card();assert.match(c.title,/스토브리그/,w+' '+JSON.stringify(c));assert.equal(c.pageScroll,false);await shot('off');
   const om=await p.evaluate(()=>G.mail.find(m=>m.subj==='연봉 협상과 재계약은 맡기셔도 됩니다'));assert.ok(om&&om.auto.includes('sal'),w+' 연봉 안내 소식');
   /* 쉬운 진행 */
-  await p.locator('#app .hw-start header [data-a="easyMode"][data-v="1"]').click();await p.waitForTimeout(100);assert.ok(await p.evaluate(()=>guideEasy()&&G.autoMode==='easy'&&autoOn('sal')&&autoOn('fre')&&autoOn('scout')),w+' 쉬운 진행 켜짐');
+  await p.locator('#app .hw-start .hw-easy [data-a="easyMode"][data-v="1"]').click();await p.waitForTimeout(100);assert.ok(await p.evaluate(()=>guideEasy()&&G.autoMode==='easy'&&autoOn('sal')&&autoOn('fre')&&autoOn('scout')),w+' 쉬운 진행 켜짐');
   c=await card();assert.ok(c.none||!/연봉/.test(c.now||''),w+' 맡긴 연봉은 할 일에서 빠짐');
   /* 둘째 해 캠프부터는 없음 */
   await go(()=>{G.year++;G.cal=buildCalendar(G.year);G.day=G.cal.camp+1;});c=await card();assert.ok(c.none,w+' 둘째 해에는 카드 없음');const n0=await p.evaluate(()=>G.mail.length);await go(()=>{G.day=G.cal.open+1;});assert.equal(await p.evaluate(()=>G.mail.length),n0,w+' 둘째 해에는 안내 소식 없음');

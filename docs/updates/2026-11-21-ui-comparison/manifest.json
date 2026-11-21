@@ -1,0 +1,62 @@
+{
+  "before": {
+    "commit": "83de5da92d9c",
+    "build": "966e262c0e63a677"
+  },
+  "after": {
+    "commit": "5ca108f574e2",
+    "build": "c7480d5df4f08c26"
+  },
+  "fixtureSha": "ba4b970311b1a45d8cd11884a2fe191e4e199bf31e06171dd423e324357ae656",
+  "pairs": [
+    {
+      "screen": "home",
+      "width": 390
+    },
+    {
+      "screen": "inbox",
+      "width": 390
+    },
+    {
+      "screen": "finance",
+      "width": 390
+    },
+    {
+      "screen": "training",
+      "width": 390
+    },
+    {
+      "screen": "medical",
+      "width": 390
+    },
+    {
+      "screen": "facilities",
+      "width": 390
+    },
+    {
+      "screen": "home",
+      "width": 1366
+    },
+    {
+      "screen": "inbox",
+      "width": 1366
+    },
+    {
+      "screen": "finance",
+      "width": 1366
+    },
+    {
+      "screen": "training",
+      "width": 1366
+    },
+    {
+      "screen": "medical",
+      "width": 1366
+    },
+    {
+      "screen": "facilities",
+      "width": 1366
+    }
+  ],
+  "stateParity": true
+}
