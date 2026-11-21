@@ -20,8 +20,8 @@ function tradeEligible(p,ctx){ const c=ctx||{}; if(!p)return false;
   if(c.faLock!==false&&faLock(p))return false;
   const rc=c.recent===undefined?'tr':c.recent; if(rc==='tr'?recentTr(p):rc==='mv'&&mvRecent(p))return false;
   return true; }
-/* 거래 뒤 정식 인원이 정원 안인지(evalTrade의 theirN) */
-function tradeSizeOk(e){ return e.theirN>=ROSTER_MIN&&e.theirN<=ROSTER_MAX; }
+/* 거래 뒤 정식 인원이 정원 안인지(evalTrade의 theirN). 이미 정원을 넘었거나(군 전역·드래프트 합류 등) 모자란 구단은 그 차이를 더 키우지만 않으면 된다: 71명인 구단이 4명을 받고 6명을 보내 69명이 되는 거래는 막지 않는다(카페 11-21 마스터쉐프). 모든 구단 같은 규칙 */
+function tradeSizeOk(e){ const n0=e.theirN0??e.theirN; return (e.theirN>=ROSTER_MIN||e.theirN>=n0)&&(e.theirN<=ROSTER_MAX||e.theirN<=n0); }
 /* 선수 nOut명을 보내고 nIn명을 받은 뒤 정원(ROSTER_MAX)을 넘지 않는지 */
 function tradeRosterFits(tid,nOut,nIn){ return rosterN(tid)-nOut+nIn<=ROSTER_MAX; }
 
