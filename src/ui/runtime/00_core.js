@@ -100,7 +100,7 @@ function sbUndo(c,failed){const m=meta();if(!sbOwn(c,m))return false;
 function sbFinish(c,idb){const m=meta();if(!sbOwn(c,m))return false;const info={...c.info};delete info.pending;delete info.fail;
   if(idb){info.idb=true;info.idbKey=c.key;info.idbCommit=c.commit;}else{delete info.idb;delete info.idbKey;delete info.idbCommit;}
   m.slots[c.n]=info;if(c.activate)m.active=c.n;return setMeta(m);}
-async function sbClean(n){if(!sbOk())return;try{const keys=await SaveStore.big.keys();for(const k of keys){if(k!==n&&!String(k).startsWith(sbPrefix(n)))continue;const it=meta().slots[n];if(!it)continue;const refs=[it.idbKey,it.idbCommit,it.pending?.key,it.pending?.commit,it.pending?.old?.idbKey,it.pending?.old?.idbCommit];if(it.idb&&!it.idbKey||it.pending?.old?.idb&&!it.pending.old.idbKey)refs.push(n);if(!refs.includes(k))await sbDrop(k);}}catch(e){}}
+async function sbClean(n){if(!sbOk())return;try{const keys=await SaveStore.big.keys();for(const k of keys){if(k!==n&&!String(k).startsWith(sbPrefix(n)))continue;const it=meta().slots[n];if(!it)continue;const refs=[it.idbKey,it.idbCommit,it.writeKey,it.pending?.key,it.pending?.commit,it.pending?.old?.idbKey,it.pending?.old?.idbCommit,it.deleting?.old?.idbKey,it.deleting?.old?.idbCommit];if(it.idb&&!it.idbKey||it.pending?.old?.idb&&!it.pending.old.idbKey||it.deleting?.old?.idb&&!it.deleting.old.idbKey)refs.push(n);if(!refs.includes(k))await sbDrop(k);}}catch(e){}}
 /* localStorage에 못 들어간 크기는 기억해 두고(10분), 그보다 큰 본문은 바로 IndexedDB로: 수 MB를 매번 써 보다 실패하는 비용을 줄인다(성능 11-18) */
 let _lsFail=null;
 function sbSet(n,data,c){let ls=false;const skip=_lsFail&&data.length>=_lsFail.n&&Date.now()-_lsFail.t<600e3;if(!c.options.forceIDB&&!skip){try{c.lsTouched=true;SaveStore.set(slotKey(n),data);ls=sbLsGet(n)===data;}catch(e){} if(!ls&&data.length>500000)_lsFail={n:data.length,t:Date.now()};}
@@ -122,24 +122,44 @@ let SAVE_ERR_SB='';
 let _sbOff=false;async function sbOffload(keep){if(_sbOff||!sbOk())return;_sbOff=true;try{for(const n of SLOT_IDS){if(n===keep||n===CUR_SLOT)continue;const m=meta(),it=m.slots[n],b=sbLsGet(n);if(!it||it.lock||it.pending||b==null)continue;await writeSlotConfirmed(n,b,it,it.rev||0,{forceIDB:true,body:b});}}catch(e){}finally{_sbOff=false;}}
 /* 현재 본문을 마지막에 지운다. 어느 삭제든 실패하면 본문·목록은 남기고 실패를 돌려준다. */
 async function sbRemove(n,exp=revOf(meta(),n)){if(SB_PEND.has(n)&&!await sbSettle(n))return false;const m=meta(),it=m.slots[n],ls=sbLsGet(n);if(revOf(m,n)!==exp||it?.pending)return false;let savedBody=null,savedMark=null;
-  try{if(it?.idb){savedBody=await SaveStore.big.read(sbBodyKey(n,it));if(typeof savedBody!=='string')return false;if(it.idbCommit)savedMark=await SaveStore.big.read(it.idbCommit);}}catch(e){return false;}
+  /* 본문이 없거나 읽기 오류인 슬롯(목록만 남은 칸)은 지킬 본문이 없으니 그대로 지운다(카페 11-21: 본문 없는 슬롯을 지울 수 없었음) */
+  if(it?.idb){try{savedBody=await SaveStore.big.read(sbBodyKey(n,it));if(typeof savedBody!=='string')savedBody=null;else if(it.idbCommit)savedMark=await SaveStore.big.read(it.idbCommit);}catch(e){savedBody=null;savedMark=null;}}
   try{const keys=sbOk()?await SaveStore.big.keys():[];if(revOf(meta(),n)!==exp)return false;SaveStore.remove(slotKey(n));if(sbLsGet(n)!=null)throw Error('remove');
     const current=it?.idb?sbBodyKey(n,it):null,owned=[...new Set([...keys.filter(k=>k===n||String(k).startsWith(sbPrefix(n))),...(current!=null?[current]:[]),...(it?.idbCommit?[it.idbCommit]:[])])];
     owned.sort((a,b)=>(a===current?1:0)-(b===current?1:0));for(const k of owned){if(revOf(meta(),n)!==exp)throw Error('changed');await sbDrop(k);}
-    if(revOf(meta(),n)!==exp)return false;sbForget(n);SB_SEQ[n]=(SB_SEQ[n]||0)+1;return true;
+    if(revOf(meta(),n)!==exp)throw Error('changed'); /* 지운 뒤 판번호가 바뀌었으면 본문을 되돌려 둔다(예전: 본문만 지우고 실패로 돌려 목록이 빈 본문을 가리킴) */sbForget(n);SB_SEQ[n]=(SB_SEQ[n]||0)+1;return true;
   }catch(e){if(revOf(meta(),n)===exp){if(ls!=null)try{SaveStore.set(slotKey(n),ls);}catch(x){}if(savedBody!=null)try{await sbPut(sbBodyKey(n,it),savedBody);if(savedMark!=null)await sbPut(it.idbCommit,savedMark);}catch(x){}}return false;}}
 async function sbCommitted(n){if(SB_PEND.has(n)&&!await sbSettle(n))return null;const m=meta(),it=m.slots[n],rev=revOf(m,n),stamp=sbStamp(it);if(it?.pending||it?.deleting)return null;try{const body=it?.idb?await SaveStore.big.read(sbBodyKey(n,it)):sbLsGet(n);if(it?.idbCommit){const z=JSON.parse(await SaveStore.big.read(it.idbCommit));if(z.saveCommit!==1||z.rev!==rev||z.key!==it.idbKey){sbForget(n);return null;}}const now=meta();if(sbStamp(now.slots[n])!==stamp||now.slots[n]?.pending||now.slots[n]?.deleting||typeof body!=='string')return null;if(it?.idb){SB.set(n,body);SB_REV.set(n,stamp);}return {body,rev,info:it?{...it}:null};}catch(e){sbForget(n);return null;}}
 /* 旧一覧のない数値キーと、確定印のある版だけを発見する。 */
 async function sbOrphan(n,keys){const found=[];for(const k of keys)if(String(k).startsWith(sbPrefix(n))&&String(k).endsWith(':commit'))try{const z=JSON.parse(await SaveStore.big.read(k));if(z.saveCommit!==1||z.n!==n||!z.info||z.info.pending||z.info.idbKey!==z.key||z.info.rev!==z.rev)continue;const body=await SaveStore.big.read(z.key);if(unpack(body))found.push({body,info:{...z.info,idb:true,idbCommit:k}});}catch(e){}
   found.sort((a,b)=>(b.info.rev||0)-(a.info.rev||0));if(found.length)return found[0];const body=await SaveStore.big.read(n),g=unpack(body);return g?{body,info:{...slotInfoOf(g),rev:revNext(0),idb:true}}:null;}
 async function sbRefresh(ns){if(!sbOk())return !(ns||SLOT_IDS).some(n=>sbFlag(meta(),n));let all=true,keys=[];try{keys=await SaveStore.big.keys();}catch(e){}
-  for(const n of ns||SLOT_IDS){if(SB_PEND.has(n)){if(!await sbSettle(n))all=false;continue;}let m=meta(),it=m.slots[n],rev=revOf(m,n);try{if(it?.deleting){all=false;continue;}
+  for(const n of ns||SLOT_IDS){if(SB_PEND.has(n)){if(!await sbSettle(n))all=false;continue;}let m=meta(),it=m.slots[n],rev=revOf(m,n);try{if(it?.deleting){if(!sbStaleDel(it)){all=false;continue;}const row={...it};delete row.deleting;m=meta();if(sbStamp(m.slots[n])!==sbStamp(it)||!m.slots[n]?.deleting){all=false;continue;}m.slots[n]=row;if(!setMeta(m)){all=false;continue;}it=row;rev=row.rev||0;}
     if(it?.pending){const p=it.pending,old=p.old,body=old?.idb?await SaveStore.big.read(sbBodyKey(n,old)):sbLsGet(n);m=meta();if(sbStamp(m.slots[n])!==sbStamp(it)){all=false;continue;}
       if(old&&unpack(body)){m.slots[n]={...old,fail:it.day};if(!setMeta(m)){all=false;continue;}it=m.slots[n];rev=it.rev||0;if(it.idb){SB.set(n,body);SB_REV.set(n,sbStamp(it));}}
       else{delete m.slots[n];setMeta(m);sbForget(n);all=false;continue;}}
     if(!it){const o=await sbOrphan(n,keys);if(!o)continue;m=meta();if(m.slots[n]){all=false;continue;}m.slots[n]=o.info;if(!setMeta(m)){all=false;continue;}SB.set(n,o.body);SB_REV.set(n,sbStamp(o.info));continue;}
-    if(!it.idb){sbForget(n);continue;}if(!await sbCommitted(n)){sbForget(n);all=false;continue;}
+    if(!it.idb){sbForget(n);if(sbLsGet(n)==null&&!it.pending)await sbRepair(n,keys);continue;}if(!await sbCommitted(n)){sbForget(n);if(!await sbRepair(n,keys))all=false;continue;}
   }catch(e){sbForget(n);all=false;}}return all;}
+/* 지우다 멈춘 표시(탭이 닫힘 등): 2분이 지났거나 시각이 없는 옛 표시는 끝난 작업으로 보고 푼다. 그 사이 다른 탭이 지우는 중이면 건드리지 않는다 */
+const sbStaleDel=it=>!(it&&it.deleting&&it.deleting.at>Date.now()-120e3);
+/* 목록이 가리키는 본문을 읽지 못하는 슬롯(카페 11-21 "저장 본문 없음"): 되살릴 수 있으면 되살리고, 본문이 확실히 없으면 항목에서 보조 저장소 위치를 떼어 lost로 표시한다(삭제·덮어쓰기가 막히지 않게).
+   되살리는 순서: 목록 키의 본문(확정 기록의 판번호만 어긋남) → localStorage 본문 → 같은 슬롯의 다른 확정본·옛 숫자 키. 판번호·키가 그대로일 때만 고치므로 여러 번 돌려도 결과가 같다(난수·게임 상태와 무관).
+   읽기 자체가 오류(큰 값 읽기 실패 등)면 고치지 않고 둔다: 그래도 삭제·덮어쓰기는 된다. true면 지금 항목이 일관됨 */
+async function sbRepair(n,keys){const it=meta().slots[n];if(!it||it.pending||it.deleting||SB_PEND.has(n))return false;const stamp=sbStamp(it);let body,err=false,fix=null;
+  if(it.idb){try{body=await SaveStore.big.read(sbBodyKey(n,it));}catch(e){err=true;}}
+  if(typeof body==='string'&&unpack(body))fix={info:{...it},body};
+  else{const ls=sbLsGet(n);if(ls!=null&&unpack(ls)){const x={...it};delete x.idb;delete x.idbKey;delete x.idbCommit;fix={info:x,body:ls};}
+    else if(sbOk()){let o=null;try{o=await sbOrphan(n,(keys||[]).filter(k=>k!==it.idbCommit));}catch(e){err=true;}if(o){const keep={};for(const f of ['memo','lock'])if(it[f]!=null)keep[f]=it[f];fix={info:Object.assign({},o.info,keep,{rev:it.rev}),body:o.body};}}}
+  if(fix){const info={...fix.info};delete info.pending;delete info.deleting;delete info.lost;delete info.fail;
+    if(info.idb&&info.idbCommit&&info.idbKey!=null){try{await sbPut(info.idbCommit,JSON.stringify({saveCommit:1,n,rev:info.rev,key:info.idbKey,info}));}catch(e){return false;}}
+    const m=meta();if(!m.slots[n]||sbStamp(m.slots[n])!==stamp||m.slots[n].pending||m.slots[n].deleting)return false;m.slots[n]=info;if(!setMeta(m))return false;if(info.idb){SB.set(n,fix.body);SB_REV.set(n,sbStamp(info));}else sbForget(n);return true;}
+  if(err||!it.idb)return false;
+  const m=meta();if(!m.slots[n]||sbStamp(m.slots[n])!==stamp||m.slots[n].pending||m.slots[n].deleting)return false;const row={...m.slots[n]};delete row.idb;delete row.idbKey;delete row.idbCommit;row.lost=1;m.slots[n]=row;if(!setMeta(m))return false;sbForget(n);return true;}
+/* 지울 때 본문이 아직 남아 있는가(삭제가 중간에 실패했을 때 목록을 되돌릴지 정한다). 읽기 오류면 남은 것으로 본다 */
+async function sbAlive(n,info){if(sbLsGet(n)!=null)return true;if(!info?.idb)return false;try{return typeof await SaveStore.big.read(sbBodyKey(n,info))==='string';}catch(e){return true;}}
+/* 목록 항목은 있는데 본문을 못 읽는 칸(진행 중인 저장·삭제는 아님): 덮어쓰기를 막지 않는다 */
+function sbLostRow(n,m=meta()){const it=m.slots[n];return !!it&&!it.pending&&!(it.deleting&&!sbStaleDel(it))&&!SB_PEND.has(n)&&sbGet(n)==null;}
 function sbNeedBoot(){return sbOk();}
 function backupMark(g,day){if(g&&Number.isFinite(day))g.bkAt=Math.max(Number.isFinite(g.bkAt)?g.bkAt:-Infinity,day);}
 /* 이 탭이 연 슬롯: 저장은 늘 여기로. 다른 탭이 활성 슬롯 기록을 바꿔도 이 탭의 저장 대상은 바뀌지 않는다(검수 11-06) */
@@ -231,7 +251,7 @@ function writeSlot(n,data,info,exp,options={}){ const own=n===curSlot()&&exp==nu
   if(own&&SAVE_CONFL)return confl();
   try{ const m=meta(), old=m.slots[n]?{...m.slots[n]}:null, act0=m.active, b0=sbGet(n); if(old&&old.lock){ SAVE_ERR=`슬롯 ${n}은(는) 보관 슬롯이라 덮어쓰지 않습니다. 보관을 풀어야 쓸 수 있습니다.`; return false; } /* 보관 슬롯은 자동 저장·덮어쓰기가 절대 쓰지 않는다(플레이테스트 3) */ if(revOf(m,n)!==exp)return confl();
     if(old?.pending||old?.deleting||SB_PEND.has(n)){SAVE_ERR='이 슬롯의 이전 저장 또는 삭제가 아직 확정되지 않았습니다. 잠시 뒤 다시 시도하세요.';return false;}
-    if(old?.idb&&b0==null){SAVE_ERR='보조 저장소에서 최신 본문을 읽지 못해 덮어쓰지 않았습니다.';return false;}
+    if(old?.idb&&b0==null&&!options.lost&&!(own&&SLOT_NEW)){SAVE_ERR='보조 저장소에서 최신 본문을 읽지 못해 덮어쓰지 않았습니다.';return false;}
     if(own&&!SLOT_NEW&&SLOT_TAG!==sbTag(old))return confl();
     if(Object.prototype.hasOwnProperty.call(options,'body')&&options.body!==b0)return confl();
     info=Object.assign({},info,{rev:revNext(exp)});delete info.pending;delete info.fail;delete info.idb;delete info.idbKey;delete info.idbCommit;
@@ -248,7 +268,7 @@ function writeSlot(n,data,info,exp,options={}){ const own=n===curSlot()&&exp==nu
 /* 외부에서 가져오기·복사·슬롯 변경은 이 약속이 true로 끝난 뒤에만 화면과 활성 게임을 바꾼다. */
 async function writeSlotConfirmed(n,data,info,exp,options={}){n=+n;if(SB_PEND.has(n)&&!await sbSettle(n))return false;
   if(meta().slots[n]?.pending||meta().slots[n]?.deleting){SAVE_ERR='다른 탭의 저장 또는 삭제가 아직 확정되지 않아 덮어쓰지 않았습니다.';return false;}
-  if(sbFlag(meta(),n)&&!await sbCommitted(n)){SAVE_ERR='최신 저장 본문을 읽지 못해 덮어쓰지 않았습니다.';return false;}
+  if(sbFlag(meta(),n)&&!options.lost&&!await sbCommitted(n)){SAVE_ERR='최신 저장 본문을 읽지 못해 덮어쓰지 않았습니다.';return false;}
   if(!writeSlot(n,data,info,exp,options))return false;const stamp=sbStamp(meta().slots[n]);if(!await sbSettle(n))return false;
   const z=await sbCommitted(n);return !!(z&&sbStamp(z.info)===stamp&&z.body===data);}
 async function saveCurrentConfirmed(){if(!G)return true;const g=G,n=curSlot();for(let attempt=0;attempt<2;attempt++){if(!saveNow())return false;const j=prepG();if(!await sbSettle(n)||G!==g||curSlot()!==n||prepG()!==j)return false;const z=await sbCommitted(n),disk=z&&unpack(z.body);if(disk&&JSON.stringify(disk)===j){_svJ=j;_svN=n;_svP=null;return true;}if(!z)return false;/* 불러오기 복원이 svMark한 내용도 실제 본문이 다르면 한 번 확정해 쓴다. */svDrop(n);}return false;}

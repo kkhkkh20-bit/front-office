@@ -89,6 +89,7 @@ step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
 step "터치 기기·날짜 효과·실제 조작"; node tools/check-touch.cjs || fail=1
 step "선수 카드·모바일 읽기·검색 공간·파일 불러오기"; node tools/check-experience.cjs || fail=1
 step "저장 실패 뒤 다시 저장·보조 저장소 위치 표시"; node tools/check-save-failure.cjs || fail=1
+step "본문 없는 슬롯 삭제·덮어쓰기·되살리기, 큰 저장 여러 개(카페 11-21)"; node tools/check-save-orphan-1121.cjs || fail=1
 step "백업 가져오기·슬롯 전환·itch 이전"; node tools/check-save-import.cjs || fail=1
 step "다년계약 협상 연도별 지출 줄"; node tools/check-contract-cash-ui.cjs || fail=1
 step "기기 옮기기(코드로 저장 옮기기) 화면 왕복"; node tools/check-save-transfer-ui.cjs || fail=1
