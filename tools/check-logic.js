@@ -10854,6 +10854,22 @@ T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 �
   G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
   G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
   G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
+T('[사용자 11-21 치명 실수 경고] 교체할 수 없는 시즌 중 외국인 방출·방출해도 내는 외국인 보장 연봉·포수 전원 이탈만 경고하고, 경고 계산은 G를 바꾸지 않고 난수를 쓰지 않는다',()=>{ fresh(); const U=G.user, y=G.year, oth=G.teams.find(t=>t.id!==U).id;
+  let f=foreignOf(U).find(p=>p.foreign==='용병'); if(!f){ f=newForeign('용병'); f.team=U; } const a=newForeign('아시아'); a.team=U; a.sal=a.ask;
+  const pure=fn=>{ const s0=JSON.stringify(G), r0=__rngCalls(); const v=fn(); ok(__rngCalls()===r0,'경고 계산이 본 난수를 씀'); ok(JSON.stringify(G)===s0,'경고 계산이 G를 바꿈'); return v; };
+  G.ps=null; G.last=null; G.sea=Object.assign(G.sea||{},{y,repl:{[U]:0},asiaRepl:{[U]:0}});
+  G.day=G.cal.open+20; ok(period()==='season','시즌 중 설정 실패'); ok(pure(()=>fRelNoRepl(f))===null&&pure(()=>fRelOwed(f))===0,'교체 가능한 시즌 중 방출에 경고가 나옴');
+  G.sea.repl[U]=F_REPL_MAX; { const w=pure(()=>fRelNoRepl(f)); ok(w&&/새로 데려올 수 없습니다/.test(w)&&w.includes(F_REPL_MAX+'회'),'교체 횟수를 다 쓴 뒤 방출 경고 없음: '+w); ok(pure(()=>fRelNoRepl(a))===null,'아시아쿼터 교체가 남았는데 경고(종류별 횟수)'); ok((pure(()=>relWarn(f))||[]).some(x=>/^지금 방출하면/.test(x)),'방출 경고 목록에 없음'); }
+  G.sea.repl[U]=0; G.day=foreignDL()+1; ok(period()==='season','8월 16일이 시즌 중이 아님'); { const w=fRelNoRepl(a); ok(w&&w.includes(dmd(foreignDL()))&&/아시아쿼터/.test(w),'등록 마감 뒤 방출 경고에 날짜·종류 없음: '+w); }
+  const d0=domestic(U).find(p=>!p.ys&&!canC(p)); ok(pure(()=>fRelNoRepl(d0))===null&&fRelOwed(d0)===0,'국내 선수에 외국인 경고');
+  G.day=G.cal.open-10; ok(period()==='pre','개막 전 설정 실패'); ok(pure(()=>fRelNoRepl(f))===null,'개막 전에는 교체 경고가 없어야 함'); ok(pure(()=>fRelOwed(f))===(f.sal||0)&&f.sal>0,'개막 전 방출 보장 연봉이 releaseForeign과 다름'); ok((relWarn(f)||[]).some(x=>x.includes(money(f.sal))),'보장 연봉 금액이 경고에 없음');
+  { releaseForeign(f.id); ok(fDeadOf(U,y)>=f.sal,'개막 전 방출이 보장 연봉을 남기지 않음(경고와 실제가 다름)'); }
+  G.day=G.cal.open+20; const C=playersOf(U).filter(canC); ok(C.length>=2,'포수가 2명 미만인 시작 명단'); const [c1,c2]=C; C.slice(2).forEach(p=>{ p.team=oth; });
+  ok(pure(()=>catcherLeftWhy(U,[c1.id]))===null,'포수가 남는데 경고'); ok(pure(()=>catcherLeftWhy(U,[d0.id]))===null,'포수가 아닌 선수 방출에 포수 경고');
+  { const w=pure(()=>catcherLeftWhy(U,[c1.id,c2.id])); ok(w&&/포수가 한 명도 남지 않아/.test(w),'포수 전원 방출 경고 없음: '+w); }
+  { const q=playersOf(oth).find(canC); ok(q&&catcherLeftWhy(U,[c1.id,c2.id],[q.id])===null,'트레이드로 포수를 받으면 경고하지 않아야 함'); }
+  c2.injOut=30; { const w=pure(()=>catcherLeftWhy(U,[c1.id])); ok(w&&/뛸 수 없어/.test(w),'남는 포수가 모두 부상인데 경고 없음: '+w); ok((relWarn(c1)||[]).some(x=>/^방출하면/.test(x)),'방출 경고 목록에 포수 경고 없음'); }
+  c2.injOut=0; ok(relWarn(c1)===null,'경고할 일이 없는데 방출 경고 목록이 비어 있지 않음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
