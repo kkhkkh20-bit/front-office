@@ -103,7 +103,7 @@ function peopleStep(d){
   else A.person(next);
   sheetScrollTo(y);
 }
-function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)for(const y of L)if(y.k===k)x=y; if(!x)x=personX(k); if(!x)return '';
+function personSheet(k){ if(String(k).startsWith('ovp:'))return ovPlayerSheet(String(k).slice(4)); if(String(k).startsWith('ovc:'))return ovClubSheet(String(k).slice(4)); const gs=relPeople(); let x=null; for(const [,L] of gs)for(const y of L)if(y.k===k)x=y; if(!x)x=personX(k); if(!x)return '';
   const t=team(G.user); const sec=(h,b)=>b?`<div class="ps-s"><div class="eyebrow">${h}</div>${b}</div>`:'';
   const btn=(l,a,v,pri)=>`<button class="btn ${pri?'primary':''}" data-a="${a}" data-v="${v}">${l}</button>`;
   let info=x.info||'', infoPF=null, moves=[], fx=[], acts=x.acts||[], recent=''; /* infoPF: 인물 카드 틀이 있을 때 카드와 겹치는 줄을 뺀 정보 */ /* info·acts: 떠난 사람 카드(personGone) */
@@ -115,7 +115,7 @@ function personSheet(k){ const gs=relPeople(); let x=null; for(const [,L] of gs)
     acts=[btn('구단주에게 요청','go','club:owner',1),btn('재정','go','club:fin')]; }
   else if(k==='ceo'){ const B=bossOf(G.user); const b=budget();
     info=`<p>${esc(B.ceo.car)}. 구단주의 뜻을 단장에게 전하고, 연봉·운영비 집행을 맡습니다.</p><p class="small">올해 예산 여유 <b>${money(b.roomGoal)}</b> · 지원 한도 ${money(supportCap(t))}</p>`;
-    moves=['홈경기를 함께 보면 친밀도가 오르고, 이기면 더 오릅니다. 두 달 넘게 함께 보지 않으면 조금씩 식습니다','친밀도가 높을수록 운영비·시설 투자 요청이 잘 통합니다. 구단주 쪽이 더 크게 작용합니다','지원 한도 자체는 구단주 신뢰를 따릅니다'];
+    moves=['홈경기를 함께 보면 친밀도가 오르며, 승리하면 더 오릅니다. 두 달 넘게 함께 보지 않으면 조금씩 낮아집니다','친밀도가 높을수록 운영비·시설 투자 요청이 잘 통합니다. 구단주 쪽이 더 크게 작용합니다','지원 한도 자체는 구단주 신뢰를 따릅니다'];
     fx=['예산을 넘겨 쓰면 구단주 재정 평가가 나빠집니다'];
     acts=[btn('재정','go','club:fin',1),btn('구단주·목표','go','club:owner')]; }
   else if(k==='mgr'){ const m=G.mgr[G.user]; const C=coachesOf(G.user); const clan=CKEYS.filter(r=>C[r]&&C[r].clan===m.id).map(r=>C[r].name);

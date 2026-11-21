@@ -136,6 +136,8 @@ if [ "${LONG_PLAY:-0}" = "1" ]; then
  step "실제 조작으로 휴대폰·태블릿·PC 한 시즌"; node tools/check-season-playthrough.cjs || fail=1
 fi
 step "연수·의료 에셋 실제 연결"; node tools/check-operations-art.cjs || fail=1
+step "해외 리그 허브·리그별 기록·역대 화면"; node tools/check-ovs-hub-1121.cjs || fail=1
+step "해외 선수·구단 카드·공개 정보·장식 사진 설정"; node tools/check-overseas-cards-ui.cjs || fail=1
 echo
 if [ $fail = 0 ]; then echo "전체 점검: 통과"; else echo "전체 점검: 실패 — 위 내용을 확인하세요"; fi
 exit $fail

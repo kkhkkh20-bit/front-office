@@ -52,7 +52,7 @@ function cheerView(){ if(G.unemp)return ''; if(!(G.fanOps&&G.fanOps.cs))return `
     <div class="chips">${ag}</div><p class="small muted">${esc(CHEER_AG[S.ag].d)}</p>
     <div class="fo-sum small"><span>단원 <b>${S.L.length}명</b></span><span>무대 <b>${up.size}/${CHEER_STAGE[lv]}명</b></span><span>무대 힘 <b>${pw.toFixed(1)}</b></span><span>홈 관중 <b style="color:${att>=0?'var(--good)':'var(--bad)'}">${att>=0?'+':''}${(att*100).toFixed(1)}%</b></span><span>월 수수료 <b>${money(cheerPay())}</b></span></div>
     <div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn small${S.auto?' primary':''}" data-a="cheerAuto">${S.auto?'자동 순환 중':'직접 정하는 중'}</button><button class="btn small" data-a="cheerMeet"${ml?' disabled':''}>${ml?esc(ml):'치어리더 팬 사인회 '+money(5)}</button></div>
-    <p class="small muted">${S.auto?'자동 순환: 덜 지친 단원부터 무대에 섭니다. 단원 버튼을 누르면 직접 정하기로 바뀝니다.':'직접 정하기: 선발로 둔 단원 중 덜 지친 순서로 무대에 섭니다. 선발이 모자라면 무대 힘이 줄어듭니다.'}</p>
+    <p class="small muted">${S.auto?'자동 순환: 덜 지친 단원부터 무대에 섭니다. 단원 버튼을 누르면 직접 정하기로 바뀝니다.':'직접 정하기: 선발 단원 중 피로가 적은 순서로 출연합니다. 선발이 부족하면 무대 힘이 줄어듭니다.'}</p>
     ${UI.cheerMsg?`<div class="note">${esc(UI.cheerMsg)}</div>`:''}
     <div class="chm-g">${L.map(m=>cheerCard(S,m,up.has(m.id))).join('')}</div>`; }
 Object.assign(A,{ cheerOn(v){ UI.cheerMsg=cheerOn(v); save(); render(); }, cheerAuto(){ UI.cheerMsg=cheerAuto(); save(); render(); }, cheerAg(v){ UI.cheerMsg=cheerAg(v); cheer22Migrate(); save(); render(); }, cheerMeet(){ UI.cheerMsg=cheerMeet(); save(); render(); } });

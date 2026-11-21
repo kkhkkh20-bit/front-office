@@ -260,7 +260,7 @@ const scenePath=id=>'assets/v14/'+(id.startsWith('event_')?'cheer/events/':id.st
 let SCENE_OK=null; /* null 아직 · 'wait' 시험 중 · true 됨 · false 안 됨 */
 function sceneProbe(){ if(SCENE_OK!==null||typeof Image==='undefined')return; SCENE_OK='wait'; const im=new Image(); im.onload=()=>{ SCENE_OK=true; try{ render(); }catch(e){} }; im.onerror=()=>{ SCENE_OK=false; }; im.src=scenePath('event_first_pitch'); }
 const sceneOf=(g,seed)=>SCENE_N[g]?g+'_'+(1+shash(seed)%SCENE_N[g]):g; /* shash: 44b_cheer_squad.js */
-function sceneImg(id,alt,cls){ sceneProbe(); if(SCENE_OK!==true)return ''; return `<img class="scene-im ${cls||''}" src="${scenePath(id)}" width="1280" height="720" alt="${esc(alt||'')}" loading="lazy" decoding="async">`; }
+function sceneImg(id,alt,cls){ if(!decorPhotosOn())return ''; sceneProbe(); if(SCENE_OK!==true)return ''; return `<img class="scene-im ${cls||''}" src="${scenePath(id)}" width="1280" height="720" alt="${esc(alt||'')}" loading="lazy" decoding="async">`; }
 /* 스카우트 소식: 내용에 맞는 출장 장면(드래프트 회의·겨울 전훈·전국대회·더그아웃 면담·주말리그) */
 function mailScene(m){ if(!/스카우트/.test(m.from||''))return ''; const t=(m.subj||'')+' '+(m.body||'').slice(0,120), mo=dobj(m.day).m;
   const g=/드래프트|지명 회의|지명 순위/.test(t)?'scout_draft_meeting':/감독|면담|귀띔/.test(t)?'scout_dugout':mo===12||mo<=2?'scout_winter':/대회|봉황|청룡|황금사자|대통령배|협회장기/.test(t)?'scout_tournament':'scout_weekend';
@@ -269,5 +269,5 @@ function mailScene(m){ if(!/스카우트/.test(m.from||''))return ''; const t=(m
 /* 운영·육성 실사 장면: 같은 경로를 사이트 패키지에 포함한다. 단일 HTML에 폴더가 없으면 사진만 생략한다. */
 const OPS_ART={"ovs_abl_game":{"title":"호주리그 실전 파견","v":{"480":"f2bb83fc1f9c","960":"0b76f5d573dc"}},"ovs_us_lab":{"title":"미국 피칭·타격 랩","v":{"480":"c9a98fa9ce3e","960":"04e2e427487c"}},"ovs_jpl_mechanics":{"title":"일본 대학·연구소 메커니즘","v":{"480":"e8a25d415f68","960":"885e611aaba6"}},"ovs_cnd_performance":{"title":"미국 컨디셔닝 센터","v":{"480":"6c675551ec92","960":"5f0b4cf8330e"}},"ovs_kac_academy":{"title":"국내 피칭·타격 아카데미","v":{"480":"c716a423f8fe","960":"c705d3f20517"}},"med_screening":{"title":"상태 평가·부하 점검","v":{"480":"70973390416b","960":"e393c6cc7738"}},"med_rehab":{"title":"재활·회복 훈련","v":{"480":"be535b329237","960":"c46aac7f473a"}},"med_return_bullpen":{"title":"복귀 전 실전 점검","v":{"480":"96ce02d839ed","960":"b5707ed8d6b8"}}};
 const OPS_OVS_ART={abl:'ovs_abl_game',us:'ovs_us_lab',jpl:'ovs_jpl_mechanics',cnd:'ovs_cnd_performance',kac:'ovs_kac_academy'};
-function opsPhoto(id,cls,small){ const a=OPS_ART[id]; if(!a)return ''; const n=small?480:960, path=w=>`assets/design-review/2026-11-10/photos/${w}/${id}.webp?v=${a.v[w]}`;
+function opsPhoto(id,cls,small){ if(!decorPhotosOn())return ''; const a=OPS_ART[id]; if(!a)return ''; const n=small?480:960, path=w=>`assets/design-review/2026-11-10/photos/${w}/${id}.webp?v=${a.v[w]}`;
   return `<img class="ops-photo ${cls||''}" src="${path(n)}" ${small?'':`srcset="${path(480)} 480w, ${path(960)} 960w" sizes="(max-width:699px) calc(100vw - 50px), (max-width:1099px) 45vw, 38vw"`} width="${n}" height="${n*9/16}" alt="${esc(a.title)} 설명용 사진" loading="${small?'eager':'lazy'}" decoding="async" onerror="this.hidden=true">`; }

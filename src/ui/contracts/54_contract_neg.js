@@ -83,7 +83,7 @@ function ngtResOf(N){ const p=G.players[N.id]; if(N.res){ if(N.k==='fa'&&N.res.s
   return null; }
 function ngtResHtml(N){ const R=ngtResOf(N); if(!R)return ''; const nx=ngtReopenTxt(N,R);
   const M={ok:['good','합의',R.sub||'계약이 확정됐습니다.'],
-    counter:['warn','역제안','에이전트가 조건을 바꿔 내놓았습니다. 오른쪽 카드에서 수락·거절하거나 고쳐서 다시 제안하세요. 카드 조건을 그대로 내도 받아들입니다.'],
+    counter:['warn','역제안','에이전트의 수정 제안입니다. 카드에서 수락·거절하거나 조건을 고쳐 제안하세요. 같은 조건으로 다시 제안해도 수락합니다.'],
     no:['bad','거절',N.k==='sal'?'선수가 요구액을 조금 낮춰 답했습니다. 그 금액이면 바로 합의됩니다.':'조건을 바꿔 다시 제안할 수 있습니다.'],
     market:['bad','거절 · FA 시장을 보겠다고 합니다',nx],
     fold:['bad','에이전트가 협상을 접었습니다',nx||'잠시 뒤 다시 제안할 수 있습니다.'],
@@ -92,7 +92,7 @@ function ngtResHtml(N){ const R=ngtResOf(N); if(!R)return ''; const nx=ngtReopen
     wait:['warn','검토 중 · 아직 계약 아님',R.shop?`선수가 시장 반응을 보고 ${dsh(R.shop)}쯤 답합니다. 결과는 소식으로 알려 드립니다.`:'다른 구단 조건과 비교해 결정합니다. 사인하면(또는 다른 구단으로 가면) 소식으로 알려 드립니다.'],
     closed:['bad','협상 결렬',nx],
     grace:['bad','결렬 직전 · 원소속 구단이라 한 번 더 기회',nx],
-    funds:['bad','FA 계약 자금 부족','선수에게 내밀지 못했습니다(라운드·분위기는 그대로). 계약금을 줄이고 연봉으로 돌리거나, 구단주에게 FA 영입 자금을 요청하세요.'],
+    funds:['bad','FA 계약 자금 부족','제안을 보내지 못했습니다. 협상 라운드·분위기는 바뀌지 않았습니다. 계약금을 줄여 연봉으로 옮기거나 구단주에게 FA 자금을 요청하세요.'],
     owner:['bad','구단주 결재 거절','선수에게 내밀지 못했습니다(라운드·분위기는 그대로). 조건을 낮추거나 연봉이 많은 선수를 먼저 정리하세요.']};
   const m=M[R.st]; if(!m)return ''; return `<div class="ng-res ${m[0]}"><b>${m[1]}</b>${m[2]?`<span>${esc(m[2])}</span>`:''}</div>`; }
 /* 지금 걸린 역제안(FA neg.counter · 비FA extCounter · 연봉 협상은 선수가 낮춰 부른 요구액) */

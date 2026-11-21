@@ -139,7 +139,7 @@ function scoutFM(){ const S=G.scouts||[], ch=scoutChief(), sel=UI.scSel&&S.find(
     <div class="scn-g"><i>아마추어</i>${REG.map(r=>cell('am',r,r,`드래프트 후보 ${draft.filter(p=>p.region===r).length}명`)).join('')}</div>
     <div class="scn-g"><i>프로</i>${REG.map(r=>cell('pro',r,r+' 구단',`다른 구단 ${proT(r).length}곳`)).join('')}</div>
     <div class="scn-g scn-g5"><i>해외</i>${Object.keys(IREG).map(r=>cell('intl',r,IREG[r].l,`후보 ${fm.filter(p=>origOf(p)===r).length}명`)).join('')}</div>
-    <p class="sf-leg">막대 ${hiI('국내는 담당 스카우트 능력(5단계, 적응 중이면 -1), 해외는 정보망 단계(3단계, 스카우트 파견 +1)')}</p></section>`;
+    <p class="sf-leg">막대 ${hiI('국내: 담당 스카우트 능력 5단계(적응 중 -1). 해외: 정보망 3단계(스카우트 파견 +1)')}</p></section>`;
   /* 관심 명단: 드래프트 관심 선수(별표) + 외국인 관찰 명단(매주 보고 누적) */
   const SL=(G.shortlist||[]).map(id=>G.players[id]).filter(p=>p&&p.prospect), FW=(G.fwatch||[]).map(w=>({w,p:G.players[w.id]})).filter(x=>x.p);
   const watch=`<section class="card scn-watch"><h3>관심 명단 <em>드래프트 ${SL.length}명 · 외국인 ${FW.length}/8명</em></h3><div class="sf-tw"><table class="sf-t scn-t"><thead><tr><th>드래프트 관심 선수</th><th>지역</th><th>현재 / 잠재</th><th>신뢰도</th><th></th></tr></thead><tbody>${SL.map(p=>{ const r=scoutReport(p); return `<tr><td><button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button><span class="scn-s">${esc(posLabel(p))} · ${p.age}세${p.school?` · ${esc(p.school)}`:''}</span></td><td>${esc(p.region||'-')}</td><td>${r.cur!=null?rchipG(r.cur,r.exact):'-'} / ${r.ofp!=null?rchipG(r.ofp):'?'}</td><td>${esc(r.conf||'-')}</td><td><button class="btn small" data-a="star" data-v="${p.id}">빼기</button></td></tr>`; }).join('')||'<tr><td colspan="5" class="muted">관심 후보가 없습니다.</td></tr>'}</tbody></table>

@@ -1,6 +1,8 @@
 /* 운영·육성: 비교 목록과 선택 상세만 스크롤. 사진이 화면 밖으로 표를 밀지 않게 한다. */
 .ops-photo{display:block;object-fit:cover;object-position:50% 50%;max-width:100%;border-radius:3px;background:var(--panel2)}
 .ops-photo[hidden],.ovs-visual:has(>.ops-photo[hidden]){display:none!important}
+.ovs-visual:empty{display:none}
+.ovs-choice:not(:has(.ops-thumb)){min-height:72px}
 .card.ovs-page{display:flex;flex-direction:column;flex:1;min-height:0;margin:0;overflow:hidden;gap:8px}
 .ovs-page>.row,.ovs-page>.seg,.ovs-center>.seg{flex:none;margin:0}
 .ovs-center{display:flex;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;gap:8px}

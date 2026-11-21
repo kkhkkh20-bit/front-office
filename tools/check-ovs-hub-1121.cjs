@@ -1,5 +1,5 @@
 /* 해외 리그 허브(11-21): 리그 > 리그별에서 MLB·트리플A·NPB·CPBL·멕시코리그마다 순위·주요 선수·기록 순위·우승 역대를 연다.
-   PC(1280x900)는 페이지 스크롤이 없고, 휴대폰(390x844)은 가로 넘침이 없어야 한다. 기록 순위는 그 리그 선수만, 세계 주목 선수 이름은 세계 선수 탭으로 간다.
+   PC(1280x900)는 페이지 스크롤이 없고, 휴대폰(390x844)은 가로 넘침이 없어야 한다. 기록 순위는 그 리그 선수만, 세계 주목 선수 이름은 선수 카드를 연다.
    사용: node tools/check-ovs-hub-1121.cjs  (index.html 필요: bash build.sh). 스크린숏: OVS_HUB_OUT(기본 /tmp/ovs-hub-1121) */
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {chromium}=require('playwright'),{startHtmlServer}=require('./lib/ui-server.cjs');
@@ -15,12 +15,13 @@ try{await page.goto(server.url);await page.waitForFunction(()=>performance.getEn
   for(const lg of ['MLB','AAA','NPB','CPBL','LMB'])for(const h of ['stand','pl','rec','hist']){
     const s=await page.evaluate(({lg,h})=>{UI.it.ovls=lg;UI.it.ovlh=h;render();const m=document.querySelector('.fmmain')||document.body;return {txt:m.textContent,cards:m.querySelectorAll('.am-lc').length,rows:m.querySelectorAll('.am-lt tbody tr').length,ht:m.querySelectorAll('.ovh-ht tbody tr').length};},{lg,h});
     if(h==='stand')assert.equal(s.rows,await page.evaluate(lg=>OVL_C[lg].length,lg),lg+' 순위 구단 수');
-    if(h==='pl'||h==='rec')assert.ok(s.cards>=2&&s.rows>0&&/게임이 기록을 쌓는 선수/.test(s.txt),lg+' '+h+' '+JSON.stringify({c:s.cards,r:s.rows}));
+    if(h==='pl'||h==='rec')assert.ok(s.cards>=2&&s.rows>0&&/기록이 있는 선수|기록을 집계합니다/.test(s.txt),lg+' '+h+' '+JSON.stringify({c:s.cards,r:s.rows}));
     if(h==='hist')assert.ok(s.ht>=1&&s.ht<=10,lg+' 역대 '+s.ht);
     await fit(lg+':'+h);if(shot.has(lg+':'+h))await page.screenshot({path:path.join(out,`${width}-${lg}-${h}.png`)});}
   /* 기록 순위는 그 리그 선수만: NPB 표의 세계 주목 선수는 모두 NPB 소속 */
-  const bad=await page.evaluate(()=>{UI.it.ovls='NPB';UI.it.ovlh='rec';render();return [...document.querySelectorAll('.ovh-lg [data-a="ovlWp"]')].map(b=>wpsGet(b.dataset.v)).filter(e=>!e||e.lg!=='NPB').length;});assert.equal(bad,0,'NPB 기록 순위에 다른 리그 선수');
-  const wp=page.locator('.ovh-lg [data-a="ovlWp"]:visible').first();if(await wp.count()){const id=await wp.getAttribute('data-v');await wp.click();assert.ok(await page.evaluate(id=>UI.it.ovlv==='world'&&UI.open['wp_'+id]===true&&!!document.querySelector(`details.wp[data-k="wp_${id}"][open]`),id),'세계 선수 탭으로 이동');}
+  const world=await page.evaluate(()=>{UI.it.ovls='NPB';UI.it.ovlh='rec';render();return [...document.querySelectorAll('.ovh-lg [data-a="ovlPlayer"]')].map(b=>wpsGet(b.dataset.v)).filter(Boolean).map(e=>({id:e.i,lg:e.lg}));});
+  assert.ok(world.length>0,'NPB 기록 순위에 세계 주목 선수 링크가 있어야 함');assert.ok(world.every(e=>e.lg==='NPB'),'NPB 기록 순위에 다른 리그 선수');
+  const wp=page.locator(`.ovh-lg [data-a="ovlPlayer"][data-v="${world[0].id}"]`).first();await wp.click();assert.ok(await page.locator('.ov-player-card').isVisible(),'세계 주목 선수 카드 열기');assert.equal(await page.evaluate(()=>UI.person),'ovp:'+world[0].id);await page.locator('#sheet [data-a="detailBack"]').click();
   /* 예전 탭 이름(역대 우승)은 리그별 > 우승·역대로, 구단 순위 단추는 그 구단을 표시 */
   const old=await page.evaluate(()=>{UI.it.ovlv='champ';render();const a={v:UI.it.ovlv,h:UI.it.ovlh};A.ovlTeam('NPB:3');render();return {...a,hl:document.querySelectorAll('.ovh-st tr.hl').length,s:UI.it.ovls,h2:UI.it.ovlh};});
   assert.deepEqual(old,{v:'stand',h:'hist',hl:1,s:'NPB',h2:'stand'},'예전 탭 '+JSON.stringify(old));

@@ -11,10 +11,10 @@ function tradeBar(p,tid){ if(!p)return null; const H=why=>({l:'트레이드 불�
   if(p.foreign)return H('외국인 선수는 트레이드할 수 없습니다.');
   if(p.joinY>G.year)return H('올해 입단한 신인은 트레이드할 수 없습니다.');
   try{ if(sdLock(p))return H(sdLockWhy(p)); }catch(e){}
-  try{ if(faSignLock(p))return H('FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다.'); if(faLock(p))return H('FA 신청을 앞둔 선수는 FA 공시(스토브리그 시작) 전까지 트레이드할 수 없습니다.'); }catch(e){}
+  try{ if(faSignLock(p))return H('FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다.'); if(faLock(p))return H('FA 신청 예정 선수는 스토브리그 시작 시 FA 공시가 나기 전까지 트레이드할 수 없습니다.'); }catch(e){}
   if(p.team!==G.user){ try{ if(hasNtc(p))return H(`계약서에 트레이드 거부권(${p.ntc}년까지)이 있어 데려올 수 없습니다.`); }catch(e){} return null; }
   try{ if(tid!=null?ntcFor(p,tid):hasNtc(p))return {l:'거부권',why:`트레이드 거부권(${p.ntc}년까지)이 있어 선수 동의가 필요합니다.`,hard:false}; }catch(e){}
-  if(p.noTrade)return {l:'트레이드 불가',why:'트레이드 불가로 지정한 선수입니다. 다른 구단이 이 선수를 묻지 않습니다. 우리가 먼저 제안할 수는 있습니다.',hard:false};
+  if(p.noTrade)return {l:'트레이드 불가',why:'트레이드 불가 선수입니다. 다른 구단의 요청을 막지만, 우리가 먼저 제안할 수는 있습니다.',hard:false};
   return null; }
 const tradeHard=(p,tid)=>{ const b=tradeBar(p,tid); return !!(b&&b.hard); };
 function tradeTags(p,tid){ if(!p)return ''; const T=[];
@@ -89,7 +89,7 @@ function lgTradeExtras(x){ const L=(x.bn||[]).slice((x.bg||[]).length); if(x.cas
 function tcReport(){ const my=(G.trades||[]).filter(t=>t.gi).slice().reverse(); const rep=G.rep??50;
   const row=t=>{ const r=tradeReport(t); return `<div class="trr"><div><b>${t.y} ${t.d!=null?dmd(t.d):''} · ${badge(t.with,14)} ${esc(tshort(t.with))}</b><span>받음 ${esc(trSide(t,'get'))} · 보냄 ${esc(trSide(t,'give'))}</span></div><span class="grade g${t.grade||'C'}">${t.grade||'-'}</span>${r?`<span class="trw ${r.net>=.5?'up':r.net<=-.5?'dn':''}">${r.net>=0?'+':''}${r.net.toFixed(1)} WAR</span>`:''}</div>`; };
   const lg=(G.lgTrades||[]).slice(0,10).map(x=>`<div class="fd"><span class="pill acc">${x.y}</span><span>${esc(tshort(x.a))} ← ${x.ag.map((id,i)=>{ const n=pNmAny(id); return n==='?'&&x.an?x.an[i]:n; }).join(', ')} / ${esc(tshort(x.b))} ← ${[...x.bg.map((id,i)=>{ const n=pNmAny(id); return n==='?'&&x.bn?x.bn[i]:n; }),...lgTradeExtras(x).map(esc)].join(', ')}</span><i>${dsh(x.d)}</i></div>`).join('');
-  return `  <section class="card"><div class="row between"><h2 class="sec">우리 트레이드 성적표</h2><span class="small muted">평점은 거래 당시 언론 평가, WAR은 이후 실제 성적 차이</span></div>${my.some(t=>!t.snap?.byTeam)?'<p class="small muted">옛 거래 일부는 거래 전 기여가 섞여 있을 수 있습니다. '+hiI('구단별 기준선이 없는 옛 거래 기록은 거래 전 기여가 포함될 수 있습니다. 새 거래부터는 거래 이후의 구단별 기여만 셉니다.')+'</p>':''}${my.length?my.map(row).join(''):'<p class="small muted">아직 트레이드 기록이 없습니다.</p>'}</section>
+  return `  <section class="card"><div class="row between"><h2 class="sec">우리 트레이드 성적표</h2><span class="small muted">평점은 거래 당시 언론 평가, WAR은 이후 실제 성적 차이</span></div>${my.some(t=>!t.snap?.byTeam)?'<p class="small muted">옛 거래 일부는 거래 전 기여가 섞여 있을 수 있습니다. '+hiI('옛 거래는 기준 기록이 없어 거래 전 기여가 포함될 수 있습니다. 새 거래는 거래 이후의 구단별 기여만 집계합니다.')+'</p>':''}${my.length?my.map(row).join(''):'<p class="small muted">아직 트레이드 기록이 없습니다.</p>'}</section>
   <section class="card"><h2 class="sec">리그 트레이드</h2>${lg?`<div class="feed">${lg}</div>`:'<p class="small muted">아직 없습니다.</p>'}</section>`; }
 function tradeCenter(){faCelebrate();const s=curSub('trade'),BODY={block:blockCenter,market:tcMarket,fa:faCenter,find:()=>tcFind('buy'),table:tradeView,offers:blockCenter,gms:tcGms,report:tcReport};
  const extra=s==='gms'||s==='report'?`<div class="trade-back"><button class="btn small" data-a="go" data-v="trade:${s==='gms'?'table':'block'}">‹ ${s==='gms'?'협상으로':'제안·매물로'}</button><b>${s==='gms'?'상대 단장':'거래 기록'}</b></div>`:'';

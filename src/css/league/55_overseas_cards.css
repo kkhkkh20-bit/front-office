@@ -1,0 +1,8 @@
+.ov-card{max-width:960px}.ov-card .sheet-head{align-items:flex-start}.ov-card .sheet-head h2{overflow-wrap:anywhere}
+.ov-card-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0;padding:16px;background:var(--panel2,var(--bg));border:1px solid var(--line);border-radius:8px}
+.ov-card-facts div{min-width:0}.ov-card-facts dt{font-size:12px;color:var(--muted);margin-bottom:6px}.ov-card-facts dd{margin:0;font-size:16px;overflow-wrap:anywhere}
+.ov-card-section{margin-top:22px}.ov-card-section h3{font-size:16px;margin:0 0 10px}.ov-card-report,.ov-card-flags,.ov-card-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.ov-card-actions{margin-top:20px}
+.ov-card-report .wps-est{margin-left:0;justify-items:start}
+.ov-card-roster{display:grid;gap:0}.ov-card-player{display:grid;grid-template-columns:minmax(120px,1fr) 48px minmax(0,2fr);align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ov-card-player>.lnk{text-align:left;overflow-wrap:anywhere}.ov-card-player>span:last-child{overflow-wrap:anywhere}.ov-card .wps-ht{min-width:0}.ov-card .tw{max-width:100%}
+@media(max-width:699px){.ov-card-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.ov-card-player{grid-template-columns:minmax(0,1fr) 48px;gap:6px}.ov-card-player>span:last-child{grid-column:1/-1}.ov-card-actions .ovq-row{display:flex;flex-wrap:wrap}}
