@@ -24,6 +24,11 @@
 .cpbl{all:unset;cursor:pointer;display:block;padding:7px 8px;border:1px solid var(--line);border-radius:5px;margin-top:4px}
 .cpbl:hover{border-color:var(--line2);background:#ffffff06}
 .cpbtns{display:flex;flex-wrap:wrap;gap:6px}
+.fac-funding-help{margin:8px 0;min-width:0;max-width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px;background:var(--panel2);overflow-wrap:anywhere}
+.fac-funding-help summary{cursor:pointer;min-height:32px;line-height:20px;font-size:13px;font-weight:600}
+.fac-funding-rows{display:grid;gap:10px;padding-top:8px;font-size:13px;line-height:1.55}
+.fac-funding-rows section{min-width:0;border-top:1px solid var(--line);padding-top:8px}
+.fac-funding-rows p{margin:4px 0 0}
 .cpstat{font-size:13px;padding:6px 8px;border-radius:4px;background:#0f161c;border-left:3px solid var(--good)}
 .cpstat span{display:block;font-size:var(--ui-caption);color:var(--muted);margin-bottom:1px}
 .cpfn{font-size:var(--ui-caption)}

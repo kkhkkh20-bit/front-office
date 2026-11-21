@@ -18,7 +18,7 @@ function staffView(){
     fac:facView,
     lead:()=>chemCard(G.user)+leadCard(),
     mil:milView,
-    med:()=>fmOn()?medFM():csec('부상 방지·병원',medArtSummary()+medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
+    med:()=>fmOn()?medFM():csec('부상 방지·병원',medArtSummary()+medMobileLists()+medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
   return subTabs('staff')+h;
 }
 /* ---------- 코치진 ---------- */

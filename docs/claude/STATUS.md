@@ -1,5 +1,7 @@
 # Status (overwrite each session end; keep short)
 
+UI follow-up (2026-11-21): `codex/mobile-training-medical-1121` starts from main `83de5da9`, independently of frozen stadium PR #326 (`7eee4e18`, approved but CI queued). Mobile training wrapping, medical risk/recovery lists, facility funding disclosure only. Repro tests 3/3, Chromium 320/390/768/1366, builds/static, staff and operations regressions pass. QUICK is running; full check, independent multi-year sim and physical devices unrun. See `docs/updates/2026-11-21-mobile-usability/README.md`. Keep draft; merge order #326 first, refresh main and retest. Do not claim deployment or full verification.
+
 Updated: 2026-11-21. Live: 082c544 (#300). All of #299-#314 merged.
 
 ## Open PRs

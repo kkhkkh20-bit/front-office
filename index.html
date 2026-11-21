@@ -2847,6 +2847,10 @@ details.credits{text-align:center;margin-top:8px}details.credits>summary{cursor:
 .trn-seg{display:flex;overflow-x:auto;scrollbar-width:none}
 .trn-seg button{flex:1 0 auto;padding:6px 10px;font-size:12px;white-space:nowrap}
 .trn-seg button i{font-style:normal;margin-left:2px;opacity:.8}
+@media(max-width:699px){
+ .trn-row .trn-seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}
+ .trn-row .trn-seg button{min-width:0;min-height:40px;white-space:normal;padding:8px 4px}
+}
 .trn-bar{position:sticky;top:0;z-index:5;display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:8px 10px;margin:6px 0;border-radius:10px;background:var(--card,#1b2230);border:1px solid var(--acc,#4a6cf7)}
 .trn-bar span{margin-right:auto;font-size:13px}
 .negw-body{margin-top:10px;display:flex;flex-direction:column;gap:10px}
@@ -3778,6 +3782,11 @@ button.ibx-day{display:flex;align-items:center;gap:6px;width:100%;text-align:lef
 .cpbl{all:unset;cursor:pointer;display:block;padding:7px 8px;border:1px solid var(--line);border-radius:5px;margin-top:4px}
 .cpbl:hover{border-color:var(--line2);background:#ffffff06}
 .cpbtns{display:flex;flex-wrap:wrap;gap:6px}
+.fac-funding-help{margin:8px 0;min-width:0;max-width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px;background:var(--panel2);overflow-wrap:anywhere}
+.fac-funding-help summary{cursor:pointer;min-height:32px;line-height:20px;font-size:13px;font-weight:600}
+.fac-funding-rows{display:grid;gap:10px;padding-top:8px;font-size:13px;line-height:1.55}
+.fac-funding-rows section{min-width:0;border-top:1px solid var(--line);padding-top:8px}
+.fac-funding-rows p{margin:4px 0 0}
 .cpstat{font-size:13px;padding:6px 8px;border-radius:4px;background:#0f161c;border-left:3px solid var(--good)}
 .cpstat span{display:block;font-size:var(--ui-caption);color:var(--muted);margin-bottom:1px}
 .cpfn{font-size:var(--ui-caption)}
@@ -7297,6 +7306,11 @@ html:has(.inbox-workspace),body:has(.inbox-workspace){height:100%;overflow:hidde
 .med-art-summary .ops-photo{width:100%;height:auto;aspect-ratio:16/9;border-radius:0}
 .med-art-summary figcaption{display:grid;gap:2px;padding:6px 8px;font-size:12px}
 .med-art-summary figcaption span{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.med-mobile-list{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);min-width:0}
+.med-mobile-list summary{cursor:pointer;min-height:36px;line-height:20px;font-weight:600;overflow-wrap:anywhere}
+.med-mobile-list summary small{display:block;margin-left:15px;font-weight:400;color:var(--muted)}
+.med-mobile-list .item{width:100%;min-width:0;display:flex;flex-direction:column;align-items:stretch;gap:3px;white-space:normal;text-align:left}
+.med-mobile-list .nm,.med-mobile-list .sub{white-space:normal;overflow-wrap:anywhere}
 @media(max-width:1099px){
  .ovs-choice{padding:10px;gap:8px}.ops-thumb{width:72px;height:41px}.ovs-choice-text b{font-size:13px}
  .ovs-choice-text>span,.ovs-choice-text small{font-size:12px}.ovs-grid{gap:8px}
@@ -45706,7 +45720,7 @@ function staffView(){
     fac:facView,
     lead:()=>chemCard(G.user)+leadCard(),
     mil:milView,
-    med:()=>fmOn()?medFM():csec('부상 방지·병원',medArtSummary()+medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
+    med:()=>fmOn()?medFM():csec('부상 방지·병원',medArtSummary()+medMobileLists()+medBody(),`<span class="small muted">${PREV[G.med.prev].l} · ${esc(HOSP[G.med.hosp].name)}</span>`)}; const h=mergedBody('staff',s,H0);
   return subTabs('staff')+h;
 }
 /* ---------- 코치진 ---------- */
@@ -45903,11 +45917,18 @@ function medRisk(p){ const sp=p.isP, cd=sp?consecDays(p,G.day+1):0, lm=sp?loadMu
 function medRecentBack(){ const bkD=x=>x.bk??(x.d+x.days);return ownedOf(G.user).flatMap(p=>(p.injHist||[]).filter(x=>bkD(x)<=G.day&&G.day-bkD(x)<=30&&!(p.injOut>0)).map(x=>({p,x}))).sort((a,b)=>bkD(b.x)-bkD(a.x)); }
 function medArtSummary(){ const n=injNowList().filter(x=>x.st==='out').length, back=new Set(medRecentBack().map(x=>x.p.id)).size;
   return `<div class="med-art-summary">${[['med_screening','상태 평가','피로·투수 부하 점검'],['med_rehab','치료·재활',`부상 ${n}명`],['med_return_bullpen','최근 복귀',`30일 내 ${back}명`]].map(([id,t,d])=>`<figure>${opsPhoto(id,'',true)}<figcaption><b>${t}</b><span>${d}</span></figcaption></figure>`).join('')}</div>`; }
-function medFM(){ const ps=playersOf(G.user).filter(p=>!p.ys&&!(p.injOut>0)), R=ps.map(medRisk), med=[...R].map(x=>x.v).sort((a,b)=>a-b)[Math.floor(R.length/2)]||1;
+function medRiskData(){ const ps=playersOf(G.user).filter(p=>!p.ys&&!(p.injOut>0)), R=ps.map(medRisk), med=[...R].map(x=>x.v).sort((a,b)=>a-b)[Math.floor(R.length/2)]||1;
   const tier=v=>v>=med*2.2?3:v>=med*1.5?2:v>=med*.85?1:0, TL=['낮음','보통','높음','매우 높음'], TC=['good','','warn','bad'];
   const why=x=>{ const L=[]; if(x.f.inj>=.25)L.push('부상이 잦은 체질'); if(x.f.fat>1.05)L.push('피로 누적'); if(x.p.isP&&(x.cd>=2||(x.arm||0)>=.9||x.f.load>1.6))L.push(x.cd>=2?`${x.cd}연투`:(x.arm||0)>=.9?'누적 팔 부하':'최근 7일 투구 많음'); if(x.p.rush&&G.day<=x.p.rush)L.push('조기 복귀 후'); if(x.p.reInj&&x.p.reInj.left>0)L.push('재발 주의 기간'); if(x.f.sta>1.08)L.push('체력 낮음'); return L.slice(0,2).join(' · ')||'특이 요인 없음'; };
   const hi=R.filter(x=>tier(x.v)>=2), top=R.filter(x=>x.p.e1||tier(x.v)>=2).sort((a,b)=>b.v-a.v).slice(0,Math.max(14,hi.length)); /* 위험 높은 선수는 모두 표에(플레이 테스트 3차: 의사 소견 17명 · 표 14명) */
   const word=(v,a,b)=>v>=b?'높음':v>=a?'보통':'낮음';
+  return {hi,top,tier,TL,TC,why,word}; }
+/* Mobile uses the same relative assessment and recovery records as the desktop medical view. */
+function medMobileLists(){ const {hi,tier,TL,TC,why,word}=medRiskData(), back=medRecentBack(), nBack=new Set(back.map(x=>x.p.id)).size;
+  const risk=hi.slice().sort((a,b)=>b.v-a.v).map(x=>`<button type="button" class="item" data-med-player="${x.p.id}" data-a="player" data-v="${x.p.id}"><span class="nm">${esc(x.p.name)} <span class="small muted">${esc(posLabel(x.p))}${x.p.e1?'':' · 2군'}</span></span><span class="sub ${TC[tier(x.v)]}">부상 위험 ${TL[tier(x.v)]} · 피로 ${word(x.p.fat||0,35,60)}${x.p.isP?` · 팔 부하 ${Math.round((x.arm||0)*100)}%`:''}</span><span class="sub">${esc(why(x))}</span></button>`).join('');
+  const returned=back.map(({p,x})=>`<button type="button" class="item" data-med-return="${p.id}" data-a="player" data-v="${p.id}"><span class="nm">${esc(p.name)} <span class="small muted">${esc(posLabel(p))}</span></span><span class="sub">${esc(x.k?injName(x.k):'부상')} · ${Number.isFinite(x.days)?x.days+'일':'기간 기록 없음'} · ${dmd(x.bk??(x.d+x.days))} 복귀</span><span class="sub">피로 ${word(p.fat||0,35,60)}</span></button>`).join('');
+  return `<div class="med-mobile-lists"><details class="med-mobile-list"><summary>위험 선수 ${hi.length}명 <small>우리 선수 중간값 대비 · 높음/매우 높음</small></summary><div class="list">${risk||'<p class="small muted">위험 높은 선수가 없습니다.</p>'}</div></details><details class="med-mobile-list"><summary>최근 복귀 ${nBack}명 <small>최근 30일의 복귀 기록</small></summary><div class="list">${returned||'<p class="small muted">최근 30일 안에 복귀한 선수가 없습니다.</p>'}</div></details></div>`; }
+function medFM(){ const {hi,top,tier,TL,TC,why,word}=medRiskData();
   const rows=top.map(x=>{ const t=tier(x.v), h=seasonTotal(x.p,G.year,'1군'); return `<tr><td><div class="md-p">${avImg(x.p,true)}<div><button class="lnk" data-a="player" data-v="${x.p.id}">${esc(x.p.name)}</button><span>${esc(posLabel(x.p))} · ${x.p.age}세${x.p.e1?'':' · 2군'}</span></div></div></td>
     <td>${h?h.g:0}경기</td><td><b class="${(x.p.fat||0)>=60?'warn':''}">${word(x.p.fat||0,35,60)}</b><i class="md-bar"><u style="width:${Math.round(clamp(x.p.fat||0,0,100))}%"></u></i></td>
     <td class="${x.f.inj>=.2?'warn':x.f.inj<=.08?'good':''}">${x.f.inj>=.3?'매우 잦음':x.f.inj>=.2?'잦은 편':x.f.inj<=.08?'튼튼함':'보통'}</td>
@@ -51131,6 +51152,13 @@ Object.assign(A,{
   cpFacGo(v){ if(v==='main')return A.go('club:stad'); if(v==='bus')return A.go('club:bus'); UI.facFocus=v; A.go('train:fac'); }
 });
 /* 훈련 시설 공사 재원 버튼(구단 현금·모기업·명명권·지자체): 시설 화면·훈련 단지 지도·휴대폰 카드가 함께 쓴다(57_club_econ) */
+/* Read-only comparison: reuse the actual upfront-payment helper and contract constants. */
+function facFundingHelp(k,c,I,t){ const row=(name,body,state)=>`<section><b>${name}</b><p>${body}</p>${state&&!state.ok?`<p class="small bad">현재 신청 불가: ${esc(state.why||'신청 조건 미충족')}</p>`:''}</section>`;
+  const rows=[row('구단 현금',`공사비 ${money(c)}를 구단이 부담합니다.`,I.cash)];
+  if(!t.indie)rows.push(row('모기업 요청','모기업에 지원을 요청합니다. 지원 여부와 금액은 심사 결과에 따라 정해집니다.',I.cap));
+  if(FAC_SPON.k.includes(k))rows.push(row('명명권 후원',`착공 시 구단 부담은 ${money(facOwnPart('spon',c))}입니다. 총 후원금 ${money(Math.round(c*FAC_SPON.share))}은 ${FAC_SPON.yrs}시즌에 나눠 받습니다. ${FAC_SPON.rk}위 이내와 관중석 점유율 ${Math.round(FAC_SPON.occ*100)}% 이상을 함께 지켜야 합니다. 조건 미달이 2회 누적되면 계약이 해지되고 받은 후원금의 ${Math.round(FAC_SPON.back*100)}%를 돌려줍니다.`,I.spon));
+  if(FAC_CITY.k.includes(k))rows.push(row('지자체 보조',`착공 시 구단 부담은 ${money(facOwnPart('city',c))}이고, 시가 ${money(c-facOwnPart('city',c))}을 보탭니다. ${FAC_CITY.yrs}시즌 동안 지역 야구 교실과 지역 채용을 약속합니다. 지역 교실비 연 ${money(Math.round(c*FAC_CITY.prog))}과 추가 시설 유지비가 발생하며, 교실을 열지 못한 횟수가 2회 누적되면 보조금의 ${Math.round(FAC_SPON.back*100)}%를 돌려줍니다.`,I.city));
+  return `<details class="fac-funding-help"><summary>재원별 부담·조건 보기</summary><div class="fac-funding-rows">${rows.join('')}</div></details>`; }
 function facRouteBtns(k,wrap){ const t=team(G.user), lv=facOf(k), c=FACI[k].c[lv+1], pre=facCanStart(G.user,k), I=facRouteInfo(G.user,k);
   if(pre)return `<p class="small muted">${esc(pre)}</p>`;
   const big=facBig(k,lv+1), b=(l,a,v,ok,tip)=>`<button class="btn small" data-a="${a}" data-v="${v}"${ok?'':' disabled'}${tip?` title="${esc(tip)}"`:''}>${l}</button>`;
@@ -51139,7 +51167,7 @@ function facRouteBtns(k,wrap){ const t=team(G.user), lv=facOf(k), c=FACI[k].c[lv
   if(FAC_SPON.k.includes(k))L.push(b(`명명권 후원${I.spon.ok?` · ${oddsWord(I.spon.p)}`:''}`,'facFund',k+':spon',I.spon.ok,I.spon.ok?'공사비 절반을 기업이 냅니다. 성적이나 관중이 기대에 못 미치면 후원을 거두고 일부를 돌려받습니다.':I.spon.why));
   if(FAC_CITY.k.includes(k))L.push(b(`지자체 보조${I.city.ok?` · ${oddsWord(I.city.p)}`:''}`,'facFund',k+':city',I.city.ok,I.city.ok?'시가 공사비 일부를 냅니다. 대신 몇 시즌 동안 지역 야구 교실과 지역 채용을 약속합니다.':I.city.why));
   const why=[!I.cash.ok?I.cash.why:'',!t.indie&&!I.cap.ok?I.cap.why:''].filter(Boolean)[0];
-  return `<div class="${wrap||'cpbtns'}">${L.join('')}</div>${big?'<p class="small muted">큰 공사라 시 인허가를 거친 뒤 첫 삽을 뜹니다. 공사 중에는 그 시설 훈련이 조금 불편해집니다.</p>':''}${why?`<p class="small muted">${esc(why)}</p>`:''}`; }
+  return `<div class="${wrap||'cpbtns'}">${L.join('')}</div>${facFundingHelp(k,c,I,t)}${big?'<p class="small muted">큰 공사라 시 인허가를 거친 뒤 첫 삽을 뜹니다. 공사 중에는 그 시설 훈련이 조금 불편해집니다.</p>':''}${why?`<p class="small muted">${esc(why)}</p>`:''}`; }
 Object.assign(A,{ facFund(v){ const [k,r]=String(v).split(':'); const e=facFund(k,r); UI.facMsg=e&&!/^$/.test(e)?e:null; toast(e||'공사를 시작했습니다.'); save(); render(); } });
 /* 스카우트팀장 배치 제안 상자: 시기에 맞는 배치안, 한 번에 적용, 계속 맡기기 */
 function scoutChiefBox(){ const c=scoutChief(); if(!c)return ''; const P=scoutPlan(); const mv=P.filter(x=>x.move); const sea=scoutDraftSea()?'드래프트 시즌 · 아마추어 우선':'외국인·FA 시즌 · 해외·프로 우선';
@@ -52656,6 +52684,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-21-mobile-care',d:'11월 21일',t:'모바일 의료 상세와 시설 재원 비교를 볼 수 있습니다',items:[
+    '휴대폰의 부상 관리에 위험 선수와 최근 30일 복귀 선수 목록이 생겼습니다. 목록을 펼쳐 부상 위험 요인과 복귀 기록을 보고, 선수를 눌러 정보를 엽니다.',
+    '훈련 시설의 재원 버튼 아래에서 착공 때 구단 부담과 후원·지자체 지원 조건을 펼쳐 볼 수 있습니다.'
+  ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
     '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',
     '인원이 더 늘어나는 거래와, 정원 안 구단이 68명을 넘게 되는 거래는 전처럼 막습니다. 안내에 지금 인원과 거래 뒤 인원을 함께 보여 줍니다. AI 구단끼리도 같은 규칙입니다.'
