@@ -37,7 +37,7 @@ function ngtRows(N,D){ const p=G.players[N.id]; const T=N.T; const R=[];
   const mrow=(f,l,sub)=>{ const v=T[f]||0, d=D[f]||0; const ok=v>=d; const st=ngtStep(Math.max(v,d,100));
     return row(f,l,sub,{h:`<button class="ngb" data-a="ngtSet" data-v="${f}:${-st}" aria-label="${l} 내리기">−</button>${contractMoneyInput('ngt',f,l,v)}<button class="ngb" data-a="ngtSet" data-v="${f}:${st}" aria-label="${l} 올리기">+</button>`},
       d?`<span class="pill ${ok?'good':'warn'}">요구 ${money(d)}</span>`:f==='opt'?'<span class="small muted">요구 없음</span>':'',d?ok:null); };
-  if(N.k!=='sal'){ const ys=N.k==='fa'?[1,2,3,4,5,6]:p.age>=33?[1,2,3,4,5]:[2,3,4,5,6]; /* 베테랑 다년은 1+1·2+1(구단 연장 옵션)이 흔하다 */ const ok=N.k==='fa'?T.years>=D.years:T.years>=extMinY(p);
+  if(N.k!=='sal'){ const ys=N.k==='fa'?[1,2,3,4,5,6]:Array.from({length:EXT_YMAX},(_,i)=>i+1); /* 비FA 다년 1~10년(구단주 11-21: KBO에 기간 상한 없음). 베테랑은 1+1·2+1(구단 연장 옵션)도 흔하다 */ const ok=N.k==='fa'?T.years>=D.years:T.years>=extMinY(p);
     R.push(row('years','계약 기간',N.k==='fa'?'FA 기간은 길수록 선수가 좋아합니다':'기간에 따라 요구액이 바뀝니다',{seg:1,h:ys.map(y=>`<button data-a="ngtSet" data-v="years:=${y}" class="${T.years===y?'on':''}">${y}년</button>`).join('')},N.k==='fa'?`<span class="pill ${ok?'good':'warn'}">요구 ${D.years}년</span>`:extMinY(p)?`<span class="pill ${ok?'good':'warn'}">최소 ${extMinY(p)}년</span>`:'',ok));
     if(N.k==='fa')R.push(mrow('bonus','계약금','계약할 때 한 번에 지급 · 상한에는 연평균으로 반영')); else R.push(`<div class="ngr ok"><div class="ngl"><b>계약금</b><i>비FA 다년계약은 계약금이 없습니다(규약상 신인·FA만). 연봉과 옵션으로 정합니다.</i></div></div>`); }
   R.push(mrow('annual','연봉',N.k==='sal'?`지금 ${money(p.sal)} · 구단 산정안 ${money((salNeg(N.id)||{}).off||p.sal)}`:'매 시즌 지급'));
@@ -64,7 +64,7 @@ function ngtPromRows(N,D){ const p=G.players[N.id]; const T=N.T, P=T.pm||{}, V=D
 /* 요구 대비 지금 조건(정확한 숫자 대신 말로). 제안하기 전에는 판정하지 않고 '제안서' 상태만 알려 준다 */
 function ngtGap(N,D){ const p=G.players[N.id]; let r;
   if(N.k==='fa'){ const P=ngtPrev(N); if(P&&P.r!=null)return [P.brk||P.st==='bad'||P.st==='far'?'bad':P.st==='counter'?'warn':'good',faPreviewTxt(P)]; r=offScore({annual:termsVal(N.T,D),years:N.T.years})/(faWantFor(p,G.user)*.97); } /* FA: 엔진과 같은 표로 예상 반응(수락 가능·역제안 예상·분위기 하락·결렬 위험) */
-  else if(N.k==='ext'){ if(N.T.years<extMinY(p))return ['bad',`에이전트가 최소 ${extMinY(p)}년 계약을 요구합니다`]; { const fl=extFloor(p); if(fl&&(N.T.annual||0)<fl)return ['bad',fl>=p.sal?`다년계약은 연봉이 지금(${money(p.sal)}) 이상이어야 합니다`:`감액 한도(연 ${money(fl)}) 아래입니다`]; } r=termsVal(N.T,D)/termsVal(D,D); } else { return salAccepts(p,salNeg(N.id),Math.max(MIN_SAL,Math.round(N.T.annual)))?['good','요구액 수준입니다']:['warn',`요구까지 ${money(D.annual-N.T.annual)} 남았습니다`]; }
+  else if(N.k==='ext'){ if(N.T.years<extMinY(p))return ['bad',`에이전트가 최소 ${extMinY(p)}년 계약을 요구합니다`]; { const ys=N.T.years||1, fl=extFloor(p,ys); if(fl&&(N.T.annual||0)<fl)return ['bad',fl>=p.sal?`${ys}년 보장으로는 지금 연봉(${money(p.sal)}) 아래로 받지 않습니다${p.age>=31?' · 기간을 늘리면 조금 낮춰 받습니다':''}`:extFloor(p,1)>=p.sal?`${ys}년 보장이면 연 ${money(fl)}(지금보다 ${Math.round((1-fl/p.sal)*100)}% 낮음)까지 받습니다`:`감액 한도(연 ${money(fl)}) 아래입니다`]; } /* 카페 11-21: '지금 이상' 고정 규칙 대신 보장 기간 할인(extWill) */ r=termsVal(N.T,D)/termsVal(D,D); } else { return salAccepts(p,salNeg(N.id),Math.max(MIN_SAL,Math.round(N.T.annual)))?['good','요구액 수준입니다']:['warn',`요구까지 ${money(D.annual-N.T.annual)} 남았습니다`]; }
   return r>=1?['good','요구 수준입니다']:r>=.9?['warn','요구에 조금 못 미칩니다']:r>=.75?['bad','요구와 차이가 큽니다']:['bad','요구와 차이가 매우 큽니다']; }
 /* FA 제안 전 예상 반응(21_block_agents faPreview): 화면에 보이는 요구·분위기만으로 */
 function ngtPrev(N){ if(!N||N.k!=='fa')return null; try{ return faPreview(N.id,{annual:N.T.annual,years:N.T.years,terms:ngtClean(N.T)}); }catch(e){ return null; } }
@@ -116,7 +116,7 @@ function ngtMsgs(N,D,ag){ const p=G.players[N.id]; let L=[];
   return `${mem?`<div class="ngm ag"><i>${who} · 지난 협상</i>${esc(mem)}</div>`:''}<div class="ngm ag"><i>${who}</i>${esc(open)}</div>${L.map(line).join('')}${tail}`; }
 /* 왼쪽 선수 보고서 */
 function ngtReport(N,D){ const p=G.players[N.id]; const T=N.T; const b=budget(); let rp=null; try{ rp=scoutReport(p); }catch(e){}
-  const v=Math.round(termsEq(D,D)); const lo=round5(v*.9), hi=round5(v*1.1);
+  const ask=Math.round(termsEq(D,D)); let v=ask; if(N.k==='ext'){ try{ v=extParts(p,T.years||1).expFA; }catch(e){} } const lo=round5(v*.9), hi=round5(v*1.1); /* 카페 11-21: 다년계약의 '시장 가치'는 요구액(지금 연봉 하한)이 아니라 예상 FA 시장가 ±10% */
   const stars=`<div class="ng-st"><span><i>현재</i>${rp?(()=>{ try{ return currentAbilityStars(rp); }catch(e){ return '-'; } })():'-'}</span><span><i>잠재</i>${potChipP(p)||'-'}</span></div>`;
   const tot=(T.bonus||0)+T.annual*(T.years||1); const capAvg=T.annual+Math.round((T.bonus||0)/(T.years||1));
   if(N.k==='sal'){ const sb=salBasis(p); const d=T.annual-p.sal; const cc=ngtCapC(N); return `<aside class="ng-rep"><div class="ng-sum">
@@ -127,7 +127,7 @@ function ngtReport(N,D){ const p=G.players[N.id]; const T=N.T; const b=budget();
     ${cc?`<div><i>${cc.hard?'구단주 허용 한도 초과':'구단주 결재 필요'}</i><b class="num ${cc.hard?'bad':'warn'}">${cc.hard?'승인 불가':`승인 가능성 ${capPLabel(cc.p)}`}</b><em>${cc.s}시즌 상위 40명 연봉이 상한을 ${money(cc.over)} 넘습니다</em></div>`:''}</div></aside>`; }
   const [s0]=ngtSeasons(N); const PX=N.k==='fa'&&!p.foreign?postCapOut(G.user,s0):null; const W=capPayWith(G.user,p.id,p.foreign?null:capAvg,s0,PX&&PX.ids.size?PX.ids:null); const over=W.tot-W.cap; /* FA 결재와 같은 기준: 포스팅 신청 선수는 이적 예상으로 뺀다 */ const cc=over>0?ngtCapC(N):null; const X=over>0?capTaxEst(over):null;
   return `<aside class="ng-rep"><div class="ng-sum">
-    <div><i>시장 가치(운영팀 추정)</i><b class="num">연 ${money(lo)}~${money(hi)}</b><em>${N.k==='fa'?`${p.faGrade}등급 FA · 관심 구단 ${Object.keys(G.fa.ai[p.id]||{}).length}곳`:'예상 FA 시장가 기준'}</em></div>
+    <div><i>시장 가치(운영팀 추정)</i><b class="num">연 ${money(lo)}~${money(hi)}</b><em>${N.k==='fa'?`${p.faGrade}등급 FA · 관심 구단 ${Object.keys(G.fa.ai[p.id]||{}).length}곳`:`예상 FA 시장가 기준${ask>hi?' · 요구는 지금 연봉 기준이라 더 높습니다':''}`}</em></div>
     <div><i>지금 연봉 · 계약</i><b class="num">${money(p.faPrevSal&&N.k==='fa'?p.faPrevSal:p.sal)}</b><em>${N.k==='fa'?`원소속 ${esc(tshort(p.faFrom))}`:esc(ctText(p))}</em></div>${stars}
     <div><i>적용 시즌 · 보장 총액</i><b class="num">${ngtSeasons(N).join('~')} · ${money(tot)}</b><em>${T.opt?`옵션 포함 최대 ${money(tot+T.opt*(T.years||1))}`:'옵션 없음'}</em></div>
     ${ngtCashRow(T,s0,p.foreign?null:capAvg)}
@@ -158,7 +158,7 @@ function ngtSheet(){ const N=UI.ngt; const p=G.players[N.id]; if(!p)return ''; c
     <div class="ng3">
       ${ngtReport(N,D)}
       <section class="ng-mid">
-        ${N.k==='ext'?(()=>{ const x=extParts(p,T.years); const m=Math.round((x.mkt-1)*100); return `<div class="ng-why"><span class="eyebrow">요구액 근거 · 전력분석팀</span><p class="small">${x.ytf?`FA까지 ${x.ytf}시즌`:'지금 FA 자격'} · FA 시장 분위기 <b>${faMktLabel(x.mkt)}</b>(${m>=0?'+':''}${m}%) · 예상 FA 시장가 연 <b>${money(x.expFA)}</b></p><p class="small muted keep">${x.why.map(esc).join(' · ')}${x.yadj!==1?` · ${T.years}년 계약 기간 ${x.yadj>1?'+':''}${Math.round((x.yadj-1)*100)}%`:''}</p></div>`; })():''}
+        ${N.k==='ext'?(()=>{ const x=extParts(p,T.years); const m=Math.round((x.mkt-1)*100); return `<div class="ng-why"><span class="eyebrow">요구액 근거 · 전력분석팀</span><p class="small">${x.ytf?`FA까지 ${x.ytf}시즌`:'지금 FA 자격'} · FA 시장 분위기 <b>${faMktLabel(x.mkt)}</b>(${m>=0?'+':''}${m}%) · 예상 FA 시장가 연 <b>${money(x.expFA)}</b></p><p class="small muted keep">${x.why.map(esc).join(' · ')}</p>${(()=>{ const fl=extFloor(p,T.years), d=ngtExtDem(p,T.years); return fl&&d<=fl?`<p class="small">${T.years}년 하한 연 <b>${money(fl)}</b> = 지금 연봉 ${money(p.sal)}${fl<p.sal?(extFloor(p,1)>=p.sal?` − ${T.years}년 보장 할인 ${Math.round((1-fl/p.sal)*100)}%`:'의 감액 한도'):''} · 예상 FA 시장가보다 높아 요구가 이 하한 근처입니다</p>`:''; })()}</div>`; })():''}
         ${ngtMil(N)}${p.postPromise&&p.team===G.user?`<div class="ng-mil small"><b>포스팅 약속</b> ${p.postPromise}년 포스팅 허락을 약속했습니다. 이 계약을 맺어도 약속은 남습니다.</div>`:''}
         ${N.k!=='sal'?`<div class="seg ng-tabs" role="tablist" aria-label="협상 탭"><button role="tab" aria-selected="${N.tab!=='prom'}" class="${N.tab!=='prom'?'on':''}" data-a="ngtTab" data-v="terms">조건</button><button role="tab" aria-selected="${N.tab==='prom'}" class="${N.tab==='prom'?'on':''}" data-a="ngtTab" data-v="prom">약속${pmCount(T)?` ${pmCount(T)}`:''}</button></div>`:''}
         <div class="ng-rows">${N.k!=='sal'&&N.tab==='prom'?ngtPromRows(N,D):ngtRows(N,D)}</div>

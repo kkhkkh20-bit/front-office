@@ -230,6 +230,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(i>=0){ if(p.fleft){ toast('선수가 재계약을 거절하고 떠나기로 했습니다.'); return; } const fs=foreignOf(G.user).filter(x=>x.id!==id&&!a.includes(x.id)); const full=p.foreign==='아시아'?fs.filter(x=>x.foreign==='아시아').length>=1:fs.filter(x=>x.foreign==='용병').length>=fMaxYB(G.user,C.y+1);
       if(full){ toast('그 사이 새 외국인과 계약해 자리가 없습니다. 재계약으로 되돌릴 수 없습니다.'); return; } a.splice(i,1); if(fReMixBad()){ a.splice(i,0,id); toast(`되돌리면 ${fReCapInfo().mix}. 재계약으로 되돌릴 수 없습니다.`); return; } } else a.push(id); save(); render();},
   relAsk(v){UI.confirmRel=+v;renderSheet();},
+  retSugAsk(v){UI.confirmRetSug=+v;renderSheet();},
+  retSugCancel(){UI.confirmRetSug=null;renderSheet();},
+  retSug(v){const r=retSuggest(+v);UI.confirmRetSug=null;if(r.now)UI.sheet=null;toast(r.msg);save();render();}, /* 카페 11-21: 36세 이상 은퇴 권유 */
   relCancel(){UI.confirmRel=null;renderSheet();},
   release(v){releasePlayer(+v);UI.sheet=null;UI.confirmRel=null;save();render();},
   advDraft(){ dliveStart('am'); },
