@@ -16,6 +16,7 @@
 .menu-subs button{border:1px solid var(--line2);background:var(--panel2);color:var(--muted);border-radius:3px;padding:5px 10px;font-size:13px;cursor:pointer}
 .menu-subs button:hover{color:var(--ink)}
 .tc-i.go{border-color:var(--acc);color:#fff;background:var(--acc)}
+.tc-i.go.off{opacity:.45;background:transparent;color:var(--muted,inherit)} /* 대졸 의무 지명 차례의 고졸 후보(카페 11-21) */
 .tc-i:disabled{opacity:.4;cursor:not-allowed}
 
 /* 드래프트 보드 */
