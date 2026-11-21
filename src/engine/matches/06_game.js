@@ -152,17 +152,28 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
   function needChange(fs){ const x=fs.box.get(fs.cur.id); const mm=mgrOf(fs.tid);
     if(fs.curIsSP){ const hook=!mm.interim&&(mm.pen>=62||mgrPush(fs.tid)>=72)&&x.bf>=18&&x.er>=3; /* 선발 쪼개기: 세 번째 타순에 흔들리면 바로 내린다 */ return x.pc>=lim(fs)+Math.min(0,armM(fs))||x.er>=6||(x.er>=4&&x.pc>=lim(fs)-25)||hook; }
     return x.outs>=(fs.multi&&fs.multi[fs.cur.id]?6:3)||x.pc>=lim(fs); }
-  function bringIn(fs,inn,lead,half,nr){
+  /* 경기 후반 불 끄기(카페 11-20 요청: '9회 리드가 따라잡히는데 한 이닝을 그냥 맡긴다'): 8회부터 수비 쪽 구원 투수가 흔들리면 타석 사이에 바꾼다.
+     sv: 큰 리드로 올라왔다가 세이브 상황(리드 1~3점 또는 동점 주자가 누상·타석·대기 타석)이 됐거나, 세이브 상황에 올라와 2점 이상 줬다 → 마무리(없으면 필승조)
+     run: 2점 이상 줘서 동점~4점 리드로 좁혀졌다 → 필승조 · cl: 마무리가 동점을 허용했거나 3점 이상 줬다 → 필승조
+     게임 상태로만 정한다(난수 없음). 바꿀 필승조·마무리가 없으면(이미 던졌거나 연투·피로 한도) 그대로 둔다. 모든 구단 같은 규칙, 퓨처스 제외 */
+  function lateFire(fs,L,nr){ const c=fs.cur, x=c&&fs.box.get(c.id); if(!x||fs.farm||fs.curIsSP||WORLD_BUILD>0)return null; /* 새 게임 시작 세계(2025 사전 경기)에서는 쓰지 않는다 */ const e0=fs.entry[c.id]??L, r0=(fs.entryR||{})[c.id]||0, drop=e0-L, svs=(l,n)=>l>=1&&(l<=3||l<=n+2);
+    if(c===fs.pen[0])return (e0>=1&&L<=0)||drop>=3?'cl':null;
+    if(svs(L,nr)&&(!svs(e0,r0)||drop>=2))return 'sv';
+    if(drop>=2&&L>=0&&L<=4)return 'run';
+    return null; }
+  function bringIn(fs,inn,lead,half,nr,fire){
     const registered=fs.farm?[]:actOf(fs.tid).filter(p=>p.isP),roster=fs.farm?(fs.pitchPool||new Set([fs.sp,...fs.pen,...(fs.spAll||[])].filter(Boolean).map(p=>p.id))):new Set(registered.map(p=>p.id));
     const eligible=p=>p&&p.isP&&!mcfPitchRest(p,day)&&roster.has(p.id)&&p!==fs.cur&&!fs.used.has(p.id)&&p.lastApp!==day&&healthy(p)&&!(p.susp>day)&&!(p.boy>day)&&(fs.farm||psOk(p));
     { const ace=psAceRelief(fs,inn,lead,day,psx); if(ace&&eligible(ace)){ fs.exit[fs.cur.id]=lead; fs.cur=ace; fs.curIsSP=false; fs.used.add(ace.id); (fs.multi=fs.multi||{})[ace.id]=1; fs.box.set(ace.id,pz()); fs.entry[ace.id]=lead; (fs.entryR=fs.entryR||{})[ace.id]=nr||0; fs.pitchers.push(ace.id); if(ev.length<400)ev.push({h:half,t:`총력전: 선발 ${ace.name} 불펜 등판`}); if(pbp.length<1000)pbp.push([half,'PC',ace.id]); return; } }
     let av=fs.pen.filter(p=>eligible(p)&&relAvail(p,day,ps));
+    if(fire&&!av.length)return false; /* 불 끄기는 쉬어 있는 불펜이 있을 때만(비상 계속 투구·선발 대체로 넓히지 않는다) */
     if(!av.length&&armDirOn(fs.tid))av=[...new Map([...fs.pen,...(fs.spAll||[]),...registered].map(p=>[p.id,p])).values()].filter(eligible); /* 퓨처스는 전달받은 명단 안에서만, 1군은 실제 등록 명단 안에서만 확인한다. */
     else if(!av.length&&fs.curIsSP){ const x0=fs.box.get(fs.cur.id); if(x0&&x0.pc>=lim(fs)+25)av=fs.pen.filter(eligible); }
     if(!av.length){ if(!(fs.armEmergency||[]).some(x=>x.id===fs.cur.id)){ const x=fs.box.get(fs.cur.id), e={id:fs.cur.id,half,startPc:x.pc,reason:'noHealthyReplacement'}; (fs.armEmergency=fs.armEmergency||[]).push(e); if(ev.length<400)ev.push({h:half,t:`비상 계속 투구: ${fs.cur.name} · ${fs.farm?'이번 퓨처스 명단에서':'등록 명단에서'} 등판 가능한 대체 투수가 없어${armDirOn(fs.tid)?' 95구 관리 목표의 예외로':''} 경기를 이어갑니다.`}); } return; }
 
     const closer=fs.pen[0], setup=fs.pen.slice(1,4), mid=fs.pen.slice(4);
     let nxt=null;
+    if(fire){ const svs=lead>=1&&(lead<=3||lead<=(nr||0)+2); nxt=(fire==='sv'||fire==='run'&&svs)&&av.find(p=>p===closer)||av.find(p=>setup.includes(p))||(fire!=='cl'&&lead===0&&inn>=9?av.find(p=>p===closer):null); if(!nxt)return false; } /* 불 끄기(lateFire): 마무리·필승조만, 없으면 바꾸지 않는다 */
     if(inn>=9&&lead>=1&&lead<=3) nxt=av.find(p=>p===closer);
     if(!nxt&&inn>=7&&lead>=0&&lead<=3) nxt=av.find(p=>setup.includes(p));
     /* 가을야구 접전(3점 차 이내)은 총력전(커뮤니티 11-13 하꼼: 접전인데 추격조·롱릴리프만 썼다): 6회부터 지고 있어도 필승조, 선발이 일찍 무너지면 롱릴리프보다 4·5선발을 먼저 길게 */
@@ -252,6 +263,7 @@ function simGame(day,hid,aid,ps,options){ try{ LRULE=lgRuleNow(); }catch(e){ LRU
         if(isBot&&inn>=9&&score.h>score.a){ walk=true; break; }
       }else{const correction=awardEarned();if(correction.length){chg=[];chgE=correction;}PB();}
       if(outs<3&&fs.box.get(fs.cur.id).pc>lim(fs)+armM(fs))bringIn(fs,inn,-lead(),half,base.filter(Boolean).length);
+      else if(outs<3&&inn>=8){ const nr=base.filter(Boolean).length, k=lateFire(fs,-lead(),nr); if(k&&bringIn(fs,inn,-lead(),half,nr,k)!==false&&ev.length<400)ev.push({h:half,t:k==='cl'?'마무리 강판: 리드를 지키지 못했습니다':'흔들리는 불펜을 내리고 필승조 투입'}); } /* 경기 후반 불 끄기(lateFire) */
     }
     line[bk].push(runs); hits[bk].push(hh);
   }
