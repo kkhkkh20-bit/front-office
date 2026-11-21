@@ -17373,6 +17373,20 @@ function lifeTags(p){ const T=[]; if(!p||p.foreign)return T; try{ const R=(p.his
 /* 9월 1일: 이번 시즌 뒤 은퇴가 유력한 우리 선수 미리 알림. 오래 뛴 선수에게는 은퇴 투어를 제안한다 */
 /* 은퇴 면담 설득 확률: 기분이 좋고 아직 쓸 만할수록, 나이가 적을수록 */
 function retTalkP(p){ return clamp(.3+((p.mor??60)-60)/150+(ovr(p)>=48?.15:0)-(p.age>=39?.2:p.age>=37?.1:0),.08,.75); }
+/* 은퇴 권유(카페 11-21 FC서울): 단장이 우리 구단 36세 이상 국내 선수에게 먼저 은퇴를 권한다. 받아들일지는 나이·능력·기분·야망으로 정한다(선수·해마다 고정 씨앗 난수, 주 난수 R() 호출 수 불변). 선수마다 한 해 한 번.
+   받아들이면 기존 은퇴 경로를 탄다: 시즌 중이면 은퇴 예고(lastY: 시즌을 마치고 결산 때 은퇴, 은퇴 투어·은퇴식 질문 그대로), 결산 뒤~개막 전이면 바로 은퇴(통산 기록·명예의 전당 심사·OB 진로·은퇴식/코치 제안).
+   KBO 관행: 은퇴하면 선수 계약이 끝나 남은 기간 연봉은 주지 않는다(선수단에서 빠짐). 우리 구단만의 선택이고 AI는 원래 은퇴 규칙을 따른다 */
+const RET_SUG_AGE=36;
+function retSugP(p){ initPers(p); return clamp(.25+(p.age-RET_SUG_AGE)*.07+(52-ovr(p))*.025-((p.mor??60)-60)/200-((p.pers.amb??12)-12)*.02,.05,.9); }
+function retSugWhy(p){ if(!p||G.unemp||p.team!==G.user)return '우리 구단 선수에게만 권할 수 있습니다.'; if(p.foreign)return '외국인 선수는 재계약하지 않는 방식으로 정리합니다.'; if(p.prospect||p.joinY>G.year)return '아직 입단하지 않은 선수입니다.'; if(p.age<RET_SUG_AGE)return `${RET_SUG_AGE}세 이상 선수에게만 은퇴를 권할 수 있습니다.`; if(lastSeason(p))return `${p.name}은(는) 이미 이번 시즌을 끝으로 은퇴하기로 했습니다.`; if(p.retSugY===G.year)return `올해는 이미 ${p.name}에게 은퇴를 권했습니다. 내년에 다시 이야기할 수 있습니다.`; return ''; }
+const retSugNow=()=>G.rolled===G.year||!!(G.cal&&G.day<G.cal.open); /* 결산 뒤 비시즌·개막 전: 바로 은퇴 */
+function retireNowUser(p){ return withRng(rngHash('retSugDo',G.year,p.id),()=>{ const tid=p.team; try{ legendRetire(p); }catch(e){} let rec=null; try{ rec=retireRecord(p); }catch(e){} let ob=null; try{ ob=obFromPlayer(p,rec); }catch(e){} for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; (G.retired=G.retired||[]).push({name:p.name,team:tid,age:p.age}); dropP(p.id); try{ if(ob)obRetireEvents([ob]); }catch(e){} return ob; }); }
+function retSuggest(id){ const p=G.players[id], why=retSugWhy(p); if(why)return {ok:false,msg:why}; p.retSugY=G.year; const pr=retSugP(p), yes=withRng(rngHash('retSug',G.year,p.id),()=>R())<pr;
+  if(!yes){ p.mor=clamp((p.mor??60)-8,0,100); try{ story(p,`${G.year} 구단의 은퇴 권유를 거절`,'move'); }catch(e){} return {ok:true,acc:false,msg:`${p.name}: "아직 더 뛸 수 있습니다." 은퇴 권유를 거절했습니다. 기분이 상했습니다.`}; }
+  p.mor=clamp((p.mor??60)+3,0,100); const nm=p.name;
+  if(retSugNow()){ try{ story(p,`${G.year} 구단과 면담 끝에 은퇴`,'move'); }catch(e){} try{ news('구단',`${tshort(G.user)} ${nm}, 현역 은퇴`,`${nm}(${p.age}세)이(가) 구단과 면담한 뒤 유니폼을 벗기로 했습니다. 남은 계약은 은퇴와 함께 끝납니다.`,1,{tid:G.user}); }catch(e){} retireNowUser(p); return {ok:true,acc:true,now:true,msg:`${nm}이(가) 은퇴 권유를 받아들여 은퇴했습니다. 남은 계약 연봉은 없습니다.`}; }
+  p.lastY=G.year; try{ story(p,`${G.year} 구단과 면담 끝에 이번 시즌을 끝으로 은퇴 결정`,'move'); }catch(e){} try{ news('구단',`${tshort(G.user)} ${nm}, 올 시즌 끝으로 은퇴`,`${nm}(${p.age}세)이(가) 구단과 면담한 뒤 이번 시즌을 마지막으로 뛰기로 했습니다.`,1,{tid:G.user,ref:p.id}); }catch(e){}
+  return {ok:true,acc:true,now:false,msg:`${nm}이(가) 은퇴 권유를 받아들였습니다. 이번 시즌을 마치고 은퇴합니다(남은 계약 연봉은 없습니다).`}; }
 function retireNotice(){ if(G.unemp)return; const L=playersOf(G.user).filter(retireLikely); if(!L.length)return; mail('운영팀',`시즌 뒤 은퇴가 유력한 선수 ${L.length}명`,L.map(p=>`· ${p.name}(${posLabel(p)}, ${p.age}세, 연봉 ${money(p.sal)})`).join('\n')+'\n\n나이와 능력으로 보아 이번 시즌이 끝나면 유니폼을 벗을 가능성이 큽니다.',{kind:'선수'});
   const star=L.filter(p=>{ const ys=new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)); return ys.size>=8||p.fr; }).sort((a,b)=>(b.svc||0)-(a.svc||0))[0];
   { const ten=p=>new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)).size; /* 선수가 먼저 은퇴 의사를 밝힌다(사용자 11-11): 우리 구단 1군 3시즌 이상 뛴 선수, 많아야 3명 */
@@ -47378,7 +47392,7 @@ function renderSheet0(){
     if(p.team===G.user&&!p.foreign&&(p.svc||0)>=7&&G.rolled===G.year&&!ovsBeen(p)&&!(G.posting||[]).some(x=>x.pid===p.id&&x.y===G.year&&!x.void))parts.push(`<section class="card"><div class="eyebrow">해외 진출 · 포스팅</div><p class="small">서비스 ${p.svc}년 · 메이저리그 의지 ${mlbOf(p)}. 신청하면 결과 발표일에 MLB·NPB 구단 제안이 오고, 계약하면 포스팅 비용을 받고 선수는 떠납니다.</p><p class="small"><b>${esc(postEstTxt(postEst(p)))}</b>${hiI('미국 스카우트가 보는 능력과 나이로 낸 범위입니다. 다른 구단도 같은 예상을 보고 포스팅을 정합니다. 실제 결과는 범위를 벗어날 수 있습니다.')}</p><button class="btn small" data-a="postGM" data-v="${p.id}">포스팅 신청</button></section>`); /* 단장이 먼저 보내기(카페 문의 11-07) */
     if(canExtend(p))parts.push('<div id="s-ext"></div>'+`<section class="card"><div class="eyebrow">비FA 다년계약 · ${ctText(p)}</div>${p.extCounter&&p.extCounter.until>=G.day?`<p class="small">역제안이 와 있습니다(${dsh(p.extCounter.until)}까지): ${esc(p.extCounter.terms?termsTxt(p.extCounter.terms,true):`${p.extCounter.years}년 연 ${money(p.extCounter.annual)}`)}</p>`:extNextDay(p)?`<p class="small bad">지난 제안(${dsh((p.extLast||{}).d??G.day)})은 거절됐습니다. 다음 제안은 ${dsh(extNextDay(p))}부터 할 수 있습니다.</p>`:''}${ngtDoor('ext',p)}<p class="small muted">시즌 중 합의는 다음 시즌부터, 시즌이 끝난 뒤~개막 전 합의는 다가오는 시즌부터 적용됩니다. 한 선수와는 일주일에 한 번 협상할 수 있습니다.</p></section>`);
     else if(UI.ext&&UI.ext.id===p.id&&UI.ext.msg)parts.push(`<div class="note ${UI.ext.ok?'good':''}">${esc(UI.ext.msg)}</div>`);
-    parts.push(`<div class="row" style="margin-top:14px;justify-content:flex-end;flex-wrap:wrap">${UI.confirmRel===p.id?`<button class="btn danger" data-a="release" data-v="${p.id}">정말 방출${relCost(p).tot?` (정산 ${money(relCost(p).tot)})`:''}</button><button class="btn" data-a="relCancel">취소</button>${(x=>x?`<p class="small warn rel-cap" style="flex-basis:100%;text-align:right">방출해도 ${x.y}시즌 연봉 ${money(x.a)}은(는) ${x.y}시즌 경쟁균형세 상한 합계(상위 40명)에 그대로 남습니다. 웨이버로 다른 구단이 데려가면 빠집니다. 트레이드 상한 여유는 늘지 않습니다.</p>`:'')(capDeadAmt(p,G.user))}`:`<button class="btn danger" data-a="relAsk" data-v="${p.id}">방출</button>`}</div>`);
+    parts.push(`<div class="row" style="margin-top:14px;justify-content:flex-end;flex-wrap:wrap">${UI.confirmRel===p.id?`<button class="btn danger" data-a="release" data-v="${p.id}">정말 방출${relCost(p).tot?` (정산 ${money(relCost(p).tot)})`:''}</button><button class="btn" data-a="relCancel">취소</button>${(x=>x?`<p class="small warn rel-cap" style="flex-basis:100%;text-align:right">방출해도 ${x.y}시즌 연봉 ${money(x.a)}은(는) ${x.y}시즌 경쟁균형세 상한 합계(상위 40명)에 그대로 남습니다. 웨이버로 다른 구단이 데려가면 빠집니다. 트레이드 상한 여유는 늘지 않습니다.</p>`:'')(capDeadAmt(p,G.user))}`:`${!retSugWhy(p)?(UI.confirmRetSug===p.id?`<button class="btn danger" data-a="retSug" data-v="${p.id}">은퇴 권유하기 (받아들일 가능성 약 ${Math.round(retSugP(p)*100)}%)</button><button class="btn" data-a="retSugCancel">취소</button>`:`<button class="btn" data-a="retSugAsk" data-v="${p.id}" title="36세 이상 선수에게 은퇴를 권합니다. 받아들이면 ${retSugNow()?'바로':'이번 시즌을 마치고'} 은퇴하고 남은 계약은 끝납니다. 거절하면 기분이 상합니다(한 해 한 번).">은퇴 권유</button>`):''}<button class="btn danger" data-a="relAsk" data-v="${p.id}">방출</button>`}</div>`);
     actions=parts.join('');
   }
   const status=p.injOut>0?`<span class="pill bad">${esc(injNow(p))} · 복귀까지 약 ${p.injOut>=300?Math.round(p.injOut/30)+'개월':p.injOut+'일'} (${injRetTxt(p)})</span>`:'';
@@ -47774,6 +47788,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(i>=0){ if(p.fleft){ toast('선수가 재계약을 거절하고 떠나기로 했습니다.'); return; } const fs=foreignOf(G.user).filter(x=>x.id!==id&&!a.includes(x.id)); const full=p.foreign==='아시아'?fs.filter(x=>x.foreign==='아시아').length>=1:fs.filter(x=>x.foreign==='용병').length>=fMaxYB(G.user,C.y+1);
       if(full){ toast('그 사이 새 외국인과 계약해 자리가 없습니다. 재계약으로 되돌릴 수 없습니다.'); return; } a.splice(i,1); if(fReMixBad()){ a.splice(i,0,id); toast(`되돌리면 ${fReCapInfo().mix}. 재계약으로 되돌릴 수 없습니다.`); return; } } else a.push(id); save(); render();},
   relAsk(v){UI.confirmRel=+v;renderSheet();},
+  retSugAsk(v){UI.confirmRetSug=+v;renderSheet();},
+  retSugCancel(){UI.confirmRetSug=null;renderSheet();},
+  retSug(v){const r=retSuggest(+v);UI.confirmRetSug=null;if(r.now)UI.sheet=null;toast(r.msg);save();render();}, /* 카페 11-21: 36세 이상 은퇴 권유 */
   relCancel(){UI.confirmRel=null;renderSheet();},
   release(v){releasePlayer(+v);UI.sheet=null;UI.confirmRel=null;save();render();},
   advDraft(){ dliveStart('am'); },
@@ -52654,6 +52671,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-21-retire-suggest',d:'11월 21일',t:'36세 이상 우리 선수에게 은퇴를 권할 수 있습니다',items:[
+    '선수 상세 아래 방출 버튼 옆에 "은퇴 권유"가 생겼습니다. 36세 이상 국내 선수에게 한 해 한 번 권할 수 있고, 나이·능력·기분·야망에 따라 받아들일 가능성이 함께 보입니다.',
+    '받아들이면 시즌 중에는 이번 시즌을 마치고, 비시즌·개막 전에는 바로 은퇴합니다. 은퇴식·코치 제안·명예의 전당 심사는 평소 은퇴와 같고, 남은 계약 연봉은 주지 않습니다. 거절하면 기분이 상합니다.'
+  ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
     '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',
     '인원이 더 늘어나는 거래와, 정원 안 구단이 68명을 넘게 되는 거래는 전처럼 막습니다. 안내에 지금 인원과 거래 뒤 인원을 함께 보여 줍니다. AI 구단끼리도 같은 규칙입니다.'

@@ -10854,6 +10854,14 @@ T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 �
   G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
   G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
   G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
+T('[카페 11-21 은퇴 권유] 36세 이상 우리 선수만 은퇴를 권할 수 있고, 받아들이면 시즌 중엔 시즌 뒤·비시즌엔 바로 기존 은퇴 경로로 계약 없이 빠지며, 거절하면 기분이 내려가고 한 해 한 번이며, 본 난수를 쓰지 않는다',()=>{ fresh(); const L=domestic(G.user).filter(q=>!q.foreign&&!q.prospect&&!q.ys&&!(q.joinY>G.year)); const [a,b,c,d]=L; const o=otherT(), ai=domestic(o).find(q=>!q.foreign&&!q.prospect);
+  for(const q of [a,b,c,d,ai]){ q.age=38; q.lastY=null; delete q.retSugY; Object.assign(q,{faC:true,yrs:3,cyrs:3,sal:1000}); }
+  d.age=35; ok(retSugWhy(d).includes('36세'),'35세에게 은퇴 권유 가능'); ok(retSugWhy(ai),'AI 구단 선수에게 은퇴 권유 가능'); ok(!retSugWhy(a),'38세 우리 선수에게 권할 수 없음: '+retSugWhy(a));
+  const P0=retSugP; try{ G.day=G.cal.open+40; G.rolled=G.year-1; retSugP=()=>1; const r0=__rngCalls(); const r=retSuggest(a.id); ok(__rngCalls()===r0,'은퇴 권유가 본 난수를 씀'); ok(r.acc&&!r.now&&lastSeason(a)&&a.team===G.user,'시즌 중 수락이 은퇴 예고(lastY)가 아님 '+JSON.stringify(r)); ok(retSugWhy(a).includes('이미'),'은퇴 예고 선수에게 다시 권유 가능');
+    retSugP=()=>0; const m0=b.mor??60; const r2=retSuggest(b.id); ok(!r2.acc&&b.team===G.user&&(b.mor??60)<m0&&!lastSeason(b),'거절 처리 이상 '+JSON.stringify(r2)); ok(retSugWhy(b).includes('올해'),'거절 뒤 같은 해 다시 권유 가능');
+    G.rolled=G.year; retSugP=()=>1; const n0=rosterN(G.user), pay0=capPay(G.user), id=c.id, nm=c.name; const r3=retSuggest(id); ok(r3.now&&!G.players[id]&&rosterN(G.user)===n0-1,'비시즌 수락이 바로 은퇴가 아님'); ok(capPay(G.user)<pay0,'은퇴한 선수의 남은 계약 연봉이 남음'); ok((G.retired||[]).some(x=>x.name===nm),'은퇴 기록 없음');
+  }finally{ retSugP=P0; }
+  G.rolled=G.year-1; G.day=KD(11,1); const id=a.id; offseason(); ok(!G.players[id]||G.players[id].team==null,'은퇴 예고 선수가 시즌 뒤 은퇴하지 않음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
