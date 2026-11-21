@@ -480,6 +480,7 @@ function contractStart(){
   /* AI 구단: 기량이 크게 떨어진 고액 연봉 베테랑은 정리한다 */
   for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간에는 AI가 맡은 전 소속 구단도 정리한다 */ for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<VET_REL_O&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); const c=relCost(p).tot; payOut(t.id,c,'rel'); /* 일반 방출과 같은 보장계약 정산(검수 11-09g) */ if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`,c); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
   for(const t of G.teams) if(t.id!==ME()) trimRoster(t.id,60);
+  for(const t of G.teams)fAiReYB(t.id,G.year+1); /* 카페 11-21: AI 아시아쿼터 재계약 → 일반 외국인 */
   refreshFMarket(12,99);
   if(!G.unemp){ stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`); if(G.mail[0])G.mail[0].auto=foreignEnd.length?['sal','fre']:['sal']; }
 }
@@ -488,6 +489,18 @@ function contractStart(){
 function fReRoster(tid,sy,C=G.contract){ const active=C&&!C.done&&(C.tid??G.user)===tid&&C.y+1===sy,FE=new Set(active?C.foreignEnd||[]:[]),FD=new Set(active?C.foreignDrop||[]:[]); return foreignOf(tid).filter(p=>!FD.has(p.id)&&!(p.joinY>sy)).map(p=>{ if(!FE.has(p.id)||p.fCtY>=sy)return p; const agreed=!!(C.fre&&C.fre[p.id]&&C.fre[p.id].ok),inc=p.fInc||0,opt=inc>0?{a:inc,from:sy,until:sy,c:optCrit(p)}:agreed?null:p.opt; return {...p,sal:p.newSal??p.sal,rsy:(p.rsy||0)+1,opt,ctT:opt?tid:p.ctT}; }); }
 function fReCapInfo(){ const C=G.contract; return C?fYBInfo(G.user,fReRoster(G.user,C.y+1,C),C.y+1):null; }
 function fReMixBad(){ const f=fReCapInfo(); return !!(f&&f.mix); }
+/* 우리 아시아쿼터 선수를 재계약 때 일반 외국인으로(카페 11-21 전자포·구단주 보충): KBO 일반 외국인 슬롯은 국적 제한이 없다. 일반 외국인 재계약이 되면 아시아쿼터 상한 대신 일반 규정(3명 정원·구성·총액 한도)을 따르고, 아시아쿼터 자리는 비어 다른 선수를 데려올 수 있다.
+   요구액은 일반 외국인 재계약 산정(newSalary)과 일반 외국인 몸값(fAsk) 가운데 큰 쪽: 아시아쿼터 상한이 없어지니 일반 외국인 수준으로 다시 부른다. 다음 시즌 일반 외국인 자리가 비어야만 한다. 난수 없음 */
+function fYBReAsk(p){ const v=Object.assign({},p,{foreign:'용병',kept:null}); return round5(Math.max(newSalary(v),fAsk(v,perfOvr(p,2)??ovr(p)))); }
+function fReYBErr(tid,p,sy,L0){ if(!p||p.foreign!=='아시아'||p.team!==tid)return '아시아쿼터 선수가 아닙니다.'; const ns=fYBReAsk(p), L=(L0||foreignOf(tid)).filter(x=>x.id!==p.id).concat([Object.assign({},L0?(L0.find(x=>x.id===p.id)||p):p,{foreign:'용병',sal:ns,opt:null})]), f=fYBInfo(tid,L,sy);
+  if(f.n>f.max)return `다음 시즌 일반 외국인이 이미 ${f.max}명이라 외국인 슬롯으로 재계약할 수 없습니다. 먼저 한 명과 결별하세요.`; if(f.mix)return f.mix+'.'; if(f.over)return `일반 외국인 연봉 총액 한도를 ${money(f.over)} 넘어 외국인 슬롯으로 재계약할 수 없습니다(요구 ${money(ns)}).`; return ''; }
+/* 우리: 재계약 기간에 바꾼다(합의는 처음부터). 아직 확정 전이면 되돌릴 수 있다 */
+function fReToYB(id){ const C=G.contract, p=G.players[id]; if(!C||C.done||!p||p.team!==G.user||!C.foreignEnd.includes(id))return '재계약 기간이 아닙니다.'; if(C.foreignDrop.includes(id))return '이미 결별하기로 한 선수입니다.';
+  if(p.foreign==='용병'&&p.fAsiaRe===C.y){ const L=fReRoster(G.user,C.y+1,C).filter(x=>x.id!==id); if(L.some(x=>x.foreign==='아시아'))return '다음 시즌 아시아쿼터 자리가 이미 찼습니다. 아시아쿼터로 되돌릴 수 없습니다.'; p.foreign='아시아'; p.newSal=p.fAsiaNs??p.newSal; delete p.fAsia; delete p.fAsiaRe; delete p.fAsiaNs; if(C.fre)delete C.fre[id]; delete p.fInc; return `${p.name}을(를) 다시 아시아쿼터로 재계약합니다. 요구액 ${money(p.newSal)}.`; }
+  const e=fReYBErr(G.user,p,C.y+1,fReRoster(G.user,C.y+1,C)); if(e)return e; const ns=fYBReAsk(p); p.fAsiaNs=p.newSal; p.foreign='용병'; p.fAsia=1; p.fAsiaRe=C.y; p.newSal=ns; if(C.fre)delete C.fre[id]; delete p.fInc; delete p.fout; /* 아시아쿼터 조건의 합의·해외 제안은 새 조건으로 다시 */
+  story(p,`${C.y+1}시즌 재계약을 일반 외국인 슬롯으로 진행(아시아쿼터 자리 비움)`,'move'); return `${p.name}을(를) 외국인 슬롯으로 재계약합니다. 일반 외국인 규정이 적용되고 요구액은 ${money(ns)}입니다. 아시아쿼터 자리가 비었습니다.`; }
+/* AI(같은 규정): 재계약한 아시아쿼터 선수가 일반 외국인 재계약 기준(능력 54)을 넘고 다음 시즌 일반 외국인 자리·구성·총액이 맞으면 일반 외국인으로 바꾼다. 새 게임 세계 생성 중에는 하지 않는다 */
+function fAiReYB(tid,sy){ if(WORLD_BUILD>0||tid===ME())return null; const p=foreignOf(tid).find(x=>x.foreign==='아시아'&&x.fCtY===sy); if(!p||ovr(p)<54||p.age>=35||fReYBErr(tid,p,sy))return null; p.sal=p.newSal=fYBReAsk(p); p.foreign='용병'; p.fAsia=1; story(p,`${sy}시즌 재계약을 일반 외국인 슬롯으로(아시아쿼터 자리 비움)`,'move'); return p; }
 /* 마감·이직 인계도 같은 정원·구성·총액에 맞춘다. 과다한 유형에서 비싼 재계약부터 포기한다. */
 function fReAutoDrop(C,tid){ const sy=C.y+1; for(let n=0;n<(C.foreignEnd||[]).length;n++){ const L=fReRoster(tid,sy,C),f=fYBInfo(tid,L,sy); if(!f.over&&!f.mix)return f; const yb=L.filter(x=>x.foreign==='용병'),np=yb.filter(x=>x.isP).length,kind=np>=f.max?true:yb.length-np>=f.max?false:null;
     const k=(C.foreignEnd||[]).map(id=>G.players[id]).filter(p=>p&&p.team===tid&&p.foreign==='용병'&&!(C.foreignDrop||[]).includes(p.id)&&(kind==null||p.isP===kind)).sort((a,b)=>(b.newSal??b.sal)-(a.newSal??a.sal))[0]; if(!k)break; (C.foreignDrop=C.foreignDrop||[]).push(k.id); if(tid===G.user)addLog(`다음 시즌 외국인 규정에 따라 ${k.name}와(과)는 재계약하지 않습니다.`); }

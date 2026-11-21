@@ -31,7 +31,10 @@ function foRivalTeams(q){ const c=q.fneg&&q.fneg.cut; const L=[]; for(const t of
 function foUp(tid,q){ const c=q&&q.fneg&&q.fneg.cut; if(c&&c.tid===tid)return c.up!=null&&G.players[c.up]&&G.players[c.up].team===tid?c.up:undefined; const nd=fNeed(tid); return nd&&nd.up?nd.up:undefined; }
 function foVal(g,i){ return g+i*FO_INC_W; }
 /* 목록의 협상 버튼: 요구액이 아니라 가장 낮은 제안(최소 보장)으로도 막히는지 본다. 낮춰 부르면 풀리는 총액 한도로는 협상 자체를 막지 않는다(검수 11-09b) */
-function foListErr(q){ const a0=q.ask; q.ask=MIN_SAL; const e=foreignCheck(G.user,q); q.ask=a0; return e; }
+function foListErr0(q){ const a0=q.ask; q.ask=MIN_SAL; const e=foreignCheck(G.user,q); q.ask=a0; return e; }
+/* 아시아쿼터 후보는 아시아쿼터 자리가 막혀도 일반 외국인 슬롯이 비어 있으면 협상할 수 있다(카페 11-21) */
+function foYBOk(q){ return !!(q&&q.foreign==='아시아'&&q.team==null)&&!fAsYB(q,()=>foListErr0(q)); }
+function foListErr(q){ const e=foListErr0(q); return e&&foYBOk(q)?'':e; }
 /* 경쟁 구단 제안(가장 강한 순) */
 /* 경쟁 구단 제시액: 관심 구단이 많을수록 값이 오른다(실제 KBO: S급 신규 외국인은 대부분 상한 100만 달러 근처). 3주 넘게 지켜본 구단(우리·AI 같은 규칙, 사용자 11-17 관찰 소문)도 관심 구단으로 센다. 예전: 우리가 관찰만 하면 한 곳 더 */
 function foRivals(q){ const cap=foCap(q); let T=foRivalTeams(q), R=[]; const Wt=fWatchers(q);
@@ -44,11 +47,11 @@ function foFloor(q){ return foVal(q.ask*.85,q.ask*.15)*.98; }
 function foNeg(q){ q.fneg=q.fneg||{n:0,mood:70,since:G.day,wk:G.day}; if(G.day-q.fneg.wk>=7){ q.fneg.wk=G.day; q.fneg.n=0; } return q.fneg; }
 /* 이기려면 필요한 보장액(인센티브 i 고정). 한도를 넘으면 null */
 function foNeedG(q,i,target,f){ const g=Math.max(Math.ceil((target/f-i*FO_INC_W)/USD)*USD,MIN_SAL); /* 1만 달러 단위로 올림, 최소 보장을 먼저 적용한 뒤 상한 검사(검수 11-06) */ return g+i<=foCap(q)?g:null; }
-function foOffer(id,g,i,rel){ rel=!!rel; const q=G.players[id]; if(!q||q.team!=null)return {ok:false,msg:'이미 다른 곳과 계약했습니다.'}; if(!foreignOpen())return {ok:false,msg:'지금은 외국인 선수를 영입할 수 없습니다.'};
+function foOffer(id,g,i,rel,yb){ rel=!!rel; { const q0=G.players[id]; if(yb&&q0&&q0.foreign==='아시아'&&q0.team==null)return fAsYB(q0,()=>foOffer(id,g,i,rel)); } /* yb: 아시아쿼터 후보를 일반 외국인 슬롯으로(카페 11-21) */ const q=G.players[id]; if(!q||q.team!=null)return {ok:false,msg:'이미 다른 곳과 계약했습니다.'}; if(!foreignOpen())return {ok:false,msg:'지금은 외국인 선수를 영입할 수 없습니다.'};
   g=Math.round(g); i=Math.round(Math.max(0,i)); const cap=foCap(q); if(g+i>cap)return {ok:false,msg:`신규 계약은 보장과 인센티브를 합쳐 ${Math.round(cap/USD)}만 달러(${money(cap)})까지입니다.`};
   const ask0=q.ask; q.ask=g+i; const err=foreignCheck(G.user,q); q.ask=ask0; if(err)return {ok:false,msg:err};
   const N=foNeg(q); if(N.cool>G.day)return {ok:false,msg:`${q.name} 측이 ${dmd(N.cool)}까지 협상을 쉬자고 합니다.`}; if(N.n>=3)return {ok:false,msg:`이번 주 제안은 세 번까지입니다. ${dmd(N.wk+7)}에 다시 제안할 수 있습니다.`};
-  N.n++; N.last=G.day; const me=foAppeal(q,G.user,{rel}); const v=foVal(g,i)*me.f; const R0=foRivals(q); const best=R0[0]; const floor=foFloor(q); const target=Math.max(floor,best?best.v*1.01:0);
+  N.n++; N.last=G.day; N.yb=!!q._fyb; /* 마지막 제안의 슬롯: 기한이 지나면 경쟁 구단도 그 슬롯 기준으로 */ const me=foAppeal(q,G.user,{rel}); const v=foVal(g,i)*me.f; const R0=foRivals(q); const best=R0[0]; const floor=foFloor(q); const target=Math.max(floor,best?best.v*1.01:0);
   const riv=best?`${R0.length}개 구단이 관심을 보이고 있고, 가장 적극적인 곳은 ${tshort(best.tid)}(보장 ${usdT(best.g)} + 인센티브 ${usdT(best.i)}, 구단 매력 ${Math.round((best.f-1)*100)>=0?'+':''}${Math.round((best.f-1)*100)}%)입니다.`:'아직 다른 구단 제안은 없습니다.';
   if(v>=target){ const err=signForeignT(G.user,id,g,i); if(err)return {ok:false,msg:err}; delete q.fneg; if(rel){ q.fRel=true; story(q,'계약 조항: 재계약하지 않으면 보류권 해제(국내 다른 구단과 계약 가능)','move'); } /* 외국인 계약은 국내 에이전시 친분을 올리지 않는다(계약 1단계: 예전에는 agentOf로 국내 에이전시가 붙어 친분이 올랐다) */ return {ok:true,msg:`${q.name} 측이 사인했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}.${best?` ${tshort(best.tid)}도 노렸지만 우리를 택했습니다.`:''}`}; }
   /* 낮게 부르면 분위기가 나빠진다 */
@@ -68,11 +71,11 @@ function signForeignT(tid,id,g,i){ const p=G.players[id]; if(!p)return '외국�
   if(tid===G.user)story(p,`계약 조건: 보장 ${money(g)}${i?` + 인센티브 ${money(i)}(규정 출전 시)`:''}`,'move'); return ''; }
 /* 기다려 준 기한이 지나면 가장 강한 경쟁 구단으로 간다 */
 function foDaily(){ for(const id of [...(G.fmarket||[])]){ const q=G.players[id]; if(!q||q.team!=null||!q.fneg||!q.fneg.dl||q.fneg.dl>=G.day)continue; const dl=q.fneg.dl; delete q.fneg.dl;
-    const R0=foRivals(q); let b=null; if(foreignOpen())for(const r of R0){ G._foNegSign=true; try{ aiForeignSign(r.tid,q,'',r); }finally{ G._foNegSign=false; } if(q.team===r.tid){ b=r; break; } } /* 우리와 줄다리기하던 후보의 계약은 아래 결과 알림 하나로(플레이 리뷰 11-12: 같은 계약에 메일 3통) */ if(q.fneg)delete q.fneg.cut; if(!b)continue; /* 1순위가 한도 등으로 못 하면 다음 구단(검수 11-06). 아무도 못 하면 시장에 남는다. 경쟁 소식 전에 낸 제안은 답으로 세지 않는다(검수 11-09zl) */ note('외국인',`${q.name}이(가) ${tname(b.tid)}과(와) 계약했습니다. ${q.fcut!=null&&!(q.fneg.last>=q.fcut)?`${dmd(dl)}까지 끼어들 기회가 있었지만 우리는 제안하지 않았습니다.`:`${dmd(dl)}까지 기다려 줬지만 우리 조건이 ${tshort(b.tid)}보다 못했습니다.`}`); } }
+    const run=()=>{ const R0=foRivals(q); let b=null; if(foreignOpen())for(const r of R0){ G._foNegSign=true; try{ aiForeignSign(r.tid,q,'',r); }finally{ G._foNegSign=false; } if(q.team===r.tid){ b=r; break; } } /* 우리와 줄다리기하던 후보의 계약은 아래 결과 알림 하나로(플레이 리뷰 11-12: 같은 계약에 메일 3통) */ if(q.fneg)delete q.fneg.cut; if(!b)return; /* 1순위가 한도 등으로 못 하면 다음 구단(검수 11-06). 아무도 못 하면 시장에 남는다. 경쟁 소식 전에 낸 제안은 답으로 세지 않는다(검수 11-09zl) */ note('외국인',`${q.name}이(가) ${tname(b.tid)}과(와) 계약했습니다. ${q.fcut!=null&&!(q.fneg.last>=q.fcut)?`${dmd(dl)}까지 끼어들 기회가 있었지만 우리는 제안하지 않았습니다.`:`${dmd(dl)}까지 기다려 줬지만 우리 조건이 ${tshort(b.tid)}보다 못했습니다.`}`); }; if(q.fneg.yb)fAsYB(q,run); else run(); } } /* 일반 슬롯으로 줄다리기한 아시아쿼터 후보는 경쟁도 일반 슬롯 기준(카페 11-21) */
 /* 우리 관찰 명단 후보를 AI 구단이 데려가려 하면 바로 끝내지 않고 사흘 끼어들 기한을 준다(사용자 피드백 11-09f: '하이재킹 당했습니다'로 끝나 허무함).
    기한에는 다른 구단도 못 데려가고(foHeld), 기한이 지나면 foDaily가 기존 점수로 가장 강한 구단에 보낸다. 관찰 명단만, 한 선수당 한 번만 */
 function foCutIn(tid,q,up){ if(G.unemp||!q||q.team!=null||q.fcut!=null||!fwatchOn(q.id)||foHeld(q))return false; const dl=foDL(); if(dl<=G.day)return false;
-  q.fcut=G.day; const N=foNeg(q); N.dl=dl; N.dlT=tid; N.cut={tid,up:up??(fNeed(tid)||{}).up}; delete N.cool; /* 영입을 추진한 구단(교체 대상 포함)은 경쟁자로 남고, 새 기한 동안 협상 휴식은 풀린다(검수 11-09zl) */ const r=foRivals(q).find(x=>x.tid===tid); const tot=r?r.g+r.i:Math.min(foCap(q),q.ask);
+  q.fcut=G.day; const N=foNeg(q); N.dl=dl; N.dlT=tid; N.yb=!!q._fyb; N.cut={tid,up:up??(fNeed(tid)||{}).up}; delete N.cool; /* 영입을 추진한 구단(교체 대상 포함)은 경쟁자로 남고, 새 기한 동안 협상 휴식은 풀린다(검수 11-09zl) */ const r=foRivals(q).find(x=>x.tid===tid); const tot=r?r.g+r.i:Math.min(foCap(q),q.ask);
   mail('스카우트팀장',`${tshort(tid)}, 관찰 후보 ${q.name}와(과) 협상 중`,`${tname(tid)}이(가) 관찰 명단의 ${q.name}(${posLabel(q)}, ${q.age}세)과(와) 계약을 앞두고 있습니다. 제시액은 약 ${Math.round(tot/USD/5)*5}만 달러 수준으로 들립니다. 관심 있으면 ${dmd(dl)}까지 제안하세요. 선수가 두 구단 조건을 비교해 고릅니다.`,{imp:true,kind:'외국인',ref:q.id,acts:[{l:`${q.name} 보고 제안`,a:'player',v:q.id},{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
   return true; }
 /* AI 구단은 우리와 협상 중인(기다려 주는) 선수를 그 기간에는 데려가지 않는다 */
