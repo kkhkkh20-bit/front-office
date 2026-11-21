@@ -11,11 +11,13 @@ function strip(points,low,high){const pos=[],uv=[],idx=[];for(let i=0;i<points.l
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
 function arc(rx,rz,cz,start=-1.38,end=1.38,n=40){return Array.from({length:n+1},(_,i)=>{const a=start+(end-start)*i/n;return [Math.sin(a)*rx,cz+Math.cos(a)*rz];});}
 function adAtlas(){const canvas=document.createElement('canvas');canvas.width=1536;canvas.height=128;const g=canvas.getContext('2d');
- VENUE_ADS.forEach((label,i)=>{const x=i*256,dark=i%2===0;g.fillStyle=dark?'#12394b':'#e6e2d5';g.fillRect(x,0,256,128);g.fillStyle=dark?'#d5bc75':'#244b5a';g.fillRect(x+11,10,234,3);g.fillRect(x+11,115,234,3);g.textAlign='center';g.textBaseline='middle';g.font='900 25px Arial,sans-serif';g.fillStyle=dark?'#f6f0df':'#183346';g.fillText(label,x+128,61,232);g.font='600 9px Arial,sans-serif';g.fillText('FRONT BASEBALL',x+128,92);});
+ VENUE_ADS.forEach((label,i)=>{const x=i*256;g.fillStyle=i%2?'#204b67':'#102d42';g.fillRect(x,0,256,128);g.fillStyle='#0a1d2a';g.fillRect(x,0,256,5);g.fillRect(x,123,256,5);g.textAlign='center';g.textBaseline='middle';g.font='900 26px Arial,sans-serif';g.fillStyle='#f2f4ed';g.fillText(label,x+128,64,232);});
  const texture=new T.CanvasTexture(canvas);texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=2;return {canvas,texture};}
-function boards(){const positions=[],uv=[],indices=[];const angles=[-43,-29,-12,12,29,43];for(let i=0;i<angles.length;i++){
- const a=angles[i]*Math.PI/180,r=124-20*Math.pow(Math.abs(a)/(Math.PI/4),1.7),cx=Math.sin(a)*r,cz=Math.cos(a)*r,tx=Math.cos(a)*7.3,tz=-Math.sin(a)*7.3,k=i*4;
- positions.push(cx-tx,2.5,cz-tz,cx+tx,2.5,cz+tz,cx-tx,6.6,cz-tz,cx+tx,6.6,cz+tz);uv.push((i+1)/6,0,i/6,0,(i+1)/6,1,i/6,1);indices.push(k,k+2,k+1,k+1,k+2,k+3);}
+/* Low boards follow the home-plate backstop wall, as in the KIA venue media guide.
+ * Home plate is z=0 and the outfield is +Z. Keep the existing pitching camera unchanged. */
+function boards(){const positions=[],uv=[],indices=[];for(let i=0;i<VENUE_ADS.length;i++){
+ const cx=-18+i*7.2,cz=-17.75+cx*cx/100,tx=3.45,tz=2*cx/100*tx,k=i*4;
+ positions.push(cx-tx,.35,cz-tz,cx+tx,.35,cz+tz,cx-tx,1.95,cz-tz,cx+tx,1.95,cz+tz);uv.push(i/6,0,(i+1)/6,0,i/6,1,(i+1)/6,1);indices.push(k,k+1,k+2,k+2,k+1,k+3);}
  const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));geometry.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geometry.setIndex(indices);geometry.computeVertexNormals();return geometry;}
 export function createVenue(scene,input={}){
  const plan=venuePlan(input),root=new T.Group();root.name='VenueDressing';root.userData={...plan};const geometries=[],materials=[],textures=[],canvases=[];

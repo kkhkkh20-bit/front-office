@@ -4,13 +4,17 @@
 
 ![완공 구장 종류별 SVG](previews/stadium-types.webp)
 
-![돔 구장 중계와 광고판](previews/broadcast-dome.webp)
+![돔 구장 기본 중계 시점 유지](previews/broadcast-dome.webp)
 
-![모바일 돔 중계](previews/broadcast-phone.webp)
+![광고판 배치 확인용 타석 정면 시점](previews/backstop-front.webp)
+
+![모바일 백스톱 배치 확인 시점](previews/broadcast-phone.webp)
 
 ![인게임 행사 사진](previews/game-events.webp)
 
 위 이미지는 로컬 Chromium에서 실제 SVG 함수와 게임 화면을 렌더링한 것입니다. 경기·구장 상태는 재현용 메모리 상태이며 실제 이용자 저장을 사용하지 않았습니다. 외부 폰트 요청은 차단하여 시스템 대체 글꼴로 확인했습니다.
+
+광고판 위치는 [KIA 구단 공식 매체 소개서의 백스톱 배치](https://tigers.co.kr/files/article/2025/02/kiatigers_ad_2025season_20250204163249.pdf#page=10)와 [Daktronics 백스톱 설치 안내](https://www.daktronics.com/en-us/products/sports/baseball/baseball-stadium-experience)를 참고해 포수 뒤 낮은 펜스로 수정했습니다. 기존 포수 뒤 기본 카메라는 유지하므로 그 시점에서 백스톱은 카메라 뒤에 있습니다. 타석 정면 이미지는 배치 확인용으로 기존 상세 카메라를 사용한 것이며 기본 중계 시점을 바꾸지 않았습니다. 경기장 SVG·행사 사진·돔 외형도 유지했습니다.
 
 1. **수정한 파일**: 구장 SVG·관련 CSS·구장 화면 옵션, 중계 화면 옵션·3D 장식 모듈, 행사 사진 3장·경로 매핑·사이트 패키징, 모듈 목록·패치 노트, 회귀 검사와 배포 파일 검사. 정확한 파일 목록은 PR의 Files changed에 있습니다.
 2. **내용**: 완공된 구장의 종류·규모·돔 여부를 외관과 중계에 반영합니다. 관람석·잔디·통로·지붕을 보강하고 가상 광고판을 추가했습니다. 공사 중인 신구장은 현재 구장으로 먼저 표시하지 않습니다. 테마 데이·콜라보 유니폼·서포터즈 모집에 행사 사진을 연결했습니다.
