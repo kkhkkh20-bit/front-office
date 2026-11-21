@@ -20216,7 +20216,7 @@ function evalTrade0(tid,give,get,cash,pk,actorTid,relOv){ const actor=actorTid??
   if(plainV>0)need=bench?Math.max(need,plainV*(mid?TR_TUNE.midMargin:TR_BENCH.margin),mid?TR_TUNE.midMin:TR_BENCH.min):Math.max(need,plainV*.03); /* 공략 방지: 매물이 아니면 내주는 값의 3%(비주전 거래는 1.5%, 그래도 최소 0.15)는 더 받아야 한다(예전 -10%까지 손해 감수) */
   const pkGate=tid!==actor?pkGateWhy(t,pk.get,give):''; if(pkGate)parts.pkGate=true; /* 상위 5순번 지명권 관문: 값 비교 전에(소유자 11-18, 96_pick_trade) */
   const gain=inV-outV; const ok=!pkGate&&gain>=need&&!(domX&&domX.refuse)&&!(capT&&capT.hard); /* 견제 집계는 실제 제출한 제안에만 남긴다(tradeEvalLog). */
-  return {gain,need,ok,theirN,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{}),...(pkGate?{pkGate}:{})};
+  return {gain,need,ok,theirN,theirN0:base.n,theirPay,capT,inV,outV,hit,cashV,cashCap,cashFull,cashUse,parts,...(domX?{dom:domX}:{}),...(pkGate?{pkGate}:{})};
 }
 /* FA 신청을 앞둔 선수: 시즌 결산 뒤 FA 공시(스토브리그 시작) 전까지는 트레이드할 수 없다. 데려가도 곧 FA로 나가는 선수를 지명권·유망주와 바꾸던 허점(커뮤니티 11-12) */
 let _faLk={k:null,s:null};
@@ -20250,8 +20250,7 @@ function proposeTrade(tid,give,get,cash,pk){
   if(!isCtr&&nt.seen[sig]!=null)return {ok:false,msg:`${gmn}: 그 안은 ${dsh(nt.seen[sig])}에 이미 답을 드렸습니다. 조건을 바꿔서 오시죠.`,dup:true};
   if(!isCtr&&!ni.left)return {ok:false,msg:`${gmn}: 이번 달은 더 시간을 내기 어렵습니다. ${ni.next}에 다시 연락 주십시오.${ni.free?'':' (우리와 맞대결하는 기간에는 경기장에서 따로 만날 수 있습니다)'}`,closed:true};
   const e=evalTrade(tid,give,get,cash,pk);
-  if(e.theirN>ROSTER_MAX)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다. 받을 선수를 늘려 주세요.`};
-  if(e.theirN<ROSTER_MIN)return {ok:false,msg:`${tfull(t)} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다.`};
+  if(!tradeSizeOk(e))return {ok:false,msg:e.theirN>ROSTER_MAX?`${tfull(t)} 로스터가 ${ROSTER_MAX}명을 넘게 됩니다(지금 ${e.theirN0}명 → ${e.theirN}명). 받을 선수를 늘리거나 보낼 선수를 줄여 주세요.`:`${tfull(t)} 로스터가 ${ROSTER_MIN}명 아래로 내려갑니다(지금 ${e.theirN0}명 → ${e.theirN}명).`};
   if(e.capT&&e.capT.hard)return {ok:false,cap:true,msg:aiCapMsg(t,e.capT)};
   if(e.pkGate)return {ok:false,gate:true,msg:`${gmn}: ${e.pkGate}${aiQ(tid,'no')}`}; /* 상위 지명권 관문: 친분을 깎지 않고 역제안도 하지 않는다 */
   if(isCtr&&!e.ok&&!(e.dom&&e.dom.refuse)&&!(e.capT&&e.capT.hard)&&e.gain>=e.need-Math.max(1.5,e.outV)*.15)e.ok=true; /* 자기가 낸 조건을 맞춰 오면 그날그날 기분(일일 변동)으로 뒤집지 않는다(커뮤니티 피드백 11-07) */
@@ -20329,8 +20328,8 @@ function tradeEligible(p,ctx){ const c=ctx||{}; if(!p)return false;
   if(c.faLock!==false&&faLock(p))return false;
   const rc=c.recent===undefined?'tr':c.recent; if(rc==='tr'?recentTr(p):rc==='mv'&&mvRecent(p))return false;
   return true; }
-/* 거래 뒤 정식 인원이 정원 안인지(evalTrade의 theirN) */
-function tradeSizeOk(e){ return e.theirN>=ROSTER_MIN&&e.theirN<=ROSTER_MAX; }
+/* 거래 뒤 정식 인원이 정원 안인지(evalTrade의 theirN). 이미 정원을 넘었거나(군 전역·드래프트 합류 등) 모자란 구단은 그 차이를 더 키우지만 않으면 된다: 71명인 구단이 4명을 받고 6명을 보내 69명이 되는 거래는 막지 않는다(카페 11-21 마스터쉐프). 모든 구단 같은 규칙 */
+function tradeSizeOk(e){ const n0=e.theirN0??e.theirN; return (e.theirN>=ROSTER_MIN||e.theirN>=n0)&&(e.theirN<=ROSTER_MAX||e.theirN<=n0); }
 /* 선수 nOut명을 보내고 nIn명을 받은 뒤 정원(ROSTER_MAX)을 넘지 않는지 */
 function tradeRosterFits(tid,nOut,nIn){ return rosterN(tid)-nOut+nIn<=ROSTER_MAX; }
 
@@ -52702,6 +52701,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
+    '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',
+    '인원이 더 늘어나는 거래와, 정원 안 구단이 68명을 넘게 되는 거래는 전처럼 막습니다. 안내에 지금 인원과 거래 뒤 인원을 함께 보여 줍니다. AI 구단끼리도 같은 규칙입니다.'
+  ]},
   {id:'2026-11-20-pen-fire',d:'11월 20일',t:'8회부터 불펜이 흔들리면 이닝 중에도 마무리·필승조로 바꿉니다',items:[
     '8회 이후 큰 리드에 올라온 구원 투수가 점수를 줘 세이브 상황(3점 차 이내 또는 동점 주자가 누상·타석·대기 타석)이 되면, 감독이 이닝이 끝나기를 기다리지 않고 마무리를 올립니다. 마무리가 이미 던졌거나 쉬어야 하면 필승조를 올립니다.',
     '세이브 상황에 올라온 투수가 2점 이상 주거나, 2점 이상 줘서 동점~4점 차로 좁혀져도 필승조로 바꿉니다. 마무리가 동점을 허용하거나 3점 이상 주면 마무리도 내립니다.',
