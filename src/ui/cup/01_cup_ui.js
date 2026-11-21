@@ -97,6 +97,8 @@ function cupNowEntry(name){ let e=null; try{ if(G&&!G.unemp)e=cupEntryNow({name:
 const cupDl=d=>FrontOfficeCore.cupKstMs(d)||0; /* 마감(한국시간 글) → ms. 없는 날짜는 0(마감 없음으로 보지 않게 화면은 '접수 중'만) */
 /* 지금 대회 단계: 0 없음 · 1 접수 중 · 2 마감(주최자 준비) · 3 진행(연재 공개 중) · 4 결과 공개 */
 function cupStage(){ const c=CUP.cfg, P=CUP.pub&&c&&CUP.pub.id===c.id?CUP.pub:null; if(!c)return 0; if(P&&P.day>=7)return 4; if(P&&P.day)return 3; const dl=cupDl(c.deadline); return c.open!==false&&(!dl||Date.now()<dl)?1:2; }
+/* 처음 화면의 프런트컵 메뉴는 대회가 진행 중일 때만(구단주 11-21): 접수 중·마감·1~6일차 공개(cupStage 1~3). 대회가 없거나 7일차까지 다 공개되면 숨긴다(명예의 전당은 설정 › 정보에서 늘 본다) */
+function cupEventOn(){ try{ cupProbe(); cupPubLoad(); const s=cupStage(); return s>=1&&s<=3; }catch(e){ return false; } }
 function cupEntsLoad(){ if(CUP.entsSt||!xfAvail()||cupStage()!==1)return; CUP.entsSt='loading'; cupApi('/entries').then(({r,j})=>{ CUP.ents=r.ok&&j&&Array.isArray(j.entries)?j:null; },()=>{}).finally(()=>{ CUP.entsSt='ok'; try{ render(); }catch(e){} }); }
 function cupStatusHtml(){ const c=CUP.cfg; if(!c)return ''; const k=cupStage(), P=CUP.pub&&CUP.pub.id===c.id?CUP.pub:null, dl=cupDl(c.deadline), left=dl-Date.now();
   const lt=left>0&&left<365*864e5?(left>864e5?`D-${Math.floor(left/864e5)}`:`${Math.floor(left/36e5)}시간 ${Math.floor(left%36e5/6e4)}분`):'';
