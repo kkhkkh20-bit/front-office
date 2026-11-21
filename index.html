@@ -27564,7 +27564,7 @@ function scVacUser(){ if(G.unemp)return []; if(!scVacNeed()){ scVacFullNote(); r
       const post=scVacPost(); if(post){ c.role=post[0]; c.region=post[1]; } else c.role=c.role||'am'; stSignOwn('sc',c,c.sal||SCOUT_SAL[c.skill]); if(!(G.scouts||[]).includes(c))break; got.push(c); } });
   if(!got.length)return got; const ln=got.map(c=>`${SROLE[c.role||'am']} ${c.role==='intl'?IREG[c.region].l:c.region} 담당 ${c.name}(능력 ${c.skill} · ${c.age}세 · 연 ${money(c.sal)})`);
   autoLogAdd('스카우트 빈자리 보강(운영팀)',`${got.length}명 영입`,ln.join(', '));
-  mail('운영팀',`스카우트 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 스카우트 빈자리를 스카우트 시장에서 채웠습니다.\n${ln.join('\n')}\n\nAI 구단과 같은 기준입니다. 구단 형편에 맞는 인원보다 적을 때, 연봉 여력 안에서 능력이 가장 높은 후보를 데려와 담당이 빈 아마추어 지역부터 맡겼습니다. 설정 > 권한에서 다시 가져올 수 있습니다.`,{kind:'스태프',acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]});
+  mail('운영팀',`스카우트 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 스카우트 빈자리를 스카우트 시장에서 채웠습니다.\n${ln.join('\n')}\n\nAI 구단과 같은 기준입니다. 구단 형편에 맞는 인원보다 적을 때, 연봉 여력 안에서 능력이 가장 높은 후보를 데려와 담당이 빈 아마추어 지역부터 맡겼습니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`,{kind:'스태프',acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]});
   return got; }
 /* 스카우트 빈자리 소식: 받은편지함 '위임하기' 버튼(mailDelegOpts)이 이 업무로 이어지게 */
 /* 스카우트 공석 알림(카페 11-20 쌉싸코 '20시즌 넘으면 지명 선수가 미확인'): 22시즌 측정에서 우리 구단만 아마추어 스카우트가 3→1명으로 줄고(AI 평균 5~6명) 다시 채워지지 않아
@@ -31605,7 +31605,8 @@ function autoRoutine(keys,only){ if(G.unemp)return ''; trainingDelegationMigrate
     for(const tp of ['listen','coord']){ const U=T.filter(t=>t.topic===tp).map(({kind,id})=>({kind,id})); if(!U.length)continue; const r=staffTalkBulk(U,tp); if(r.success.length){ L.push(`직원 ${r.success.length}명 ${tp==='coord'?'감독과 업무 조율':'희망 보직 면담'}`); D.push(...r.success.map(x=>x.name)); W.push({k:'stalk',x:tp}); } } }
   if(keys.includes('fall')&&autoOn('fall')){ const r=fallAutoApply(); if(r){ L.push(r); D.push(...fallBest(G.user,8).map(p=>p.name)); W.push({k:'fall'}); } }
   if(!L.length)return ''; const t=L.join(' · '); autoLogAdd('정기 업무(운영팀)',t,'',W);
-  mail('운영팀',`자동 처리: ${L.length===1?L[0]:L.length+'건'}`,`맡기신 정기 업무를 처리했습니다.\n${L.join('\n')}${D.length?`\n\n대상: ${D.join(', ')}`:''}\n\n비용과 횟수 제한은 직접 할 때와 같습니다. 설정 > 권한에서 끌 수 있습니다.`,{kind:'운영',acts:[{l:'권한 설정',a:'go',v:'cfg:auth'}]});
+  const mm=mail('운영팀',`자동 처리: ${L.length===1?L[0]:L.length+'건'}`,`맡기신 정기 업무를 처리했습니다.\n${L.join('\n')}${D.length?`\n\n대상: ${D.join(', ')}`:''}\n\n비용과 횟수 제한은 직접 할 때와 같습니다. 설정 › 업무 권한 또는 스태프 화면에서 끌 수 있습니다.`,{kind:'운영',acts:[{l:'권한 설정',a:'go',v:'cfg:auth'}]});
+  if(mm&&mm.id)mm.deleg=[...new Set(W.map(w=>w.k))]; /* 맡긴 업무로 처리한 소식: 소식함에서 '직접 처리로 되돌리기'(카페 11-21). 난수 없음 */
   return t; }
 /* 희망 보직 면담 자동 처리의 면담 방식(국사왕 11-18): listen 단장과 대화 · coord 감독과 업무 조율 · auto 자동 판단. 효과는 직접 면담과 같다(staffTalk) */
 const STALK_T=[['listen','단장과 대화'],['coord','감독과 업무 조율'],['auto','자동 판단']];
@@ -31707,7 +31708,7 @@ function autoNow(k){ const C=G.contract; const out=[];
   if(k==='ev'||k==='mgr'||k==='inv'){ let nd=0,nv=0; for(const e of [...(G.evs||[])]){ if(e.done)continue; if((k==='ev'&&!EV_KEY.has(e.k)&&!evOwn(e)&&EV_NAME[e.k]&&evDelegOn(e.k))||(k==='mgr'&&(e.k==='mreq'||e.k==='mpick'))||(e.k==='gmInv'&&autoOn('inv'))){ e.deleg=true; evPick(e.id,e.k==='gmInv'&&G.auto&&G.auto.inv==='yes'?0:evAutoIdx(e),true); if(e.void)nv++; else if(e.done)nd++; } } out.push(nd||!nv?`걸려 있던 결정 ${nd}건을 기본안으로 처리했습니다`:''); if(nv)out.push(`${nv}건은 대상이 떠나 효력을 잃어 처리하지 않았습니다`); }
   if(C&&!C.done&&autoOn('sal')&&G.day>=KD(1,5)&&dobj(G.day).m<=2)autoConfirm();
   return out.filter(Boolean).join('. '); }
-function handOff(k){ autoSet(k,true); const r=autoNow(k); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) ${AUTO_WHO[k]||'비서'}에게 넘겼습니다.${r?' '+r+'.':''} 설정 · 권한에서 다시 가져올 수 있습니다.`; }
+function handOff(k){ autoSet(k,true); const r=autoNow(k); const a=AUTO_AREAS.find(x=>x[0]===k); return `${a?a[1]:'이 업무'}을(를) ${AUTO_WHO[k]||'비서'}에게 넘겼습니다.${r?' '+r+'.':''} 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`; }
 function evOverrideText(){return Object.keys(EV_POL).filter(k=>evPolOf(k)&&evPolOf(k)!=='self').map(k=>`${EV_NAME[k]} ${EV_POL[k].find(x=>x[0]===evPolOf(k))[1]}`).join(' · ');}
 function takeBack(k){ autoSet(k,false); const a=AUTO_AREAS.find(x=>x[0]===k),ex=k==='ev'?evOverrideText():''; return `${a?a[1]:'이 업무'}을(를) 다시 직접 합니다.${ex?` 개별 기준은 유지됩니다: ${ex}. 결정별 비서 기준에서 직접 결정으로 바꿀 수 있습니다.`:''}`; }
 /* 소식함에서 바로 위임(사용자 11-17: '수신함에서 즉석해서 위임하기 버튼', 어려운 사람은 비서를 통해 쉽게).
@@ -31724,7 +31725,7 @@ function mailDelegOpts(m){ if(!m||G.unemp)return []; if(m.kind==='결정'&&(G.ev
       if(!L.length)L.push({a:'evHand',v:e.id,l:'비서에게 맡기기',d:`비서: 이번 건만 추천안 ${df}(으)로 정합니다. 같은 종류는 앞으로도 직접 정합니다`}); } }
   return L; }
 /* 결정 종류 하나를 앞으로 맡기고 이번 건도 기본안으로(권한 화면 '종류별로 넘긴 일상 결정'과 같은 G.deleg) */
-function evDeleg(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k)||EV_KEY.has(e.k)||evOwn(e)||!EV_NAME[e.k])return handOffEv(id); G.deleg=G.deleg||{}; G.deleg[e.k]=true; if(evPolOf(e.k)==='self')delete G.evPol[e.k]; const r=handOffEv(id); return `${r} 앞으로 ${EV_NAME[e.k]}은(는) 비서가 기본안으로 처리합니다. 설정 · 권한에서 다시 가져올 수 있습니다.`; }
+function evDeleg(id){ const e=(G.evs||[]).find(x=>x.id===id); if(!e||e.done)return '이미 정한 일입니다.'; if(EV_GM.has(e.k)||EV_KEY.has(e.k)||evOwn(e)||!EV_NAME[e.k])return handOffEv(id); G.deleg=G.deleg||{}; G.deleg[e.k]=true; if(evPolOf(e.k)==='self')delete G.evPol[e.k]; const r=handOffEv(id); return `${r} 앞으로 ${EV_NAME[e.k]}은(는) 비서가 기본안으로 처리합니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`; }
 /* 확인할 소식을 한 번에: 넘길 수 있는 결정은 이번 건만 비서가 기본안으로(단장 전용 제외). 권한 설정은 바꾸지 않는다 */
 function evHandAll(mails){ let n=0; for(const m of mails||[]){ if(m.kind!=='결정')continue; const e=(G.evs||[]).find(x=>x.mid===m.id&&!x.done); if(!e||EV_GM.has(e.k)||evOwn(e))continue; handOffEv(e.id); if(e.done&&!e.void)n++; } return n; }
 /* 결정 한 건만 넘기기(핵심 결정 포함): 비서가 기본안으로 처리 */
@@ -34352,7 +34353,7 @@ function coachVacRound(why,start){ if(!G.coach)return []; const ids=G.teams.map(
 function coachVacUser(why,start){ if(G.unemp||!G.coach||!G.coach[G.user])return []; const got=coachVacFill(G.user,why,null,start); if(!got.length)return got;
   const t=got.map(c=>`${CROLE[c.role].l} ${c.name}(지도 ${dv(effC(c,G.user,'sk',1))} · 육성 ${dv(effC(c,G.user,'dv',1))} · ${c.yrs}년 · 연 ${money(c.sal)})`);
   autoLogAdd('코치 빈자리 보강(운영팀)',`${got.length}명 영입`,t.join(', '));
-  mail('운영팀',`코치 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 빈 코치 자리를 코치 시장에서 채웠습니다.\n${t.join('\n')}\n\nAI 구단과 같은 기준입니다. 그 자리 후보 가운데 연봉 여력 안에서 종합(지도+육성)이 가장 높은 코치를 골랐고, 후보가 없으면 새 후보를 데려왔습니다. 설정 > 권한에서 다시 가져올 수 있습니다.`,{kind:'코치',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]});
+  mail('운영팀',`코치 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 빈 코치 자리를 코치 시장에서 채웠습니다.\n${t.join('\n')}\n\nAI 구단과 같은 기준입니다. 그 자리 후보 가운데 연봉 여력 안에서 종합(지도+육성)이 가장 높은 코치를 골랐고, 후보가 없으면 새 후보를 데려왔습니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`,{kind:'코치',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]});
   return got; }
 /* 코치 빈자리 소식: 받은편지함 '위임하기' 버튼(mailDelegOpts)이 이 업무로 이어지게 */
 function cvacMail(m){ if(m&&typeof m==='object'&&m.id)m.auto=[...new Set([...(m.auto||[]),'cvac'])]; return m; }
@@ -40411,9 +40412,10 @@ function mgrBody(){
   const MC=[...IPM,...(G.mmarket||[])];
   const mv=inTabs('mgrv',[['cur','현재 감독'],...(m&&!m.interim?[['rel','지시·요청']]:[]),['cand',`채용 후보 ${MC.length}`]],m&&!m.interim?'cur':'cand');
   if(UI._smk){ mv.cur='cand'; mv.bar=''; } const PGm=pager('mgc',MC,fmOn()?8:40); /* 내부 승격 후보를 맨 앞에 */ /* 휴대폰: 후보 카드를 넘기지 않고 목록으로(제안 버튼이 늘 보이게, UI 3단계 3-9) */
-  if(mv.cur==='rel')return mv.bar+(fmOn()?`<div class="mgfm mgfm2"><section class="mgfm-c">${mgrBondView()}${mreqView()}</section><section class="mgfm-c">${pol}</section></div>`:mgrBondView()+mreqView()+pol); /* 지시·요청·운영 기조·유망주 합의는 이 탭에(PC 두 칸) */
-  if(mv.cur==='cur'&&m&&!m.interim)return mv.bar+cur+`<p class="small muted">고집이 셀수록 단장 지시를 덜 받아들입니다. 스타 감독은 팬 관심을 끌지만 연봉이 비싸고 자기 방식이 강합니다. 지시는 <button class="lnk" data-a="itab" data-v="mgrv:rel">지시·요청</button> 탭에서 합니다.</p>`;
-  return mv.bar+(mv.cur==='cur'?cur+`<p class="small muted">고집이 셀수록 단장 지시를 덜 받아들입니다. 감독을 바꿔도 남은 계약 연봉은 그대로 나갑니다. ${hiI('스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다. 작전 수치가 높으면 도루를 많이 시도하고, 불펜 운용 수치가 높으면 선발을 일찍 내립니다. 육성은 26세 이하 선수 성장, 장악력은 선수단 기분, 경기 운영은 전반적인 경기력에 영향을 줍니다.')}</p>`:mv.cur==='pol'?pol:ipBox+(MC.length?`<p class="small muted">능력치에서 고집·투수 혹사는 낮을수록 좋습니다. 작전(번트·도루 선호)과 스타성(관중·홍보 효과)은 성향입니다. 사단은 감독과 함께 오는 코치입니다.</p>${mplPickCard()}<div class="tgrid mgrg" data-pg="mgc">${PGm.items.map(mgrCandCard).join('')}</div>${PGm.bar}`:'<p class="small muted">후보가 없습니다. 11월에 새 후보가 나옵니다.</p>'));
+  const dlg=delegStaffCard(), dlgN=dlg?delegList().length:0; /* 비서에게 맡긴 일(카페 11-21): 지시·요청 탭에 카드, 현재 감독 탭에는 바로 가는 한 줄 */
+  if(mv.cur==='rel')return mv.bar+(fmOn()?`<div class="mgfm mgfm2"><section class="mgfm-c">${dlg}${mgrBondView()}${mreqView()}</section><section class="mgfm-c">${pol}</section></div>`:dlg+mgrBondView()+mreqView()+pol); /* 지시·요청·운영 기조·유망주 합의는 이 탭에(PC 두 칸) */
+  if(mv.cur==='cur'&&m&&!m.interim)return mv.bar+cur+`<p class="small muted">고집이 셀수록 단장 지시를 덜 받아들입니다. 스타 감독은 팬 관심을 끌지만 연봉이 비싸고 자기 방식이 강합니다. 지시는 <button class="lnk" data-a="itab" data-v="mgrv:rel">지시·요청</button> 탭에서 합니다.</p>${dlgN?`<p class="small keep deleg-n"><b>비서에게 맡긴 일 ${dlgN}개</b> · <button class="lnk" data-a="itab" data-v="mgrv:rel">보기·가져오기</button></p>`:''}`;
+  return mv.bar+(m&&!m.interim?'':dlg)+(mv.cur==='cur'?cur+`<p class="small muted">고집이 셀수록 단장 지시를 덜 받아들입니다. 감독을 바꿔도 남은 계약 연봉은 그대로 나갑니다. ${hiI('스타 감독은 팬 관심과 구단 인기를 끌어올리지만 연봉이 비싸고 자기 방식이 강합니다. 작전 수치가 높으면 도루를 많이 시도하고, 불펜 운용 수치가 높으면 선발을 일찍 내립니다. 육성은 26세 이하 선수 성장, 장악력은 선수단 기분, 경기 운영은 전반적인 경기력에 영향을 줍니다.')}</p>`:mv.cur==='pol'?pol:ipBox+(MC.length?`<p class="small muted">능력치에서 고집·투수 혹사는 낮을수록 좋습니다. 작전(번트·도루 선호)과 스타성(관중·홍보 효과)은 성향입니다. 사단은 감독과 함께 오는 코치입니다.</p>${mplPickCard()}<div class="tgrid mgrg" data-pg="mgc">${PGm.items.map(mgrCandCard).join('')}</div>${PGm.bar}`:'<p class="small muted">후보가 없습니다. 11월에 새 후보가 나옵니다.</p>'));
 }
 /* 지금 빠져 있거나 복귀 뒤 실전으로 기량을 되찾는 중인 우리 선수 */
 function injNowList(){ const L=[]; for(const p of Object.values(G.players)){ if(p.team!==G.user||p.joinY>G.year)continue; const I=p.injK&&INJ[p.injK], sv=milServing(p)?p.mil.unit+' 복무 중 · ':''; /* 육성선수·상무 복무 선수도 의무 명단에(검수 11-09zy) */
@@ -42655,12 +42657,12 @@ function mailActionStatus(m,a){
   if(a.a==='jobYes'||a.a==='jobNo'){const j=jobMailOffer(m,a);return !j||j.done?mailEnd('이미 답했거나 끝난 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='goalTalk'){const g=G.goals;return !g||g.y!==G.year||!g.pre||g.talk?mailEnd(g&&g.talk?'올해 목표는 구단주와 상의를 마쳤습니다.':'목표 상의 기간이 끝났습니다.'):null;} /* 플레이 테스트 11-13: 수락한 뒤에도 버튼이 살아 있었다 */
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 끝났습니다.'):null;}
-  if(a.a==='easyMode'&&typeof guideEasy==='function'&&guideEasy())return mailEnd('쉬운 진행을 켰습니다. 설정 · 권한에서 하나씩 다시 가져올 수 있습니다.'); /* 첫 시즌 안내(55_guide_bar.js) */
-  if(a.a==='handOff'&&typeof autoOn==='function'&&autoOn(a.v))return mailEnd(`${AUTO_WHO[a.v]||'비서'}에게 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`); /* 사용자 11-17 */
+  if(a.a==='easyMode'&&typeof guideEasy==='function'&&guideEasy())return mailEnd('쉬운 진행을 켰습니다. 설정 › 업무 권한 또는 스태프 화면에서 하나씩 되돌릴 수 있습니다.'); /* 첫 시즌 안내(55_guide_bar.js) */
+  if(a.a==='handOff'&&typeof autoOn==='function'&&autoOn(a.v))return mailEnd(`${AUTO_WHO[a.v]||'비서'}에게 맡겼습니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`); /* 사용자 11-17 */
   { const tg=(m.acts||[]).find(x=>x.a==='tripPlanGo'); if(tg&&(a===tg||a.a==='handOff'&&a.v==='scout'||a.a==='go')){ /* 출장 안 메일: 세 버튼 모두 이 안(구단·주·번호)이 지금 걸린 안일 때만(리뷰② 11-17) */
     if(m.closed)return m.closed; const why=tripGoWhy(tg.v), k=String(tg.v||''), kt=k.includes(':')?k.split(':')[0]:'';
     if(kt!==''&&+kt!==G.user)return mailEnd(MAIL_CLUB_TXT,true);
-    if(a.a==='handOff'&&autoOn('scout'))return mailEnd(`${AUTO_WHO.scout||'스카우트팀장'}에게 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`);
+    if(a.a==='handOff'&&autoOn('scout'))return mailEnd(`${AUTO_WHO.scout||'스카우트팀장'}에게 맡겼습니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`);
     if(tripAutoOn())return mailEnd(why&&why.startsWith('지난')?why:'스카우트팀장에게 출장을 맡겼습니다. 따로 승인하지 않아도 됩니다.',!!why&&why.startsWith('지난'));
     if(why)return mailEnd(why,!why.startsWith('이 출장 안은 이미'));
     return null; } }
@@ -42773,7 +42775,7 @@ function mailCard(m,nav){
     ${L.length?`<div class="mailbody">${(L.length>4&&!mFull&&!mOpenAct?L.slice(0,2):L).map(t=>`<p>${lk(t)}</p>`).join('')}${L.length>4&&!mFull&&!mOpenAct?`<details class="mfold" data-k="mf:${m.id}" ${UI.open['mf:'+m.id]?'open':''}><summary>자세히 (${L.length-2}줄 더)</summary>${L.slice(2).map(t=>`<p>${lk(t)}</p>`).join('')}</details>`:''}</div>`:''}
     ${fth?`<div class="ibm-fth"><div class="small muted">댓글 ${fth.cm.length}개${(()=>{ try{ return ` · 분위기: ${fpMood(fth.cm)}`; }catch(e){ return ''; } })()}</div><div class="fcms">${fth.cm.map(cmtRow).join('')}</div></div>`:''}
     ${m.rv?rvActsH(m):''}
-    ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${(()=>{ const H=handOffActs(m); return acts.length||H.b?`<div class="ibm-acts">${acts.map(a=>mailActionHTML(m,a,m.acts.indexOf(a))).join('')}${H.b}${H.d}</div>`:''; })()}
+    ${doneA.length?`<div class="ibm-res">${doneA.map(a=>`<p class="note good small">${esc(a.res)}</p>`).join('')}</div>`:''}${delegUndoHTML(m)}${(()=>{ const H=handOffActs(m); return acts.length||H.b?`<div class="ibm-acts">${acts.map(a=>mailActionHTML(m,a,m.acts.indexOf(a))).join('')}${H.b}${H.d}</div>`:''; })()}
     ${o&&!status?offerOne(o):m.oid?'<p class="small muted"><span class="pill">끝난 제안</span> 이미 답했거나 기한이 지났습니다.</p>':''}</article>`; }
 /* 상단 숫자와 계속 버튼은 동일한 현재 미처리 업무만 센다. 단순 안내·보고는 제외한다. */
 const mailNeeds=m=>ibMust(m);
@@ -50257,8 +50259,8 @@ function bdayCfgCard(){ const off=!!(G.cfg&&G.cfg.bdayOff); return `<section cla
 function guideCfgCard(){ const off=!!(G.cfg&&G.cfg.guideOff); return `<section class="card"><h2 class="sec">첫 시즌 안내</h2><div class="chips">${[['0','보기'],['1','숨기기']].map(([v,l])=>`<button data-a="guideOff" data-v="${v}" class="${(off?'1':'0')===v?'on':''}">${l}</button>`).join('')}</div><p class="small muted">홈 맨 위 '이번 시즌 할 일' 카드, 할 일 화면의 안내 띠, 단계마다 오는 비서 안내 소식을 보이거나 숨깁니다. 첫 시즌의 스토브리그가 끝나면 저절로 꺼집니다.</p></section>`; }
 Object.assign(A,{
   guideGo(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.go)return; if(x.k==='review'){ G.tutFlags=G.tutFlags||{}; G.tutFlags.review=true; } UI.guide={k:x.k}; A[x.go[0]]?.(x.go[1]); UI.guide={k:x.k,route:guideRoute()}; render(); },
-  guideDeleg(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.deleg||!x.deleg.length)return; const L=x.deleg.map(k=>handOff(k)); toast(L.length>1?`${x.t}: ${x.deleg.length}가지 업무를 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`:L[0]); save(); render(); },
-  easyMode(v){ const on=v==='1'; autoAll(on); toast(on?'쉬운 진행을 켰습니다. 연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강은 비서와 팀장이 맡습니다. 설정 › 권한에서 하나씩 다시 가져올 수 있습니다.':'맡긴 업무를 모두 다시 직접 합니다.'); save(); render(); },
+  guideDeleg(v){ const x=guideItems().find(i=>i.k===v); if(!x||!x.deleg||!x.deleg.length)return; const L=x.deleg.map(k=>handOff(k)); toast(L.length>1?`${x.t}: ${x.deleg.length}가지 업무를 맡겼습니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`:L[0]); save(); render(); },
+  easyMode(v){ const on=v==='1'; autoAll(on); toast(on?'쉬운 진행을 켰습니다. 연봉·재계약·일상 결정·감독 요청·스카우트 배치·받은 트레이드 제안·코치 빈자리 보강은 비서와 팀장이 맡습니다. 설정 › 업무 권한 또는 스태프 화면에서 하나씩 되돌릴 수 있습니다.':'맡긴 업무를 모두 다시 직접 합니다.'); save(); render(); },
   guideClose(){ UI.guide=null; render(); },
   bdayOff(v){ G.cfg=G.cfg||{}; G.cfg.bdayOff=v==='1'; save(); render(); },
   guideOff(v){ G.cfg=G.cfg||{}; G.cfg.guideOff=v==='1'; if(G.cfg.guideOff)UI.guide=null; save(); render(); },
@@ -51805,6 +51807,22 @@ function troFView(){ const f=troF(); const sel=(k,L,lb)=>`<select data-a="troF" 
 /* 사용자 11-17: 위임 버튼은 결정 버튼 옆(같은 줄)에, 위임하면 무엇을 하는지 한 줄로 */
 function handOffActs(m){ if(G.unemp||mailDone(m))return {b:'',d:''}; const L=mailDelegOpts(m); if(!L.length)return {b:'',d:''};
   return {b:L.map(o=>`<span class="ibm-act ibm-deleg"><button class="btn" data-a="${o.a}" data-v="${esc(String(o.v))}" title="${esc(o.d)}">${esc(o.l)}</button></span>`).join(''), d:`<p class="small muted keep ibm-deleg-d">${L.map(o=>esc(o.d)).join('<br>')}</p>`}; }
+/* 맡긴 일 되돌리기(카페 야구화이팅 11-21: 잘못 누른 '비서가 처리하기'를 어디서 되돌리는지 몰라 1년 동안 감독 관계가 나빠짐).
+   소식함의 처리된 소식과 스태프 › 감독 화면에서 바로 가져온다. 상태만 바꾸고 난수는 쓰지 않는다 */
+function delegEvArea(k){ if(k==='mreq'||k==='mpick')return 'mgr'; if(k==='gmInv')return 'inv'; if(!EV_NAME[k])return null; return autoOn('ev')?'ev':'ev:'+k; }
+function delegUndoOf(key){ if(!key)return null; if(key.startsWith('ev:')){ const k=key.slice(3); return !autoOn('ev')&&evDelegOn(k)?{a:'evTake',v:k,l:EV_NAME[k]}:null; } const a=AUTO_AREAS.find(x=>x[0]===key); return a&&autoOn(key)?{a:'takeBack',v:key,l:a[1]}:null; }
+/* 비서가 맡아 처리한 결정 가운데 감독 관계를 낮춘 선택(선택지 설명에 '감독 관계 … 악화')을 최근 1년 기준으로 센다 */
+function delegHurt(key){ const L=(G.evs||[]).filter(e=>e.done&&e.deleg&&!e.void&&G.day-(e.day??G.day)<=365&&delegEvArea(e.k)===key&&/감독 관계[^.]*악화/.test((e.opts[e.pick??e.def]||{}).fx||'')); if(!L.length)return '';
+  return `최근 1년 비서가 답한 ${key==='mgr'?'감독 요청':'결정'} ${L.length}건이 감독 관계를 낮췄습니다(예: "${(L[L.length-1].opts[L[L.length-1].pick??L[L.length-1].def]||{}).l||''}"). 직접 답하면 관계를 챙길 수 있습니다.`; }
+function delegList(){ if(!G||G.unemp)return []; const L=AUTO_AREAS.filter(([k])=>autoOn(k)).map(([k,l])=>({a:'takeBack',v:k,key:k,l,who:AUTO_WHO[k]||'비서'}));
+  if(!autoOn('ev'))for(const k of Object.keys(EV_NAME))if(evDelegOn(k))L.push({a:'evTake',v:k,key:'ev:'+k,l:`${EV_NAME[k]}(일상 결정)`,who:'비서'});
+  return L.map(x=>({...x,hurt:delegHurt(x.key)})); }
+function delegStaffCard(){ const L=delegList(); if(!L.length)return '';
+  return `<section class="card deleg-undo" id="delegUndo"><div class="row between"><h2 class="sec">비서에게 맡긴 일 ${L.length}개</h2><button class="lnk small" data-a="go" data-v="cfg:auth">설정 › 업무 권한</button></div><p class="small muted keep">잘못 맡겼다면 가져오기를 누르세요. 다음 건부터 단장이 직접 정합니다.</p><div class="list">${L.map(x=>`<div class="item authi"><div><b>${esc(x.l)}</b> <span class="pill acc">${esc(x.who)} 담당</span>${x.hurt?`<span class="small warn" style="display:block">${esc(x.hurt)}</span>`:''}</div><button class="btn small" data-a="${x.a}" data-v="${esc(x.v)}">가져오기</button></div>`).join('')}</div></section>`; }
+/* 소식함: 맡긴 업무로 처리된 소식에 '직접 처리로 되돌리기' */
+function delegUndoMail(m){ if(!m||!G||G.unemp)return null; if(m.kind==='결정'){ const e=(G.evs||[]).find(x=>x.mid===m.id); return e&&e.done&&e.deleg&&!e.void?delegUndoOf(delegEvArea(e.k)):null; }
+  for(const k of (m.deleg||[])){ const u=delegUndoOf(k); if(u)return u; } return null; }
+function delegUndoHTML(m){ const u=delegUndoMail(m); return u?`<p class="small muted keep ibm-undo">비서가 맡은 일(${esc(u.l)})로 처리했습니다. <button class="lnk" data-a="${u.a}" data-v="${esc(u.v)}">직접 처리로 되돌리기</button></p>`:''; }
 Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v){ toast(takeBack(v)); save(); render(); },
   autoScope(v){ const i=String(v).indexOf(':'); toast(autoScopeToggle(String(v).slice(0,i),String(v).slice(i+1))||'고를 수 없는 범위입니다.'); save(); render(); }, /* 고교 후원 권역·교류 방문단 나라 자동 처리 켜고 끄기 */
   autoScopeGo(k){ if(k==='ovsb'){ UI.it=Object.assign(UI.it||{},{devv:'ovs'}); A.go('staff:dev'); return; } UI.it=Object.assign(UI.it||{},{scoutpg:k==='schg'?'map':'ovs'}); A.go('staff:scouts'); },
@@ -51816,7 +51834,7 @@ Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v
     toast(`${EV_NAME[k]}: ${(EV_POL[k].find(o=>o[0]===x)||[])[1]}${x==='self'?'. 일상 결정을 맡겨도 소식함에 결정으로 남깁니다.':'으로 비서가 처리합니다.'}${r}`); save(); render(); },
   stalkT(v){ if(!STALK_T.some(o=>o[0]===v))return; G.auto=G.auto||{}; G.auto.stalkT=v; toast(`희망 보직 면담 자동 처리: ${STALK_T.find(o=>o[0]===v)[1]}${v==='auto'?'(감독 관계가 단장 관계보다 낮은 직원은 감독과 업무 조율)':''}. 효과는 직접 면담과 같습니다.`); save(); render(); },
   troMode(){ G.auto=G.auto||{}; autoSet('tro',G.auto.tro==='good'?true:'good'); /* 공통 처리: '모두 거절'로 바꾸면 이미 올라온 제안도 정리(검수 11-07) */ toast(G.auto.tro==='good'?'부단장이 우리 평가로 공정 이상인 제안은 올리고, 나머지만 거절합니다.':'부단장이 받은 제안을 모두 거절합니다.'); save(); render(); },
-  evHand(v){ toast(handOffEv(v)); save(); render(); }, evDeleg(v){ toast(evDeleg(v)); save(); render(); }, evHandAll(){ const n=evHandAll(G.mail.filter(m=>!m.read||ibMust(m)).filter(ibMust)); toast(n?`결정 ${n}건을 비서가 기본안으로 처리했습니다.`:'비서에게 넘길 결정이 없습니다.'); save(); render(); }, evTake(v){ G.deleg=G.deleg||{}; if(EV_LATE.has(v))G.deleg[v]=false; else delete G.deleg[v]; if(evPolOf(v))G.evPol[v]='self'; save(); render(); }, evGive(v){ G.deleg=G.deleg||{}; G.deleg[v]=true; if(evPolOf(v)==='self')delete G.evPol[v]; toast(`${EV_NAME[v]||'이 종류'} 결정은 앞으로 비서가 기본안으로 처리합니다. 권한 화면에서 다시 가져올 수 있습니다.`); save(); render(); },
+  evHand(v){ toast(handOffEv(v)); save(); render(); }, evDeleg(v){ toast(evDeleg(v)); save(); render(); }, evHandAll(){ const n=evHandAll(G.mail.filter(m=>!m.read||ibMust(m)).filter(ibMust)); toast(n?`결정 ${n}건을 비서가 기본안으로 처리했습니다.`:'비서에게 넘길 결정이 없습니다.'); save(); render(); }, evTake(v){ G.deleg=G.deleg||{}; if(EV_LATE.has(v))G.deleg[v]=false; else delete G.deleg[v]; if(evPolOf(v))G.evPol[v]='self'; toast(`${EV_NAME[v]||'이 종류'} 결정을 다시 직접 정합니다.`); save(); render(); }, evGive(v){ G.deleg=G.deleg||{}; G.deleg[v]=true; if(evPolOf(v)==='self')delete G.evPol[v]; toast(`${EV_NAME[v]||'이 종류'} 결정은 앞으로 비서가 기본안으로 처리합니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`); save(); render(); },
   foRec(v){ const F=UI.fo; const p=G.players[+v]; if(!F||!p)return; if(F.re){ const t=foReFloor(p), f=foReComfort(p), cap=p.foreign==='아시아'?asiaReCap(p):Infinity; const need=i=>Math.max(MIN_SAL,Math.ceil((t/f-i*FO_INC_W)/USD)*USD); /* 아시아쿼터 재계약 상한 안에서만 추천(검수 11-09b). 상한이 있으면 인센티브 없이 보장으로 주는 쪽이 값이 크다 */
     if(need(F.i)+F.i>cap)F.i=0; const g=need(F.i); if(g+F.i>cap){ F.g=Math.max(MIN_SAL,cap-F.i); F.msg=`재계약 상한 ${usdT(cap)} 안에서는 합의할 수 있는 조건이 없습니다. 상한까지 맞췄습니다.`; } else { F.g=g; F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; } renderSheet(); return; }
     const me=foAppeal(p,G.user,{rel:!!F.rel}) /* 넣은 보류권 해제 조항도 반영(검수 11-09b) */, Rv=foRivals(p), best=Rv[0]; const known=!!p.fneg||!best; const cap=foCap(p);
@@ -52656,6 +52674,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-21-deleg-undo',d:'11월 21일',t:'비서에게 맡긴 일을 소식함과 스태프 화면에서 바로 되돌릴 수 있습니다',items:[
+    '비서가 맡아 처리한 소식에 "직접 처리로 되돌리기"가 붙습니다. 누르면 그 업무를 다음 건부터 단장이 직접 합니다.',
+    '스태프 › 감독 › 지시·요청에 "비서에게 맡긴 일" 카드가 생겼습니다. 맡긴 업무마다 가져오기 버튼이 있고, 비서가 답한 감독 요청이 감독 관계를 낮췄다면 그 줄에 몇 건인지 알려 줍니다. 맡긴 일이 없으면 보이지 않습니다.',
+    '업무를 맡길 때 알림에 되돌릴 곳(설정 › 업무 권한 또는 스태프 화면)을 함께 알려 줍니다.'
+  ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
     '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',
     '인원이 더 늘어나는 거래와, 정원 안 구단이 68명을 넘게 되는 거래는 전처럼 막습니다. 안내에 지금 인원과 거래 뒤 인원을 함께 보여 줍니다. AI 구단끼리도 같은 규칙입니다.'

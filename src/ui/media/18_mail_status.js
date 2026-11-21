@@ -35,12 +35,12 @@ function mailActionStatus(m,a){
   if(a.a==='jobYes'||a.a==='jobNo'){const j=jobMailOffer(m,a);return !j||j.done?mailEnd('이미 답했거나 끝난 단장직 제의입니다.'):G.day>=j.exp?mailEnd('단장직 제의의 답변 기한이 지났습니다.',true):null;}
   if(a.a==='goalTalk'){const g=G.goals;return !g||g.y!==G.year||!g.pre||g.talk?mailEnd(g&&g.talk?'올해 목표는 구단주와 상의를 마쳤습니다.':'목표 상의 기간이 끝났습니다.'):null;} /* 플레이 테스트 11-13: 수락한 뒤에도 버튼이 살아 있었다 */
   if(a.a==='pactKeep'||a.a==='pactEnd'){const P=G.pact;return !P?.on||old||(c.mid&&G.mgr[G.user]?.id!==c.mid)||(c.pact!=null&&P.day!==c.pact)||dobj(d).m!==dobj(G.day).m?mailEnd('이 유망주 기회 점검은 끝났습니다.'):null;}
-  if(a.a==='easyMode'&&typeof guideEasy==='function'&&guideEasy())return mailEnd('쉬운 진행을 켰습니다. 설정 · 권한에서 하나씩 다시 가져올 수 있습니다.'); /* 첫 시즌 안내(55_guide_bar.js) */
-  if(a.a==='handOff'&&typeof autoOn==='function'&&autoOn(a.v))return mailEnd(`${AUTO_WHO[a.v]||'비서'}에게 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`); /* 사용자 11-17 */
+  if(a.a==='easyMode'&&typeof guideEasy==='function'&&guideEasy())return mailEnd('쉬운 진행을 켰습니다. 설정 › 업무 권한 또는 스태프 화면에서 하나씩 되돌릴 수 있습니다.'); /* 첫 시즌 안내(55_guide_bar.js) */
+  if(a.a==='handOff'&&typeof autoOn==='function'&&autoOn(a.v))return mailEnd(`${AUTO_WHO[a.v]||'비서'}에게 맡겼습니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`); /* 사용자 11-17 */
   { const tg=(m.acts||[]).find(x=>x.a==='tripPlanGo'); if(tg&&(a===tg||a.a==='handOff'&&a.v==='scout'||a.a==='go')){ /* 출장 안 메일: 세 버튼 모두 이 안(구단·주·번호)이 지금 걸린 안일 때만(리뷰② 11-17) */
     if(m.closed)return m.closed; const why=tripGoWhy(tg.v), k=String(tg.v||''), kt=k.includes(':')?k.split(':')[0]:'';
     if(kt!==''&&+kt!==G.user)return mailEnd(MAIL_CLUB_TXT,true);
-    if(a.a==='handOff'&&autoOn('scout'))return mailEnd(`${AUTO_WHO.scout||'스카우트팀장'}에게 맡겼습니다. 설정 · 권한에서 다시 가져올 수 있습니다.`);
+    if(a.a==='handOff'&&autoOn('scout'))return mailEnd(`${AUTO_WHO.scout||'스카우트팀장'}에게 맡겼습니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`);
     if(tripAutoOn())return mailEnd(why&&why.startsWith('지난')?why:'스카우트팀장에게 출장을 맡겼습니다. 따로 승인하지 않아도 됩니다.',!!why&&why.startsWith('지난'));
     if(why)return mailEnd(why,!why.startsWith('이 출장 안은 이미'));
     return null; } }

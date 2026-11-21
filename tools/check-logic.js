@@ -10854,6 +10854,11 @@ T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 �
   G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
   G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
   G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
+T('[카페 11-21 야구화이팅] 맡긴 정기 업무 소식에 되돌릴 업무가 남고, 넘길 때 되돌릴 곳을 알린다 · 면담 자동 처리는 감독-단장 관계를 바꾸지 않는다',()=>{TR1041fresh();const m=G.mgr[G.user];ok(m&&!m.interim,'준비: 감독');
+  G.auto={stalk:true,stalkT:'coord'};const rel0=m.rel;const r=autoRoutine(['stalk']);ok(r&&r.includes('감독과 업무 조율'),'준비: 실제 조율 면담 '+r);const ml=G.mail[0];ok(ml&&/^자동 처리:/.test(ml.subj)&&JSON.stringify(ml.deleg)==='["stalk"]','자동 처리 소식에 맡긴 업무 표시 없음 '+JSON.stringify(ml&&ml.deleg));
+  ok(G.mgr[G.user].rel===rel0,'자동 조율 면담이 감독-단장 관계를 바꿈 '+rel0+'→'+G.mgr[G.user].rel);
+  const t=handOff('mgr');ok(autoOn('mgr')&&t.includes('설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다'),'넘길 때 되돌릴 곳 안내 없음: '+t);takeBack('mgr');ok(!autoOn('mgr'),'가져오기 뒤에도 위임 유지');
+  const before=JSON.stringify(G.mail.map(x=>x.deleg||null));G.auto={};ok(!autoRoutine(['stalk'])&&JSON.stringify(G.mail.map(x=>x.deleg||null))===before,'맡기지 않았는데 자동 처리 소식 표시');});
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

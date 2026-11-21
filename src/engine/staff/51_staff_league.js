@@ -197,7 +197,7 @@ function scVacUser(){ if(G.unemp)return []; if(!scVacNeed()){ scVacFullNote(); r
       const post=scVacPost(); if(post){ c.role=post[0]; c.region=post[1]; } else c.role=c.role||'am'; stSignOwn('sc',c,c.sal||SCOUT_SAL[c.skill]); if(!(G.scouts||[]).includes(c))break; got.push(c); } });
   if(!got.length)return got; const ln=got.map(c=>`${SROLE[c.role||'am']} ${c.role==='intl'?IREG[c.region].l:c.region} 담당 ${c.name}(능력 ${c.skill} · ${c.age}세 · 연 ${money(c.sal)})`);
   autoLogAdd('스카우트 빈자리 보강(운영팀)',`${got.length}명 영입`,ln.join(', '));
-  mail('운영팀',`스카우트 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 스카우트 빈자리를 스카우트 시장에서 채웠습니다.\n${ln.join('\n')}\n\nAI 구단과 같은 기준입니다. 구단 형편에 맞는 인원보다 적을 때, 연봉 여력 안에서 능력이 가장 높은 후보를 데려와 담당이 빈 아마추어 지역부터 맡겼습니다. 설정 > 권한에서 다시 가져올 수 있습니다.`,{kind:'스태프',acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]});
+  mail('운영팀',`스카우트 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 스카우트 빈자리를 스카우트 시장에서 채웠습니다.\n${ln.join('\n')}\n\nAI 구단과 같은 기준입니다. 구단 형편에 맞는 인원보다 적을 때, 연봉 여력 안에서 능력이 가장 높은 후보를 데려와 담당이 빈 아마추어 지역부터 맡겼습니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`,{kind:'스태프',acts:[{l:'스카우트 보기',a:'goWork',v:'스카우트팀'}]});
   return got; }
 /* 스카우트 빈자리 소식: 받은편지함 '위임하기' 버튼(mailDelegOpts)이 이 업무로 이어지게 */
 /* 스카우트 공석 알림(카페 11-20 쌉싸코 '20시즌 넘으면 지명 선수가 미확인'): 22시즌 측정에서 우리 구단만 아마추어 스카우트가 3→1명으로 줄고(AI 평균 5~6명) 다시 채워지지 않아

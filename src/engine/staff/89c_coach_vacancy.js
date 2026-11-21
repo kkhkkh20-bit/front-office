@@ -38,7 +38,7 @@ function coachVacRound(why,start){ if(!G.coach)return []; const ids=G.teams.map(
 function coachVacUser(why,start){ if(G.unemp||!G.coach||!G.coach[G.user])return []; const got=coachVacFill(G.user,why,null,start); if(!got.length)return got;
   const t=got.map(c=>`${CROLE[c.role].l} ${c.name}(지도 ${dv(effC(c,G.user,'sk',1))} · 육성 ${dv(effC(c,G.user,'dv',1))} · ${c.yrs}년 · 연 ${money(c.sal)})`);
   autoLogAdd('코치 빈자리 보강(운영팀)',`${got.length}명 영입`,t.join(', '));
-  mail('운영팀',`코치 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 빈 코치 자리를 코치 시장에서 채웠습니다.\n${t.join('\n')}\n\nAI 구단과 같은 기준입니다. 그 자리 후보 가운데 연봉 여력 안에서 종합(지도+육성)이 가장 높은 코치를 골랐고, 후보가 없으면 새 후보를 데려왔습니다. 설정 > 권한에서 다시 가져올 수 있습니다.`,{kind:'코치',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]});
+  mail('운영팀',`코치 빈자리 보강: ${got.length}명 영입`,`맡기신 대로 빈 코치 자리를 코치 시장에서 채웠습니다.\n${t.join('\n')}\n\nAI 구단과 같은 기준입니다. 그 자리 후보 가운데 연봉 여력 안에서 종합(지도+육성)이 가장 높은 코치를 골랐고, 후보가 없으면 새 후보를 데려왔습니다. 설정 › 업무 권한 또는 스태프 화면에서 되돌릴 수 있습니다.`,{kind:'코치',acts:[{l:'코치진 보기',a:'go',v:'staff:coach'}]});
   return got; }
 /* 코치 빈자리 소식: 받은편지함 '위임하기' 버튼(mailDelegOpts)이 이 업무로 이어지게 */
 function cvacMail(m){ if(m&&typeof m==='object'&&m.id)m.auto=[...new Set([...(m.auto||[]),'cvac'])]; return m; }
