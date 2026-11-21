@@ -10966,6 +10966,22 @@ T('[조항 점검 11-21] 포스팅 허용 조항: 그해 요청은 거절·연�
   const tid=otherT(), t=team(tid); t.plan={k:'build'}; const s=domestic(tid).find(z=>!z.foreign&&!z.faC&&!z.ys); delete s.agId; s.svc=5; s.age=27; s.faN=0; delete s.lastFA; delete s.ovsY; delete s.retFrom; s.mlb=75; const V=pmVals(s,'ext'); ok(V.po>=.05,'준비 실패: 해외 의지 '+V.po);
   const A=aiExtTerms(s,t,1000,4); ok(A&&A.pm&&A.pm.po===2&&A.annual<1000&&A.annual>=round5(1000/(1+V.po))-5,'리빌딩 AI가 해외 의지 큰 선수에게 포스팅 조항으로 값을 낮추지 않음: '+JSON.stringify(A));
   t.plan={k:'win'}; ok(!aiExtTerms(s,t,1000,4),'우승 도전 AI가 포스팅 조항을 줌'); });
+T('[카페 11-21 이직 후 우리 선수 잠재력] 다른 구단으로 옮기면 새 구단 선수 잠재력을 우리 선수처럼 추정하고, 떠나보낸 선수는 보관 평가를 쓴다 [이직잠재력]',()=>{fresh();G.day=KD(11,1);myCInit();const U=G.user,V=otherT(),W=G.teams.find(t=>t.id!==U&&t.id!==V).id;
+  const Q=Object.values(G.players).find(p=>p.team===U&&!p.foreign&&!p.prospect);ok(Q,'준비: 옛 구단 선수');const q0=scoutReport(Q);Q.team=W;Q.tLog=(Q.tLog||[]).concat({f:U,t:W,d:G.day,y:G.year});scoutDeparture(Q,U,W);ok(scoutReport(Q).historical&&scoutReport(Q).ofp===q0.ofp,'준비: 옛 구단을 떠난 선수 보관 평가');
+  const young=Object.values(G.players).filter(p=>p.team===V&&!p.foreign&&!p.prospect&&p.age<=25);ok(young.length>=3,'준비: 새 구단 젊은 선수 '+young.length);
+  for(const p of young){acqStamp(p,'draft',V,{rd:2,no:3});p.draft={tid:V,y:G.year-1,rd:2,no:3,d:G.day-60};p.acq.d=G.day-60;delete p.dEst;delete p.acq.ep;} /* AI 구단 신인 지명과 같은 기록(doPick→acqStamp, 우리 지명 평가 없음) */ domesticScoutMigrate(); ok(young.every(p=>scoutDraftEstimate(p)?.tid===V&&scoutDraftEstimate(p).ofp==null),'준비: AI 지명 선수 미확인 지명 기록'); /* 불러오기 때와 같은 복원 */
+  G.jobs=[];jobOffer(V,false,{sal:250,yrs:2});jobAnswer(V,true);ok(G.user===V,'이직 실패');
+  const rs=__rngState(),own=Object.values(G.players).filter(p=>p.team===V&&!p.foreign&&!p.prospect);const bad=own.filter(p=>scoutReport(p).ofp==null);ok(!bad.length,'새 구단 우리 선수 잠재력 판단 불가 '+bad.length+'/'+own.length+': '+bad.slice(0,3).map(p=>p.name+' '+p.age+'세').join(', '));ok(__rngState()===rs,'평가가 경기 난수를 씀');
+  ok(Q.proScoutPast&&Q.proScoutPast[U]&&Q.proScoutPast[U].r.ofp===q0.ofp,'옛 구단 시절 보관 평가가 사라짐');
+  const D=young[0],d0=scoutReport(D);ok(d0.ofp!=null&&d0.sd<99,'새 구단 지명 선수 오차 없음');D.team=W;D.tLog=(D.tLog||[]).concat({f:V,t:W,d:G.day,y:G.year});scoutDeparture(D,V,W);const d1=scoutReport(D);ok(d1.historical&&d1.ofp===d0.ofp,'새 구단에서 떠나보낸 선수가 보관 평가를 쓰지 않음');});
+T('[카페 11-21 FA 된 우리 선수 정보] 계약이 끝나 FA가 된 우리 2군 선수는 FA 시장에서도 우리 팀 시절 평가(현재·잠재력)를 보여 준다 [FA우리정보]',()=>{fresh();G.day=KD(11,10);const U=G.user;
+  const p=domestic(U).filter(q=>!q.foreign&&!q.prospect&&q.age<=27).sort((a,b)=>a.id-b.id)[0];ok(p,'준비: 우리 젊은 선수');p.age=24;p.hist=[{...ZB,y:G.year,lvl:'퓨처스',t:U,pa:150,ab:130,h:35}];p.svc=12;p.faC=true;p.yrs=1;p.ext=false;p.lastFA=G.year-4;p.faN=1;delete p.extNext;delete p.proScoutPast;
+  ok(!publicP(p),'준비: 1군 기록 없는 2군 선수');const mine=scoutReport(p);ok(mine.cur!=null&&mine.ofp!=null,'준비: 우리 선수일 때 평가');
+  offseason();ok(p.team==null&&p.faFrom===U&&(G.fa.pool||[]).includes(p.id),'준비: 계약 만료 FA 선언 '+p.team);
+  const r=scoutReport(p);ok(r.historical&&r.cur!=null&&r.ofp!=null&&r.who.includes('우리 팀 시절'),'FA 된 우리 2군 선수가 평가 없음 '+JSON.stringify({cur:r.cur,ofp:r.ofp,who:r.who}));ok(r.sd<99&&r.conf&&r.conf!=='없음','보관 평가 신뢰도 누락 '+r.conf);
+  const j=JSON.stringify(p.proScoutPast),rs=__rngState();domesticScoutMigrate();domesticScoutMigrate();ok(JSON.stringify(p.proScoutPast)===j&&__rngState()===rs,'복원 반복이 보관 평가/난수 변경');
+  delete p.proScoutPast;const rs2=__rngState();domesticScoutMigrate();const a=JSON.stringify(p.proScoutPast);domesticScoutMigrate();ok(p.proScoutPast?.[U]&&JSON.stringify(p.proScoutPast)===a&&__rngState()===rs2,'옛 저장 FA 보관 복원 실패/반복 변경/난수 소비');ok(scoutReport(p).ofp!=null,'옛 저장 FA 평가 없음');
+  G.day+=731;ok(!scoutReport(p).historical,'2년 지나도 보관 평가 유지');});
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
