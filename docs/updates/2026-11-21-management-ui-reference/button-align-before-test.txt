@@ -1,0 +1,13 @@
+UI references checked 1440
+UI references checked 390
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Contract button label is centered 390 {"label":"닫기","dx":63.2890625,"dy":0}'
++ ]
+- []
+
+    at /workspace/front-office-management-ui-reference/tools/check-management-ui-reference-1121.cjs:22:51
+
+CHECK_EXIT=1

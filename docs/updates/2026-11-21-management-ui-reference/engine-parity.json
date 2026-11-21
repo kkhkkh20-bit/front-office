@@ -1,0 +1,7 @@
+{
+  "main": "ada3fc9f1883e0330d9b701518c1121cae2fdf38",
+  "engine_equal_to_main": true,
+  "bytes": 4386562,
+  "sha256": "1dc5d8836a34a62a85152c68c95c41b274800ecbdaa619f18e459f25c56a2210",
+  "comparison_source": "origin/main:index.html script#engine vs local dist/engine.js"
+}

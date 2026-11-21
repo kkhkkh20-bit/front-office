@@ -1,0 +1,17 @@
+UI references checked 1440
+UI references checked 390
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Long recovery status20% is visible 1440',
++   'Hidden completed game has a state label',
++   'Weekly strip carries the same hidden-completed state',
++   'Dialog close is labelled as close 1440',
++   'Dialog close is labelled as close 390'
++ ]
+- []
+
+    at /workspace/front-office-management-ui-reference/tools/check-management-ui-reference-1121.cjs:22:51
+
+EXPECTED_BASELINE_EXIT=1

@@ -1,0 +1,4 @@
+index.html 생성: 65306451 bytes
+엔진 생성: dist/engine.js
+
+CHECK_EXIT=0

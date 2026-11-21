@@ -1,0 +1,5 @@
+UI references checked 1440
+UI references checked 390
+PASS reference UI: close/withdraw semantics, hidden/revealed/future calendar, PC/mobile medical recovery and read-only state
+
+CHECK_EXIT=0
