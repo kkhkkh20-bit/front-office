@@ -233,6 +233,25 @@ function releasePlayer(id){
   for(const k in G.lineup) if(G.lineup[k]===id)delete G.lineup[k];
   toFree(p,`${tname(G.user)}에서 방출`,cost); /* 웨이버 공시 뒤 아무도 데려가지 않으면 무적 선수로 남는다 */
 }
+/* 치명 실수 경고(사용자 11-21: 교체할 수 없는 기간에 외국인 방출을 알려 달라). 확인 창이 보여 줄 '되돌릴 수 없는 숨은 결과'만 고른다. 모두 읽기 전용: G를 바꾸지 않고 난수도 쓰지 않는다 */
+function fRelNoRepl(p){ if(!p||!p.foreign||period()!=='season')return null; const kind=p.foreign==='아시아'?'아시아쿼터':'외국인';
+  if(G.day>foreignDL())return `올 시즌에는 ${kind} 선수를 새로 데려올 수 없습니다(등록 마감 ${dmd(foreignDL())} 지남).`;
+  if(fReplLeft(p.team??G.user,p.foreign)<=0)return `올 시즌에는 ${kind} 선수를 새로 데려올 수 없습니다(시즌 중 교체 ${fReplMax(p.foreign)}회를 다 씀).`;
+  return null; }
+/* 방출해도 내는 외국인 보장 연봉: releaseForeign·fDeadAdd와 같은 조건(개막 전, 결산 뒤 다음 시즌 계약이 확정된 선수). 개막 뒤에는 이미 올해 지출에 들어 있어 0 */
+function fRelOwed(p){ if(!p||!p.foreign||p.team==null)return 0; const y=sponSeason(); if(p.joinY>y||!fNextOwed(p))return 0; if(G.sea&&G.sea.y===y&&G.cal&&G.day>=G.cal.open)return 0; return p.sal||0; }
+/* 포수를 모두(또는 뛸 수 있는 포수를 모두) 내보내는지: 주 포지션 포수와 포수 숙련 50 이상만 포수로 센다. 육성선수는 뺀다 */
+const canC=p=>!p.isP&&!p.ys&&(p.pos==='C'||((pexpOf(p)||{}).C||0)>=50);
+function catcherLeftWhy(tid,outIds,inIds){ const out=new Set((outIds||[]).map(Number)); const L=playersOf(tid); if(!L.some(p=>out.has(p.id)&&canC(p)))return null;
+  const stay=[...L.filter(p=>!out.has(p.id)),...(inIds||[]).map(id=>G.players[id]).filter(Boolean)].filter(canC);
+  if(!stay.length)return '우리 팀에 포수가 한 명도 남지 않아 다른 포지션 선수가 포수를 봅니다.';
+  if(!stay.some(p=>healthyAt(p)))return `남는 포수 ${stay.length}명이 모두 부상 등으로 뛸 수 없어 당분간 다른 포지션 선수가 포수를 봅니다.`;
+  return null; }
+/* 방출 경고 문장 목록(없으면 null). 선수 상세·외국인 시장 방출 확인이 같은 문장을 쓴다 */
+function relWarn(p){ if(!p||p.team==null)return null; const W=[]; const nr=fRelNoRepl(p); if(nr)W.push(`지금 방출하면 ${nr}`);
+  const ow=fRelOwed(p); if(ow)W.push(`방출해도 ${sponSeason()}시즌 보장 연봉 ${money(ow)}(${Math.round(ow/USD)}만 달러)은 그대로 냅니다.`);
+  const c=catcherLeftWhy(p.team,[p.id]); if(c)W.push(`방출하면 ${c}`);
+  return W.length?W:null; }
 function needScore(tid,p){ const C=faPC(); let d=C&&C.dep.get(tid); if(!d){ d=depth(tid); if(C)C.dep.set(tid,d); } const o=ovr(p); /* FA 하루 입찰 중에는 구단별 뎁스를 한 번만(01_rules faPC) */
   if(p.isP){ const arr=isSPr(p)?d.sp.map(spV):d.pen.map(penV); return arr.length&&o>Math.min(...arr)+2?1:0; }
   return d.start.length&&o>Math.min(...d.start.map(x=>ovr(x)))+2?1:0; }
