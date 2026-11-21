@@ -2,7 +2,7 @@
 
 검토용 · 미배포. [사운드 비교](preview.html) · [기존](previews/sound-before.mp3) · [개선](previews/sound-after.mp3)
 
-사용자 피드백: 소리는 채택하고, 스윙 후 복귀 시안은 기존 자세가 더 좋으므로 제외했습니다. `scene.mjs`를 부모 비교안 `c655ddba`와 바이트 단위로 같게 복원했습니다. 사운드 관련 네 소스 파일은 채택된 `829c0a69`와 동일합니다. [동일성](checks/restored-source.json).
+사용자 피드백: 소리는 채택하고, 스윙 후 복귀 시안은 기존 자세가 더 좋으므로 제외했습니다. `scene.mjs`를 부모 비교안 `c655ddba`와 바이트 단위로 같게 복원했습니다. 사운드 세 파일과 두 제어 함수는 채택된 `829c0a69`와 동일합니다. 최신 main의 다른 선수 정보 변경은 함께 보존했습니다. [동일성](checks/restored-source.json).
 
 ## 최종 변경과 영향
 
@@ -25,11 +25,12 @@
 
 - 사용자 결정에 맞춰 기존 자세 유지 검사로 변경했습니다. 제외할 자동 복귀 코드에서 실패한 뒤, 원복 후 450·900·1400ms 접촉·전체 팔로스루·끝 자세 유지·명시적 준비 자세·run/bunt/seek 전환이 통과했습니다. [원복 전](checks/restore-swing-before.txt) · [원복 후](checks/restore-swing-after.txt). 기존 검사를 지우지 않았습니다.
 - 사운드 소유권 4/4 통과. [결과](checks/restore-swing-sound.txt).
-- 빌드 2종·정적 검사·원복 후 실제 WebGL/AudioContext의 자세 유지 및 여섯 정지 경로는 다시 점검 중입니다. 종료 결과를 확인하기 전 통과로 간주하지 않습니다.
+- 최신 main `ada3fc9f` 병합 후 [빌드 2종](checks/restore-swing-build-main.txt)·[정적 검사](checks/restore-swing-static-main.txt)·[구버전 저장 검사4/4](checks/restore-swing-migration.txt) 통과. [엔진 산출물도 최신 main과 바이트 단위로 동일](checks/restore-swing-engine-main.json)합니다. 양쪽 패치 노트를 보존해 충돌을 풀었습니다.
+- 원복 후 실제 WebGL/AudioContext 재점검의 가상시계 페이지에서 3초 대기 실패가 발생했습니다. 직후 계측은 `soundEnded:true`, AudioContext `running`, 활성효과음0을 확인했습니다. 정확한 내부 원인은 미확정입니다. 실제 ended 단언과 3초 제한을 유지하면서 가상시계 WebGL 페이지와 native-clock 3D 오디오 페이지를 분리했고, [최신 main에서 기존 스윙 유지·여섯 정지 경로·기록 불변 검사가 통과했습니다](checks/restore-swing-actual-main.txt). 프로덕션 사운드는 이 과정에서 바꾸지 않았습니다.
 - 수정 전 후보 `829c0a69`의 검사·스윙 이미지는 이 디렉터리에 과거 근거로 남아 있으나 최종 시안과 검증 결과로 사용하지 않습니다.
 
 ## 미완료 검사와 남은 위험
 
-이전 QUICK은 원복 전 후보의 검사이며 현재 버전의 통과 근거가 아닙니다. 원복 후 QUICK·GitHub 검사·전체 점검·장기 시즌 시뮬레이션·실제 휴대폰 장시간 성능/스피커 청취는 완료 전입니다. 시안의 함성 교차 페이드는 기존 반응의 긴 꼬리를 교체하는 연출 변화입니다.
+이전 QUICK은 원복 전 후보의 검사이며 현재 버전의 통과 근거가 아닙니다. 최신 main 기준 원복 후 QUICK은 실행 중입니다. GitHub 검사·전체 점검·장기 시즌 시뮬레이션·실제 휴대폰 장시간 성능/스피커 청취는 완료 전입니다. 시안의 함성 교차 페이드는 기존 반응의 긴 꼬리를 교체하는 연출 변화입니다.
 
-브랜치 `codex/broadcast-motion-sound-1121`, [초안 PR #337](https://github.com/kkhkkh20-bit/front-office/pull/337). 부모 #326→#336과 최신 main을 다시 반영해야 하며 선행 검사 실패도 해결해야 합니다. 사용자 피드백은 사운드 채택과 스윙 시안 제외에 적용했습니다. 병합·배포는 보류합니다.
+브랜치 `codex/broadcast-motion-sound-1121`, [초안 PR #337](https://github.com/kkhkkh20-bit/front-office/pull/337). 부모 #326→#336과 최신 main을 다시 반영해야 하며 선행 검사 실패도 해결해야 합니다. 사용자 피드백은 사운드 채택과 스윙 시안 제외에 적용했습니다. 앞으로의 신규 연출은 [실중계 조사 기준](../../asset-research/2026-11-21-real-broadcast/README.md)을 따릅니다. 병합·배포는 보류합니다.
