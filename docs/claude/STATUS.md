@@ -3,7 +3,8 @@
 Updated: 2026-11-21. Live: 082c544 (#300). All of #299-#314 merged.
 
 ## Open PRs
-- #315 trade allowed when over-limit team shrinks (cafe 마스터쉐프) — CI started 01:46 on 86ac4c2f; merge when rules 16/16 + only known browser fails.
+- #315 trade allowed when over-limit team shrinks (cafe 마스터쉐프) and #316 (this STATUS) — owner approved merge once rules 16/16 + only known browser fails. If still open in a new session: check CI, merge, verify release.json commit.
+- Next session starts roadmap step 2 (lag stage 2).
 
 ## Known flaky/browser failures (not blockers)
 trade listing "same-player normal/listed/urgent"; scouting #73/#77; cafe-1119 button height; check-match3d/in-game; FA nameFont; check-feedback-operations-20261110; check-contract-input 120≠123; calendar "Space로 중단" (reduced motion, intermittent); budget-chip (budget room unchanged after coach hire); trade-filters-small0b; community-rules 30≠80 (once).
