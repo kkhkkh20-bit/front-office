@@ -1,6 +1,10 @@
 /* ---------- 외국인 선수 협상 패널(선수 상세): 보장·인센티브 정하기, 우리 매력과 경쟁 구단 비교 ---------- */
-function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0; const open=foreignOpen();
-  const cap=foCap(p); let F=UI.fo&&UI.fo.id===p.id?UI.fo:null; if(!F){ const g=Math.min(cap,Math.round(p.ask*.85/USD)*USD); F=UI.fo={id:p.id,g,i:Math.max(0,Math.min(cap-g,p.ask-g)),msg:''}; }
+/* 아시아쿼터 후보의 영입 슬롯(카페 11-21): '외국인 슬롯으로 영입'을 고르면 협상 화면·버튼·추천이 모두 일반 외국인 기준(fAsYB)으로 계산한다 */
+function foSlotRun(p,fn){ const F=UI.fo; return F&&p&&F.id===p.id&&F.slot==='yb'?fAsYB(p,fn):fn(); }
+function foPanel(p){ if(p&&p.foreign==='아시아'&&p.team==null){ let F0=UI.fo&&UI.fo.id===p.id?UI.fo:null; if(!F0)F0=UI.fo={id:p.id,msg:'',g:null,i:null,slot:foListErr0(p)&&foYBOk(p)?'yb':'asia'}; if(F0.slot==='yb')return fAsYB(p,()=>foPanel(p)); } /* 아시아쿼터 자리가 막히고 일반 슬롯이 비어 있으면 일반 슬롯부터 */
+  const per=period(); const mid=per==='season'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0; const open=foreignOpen();
+  const cap=foCap(p); let F=UI.fo&&UI.fo.id===p.id?UI.fo:null; if(!F||F.g==null){ const g=Math.min(cap,Math.round(p.ask*.85/USD)*USD); F=UI.fo=Object.assign(F||{id:p.id,msg:''},{g,i:Math.max(0,Math.min(cap-g,p.ask-g))}); }
+  const slotH=p.foreign==='아시아'||p._fyb?`<div class="fo-slot" role="group" aria-label="영입 슬롯">${[['asia','아시아쿼터로 영입'],['yb','외국인 슬롯으로 영입']].map(([k,l])=>`<button class="btn small${(F.slot||'asia')===k?' on':''}" data-a="foSlot" data-v="${k}" aria-pressed="${(F.slot||'asia')===k}">${l}</button>`).join('')}</div><p class="small muted keep fo-slot-d">${p._fyb?`일반 외국인 규정으로 계약합니다: 1인 상한 ${usdT(foCap(p))} · 일반 외국인 ${fMaxYB(G.user)}명·총액 한도 · 시즌 중 교체 ${fReplMax('용병')}회. 아시아쿼터 자리는 쓰지 않습니다. 아시아쿼터 상한이 없어져 요구액이 일반 외국인 시장 수준으로 오릅니다.`:`아시아쿼터 규정으로 계약합니다: 신규 상한 ${usdT(asiaCap())} · 1명 · 시즌 중 교체 ${fReplMax('아시아')}회. 일반 외국인 자리가 비어 있으면 외국인 슬롯으로도 영입할 수 있습니다.`}</p>`:'';
   const me=foAppeal(p,G.user,{rel:!!F.rel}); const Rv=foRivals(p); const best=Rv[0]; const N=p.fneg; const known=!!N||Rv.length===0;
   const pct=f=>{ const v=Math.round((f-1)*100); return `${v>=0?'+':''}${v}%`; };
   const parts=me.parts.map(x=>`<div class="row between small"><span>${esc(x[0])}</span><b class="${x[1]>0?'good':x[1]<0?'bad':''}">${x[1]>0?'+':''}${Math.round(x[1]*100)}%</b></div>`).join('');
@@ -8,7 +12,7 @@ function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mi
   const room=foRoom(p), atTop=F.g+F.i>=room;
   const step=(k,d,l)=>`<button class="btn small" data-a="foStep" data-v="${k}:${d}"${d>0&&atTop?` disabled title="${esc(foRoomWhy(p,room))}"`:''}>${l} 달러</button>`;
   const err=!open?'지금은 외국인 선수를 영입할 수 없습니다.':repl?'이번 시즌 외국인 교체 횟수를 다 썼습니다.':(()=>{ const a0=p.ask; p.ask=F.g+F.i; const e=foreignCheck(G.user,p); p.ask=a0; return e; })();
-  return `<section class="card fo"><div class="row between"><h2 class="sec">계약 협상</h2><span class="small muted">상한 ${Math.round(cap/USD)}만 달러</span></div>
+  return `<section class="card fo"><div class="row between"><h2 class="sec">계약 협상</h2><span class="small muted">상한 ${Math.round(cap/USD)}만 달러</span></div>${slotH}
     <p class="small">요구 총액 <b>${usdT(p.ask)}</b>(${money(p.ask)}) · 보장 85% + 인센티브 15% 선호${mid?` · 남은 기간분 ${Math.round(remainFrac()*100)}%만 지급`:''} ${hiI(`보통 보장 85% + 인센티브 15%로 받기를 원합니다. 선수는 인센티브를 보장의 절반 정도 가치로 봅니다.${mid?` 시즌 중 계약이라 남은 기간분 ${Math.round(remainFrac()*100)}%만 지급합니다.`:''}`)}</p>
     <div class="fo-in">
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>
@@ -28,11 +32,12 @@ function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mi
 function foRoom(p){ let cap=foCap(p); if(p.foreign!=='용병')return cap; try{ if(G.contract&&!G.contract.done){ const f=fReCapInfo(); if(f)return Math.max(0,Math.min(cap,f.cap-f.tot)); } const yb=fStayOf(G.user).filter(x=>x.foreign==='용병'&&x.id!==p.id); cap=Math.min(cap,fCap(G.user)-sum(yb.map(fCommit))); }catch(e){} return Math.max(0,cap); }
 function foRoomWhy(p,room){ const c=foCap(p); return room<c?`외국인 3명 연봉 총액 한도에서 남은 몫이 ${usdT(room)}입니다(1인 상한 ${usdT(c)}). 이미 계약한 외국인 연봉을 합친 금액입니다.`:`신규 계약은 보장과 인센티브를 합쳐 1인 ${usdT(c)}까지입니다.`; }
 Object.assign(A,{ foRe(v){ UI.negWin={k:'fre',id:+v}; renderSheet(); }, /* 재계약 협상도 협상 창으로 */
-  foStep(v){ const [k,d]=String(v).split(':'); const F=UI.fo; if(!F)return; const p=G.players[F.id]; if(!p)return; const cap=foCap(p);
-    const top=F.re?Math.round(p.newSal*2):foRoom(p), g0=F.g, i0=F.i; if(k==='g')F.g=clamp(F.g+(+d)*USD,MIN_SAL,Math.max(MIN_SAL,top-F.i)); else F.i=clamp(F.i+(+d)*USD,0,Math.max(0,top-F.g)); F.msg=+d>0&&F.g===g0&&F.i===i0&&!F.re?'더 올릴 수 없습니다: '+foRoomWhy(p,top):''; renderSheet(); }, /* 막히면 이유를 적는다(플레이테스트 4 #11) */
+  foStep(v){ const [k,d]=String(v).split(':'); const F=UI.fo; if(!F)return; const p=G.players[F.id]; if(!p)return;
+    const top=F.re?Math.round(p.newSal*2):foSlotRun(p,()=>foRoom(p)), g0=F.g, i0=F.i; if(k==='g')F.g=clamp(F.g+(+d)*USD,MIN_SAL,Math.max(MIN_SAL,top-F.i)); else F.i=clamp(F.i+(+d)*USD,0,Math.max(0,top-F.g)); F.msg=+d>0&&F.g===g0&&F.i===i0&&!F.re?'더 올릴 수 없습니다: '+foSlotRun(p,()=>foRoomWhy(p,top)):''; renderSheet(); },
+  foSlot(v){ const F=UI.fo; if(!F||F.re)return; const s=v==='yb'?'yb':'asia'; if(F.slot===s)return; F.slot=s; F.g=null; F.i=null; F.msg=''; renderSheet(); }, /* 슬롯을 바꾸면 요구액·상한이 달라 조건을 새로 잡는다 */ /* 막히면 이유를 적는다(플레이테스트 4 #11) */
   foRel(){ const F=UI.fo; if(!F)return; F.rel=!F.rel; F.msg=''; renderSheet(); },
   foGo(v){ if(!contractMoneyValid())return; const F=UI.fo; if(!F||F.id!==+v)return;
-    if(!F.re&&!UI._cfmPass){ const p=G.players[+v]; if(p){ UI.cfm={k:'foGo',v,doc:{head:'외국인 계약',subj:`${p.name}에게 이 조건으로 제안할까요?`,lines:[`보장 ${usdT(F.g)}(${money(F.g)})${F.i?` + 인센티브 ${usdT(F.i)}(규정 출전 시)`:''}`,F.rel?'보류권 해제 조항 포함: 재계약하지 않으면 국내 다른 구단과 계약할 수 있습니다.':'',`선수가 받아들이면 바로 계약됩니다. 계약 뒤에는 되돌릴 수 없습니다.`],ok:'제안하기',no:'취소',noMail:true}}; cfmRender(); return; } } /* 계약 전 확인(플레이테스트 4 #12) */ const r=F.re?foReOffer(+v,F.g,F.i):foOffer(+v,F.g,F.i,!!F.rel); if(F.re){ F.msg=r.msg; save(); render(); return; } F.msg=r.msg; if(r.ok){ UI.fo=null; toast(r.msg); UI.sheet=null; save(); render(); return; } save(); renderSheet(); } });
+    if(!F.re&&!UI._cfmPass){ const p=G.players[+v]; if(p){ UI.cfm={k:'foGo',v,doc:{head:'외국인 계약',subj:`${p.name}에게 이 조건으로 제안할까요?`,lines:[`보장 ${usdT(F.g)}(${money(F.g)})${F.i?` + 인센티브 ${usdT(F.i)}(규정 출전 시)`:''}`,F.rel?'보류권 해제 조항 포함: 재계약하지 않으면 국내 다른 구단과 계약할 수 있습니다.':'',F.slot==='yb'&&p.foreign==='아시아'?'외국인 슬롯(일반 외국인 규정)으로 계약합니다. 아시아쿼터 자리는 쓰지 않습니다.':'',`선수가 받아들이면 바로 계약됩니다. 계약 뒤에는 되돌릴 수 없습니다.`],ok:'제안하기',no:'취소',noMail:true}}; cfmRender(); return; } } /* 계약 전 확인(플레이테스트 4 #12) */ const r=F.re?foReOffer(+v,F.g,F.i):foOffer(+v,F.g,F.i,!!F.rel,F.slot==='yb'); if(F.re){ F.msg=r.msg; save(); render(); return; } F.msg=r.msg; if(r.ok){ UI.fo=null; toast(r.msg); UI.sheet=null; save(); render(); return; } save(); renderSheet(); } });
 /* 우리 외국인 재계약 협상(보류권: 경쟁 상대는 해외 제안뿐) */
 function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.fo&&UI.fo.id===p.id?UI.fo:null;
   if(!F){ F=UI.fo={id:p.id,g:Math.round(p.newSal*.85/USD)*USD,i:0,msg:'',re:true}; }
@@ -41,6 +46,7 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
   return `<section class="card fo"><div class="row between"><h2 class="sec">재계약 협상</h2><span class="small muted">보류권 · 국내 경쟁 없음</span></div>
     <p class="small">지금 ${usdT(p.sal)} · 요구 ${usdT(p.newSal)}(${money(p.newSal)}) · 지난 시즌 ${h?statLine(h,p):'기록 없음'}${h?` · WAR ${warOf(h,p).toFixed(1)}`:''}</p>
     ${p.foreign==='아시아'?`<p class="small">아시아쿼터 재계약 상한 <b>${usdT(asiaReCap(p))}</b> ${hiI(`신규 계약은 ${Math.round(asiaCap()/USD)}만 달러까지입니다. 재계약 상한은 KBO에서 뛴 시즌마다 10만 달러씩 늘고, 직전 연봉보다 10만 달러 더 주는 것도 됩니다.`)}</p>`:''}
+    ${p.foreign==='아시아'?(()=>{ const e=fReYBErr(G.user,p,C.y+1,fReRoster(G.user,C.y+1,C)); return `<div class="fo-slot fo-re-slot"><button class="btn small" data-a="foReYB" data-v="${p.id}"${e?` disabled title="${esc(e)}"`:''}>외국인 슬롯으로 재계약</button></div><p class="small muted keep fo-slot-d">${e?esc(e):`일반 외국인 규정(정원·총액 한도)으로 바꾸면 아시아쿼터 상한이 없어지고 요구액이 ${usdT(fYBReAsk(p))}(으)로 다시 정해집니다. 아시아쿼터 자리는 비어 다른 선수를 영입할 수 있습니다.`}</p>`; })():p.fAsiaRe===C.y?`<div class="fo-slot fo-re-slot"><button class="btn small on" data-a="foReYB" data-v="${p.id}" aria-pressed="true">외국인 슬롯으로 재계약 중 · 아시아쿼터로 되돌리기</button></div><p class="small muted keep fo-slot-d">일반 외국인 규정으로 재계약합니다. 아시아쿼터 자리는 비어 있습니다.</p>`:''}
     <p class="small">보류권 때문에 국내 다른 구단은 이 선수와 협상할 수 없습니다. 경쟁 상대는 해외 제안뿐입니다: <b>${O&&!O.none?`${O.k} 구단 ${usdT(O.v)} 수준`:'해외 제안 없음'}</b></p>
     <div class="fo-in">
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>
@@ -52,6 +58,7 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
     ${N&&N.ok&&reCap&&reCap.over>0?`<div class="note">외국인 3명 연봉 총액이 한도를 ${money(reCap.over)} 넘습니다. 낮춘 조건으로 다시 제안해 합의를 바꿀 수 있습니다(거절돼도 기존 합의는 남습니다).</div><button class="btn primary block" data-a="foGo" data-v="${p.id}">낮춘 조건으로 다시 제안</button>`:''}
     ${N&&N.ok?`<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.${p.fMulti>C.y?` ${C.y+1}~${p.fMulti} 2년 계약입니다.`:''}</div>${p.fMulti>C.y||p.age>=35?'':`<button class="btn small" data-a="foMulti" data-v="${p.id}" title="연봉 +5%, 다음 겨울 협상 없음">2년 계약으로 바꾸기 · 연봉 +5%</button>`}`:`<div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button></div>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
 Object.assign(A,{
+  foReYB(v){ const m=fReToYB(+v); if(UI.fo&&UI.fo.id===+v){ const p=G.players[+v]; UI.fo.g=Math.round(p.newSal*.85/USD)*USD; UI.fo.i=0; UI.fo.msg=m; } toast(m); save(); renderSheet(); render(); }, /* 카페 11-21: 아시아쿼터 → 일반 외국인 재계약 */
   foMulti(v){ const m=fReMulti(+v); if(UI.fo)UI.fo.msg=m; toast(m); save(); render(); },
   fTmpStart(v){ UI.ftmpFor=v===''||v==null?null:+v; UI.ff=Object.assign({},UI.ff||{},{t:'yb'},UI.ftmpFor!=null?{r:'all'}:{}); /* 타자·투수 등 이전 필터가 대체 후보를 숨기지 않게(검수 11-09c) */ if(UI.tab==='transfer'&&curSub('transfer')==='foreign')render(); else A.go('transfer:foreign'); },
   fTmpSign(v){ const err=signTempForeign(G.user,UI.ftmpFor,+v); toast(err||'부상 대체 외국인을 등록했습니다.'); if(!err)UI.ftmpFor=null; save(); render(); },

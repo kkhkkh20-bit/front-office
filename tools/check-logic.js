@@ -11038,6 +11038,64 @@ T('[카페 11-21 업셋 우승 최종 순위] 한국시리즈 우승 1위·준�
   G.history=[...G.history.filter(x=>x.y!==y),{y,order,champ:ids[0],runner:ids[1]}]; ok(draftOrders().r2.join()===[...ids].reverse().join(),'정규 1위 우승·2위 준우승이면 정규시즌 역순과 같아야 함: '+draftOrders().r2.join());
   G.history=[...G.history.filter(x=>x.y!==y),{y,order}]; ok(draftOrders().r2.join()===[...ids].reverse().join(),'한국시리즈 기록이 없는 해(옛 저장·시작용 시즌)는 정규시즌 역순이어야 함');
   ok(order.map(o=>o.tid).join()===reg,'드래프트 계산이 정규시즌 순서(h.order)를 바꿈'); ok(__rngState()===c1&&__rngCalls()===c2,'드래프트 순서 계산이 난수를 씀'); });
+T('[카페 11-21 아시아 선수 외국인 슬롯] 아시아쿼터 후보를 일반 외국인 슬롯으로: 빈 자리만, 일반 규정·횟수, AI도 같은 규정, 난수 없음',()=>{ fresh(); ok(foreignOpen()&&period()!=='season','준비 실패: 겨울 영입 기간 아님 '+period());
+  const U=G.user, clean=x=>{ delete x.prev; delete x.prev2; delete x.now; x.sx=0; x.fpub=0; x.fknow=null; x.fsrc='agent'; return x; };
+  const setup=(tid,o)=>{ for(const x of foreignOf(tid))releaseForeign(x.id); for(const isP of o.yb){ const x=newForeign('용병',{isP}); x.team=tid; x.sal=Math.min(x.ask,300); } if(o.asia){ const x=newForeign('아시아',{}); x.team=tid; x.sal=Math.min(x.ask,ASIA_CAP); } };
+  setup(U,{yb:[true,false],asia:true}); /* 일반 2명 + 아시아쿼터 1명: 일반 한 자리 빈 상태 */
+  const q=clean(newForeign('아시아',{market:true,isP:true})); G.fmarket=[q.id]; const a0=q.ask;
+  const rs=__rngState(), rc=__rngCalls(); const ybAsk=fAsYB(q,()=>q.ask), err0=foListErr0(q), errL=foListErr(q), okYB=foYBOk(q);
+  ok(__rngState()===rs&&__rngCalls()===rc,'슬롯 보기·검사가 주 난수를 씀'); ok(q.foreign==='아시아'&&q.ask===a0&&q.team==null&&!q._fyb,'계약 없이 보기만 했는데 후보가 바뀜');
+  ok(/아시아쿼터는 1명/.test(err0),'준비 실패: 아시아쿼터 자리가 비어 있음 '+err0); ok(errL===''&&okYB,'일반 자리가 비었는데 협상이 막힘: '+errL);
+  ok(ybAsk>=a0&&ybAsk>asiaCap()&&ybAsk<=fNewCap(),'일반 슬롯 요구액이 일반 시장 기준이 아님 '+a0+'→'+ybAsk);
+  { const r=foOffer(q.id,asiaCap(),0); ok(!r.ok&&q.team==null&&q.foreign==='아시아','아시아쿼터 자리가 찼는데 아시아쿼터로 계약: '+r.msg); }
+  { const r=fAsYB(q,()=>foOffer(q.id,ASIA_CAP,0)); ok(!r.ok&&/신규 계약은|사인|못 미|조건/.test(r.msg)&&q.foreign==='아시아'&&q.ask===a0,'일반 슬롯에 아시아쿼터 상한 금액으로 계약되거나 되돌리지 않음: '+r.msg); delete q.fneg; }
+  const r1=foOffer(q.id,fNewCap(),0,false,true); ok(r1.ok&&q.team===U,'일반 자리가 비었는데 외국인 슬롯으로 계약 못 함: '+r1.msg);
+  ok(q.foreign==='용병'&&q.fAsia===1&&q.sal===fNewCap(),'슬롯 종류·연봉이 일반 외국인으로 남지 않음 '+q.foreign+' '+q.sal);
+  { const F=foreignOf(U); ok(F.filter(x=>x.foreign==='용병').length===3&&F.filter(x=>x.foreign==='아시아').length===1,'일반 3명 + 아시아쿼터 1명으로 세지 않음'); }
+  /* 일반 자리가 다 찼으면 외국인 슬롯으로는 못 한다 */
+  const q2=clean(newForeign('아시아',{market:true,isP:false})); G.fmarket.push(q2.id); const b0=q2.ask;
+  ok(!foYBOk(q2)&&/3명까지|1명까지/.test(foListErr(q2)),'일반 자리가 찼는데 외국인 슬롯 협상이 열림');
+  { const r=foOffer(q2.id,fNewCap(),0,false,true); ok(!r.ok&&/3명까지/.test(r.msg)&&q2.team==null&&q2.foreign==='아시아'&&q2.ask===b0,'일반 자리가 찼는데 외국인 슬롯으로 계약하거나 후보가 바뀜: '+r.msg); }
+  /* 시즌 중 교체: 일반 슬롯 계약은 일반 교체 횟수만 쓰고 아시아쿼터 자리·횟수는 그대로 */
+  G.day=G.cal.open+20; G.sea.repl=G.sea.repl||{}; G.sea.asiaRepl=G.sea.asiaRepl||{}; G.sea.repl[U]=0; G.sea.asiaRepl[U]=0; releaseForeign(q.id);
+  const q3=clean(newForeign('아시아',{market:true,isP:true})); G.fmarket.push(q3.id);
+  ok(!fAsYB(q3,()=>signForeign(U,q3.id))&&q3.team===U&&q3.foreign==='용병','시즌 중 외국인 슬롯 교체 계약 실패');
+  ok(G.sea.repl[U]===1&&(G.sea.asiaRepl[U]||0)===0&&fReplLeft(U,'아시아')===ASIA_REPL_MAX,'교체 횟수를 슬롯 종류대로 세지 않음 '+JSON.stringify([G.sea.repl[U],G.sea.asiaRepl[U]]));
+  ok(q3.sal<=fNewCap(),'시즌 중 일반 외국인 교체 상한을 넘음');
+  /* AI: 일반 후보 1순위보다 확실히 나은 아시아쿼터 후보는 일반 슬롯으로, 아니면 일반 후보 */
+  fresh(); const A=G.teams.find(t=>t.id!==G.user).id; setup(A,{yb:[true,false],asia:true}); team(A).cash=0;
+  const w=clean(newForeign('용병',{market:true,isP:true})), s=clean(newForeign('아시아',{market:true,isP:true})); setOvr(w,42); setOvr(s,72); w.ask=fAsk(w); G.fmarket=[w.id,s.id];
+  { const nd=fNeed(A); ok(nd&&nd.kind==='용병'&&nd.isP===true,'준비 실패: AI 일반 투수 수요 '+JSON.stringify(nd)); }
+  const r2=__rngState(), c2=__rngCalls(); const pk=aiForeignPick(A); ok(__rngState()===r2&&__rngCalls()===c2,'AI 슬롯 판단이 주 난수를 씀'); ok(pk===s&&s.foreign==='아시아','AI가 확실히 나은 아시아쿼터 후보를 일반 자리 후보로 보지 않음');
+  WORLD_BUILD++; try{ ok(aiForeignPick(A)===w,'새 게임 세계 생성 중에도 AI가 아시아쿼터 후보를 일반 슬롯으로 고름(main과 세계가 달라짐)'); } finally{ WORLD_BUILD--; }
+  aiForeignFill(A); ok(s.team===A&&s.foreign==='용병'&&s.fAsia===1&&w.team==null,'AI가 아시아쿼터 후보를 일반 슬롯으로 계약하지 않음');
+  { const F=foreignOf(A); ok(F.filter(x=>x.foreign==='용병').length===3&&F.filter(x=>x.foreign==='아시아').length===1,'AI 외국인 수를 슬롯대로 세지 않음'); }
+  const s2=clean(newForeign('아시아',{market:true,isP:true})), w2=clean(newForeign('용병',{market:true,isP:true})); setup(A,{yb:[true,false],asia:true}); setOvr(s2,48); setOvr(w2,62); w2.ask=fAsk(w2); G.fmarket=[w2.id,s2.id];
+  ok(aiForeignPick(A)===w2,'AI가 일반 후보보다 못한 아시아쿼터 후보를 일반 슬롯으로 고름'); });
+T('[카페 11-21 아시아 선수 외국인 슬롯 재계약] 우리 아시아쿼터 선수를 재계약 때 일반 외국인으로: 빈 자리만, 일반 요구액, 다음 시즌 집계, AI도 같은 규정, 난수 없음',()=>{ fresh();
+  const U=G.user, mk=(tid,k,isP)=>{ const x=newForeign(k,{isP}); x.team=tid; x.sal=k==='아시아'?ASIA_CAP:300; x.fy=G.year; x.rsy=0; delete x.opt; delete x.fCtY; delete x.fMulti; delete x.kept; return x; };
+  const setup=(tid,n)=>{ for(const x of foreignOf(tid))releaseForeign(x.id); const L=[true,false,true].slice(0,n).map(isP=>mk(tid,'용병',isP)); return {yb:L,a:mk(tid,'아시아',false)}; };
+  let {a}=setup(U,2); setOvr(a,60); a.newSal=newSalary(a); const ns0=a.newSal; G.contract={y:G.year,tid:U,ended:[],foreignEnd:[a.id],foreignDrop:[],released:[],fre:{},done:false};
+  const exp=fYBReAsk(a); ok(exp>asiaReCap(a)&&exp>=newSalary(Object.assign({},a,{foreign:'용병',kept:null})),'일반 외국인 재계약 요구액이 일반 기준이 아님 '+exp);
+  const rs=__rngState(), rc=__rngCalls(); const m1=fReToYB(a.id); ok(__rngState()===rs&&__rngCalls()===rc,'재계약 슬롯 전환이 주 난수를 씀');
+  ok(a.foreign==='용병'&&a.fAsia===1&&a.newSal===exp,'재계약 외국인 슬롯 전환 실패: '+m1);
+  { const f=fReCapInfo(); ok(f.n===3&&!f.mix&&!f.over,'다음 시즌 일반 외국인 3명으로 세지 않음 '+JSON.stringify(f)); }
+  { const q=newForeign('아시아',{market:true}); G.fmarket.push(q.id); ok(foListErr0(q)==='','전환 뒤 아시아쿼터 자리가 비지 않음: '+foListErr0(q)); const r=newForeign('용병',{market:true,isP:false}); ok(/3명까지/.test(foreignCheck(U,r)||''),'전환 뒤 일반 외국인을 4명째 받음'); }
+  { const m=fReToYB(a.id); ok(a.foreign==='아시아'&&a.newSal===ns0&&!a.fAsia,'아시아쿼터로 되돌리기 실패: '+m); fReToYB(a.id); ok(a.foreign==='용병','다시 전환 실패'); }
+  const g1=round5(a.newSal*1.15), cap0=asiaReCap(Object.assign({},a,{foreign:'아시아'})); { const r=foReOffer(a.id,g1,0); ok(r.ok&&g1>cap0,'일반 외국인 재계약 제안이 아시아쿼터 상한에 막힘: '+r.msg); }
+  fReFinish(G.contract,U); ok(a.team===U&&a.foreign==='용병'&&a.sal===g1&&a.fCtY===G.year+1,'다음 시즌 계약이 일반 외국인으로 남지 않음 '+a.sal);
+  { const F=foreignOf(U); ok(F.filter(x=>x.foreign==='용병').length===3&&!F.some(x=>x.foreign==='아시아')&&fYBInfo(U,F,G.year+1).n===3,'다음 시즌 집계가 슬롯과 다름'); }
+  /* 일반 자리가 다 차 있으면 막는다 */
+  ({a}=setup(U,3)); setOvr(a,60); a.newSal=newSalary(a); const ns1=a.newSal; G.contract={y:G.year,tid:U,ended:[],foreignEnd:[a.id],foreignDrop:[],released:[],fre:{},done:false};
+  { const m=fReToYB(a.id); ok(/3명/.test(m)&&a.foreign==='아시아'&&a.newSal===ns1&&!a.fAsia,'일반 외국인 3명인데 외국인 슬롯 재계약이 됨: '+m); }
+  G.contract.foreignDrop=[]; G.contract.done=true;
+  /* AI: 재계약한 아시아쿼터 선수가 일반 기준을 넘고 자리가 비면 일반 외국인으로, 아니면 그대로 */
+  const A=G.teams.find(t=>t.id!==U).id, sy=G.year+1; let b=setup(A,2).a; setOvr(b,60); b.fCtY=sy; b.newSal=b.sal=newSalary(b); const ex2=fYBReAsk(b);
+  WORLD_BUILD++; try{ ok(!fAiReYB(A,sy)&&b.foreign==='아시아','새 게임 세계 생성 중에 AI가 슬롯을 바꿈'); } finally{ WORLD_BUILD--; }
+  const r2=__rngState(), c2=__rngCalls(); ok(fAiReYB(A,sy)===b&&b.foreign==='용병'&&b.fAsia===1&&b.sal===ex2,'AI가 아시아쿼터 선수를 일반 외국인으로 재계약하지 않음'); ok(__rngState()===r2&&__rngCalls()===c2,'AI 재계약 전환이 주 난수를 씀');
+  { const nd=fNeed(A); ok(nd&&nd.kind==='아시아','AI의 비은 아시아쿼터 자리를 수요로 보지 않음 '+JSON.stringify(nd)); }
+  b=setup(A,3).a; setOvr(b,60); b.fCtY=sy; ok(!fAiReYB(A,sy)&&b.foreign==='아시아','AI 일반 외국인 3명인데 전환');
+  b=setup(A,2).a; setOvr(b,45); b.fCtY=sy; ok(!fAiReYB(A,sy)&&b.foreign==='아시아','AI가 일반 기준보다 약한 선수를 전환'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
