@@ -97,6 +97,14 @@ function cupNowEntry(name){ let e=null; try{ if(G&&!G.unemp)e=cupEntryNow({name:
 const cupDl=d=>FrontOfficeCore.cupKstMs(d)||0; /* 마감(한국시간 글) → ms. 없는 날짜는 0(마감 없음으로 보지 않게 화면은 '접수 중'만) */
 /* 지금 대회 단계: 0 없음 · 1 접수 중 · 2 마감(주최자 준비) · 3 진행(연재 공개 중) · 4 결과 공개 */
 function cupStage(){ const c=CUP.cfg, P=CUP.pub&&c&&CUP.pub.id===c.id?CUP.pub:null; if(!c)return 0; if(P&&P.day>=7)return 4; if(P&&P.day)return 3; const dl=cupDl(c.deadline); return c.open!==false&&(!dl||Date.now()<dl)?1:2; }
+/* 처음 화면의 프런트컵 메뉴는 대회가 진행 중일 때만(구단주 11-21): 접수 중·마감·1~6일차 공개(cupStage 1~3). 대회가 없거나 7일차까지 다 공개되면 숨긴다(명예의 전당은 설정 › 정보에서 늘 본다) */
+const CUP_T={st:'',on:false};
+const CUP_HOF_BTN='<button class="fb-button" data-a="tsGo" data-v="cuphof"><b>프런트컵 명예의 전당</b><span>유저 대회 역대 우승 팀과 로스터</span></button>';
+function cupEventOn(){ cupTitleProbe(); return CUP_T.on; }
+/* 처음 화면 전용 조용한 확인: 화면 전체를 다시 그리지 않는다(시작 배경·로고 디코딩을 끊지 않게, check-startup). 대회 중이면 메뉴에 단추만 끼워 넣는다 */
+function cupTitleProbe(){ if(CUP_T.st)return; CUP_T.st='wait'; if(typeof xfAvail==='function'&&!xfAvail()){ CUP_T.st='off'; return; }
+  Promise.all([cupApi(''),cupApi('/pub').catch(()=>null)]).then(([a,b])=>{ if(a&&a.r.ok&&a.j&&a.j.cup)CUP.cfg=a.j.cup; if(b&&b.r.ok&&b.j&&b.j.v)CUP.pub=b.j; const s=cupStage(); CUP_T.on=!!(a&&a.r.ok&&a.j&&a.j.cup)&&s>=1&&s<=3; CUP_T.st=CUP_T.on?'on':'none';
+    if(CUP_T.on){ const nav=document.querySelector('.fb-menu'); if(nav&&!nav.querySelector('[data-v="cuphof"]')){ const set=nav.querySelector('[data-v="settings"]'); if(set)set.insertAdjacentHTML('beforebegin',CUP_HOF_BTN); } } },()=>{ CUP_T.st='off'; }); }
 function cupEntsLoad(){ if(CUP.entsSt||!xfAvail()||cupStage()!==1)return; CUP.entsSt='loading'; cupApi('/entries').then(({r,j})=>{ CUP.ents=r.ok&&j&&Array.isArray(j.entries)?j:null; },()=>{}).finally(()=>{ CUP.entsSt='ok'; try{ render(); }catch(e){} }); }
 function cupStatusHtml(){ const c=CUP.cfg; if(!c)return ''; const k=cupStage(), P=CUP.pub&&CUP.pub.id===c.id?CUP.pub:null, dl=cupDl(c.deadline), left=dl-Date.now();
   const lt=left>0&&left<365*864e5?(left>864e5?`D-${Math.floor(left/864e5)}`:`${Math.floor(left/36e5)}시간 ${Math.floor(left%36e5/6e4)}분`):'';

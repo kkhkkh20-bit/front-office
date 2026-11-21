@@ -60,6 +60,9 @@ const { chromium } = require('playwright');
     const sw = await p2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1); assert.ok(sw, '휴대폰 폭에서 가로 스크롤'); console.log('처음 화면 명예의 전당 통과');
     await p2.route('**/api/cup/results', r => r.abort()); await p2.reload();await p2.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await p2.waitForFunction(() => typeof UI !== 'undefined' && UI.title === true, null, { timeout: 60000 }); await p2.click('[data-a="tsGo"][data-v="cuphof"]');
     await p2.waitForFunction(() => /마지막으로 받은 결과/.test(document.body.innerText) && /우승 단장 새벽별 2027/.test(document.body.innerText), null, { timeout: 20000 }); console.log('연결 끊김 때 남은 결과 통과');
+    /* 처음 화면 프런트컵 메뉴는 대회 진행 중에만(구단주 11-21): 위는 접수 중이라 보였고, 대회 설정이 없으면(404) 숨긴다 */
+    const p3 = await b.newPage(); await p3.route(/\/api\/cup$/, r => r.fulfill({ status: 404, body: '{}' })); await p3.goto(url); await p3.waitForFunction(()=>performance.getEntriesByName('fronttime-menu-ready').length>0); await p3.waitForFunction(() => typeof UI !== 'undefined' && UI.title === true && CUP_T.st === 'none', null, { timeout: 60000 }); await p3.waitForTimeout(300);
+    assert.ok(await p3.evaluate(() => !document.querySelector('[data-a="tsGo"][data-v="cuphof"]')), '대회가 없는데 처음 화면에 프런트컵 메뉴가 보임'); await p3.close(); console.log('대회 없을 때 처음 화면 프런트컵 메뉴 숨김 통과');
     /* 관리자 페이지: 설정 › 정보 맨 아래 '관리자' → 틀린 키는 거절 → 맞는 키 → 대회 열기 → 참가 파일 올리기 → 돌리기 → 1~7일차 공개 → 명예의 전당 등록 */
     await p.evaluate(() => { A.go('cfg:info'); }); await p.click('[data-a="admAsk"]'); await p.fill('#admKey', 'wrong-key'); await p.click('[data-a="admKeyOk"]');
     await p.waitForFunction(() => /키가 맞지 않습니다/.test(document.body.innerText), null, { timeout: 10000 }); assert.equal(await p.evaluate(() => !!document.querySelector('[data-a="admOpen"]')), false, '틀린 키인데 관리자 메뉴');

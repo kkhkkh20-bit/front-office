@@ -55,7 +55,9 @@ function clubProfileOverview(tid){ const t=team(tid), F=clubProfileFact, R=G.sea
   const training=csec('훈련 시설',`<dl class="club-profile-facts">${FACK.map(k=>{const lv=fac?.it?.[k], b=fac?.bld?.[k]; return F(FACI[k].l,lv!=null?`${lv}단계 · ${esc(FACI[k].lv[lv]||'')}${b?`<small>${b.lv}단계 공사 중 · ${dmdA(b.done)} 완공 예정</small>`:''}`:null);}).join('')}${F('구단 버스',tid===G.user?esc(BUS[G.bus??1]?.l||''):t.bus!=null?esc(BUS[t.bus]?.l||''):null)}</dl>${fac?.hist?.length?`<details><summary>시설 투자 이력 ${fac.hist.length}건</summary><div class="club-profile-ledger">${fac.hist.slice().reverse().map(h=>`<p><span>${h.d!=null?`${dobj(h.d).y} ${dmd(h.d)}`:''} ${esc(facHistLbl(h))}</span><b>${h.c!=null?money(h.c):''}</b></p>`).join('')}</div></details>`:''}`);
   return `<div class="club-profile-grid">${ownershipCard(tid)}${identity}${cash}${stadium}${training}${uniRow(tid)?csec('유니폼',uniRow(tid)):''}</div>`; }
 /* 얼굴 첫 배정(avImg→face6Idx)은 저장 상태를 쓰므로, 이미 배정된 초상만 읽는다. */
-function clubProfileAvatar(p){ const i=G.f6?.[p.id], fv=typeof FACE6!=='undefined'&&(FACE6.v==='6c'?3:2); if(p.img||i!=null&&G.f6v===fv&&G.f6r?.[p.team+':'+i]===p.id)return avImg(p); return `<span class="av ini" aria-hidden="true">${esc((p.name||'?').slice(0,1))}</span>`; }
+function clubProfileAvatar(p){ const i=G.f6?.[p.id], fv=typeof FACE6!=='undefined'&&(FACE6.v==='6c'?3:2); if(p.img||i!=null&&G.f6v===fv&&G.f6r?.[p.team+':'+i]===p.id||G.f6off||typeof face6Idx!=='function')return avImg(p); return `<span class="av ini" aria-hidden="true">${esc((p.name||'?').slice(0,1))}</span>`; } /* 그리기는 G를 바꾸지 않는다(공개 프로필 조회 무변경 검사). 사진 배정은 화면을 여는 동작(clubFaceAssign)에서 */
+/* 카페 11-21(타구단 선수단 얼굴이 이름 첫 글자로만 나옴): 공개 구단 기록을 열거나 선수단 탭을 누를 때(동작) 그 구단 선수 사진을 선수 창·명단과 같은 규칙으로 미리 배정한다. 난수·경기 결과와 무관 */
+function clubFaceAssign(tid){ try{ if(typeof face6Idx!=='function'||G.f6off)return; for(const p of playersOf(tid))if(!p.img)face6Idx(p); }catch(e){} }
 function clubProfileRoster(tid){ const ps=playersOf(tid).slice().sort((a,b)=>Number(b.e1)-Number(a.e1)||Number(b.isP)-Number(a.isP)||String(a.name).localeCompare(b.name,'ko'));
   const row=p=>`<button class="club-profile-player" data-a="player" data-v="${p.id}">${clubProfileAvatar(p)}<span><b>${esc(p.name)}</b><small>${esc(posLabel(p))} · ${p.age}세 · ${p.e1?'1군':p.ys?'육성':'2군'}${p.foreign?' · '+esc(p.foreign):''}</small></span><span><b>${money(p.sal)}</b><small>${esc(ctText(p))}${p.injOut>0?' · 부상 '+p.injOut+'일':''}</small></span></button>`;
   /* 포지션별 보기(일고회장 11-12: 팀 선수들 볼 때): 전체는 포지션 묶음으로, 칩으로 한 묶음만 */
@@ -164,6 +166,7 @@ function gamesView(){
 function tradeMood(tid,give,get,cash,pk){
   if(!give.length&&!get.length)return null;
   { let cd=null; try{ cd=tradeCool(tid,get); }catch(e){} if(cd)return {k:'no',l:'거래 제한',s:cd.cap?`올해 이 구단과 거래 한도(${cd.max}번)를 채웠습니다`:`최근 거래해 ${dsh(cd.until)}부터 다시 거래할 수 있습니다`,c:'var(--bad)',w:3,sd:0}; } /* 보내기 전에 거래 제한을 반응 막대에(플레이 테스트 11-13) */
+  { const m=sdLockMsg([...give,...get]); if(m)return {k:'no',l:'트레이드 불가',s:m,c:'var(--bad)',w:3,sd:0}; }
   if(faLockMsg([...give,...get]))return {k:'no',l:'트레이드 불가',s:[...give,...get].some(id=>faSignLock(G.players[id]))?'FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다':'FA 신청을 앞둔 선수는 FA 공시 전까지 트레이드할 수 없습니다',c:'var(--bad)',w:3,sd:0};
   const t=team(tid); const e=evalTrade(tid,give,get,cash,pk);
   if(e.pkGate)return {k:'no',l:'상위 지명권',s:'1라운드 1~5순번 지명권은 리그 A급 선수(1순위는 특급)를 받고 그 자리가 필요할 때만 검토합니다',c:'var(--bad)',w:3,sd:0};

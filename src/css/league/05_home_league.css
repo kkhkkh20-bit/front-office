@@ -235,12 +235,12 @@ button.ggf-m{cursor:pointer}button.ggf-m:hover{filter:brightness(1.12)}button.gg
 .ggf-m em,.asf-p em{display:inline-flex;align-items:center;gap:3px}.ggf-m em .badge,.asf-p em .badge,.ggf-m em img,.asf-p em img{width:16px;height:16px;flex:none} /* 수상자·올스타 구단 마크 */
 body .ltile .l1>span>i{display:flex;align-items:center;gap:4px;white-space:nowrap;word-break:keep-all} /* 사진을 키운 뒤에도 구단 별칭은 한 줄(별칭만 써서 짧다) */
 @media (max-width:620px){ .ltile .l1{display:grid;grid-template-columns:52px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center} .ltile .l1>.av{grid-row:1 / span 2} .ltile .l1>em{grid-column:2;justify-self:start;line-height:1.1} } /* 휴대폰: 사진을 키운 대신 기록 숫자는 이름 아래(겹치지 않게) */
-/* 해외 리그(16b_ovs_league): 지구별로 접는 순위표, 휴대폰 390px에서 가로 스크롤 없이 */
-.ovl-d{border:1px solid var(--line);border-radius:4px;background:var(--panel2);margin:6px 0}.ovl-d>summary{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:8px 10px;cursor:pointer}
-.ovl-d .tbl-wrap{margin:0 6px 6px}.ovl-t{width:100%;table-layout:fixed}.ovl-t th:first-child,.ovl-t td.ovl-c{width:auto;text-align:left}.ovl-t th:not(:first-child),.ovl-t td:not(.ovl-c){width:44px;text-align:right}
-.ovl-c{white-space:normal;word-break:keep-all}.ovl-af{display:inline-block;margin-left:5px;font-size:var(--ui-caption);color:var(--muted)}.ovl-al{display:block;font-size:12px}.ovl-al .lnk{padding:0;margin-right:6px}
-.ovl-ch td{vertical-align:top;white-space:normal;word-break:keep-all}.ovl-chl{padding:1px 0}.ovl-ch td,.ovl-ch th{text-align:left}.ovl-ch td:first-child{width:52px;white-space:nowrap}
-@media(max-width:420px){.ovl-t th:not(:first-child),.ovl-t td:not(.ovl-c){width:36px;font-size:12px}.ovl-c .pill{font-size:var(--ui-caption);padding:0 4px}}
+/* 해외 리그 허브(16b_ovs_league 11-21): 리그별 순위·주요 선수·기록 순위·우승 역대는 아마추어 기록 카드(am-lc·am-lt)를 쓴다. .ovl-d는 세계 선수 구단 접기 */
+.ovl-d{border:1px solid var(--line);border-radius:4px;background:var(--panel2);margin:6px 0}.ovl-d>summary{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:8px 10px;cursor:pointer}.ovl-d .tbl-wrap{margin:0 6px 6px}
+.ovh-hd{margin:6px 0}.ovh-note{margin:2px 0 6px}.ovh-st tr.me td.n{font-weight:600}.ovh-st tr.hl td{background:color-mix(in srgb,var(--acc) 18%,transparent)}.ovh-st td.n .am-sc{display:block;line-height:1.15}
+:is(.ovh-st,.ovh-pt) td.n .pill{font-size:10px;padding:0 4px;margin-left:3px;line-height:1.4}.ovh-pt td.n .am-sc{display:block;line-height:1.2;white-space:normal}.ovh-al{margin:4px 0 0;line-height:1.6}:is(.ovh-al,.ovh-aw,.ovh-pt) .lnk{padding:0;min-height:0}
+.ovh-ht td{vertical-align:top;white-space:normal;word-break:keep-all;text-align:left}.ovh-ht th{text-align:left}.ovh-ht td:first-child{width:52px;white-space:nowrap}.ovh-sub{display:block}.ovh-aw{margin:4px 0;padding-left:16px}
+@media(min-width:700px){.am-lg.ovh-lg{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}}
 /* 해외 리그 주목 선수: 타자·투수 표는 업무 화면 칸(ws-panel) 안에서 스크롤 */
 .ovt-h{margin:6px 0}.ovt-e{font-size:13px;padding:8px 0}.ovt-t{width:100%}.ovt-t th,.ovt-t td{text-align:right;white-space:nowrap}.ovt-t th:nth-child(-n+3),.ovt-t td:nth-child(-n+3){text-align:left}
 .ovt-t td.ovt-n{white-space:normal;min-width:150px}.ovt-n .pm-n .av{width:30px;height:30px;flex:none}.ovt-n .pm-n span{display:grid;line-height:1.3}.ovt-n .pm-n i{font-style:normal;font-size:12px;color:var(--muted)}.ovt-t tbody tr{cursor:pointer}

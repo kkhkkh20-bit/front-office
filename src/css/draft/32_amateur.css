@@ -156,3 +156,4 @@
 .scm-cov .c0{color:var(--bad,#e66)}.scm-cov .c1{color:var(--warn,#d9a400)}.scm-cov .c2{color:var(--good,#3c9)}
 .am-u18 ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 8px;font-size:12px}
 .am-u18 .am-u18-r{font-size:12px;margin:4px 0}
+.am-seg{flex-wrap:wrap}.am-seg button{white-space:nowrap} /* 대회 이름 버튼이 두 줄로 쪼개지지 않게(11-21 기록 탭) */
