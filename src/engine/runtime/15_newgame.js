@@ -40,7 +40,8 @@ function buildWorld0(opts){ const lite=!!(opts&&opts.lite); /* lite: 지난 시�
   G.sea={y:2025,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},asiaRepl:{},mark:null};
   for(const t of G.teams){ for(const isP of [true,true,false]){ const p=newForeign('용병',{isP}); while(foreignCheck(t.id,p)&&p.ask>300)p.ask=round5(p.ask*.85); signForeign(t.id,p.id);} signForeign(t.id,newForeign('아시아').id); }
   G.stops=[]; rollForm(); /* 2025 시즌도 컨디션·타구 운이 걸린 채로 치른다 */
-  let pd=null; if(!lite)for(const d of Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b)){ if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false,{pitchRecords:false}); applyGame(d,h,a,g,false);} if(dobj(d).w===0){ G.flHist=1; futuresWeek(); delete G.flHist; } } /* 과거 시즌은 빠른 주간 2군 기록 */
+  let pd=null; const tick=opts&&typeof opts.tick==='function'?opts.tick:null, DS=Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b); let di=0; /* tick: 진행률 알림(화면 표시용, 난수 안 씀) */
+  if(!lite)for(const d of DS){ if(tick&&!(di++%8))try{ tick(di/DS.length); }catch(e){} if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false,{pitchRecords:false}); applyGame(d,h,a,g,false);} if(dobj(d).w===0){ G.flHist=1; futuresWeek(); delete G.flHist; } } /* 과거 시즌은 빠른 주간 2군 기록 */
   updateLg(2025); if(!lite){ try{ featSeason(2025); }catch(e){} try{ genPastSeasons(); }catch(e){ console.error(e); } } const st=standingsNow();
   G.history.push({y:2025,order:st,champ:null,runner:null}); /* 시작용 2025시즌은 정규시즌만 치렀다: 1·2위를 한국시리즈 우승·준우승으로 세지 않는다(검수 11-09zz) */ G.iv=null;
   for(const p of Object.values(G.players)){ p.svc++; p.injOut=0; /* 사전 시뮬의 진행 중 부상 상태는 지운다(부상 이력 injHist만 남긴다) */ delete p.injFx; delete p.injK; delete p.reInj; delete p.ld; delete p.armw; delete p.lsS; develop(p); delete p.lastStart; delete p.lastApp; delete p.prevApp; }
@@ -72,6 +73,11 @@ function buildWorld0(opts){ const lite=!!(opts&&opts.lite); /* lite: 지난 시�
 }
 /* 시작 자금은 시장 크기대로: 큰 구단 약 60억, 작은 구단 약 26억, 독립 구단 약 20억(사용자 11-08: 쉬운 구단·어려운 구단) */
 function mktCash(tid){ const d=TEAM_DEF[tid]||{}; return Math.round(4000*Math.pow(d.indie?.7:d.market||1,2)/10)*10; }
+/* 새 게임 구단 고르기용 리그: buildWorld + 창단 지명 순서 + 구단별 취임 첫날 예산(재정 압박·창단 자금). 예전 화면 쪽 ensureWorld와 같은 순서·같은 계산이다.
+   화면은 이 함수를 Worker에서 돌려(01_layout.js worldWorker) 리그를 만드는 동안에도 버튼이 눌린다(구단주 11-21). G는 원래대로 돌려 놓고 만든 세계를 돌려준다. tick(0~1): 진행률 */
+function worldForPick(tick){ const G0=G; try{ buildWorld({tick:tick?f=>tick(f*.85):null}); const W=G; try{ W.fdOrd=fdOrder(); }catch(e){} /* 창단 드래프트 순서는 구단을 고르기 전에 한 번 정해 두고(구단 카드와 실제가 같고 겹치지 않게) 시작 때 그대로 쓴다 */
+    try{ const js=JSON.stringify(W); W.preview.forEach((x,i)=>{ if(tick)try{ tick(.85+.15*i/W.preview.length); }catch(e){} G=JSON.parse(js); claimTeam(x.tid); x.room=Math.round(budget().roomGoal); try{ x.fin=fdFin(x.tid); x.ownN=bossOf(x.tid).own.name; }catch(e){} }); }catch(e){ console.error(e); }
+    return W; } finally{ G=G0; } }
 function claimTeam(userTid,austK){ G.user=userTid; G.gmSince=G.year; G.gmSinceD=G.day; G.myC=null; delete G.preview; G.lineup={}; team(userTid).cash=mktCash(userTid); if(austK)fdAustApply(userTid,austK);
   if(G.scouts[2])G.scouts[2].region=TEAM_DEF[userTid].region==='수도권'?'영남':'수도권';
   for(const p of foreignOf(userTid)) delete G.players[p.id];

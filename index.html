@@ -3237,6 +3237,24 @@ header.ibm-h>.av,header.ibm-h>.ob-av{width:76px;height:76px;border-radius:10px}
 /* 한 구역의 ⓘ를 하나로 합친 뒤(mergeHints) 말풍선이 길어질 수 있어 화면 안에서 스크롤 */
 #tipb{max-height:min(60vh,440px);overflow:auto}
 .cfm[tabindex="-1"]:focus{outline:none}
+
+/* 새 게임 구단 고르기 순서(구단주 11-21): ① 구단 ② 지명 순번 ③ 단장 소개. 어느 쪽을 먼저 골라도 되고, 아래 '다음' 단추가 왜 꺼져 있는지 적는다 */
+.fdset{display:flex;gap:6px;list-style:none;margin:4px 0 10px;padding:0}
+.fdset li{flex:1;min-width:0;display:grid;gap:1px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
+.fdset li b{font-size:13px;white-space:nowrap}.fdset li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fdset li.on{color:var(--text,#e2e8ed);border-color:var(--acc,#4a7dff);box-shadow:inset 0 0 0 1px var(--acc,#4a7dff)}
+.fdset li.done{color:var(--text,#e2e8ed)}.fdset li.done b::after{content:' ✓';color:var(--good,#3fb871)}
+.tmk-wait{display:grid;gap:8px;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:5px;padding:12px;color:var(--ink);cursor:pointer}.tmk-wait:hover{border-color:var(--acc,#8b5cf6)}
+.tmk.sel,.tmk-wait.sel{border-color:var(--good,#3fb871);box-shadow:inset 0 0 0 2px var(--good,#3fb871)}/* 선택 표시는 카드 격자 칸을 차지하지 않게 테두리 위에 띄운다(구단주 11-21: 1420px에서 연봉 상자가 밀려 세로로 깨짐) */
+.tmk.sel,.tmk-wait.sel{position:relative}.tp-sel{position:absolute;top:-9px;right:12px;z-index:1;padding:1px 8px;border-radius:9px;font-size:11px;font-style:normal;font-weight:700;line-height:16px;background:var(--good,#3fb871);color:#06140c;pointer-events:none;white-space:nowrap}
+.fdpk.need{box-shadow:inset 0 0 0 2px var(--warn,#e0a030)}
+.fdgo{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel,#151b22);box-shadow:0 -6px 16px rgba(0,0,0,.25)}
+.fdgo-s{min-width:0;flex:1 1 160px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-size:13px}
+.fdgo-b{flex:none}.fdgo-b.off{opacity:.5;filter:saturate(.3)}.fdgo-why{flex-basis:100%;color:var(--warn,#e0a030)}
+.wl-run{padding:10px 4px}.wl-run p{margin:0 0 6px}.wl-run>div{flex:1;min-width:0}
+.wl-bar{display:block;height:6px;border-radius:3px;background:var(--line,#2a333e);overflow:hidden}.wl-bar b{display:block;height:100%;width:0;background:var(--acc,#4a7dff);transition:width .3s}
+.tmk-wait .tp-sum{margin:0}
+.fdpk-dr1{flex-basis:100%}.fdpk-now .fdpk-dr1 em{font-weight:400;color:var(--muted)}
 /* ===== 소식함 (FM 수신함 구조) ===== */
 /* 상단 바: 분류 탭 + 안 읽음 */
 .ibx-bar{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);margin:0 0 12px;flex-wrap:wrap}
@@ -18218,7 +18236,8 @@ function draftClubLeave(old,rehire){ draftClubInit();
   G.shortlist=n?n.shortlist:[]; G.dmemo=n?n.dmemo:{}; G.dplan=n?n.dplan:null; G.drestPre=n?n.drestPre:null; G.dbSort=draftBoardSortState(n&&n.dbSort,G.user);
   for(const p of Object.values(G.players)){ delete p.rchkA; if(n&&n.rchkA&&n.rchkA[p.id])p.rchkA=n.rchkA[p.id]; }
   if(n)delete T[G.user]; }
-function draftOrders(){ draftClubInit(); const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid); for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
+function draftOrders(){ draftClubInit(); const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; let order=[...h.order].reverse().map(o=>o.tid); for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
+  if(G.dr1F&&G.dr1F.y===G.year&&Array.isArray(G.dr1F.ord)){ const o=[...G.dr1F.ord].reverse().filter(t=>order.includes(t)); order=[...order.filter(t=>!o.includes(t)),...o]; } /* 창단 게임 첫 시즌 신인 드래프트: 창단 지명 순서의 역순(창단 1순위 → 신인 10순위). 모든 구단 같은 규칙(구단주 11-21: 1년차 순번을 공짜로 고르면 다 1순위를 골랐다) */
   if(G.dr1&&G.dr1.y===G.year&&order.includes(G.dr1.tid)){ const i=order.indexOf(G.dr1.tid); order.splice(i,1); order.splice(clamp(G.dr1.slot-1,0,order.length),0,G.dr1.tid); } /* 1년차 신인 드래프트 순번을 새 게임에서 골랐으면 첫 시즌만 그 자리(오른발고니 11-11) */
   const pen=G.teams.filter(t=>t.pickPen===G.year&&order.includes(t.id)).map(t=>t.id);
   return {r1:penOrder(order,pen),r2:order,pen,y:h.y}; }
@@ -18327,7 +18346,7 @@ function austOn(t){ return t&&t.aust&&sponSeason()<=t.aust.y1?t.aust:null; }
 function austTxt(a){ return a.d<0?`긴축 ${Math.round(-a.d*100)}% 감액`:a.d>0?`지원 ${Math.round(a.d*100)}% 증액`:'긴축'; }
 function fdOrder(){ return G.teams.map(t=>({id:t.id,v:fdCapOf(t.id)+hn('fdo'+G.year,t.id)*30})).sort((a,b)=>a.v-b.v).map(x=>x.id); }
 function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); if(p.fsx==null)p.fsx=Math.round(clamp(N(0,4.5),-9,9)*10)/10; } /* fsx: 실전 감각(숨은 값). 기록에는 묻어나지만 툴을 보는 눈에는 안 보인다 */
-  G.lineup={}; const order=G.fdOrd&&G.fdOrd.length===G.teams.length?G.fdOrd:fdOrder(); delete G.fdOrd; const picks=[]; /* 구단 고르기 화면에서 정해 둔 순서가 있으면 그대로 */
+  G.lineup={}; const order=G.fdOrd&&G.fdOrd.length===G.teams.length?G.fdOrd:fdOrder(); delete G.fdOrd; if(G.dr1F&&G.dr1F.y===G.year&&!G.dr1F.ord)G.dr1F.ord=[...order]; /* 첫 시즌 신인 드래프트 순번은 이 순서의 역순(10_draft.js draftOrders). 이 규칙으로 시작한 새 게임만(G.dr1F) */ const picks=[]; /* 구단 고르기 화면에서 정해 둔 순서가 있으면 그대로 */
   for(let r=0;r<FD_ROUNDS;r++){ const seq=r%2&&!G.fdStraight?[...order].reverse():order; seq.forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null})); }
   G.startY=G.year; G.fd={pool:ids,all:ids.slice(),order,picks,cur:0,done:false,y:G.year,open:false,man:FD_MAN};
   { for(let i=0;i<4;i++)scoutFindWeek(true); } /* 창단 때 찾은 후보도 소식 없이 외국인 시장에 '우리 스카우트 발굴'로 표시 */
@@ -19874,7 +19893,8 @@ function buildWorld0(opts){ const lite=!!(opts&&opts.lite); /* lite: 지난 시�
   G.sea={y:2025,rec:G.teams.map(()=>({w:0,l:0,t:0})),months:[],fspend:{},repl:{},asiaRepl:{},mark:null};
   for(const t of G.teams){ for(const isP of [true,true,false]){ const p=newForeign('용병',{isP}); while(foreignCheck(t.id,p)&&p.ask>300)p.ask=round5(p.ask*.85); signForeign(t.id,p.id);} signForeign(t.id,newForeign('아시아').id); }
   G.stops=[]; rollForm(); /* 2025 시즌도 컨디션·타구 운이 걸린 채로 치른다 */
-  let pd=null; if(!lite)for(const d of Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b)){ if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false,{pitchRecords:false}); applyGame(d,h,a,g,false);} if(dobj(d).w===0){ G.flHist=1; futuresWeek(); delete G.flHist; } } /* 과거 시즌은 빠른 주간 2군 기록 */
+  let pd=null; const tick=opts&&typeof opts.tick==='function'?opts.tick:null, DS=Object.keys(G.cal.sched).map(Number).sort((a,b)=>a-b); let di=0; /* tick: 진행률 알림(화면 표시용, 난수 안 씀) */
+  if(!lite)for(const d of DS){ if(tick&&!(di++%8))try{ tick(di/DS.length); }catch(e){} if(pd!=null)recoverAll(d-pd); pd=d; G.day=d; for(const p of Object.values(G.players))if(p.injOut>0)p.injOut--; for(const [h,a] of G.cal.sched[d]){ const g=simGame(d,h,a,false,{pitchRecords:false}); applyGame(d,h,a,g,false);} if(dobj(d).w===0){ G.flHist=1; futuresWeek(); delete G.flHist; } } /* 과거 시즌은 빠른 주간 2군 기록 */
   updateLg(2025); if(!lite){ try{ featSeason(2025); }catch(e){} try{ genPastSeasons(); }catch(e){ console.error(e); } } const st=standingsNow();
   G.history.push({y:2025,order:st,champ:null,runner:null}); /* 시작용 2025시즌은 정규시즌만 치렀다: 1·2위를 한국시리즈 우승·준우승으로 세지 않는다(검수 11-09zz) */ G.iv=null;
   for(const p of Object.values(G.players)){ p.svc++; p.injOut=0; /* 사전 시뮬의 진행 중 부상 상태는 지운다(부상 이력 injHist만 남긴다) */ delete p.injFx; delete p.injK; delete p.reInj; delete p.ld; delete p.armw; delete p.lsS; develop(p); delete p.lastStart; delete p.lastApp; delete p.prevApp; }
@@ -19906,6 +19926,11 @@ function buildWorld0(opts){ const lite=!!(opts&&opts.lite); /* lite: 지난 시�
 }
 /* 시작 자금은 시장 크기대로: 큰 구단 약 60억, 작은 구단 약 26억, 독립 구단 약 20억(사용자 11-08: 쉬운 구단·어려운 구단) */
 function mktCash(tid){ const d=TEAM_DEF[tid]||{}; return Math.round(4000*Math.pow(d.indie?.7:d.market||1,2)/10)*10; }
+/* 새 게임 구단 고르기용 리그: buildWorld + 창단 지명 순서 + 구단별 취임 첫날 예산(재정 압박·창단 자금). 예전 화면 쪽 ensureWorld와 같은 순서·같은 계산이다.
+   화면은 이 함수를 Worker에서 돌려(01_layout.js worldWorker) 리그를 만드는 동안에도 버튼이 눌린다(구단주 11-21). G는 원래대로 돌려 놓고 만든 세계를 돌려준다. tick(0~1): 진행률 */
+function worldForPick(tick){ const G0=G; try{ buildWorld({tick:tick?f=>tick(f*.85):null}); const W=G; try{ W.fdOrd=fdOrder(); }catch(e){} /* 창단 드래프트 순서는 구단을 고르기 전에 한 번 정해 두고(구단 카드와 실제가 같고 겹치지 않게) 시작 때 그대로 쓴다 */
+    try{ const js=JSON.stringify(W); W.preview.forEach((x,i)=>{ if(tick)try{ tick(.85+.15*i/W.preview.length); }catch(e){} G=JSON.parse(js); claimTeam(x.tid); x.room=Math.round(budget().roomGoal); try{ x.fin=fdFin(x.tid); x.ownN=bossOf(x.tid).own.name; }catch(e){} }); }catch(e){ console.error(e); }
+    return W; } finally{ G=G0; } }
 function claimTeam(userTid,austK){ G.user=userTid; G.gmSince=G.year; G.gmSinceD=G.day; G.myC=null; delete G.preview; G.lineup={}; team(userTid).cash=mktCash(userTid); if(austK)fdAustApply(userTid,austK);
   if(G.scouts[2])G.scouts[2].region=TEAM_DEF[userTid].region==='수도권'?'영남':'수도권';
   for(const p of foreignOf(userTid)) delete G.players[p.id];
@@ -40014,24 +40039,44 @@ async function importText(t,to,opt={}){
  saveOpenGame(g,slot,meta());UI.tab='home';UI.readingOpen={};UI.readingScroll={};UI.impMsg='불러왔습니다.';render();return true;
 }
 
-function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldBusy=true; setTimeout(()=>{ const G0=G; try{ buildWorld(); UI.world=G; try{ G.fdOrd=fdOrder(); }catch(e){} /* 창단 드래프트 순서는 구단을 고르기 전에 한 번 정해 두고(구단 카드와 실제가 같고 겹치지 않게) 시작 때 그대로 쓴다 */
-    /* 구단마다 취임 첫날 예산을 미리 계산해 재정 압박 구단을 표시한다 */
-    try{ const js=JSON.stringify(UI.world); for(const x of UI.world.preview){ G=JSON.parse(js); claimTeam(x.tid); x.room=Math.round(budget().roomGoal); try{ x.fin=fdFin(x.tid); x.ownN=bossOf(x.tid).own.name; }catch(e){} } }catch(e){ console.error(e); }
-  }catch(e){ console.error(e); UI.worldErr=true; } finally{ G=G0; UI.worldBusy=false; render(); } },60); }
+/* 새 게임 리그 만들기(창단 드래프트·단장 취임 공용). 2025 시즌 144경기를 치르는 buildWorld가 화면 스레드를 PC 11초·휴대폰(CPU 4배 느림) 38초 멈춰
+   '새 게임' 뒤 버튼이 안 눌렸다(구단주 11-21). 같은 엔진 코드(worldForPick)를 Worker에서 돌리고, 화면은 그동안 구단·순번을 고를 수 있다.
+   Worker를 못 쓰면(file:// 등) 예전처럼 화면 스레드에서 만든다. 만드는 코드·난수 순서는 그대로다. __wbPre/__wbDone: 점검용(같은 씨앗으로 세계 비교) */
+function worldDone(W,err,fromJ){ UI.worldBusy=false; UI.worldW=null; if(err){ UI.worldErr=true; } else { UI.world=W; UI.worldJ=!!fromJ; UI.worldPct=1; }
+  const go=UI.gpWait; UI.gpWait=false; if(UI.title){ try{ if(UI.sstep==='prof'&&document.getElementById('gp-name'))gpSync(); }catch(e){} /* 단장 소개에 적던 이름을 다시 그리기 전에 담아 둔다(다 만든 순간 지워지지 않게) */ render(); if(go&&UI.sstep==='prof'&&!err)try{ A.gpStart(); }catch(e){ console.error(e); } } }
+function worldPctShow(f){ UI.worldPct=f; if(typeof document==='undefined')return; const pc=Math.max(1,Math.min(99,Math.round(f*100)));
+  document.querySelectorAll('[data-wpct]').forEach(el=>{ if(el.dataset.wpct==='bar')el.style.width=pc+'%'; else el.textContent=pc+'%'; }); }
+function worldSync(){ UI.worldBusy=true; setTimeout(()=>{ let W=null; try{ W=worldForPick(); }catch(e){ console.error(e); return worldDone(null,true); } worldDone(W); },60); }
+function worldWorker(){ try{ if(typeof Worker==='undefined'||typeof URL==='undefined'||!URL.createObjectURL||typeof Blob==='undefined')return false;
+    const el=document.getElementById('engine'); if(!el)return false; const urls=[];
+    const eng=el.src?new URL(el.src,location.href).href:(()=>{ const u=URL.createObjectURL(new Blob([el.textContent],{type:'text/javascript'})); urls.push(u); return u; })();
+    let tn=null; try{ tn=teamNamesPreset(); }catch(e){}
+    const src=(typeof window.__wbPre==='string'?window.__wbPre+'\n':'')+'var __TN=null;function teamNamesPreset(){return __TN;}\nimportScripts('+JSON.stringify(eng)+');\n'
+      +'onmessage=function(e){ __TN=e.data&&e.data.tn||null; var last=0; try{ var W=worldForPick(function(f){ var n=Date.now(); if(n-last>120){ last=n; postMessage({p:f}); } }); postMessage({j:JSON.stringify(W),nm:_nmSet?Array.from(_nmSet):null,nd:_nmDay,post:typeof __wbPost==="function"?__wbPost():null}); }catch(err){ postMessage({err:String(err&&err.stack||err)}); } };';
+    const u=URL.createObjectURL(new Blob([src],{type:'text/javascript'})); urls.push(u); const w=new Worker(u); UI.worldW=w; UI.worldBusy=true;
+    const end=()=>{ try{ w.terminate(); }catch(e){} urls.forEach(x=>{ try{ URL.revokeObjectURL(x); }catch(e){} }); };
+    w.onmessage=e=>{ if(UI.worldW!==w)return end(); const d=e.data||{}; if(d.p!=null)return worldPctShow(d.p);
+      end(); if(d.err!=null||typeof d.j!=='string'){ console.error(d.err); UI.worldW=null; return worldSync(); } /* Worker에서 실패하면 화면 스레드에서 한 번 더 */
+      let W=null; try{ W=JSON.parse(d.j); }catch(x){ UI.worldW=null; return worldSync(); } try{ worldReset(); _nmSet=d.nm?new Set(d.nm):null; _nmDay=d.nd??null; }catch(x){} /* 화면 스레드에서 만들 때와 같게: 엔진 캐시를 비우고, 그날 쓴 이름 목록(genName 중복 피하기)은 Worker 것을 이어받는다. 안 하면 취임 때 뽑는 이름·인물이 달라졌다 */
+      try{ if(typeof window.__wbDone==='function')window.__wbDone(d.post); }catch(x){} worldDone(W,false,true); };
+    w.onerror=ev=>{ try{ ev.preventDefault(); }catch(x){} if(UI.worldW!==w)return; end(); UI.worldW=null; worldSync(); };
+    w.postMessage({tn}); return true; }catch(e){ UI.worldW=null; return false; } }
+function ensureWorld(){ if(UI.world||UI.worldBusy)return; UI.worldErr=false; UI.worldPct=0; if(!worldWorker())worldSync(); }
+/* 저장이 하나도 없는 처음 방문자: 처음 화면에서 미리 만들어 둔다(새 게임을 누를 때쯤이면 끝나 있다). 자동 점검 브라우저(webdriver)는 __wbTitle을 켤 때만 */
+function worldEarly(){ try{ if(UI._wbE||UI.world||UI.worldBusy||typeof Worker==='undefined')return; UI._wbE=1; if(navigator.webdriver&&!window.__wbTitle)return; const m=meta(); if(SLOT_IDS.some(n=>slotUsed(n,m)))return; setTimeout(()=>{ if(UI.title&&!UI.world&&!UI.worldBusy)ensureWorld(); },1200); }catch(e){} }
 const SLK={C:'포수','1B':'1루','2B':'2루','3B':'3루',SS:'유격',LF:'좌익',CF:'중견',RF:'우익',DH:'지명',SP:'선발',RP:'불펜',P:'투수'};
 const G0Y=()=>2026; const eok=v=>`${Math.round(v/100)}억`;
 /* 창단 지명 순번 고르기(구단 고르기 전). 조건은 FD_SLOT(11_founding_draft.js) */
-/* 1년차 신인 드래프트 순번(오른발고니 11-11: 리빌딩 재미): 첫 시즌 드래프트만 우리 순번을 고른다. 자동은 지난 시즌(가상) 순위 역순 */
-function dr1Pick(){ const n=(UI.world&&UI.world.teams?UI.world.teams.length:G&&G.teams?G.teams.length:10)||10, cur=UI.dr1Pk||0;
-  return `<section class="card dr1pk"><h2 class="sec">1년차 신인 드래프트 순번</h2><p class="small muted">첫 시즌 신인 드래프트에서 우리 구단의 지명 순서를 고릅니다(1·2라운드 모두 그 자리). 자동은 지난 시즌 순위 역순이고, 2년차부터는 실제 순위 역순입니다.</p>
-    <div class="chips optrow" role="group" aria-label="1년차 신인 드래프트 순번"><button type="button" data-a="dr1Pk" data-v="0" class="${cur?'':'on'}">자동</button>${Array.from({length:n},(_,i)=>`<button type="button" data-a="dr1Pk" data-v="${i+1}" class="${cur===i+1?'on':''}">${i+1}순위</button>`).join('')}</div></section>`; }
+/* 1년차 신인 드래프트 순번(구단주 11-21: 고르게 하니 다 1순위를 골랐다). 창단: 창단 지명 순번의 역순(1순위 → 10순위, 1·2라운드 같은 자리). 취임: 지난 시즌 순위의 역순(KBO 규칙). 모든 구단 같은 규칙 */
+function nTeams(){ return (UI.world&&UI.world.teams?UI.world.teams.length:TEAM_DEF.length)||10; }
+function dr1Of(k){ return k?nTeams()+1-k:0; }
 function fdSlotPick(){ if(typeof FD_SLOT==='undefined')return ''; const cur=UI.fdPk||0, pc=d=>d<0?`${Math.round(-d*100)}% 감액`:d>0?`${Math.round(d*100)}% 증액`:'그대로';
-  return `<section class="card fdpk${UI.fdNeed?' need':''}"><h2 class="sec">창단 지명 순번</h2><p class="small">${UI.fdNeed?'<b class="bad">먼저 순번을 고르세요.</b> ':''}${UI.fdStr?'모든 라운드가 같은 순서입니다: 1R 1→10, 2R 1→10 … 앞 순번 이득이 쌓이므로 순번 조건이 두 배입니다. 앞 순번은 긴축, 뒤 순번은 지원 보너스':'라운드마다 순서가 뒤집힙니다: 1R 1→10, 2R 10→1, 3R 1→10 … 앞 순번은 긴축, 뒤 순번은 지원 보너스'}(${FD_AUST_Y}시즌) ${hiI('1순위는 전체 1번을 갖는 대신 2라운드는 맨 끝(전체 20번)입니다. 10순위는 10번과 11번을 연달아 뽑습니다. '+'1~3순위는 구단주가 수익 우선으로 바뀌고 시설·추가 지원 승인 가능성이 낮아집니다. 독립구단(고양)은 모기업 지원이 없어 시작 현금만 달라집니다. 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다.')}</p>
+  return `<section class="card fdpk${UI.fdNeed?' need':''}"><h2 class="sec">② 창단 지명 순번</h2><p class="small">${UI.fdNeed?`<b class="bad">${UI.fdTid!=null&&TEAM_DEF[UI.fdTid]?esc(tshortD(UI.fdTid))+'을(를) 골랐습니다. 이제 ':''}지명 순번(1~10순위)을 고르세요.</b> `:''}${UI.fdStr?'모든 라운드가 같은 순서입니다: 1R 1→10, 2R 1→10 … 앞 순번 이득이 쌓이므로 순번 조건이 두 배입니다. 앞 순번은 긴축, 뒤 순번은 지원 보너스':'라운드마다 순서가 뒤집힙니다: 1R 1→10, 2R 10→1, 3R 1→10 … 앞 순번은 긴축, 뒤 순번은 지원 보너스'}(${FD_AUST_Y}시즌). 첫 시즌 신인 드래프트는 반대 순서입니다: 창단 1순위 → 신인 ${nTeams()}순위, 창단 ${nTeams()}순위 → 신인 1순위(모든 구단). ${hiI('1순위는 전체 1번을 갖는 대신 2라운드는 맨 끝(전체 20번)입니다. 10순위는 10번과 11번을 연달아 뽑습니다. '+'1~3순위는 구단주가 수익 우선으로 바뀌고 시설·추가 지원 승인 가능성이 낮아집니다. 독립구단(고양)은 모기업 지원이 없어 시작 현금만 달라집니다. 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다.')}</p>
     <div class="chips optrow" role="group" aria-label="지명 방식"><button type="button" data-a="fdStr" data-v="0" class="${UI.fdStr?'':'on'}">지그재그</button><button type="button" data-a="fdStr" data-v="1" class="${UI.fdStr?'on':''}">같은 순서</button></div><div class="chips optrow" role="group">${Object.keys(FD_SLOT).map(k=>`<button type="button" data-a="fdPk" data-v="${k}" class="${+k===cur?'on':''}" aria-pressed="${+k===cur}">${k}순위</button>`).join('')}</div>
-    ${cur?(()=>{ const A=fdSlotA(cur,!!UI.fdStr), s0=((UI.world.preview.find(x=>!TEAM_DEF[x.tid].indie)||{}).fin||{}).sup||0, ds=Math.round(s0*A.d), dc=A.cash-4000, sg=v=>v>0?`+${eok(v)}`:v<0?`-${eok(-v)}`:'변화 없음';
-      return `<div class="fdpk-now"><b>${cur}순위 선택</b><span>모기업 지원 한도 <b>${eok(s0)} → ${eok(s0+ds)}</b> <em class="${ds<0?'bad':ds>0?'ok':''}">${sg(ds)}</em> · 해마다, ${FD_AUST_Y}시즌</span><span>시작 현금 <b>40억 → ${eok(A.cash)}</b> <em class="${dc<0?'bad':dc>0?'ok':''}">${sg(dc)}</em></span><span>${FD_AUST_Y}시즌 합계 <b class="${ds<0?'bad':ds>0?'ok':''}">${sg(ds*FD_AUST_Y+dc)}</b>${A.strict?' · 구단주 수익 우선':''}</span><span class="fdpk-seq">우리 지명: ${[0,1,2,3,4].map(r=>{ const pos=r%2&&!UI.fdStr?11-cur:cur; return `${r+1}R <b>${pos}번째</b>(전체 ${r*10+pos})`; }).join(' · ')} …</span></div>`; })():''}<details class="frule"><summary class="small">순번별 조건 전체</summary><div class="tw"><table><thead><tr><th>순번</th><th>모기업 지원 한도(${FD_AUST_Y}시즌)</th><th>시작 현금</th></tr></thead><tbody>${Object.keys(FD_SLOT).map(k=>[k,fdSlotA(k,!!UI.fdStr)]).map(([k,A])=>`<tr${+k===cur?' class="on"':''}><td>${k}순위${A.strict?' · 긴축':''}</td><td>${pc(A.d)}</td><td>${eok(A.cash)}</td></tr>`).join('')}</tbody></table></div></details></section>`; }
+    ${cur&&UI.world?(()=>{ const A=fdSlotA(cur,!!UI.fdStr), s0=((UI.world.preview.find(x=>!TEAM_DEF[x.tid].indie)||{}).fin||{}).sup||0, ds=Math.round(s0*A.d), dc=A.cash-4000, sg=v=>v>0?`+${eok(v)}`:v<0?`-${eok(-v)}`:'변화 없음';
+      return `<div class="fdpk-now"><b>${cur}순위 선택</b><span>모기업 지원 한도 <b>${eok(s0)} → ${eok(s0+ds)}</b> <em class="${ds<0?'bad':ds>0?'ok':''}">${sg(ds)}</em> · 해마다, ${FD_AUST_Y}시즌</span><span>시작 현금 <b>40억 → ${eok(A.cash)}</b> <em class="${dc<0?'bad':dc>0?'ok':''}">${sg(dc)}</em></span><span>${FD_AUST_Y}시즌 합계 <b class="${ds<0?'bad':ds>0?'ok':''}">${sg(ds*FD_AUST_Y+dc)}</b>${A.strict?' · 구단주 수익 우선':''}</span><span class="fdpk-dr1">1년차 신인 드래프트 <b>${dr1Of(cur)}순위</b> <em>창단 ${cur}순위의 반대 · 1·2라운드 모두</em></span><span class="fdpk-seq">우리 지명: ${[0,1,2,3,4].map(r=>{ const pos=r%2&&!UI.fdStr?11-cur:cur; return `${r+1}R <b>${pos}번째</b>(전체 ${r*10+pos})`; }).join(' · ')} …</span></div>`; })():''}<details class="frule"><summary class="small">순번별 조건 전체</summary><div class="tw"><table><thead><tr><th>순번</th><th>모기업 지원 한도(${FD_AUST_Y}시즌)</th><th>시작 현금</th><th>1년차 신인</th></tr></thead><tbody>${Object.keys(FD_SLOT).map(k=>[k,fdSlotA(k,!!UI.fdStr)]).map(([k,A])=>`<tr${+k===cur?' class="on"':''}><td>${k}순위${A.strict?' · 긴축':''}</td><td>${pc(A.d)}</td><td>${eok(A.cash)}</td><td>${dr1Of(+k)}순위</td></tr>`).join('')}</tbody></table></div></details></section>`; }
 function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d,i)=>`<button class="item wa" data-a="start" data-v="${i}">${badge(i,34)}<span class="nm"><b>${tfull(d)}</b></span><span class="rt small muted">선택</span></button>`).join('')}</div>`;
-  if(!UI.world){ ensureWorld(); return `<div class="worldload"><span class="spin"></span><p>리그를 만드는 중입니다. 10개 구단 선수단을 만들고 지난 시즌 144경기를 치르고 있습니다.</p></div>`; }
+  if(!UI.world){ ensureWorld(); return worldWaitView(); }
   const P=[...UI.world.preview].sort((a,b)=>a.proj-b.proj); const OL={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
   const card=x=>{ const d=TEAM_DEF[x.tid]; const over=x.pay>x.cap; const mv=x.prev-x.proj; const tight=over||(x.room!=null&&x.room<0);
     return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${tfull(d)}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · ${gl('시장 규모')} ${Math.round(d.market*100)}</span></div>
@@ -40039,23 +40084,35 @@ function pickTeams(){ if(UI.worldErr)return `<div class="list">${TEAM_DEF.map((d
       <div class="tp-g"><span><i>지난 시즌</i><b>${x.prev}위 · ${x.w}승 ${x.l}패</b>${mv?`<em class="${mv<0?'dn':'up'}">${mv>0?'▲':'▼'}${Math.abs(mv)}</em>`:''}</span><span><i>구단주</i><b>${OL[x.owner]}</b></span><span><i>시작 자금·시설</i><b>${eok(mktCash(x.tid))} · ${d.market>=1.15?'개발된 구장·시설':d.market<=.9||d.indie?'낡은 구장·시설':'보통'}</b></span>
         <span><i>강점</i><b>${x.best.map(([k,r])=>`${SLK[k]} ${r}위`).join(' · ')}</b></span><span><i>약점</i><b class="wk">${x.worst.map(([k,r])=>`${SLK[k]} ${r}위`).join(' · ')}</b></span>
         <span><i>간판</i><b>${x.top.map(p=>`${esc(p.name)}(${p.pos} ${dv(p.o)})`).join(', ')}</b></span><span><i>연봉 총액</i><b class="${over?'wk':''}">${money(x.pay)} / 캡 ${money(x.cap)}${over?' 초과':''}</b></span><span><i>첫해 예산 여유</i><b class="${tight?'wk':''}">${x.room==null?'-':x.room<0?`지원 한도 ${money(-x.room)} 초과`:`여유 ${money(x.room)}`}</b></span></div>
-      <div class="tp-t">${tight?'<span class="pill bad">재정 압박 구단</span>':''}${[x.age<=27.8?'젊은 선수단':x.age>=28.8?'노장 위주':'', x.young?`24세 이하 1군급 ${x.young}명`:'', x.vets>=2?`33세 이상 주전급 ${x.vets}명`:'', x.faSoon?`FA 앞둔 주전 ${x.faSoon}명`:'', d.indie?'모기업 지원 없음':''].filter(Boolean).map(t=>`<span class="pill">${t}</span>`).join('')}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
+      <div class="tp-t">${tight?'<span class="pill bad">재정 압박 구단</span>':''}<span class="pill" title="지난 시즌 ${x.prev}위의 역순(KBO 규칙)">1년차 신인 ${dr1Of(x.prev)}순위</span>${[x.age<=27.8?'젊은 선수단':x.age>=28.8?'노장 위주':'', x.young?`24세 이하 1군급 ${x.young}명`:'', x.vets>=2?`33세 이상 주전급 ${x.vets}명`:'', x.faSoon?`FA 앞둔 주전 ${x.faSoon}명`:'', d.indie?'모기업 지원 없음':''].filter(Boolean).map(t=>`<span class="pill">${t}</span>`).join('')}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
   if(UI.smode==='fd'){ const OLV={win:'성적 우선',profit:'수익 우선',pr:'홍보 우선'};
     /* 고른 지명 순번의 조건(지원 한도 증감·시작 현금)을 구단 카드 숫자에 바로 반영한다 */
     const fdAdj=x=>{ const f=x.fin||{}, A=UI.fdPk&&typeof FD_SLOT!=='undefined'?fdSlotA(UI.fdPk,!!UI.fdStr):null; if(!A)return f; const ds=TEAM_DEF[x.tid].indie?0:Math.round((f.sup||0)*A.d); return {...f,sup:(f.sup||0)+ds,avail:(f.avail||0)+ds,cash:A.cash}; };
     const P2=[...UI.world.preview].sort((a,b)=>(fdAdj(b).avail||0)-(fdAdj(a).avail||0));
     const fcard=x=>{ const d=TEAM_DEF[x.tid]; const f=fdAdj(x); const ri=P2.indexOf(x), ok=ri<3, mid=ri<7; /* 난이도는 10개 구단 안에서 자금 여유 순위로(모두 캡을 넘겨 다 '쉬움'으로 보이던 문제) */ const age=G0Y()-(STAD_BUILT[x.tid]||2000);
-      return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}"><div class="tp-h">${badge(x.tid,38)}<div><b>${tfull(d)}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · ${gl('시장 규모')} ${Math.round(d.market*100)}</span></div>
+      return `<div class="tmk${UI.teamOpen?.[x.tid]?' open':''}${UI.fdTid===x.tid?' sel':''}" role="button" tabindex="0" data-a="start" data-v="${x.tid}">${UI.fdTid===x.tid?'<em class="tp-sel">선택한 구단</em>':''}<div class="tp-h">${badge(x.tid,38)}<div><b>${tfull(d)}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · ${gl('시장 규모')} ${Math.round(d.market*100)}</span></div>
         <div class="tp-r tp-rf ${ok?'hi':mid?'mid':'lo'}"><i>샐러리캡 대비 여유</i><b>${(f.avail||0)>=(f.cap||0)?'+':'-'}${eok(Math.abs((f.avail||0)-(f.cap||0)))}</b><span>연봉 예산 ${eok(Math.max(0,f.avail||0))} · 자금 ${ri+1}위</span></div></div>
         <p class="tp-sum">${(()=>{ return [ok?'자금 넉넉':mid?'자금 보통':'자금 빠듯', d.market>=1.15?'큰 시장':d.market<=.9?'작은 시장':'', d.indie?'모기업 없음':OLV[x.owner]+' 구단주'].filter(Boolean).join(' · '); })()}</p>
         <div class="tp-g"><span><i>구단주</i><b>${esc(x.ownN||'')} 회장 · ${OLV[x.owner]}</b></span><span><i>예상 수입</i><b>${eok(f.I||0)}</b></span>
           <span><i>모기업 지원 한도</i><b class="${d.indie?'wk':''}">${d.indie?'없음':eok(f.sup||0)}</b></span><span><i>선수 연봉 외 지출</i><b>${eok(f.other||0)}</b></span>
           <span><i>보유 현금</i><b>${eok(f.cash||0)}</b></span><span><i>홈구장</i><b>${(STAD_NM&&STAD_NM[x.tid])?esc(STAD_NM[x.tid])+' · ':''}${(STAD_CAP[x.tid]||0).toLocaleString()}석 · ${age}년 된 구장</b></span></div>${typeof uniRow==='function'?`<div class="tp-uni">${uniRow(x.tid,{sz:64})}</div>`:''}
-        <div class="tp-t">${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">이 구단 선택</button></div></div>`; };
-    return `<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 구단마다 다른 것은 시장 크기와 구장(입장·광고 수입)이고, 고양은 모기업 지원이 없습니다. 카드의 돈은 고른 순번 조건을 반영한 값입니다. 먼저 창단 지명 순번을 고르고, 그다음 구단을 고릅니다.</p>${fdSlotPick()}${dr1Pick()}<details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">우리 순번은 위에서 고르고, 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다. 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
-    <div class="tpg cmp">${P2.map(fcard).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button></div>`; }
-  return `<p class="small muted">구단마다 전력이 달라 난이도가 다릅니다(예상 1~3위 쉬움, 4~7위 보통, 8~10위 어려움). 외국인 선수와 감독은 취임 후 새로 데려옵니다. ${hiI('예상 순위는 전력분석팀 추정치로, 비슷한 수준의 외국인 선수를 데려온다고 보고 계산했습니다.')}</p>
-    ${dr1Pick()}<div class="tpg cmp">${P.map(card).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button><span class="small muted">선수단은 새 게임마다 무작위로 만들어집니다.</span></div>`; }
+        <div class="tp-t">${d.indie?'<span class="pill">모기업 지원 없음</span>':''}<button class="lnk tp-more" data-a="tpOpen" data-v="${x.tid}" aria-expanded="${!!UI.teamOpen?.[x.tid]}">${UI.teamOpen?.[x.tid]?'접기':'자세히'}</button><button class="btn small" data-a="start" data-v="${x.tid}">${UI.fdTid===x.tid?'선택됨':'이 구단 선택'}</button></div></div>`; };
+    return `${fdSetSteps()}<p class="small muted">선수는 드래프트로 새로 뽑으므로 전력은 같은 출발선입니다. 구단마다 다른 것은 시장 크기와 구장(입장·광고 수입)이고, 고양은 모기업 지원이 없습니다. 카드의 돈은 고른 순번 조건을 반영한 값입니다. 구단과 순번은 어느 쪽을 먼저 골라도 됩니다.</p>${fdSlotPick()}<details class="frule"><summary class="small">예산 여유와 지명 순서 설명</summary><p class="small muted">우리 순번은 위에서 고르고, 나머지 구단은 예산 여유가 적은 구단부터 남은 자리를 채웁니다. 라운드마다 순서가 뒤집힙니다. 예산 여유는 예상 수입과 모기업 지원 한도에서 선수 연봉 외 지출을 뺀 값으로, 국내 선수 연봉에 쓸 수 있는 돈입니다. 큰 숫자는 샐러리캡(${eok((P2[0]&&P2[0].fin&&P2[0].fin.cap)||0)})까지 채웠을 때 남거나 모자라는 돈입니다. 예산 여유는 모기업 지원을 한도까지 받는다고 가정한 최대치입니다. 창단 뒤 화면 위 <b>예산 여유</b>는 구단주가 정한 지원 목표 기준이라 이보다 훨씬 작게 나옵니다.</p></details>
+    <div class="tpg cmp">${P2.map(fcard).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button></div>${fdGoBar()}`; }
+  return `${takeSteps()}<p class="small muted">구단마다 전력이 달라 난이도가 다릅니다(예상 1~3위 쉬움, 4~7위 보통, 8~10위 어려움). 외국인 선수와 감독은 취임 후 새로 데려옵니다. ${hiI('예상 순위는 전력분석팀 추정치로, 비슷한 수준의 외국인 선수를 데려온다고 보고 계산했습니다.')}</p>
+    <div class="tpg cmp">${P.map(card).join('')}</div><div class="row" style="margin-top:10px"><button class="btn" data-a="reroll">다른 리그로 다시 만들기</button><span class="small muted">선수단은 새 게임마다 무작위로 만들어집니다.</span></div>`; }
+/* 시작 순서 표시(구단주 11-21: 순번을 먼저 안 고르면 구단을 눌러도 아무 일이 없는 것 같았다). 구단·순번은 어느 쪽을 먼저 골라도 되고, 둘 다 고르면 '다음'이 켜진다 */
+function tshortD(tid){ const d=TEAM_DEF[tid]; return d?tfull(d):''; }
+function fdSetSteps(){ const t=UI.fdTid, k=UI.fdPk||0, S=[['① 구단',t!=null&&TEAM_DEF[t]?tshortD(t):'카드에서 고르기',t!=null],['② 지명 순번',k?`${k}순위 · 신인 ${dr1Of(k)}순위`:'1~10순위 고르기',!!k],['③ 단장 소개','이름 정하고 시작',false]];
+  const on=S.findIndex(x=>!x[2]); return `<ol class="fdset" aria-label="창단 준비 순서">${S.map((x,i)=>`<li class="${x[2]?'done':i===on?'on':''}"><b>${x[0]}</b><span>${esc(x[1])}</span></li>`).join('')}</ol>`; }
+function fdGoWhy(){ const t=UI.fdTid!=null&&TEAM_DEF[UI.fdTid], k=UI.fdPk; return !t&&!k?'구단과 지명 순번을 고르면 켜집니다':!t?'구단 카드를 눌러 고르세요':!k?'② 지명 순번(1~10순위)을 고르세요':''; }
+function fdGoBar(){ const why=fdGoWhy(); return `<div class="fdgo" role="region" aria-label="다음 단계"><span class="fdgo-s">${UI.fdTid!=null&&TEAM_DEF[UI.fdTid]?`${badge(UI.fdTid,18)} <b>${esc(tshortD(UI.fdTid))}</b>`:'<b>구단 미선택</b>'} · <b>${UI.fdPk?UI.fdPk+'순위':'순번 미선택'}</b></span><button class="btn primary fdgo-b${why?' off':''}" data-a="fdGo" aria-disabled="${!!why}">다음: 단장 소개</button>${why?`<span class="fdgo-why small">${why}</span>`:''}</div>`; }
+function takeSteps(){ return `<ol class="fdset" aria-label="취임 순서"><li class="on"><b>① 구단</b><span>카드를 누르면 바로 다음</span></li><li><b>② 단장 소개</b><span>이름 정하고 시작</span></li></ol>`; }
+/* 리그를 만드는 동안(Worker): 구단 카드(.tmk-wait, 완성 카드 .tmk와 구분)는 기본 정보만 보이고 바로 누를 수 있다. 창단은 순번도 먼저 고를 수 있다. 숫자는 다 만들면 채워진다 */
+function worldWaitView(){ const fd=UI.smode!=='take', pc=Math.max(1,Math.min(99,Math.round((UI.worldPct||0)*100)));
+  const card=(d,i)=>`<div class="tmk-wait${fd&&UI.fdTid===i?' sel':''}" role="button" tabindex="0" data-a="start" data-v="${i}">${fd&&UI.fdTid===i?'<em class="tp-sel">선택한 구단</em>':''}<div class="tp-h">${badge(i,38)}<div><b>${tfull(d)}</b><span>${d.indie?'독립구단':'모기업 구단'} · ${d.region} · ${gl('시장 규모')} ${Math.round((d.market||1)*100)}</span></div></div><p class="tp-sum muted">${fd?'예산 여유 계산 중…':'전력·예상 순위 계산 중…'}</p><div class="tp-t"><button class="btn small" data-a="start" data-v="${i}">${fd&&UI.fdTid===i?'선택됨':'이 구단 선택'}</button></div></div>`;
+  return `${fd?fdSetSteps():takeSteps()}<div class="worldload wl-run" role="status"><span class="spin"></span><div><p>리그를 만드는 중입니다 <b data-wpct="txt">${pc}%</b>. 기다리지 않고 ${fd?'구단과 순번을':'구단을'} 먼저 골라도 됩니다. ${fd?'예산':'전력'} 숫자는 다 만들면 나옵니다.</p><i class="wl-bar"><b data-wpct="bar" style="width:${pc}%"></b></i></div></div>
+    ${fd?fdSlotPick():''}<div class="tpg cmp">${TEAM_DEF.map(card).join('')}</div>${fd?fdGoBar():''}`; }
 function inFrame(){ try{ return window.self!==window.top; }catch(e){ return true; } }
 /* 백업 권유: 다른 사이트 안(itch 등)에서 실행 중이면, 마지막 백업(파일·코드 내보내기)에서 게임 날짜로 60일이 지날 때마다 상단에 띄운다. '나중에'는 30일 뒤 */
 function needBackup(){ try{ if(!G||!inFrame())return false; if(G.bkAt==null){ G.bkAt=G.day; return false; } return G.day-G.bkAt>=60; }catch(e){ return false; } }
@@ -40080,7 +40137,7 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
   const act=live?{tid:G.user,date:dstr(G.day)}:cs!=null?(m.slots[cs]||{name:`슬롯 ${cs}`}):null; const canCont=!!act;
   const foot=`<p class="small muted" style="margin-top:14px">${NOT_AFFIL} 일정 흐름, 샐러리캡, FA 등급과 보상, 외국인 선수 한도, 트레이드 마감, 포스트시즌 배당은 실제 한국 프로야구 규정을 단순화해 반영했습니다.</p>`;
   const back=(v,l)=>`<button class="lnk tsback" data-a="tsGo" data-v="${v}">← ${l}</button>`;
-  if(st==='main'){ const tn=act&&act.tid!=null&&TEAM_DEF[act.tid]?`${tfull(TEAM_DEF[act.tid])}`:(act&&act.name)||'';
+  if(st==='main'){ worldEarly(); const tn=act&&act.tid!=null&&TEAM_DEF[act.tid]?`${tfull(TEAM_DEF[act.tid])}`:(act&&act.name)||'';
     return `<main class="fb-title" aria-label="프런트야구 시작 화면"><div class="fb-title-content">
       <div class="fb-brand"><h1 class="fb-wordmark"><span class="fb-sr">프런트야구</span></h1></div>
       <nav class="fb-menu" aria-label="시작 메뉴">
@@ -40107,7 +40164,7 @@ function startScreen0(){ const st=UI.sstep||'main'; const m=meta(); const live=G
   if(st==='prof'&&UI.pickT!=null)return gpStartView();
   if(UI.smode!=='take')UI.smode='fd'; const fd=UI.smode==='fd';
   return `<div class="gut"><div class="wrap" style="max-width:760px">${back('mode','시작 방식')}
-  ${fd?fdSteps(1):''}<h2 class="ts-h">${fd?'창단 드래프트 · 함께할 구단을 고르세요':'단장 취임 · 맡을 구단을 고르세요'}</h2>
+  <h2 class="ts-h">${fd?'창단 드래프트 · 구단과 지명 순번을 고르세요':'단장 취임 · 맡을 구단을 고르세요'}</h2>
 
   ${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)} <button class="lnk" data-a="tsGo" data-v="slots">저장 슬롯 보기</button></div>`:''}<section class="card">${pickTeams()}</section>${foot}</div></div>`;
 }
@@ -47603,7 +47660,7 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   seasy(v){ UI.easy=v==='1'; render(); }, sguide(v){ UI.guideNo=v==='0'; render(); }, /* 새 게임 진행 방식(첫 시즌 안내, 55_guide_bar.js) */
   softOff(){ if(G&&G.cfg&&G.cfg.soft){ G.cfg.soft=false; G.cfg.softOffY=G.year; toast('난이도를 보통으로 올렸습니다. 이 게임에서는 다시 쉬움으로 낮출 수 없습니다.'); render(); } },
   hardOff(){ if(G&&G.cfg&&G.cfg.hard){ G.cfg.hard=false; G.cfg.hardOffY=G.year; toast('난이도를 보통으로 낮췄습니다. 이 게임에서는 다시 어려움으로 올릴 수 없습니다.'); save(); render(); } },
-  smode(v){ UI.smode=v; UI.sstep='team'; render(); window.scrollTo(0,0); },
+  smode(v){ if(UI.smode!==v)UI.fdTid=null; UI.smode=v; UI.sstep='team'; UI.fdNeed=false; render(); window.scrollTo(0,0); },
   tsGo(v){ UI.sstep=v; if(v==='main'){ UI.newSlot=null; UI.slotMsg=''; } render(); window.scrollTo(0,0); },
   toTitle(){ if(G&&!saveOK()){ toast(`지금 게임(${dstr(G.day)})을 저장하지 못해 처음 화면으로 가지 않았습니다. 그대로 닫으면 마지막 저장 이후 진행이 사라집니다. ${SAVE_ERR||''}`.trim()); return; } if(saveHold(()=>A.toTitle(),'처음 화면으로 가지'))return; /* 보조 저장소에 쓰는 중이면 확정을 기다린다(외부 검수 11-17) */ /* 검수 11-07 */ closeSheets(); UI.slotMsg=''; UI.title=true; UI.sstep='main'; render(); window.scrollTo(0,0); },
   async tsCont(){const n=G?(slotHas(curSlot())?curSlot():contSlot()):contSlot();if(n==null){UI.slotMsg='이어 할 저장이 없습니다.';render();return false;}if(meta().slots[n]?.lock)return A.slotLoadNew(n);if(G&&!SAVE_CONFL&&n===curSlot()&&slotHas(n)&&revOf(meta(),n)===SLOT_REV){UI.title=false;render();return true;}return A.slotLoad(n);},
@@ -47722,7 +47779,8 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   cmpK(v){ UI.cmpK=UI.cmpK===v?null:v; render(); },
   keepP(v){ keepPlayer(+v); save(); render(); },
   tab(v){ UI.clubInspect=null; if(v==='roster'&&UI.tab==='roster'&&(UI.trimOn||document.querySelector('.trimc')))return A.trimClose();if(UI.cast&&!castPark())A.castClose(true); /* 중계 위에서 다른 화면·진행을 누르면 중계를 닫고 간다(사용자 제보 11-06: 경기 끝난 중계에서 '계속'을 눌러도 화면이 그대로) */ if(v==='inbox'){ A.inbox(); return; } if(v==='train'){ A.go('staff:camp'); return; } if(v==='scout'){ A.go('transfer:draft'); return; } if(v==='roster'&&UI.tab!=='roster')UI.rosterTeam=null; UI.tab=v;closeSheets();render();window.scrollTo(0,0);},
-  startGo(v){ const m=meta(); const to=UI.newSlot||SLOT_IDS.find(n=>!slotUsed(n,m)); if(UI.newSlot&&(((m.slots[UI.newSlot]||{}).rev||0)!==UI.newSlotRev||slotUsed(UI.newSlot,m)!==UI.newSlotUsed)){ UI.slotMsg=`슬롯 ${UI.newSlot}에 다른 탭(창)이 그사이 저장했습니다. 덮어쓰지 않았습니다. 처음 화면에서 슬롯을 다시 고르세요.`; UI.newSlot=null; UI.sstep='main'; render(); window.scrollTo(0,0); return false; } if(!to){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return false; } CUR_SLOT=to; slotRevSync(to,m); SLOT_NEW=true; /* 실제 저장 대상도 새 슬롯으로(검수 11-07: 활성 표시만 바뀌고 기존 슬롯을 덮어씀). 활성 슬롯은 첫 저장이 성공할 때 writeSlot이 바꾼다(검수 11-09 #9) */ UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=JSON.parse(JSON.stringify(UI.world)); UI.world=null; if(UI.smode!=='take'&&UI.fdStr)G.fdStraight=true; claimTeam(+v,UI.smode==='take'?0:UI.fdPk); try{ lgTopBase(lgTopDom()); }catch(e){} try{ ovsWorldStart(); }catch(e){} } /* 미리 보기(구단별 창단 지명 순서)를 계산한 것과 같은 저장 형태에서 시작해야 순서가 똑같다 */ else newGame(+v); if(UI.diff==='hard'){ G.cfg=G.cfg||{}; G.cfg.hard=true; } if(UI.diff==='soft'){ G.cfg=G.cfg||{}; G.cfg.soft=true; try{ const tU=team(G.user); if(tU&&!tU.indie)tU.cash=Math.round((tU.cash||0)*1.15); }catch(e){} } /* 쉬움: 창단 자금(시작 현금) +15%, 독립구단 제외 */ UI.diff=null; /* 다음 새 게임은 다시 보통에서 시작(사용자 11-21) */ /* 새 게임 난이도 */ if(G){ if(G.startY==null)G.guideY=G.year; if(UI.guideNo){ G.cfg=G.cfg||{}; G.cfg.guideOff=true; } if(UI.easy)try{ autoAll(true); }catch(e){} } /* 진행 방식: 첫 시즌 안내 해·쉬운 진행(반복 업무 위임) */ if(UI.dr1Pk&&G){ G.dr1={y:G.year,slot:UI.dr1Pk,tid:G.user}; } UI.dr1Pk=0; const tk=UI.smode==='take'; UI.fdPk=0; UI.fdStr=0; if(!tk)fdWelcome(); UI.smode=null; UI.tab='inbox'; UI._ibFirst=true; if(!saveNow()){ try{ toast(`새 게임을 슬롯 ${to}에 저장하지 못했습니다. 기존 세이브의 이어하기는 그대로입니다. ${SAVE_ERR||''}`.trim()); }catch(e){} } render();window.scrollTo(0,0); return true;}, /* 소식함이 게임의 중심: 시작하면 소식함 */
+  startGo(v){ const m=meta(); const to=UI.newSlot||SLOT_IDS.find(n=>!slotUsed(n,m)); if(UI.newSlot&&(((m.slots[UI.newSlot]||{}).rev||0)!==UI.newSlotRev||slotUsed(UI.newSlot,m)!==UI.newSlotUsed)){ UI.slotMsg=`슬롯 ${UI.newSlot}에 다른 탭(창)이 그사이 저장했습니다. 덮어쓰지 않았습니다. 처음 화면에서 슬롯을 다시 고르세요.`; UI.newSlot=null; UI.sstep='main'; render(); window.scrollTo(0,0); return false; } if(!to){ UI.slotMsg=`슬롯 ${SLOTS}개가 모두 찼습니다.`+' 덮어쓸 슬롯의 "덮어쓰고 새 게임"을 먼저 누르세요.'; render(); window.scrollTo(0,0); return false; } CUR_SLOT=to; slotRevSync(to,m); SLOT_NEW=true; /* 실제 저장 대상도 새 슬롯으로(검수 11-07: 활성 표시만 바뀌고 기존 슬롯을 덮어씀). 활성 슬롯은 첫 저장이 성공할 때 writeSlot이 바꾼다(검수 11-09 #9) */ UI.newSlot=null; UI.slotMsg=''; UI.title=false; UI.sstep='main'; if(UI.world){ G=UI.worldJ?UI.world:JSON.parse(JSON.stringify(UI.world)); UI.world=null; UI.worldJ=false; /* Worker 세계는 이미 JSON에서 막 풀어 낸 사본이라 한 번 더 복사하지 않는다(11-21) */ if(UI.smode!=='take'&&UI.fdStr)G.fdStraight=true; claimTeam(+v,UI.smode==='take'?0:UI.fdPk); try{ lgTopBase(lgTopDom()); }catch(e){} try{ ovsWorldStart(); }catch(e){} } /* 미리 보기(구단별 창단 지명 순서)를 계산한 것과 같은 저장 형태에서 시작해야 순서가 똑같다 */ else newGame(+v); if(UI.diff==='hard'){ G.cfg=G.cfg||{}; G.cfg.hard=true; } if(UI.diff==='soft'){ G.cfg=G.cfg||{}; G.cfg.soft=true; try{ const tU=team(G.user); if(tU&&!tU.indie)tU.cash=Math.round((tU.cash||0)*1.15); }catch(e){} } /* 쉬움: 창단 자금(시작 현금) +15%, 독립구단 제외 */ UI.diff=null; /* 다음 새 게임은 다시 보통에서 시작(사용자 11-21) */ /* 새 게임 난이도 */ if(G){ if(G.startY==null)G.guideY=G.year; if(UI.guideNo){ G.cfg=G.cfg||{}; G.cfg.guideOff=true; } if(UI.easy)try{ autoAll(true); }catch(e){} } /* 진행 방식: 첫 시즌 안내 해·쉬운 진행(반복 업무 위임) */ const tk=UI.smode==='take'; if(G&&!tk)G.dr1F={y:G.year}; /* 1년차 신인 드래프트 순번은 고르지 않는다(구단주 11-21): 창단은 창단 지명 순서의 역순, 취임은 지난 시즌 순위의 역순. 예전 저장의 G.dr1은 그대로 */ UI.fdPk=0; UI.fdStr=0; UI.fdTid=null; UI.gpWait=false; if(!tk)fdWelcome(); UI.smode=null; UI.tab='inbox'; UI._ibFirst=true; const svFail=()=>{ try{ toast(`새 게임을 슬롯 ${to}에 저장하지 못했습니다. 기존 세이브의 이어하기는 그대로입니다. ${SAVE_ERR||''}`.trim()); }catch(e){} };
+    if(UI._sgQuick){ /* 단장 소개에서 시작(gpStart): 첫 화면을 먼저 그리고 첫 저장(압축 0.5초, 휴대폰 2초)은 그 뒤에 한다. 단장 정보까지 담긴다(구단주 11-21) */ const g0=G; let dn=false; const go=()=>{ if(dn)return; dn=true; if(G===g0&&!saveNow())svFail(); }; try{ requestAnimationFrame(()=>setTimeout(go,0)); }catch(e){} setTimeout(go,400); } else { if(!saveNow())svFail(); render(); } window.scrollTo(0,0); return true;}, /* 소식함이 게임의 중심: 시작하면 소식함 */
   rosterRecovery(){closeSheets();A.go('transfer:free');workspaceReveal('[data-a=signFree]');},
   advStop(){if(UI.advRun)advRunEnd(UI.advRun,true);},
   adv(v,el){ if(UI.advRun){A.advStop();return;}if(UI.cast){toast('중계를 보는 중입니다. 위의 "나가기"를 누른 뒤 진행하세요.');return;}if(UI.castRet&&UI.castRet.parked){toast('멈춰 둔 중계가 있습니다. "중계 이어 보기"로 마저 보거나 "결과 보기"로 끝낸 뒤 진행하세요.');return;}
@@ -52159,7 +52217,8 @@ function gpForm(go,goL){ const g=UI.gp=UI.gp||gpDefault(); const av={persona:'st
 /* 새 게임: 구단을 고르면 단장 정보부터 */
 function gpStartView(){ const v=UI.pickT; const d=TEAM_DEF[v];
   return `<div class="gut"><div class="wrap" style="max-width:640px"><button class="lnk tsback" data-a="tsGo" data-v="team">← 구단 다시 고르기</button>
-    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(tfull(d))} · `:''}단장 소개</h2><section class="card">${gpForm('gpStart','이 단장으로 시작')}</section></div></div>`; }
+    ${UI.smode!=='take'?`<ol class="fdset" aria-label="창단 준비 순서"><li class="done"><b>① 구단</b><span>${esc(d?tfull(d):'')}</span></li><li class="done"><b>② 지명 순번</b><span>${UI.fdPk?UI.fdPk+'순위':'-'}</span></li><li class="on"><b>③ 단장 소개</b><span>이름 정하고 시작</span></li></ol>`:`<ol class="fdset" aria-label="취임 순서"><li class="done"><b>① 구단</b><span>${esc(d?tfull(d):'')}</span></li><li class="on"><b>② 단장 소개</b><span>이름 정하고 시작</span></li></ol>`}
+    <h2 class="ts-h">${d?`${badge(v,28)} ${esc(tfull(d))} · `:''}단장 소개</h2>${(()=>{ const pv=UI.world&&UI.world.preview?UI.world.preview.find(x=>x.tid===v):null; const k=UI.smode!=='take'?dr1Of(UI.fdPk||0):pv?dr1Of(pv.prev):0; return k?`<p class="small muted gp-dr1">1년차 신인 드래프트 <b>${k}순위</b>(1·2라운드) · ${UI.smode!=='take'?`창단 ${UI.fdPk}순위의 반대`:`지난 시즌 ${pv.prev}위의 역순`}</p>`:''; })()}${!UI.world&&UI.worldBusy?`<div class="worldload wl-run gp-wait" role="status"><span class="spin"></span><div><p>리그를 만드는 중입니다 <b data-wpct="txt">${Math.max(1,Math.min(99,Math.round((UI.worldPct||0)*100)))}%</b>. ${UI.gpWait?'<b>다 만들면 바로 시작합니다.</b> 그동안 단장 정보를 더 고쳐도 됩니다.':'시작을 먼저 눌러 두면 다 만드는 대로 바로 시작합니다.'}</p><i class="wl-bar"><b data-wpct="bar" style="width:${Math.max(1,Math.min(99,Math.round((UI.worldPct||0)*100)))}%"></b></i></div></div>`:''}<section class="card">${gpForm('gpStart',UI.gpWait&&!UI.world?'준비되면 바로 시작(대기 중)':'이 단장으로 시작')}</section></div></div>`; }
 /* 사이드바 '단장 프로필' */
 /* 야인이어도 돌아보는 경력: 시즌별 재임 구단·순위·성적, 퇴임 시점 마지막 시즌 결산 */
 function meCareerSeasons(C){ const S=(C&&C.seas||[]).slice().reverse(); if(!S.length)return ''; return csec('시즌별 경력',`<div class="tw"><table><thead><tr><th>시즌</th><th>구단</th><th>순위</th><th>성적</th><th></th></tr></thead><tbody>${S.map(x=>`<tr><td>${x.y}</td><td>${badge(x.tid,14)} ${esc(tshort(x.tid))}</td><td>${x.rank!=null?`${x.rank}위`:'-'}${x.part?` <span class="muted">(시즌 중 ${esc(x.how||'이직')})</span>`:''}</td><td>${x.w}승 ${x.l}패${x.t?` ${x.t}무`:''}</td><td>${x.ch===1?'<span class="pill good">우승</span>':x.ch===2?'<span class="pill">준우승</span>':''}</td></tr>`).join('')}</tbody></table></div>`); }
@@ -52191,23 +52250,23 @@ function gmSuccView(){ const L=(G.gmLine||[]).slice().reverse(); const a=meAge()
   return csec('세대 교체 · 단장 계보',body+line); }
 Object.assign(A,{
   gmAgeFix(){ gmAgeFixToggle(); save(); render(); },
-  fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); },
-  dr1Pk(v){ UI.dr1Pk=+v||0; render(); },
+  fdPk(v){ UI.fdPk=+v; UI.fdNeed=false; render(); if(UI.fdTid!=null)document.querySelector('.fdgo')?.scrollIntoView({block:'nearest'}); }, /* 구단을 먼저 골랐으면 '다음' 단추가 보이게 */
+  fdGo(){ const why=fdGoWhy(); if(why){ if(UI.fdTid==null){ toast(why); document.querySelector('.tpg')?.scrollIntoView({block:'start'}); } else { UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); } return; } A.start(UI.fdTid); },
   fdStr(v){ UI.fdStr=+v?1:0; render(); },
   scHomeAuto(){ toast(scHomeAuto()); save(); render(); },
   facRefurb(v){ const e=facRefurb(v); toast(e||'보수 공사를 마쳤습니다. 연식을 새로 셉니다.'); if(!e)save(); render(); },
   fenceD(v){ const [k,x]=String(v).split(':'); UI.fenceD=UI.fenceD||{}; UI.fenceD[k]=+x; UI.fenceMsg=''; render(); },
   fenceReset(){ UI.fenceD={}; UI.fenceMsg=''; render(); },
   fenceGo(){ const e=fenceSet(fenceTarget(G.user)); UI.fenceMsg=e||'담장 공사를 마쳤습니다. 다음 경기부터 반영됩니다.'; UI.fenceOk=!e; if(!e){ UI.fenceD={}; save(); } render(); },
-  start(v){ if(UI.smode!=='take'&&UI.world&&UI.world.fdOrd&&!UI.fdPk){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
+  start(v){ if(UI.smode!=='take'){ UI.fdTid=+v; if(typeof FD_SLOT!=='undefined'&&!UI.fdPk&&!UI.worldErr){ UI.fdNeed=true; render(); document.querySelector('.fdpk')?.scrollIntoView({block:'start'}); return; } } /* 창단: 순번보다 구단을 먼저 눌러도 고른 것으로 남기고 순번을 묻는다(구단주 11-21: 눌러도 아무 일이 없어 보였다) */ UI.pickT=+v; UI.gp=UI.gp||gpDefault(); UI.gpMsg=''; UI.sstep='prof'; render(); window.scrollTo(0,0); },
   gpFace(){ const g=gpSync(); UI.gpSeeds=null; render(); },
   gpPick(v){ const g=gpSync(); g.face=v; delete g.mod; delete g.img; render(); },
   gpSex(v){ const g=gpSync(); g.female=v==='f'; g.face='gm'+Math.floor(Math.random()*1e6); delete g.mod; UI.gpSeeds=null; render(); },
   gpAge(v){ const g=gpSync(); g.age=clamp((g.age||40)+(+v),30,65); render(); },
   gpBg(v){ const g=gpSync(); g.bg=v; render(); },
   gpVoice(v){ const g=gpSync(); g.voice=g.voice===v?null:v; render(); },
-  gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; const P={...g}; if(!UI.newSlot&&!SLOT_IDS.some(n=>!meta().slots[n])){ UI.gpMsg=`저장 슬롯 ${SLOTS}개가 모두 찼습니다. 처음 화면 → 불러오기에서 슬롯 하나를 '덮어쓰고 새 게임'으로 쓰거나 지운 뒤 다시 시작하세요. 정한 단장 정보는 남겨 둡니다.`; render(); return; } /* 슬롯이 없으면 얼굴·이름을 지우지 않고 알린다(전에는 조용히 멈추고 얼굴만 새로 뽑혔다) */
-    UI.gp=null; const how={mode:UI.smode==='take'?'take':'fd',diff:UI.diff==='hard'||UI.diff==='soft'?UI.diff:'norm',easy:!!UI.easy,guide:!UI.guideNo}; /* startGo가 UI.smode를 지우므로 먼저 잡아 둔다 */ const ok=A.startGo(UI.pickT); if(ok&&G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age,...how}); }catch(e){} } },
+  gpStart(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } UI.gpMsg=''; if(!UI.world&&UI.worldBusy){ UI.gpWait=true; render(); return; } /* 리그를 아직 만드는 중(Worker): 눌러 둔 채로 기다렸다가 다 만들면 바로 시작(01_layout.js worldDone) */ const P={...g}; if(!UI.newSlot&&!SLOT_IDS.some(n=>!meta().slots[n])){ UI.gpMsg=`저장 슬롯 ${SLOTS}개가 모두 찼습니다. 처음 화면 → 불러오기에서 슬롯 하나를 '덮어쓰고 새 게임'으로 쓰거나 지운 뒤 다시 시작하세요. 정한 단장 정보는 남겨 둡니다.`; render(); return; } /* 슬롯이 없으면 얼굴·이름을 지우지 않고 알린다(전에는 조용히 멈추고 얼굴만 새로 뽑혔다) */
+    UI.gp=null; const how={mode:UI.smode==='take'?'take':'fd',diff:UI.diff==='hard'||UI.diff==='soft'?UI.diff:'norm',easy:!!UI.easy,guide:!UI.guideNo}; /* startGo가 UI.smode를 지우므로 먼저 잡아 둔다 */ UI._sgQuick=true; let ok=false; try{ ok=A.startGo(UI.pickT); }finally{ UI._sgQuick=false; } if(ok&&G){ G.gmP={...P,y0:G.year}; gmBgApply(); save(); render(); try{ teleEv('gm_created',{bg:P.bg,start_team:G.user,female:!!P.female,age:P.age,...how}); }catch(e){} } },
   gpEdit(){ UI.gpEdit=!UI.gpEdit; if(UI.gpEdit)UI.gp=G.gmP?{...G.gmP,age:meAge()||G.gmP.age}:gpDefault(); UI.gpMsg=''; render(); },
   gpSave(){ const g=gpSync(); if(!g.name||g.name.length<2){ UI.gpMsg='이름을 두 글자 이상 적어 주세요.'; render(); return; } const y0=G.gmP&&G.gmP.y0!=null?G.gmP.y0:G.year; const age=G.gmP?G.gmP.age:g.age; /* 취임한 단장은 나이를 못 고친다: 고치면 정년을 피할 수 있었다(검수 11-09zc) */ const done=!!(G.gmP&&G.gmP.bgDone); G.gmP={name:g.name,age:Math.max(25,age),bg:g.bg,voice:GMV[g.voice]?g.voice:null,female:g.female,face:g.face,mod:g.mod||null,img:g.img||null,y0,bgDone:done}; if(!done)gmBgApply(); UI.gp=null; UI.gpEdit=false; UI.gpMsg=''; save(); render(); toast('단장 정보를 저장했습니다.'); },
   gmSuccAsk(){ UI.gsucc=!UI.gsucc; UI.gp=UI.gsucc?gpDefault():null; UI.gpMsg=''; render(); },
@@ -52656,6 +52715,12 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-21-newgame-fast',d:'11월 21일',t:'새 게임 구단 고르기 화면이 바로 열리고, 구단·순번을 아무 순서로나 고를 수 있습니다',items:[
+    '새 게임을 누르면 리그(10개 구단 선수단과 지난 시즌 144경기)를 화면 뒤에서 만듭니다. 전에는 만드는 동안 PC 약 12초, 휴대폰은 30초 넘게 화면이 멈춰 버튼이 눌리지 않았습니다. 이제 진행률을 보여 주고, 그동안 구단과 창단 지명 순번을 먼저 골라 둘 수 있습니다. 단장 소개에서 시작을 먼저 눌러 두면 다 만들어지는 대로 바로 시작합니다.',
+    '창단 드래프트: 지명 순번보다 구단을 먼저 눌러도 그 구단이 선택된 채로 남고 순번을 고르라고 알려 줍니다. 위에 ① 구단 ② 지명 순번 ③ 단장 소개 순서를 보여 주고, 아래 "다음: 단장 소개" 단추 옆에 무엇이 남았는지 적습니다.',
+    '단장 취임·창단 모두 시작 단추를 누른 뒤 첫 화면이 더 빨리 뜹니다. 만들어지는 리그와 규칙은 전과 같습니다.',
+    '1년차 신인 드래프트 순번은 더 이상 고르지 않습니다. 창단 드래프트는 창단 지명 순번의 반대(창단 1순위 → 신인 10순위, 창단 10순위 → 신인 1순위)이고 AI 구단도 같습니다. 앞 순번으로 창단하면 첫 신인 지명은 뒤로 갑니다. 단장 취임은 지난 시즌 순위의 역순(KBO 규칙)이며 구단 카드와 단장 소개에 보여 줍니다. 이미 시작한 게임에서 정해 둔 순번은 그대로입니다.'
+  ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
     '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',
     '인원이 더 늘어나는 거래와, 정원 안 구단이 68명을 넘게 되는 거래는 전처럼 막습니다. 안내에 지금 인원과 거래 뒤 인원을 함께 보여 줍니다. AI 구단끼리도 같은 규칙입니다.'
