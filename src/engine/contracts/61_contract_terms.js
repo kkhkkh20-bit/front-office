@@ -17,9 +17,14 @@ function termsVal(t,d){ return termsEq(t,d)*termsMul(t,d); }
 /* 요구 묶음: 환산 연봉 요구액(base)을 계약금·연봉으로 나눈다. 대형 FA일수록 계약금 비중이 크다(KBO 관행) */
 /* FA 요구 계약금: 등급·나이에 따른 총액 비율(요구 조건·구단주 FA 자금이 같은 식을 쓴다) */
 function faBonusDemand(p,annual,years){ const bs=(p.faGrade==='A'?.42:p.faGrade==='B'?.32:.15)*(p.age>=34?.6:p.age>=32?.8:1); return bs>0?round5(annual*Math.max(1,years||1)*bs):0; }
+/* 거부권 요구: 대형·강경 에이전트의 29세 이상 스타(능력 64+). AI 계약도 같은 판정으로 거부권을 준다(aiNtcGive) */
+function ntcWant(p,kind){ return kind!=='sal'&&ovr(p)>=64&&p.age>=29&&hasAgent(p)&&(agentOf(p).size==='big'||agentOf(p).style==='hard'); }
+/* AI 구단 계약의 거부권(조항 점검 11-21): FA·연장 비교에서 AI 제안은 요구 조항을 다 들어준 값(환산 연봉 그대로)으로 보고, 우리 제안만 거부권을 빼면 5% 깎였다.
+   같은 값으로 계약했으니 거부권을 요구한 선수에게는 AI도 거부권을 준다(계약 끝 시즌까지) */
+function aiNtcGive(p,years,sy){ if(!p||p.team==null||!ntcWant(p,'fa'))return; p.ctT=p.team; p.ntc=(sy??ctSeason())+Math.max(1,years||1)-1; }
 function termsDemand(p,kind,base){ const y=Math.max(1,base.years||1); const o=ovr(p);
   const bonus=kind==='fa'?faBonusDemand(p,base.annual,y):0; /* 비FA 다년계약·연봉 협상은 계약금 없음(KBO 규약 제81조, 실제화 11-17) */ const annual=Math.max(MIN_SAL,Math.ceil((base.annual-bonus*CT_BON/y)/5)*5);
-  const role=kind==='fa'?(o>=58?0:o>=50?1:2):null; const ntc=kind!=='sal'&&o>=64&&p.age>=29&&hasAgent(p)&&(agentOf(p).size==='big'||agentOf(p).style==='hard');
+  const role=kind==='fa'?(o>=58?0:o>=50?1:2):null; const ntc=ntcWant(p,kind);
   const ag=hasAgent(p)?agentOf(p):null; return {years:y,bonus,annual,opt:0,role,ntc,ov:agOptV(ag),...(kind!=='sal'?{pv:pmVals(p,kind)}:{})}; }
 /* FA 실제 요구(환산 연봉): 에이전트 성향·경쟁 구단 수·원소속 할인을 반영한 금액. 이만큼이면 '요구 충족'(다른 구단과의 비교는 별도) */
 function faWantA(p){ const ag=agNeg(p); const ai=Object.entries((G.fa&&G.fa.ai&&G.fa.ai[p.id])||{}).filter(([tid,o])=>o&&faAiOk(+tid,p,o)).length; return Math.ceil(p.ask.annual*agWantMul(ag)*(1+.03*ai)*(p.faFrom===G.user?.95:1)*.97/5)*5; }
@@ -40,12 +45,17 @@ function termsSame(a,b){ if(!a||!b)return false; for(const k of ['years','bonus'
 function termsTxt(t,short){ const L=[`${t.years}년${t.cOpt?`+구단 옵션 ${t.cOpt}년`:''}`]; if(t.bonus)L.push(`계약금 ${money(t.bonus)}`); L.push(`연봉 ${money(t.annual)}`); if(t.opt)L.push(`옵션 연 ${money(t.opt)}`); if(t.pOut)L.push(`${t.pOut}년 뒤 선수 옵트아웃`); { const pt=pmTxt(t); if(pt)L.push(`약속: ${pt}`); }
   if(!short){ const tot=(t.bonus||0)+t.annual*t.years; L.push(`보장 총액 ${money(tot)}${t.opt?` (옵션 포함 최대 ${money(tot+t.opt*t.years)})`:''}`); } return L.join(' · '); }
 /* 계약 반영: 계약금은 바로 지급(올해 지출), 상한 계산에는 연평균으로 들어간다. 옵션은 시즌 뒤 달성하면 지급 */
-/* 조건은 계약한 구단에서만 유효하다(p.ctT): 방출·트레이드·보상선수로 옮기면 상한 반영·옵션·거부권·약속이 모두 끝난다 */
+/* 조건은 계약을 가진 구단에서만 유효하다(p.ctT): 방출하면 모두 끝나고, 트레이드·보상선수·2차 드래프트·웨이버는 계약 양도라 조항(옵션·거부권·구단 옵션·옵트아웃·포스팅 허용)을 새 구단이 잇는다. 계약금 상한 반영과 구두 약속은 끝난다 */
 /* 확정 잔여 보장액: 지금 계약의 남은 해(다년·FA 계약) + 이미 합의한 다음 시즌 시작 계약(extNext). 해마다 협상하는 연봉은 넣지 않는다 */
 function guarLeft(p){ if(!p||p.foreign)return 0; return (p.faC?p.sal*Math.max(1,p.yrs||1):0)+(p.extNext?p.extNext.annual*p.extNext.years:0); }
-/* 이적하면 없어지는 계약 조건(화면 안내용) */
-function termsLostTxt(p){ if(!p)return ''; const L=[]; if(ctOn(p)){ if(p.capB)L.push(`계약금 상한 반영(연 ${money(p.capB.a)})`); if(p.opt)L.push(`성과 옵션(연 최대 ${money(p.opt.a)})`); if(p.ntc)L.push('트레이드 거부권'); if(p.roleProm)L.push('역할 약속'); if(p.cOpt&&!p.cOpt.used)L.push(`구단 연장 옵션 ${p.cOpt.y}년`); if(p.pOut&&!p.pOut.used)L.push('선수 옵트아웃'); }
-  { const X=p.extNext&&p.extNext.terms, N=[]; if(X){ if(X.bonus>0)N.push(`계약금 상한 반영(연 ${money(Math.round(X.bonus/Math.max(1,X.years||1)))})`); if(X.opt>0)N.push(`성과 옵션(연 최대 ${money(X.opt)})`); if(X.ntc)N.push('트레이드 거부권'); if(X.role===0)N.push('역할 약속'); if(X.cOpt>0)N.push(`구단 연장 옵션 ${X.cOpt}년`); if(X.pOut>0)N.push('선수 옵트아웃'); } if(N.length)L.push(`다음 시즌 계약의 ${N.join('·')}`); } /* 트레이드하면 미리 맺은 다음 시즌 계약의 구단 한정 조항도 끝난다(mvLog, 검수 11-09zzb) */
+/* 트레이드로 이적하면 없어지는 조건(화면 안내용): 계약서 밖 약속만 끝난다. 계약금 상한 반영액은 낸 구단에 남는다(조항 점검 11-21: 계약 조항은 승계) */
+function termsLostTxt(p){ if(!p)return ''; const L=[]; if(ctOn(p)){ if(p.capB)L.push(`계약금 상한 반영(연 ${money(p.capB.a)}, 낸 구단에 남음)`); if(p.roleProm)L.push('역할 약속'); if(p.cprom)L.push('출전·보강 약속'); }
+  if(p.postPromise&&!postClause(p)&&p.postPromiseT===p.team)L.push('포스팅 약속'); { const X=p.extNext&&p.extNext.terms; if(X&&X.role===0)L.push('다음 시즌 계약의 역할 약속'); }
+  return L.join(' · '); }
+/* 트레이드해도 새 구단으로 이어지는 계약 조항(KBO 선수계약 양도) */
+function termsKeepTxt(p){ if(!p)return ''; const L=[]; if(ctOn(p)){ if(p.opt)L.push(`성과 옵션(연 최대 ${money(p.opt.a)})`); if(p.ntc)L.push(`트레이드 거부권(${p.ntc}년까지)`); if(p.cOpt&&!p.cOpt.used)L.push(`구단 연장 옵션 ${p.cOpt.y}년`); if(p.pOut&&!p.pOut.used)L.push(`선수 옵트아웃(${p.pOut.y}시즌 뒤)`); }
+  if(postClause(p))L.push(`포스팅 허용(${p.postPromise}년 겨울)`);
+  { const X=p.extNext&&p.extNext.terms, N=[]; if(X){ if(X.opt>0)N.push('성과 옵션'); if(X.ntc)N.push('트레이드 거부권'); if(X.cOpt>0)N.push(`구단 연장 옵션 ${X.cOpt}년`); if(X.pOut>0)N.push('선수 옵트아웃'); } if(N.length)L.push(`다음 시즌 계약의 ${N.join('·')}`); }
   return L.join(' · '); }
 /* 계약의 현금 지급 연도: 계약금은 합의할 때 바로 나가 지금 결산 연도(sponSeason)에 잡히고, 연봉은 계약 적용 시즌마다. '계약 적용 시즌'과 '돈이 나가는 해'를 나눈다 */
 function ctCashYears(T,s0){ const py=sponSeason(), yrs=Math.max(1,T.years||1), s1=s0+yrs-1; const out=[]; for(let y=Math.min(py,s0);y<=s1;y++){ const sal=y>=s0?(T.annual||0):0, bon=y===py?(T.bonus||0):0; if(sal||bon)out.push({y,sal,bon,v:sal+bon}); } return out; }
@@ -54,7 +64,9 @@ function ctCashYears(T,s0){ const py=sponSeason(), yrs=Math.max(1,T.years||1), s
 function optPaid(tid,a){ const L=G.sea.optPd=G.sea.optPd||{}; L[tid]=(L[tid]||0)+a; }
 /* 최근 트레이드로 옮긴 선수(30일): 같은 선수를 곧바로 다시 트레이드하지 않는다(플레이테스트 4 #19·#25) */
 function recentTr(p,d){ return !!p&&p.trD!=null&&G.day-p.trD<(d||30); }
-function tradeTerms(p){ if(p){ moveSalary(p,p.team); p.trD=G.day; } try{ if(p&&p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ optPaid(p.team,p.opt.a); p.opt.paidY=G.year; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 트레이드와 함께 지급합니다.`); } }catch(e){} try{ capDeadBonus(p); }catch(e){} termsClear(p); } /* 계약금 반영액은 낸 구단 상한에 남긴다 */
+function tradeTerms(p,to){ if(p){ moveSalary(p,p.team); p.trD=G.day; } try{ if(p&&p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ optPaid(p.team,p.opt.a); p.opt.paidY=G.year; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 트레이드와 함께 지급합니다.`); } }catch(e){} try{ capDeadBonus(p); }catch(e){}
+  if(p&&to!=null&&ctOn(p)){ optLedKeep(p); delete p.capB; delete p.roleProm; delete p.cprom; delete p.ntcOk; if(p.cOpt)delete p.cOpt.dec; if(postClause(p))p.postPromiseT=to; p.ctT=to; return; } /* 계약 양도(KBO 규약: 양수 구단이 선수계약을 그대로 승계): 성과 옵션·거부권·구단 옵션·옵트아웃·포스팅 허용 조항은 새 구단으로 이어지고, 구두 약속(역할·출전·보강)만 끝난다. 2차 드래프트·웨이버 승계(termsCarry)와 같다(조항 점검 11-21) */
+  termsClear(p); } /* 계약금 반영액은 낸 구단 상한에 남긴다 */
 /* 끝나지 않은 수상 옵션 장부(리뷰② 11-17): 정규시즌 뒤 시상식 전에 계약이 바뀌거나(재계약·다년 시작·트레이드·방출) FA가 되면 p.opt가 지워져
    12월 골든글러브 옵션이 사라졌다. 지우기 전에 {pid,y 시즌,tid 계약 구단,a 금액,paid}를 G.optLed에 남기고 시상식에서 그 시즌 수상이면 원래 구단이 한 번만 낸다. 사용자·AI 같은 규칙 */
 function optLedKeep(p){ try{ const o=p&&p.opt, y=G.year; if(!o||(o.c)!=='gg'||!(o.a>0)||o.from>y||o.until<y||o.paidY===y||p.ctT==null)return; if(!(G.cal&&G.day>=G.cal.end))return; /* 그 시즌을 마친 뒤만 */
@@ -115,7 +127,8 @@ function pmApply(p,t,sy,y){ const P=t&&t.pm; if(!P)return; const L=[];
   if(P.pt>0){ const c=pmPtC(p,P.ptc); L.push({k:'pt',c,n:pmPtN(p,c,P.pt),y0:sy,y1:sy+Math.min(y,2)-1}); }
   if(P.sg&&PM_SG[P.sg])L.push({k:'sg',g:P.sg,y0:sy,y1:sy,d:P.d??G.day,seq:G.mvN||0});
   if(L.length){ let ag=null; try{ ag=agentOf(p); }catch(e){} p.cprom={tid:p.team,ag:ag?ag.id:null,L}; }
-  if(P.po>0){ p.postPromise=sy+P.po-1; p.postPromiseT=p.team; } }
+  if(P.po>0){ p.postPromise=sy+P.po-1; p.postPromiseT=p.team; p.postPromiseC=p.postPromise; } } /* postPromiseC: 계약서 조항으로 넣은 포스팅 허용(그해 거절·연기 불가, 트레이드해도 계약과 함께 승계) */
+const postClause=p=>!!p&&p.postPromiseC!=null&&p.postPromiseC===p.postPromise&&p.postPromiseT===p.team;
 /* 출전 기준 확인: 부상으로 빠진 날만큼 기준을 낮추고, 절반 넘게 빠졌거나 군 복무 중이면 따지지 않는다(null) */
 function promiseInjEnd(p,h){if(Number.isFinite(h.bk))return h.bk;return h===(p.injHist||[]).at(-1)&&p.injOut>0?G.day+p.injOut:h.d+(h.days||0);}
 function promiseInjDays(p,from,to){const intervals=(p.injHist||[]).filter(h=>Number.isFinite(h.d)).map(h=>[Math.max(from,h.d),Math.min(to,promiseInjEnd(p,h))]).filter(([a,b])=>b>a).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);let total=0,start=null,end=null;for(const [a,b] of intervals){if(start==null){start=a;end=b;}else if(a<=end)end=Math.max(end,b);else{total+=end-start;start=a;end=b;}}return total+(start==null?0:end-start);}

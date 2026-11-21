@@ -117,6 +117,7 @@ step "사이트 배포·파일 크기·3D 재시도"; node tools/check-site.cjs 
 step "인게임 동작·이름·수비·전광판"; node tools/check-gameplay.cjs || fail=1
 step "3D 경기장·동작·오프라인"; node tools/check-match3d.cjs || fail=1
 step "계약 금액 직접 입력"; node tools/check-contract-input.cjs || fail=1
+step "계약 조항 화면(포스팅 허용·트레이드 승계)"; node tools/check-contract-clauses-1121.cjs || fail=1
 step "3D 상태·공 연결·메모리"; node tools/check-match3d-state.cjs || fail=1
 step "3D 플레이 리뷰·시선·릴리스"; node tools/check-match3d-review.cjs || fail=1
 step "공별 중계·투구판"; node tools/check-pitches.cjs || fail=1
