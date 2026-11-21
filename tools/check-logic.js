@@ -10897,6 +10897,14 @@ T('[카페 11-21 해외 복귀 연봉] 37세 복귀 선수 요구는 국내 베�
   G.day=KD(11,1); G.rolled=null; offseason(); ok(q.team===G.user&&!(G.fa.pool||[]).includes(q.id),'1년 복귀 계약 뒤 원소속 보류 선수로 남지 않음(연차 '+q.svc+')'); G.day=KD(12,1); contractStart(); ok(G.contract.ended.includes(q.id),'1년 계약 뒤 우리 구단 연봉 협상 대상이 아님');
   /* 옛 저장: 미계약 과다 요구만 재산정, 두 번째는 그대로, 난수 없음 */ const z=pk(G.user); z.team=null; z.age=37; z.retFrom=G.user; z.retAsk={sal:5000,yrs:3,lg:'MLB',n:1,post:1,exp:G.day+14}; const keep=pk(o); const kr={sal:900,yrs:1,lg:'NPB',n:1,post:0,exp:G.day+14}; keep.team=null; keep.retFrom=o; keep.retAsk=Object.assign({},kr);
   const c0=__rngCalls(); ovsRetAskFix(); ok(__rngCalls()===c0,'재산정이 난수를 씀'); ok(z.retAsk.sal<=round5(dom(z)*1.15)+5&&z.retAsk.yrs===1,'옛 과다 요구가 남음 '+JSON.stringify(z.retAsk)); ok(keep.retAsk.sal===900&&keep.retAsk.yrs===1,'정상 요구까지 바뀜'); const j=JSON.stringify([z.retAsk,keep.retAsk]); ovsRetAskFix(); ok(JSON.stringify([z.retAsk,keep.retAsk])===j,'재산정이 멱등이 아님'); });
+T('[카페 11-21 은퇴 권유] 36세 이상 우리 선수만 은퇴를 권할 수 있고, 받아들이면 시즌 중엔 시즌 뒤·비시즌엔 바로 기존 은퇴 경로로 계약 없이 빠지며, 거절하면 기분이 내려가고 한 해 한 번이며, 본 난수를 쓰지 않는다',()=>{ fresh(); const L=domestic(G.user).filter(q=>!q.foreign&&!q.prospect&&!q.ys&&!(q.joinY>G.year)); const [a,b,c,d]=L; const o=otherT(), ai=domestic(o).find(q=>!q.foreign&&!q.prospect);
+  for(const q of [a,b,c,d,ai]){ q.age=38; q.lastY=null; delete q.retSugY; Object.assign(q,{faC:true,yrs:3,cyrs:3,sal:1000}); }
+  d.age=35; ok(retSugWhy(d).includes('36세'),'35세에게 은퇴 권유 가능'); ok(retSugWhy(ai),'AI 구단 선수에게 은퇴 권유 가능'); ok(!retSugWhy(a),'38세 우리 선수에게 권할 수 없음: '+retSugWhy(a));
+  const P0=retSugP; try{ G.day=G.cal.open+40; G.rolled=G.year-1; retSugP=()=>1; const r0=__rngCalls(); const r=retSuggest(a.id); ok(__rngCalls()===r0,'은퇴 권유가 본 난수를 씀'); ok(r.acc&&!r.now&&lastSeason(a)&&a.team===G.user,'시즌 중 수락이 은퇴 예고(lastY)가 아님 '+JSON.stringify(r)); ok(retSugWhy(a).includes('이미'),'은퇴 예고 선수에게 다시 권유 가능');
+    retSugP=()=>0; const m0=b.mor??60; const r2=retSuggest(b.id); ok(!r2.acc&&b.team===G.user&&(b.mor??60)<m0&&!lastSeason(b),'거절 처리 이상 '+JSON.stringify(r2)); ok(retSugWhy(b).includes('올해'),'거절 뒤 같은 해 다시 권유 가능');
+    G.rolled=G.year; retSugP=()=>1; const n0=rosterN(G.user), pay0=capPay(G.user), id=c.id, nm=c.name; const r3=retSuggest(id); ok(r3.now&&!G.players[id]&&rosterN(G.user)===n0-1,'비시즌 수락이 바로 은퇴가 아님'); ok(capPay(G.user)<pay0,'은퇴한 선수의 남은 계약 연봉이 남음'); ok((G.retired||[]).some(x=>x.name===nm),'은퇴 기록 없음');
+  }finally{ retSugP=P0; }
+  G.rolled=G.year-1; G.day=KD(11,1); const id=a.id; offseason(); ok(!G.players[id]||G.players[id].team==null,'은퇴 예고 선수가 시즌 뒤 은퇴하지 않음'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
