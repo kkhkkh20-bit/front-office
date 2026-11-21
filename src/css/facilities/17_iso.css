@@ -1,8 +1,8 @@
 /* ---------- 아이소메트릭 그림(시안 B): 구장 외관·구단 버스·훈련장 지도·시설 썸네일 ---------- */
 svg .isot{font-family:var(--f-ui);font-weight:700;fill:#f2f4f6;paint-order:stroke;stroke:#0b0f14;stroke-linejoin:round}
 .isosvg{display:block;width:100%;height:auto}
-.isostad{margin:0 0 10px;border:1px solid var(--line);border-radius:6px;background:#141a22;overflow:hidden}
-.isostad>.isosvg{max-width:640px;margin:0 auto}
+.isostad{margin:0 0 10px;border:1px solid var(--line);border-radius:6px;background:radial-gradient(ellipse at 50% 70%,#253840 0,#15222c 52%,#101921 100%);overflow:hidden}
+.isostad>.isosvg{max-width:640px;margin:0 auto;filter:drop-shadow(0 8px 7px #0004)}
 .isocap{display:flex;flex-wrap:wrap;gap:3px 12px;padding:6px 10px 7px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
 .isocap b{color:var(--ink);font-weight:700}
 .isocap em{font-style:normal}.isocap .bld{color:var(--warn)}
