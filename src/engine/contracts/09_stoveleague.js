@@ -4,7 +4,11 @@ const RET_AGE=40, RET_VET_AGE=37, RET_FREE_AGE=35, RET_VET_O=40, RET_MID_AGE=32,
 /* 40세 정년 완화(11-20, 구단주 결정): 40세부터 바로 은퇴하던 것을 기량으로 가른다. 40세 이상은 나이마다 베테랑 기준(RET_VET_O 40)보다 2씩 높은 기준(40세 42·41세 44·42세 46·43세 48·44세 50) 미만이면 은퇴하고, 45세(RET_CAP)에는 누구나 은퇴한다.
    우리·AI 구단 같은 식, 난수 없음. 은퇴 면담으로 한 해 미루는 것도 45세 전까지만(retDelayOk) */
 const RET_CAP=45, RET_OLD_STEP=2; const retOldO=a=>RET_VET_O+(a-RET_AGE+1)*RET_OLD_STEP;
-function retireVetRule(p,o){ o=o??ovr(p); return p.age>=RET_CAP||(p.age>=RET_AGE&&o<retOldO(p.age))||(p.age>=RET_VET_AGE&&o<RET_VET_O); } /* 나이·기량 은퇴(계약과 무관): FA 자격의 은퇴 예상도 같은 함수 */
+/* 카페 11-21 후속(구단주: 멘탈·체력 좋고 기술로 사는 노장이 살아남는다): 베테랑 은퇴·AI 베테랑 방출은 종합 능력에 멘탈 가산(좋은 멘탈만, 최대 RET_MENT_B)과 기술 가산(제구 또는 컨택·선구안이 종합보다 높은 몫의 0.4배, 최대 RET_SKILL_B)을 더한 값(retO)으로 본다. 노장 2군 체류 뒤 은퇴 대신 트레이드 요청(VET_FARM_KEEP)도 같은 값.
+   체력·구위가 떨어져도 제구·멘탈이 좋은 노장은 더 뛴다. 우리·AI 같은 식, 난수 없음. 새 게임 세계를 만드는 동안은 예전 값(종합 능력) 그대로 */
+const RET_MENT_B=4, RET_SKILL_B=3;
+function retO(p,o){ o=o??ovr(p); if((typeof WORLD_BUILD!=='undefined'&&WORLD_BUILD>0)||!p||!p.r)return o; const r=p.r, sk=p.isP?r.ctl:((r.con??o)+(r.eye??o))/2; return o+RET_MENT_B*Math.max(0,ageMent(p))+Math.min(RET_SKILL_B,Math.max(0,(sk??o)-o)*.4); }
+function retireVetRule(p,o){ o=o??ovr(p); const v=p.age>=RET_VET_AGE&&p.age<RET_CAP?retO(p,o):o; return p.age>=RET_CAP||(p.age>=RET_AGE&&v<retOldO(p.age))||(p.age>=RET_VET_AGE&&v<RET_VET_O); } /* 나이·기량 은퇴(계약과 무관): FA 자격의 은퇴 예상도 같은 함수 */
 /* KBO 비율 기준(11-20 구단주 결정, 2026 최고령 최형우 42세·40대 현역이 시즌마다 몇 명): 35~36세(RET_FREE_AGE~RET_VET_AGE-1)는 능력으로 강제 은퇴하지 않는다. 이 나이는 FA 미계약·무적 기간만으로 은퇴한다.
    베테랑 기준 40(RET_VET_O)은 37세부터(예전 35세부터), 계약 없는 약체 기준 34(RET_MID_O)는 32~34세에만. 우리·AI 같음 */
 function retireRule(p,o){ o=o??ovr(p); return retireVetRule(p,o)||(p.age>=RET_MID_AGE&&p.age<RET_FREE_AGE&&o<RET_MID_O&&!p.faC); }
@@ -13,7 +17,7 @@ const retDelayOk=p=>p.retDelay===G.year&&p.age<RET_CAP; /* 은퇴 면담으로 �
    은퇴 확률 35세 20%·36세 25%·37세 이상 35%(능력 45 이상은 은퇴하지 않고 트레이드 요청)(선수·해마다 고정 난수, 주 난수 R() 호출 수 불변). 은퇴하지 않으면 트레이드 요청: 우리 구단은 소식함 요청(트레이드 명단에 올리기), AI 구단은 트레이드 블록에 올린다(출전 불만과 같은 표시). 우리·AI 같은 규칙. 은퇴 면담으로 미룬 해는 빼고 */
 const VET_FARM_AGE=35, VET_FARM_RET=[.2,.25,.35], VET_FARM_KEEP=45; /* 측정(시드 7, 8시즌): 35/45/55%면 35세 은퇴가 몰려(32세 이상 은퇴의 27%) 낮췄다. 능력 45 이상은 은퇴 대신 트레이드 요청(아직 1군에서 뛸 수 있다) */
 function vetFarmLong(p,y){ if(!p||p.foreign||p.team==null||p.age<VET_FARM_AGE||!p.hist)return false; const a=seasonTotal(p,y,'1군')||{}, f=seasonTotal(p,y,'퓨처스')||{}, hurt=(p.injOut||0)>=60; /* 오래 다쳐 재활 중인 노장도 같다(박병호·오승환 사례) */ return p.isP?(a.outs||0)<90&&((f.outs||0)>=90||hurt):(a.pa||0)<100&&((f.pa||0)>=100||hurt); }
-function vetFarmPick(p){ const k=Math.min(VET_FARM_RET.length-1,p.age-VET_FARM_AGE), x=withRng(rngHash('vetFarm',G.year,p.id),()=>R()); return x<VET_FARM_RET[k]&&!(p.r&&ovr(p)>=VET_FARM_KEEP)?'ret':'treq'; }
+function vetFarmPick(p){ const k=Math.min(VET_FARM_RET.length-1,p.age-VET_FARM_AGE), x=withRng(rngHash('vetFarm',G.year,p.id),()=>R()); return x<VET_FARM_RET[k]&&!(p.r&&retO(p)>=VET_FARM_KEEP)?'ret':'treq'; }
 function vetFarmTreq(p){ return withRng(rngHash('vetFarmMsg',G.year,p.id),()=>vetFarmTreq0(p)); } /* 알림·소식도 따로 된 난수(주 난수 흐름 불변) */
 function vetFarmTreq0(p){ if(p.team===G.user&&!G.unemp){ if(p.listed||(p.treq&&!p.treq.done))return; p.treq={day:G.day}; mail(p.name,'트레이드 요청',`올해 거의 한 시즌을 2군에서 보냈습니다. 제 나이에 남은 시간이 많지 않습니다. 1군에서 뛸 수 있는 팀이 있으면 보내 주십시오. 내년에도 이대로라면 은퇴를 생각하겠습니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'트레이드 명단에 올리기',a:'listP',v:p.id},{l:'방출해 준다',a:'release',v:p.id},{l:'남아 달라고 설득',a:'keepP',v:p.id},{l:'선수 보기',a:'player',v:p.id}]}); return; } /* 방출하면 무적 선수로 다른 구단을 찾고, 아무도 데려가지 않으면 은퇴한다(freeYear) */
   if(hasNtc(p)||p.aiListed)return; p.aiListed=true; p.aiWhy='mood'; p.aiLd=G.day; try{ wire('구단 사정',`${tshort(p.team)} ${p.name}(${posLabel(p)}, ${p.age}세), 2군 생활 끝에 트레이드 요청`,{tid:p.team,ref:p.id}); }catch(e){} }
@@ -496,7 +500,7 @@ function contractStart(){
   G.contract={y:G.year,tid:G.user,ended,foreignEnd,foreignDrop:[],released:[],done:false}; for(const id of foreignEnd)initPers(G.players[id]); salTalkInit();
   for(const p of aiSal){ let r=null; try{ r=aiSalNeg(p); }catch(e){} if(r&&r.st==='hold'&&p.team!==G.user)holdStart(p,r.sal,r.ask,true); else { p.sal=Math.max(MIN_SAL,r?r.sal:p.newSal); delete p.newSal; } } /* AI도 같은 요구·판정으로 협상하고, 차이가 크면 미계약(계약 2단계) */
   /* AI 구단: 기량이 크게 떨어진 고액 연봉 베테랑은 정리한다 */
-  for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간에는 AI가 맡은 전 소속 구단도 정리한다 */ for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<VET_REL_O&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); const c=relCost(p).tot; payOut(t.id,c,'rel'); /* 일반 방출과 같은 보장계약 정산(검수 11-09g) */ if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`,c); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
+  for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간에는 AI가 맡은 전 소속 구단도 정리한다 */ for(const p of domestic(t.id)){ if(p.age>=32&&retO(p)<VET_REL_O&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); const c=relCost(p).tot; payOut(t.id,c,'rel'); /* 일반 방출과 같은 보장계약 정산(검수 11-09g) */ if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`,c); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
   for(const t of G.teams) if(t.id!==ME()) trimRoster(t.id,60);
   for(const t of G.teams)fAiReYB(t.id,G.year+1); /* 카페 11-21: AI 아시아쿼터 재계약 → 일반 외국인 */
   refreshFMarket(12,99);

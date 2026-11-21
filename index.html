@@ -2769,7 +2769,6 @@ body:has(#sheet .scrim) #dtick:not(.on){display:none}
 .fo .fo-in{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
 .fo .fo-in>div{display:flex;flex-direction:column;gap:3px;background:var(--bg2,rgba(127,127,127,.08));border-radius:8px;padding:8px}
 .fo .fo-in b{font-size:17px}.fo .fo-in i{font-style:normal}.fo .fo-in .row{gap:4px;flex-wrap:wrap}
-.fo .fo-slot{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 2px}.fo .fo-re-slot{grid-template-columns:1fr}.fo .fo-slot .btn{min-width:0;white-space:normal}.fo .fo-slot-d{margin:2px 0 6px}
 .fo .fo-cmp{display:flex;flex-direction:column;gap:4px;margin:8px 0;padding:8px;border-radius:8px;border:1px solid var(--line,rgba(127,127,127,.25))}
 .fo b.good{color:var(--good,#3fb871)}.fo b.bad{color:var(--bad,#e5534b)}
 /* 업무 맡기기·설명 접기 */
@@ -15878,6 +15877,21 @@ const VET_SKILL_AGE=38, AGE_ELITE_O=50, AGE_ELITE_F=.6;
 const AGE_DECL_K=.4, AGE_PHYS_K=.16, AGE_SLUMP_F=1/3, PEAK_MU=.3, POT_TIDY_PEAK=2;
 const DT={norm:{l:'정상 성장형',grow:28,peak:31,fall:33},early:{l:'조기 완성형',grow:25,peak:29,fall:31},late:{l:'대기만성형',grow:30,peak:33,fall:35},stall:{l:'정체형',grow:26,peak:30,fall:32},vet:{l:'기술형 베테랑',grow:28,peak:33,fall:35}}; /* KBO 전성기는 29세 전후부터: 모든 유형을 2년 늦췄다(사용자 11-07) */
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
+/* 카페 11-21 노장 체력 노화(FC서울: "37세 투수가 체력 90대는 말이 안 된다", 구단주: 피지컬 쪽 감소가 좀 심해야 하고 정신적인 것은 덜하고, 전성기 27~33·신체 하락은 33세부터 완만히, 35~36세부터 가파르게).
+   능력을 신체 몫(AGE_PW, 1=순수 신체)으로 나눈다. 투수 체력(sta)·주력(spd)·타자 체력(vit) 1, 구위(stf, 구속) .7, 장타력(pow) .5, 수비(def, 범위·송구) .4, 컨택(con) .2, 선구안(eye)·제구(ctl) 0.
+   1) 신체 노화: 유형과 무관하게 몸 나이(그해 뛸 나이 a1)로 정한다. agePhys(a1)×신체 몫만큼 깎는다(33~35세 완만, 36세부터 가파르게). 구속 보정(velo)도 같은 곡선으로 줄어든다.
+   2) 정신·기술 노화: 하락 구간의 공통 하락(base)을 신체 몫이 작을수록 덜 받는다(제구·선구안 0.5배·컨택 0.6배). 예전 PHYS 식(제구·선구안 소폭 가산)은 이 식으로 바꿨다.
+   3) 나이 천장: 순수 신체 능력(몫 1)은 agePhysCap(a1)을 넘으면 넘친 몫을 더 깎는다(한 해 최대 AGE_CAP_STEP, 예전 저장의 노장이 한 번에 무너지지 않게). 37세 천장 68(화면 약 88).
+   엘리트 완만 하락(AGE_ELITE_F)은 기술 몫에만 준다(기술은 엘리트로 남고 몸은 똑같이 늙는다). 모든 구단·모든 선수 같은 식이고 난수를 더 쓰지 않는다.
+   새 게임 세계를 만드는 동안(WORLD_BUILD)은 예전 식 그대로라 시작 세계가 main과 같다. 예전 저장은 지금 능력을 건드리지 않고 다음 해 넘김(develop)부터 새 식을 탄다 */
+const AGE_PW={sta:1,spd:1,vit:1,stf:.7,pow:.5,def:.4,con:.2,eye:0,ctl:0}, AGE_PH0=33, AGE_MENT_F=.5, AGE_CAP_PULL=1, AGE_CAP_STEP=4, AGE_VELO_K=.25;
+/* 카페 11-21 후속(구단주: 노장을 좀 더 늘려도 된다. 멘탈·체력 좋고 기술로 사는 선수가 살아남는다): 멘탈 점수 ageMent(프로의식, 예민도 13 초과는 감점, -1~1)가
+   신체 노화를 ±40%(AGE_MENT_PH) 조절하고, 좋은 멘탈은 36세 이후 기울기를 최대 30%(AGE_MENT_SLOPE) 낮추며, 기술 몫의 공통 하락 완화도 최대 +0.2(AGE_MENT_SK) 키운다. 나이 천장은 그대로(37세 체력 90대는 여전히 드물다) */
+const AGE_MENT_PH=.4, AGE_MENT_SLOPE=.3, AGE_MENT_SK=.2, AGE_SLOPE36=.6;
+function ageMent(p){ if(!p)return 0; initPers(p); const pr=p.pers.pro??10, tp=p.pers.temp??10; return clamp((pr-10)/8-Math.max(0,tp-13)*.05,-1,1); }
+const agePhys=(a,m=0)=>a<AGE_PH0?0:a<=35?.45*(a-AGE_PH0+1):1.35+AGE_SLOPE36*(1-AGE_MENT_SLOPE*Math.max(0,m))*(a-35); /* 보통 멘탈: 33세 .45 · 34 .9 · 35 1.35 · 36 1.95 · 37 2.55 · 38 3.15 · 40 4.35(원래 능력 단위, 한 해). 후속(노장을 더 남긴다): 36세 이후 기울기 1.0→0.6(37세 체력 90대는 나이 천장이 막는다), 장타 신체 몫 .6→.5·수비 .5→.4 */
+const agePhysCap=a=>a<=34?80:80-4*(a-34); /* 35세 76 · 36 72 · 37 68 · 38 64 · 39 60 · 40 56 */
+const ageNew=()=>!(typeof WORLD_BUILD!=='undefined'&&WORLD_BUILD>0);
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
 function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군는 60%만 인정
   const y=G.year; const a=seasonTotal(p,y,'1군'), f=seasonTotal(p,y,'퓨처스'); const fw=.6+facAiFut(p.team); /* 모든 구단 같은 식(우리만 +0.1이던 비대칭, 사용자 11-13) */ /* 2군 구장이 좋을수록 2군 출전을 더 인정 */
@@ -15969,10 +15983,11 @@ function develop(p){
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
   const tc=svc?(delete p.trD,null):typeof trnCost==='function'?trnCost(p):null; /* 복무 중 겨울에는 입대 전 집중 훈련 비용을 매기지 않는다(검수 11-09zy) */ /* 훈련 방향 비용: 한 항목에 집중한 만큼 다른 항목의 성장 기회가 준다 */
   const stam0=(p.isP?p.r.sta:p.r.vit)??50; initPers(p); const agK=clamp(1-(stam0-50)*.012-((p.pers.pro??10)-10)*.025,.7,1.4); /* 노화 하락 폭: 체력이 높고 프로의식이 강하면 덜 떨어진다(사용자 11-08). 부상 후유증 하락은 따로(injury) */
+  const AN=ageNew(), a1=age+1, pw=k=>AGE_PW[k]??.5, am=ageMent(p), phK=clamp(1-am*AGE_MENT_PH,.6,1.4); /* 카페 11-21: 신체 노화는 멘탈(프로의식·예민도)만 본다(체력이 높다고 체력이 덜 늙지 않는다). 후속: ±25%→±40% */
   for(const k in p.r){
-    let dk=base+N(0,(k==='eye'||k==='ctl'?.6:1));
+    let dk=base+N(0,(k==='eye'||k==='ctl'?.6:1)), dP=0;
     if(age>=T.fall-1){ // 노화: 신체 능력이 먼저 떨어진다
-      dk-=PHYS[k]*(age-T.fall+2)*AGE_PHYS_K*fac.d;
+      if(AN){ if(base<0)dk-=base*(AGE_MENT_F+AGE_MENT_SK*Math.max(0,am))*(1-pw(k)); } else dk-=PHYS[k]*(age-T.fall+2)*AGE_PHYS_K*fac.d; /* 카페 11-21: 기술 몫은 공통 하락을 덜 받는다 */
       if(p.dt==='vet'&&PHYS[k]<=0&&age<=VET_SKILL_AGE)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
     }
     if(dk>0&&club)dk*=coachToolMult(p,k);
@@ -15980,7 +15995,8 @@ function develop(p){
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k]&&dk>0){dk=Math.max(0,dk-tc[k]);if(!p.devLog.reasons.includes('training-opportunity'))p.devLog.reasons.push('training-opportunity');} /* 성장 기회만 줄인다. 이미 퇴보 중인 능력은 더 깎지 않는다. */
     if(dk<0&&age>=T.fall-1&&svc!=='현역'){dk*=agK*(age>=34&&o>=AGE_ELITE_O?AGE_ELITE_F:1);if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging');}
-    if(dk<0&&age>=T.fall-1&&svc!=='현역'){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
+    if(AN&&svc!=='현역'){ dP=-pw(k)*agePhys(a1,am)*fac.d*phK; if(pw(k)>=1){ const cap=agePhysCap(a1), v=p.r[k]+dk+dP; if(v>cap)dP-=Math.min(AGE_CAP_STEP,(v-cap)*AGE_CAP_PULL); } if(dP<0){ dk+=dP; if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging'); } } /* 카페 11-21 신체 노화·나이 천장(엘리트 완만 하락 없음) */
+    if(dk<0&&(age>=T.fall-1||dP<0)&&svc!=='현역'){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }
   if(svc==='현역')p.devLog.reasons.push('military');
@@ -15994,7 +16010,7 @@ function develop(p){
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
   if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+(age>T.grow?POT_TIDY_PEAK:1)+(T.vl?2:0)+(p.gcar||0)+(p.potUp&&p.potUp.y===G.year?p.potUp.v:0)); /* 올해 성적 보상으로 오른 잠재력(65_cur_eval potPerfSeason·potIntlUp)은 이번 정리에서 지켜 준다 */ /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
   p.pot=clamp(Math.max(p.pot,no),20,80);if(p.pot<potBefore)p.devLog.reasons.push('potential-reassessment');
-  if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0);
+  if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(ageNew()){ if(svc!=='현역')p.velo-=agePhys(age+1,ageMent(p))*AGE_VELO_K*fac.d+(age>=T.fall&&p.dt==='vet'?.2:0); } else if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0); /* 카페 11-21: 구속 보정도 몸 나이 곡선(33세 -0.1·36세 -0.6·38세 -1.1km/h, 구위 하락분과 합쳐 35세 약 -1.3·37세 약 -2.3km/h) */
   (p.oh=p.oh||[]).push({y:G.year,o:Math.round(no)}); if(p.oh.length>12)p.oh.shift();
   p.age++;
 }
@@ -17339,7 +17355,11 @@ const RET_AGE=40, RET_VET_AGE=37, RET_FREE_AGE=35, RET_VET_O=40, RET_MID_AGE=32,
 /* 40세 정년 완화(11-20, 구단주 결정): 40세부터 바로 은퇴하던 것을 기량으로 가른다. 40세 이상은 나이마다 베테랑 기준(RET_VET_O 40)보다 2씩 높은 기준(40세 42·41세 44·42세 46·43세 48·44세 50) 미만이면 은퇴하고, 45세(RET_CAP)에는 누구나 은퇴한다.
    우리·AI 구단 같은 식, 난수 없음. 은퇴 면담으로 한 해 미루는 것도 45세 전까지만(retDelayOk) */
 const RET_CAP=45, RET_OLD_STEP=2; const retOldO=a=>RET_VET_O+(a-RET_AGE+1)*RET_OLD_STEP;
-function retireVetRule(p,o){ o=o??ovr(p); return p.age>=RET_CAP||(p.age>=RET_AGE&&o<retOldO(p.age))||(p.age>=RET_VET_AGE&&o<RET_VET_O); } /* 나이·기량 은퇴(계약과 무관): FA 자격의 은퇴 예상도 같은 함수 */
+/* 카페 11-21 후속(구단주: 멘탈·체력 좋고 기술로 사는 노장이 살아남는다): 베테랑 은퇴·AI 베테랑 방출은 종합 능력에 멘탈 가산(좋은 멘탈만, 최대 RET_MENT_B)과 기술 가산(제구 또는 컨택·선구안이 종합보다 높은 몫의 0.4배, 최대 RET_SKILL_B)을 더한 값(retO)으로 본다. 노장 2군 체류 뒤 은퇴 대신 트레이드 요청(VET_FARM_KEEP)도 같은 값.
+   체력·구위가 떨어져도 제구·멘탈이 좋은 노장은 더 뛴다. 우리·AI 같은 식, 난수 없음. 새 게임 세계를 만드는 동안은 예전 값(종합 능력) 그대로 */
+const RET_MENT_B=4, RET_SKILL_B=3;
+function retO(p,o){ o=o??ovr(p); if((typeof WORLD_BUILD!=='undefined'&&WORLD_BUILD>0)||!p||!p.r)return o; const r=p.r, sk=p.isP?r.ctl:((r.con??o)+(r.eye??o))/2; return o+RET_MENT_B*Math.max(0,ageMent(p))+Math.min(RET_SKILL_B,Math.max(0,(sk??o)-o)*.4); }
+function retireVetRule(p,o){ o=o??ovr(p); const v=p.age>=RET_VET_AGE&&p.age<RET_CAP?retO(p,o):o; return p.age>=RET_CAP||(p.age>=RET_AGE&&v<retOldO(p.age))||(p.age>=RET_VET_AGE&&v<RET_VET_O); } /* 나이·기량 은퇴(계약과 무관): FA 자격의 은퇴 예상도 같은 함수 */
 /* KBO 비율 기준(11-20 구단주 결정, 2026 최고령 최형우 42세·40대 현역이 시즌마다 몇 명): 35~36세(RET_FREE_AGE~RET_VET_AGE-1)는 능력으로 강제 은퇴하지 않는다. 이 나이는 FA 미계약·무적 기간만으로 은퇴한다.
    베테랑 기준 40(RET_VET_O)은 37세부터(예전 35세부터), 계약 없는 약체 기준 34(RET_MID_O)는 32~34세에만. 우리·AI 같음 */
 function retireRule(p,o){ o=o??ovr(p); return retireVetRule(p,o)||(p.age>=RET_MID_AGE&&p.age<RET_FREE_AGE&&o<RET_MID_O&&!p.faC); }
@@ -17348,7 +17368,7 @@ const retDelayOk=p=>p.retDelay===G.year&&p.age<RET_CAP; /* 은퇴 면담으로 �
    은퇴 확률 35세 20%·36세 25%·37세 이상 35%(능력 45 이상은 은퇴하지 않고 트레이드 요청)(선수·해마다 고정 난수, 주 난수 R() 호출 수 불변). 은퇴하지 않으면 트레이드 요청: 우리 구단은 소식함 요청(트레이드 명단에 올리기), AI 구단은 트레이드 블록에 올린다(출전 불만과 같은 표시). 우리·AI 같은 규칙. 은퇴 면담으로 미룬 해는 빼고 */
 const VET_FARM_AGE=35, VET_FARM_RET=[.2,.25,.35], VET_FARM_KEEP=45; /* 측정(시드 7, 8시즌): 35/45/55%면 35세 은퇴가 몰려(32세 이상 은퇴의 27%) 낮췄다. 능력 45 이상은 은퇴 대신 트레이드 요청(아직 1군에서 뛸 수 있다) */
 function vetFarmLong(p,y){ if(!p||p.foreign||p.team==null||p.age<VET_FARM_AGE||!p.hist)return false; const a=seasonTotal(p,y,'1군')||{}, f=seasonTotal(p,y,'퓨처스')||{}, hurt=(p.injOut||0)>=60; /* 오래 다쳐 재활 중인 노장도 같다(박병호·오승환 사례) */ return p.isP?(a.outs||0)<90&&((f.outs||0)>=90||hurt):(a.pa||0)<100&&((f.pa||0)>=100||hurt); }
-function vetFarmPick(p){ const k=Math.min(VET_FARM_RET.length-1,p.age-VET_FARM_AGE), x=withRng(rngHash('vetFarm',G.year,p.id),()=>R()); return x<VET_FARM_RET[k]&&!(p.r&&ovr(p)>=VET_FARM_KEEP)?'ret':'treq'; }
+function vetFarmPick(p){ const k=Math.min(VET_FARM_RET.length-1,p.age-VET_FARM_AGE), x=withRng(rngHash('vetFarm',G.year,p.id),()=>R()); return x<VET_FARM_RET[k]&&!(p.r&&retO(p)>=VET_FARM_KEEP)?'ret':'treq'; }
 function vetFarmTreq(p){ return withRng(rngHash('vetFarmMsg',G.year,p.id),()=>vetFarmTreq0(p)); } /* 알림·소식도 따로 된 난수(주 난수 흐름 불변) */
 function vetFarmTreq0(p){ if(p.team===G.user&&!G.unemp){ if(p.listed||(p.treq&&!p.treq.done))return; p.treq={day:G.day}; mail(p.name,'트레이드 요청',`올해 거의 한 시즌을 2군에서 보냈습니다. 제 나이에 남은 시간이 많지 않습니다. 1군에서 뛸 수 있는 팀이 있으면 보내 주십시오. 내년에도 이대로라면 은퇴를 생각하겠습니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'트레이드 명단에 올리기',a:'listP',v:p.id},{l:'방출해 준다',a:'release',v:p.id},{l:'남아 달라고 설득',a:'keepP',v:p.id},{l:'선수 보기',a:'player',v:p.id}]}); return; } /* 방출하면 무적 선수로 다른 구단을 찾고, 아무도 데려가지 않으면 은퇴한다(freeYear) */
   if(hasNtc(p)||p.aiListed)return; p.aiListed=true; p.aiWhy='mood'; p.aiLd=G.day; try{ wire('구단 사정',`${tshort(p.team)} ${p.name}(${posLabel(p)}, ${p.age}세), 2군 생활 끝에 트레이드 요청`,{tid:p.team,ref:p.id}); }catch(e){} }
@@ -17813,9 +17833,8 @@ function contractStart(){
   G.contract={y:G.year,tid:G.user,ended,foreignEnd,foreignDrop:[],released:[],done:false}; for(const id of foreignEnd)initPers(G.players[id]); salTalkInit();
   for(const p of aiSal){ let r=null; try{ r=aiSalNeg(p); }catch(e){} if(r&&r.st==='hold'&&p.team!==G.user)holdStart(p,r.sal,r.ask,true); else { p.sal=Math.max(MIN_SAL,r?r.sal:p.newSal); delete p.newSal; } } /* AI도 같은 요구·판정으로 협상하고, 차이가 크면 미계약(계약 2단계) */
   /* AI 구단: 기량이 크게 떨어진 고액 연봉 베테랑은 정리한다 */
-  for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간에는 AI가 맡은 전 소속 구단도 정리한다 */ for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<VET_REL_O&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); const c=relCost(p).tot; payOut(t.id,c,'rel'); /* 일반 방출과 같은 보장계약 정산(검수 11-09g) */ if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`,c); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
+  for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간에는 AI가 맡은 전 소속 구단도 정리한다 */ for(const p of domestic(t.id)){ if(p.age>=32&&retO(p)<VET_REL_O&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); const c=relCost(p).tot; payOut(t.id,c,'rel'); /* 일반 방출과 같은 보장계약 정산(검수 11-09g) */ if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`,c); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
   for(const t of G.teams) if(t.id!==ME()) trimRoster(t.id,60);
-  for(const t of G.teams)fAiReYB(t.id,G.year+1); /* 카페 11-21: AI 아시아쿼터 재계약 → 일반 외국인 */
   refreshFMarket(12,99);
   if(!G.unemp){ stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`); if(G.mail[0])G.mail[0].auto=foreignEnd.length?['sal','fre']:['sal']; }
 }
@@ -17824,18 +17843,6 @@ function contractStart(){
 function fReRoster(tid,sy,C=G.contract){ const active=C&&!C.done&&(C.tid??G.user)===tid&&C.y+1===sy,FE=new Set(active?C.foreignEnd||[]:[]),FD=new Set(active?C.foreignDrop||[]:[]); return foreignOf(tid).filter(p=>!FD.has(p.id)&&!(p.joinY>sy)).map(p=>{ if(!FE.has(p.id)||p.fCtY>=sy)return p; const agreed=!!(C.fre&&C.fre[p.id]&&C.fre[p.id].ok),inc=p.fInc||0,opt=inc>0?{a:inc,from:sy,until:sy,c:optCrit(p)}:agreed?null:p.opt; return {...p,sal:p.newSal??p.sal,rsy:(p.rsy||0)+1,opt,ctT:opt?tid:p.ctT}; }); }
 function fReCapInfo(){ const C=G.contract; return C?fYBInfo(G.user,fReRoster(G.user,C.y+1,C),C.y+1):null; }
 function fReMixBad(){ const f=fReCapInfo(); return !!(f&&f.mix); }
-/* 우리 아시아쿼터 선수를 재계약 때 일반 외국인으로(카페 11-21 전자포·구단주 보충): KBO 일반 외국인 슬롯은 국적 제한이 없다. 일반 외국인 재계약이 되면 아시아쿼터 상한 대신 일반 규정(3명 정원·구성·총액 한도)을 따르고, 아시아쿼터 자리는 비어 다른 선수를 데려올 수 있다.
-   요구액은 일반 외국인 재계약 산정(newSalary)과 일반 외국인 몸값(fAsk) 가운데 큰 쪽: 아시아쿼터 상한이 없어지니 일반 외국인 수준으로 다시 부른다. 다음 시즌 일반 외국인 자리가 비어야만 한다. 난수 없음 */
-function fYBReAsk(p){ const v=Object.assign({},p,{foreign:'용병',kept:null}); return round5(Math.max(newSalary(v),fAsk(v,perfOvr(p,2)??ovr(p)))); }
-function fReYBErr(tid,p,sy,L0){ if(!p||p.foreign!=='아시아'||p.team!==tid)return '아시아쿼터 선수가 아닙니다.'; const ns=fYBReAsk(p), L=(L0||foreignOf(tid)).filter(x=>x.id!==p.id).concat([Object.assign({},L0?(L0.find(x=>x.id===p.id)||p):p,{foreign:'용병',sal:ns,opt:null})]), f=fYBInfo(tid,L,sy);
-  if(f.n>f.max)return `다음 시즌 일반 외국인이 이미 ${f.max}명이라 외국인 슬롯으로 재계약할 수 없습니다. 먼저 한 명과 결별하세요.`; if(f.mix)return f.mix+'.'; if(f.over)return `일반 외국인 연봉 총액 한도를 ${money(f.over)} 넘어 외국인 슬롯으로 재계약할 수 없습니다(요구 ${money(ns)}).`; return ''; }
-/* 우리: 재계약 기간에 바꾼다(합의는 처음부터). 아직 확정 전이면 되돌릴 수 있다 */
-function fReToYB(id){ const C=G.contract, p=G.players[id]; if(!C||C.done||!p||p.team!==G.user||!C.foreignEnd.includes(id))return '재계약 기간이 아닙니다.'; if(C.foreignDrop.includes(id))return '이미 결별하기로 한 선수입니다.';
-  if(p.foreign==='용병'&&p.fAsiaRe===C.y){ const L=fReRoster(G.user,C.y+1,C).filter(x=>x.id!==id); if(L.some(x=>x.foreign==='아시아'))return '다음 시즌 아시아쿼터 자리가 이미 찼습니다. 아시아쿼터로 되돌릴 수 없습니다.'; p.foreign='아시아'; p.newSal=p.fAsiaNs??p.newSal; delete p.fAsia; delete p.fAsiaRe; delete p.fAsiaNs; if(C.fre)delete C.fre[id]; delete p.fInc; return `${p.name}을(를) 다시 아시아쿼터로 재계약합니다. 요구액 ${money(p.newSal)}.`; }
-  const e=fReYBErr(G.user,p,C.y+1,fReRoster(G.user,C.y+1,C)); if(e)return e; const ns=fYBReAsk(p); p.fAsiaNs=p.newSal; p.foreign='용병'; p.fAsia=1; p.fAsiaRe=C.y; p.newSal=ns; if(C.fre)delete C.fre[id]; delete p.fInc; delete p.fout; /* 아시아쿼터 조건의 합의·해외 제안은 새 조건으로 다시 */
-  story(p,`${C.y+1}시즌 재계약을 일반 외국인 슬롯으로 진행(아시아쿼터 자리 비움)`,'move'); return `${p.name}을(를) 외국인 슬롯으로 재계약합니다. 일반 외국인 규정이 적용되고 요구액은 ${money(ns)}입니다. 아시아쿼터 자리가 비었습니다.`; }
-/* AI(같은 규정): 재계약한 아시아쿼터 선수가 일반 외국인 재계약 기준(능력 54)을 넘고 다음 시즌 일반 외국인 자리·구성·총액이 맞으면 일반 외국인으로 바꾼다. 새 게임 세계 생성 중에는 하지 않는다 */
-function fAiReYB(tid,sy){ if(WORLD_BUILD>0||tid===ME())return null; const p=foreignOf(tid).find(x=>x.foreign==='아시아'&&x.fCtY===sy); if(!p||ovr(p)<54||p.age>=35||fReYBErr(tid,p,sy))return null; p.sal=p.newSal=fYBReAsk(p); p.foreign='용병'; p.fAsia=1; story(p,`${sy}시즌 재계약을 일반 외국인 슬롯으로(아시아쿼터 자리 비움)`,'move'); return p; }
 /* 마감·이직 인계도 같은 정원·구성·총액에 맞춘다. 과다한 유형에서 비싼 재계약부터 포기한다. */
 function fReAutoDrop(C,tid){ const sy=C.y+1; for(let n=0;n<(C.foreignEnd||[]).length;n++){ const L=fReRoster(tid,sy,C),f=fYBInfo(tid,L,sy); if(!f.over&&!f.mix)return f; const yb=L.filter(x=>x.foreign==='용병'),np=yb.filter(x=>x.isP).length,kind=np>=f.max?true:yb.length-np>=f.max?false:null;
     const k=(C.foreignEnd||[]).map(id=>G.players[id]).filter(p=>p&&p.team===tid&&p.foreign==='용병'&&!(C.foreignDrop||[]).includes(p.id)&&(kind==null||p.isP===kind)).sort((a,b)=>(b.newSal??b.sal)-(a.newSal??a.sal))[0]; if(!k)break; (C.foreignDrop=C.foreignDrop||[]).push(k.id); if(tid===G.user)addLog(`다음 시즌 외국인 규정에 따라 ${k.name}와(과)는 재계약하지 않습니다.`); }
@@ -19404,25 +19411,12 @@ function fAiEst(tid,q){ if(q.team!=null||!q.foreign){ const sd=(team(tid)||{}).s
 /* 이 구단이 노리는 후보 상위 3명: 계약할 수 있는 후보만(보류권·총액 한도·교체 기준), 우리와 협상 중인 다른 후보는 뺀다. AI 영입·경쟁 구단·관심 집계가 같은 목록을 쓴다(검수 11-09zl: 계약 불가 후보가 상위 칸을 차지) */
 function fTop3(tid,nd,q){ const L=(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&(x===q||!foHeld(x))&&fKnows(tid,x)&&x.foreign===nd.kind&&(nd.isP==null||x.isP===nd.isP)&&(!nd.up||fAiEst(tid,x)>=nd.upO+6)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a));
   const out=[]; for(const x of L){ if(!foreignCheck(tid,x,nd.up))out.push(x); if(out.length>=3)break; } return out; }
-/* 아시아쿼터 후보를 일반 외국인 슬롯으로(카페 11-21 전자포): KBO 일반 외국인 슬롯은 국적 제한이 없어 아시아 선수도 일반 외국인으로 계약할 수 있다.
-   그러면 일반 외국인 규정(1인 상한·3명 총액·교체 2회)을 따르고 아시아쿼터 자리는 쓰지 않는다. 슬롯 종류는 p.foreign에 남기고(계약 뒤 '용병'), 아시아쿼터 대상이었음은 p.fAsia.
-   fAsYB(q,fn): 시장 후보 q를 일반 외국인으로 보고 fn을 돌린다. 계약하면 그대로 두고, 못 하면 원래(아시아쿼터·요구액)로 되돌린다. 난수 없음 */
-function fYBAsk(q){ const o=ovr(q)+hn('fyb',q.id)*3.5+(q.mlbG>=30?1.5:q.mlbG>0?.7:0); let a=fAsk(Object.assign({},q,{foreign:'용병'}),o); if(q.flaw)a=round5(a*.88); return Math.max(q.ask||0,a); } /* 신규 일반 외국인과 같은 몸값 식: 아시아쿼터 상한이 없어지니 요구액이 일반 시장 수준으로 오른다 */
-function fAsYB(q,fn){ if(!q||q.foreign!=='아시아'||q.team!=null)return fn(); const a0=q.ask; q.foreign='용병'; q.ask=fYBAsk(q); q._fyb=1;
-  try{ return fn(); } finally{ delete q._fyb; if(q.team!=null){ q.fAsia=1; try{ story(q,'아시아쿼터 대상 선수지만 일반 외국인 슬롯으로 계약(일반 외국인 규정 적용)','move'); }catch(e){} } else { q.foreign='아시아'; q.ask=a0; } } }
-/* AI(우리 위임 포함)도 같은 판단: 일반 외국인 자리를 채울 때 아시아쿼터 후보가 일반 슬롯 몸값으로도 일반 후보 1순위보다 확실히(점수 +F_YB_EDGE) 나으면 그 선수를 고른다. 새 게임 세계 생성 중에는 하지 않는다 */
-const F_YB_EDGE=5;
-function fAiYBPick(tid,nd,best){ if(WORLD_BUILD>0||!nd||nd.kind!=='용병'||!best||best.foreign!=='용병')return null; let top=null, ts=fScoreBy(tid,best)+F_YB_EDGE;
-  for(const id of G.fmarket||[]){ const x=G.players[id]; if(!x||x.team!=null||x.foreign!=='아시아'||foHeld(x)||!fKnows(tid,x)||(nd.isP!=null&&x.isP!==nd.isP))continue;
-    fAsYB(x,()=>{ if(nd.up&&fAiEst(tid,x)<nd.upO+6)return; const s=fScoreBy(tid,x); if(s>=ts&&!foreignCheck(tid,x,nd.up)){ top=x; ts=s; } }); }
-  return top; }
-const fAiYB=(tid,q)=>!!(q&&q.foreign==='아시아'&&q.team==null&&(fNeed(tid)||{}).kind==='용병'); /* aiForeignPick이 일반 자리에 고른 아시아쿼터 후보 */
-function aiForeignPick(tid){ const nd=fNeed(tid); const q=nd&&fTop3(tid,nd)[0]||null; return q&&fAiYBPick(tid,nd,q)||q; } /* 일반 외국인 자리: 아시아쿼터 후보가 확실히 나으면 일반 슬롯으로(카페 11-21). 일반 후보가 있을 때만 바꿔 난수 순서는 그대로 */
+function aiForeignPick(tid){ const nd=fNeed(tid); return nd&&fTop3(tid,nd)[0]||null; }
 function fInterest(q){ return !q||q.team!=null?0:foRivalTeams(q).length; } /* 보류권으로 다른 구단이 못 데려가는 선수는 관심도 0이라 몸값이 오르지 않는다 */
 function aiForeignSign(tid,q,why,T){ const c=q.fneg&&q.fneg.cut, nd=fNeed(tid); const up=c&&c.tid===tid?foUp(tid,q):nd&&nd.up&&fAiEst(tid,q)>=nd.upO+6?nd.up:null; /* 끼어들기를 일으킨 구단은 그때 바꾸려던 선수를 내보낸다(검수 11-09zl) */ if(up&&G.players[up]){ const w=G.players[up]; { const a0=q.ask; if(T)q.ask=T.g+T.i; const e=foreignCheck(tid,q,w.id); q.ask=a0; if(e)return e; } /* 교체 계약이 성립하는지(총액 한도 등) 먼저 보고 나서 기존 선수를 내보낸다(검수 11-06) */ releaseForeign(w.id); wire('외국인',`${tshort(tid)}, 외국인 ${w.name} 대신 ${q.name} 영입 추진`,{tid,ref:q.id}); } const err=T?signForeignT(tid,q.id,T.g,T.i):signForeign(tid,q.id); /* T: 경쟁 구단이 실제로 제시한 보장·인센티브(검수 11-05: 협상을 압박한 조건과 실제 계약이 달랐다) */ if(err)return err; if(fwatchOn(q.id)&&!G._foNegSign)mail('스카우트팀장',`관찰 후보 ${q.name}, ${tshort(tid)}와(과) 계약`,`관찰 명단에 있던 ${q.name}(${posLabel(q)})을(를) ${tname(tid)}이(가) ${T?`보장 ${money(T.g)}${T.i?` + 인센티브 ${money(T.i)}`:''}`:`연 ${money(q.sal)}`}에 먼저 데려갔습니다.${why||''}`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); else if(ovr(q)>=60)wire('외국인',`${tshort(tid)}, 외국인 ${posLabel(q)} ${q.name} 영입 (${money(q.sal)})`,{tid,ref:q.id}); }
 /* 스토브리그·캠프 기간: 구단들이 하루하루 시장에서 데려간다. 인기 선수는 몸값이 오른다 */
 function aiForeignDaily(){ if(!foreignOpen()||period()==='season')return; const o=dobj(G.day); const pr=G.startY===G.year&&o.m===1?.45:o.m===1||o.m===2?.12:.06; /* 창단 첫 1월: 모든 구단이 외국인 선수단을 새로 꾸리므로 각 구단이 자기 판단으로 바로 움직인다(순번 없이). 평소 겨울은 띄엄띄엄 */
-  for(const t of G.teams){ if(t.id===ME()||!fNeed(t.id))continue; const q=aiForeignPick(t.id); if(q&&R()<pr){ const go=()=>{ if(foCutIn(t.id,q))return; if(fwatchOn(q.id)&&!G.unemp){ const w=q.fwarn; if(!w||w.tid!==t.id||w.y!==G.year){ q.fwarn={tid:t.id,d:G.day,y:G.year}; stop('외국인',`${tname(t.id)}이(가) 우리가 관찰 중인 외국인 후보 ${q.name}(${posLabel(q)})과(와) 협상에 들어갔습니다. 3일쯤 뒤 계약할 것으로 보입니다. 잡으려면 외국인 시장에서 먼저 제안하세요.`); return; } if(G.day-w.d<3)return; } aiForeignSign(t.id,q); }; if(fAiYB(t.id,q))fAsYB(q,go); else go(); } } } /* 관찰 중인 후보: 다른 구단이 움직이면 먼저 알리고 3일 여유를 준다(커뮤니티 11-12: 관찰을 시키자마자 다음 날 다른 구단과 계약). 관찰한다고 AI가 서두르지는 않는다(해외 활성화 1-2) */
+  for(const t of G.teams){ if(t.id===ME()||!fNeed(t.id))continue; const q=aiForeignPick(t.id); if(q&&R()<pr&&!foCutIn(t.id,q)){ if(fwatchOn(q.id)&&!G.unemp){ const w=q.fwarn; if(!w||w.tid!==t.id||w.y!==G.year){ q.fwarn={tid:t.id,d:G.day,y:G.year}; stop('외국인',`${tname(t.id)}이(가) 우리가 관찰 중인 외국인 후보 ${q.name}(${posLabel(q)})과(와) 협상에 들어갔습니다. 3일쯤 뒤 계약할 것으로 보입니다. 잡으려면 외국인 시장에서 먼저 제안하세요.`); continue; } if(G.day-w.d<3)continue; } aiForeignSign(t.id,q); } } } /* 관찰 중인 후보: 다른 구단이 움직이면 먼저 알리고 3일 여유를 준다(커뮤니티 11-12: 관찰을 시키자마자 다음 날 다른 구단과 계약). 관찰한다고 AI가 서두르지는 않는다(해외 활성화 1-2) */
 /* 트리플A 옵트아웃 후보(해외 활성화 2-2): 6월 1일~7월 10일 매주 2~3명. 실제로 MLB 경력 베테랑의 마이너 계약에는 6월 1일·7월 1일 옵트아웃이 흔하고(노사협약 XX(B) 선수는 6월 1일, 날짜는 계약마다 달라 불확실),
    KBO 시즌 중 교체 외국인이 이 무렵에 몰린다. 올해 트리플A 기록(p.now)을 그 주까지 채워서 낸다. 같은 시장이라 AI 교체 판단(aiForeignReview)도 같은 후보를 본다 */
 const F_OPT={d0:[6,1],d1:[7,10],max:24};
@@ -19440,7 +19434,7 @@ function fNewWeek(){ G.fmarket=G.fmarket||[]; const ag=G.fmarket.filter(id=>{ co
   return n; }
 function fBidWeek(){ try{ scoutFindWeek(); }catch(err){} if(!foreignOpen())return; fNewWeek(); rosterMemoOn(); try{ for(const id of (G.fmarket||[])){ const q=G.players[id]; if(!q||q.team!=null)continue; const n=fInterest(q); q.fint=n; if(q.ask0==null)q.ask0=q.ask; if(q.ask>foCap(q))q.ask=foCap(q); /* 요구액도 지금 제안 상한 안에서: 우리는 막히고 AI는 상한액으로 잘려 계약하던 차이(검수 11-08) */ const nn=new Set([...foRivalTeams(q),...fWatchers(q)]).size; /* 관찰 소문(사용자 11-17): 3주 넘게 지켜본 구단도 관심으로 친다. 우리 관찰·AI 관찰 같은 규칙 */ if(nn>=2&&q.ask<q.ask0*1.3)q.ask=round5(Math.min(q.ask*1.04,foCap(q))); /* 시즌 중 줄어든 신규 상한까지만(검수 11-08) */ } } finally { rosterMemoOff(); } } /* 시장 선수 관심도 평가는 구단 명단을 바꾸지 않는다: 명단 거르기를 한 번만(성능 11-18) */
 function aiForeignFill(tid){
-  { const q=aiForeignPick(tid); if(q){ if(fAiYB(tid,q))fAsYB(q,()=>aiForeignSign(tid,q)); else aiForeignSign(tid,q); return; } }
+  { const q=aiForeignPick(tid); if(q){ aiForeignSign(tid,q); return; } }
   const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병');
   if(yb.length<fMaxYB(tid)&&fReplLeft(tid)>0){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1;
     const want=needP?true:needB?false:R()<.6;
@@ -31291,10 +31285,7 @@ function foRivalTeams(q){ const c=q.fneg&&q.fneg.cut; const L=[]; for(const t of
 function foUp(tid,q){ const c=q&&q.fneg&&q.fneg.cut; if(c&&c.tid===tid)return c.up!=null&&G.players[c.up]&&G.players[c.up].team===tid?c.up:undefined; const nd=fNeed(tid); return nd&&nd.up?nd.up:undefined; }
 function foVal(g,i){ return g+i*FO_INC_W; }
 /* 목록의 협상 버튼: 요구액이 아니라 가장 낮은 제안(최소 보장)으로도 막히는지 본다. 낮춰 부르면 풀리는 총액 한도로는 협상 자체를 막지 않는다(검수 11-09b) */
-function foListErr0(q){ const a0=q.ask; q.ask=MIN_SAL; const e=foreignCheck(G.user,q); q.ask=a0; return e; }
-/* 아시아쿼터 후보는 아시아쿼터 자리가 막혀도 일반 외국인 슬롯이 비어 있으면 협상할 수 있다(카페 11-21) */
-function foYBOk(q){ return !!(q&&q.foreign==='아시아'&&q.team==null)&&!fAsYB(q,()=>foListErr0(q)); }
-function foListErr(q){ const e=foListErr0(q); return e&&foYBOk(q)?'':e; }
+function foListErr(q){ const a0=q.ask; q.ask=MIN_SAL; const e=foreignCheck(G.user,q); q.ask=a0; return e; }
 /* 경쟁 구단 제안(가장 강한 순) */
 /* 경쟁 구단 제시액: 관심 구단이 많을수록 값이 오른다(실제 KBO: S급 신규 외국인은 대부분 상한 100만 달러 근처). 3주 넘게 지켜본 구단(우리·AI 같은 규칙, 사용자 11-17 관찰 소문)도 관심 구단으로 센다. 예전: 우리가 관찰만 하면 한 곳 더 */
 function foRivals(q){ const cap=foCap(q); let T=foRivalTeams(q), R=[]; const Wt=fWatchers(q);
@@ -31307,11 +31298,11 @@ function foFloor(q){ return foVal(q.ask*.85,q.ask*.15)*.98; }
 function foNeg(q){ q.fneg=q.fneg||{n:0,mood:70,since:G.day,wk:G.day}; if(G.day-q.fneg.wk>=7){ q.fneg.wk=G.day; q.fneg.n=0; } return q.fneg; }
 /* 이기려면 필요한 보장액(인센티브 i 고정). 한도를 넘으면 null */
 function foNeedG(q,i,target,f){ const g=Math.max(Math.ceil((target/f-i*FO_INC_W)/USD)*USD,MIN_SAL); /* 1만 달러 단위로 올림, 최소 보장을 먼저 적용한 뒤 상한 검사(검수 11-06) */ return g+i<=foCap(q)?g:null; }
-function foOffer(id,g,i,rel,yb){ rel=!!rel; { const q0=G.players[id]; if(yb&&q0&&q0.foreign==='아시아'&&q0.team==null)return fAsYB(q0,()=>foOffer(id,g,i,rel)); } /* yb: 아시아쿼터 후보를 일반 외국인 슬롯으로(카페 11-21) */ const q=G.players[id]; if(!q||q.team!=null)return {ok:false,msg:'이미 다른 곳과 계약했습니다.'}; if(!foreignOpen())return {ok:false,msg:'지금은 외국인 선수를 영입할 수 없습니다.'};
+function foOffer(id,g,i,rel){ rel=!!rel; const q=G.players[id]; if(!q||q.team!=null)return {ok:false,msg:'이미 다른 곳과 계약했습니다.'}; if(!foreignOpen())return {ok:false,msg:'지금은 외국인 선수를 영입할 수 없습니다.'};
   g=Math.round(g); i=Math.round(Math.max(0,i)); const cap=foCap(q); if(g+i>cap)return {ok:false,msg:`신규 계약은 보장과 인센티브를 합쳐 ${Math.round(cap/USD)}만 달러(${money(cap)})까지입니다.`};
   const ask0=q.ask; q.ask=g+i; const err=foreignCheck(G.user,q); q.ask=ask0; if(err)return {ok:false,msg:err};
   const N=foNeg(q); if(N.cool>G.day)return {ok:false,msg:`${q.name} 측이 ${dmd(N.cool)}까지 협상을 쉬자고 합니다.`}; if(N.n>=3)return {ok:false,msg:`이번 주 제안은 세 번까지입니다. ${dmd(N.wk+7)}에 다시 제안할 수 있습니다.`};
-  N.n++; N.last=G.day; N.yb=!!q._fyb; /* 마지막 제안의 슬롯: 기한이 지나면 경쟁 구단도 그 슬롯 기준으로 */ const me=foAppeal(q,G.user,{rel}); const v=foVal(g,i)*me.f; const R0=foRivals(q); const best=R0[0]; const floor=foFloor(q); const target=Math.max(floor,best?best.v*1.01:0);
+  N.n++; N.last=G.day; const me=foAppeal(q,G.user,{rel}); const v=foVal(g,i)*me.f; const R0=foRivals(q); const best=R0[0]; const floor=foFloor(q); const target=Math.max(floor,best?best.v*1.01:0);
   const riv=best?`${R0.length}개 구단이 관심을 보이고 있고, 가장 적극적인 곳은 ${tshort(best.tid)}(보장 ${usdT(best.g)} + 인센티브 ${usdT(best.i)}, 구단 매력 ${Math.round((best.f-1)*100)>=0?'+':''}${Math.round((best.f-1)*100)}%)입니다.`:'아직 다른 구단 제안은 없습니다.';
   if(v>=target){ const err=signForeignT(G.user,id,g,i); if(err)return {ok:false,msg:err}; delete q.fneg; if(rel){ q.fRel=true; story(q,'계약 조항: 재계약하지 않으면 보류권 해제(국내 다른 구단과 계약 가능)','move'); } /* 외국인 계약은 국내 에이전시 친분을 올리지 않는다(계약 1단계: 예전에는 agentOf로 국내 에이전시가 붙어 친분이 올랐다) */ return {ok:true,msg:`${q.name} 측이 사인했습니다. 보장 ${usdT(g)}(${money(g)})${i?` + 인센티브 ${usdT(i)}`:''}.${best?` ${tshort(best.tid)}도 노렸지만 우리를 택했습니다.`:''}`}; }
   /* 낮게 부르면 분위기가 나빠진다 */
@@ -31331,11 +31322,11 @@ function signForeignT(tid,id,g,i){ const p=G.players[id]; if(!p)return '외국�
   if(tid===G.user)story(p,`계약 조건: 보장 ${money(g)}${i?` + 인센티브 ${money(i)}(규정 출전 시)`:''}`,'move'); return ''; }
 /* 기다려 준 기한이 지나면 가장 강한 경쟁 구단으로 간다 */
 function foDaily(){ for(const id of [...(G.fmarket||[])]){ const q=G.players[id]; if(!q||q.team!=null||!q.fneg||!q.fneg.dl||q.fneg.dl>=G.day)continue; const dl=q.fneg.dl; delete q.fneg.dl;
-    const run=()=>{ const R0=foRivals(q); let b=null; if(foreignOpen())for(const r of R0){ G._foNegSign=true; try{ aiForeignSign(r.tid,q,'',r); }finally{ G._foNegSign=false; } if(q.team===r.tid){ b=r; break; } } /* 우리와 줄다리기하던 후보의 계약은 아래 결과 알림 하나로(플레이 리뷰 11-12: 같은 계약에 메일 3통) */ if(q.fneg)delete q.fneg.cut; if(!b)return; /* 1순위가 한도 등으로 못 하면 다음 구단(검수 11-06). 아무도 못 하면 시장에 남는다. 경쟁 소식 전에 낸 제안은 답으로 세지 않는다(검수 11-09zl) */ note('외국인',`${q.name}이(가) ${tname(b.tid)}과(와) 계약했습니다. ${q.fcut!=null&&!(q.fneg.last>=q.fcut)?`${dmd(dl)}까지 끼어들 기회가 있었지만 우리는 제안하지 않았습니다.`:`${dmd(dl)}까지 기다려 줬지만 우리 조건이 ${tshort(b.tid)}보다 못했습니다.`}`); }; if(q.fneg.yb)fAsYB(q,run); else run(); } } /* 일반 슬롯으로 줄다리기한 아시아쿼터 후보는 경쟁도 일반 슬롯 기준(카페 11-21) */
+    const R0=foRivals(q); let b=null; if(foreignOpen())for(const r of R0){ G._foNegSign=true; try{ aiForeignSign(r.tid,q,'',r); }finally{ G._foNegSign=false; } if(q.team===r.tid){ b=r; break; } } /* 우리와 줄다리기하던 후보의 계약은 아래 결과 알림 하나로(플레이 리뷰 11-12: 같은 계약에 메일 3통) */ if(q.fneg)delete q.fneg.cut; if(!b)continue; /* 1순위가 한도 등으로 못 하면 다음 구단(검수 11-06). 아무도 못 하면 시장에 남는다. 경쟁 소식 전에 낸 제안은 답으로 세지 않는다(검수 11-09zl) */ note('외국인',`${q.name}이(가) ${tname(b.tid)}과(와) 계약했습니다. ${q.fcut!=null&&!(q.fneg.last>=q.fcut)?`${dmd(dl)}까지 끼어들 기회가 있었지만 우리는 제안하지 않았습니다.`:`${dmd(dl)}까지 기다려 줬지만 우리 조건이 ${tshort(b.tid)}보다 못했습니다.`}`); } }
 /* 우리 관찰 명단 후보를 AI 구단이 데려가려 하면 바로 끝내지 않고 사흘 끼어들 기한을 준다(사용자 피드백 11-09f: '하이재킹 당했습니다'로 끝나 허무함).
    기한에는 다른 구단도 못 데려가고(foHeld), 기한이 지나면 foDaily가 기존 점수로 가장 강한 구단에 보낸다. 관찰 명단만, 한 선수당 한 번만 */
 function foCutIn(tid,q,up){ if(G.unemp||!q||q.team!=null||q.fcut!=null||!fwatchOn(q.id)||foHeld(q))return false; const dl=foDL(); if(dl<=G.day)return false;
-  q.fcut=G.day; const N=foNeg(q); N.dl=dl; N.dlT=tid; N.yb=!!q._fyb; N.cut={tid,up:up??(fNeed(tid)||{}).up}; delete N.cool; /* 영입을 추진한 구단(교체 대상 포함)은 경쟁자로 남고, 새 기한 동안 협상 휴식은 풀린다(검수 11-09zl) */ const r=foRivals(q).find(x=>x.tid===tid); const tot=r?r.g+r.i:Math.min(foCap(q),q.ask);
+  q.fcut=G.day; const N=foNeg(q); N.dl=dl; N.dlT=tid; N.cut={tid,up:up??(fNeed(tid)||{}).up}; delete N.cool; /* 영입을 추진한 구단(교체 대상 포함)은 경쟁자로 남고, 새 기한 동안 협상 휴식은 풀린다(검수 11-09zl) */ const r=foRivals(q).find(x=>x.tid===tid); const tot=r?r.g+r.i:Math.min(foCap(q),q.ask);
   mail('스카우트팀장',`${tshort(tid)}, 관찰 후보 ${q.name}와(과) 협상 중`,`${tname(tid)}이(가) 관찰 명단의 ${q.name}(${posLabel(q)}, ${q.age}세)과(와) 계약을 앞두고 있습니다. 제시액은 약 ${Math.round(tot/USD/5)*5}만 달러 수준으로 들립니다. 관심 있으면 ${dmd(dl)}까지 제안하세요. 선수가 두 구단 조건을 비교해 고릅니다.`,{imp:true,kind:'외국인',ref:q.id,acts:[{l:`${q.name} 보고 제안`,a:'player',v:q.id},{l:'외국인 시장',a:'go',v:'transfer:foreign'}]});
   return true; }
 /* AI 구단은 우리와 협상 중인(기다려 주는) 선수를 그 기간에는 데려가지 않는다 */
@@ -39434,7 +39425,7 @@ function sbUndo(c,failed){const m=meta();if(!sbOwn(c,m))return false;
 function sbFinish(c,idb){const m=meta();if(!sbOwn(c,m))return false;const info={...c.info};delete info.pending;delete info.fail;
   if(idb){info.idb=true;info.idbKey=c.key;info.idbCommit=c.commit;}else{delete info.idb;delete info.idbKey;delete info.idbCommit;}
   m.slots[c.n]=info;if(c.activate)m.active=c.n;return setMeta(m);}
-async function sbClean(n){if(!sbOk())return;try{const keys=await SaveStore.big.keys();for(const k of keys){if(k!==n&&!String(k).startsWith(sbPrefix(n)))continue;const it=meta().slots[n];if(!it)continue;const refs=[it.idbKey,it.idbCommit,it.writeKey,it.pending?.key,it.pending?.commit,it.pending?.old?.idbKey,it.pending?.old?.idbCommit,it.deleting?.old?.idbKey,it.deleting?.old?.idbCommit];if(it.idb&&!it.idbKey||it.pending?.old?.idb&&!it.pending.old.idbKey||it.deleting?.old?.idb&&!it.deleting.old.idbKey)refs.push(n);if(!refs.includes(k))await sbDrop(k);}}catch(e){}}
+async function sbClean(n){if(!sbOk())return;try{const keys=await SaveStore.big.keys();for(const k of keys){if(k!==n&&!String(k).startsWith(sbPrefix(n)))continue;const it=meta().slots[n];if(!it)continue;const refs=[it.idbKey,it.idbCommit,it.pending?.key,it.pending?.commit,it.pending?.old?.idbKey,it.pending?.old?.idbCommit];if(it.idb&&!it.idbKey||it.pending?.old?.idb&&!it.pending.old.idbKey)refs.push(n);if(!refs.includes(k))await sbDrop(k);}}catch(e){}}
 /* localStorage에 못 들어간 크기는 기억해 두고(10분), 그보다 큰 본문은 바로 IndexedDB로: 수 MB를 매번 써 보다 실패하는 비용을 줄인다(성능 11-18) */
 let _lsFail=null;
 function sbSet(n,data,c){let ls=false;const skip=_lsFail&&data.length>=_lsFail.n&&Date.now()-_lsFail.t<600e3;if(!c.options.forceIDB&&!skip){try{c.lsTouched=true;SaveStore.set(slotKey(n),data);ls=sbLsGet(n)===data;}catch(e){} if(!ls&&data.length>500000)_lsFail={n:data.length,t:Date.now()};}
@@ -39456,44 +39447,24 @@ let SAVE_ERR_SB='';
 let _sbOff=false;async function sbOffload(keep){if(_sbOff||!sbOk())return;_sbOff=true;try{for(const n of SLOT_IDS){if(n===keep||n===CUR_SLOT)continue;const m=meta(),it=m.slots[n],b=sbLsGet(n);if(!it||it.lock||it.pending||b==null)continue;await writeSlotConfirmed(n,b,it,it.rev||0,{forceIDB:true,body:b});}}catch(e){}finally{_sbOff=false;}}
 /* 현재 본문을 마지막에 지운다. 어느 삭제든 실패하면 본문·목록은 남기고 실패를 돌려준다. */
 async function sbRemove(n,exp=revOf(meta(),n)){if(SB_PEND.has(n)&&!await sbSettle(n))return false;const m=meta(),it=m.slots[n],ls=sbLsGet(n);if(revOf(m,n)!==exp||it?.pending)return false;let savedBody=null,savedMark=null;
-  /* 본문이 없거나 읽기 오류인 슬롯(목록만 남은 칸)은 지킬 본문이 없으니 그대로 지운다(카페 11-21: 본문 없는 슬롯을 지울 수 없었음) */
-  if(it?.idb){try{savedBody=await SaveStore.big.read(sbBodyKey(n,it));if(typeof savedBody!=='string')savedBody=null;else if(it.idbCommit)savedMark=await SaveStore.big.read(it.idbCommit);}catch(e){savedBody=null;savedMark=null;}}
+  try{if(it?.idb){savedBody=await SaveStore.big.read(sbBodyKey(n,it));if(typeof savedBody!=='string')return false;if(it.idbCommit)savedMark=await SaveStore.big.read(it.idbCommit);}}catch(e){return false;}
   try{const keys=sbOk()?await SaveStore.big.keys():[];if(revOf(meta(),n)!==exp)return false;SaveStore.remove(slotKey(n));if(sbLsGet(n)!=null)throw Error('remove');
     const current=it?.idb?sbBodyKey(n,it):null,owned=[...new Set([...keys.filter(k=>k===n||String(k).startsWith(sbPrefix(n))),...(current!=null?[current]:[]),...(it?.idbCommit?[it.idbCommit]:[])])];
     owned.sort((a,b)=>(a===current?1:0)-(b===current?1:0));for(const k of owned){if(revOf(meta(),n)!==exp)throw Error('changed');await sbDrop(k);}
-    if(revOf(meta(),n)!==exp)throw Error('changed'); /* 지운 뒤 판번호가 바뀌었으면 본문을 되돌려 둔다(예전: 본문만 지우고 실패로 돌려 목록이 빈 본문을 가리킴) */sbForget(n);SB_SEQ[n]=(SB_SEQ[n]||0)+1;return true;
+    if(revOf(meta(),n)!==exp)return false;sbForget(n);SB_SEQ[n]=(SB_SEQ[n]||0)+1;return true;
   }catch(e){if(revOf(meta(),n)===exp){if(ls!=null)try{SaveStore.set(slotKey(n),ls);}catch(x){}if(savedBody!=null)try{await sbPut(sbBodyKey(n,it),savedBody);if(savedMark!=null)await sbPut(it.idbCommit,savedMark);}catch(x){}}return false;}}
 async function sbCommitted(n){if(SB_PEND.has(n)&&!await sbSettle(n))return null;const m=meta(),it=m.slots[n],rev=revOf(m,n),stamp=sbStamp(it);if(it?.pending||it?.deleting)return null;try{const body=it?.idb?await SaveStore.big.read(sbBodyKey(n,it)):sbLsGet(n);if(it?.idbCommit){const z=JSON.parse(await SaveStore.big.read(it.idbCommit));if(z.saveCommit!==1||z.rev!==rev||z.key!==it.idbKey){sbForget(n);return null;}}const now=meta();if(sbStamp(now.slots[n])!==stamp||now.slots[n]?.pending||now.slots[n]?.deleting||typeof body!=='string')return null;if(it?.idb){SB.set(n,body);SB_REV.set(n,stamp);}return {body,rev,info:it?{...it}:null};}catch(e){sbForget(n);return null;}}
 /* 旧一覧のない数値キーと、確定印のある版だけを発見する。 */
 async function sbOrphan(n,keys){const found=[];for(const k of keys)if(String(k).startsWith(sbPrefix(n))&&String(k).endsWith(':commit'))try{const z=JSON.parse(await SaveStore.big.read(k));if(z.saveCommit!==1||z.n!==n||!z.info||z.info.pending||z.info.idbKey!==z.key||z.info.rev!==z.rev)continue;const body=await SaveStore.big.read(z.key);if(unpack(body))found.push({body,info:{...z.info,idb:true,idbCommit:k}});}catch(e){}
   found.sort((a,b)=>(b.info.rev||0)-(a.info.rev||0));if(found.length)return found[0];const body=await SaveStore.big.read(n),g=unpack(body);return g?{body,info:{...slotInfoOf(g),rev:revNext(0),idb:true}}:null;}
 async function sbRefresh(ns){if(!sbOk())return !(ns||SLOT_IDS).some(n=>sbFlag(meta(),n));let all=true,keys=[];try{keys=await SaveStore.big.keys();}catch(e){}
-  for(const n of ns||SLOT_IDS){if(SB_PEND.has(n)){if(!await sbSettle(n))all=false;continue;}let m=meta(),it=m.slots[n],rev=revOf(m,n);try{if(it?.deleting){if(!sbStaleDel(it)){all=false;continue;}const row={...it};delete row.deleting;m=meta();if(sbStamp(m.slots[n])!==sbStamp(it)||!m.slots[n]?.deleting){all=false;continue;}m.slots[n]=row;if(!setMeta(m)){all=false;continue;}it=row;rev=row.rev||0;}
+  for(const n of ns||SLOT_IDS){if(SB_PEND.has(n)){if(!await sbSettle(n))all=false;continue;}let m=meta(),it=m.slots[n],rev=revOf(m,n);try{if(it?.deleting){all=false;continue;}
     if(it?.pending){const p=it.pending,old=p.old,body=old?.idb?await SaveStore.big.read(sbBodyKey(n,old)):sbLsGet(n);m=meta();if(sbStamp(m.slots[n])!==sbStamp(it)){all=false;continue;}
       if(old&&unpack(body)){m.slots[n]={...old,fail:it.day};if(!setMeta(m)){all=false;continue;}it=m.slots[n];rev=it.rev||0;if(it.idb){SB.set(n,body);SB_REV.set(n,sbStamp(it));}}
       else{delete m.slots[n];setMeta(m);sbForget(n);all=false;continue;}}
     if(!it){const o=await sbOrphan(n,keys);if(!o)continue;m=meta();if(m.slots[n]){all=false;continue;}m.slots[n]=o.info;if(!setMeta(m)){all=false;continue;}SB.set(n,o.body);SB_REV.set(n,sbStamp(o.info));continue;}
-    if(!it.idb){sbForget(n);if(sbLsGet(n)==null&&!it.pending)await sbRepair(n,keys);continue;}if(!await sbCommitted(n)){sbForget(n);if(!await sbRepair(n,keys))all=false;continue;}
+    if(!it.idb){sbForget(n);continue;}if(!await sbCommitted(n)){sbForget(n);all=false;continue;}
   }catch(e){sbForget(n);all=false;}}return all;}
-/* 지우다 멈춘 표시(탭이 닫힘 등): 2분이 지났거나 시각이 없는 옛 표시는 끝난 작업으로 보고 푼다. 그 사이 다른 탭이 지우는 중이면 건드리지 않는다 */
-const sbStaleDel=it=>!(it&&it.deleting&&it.deleting.at>Date.now()-120e3);
-/* 목록이 가리키는 본문을 읽지 못하는 슬롯(카페 11-21 "저장 본문 없음"): 되살릴 수 있으면 되살리고, 본문이 확실히 없으면 항목에서 보조 저장소 위치를 떼어 lost로 표시한다(삭제·덮어쓰기가 막히지 않게).
-   되살리는 순서: 목록 키의 본문(확정 기록의 판번호만 어긋남) → localStorage 본문 → 같은 슬롯의 다른 확정본·옛 숫자 키. 판번호·키가 그대로일 때만 고치므로 여러 번 돌려도 결과가 같다(난수·게임 상태와 무관).
-   읽기 자체가 오류(큰 값 읽기 실패 등)면 고치지 않고 둔다: 그래도 삭제·덮어쓰기는 된다. true면 지금 항목이 일관됨 */
-async function sbRepair(n,keys){const it=meta().slots[n];if(!it||it.pending||it.deleting||SB_PEND.has(n))return false;const stamp=sbStamp(it);let body,err=false,fix=null;
-  if(it.idb){try{body=await SaveStore.big.read(sbBodyKey(n,it));}catch(e){err=true;}}
-  if(typeof body==='string'&&unpack(body))fix={info:{...it},body};
-  else{const ls=sbLsGet(n);if(ls!=null&&unpack(ls)){const x={...it};delete x.idb;delete x.idbKey;delete x.idbCommit;fix={info:x,body:ls};}
-    else if(sbOk()){let o=null;try{o=await sbOrphan(n,(keys||[]).filter(k=>k!==it.idbCommit));}catch(e){err=true;}if(o){const keep={};for(const f of ['memo','lock'])if(it[f]!=null)keep[f]=it[f];fix={info:Object.assign({},o.info,keep,{rev:it.rev}),body:o.body};}}}
-  if(fix){const info={...fix.info};delete info.pending;delete info.deleting;delete info.lost;delete info.fail;
-    if(info.idb&&info.idbCommit&&info.idbKey!=null){try{await sbPut(info.idbCommit,JSON.stringify({saveCommit:1,n,rev:info.rev,key:info.idbKey,info}));}catch(e){return false;}}
-    const m=meta();if(!m.slots[n]||sbStamp(m.slots[n])!==stamp||m.slots[n].pending||m.slots[n].deleting)return false;m.slots[n]=info;if(!setMeta(m))return false;if(info.idb){SB.set(n,fix.body);SB_REV.set(n,sbStamp(info));}else sbForget(n);return true;}
-  if(err||!it.idb)return false;
-  const m=meta();if(!m.slots[n]||sbStamp(m.slots[n])!==stamp||m.slots[n].pending||m.slots[n].deleting)return false;const row={...m.slots[n]};delete row.idb;delete row.idbKey;delete row.idbCommit;row.lost=1;m.slots[n]=row;if(!setMeta(m))return false;sbForget(n);return true;}
-/* 지울 때 본문이 아직 남아 있는가(삭제가 중간에 실패했을 때 목록을 되돌릴지 정한다). 읽기 오류면 남은 것으로 본다 */
-async function sbAlive(n,info){if(sbLsGet(n)!=null)return true;if(!info?.idb)return false;try{return typeof await SaveStore.big.read(sbBodyKey(n,info))==='string';}catch(e){return true;}}
-/* 목록 항목은 있는데 본문을 못 읽는 칸(진행 중인 저장·삭제는 아님): 덮어쓰기를 막지 않는다 */
-function sbLostRow(n,m=meta()){const it=m.slots[n];return !!it&&!it.pending&&!(it.deleting&&!sbStaleDel(it))&&!SB_PEND.has(n)&&sbGet(n)==null;}
 function sbNeedBoot(){return sbOk();}
 function backupMark(g,day){if(g&&Number.isFinite(day))g.bkAt=Math.max(Number.isFinite(g.bkAt)?g.bkAt:-Infinity,day);}
 /* 이 탭이 연 슬롯: 저장은 늘 여기로. 다른 탭이 활성 슬롯 기록을 바꿔도 이 탭의 저장 대상은 바뀌지 않는다(검수 11-06) */
@@ -39585,7 +39556,7 @@ function writeSlot(n,data,info,exp,options={}){ const own=n===curSlot()&&exp==nu
   if(own&&SAVE_CONFL)return confl();
   try{ const m=meta(), old=m.slots[n]?{...m.slots[n]}:null, act0=m.active, b0=sbGet(n); if(old&&old.lock){ SAVE_ERR=`슬롯 ${n}은(는) 보관 슬롯이라 덮어쓰지 않습니다. 보관을 풀어야 쓸 수 있습니다.`; return false; } /* 보관 슬롯은 자동 저장·덮어쓰기가 절대 쓰지 않는다(플레이테스트 3) */ if(revOf(m,n)!==exp)return confl();
     if(old?.pending||old?.deleting||SB_PEND.has(n)){SAVE_ERR='이 슬롯의 이전 저장 또는 삭제가 아직 확정되지 않았습니다. 잠시 뒤 다시 시도하세요.';return false;}
-    if(old?.idb&&b0==null&&!options.lost&&!(own&&SLOT_NEW)){SAVE_ERR='보조 저장소에서 최신 본문을 읽지 못해 덮어쓰지 않았습니다.';return false;}
+    if(old?.idb&&b0==null){SAVE_ERR='보조 저장소에서 최신 본문을 읽지 못해 덮어쓰지 않았습니다.';return false;}
     if(own&&!SLOT_NEW&&SLOT_TAG!==sbTag(old))return confl();
     if(Object.prototype.hasOwnProperty.call(options,'body')&&options.body!==b0)return confl();
     info=Object.assign({},info,{rev:revNext(exp)});delete info.pending;delete info.fail;delete info.idb;delete info.idbKey;delete info.idbCommit;
@@ -39602,7 +39573,7 @@ function writeSlot(n,data,info,exp,options={}){ const own=n===curSlot()&&exp==nu
 /* 외부에서 가져오기·복사·슬롯 변경은 이 약속이 true로 끝난 뒤에만 화면과 활성 게임을 바꾼다. */
 async function writeSlotConfirmed(n,data,info,exp,options={}){n=+n;if(SB_PEND.has(n)&&!await sbSettle(n))return false;
   if(meta().slots[n]?.pending||meta().slots[n]?.deleting){SAVE_ERR='다른 탭의 저장 또는 삭제가 아직 확정되지 않아 덮어쓰지 않았습니다.';return false;}
-  if(sbFlag(meta(),n)&&!options.lost&&!await sbCommitted(n)){SAVE_ERR='최신 저장 본문을 읽지 못해 덮어쓰지 않았습니다.';return false;}
+  if(sbFlag(meta(),n)&&!await sbCommitted(n)){SAVE_ERR='최신 저장 본문을 읽지 못해 덮어쓰지 않았습니다.';return false;}
   if(!writeSlot(n,data,info,exp,options))return false;const stamp=sbStamp(meta().slots[n]);if(!await sbSettle(n))return false;
   const z=await sbCommitted(n);return !!(z&&sbStamp(z.info)===stamp&&z.body===data);}
 async function saveCurrentConfirmed(){if(!G)return true;const g=G,n=curSlot();for(let attempt=0;attempt<2;attempt++){if(!saveNow())return false;const j=prepG();if(!await sbSettle(n)||G!==g||curSlot()!==n||prepG()!==j)return false;const z=await sbCommitted(n),disk=z&&unpack(z.body);if(disk&&JSON.stringify(disk)===j){_svJ=j;_svN=n;_svP=null;return true;}if(!z)return false;/* 불러오기 복원이 svMark한 내용도 실제 본문이 다르면 한 번 확정해 쓴다. */svDrop(n);}return false;}
@@ -39974,7 +39945,7 @@ function unempCfg(){ return patchCard()+`<section class="card"><div class="row b
 function anySave(){ try{ return contSlot()!=null; }catch(e){ return false; } }
 function slotsCard(start){ const m=meta(); const used=SLOT_IDS.reduce((a,n)=>a+slotSize(n),0); const has={}; for(const n of SLOT_IDS)has[n]=slotHas(n); const sv=n=>has[n]?(m.slots[n]||{name:'(목록 정보 없음)',y:''}):m.slots[n]?Object.assign({},m.slots[n],{nobody:1}):null; /* 목록과 본문이 어긋나도 칸은 사용 중으로 센다: 새 게임·복사가 쓰는 slotUsed와 같은 기준(검수 11-07, 11-09 #13) */
   const rows=SLOT_IDS.filter(n=>sv(n)||n===SLOT_IDS.find(k=>!sv(k))||UI.slotAll).map(n=>{ const s=sv(n); const cur=G&&curSlot()===n; /* 이 탭이 연 슬롯만 진행 중(검수 11-07: 다른 탭이 바꾼 활성 기록을 따르면 진행 중 슬롯에 삭제 버튼) */
-    return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s&&s.nobody?`${esc(s.name||'')} · <b class="bad">저장 본문이 사라져 불러올 수 없습니다.</b> 삭제하거나 덮어 저장할 수 있습니다.`:s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.lock?' · <b>보관</b>':''}${s.over?' · 경질됨':''}${s.fail?' · <b class="bad">마지막 저장 실패(내보내기로 백업하세요)</b>':''} · ${slotSize(n)}KB${s.at?` · 저장 ${new Date(s.at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}`:''}`:'비어 있음'}</div>${s?`<input class="slot-memo" data-a="slotMemo" data-v="${n}" maxlength="30" placeholder="메모(예: 외국인 교체 전)" value="${esc(s.memo||'')}" aria-label="슬롯 ${n} 메모">`:''}</div>
+    return `<div class="slot ${cur?'on':''}"><div><b>슬롯 ${n}${cur?' · 진행 중':''}</b><div class="small muted">${s&&s.nobody?`${esc(s.name||'')} · 저장 본문 없음(불러올 수 없음)`:s?`${esc(s.name||'')} · ${esc(s.date||s.y+'년')}${s.lock?' · <b>보관</b>':''}${s.over?' · 경질됨':''}${s.fail?' · <b class="bad">마지막 저장 실패(내보내기로 백업하세요)</b>':''} · ${slotSize(n)}KB${s.at?` · 저장 ${new Date(s.at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}`:''}`:'비어 있음'}</div>${s?`<input class="slot-memo" data-a="slotMemo" data-v="${n}" maxlength="30" placeholder="메모(예: 외국인 교체 전)" value="${esc(s.memo||'')}" aria-label="슬롯 ${n} 메모">`:''}</div>
       <div class="row">${s&&cur?`<button class="btn small" data-a="slotCopy" title="지금 진행 상황을 빈 슬롯에 따로 저장해 둡니다. 계속 진행하는 곳은 이 슬롯입니다">빈 슬롯에 따로 저장</button>`:''}${s&&cur&&SAVE_CONFL&&has[n]?`<button class="btn small" data-a="slotLoad" data-v="${n}" title="다른 탭이 저장한 최신 진행을 엽니다">최신 저장 다시 열기</button>`:''}${s&&!cur&&has[n]&&!s.lock?`<button class="btn small primary" data-a="slotLoad" data-v="${n}" title="이 슬롯을 열고 앞으로의 자동 저장도 이 슬롯에 합니다">이 슬롯에 이어서 저장</button>`:''}${s&&!cur&&has[n]?`<button class="btn small${s.lock?' primary':''}" data-a="slotLoadNew" data-v="${n}" title="이 슬롯은 그대로 두고, 빈 슬롯에 사본을 만들어 그 사본으로 이어 합니다">새 슬롯에 이어하기</button>`:''}${s&&!cur&&has[n]?`<button class="btn small" data-a="slotLock" data-v="${n}" title="보관한 슬롯은 자동 저장·덮어쓰기·삭제로 바뀌지 않습니다">${s.lock?'보관 풀기':'보관'}</button>`:''}${s&&!cur&&!start&&G&&curSlot()!=null&&!s.lock?`<button class="btn small${UI.overAsk?.n===n?' danger':''}" data-a="slotOver" data-v="${n}" title="지금 진행을 이 슬롯에 덮어 저장합니다. 계속 진행하는 곳은 지금 슬롯입니다">${UI.overAsk?.n===n?'한 번 더 눌러 덮어쓰기':'여기에 덮어 저장'}</button>`:''}${start?`<button class="btn small" data-a="slotNew" data-v="${n}">${s?'덮어쓰고 새 게임':'새 게임'}</button>`:''}${s&&!cur&&!s.lock?`<button class="btn small danger" data-a="slotDel" data-v="${n}">삭제</button>`:''}</div></div>`; }).join('');
   const filled=SLOT_IDS.filter(n=>sv(n)).length;
   return `<section class="card"><div class="row between"><h2 class="sec">저장 슬롯</h2><span class="small muted">${filled}/${SLOTS} 사용 · 약 ${(used/1024).toFixed(1)}MB</span></div><div class="slots">${rows}</div>${filled+1<SLOTS?`<button class="btn small" data-a="slotAll">${UI.slotAll?'빈 슬롯 숨기기':'빈 슬롯 모두 보기'}</button>`:''}<p class="small muted sv-dev"><b>저장은 이 기기·이 브라우저에만 남습니다.</b> 계정(itch.io 계정 포함)과 연결되지 않아 다른 기기에서 자동으로 이어지지 않습니다. 다른 기기에서 이어 하려면 마지막으로 플레이한 기기에서 <b>기기 옮기기</b> 코드를 만들어 옮겨 오세요. 원래 기기로 돌아갈 때도 같습니다.</p><p class="small muted">브라우저 데이터를 지우면 저장도 사라집니다. 중요한 세이브는 "파일로 내보내기"로도 보관하세요. ${hiI(`슬롯은 ${SLOTS}개까지입니다. 기본 저장 공간(보통 5MB 안팎)이 차면 진행 중이 아닌 슬롯부터 브라우저의 보조 저장소(IndexedDB, 훨씬 큼)로 자동으로 옮겨 계속 저장합니다. 브라우저 데이터를 지우면 둘 다 사라집니다.`)}</p>${UI.slotMsg?`<div class="note">${esc(UI.slotMsg)}</div>`:''}</section>`; }
@@ -45557,7 +45528,7 @@ function foreignView(){
     ${(()=>{ const b=budget(); if(!b.fR)return ''; const fsU=sum(fStayOf(G.user).map(p=>p.sal)); return `<p class="small"><b>외국인 배정 예산</b> ${money(b.fR)} 중 ${money(fsU)} 사용 · 남은 배정 ${money(b.fRoom)} <button type="button" class="hi-i" data-tip="${esc('외국인 계약금·연봉은 이 배정 예산에서 먼저 씁니다. 배정 안에서 영입하면 연봉 여유(예산 기준)는 그대로이고, 넘는 만큼만 줄어듭니다.\n'+(G.gmSince===G.year?'첫 시즌: 규정 한도만큼 구단주가 미리 배정했습니다.':'지난 시즌 리그 평균 외국인 지출 기준입니다.'))}">i</button></p>`; })()}
     ${UI.fmsg2?`<div class="note bad">${esc(UI.fmsg2)}</div>`:''}</section>`;
   const mine=(asia?as:yb).map(p=>pcard(p,{sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)}`,tags:p.fy===G.year||p.fy===G.year+1?'<span class="pill">리그 첫 시즌</span>':'',foot:`<b class="num">${money(p.sal)}</b><span>${Math.round(p.sal/USD)}만 달러 · ${p.rsy?`재계약 ${p.rsy}년차`:'첫 계약'}</span><button class="tc-i" data-a="player" data-v="${p.id}">상세</button><button class="tc-i" data-a="relNow" data-v="${p.id}">방출</button>`})).join('');
-  const cards=market.map(({p,rp,fs})=>{ const est=fs.mid!=null?{v:fs.mid,raw:fs.raw,lo:fs.lo,hi:fs.hi}:null; const err=open?foListErr(p):'영입 기간이 아닙니다.'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0&&!foYBOk(p); const pay=mid?Math.round(p.ask*remainFrac()):p.ask;
+  const cards=market.map(({p,rp,fs})=>{ const est=fs.mid!=null?{v:fs.mid,raw:fs.raw,lo:fs.lo,hi:fs.hi}:null; const err=open?foListErr(p):'영입 기간이 아닙니다.'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0; const pay=mid?Math.round(p.ask*remainFrac()):p.ask;
     const srcP=p.fsrc==='scout'?((p.fknow||[]).includes(G.user)?(G.day<(p.fpub||0)?'<span class="pill good">우리 스카우트 발굴 · 아직 우리만 앎</span>':'<span class="pill">우리 발굴 · 소문 퍼짐</span>'):'<span class="pill">다른 구단 발굴 · 소문으로 앎</span>'):'<span class="pill">에이전트 제안</span>';
     const fn=fFindNote(p,rp); return pcard(p,{rp,est,stat:fn?`<span class="fnote">${esc(fn)}</span>`:'',sub:`${esc(p.nat)} · ${p.age}세 · ${hand(p)} · ${esc(p.prevLvl||'')}`,
       tags:fsPill(p,rp,fs)+(p.isP?`<span class="pill">${isSPr(p)?'선발형':'불펜형'}</span>`:'')+(p.mlbG?`<span class="pill good" title="메이저리그 통산 출전 경기 수. 콜업 경험이 많을수록 실력이 검증된 선수입니다">MLB ${p.mlbG}경기</span>`:'')+(G.mgrWant&&G.mgrWant.y===G.year&&G.mgrWant.tid===G.user&&G.mgrWant.mid===G.mgr[G.user]?.id&&!G.unemp&&mgrFitF(p,{want:G.mgrWant})?`<span class="pill good" title="감독이 원한 유형: ${esc(G.mgrWant.style||'')}">감독 선호</span>`:'')+srcP+(p.flaw?`<span class="pill bad">${FFLAW[p.flaw]}</span>`:'')+(p.inj>.24&&rp.sd<=7.5&&p.flaw!=='inj'?'<span class="pill bad">부상 체질</span>':'')+(()=>{ const n=fInterest(p); return n>=2?`<span class="pill bad">인기 · ${n}개 구단 관심</span>`:n===1?'<span class="pill">1개 구단 관심</span>':''; })()+fRumPill(p)+(p.ask0&&p.ask>p.ask0?`<span class="pill warn">몸값 +${Math.round((p.ask/p.ask0-1)*100)}%</span>`:''),
@@ -45603,7 +45574,7 @@ function foreignFM(o){ const {asia,yb,as,tot,capT,mid,open,ff,regs,used,max,mark
   const top=tfKpi([tabs,...(asia?[['아시아쿼터',`${as.length} / 1`,as.length?'good':'warn','일반 외국인 3명과 별도'],['연봉 상한',`신규 ${Math.round(asiaCap()/USD)}만 달러`,'',`재계약은 직전 연봉 +10만 달러/년 · 총액 한도 밖`],['대상','일본·대만·호주']]
       :[['외국인',`${yb.length} / 3`,yb.length<3?'warn':'good'],['투수 · 타자',`${yb.filter(p=>p.isP).length} · ${yb.filter(p=>!p.isP).length}`,'','3명 모두 한쪽은 불가'],['총액 / 한도',`${Math.round(tot/USD)}만 / ${Math.round(capT/USD)}만 달러`,tot>capT?'bad':'',`신규 계약 1인 ${Math.round(fNewCap()/USD)}만 달러까지`]]),
     mid?[`시즌 중 ${asia?'아시아쿼터':'일반 외국인'}`,`교체 ${used}/${max}회`,used>=max?'bad':'','영입하면 남은 경기 비율만큼 연봉']:null,['영입 기간',open?'열림':'닫힘',open?'good':'warn',open?'8월 15일까지 · 매달 1일 후보 교체':'12월~8월 15일'],b.fR?['외국인 배정 예산 남음',money(b.fRoom),b.fRoom<0?'bad':'',`${money(b.fR)} 중 ${money(fsU)} 사용`]:null]);
-  const rows=market.map(({p,rp,fs})=>{ const err=open?foListErr(p):'영입 기간이 아닙니다.', repl=mid&&fReplLeft(G.user,p.foreign)<=0&&!foYBOk(p), pay=mid?Math.round(p.ask*remainFrac()):p.ask, n=fInterest(p), h=p.now&&p.now.y===G.year?p.now:p.prev, fn=fFindNote(p,rp);
+  const rows=market.map(({p,rp,fs})=>{ const err=open?foListErr(p):'영입 기간이 아닙니다.', repl=mid&&fReplLeft(G.user,p.foreign)<=0, pay=mid?Math.round(p.ask*remainFrac()):p.ask, n=fInterest(p), h=p.now&&p.now.y===G.year?p.now:p.prev, fn=fFindNote(p,rp);
     return `<tr${rowTap('player',p.id)}><td>${rowQuiet(tfP(p,`${esc(posLabel(p))}${p.isP?(isSPr(p)?'(선발형)':'(불펜형)'):''} · ${esc(p.nat)} · ${p.age}세 · ${hand(p)}`))}</td>
       <td>${fs.mid!=null?`<b class="rc" style="--c:${rcol(fs.raw)}">${fs.mid}</b> <span class="muted">${fs.lo}~${fs.hi}</span>`:'<span class="muted">조사 전</span>'}<span class="scn-s">${fsPill(p,rp,fs)}${p.flaw?` <span class="pill bad">${FFLAW[p.flaw]}</span>`:''}${p.fkbo?` <span class="pill acc" title="${esc(fKboTxt(p))}">KBO 경력</span>`:''}${p.fopt?` <span class="pill warn" title="${esc(`마이너 계약 옵트아웃 ${dmd(p.fopt)} · 올해 트리플A 기록이 있습니다`)}">옵트아웃</span>`:''}${fn?` <span class="pill good" title="${esc(fn)}">우리 발굴</span>`:''}</span></td>
       <td class="small"${lgLv(h&&h.lvl||p.prevLvl)?` title="${esc(lgLv(h&&h.lvl||p.prevLvl)+(lgKboHint(h&&h.lvl||p.prevLvl)?' · '+lgKboHint(h&&h.lvl||p.prevLvl):''))}"`:''}>${esc(ovlCandLvl(p,h&&h.lvl,1))}<span class="scn-s">${lineTxt(h,p.isP)}${p.mlbG?` · MLB ${p.mlbG}경기`:''}</span></td>
@@ -45645,7 +45616,7 @@ function fTmpBox(market){ const mine=playersOf(G.user).filter(q=>q.ftmp).map(q=>
 
 /* 휴대폰 외국인 후보 목록: 한 줄에 이름·포지션·예상 능력(범위)·요구 연봉·관심 구단·협상 버튼, 아래 줄에 지난 리그 기록. 이름을 누르면 선수 정보 */
 function fRows(market,open,mid){ if(!market.length)return '<p class="small muted">조건에 맞는 후보가 없습니다.</p>';
-  const row=({p,rp,fs})=>{ const err=open?foListErr(p):'영입 기간이 아닙니다.', repl=mid&&fReplLeft(G.user,p.foreign)<=0&&!foYBOk(p), n=fInterest(p), h=p.now&&p.now.y===G.year?p.now:p.prev;
+  const row=({p,rp,fs})=>{ const err=open?foListErr(p):'영입 기간이 아닙니다.', repl=mid&&fReplLeft(G.user,p.foreign)<=0, n=fInterest(p), h=p.now&&p.now.y===G.year?p.now:p.prev;
     return `<div class="fr-r"${rowTap('player',p.id)}><span class="st-n">${avImg(p)}<span><b>${esc(p.name)}</b><i>${esc(posLabel(p))}${p.isP?(isSPr(p)?' 선발':' 불펜'):''} · ${esc(p.nat)} · ${p.age}세</i></span></span>
       <span class="fr-est">${fs.mid!=null?`<b class="rc" style="--c:${rcol(fs.raw)}">${fs.mid}</b><i>${fs.lo}~${fs.hi}</i>`:'<i>조사 전</i>'}</span>
       <span class="fr-act"><button class="btn small fo-watch${fwatchIntent(p.id)?' on':''}" data-a="fwatch" data-v="${p.id}" aria-pressed="${fwatchIntent(p.id)}">${fwatchOn(p.id)?'관찰 중':fwatchIntent(p.id)?'이전 대기':'관찰'}</button>${!open?'':err||repl?`<button class="btn small" data-a="negOpen" data-v="fm:${p.id}" disabled title="${esc(repl?'교체 횟수 소진':err)}">${repl?'교체 소진':esc(fErrShort(err))}</button>`:`<button class="btn small primary" data-a="negOpen" data-v="fm:${p.id}">협상</button>`}</span>
@@ -47090,7 +47061,7 @@ function playerProfileOverview(p,rp,h,tiles,injBox){
   const teamPos=mates.length>1?`<section class="card pf-fm-box pf-teampos"><h3>팀 내 위치</h3>${stateRow(p.isP?'투수 종합 순위':'야수 종합 순위',`${rankBy(ovr)} / ${mates.length}위`)}${stateRow('연봉 순위',`${rankBy(q=>q.sal||0)} / ${mates.length}위`)}${stateRow('나이 순',`${1+mates.filter(q=>q.age>p.age).length} / ${mates.length}번째`)}${p.pos&&!p.isP?stateRow('같은 포지션',`${mates.filter(q=>q.pos===p.pos).length}명`):''}${(()=>{ try{ const k=slotStartAvgOf(p), A=lgStartAvg(); return k&&A[k]!=null?stateRow(`리그 주전 평균(${SLOTK[k]})`,String(dv(A[k]))):''; }catch(e){ return ''; } })()}</section>`:'';
   const track=fmOn()&&!p.isP?trackCard(p):''; /* 투수는 구속 상자와 겹친다 */
   const ST=[...(p.story||[])].slice(-4).reverse(), storyBox=ST.length?`<section class="card pf-fm-box pf-story"><h3>최근 이력</h3>${ST.map(s=>`<div class="pf-st"><span>${s.y||''}</span><p>${esc(s.t)}</p></div>`).join('')}</section>`:'';
-  return `<div class="pf-overview"><aside class="pf-sidebar">${fmCard}${ctCard}<section class="card pr-readout pf-state"><h3>${fsx?'스카우트 조사':'현재 상태'}</h3><div class="pf-status">${state.labels.map(l=>`<span class="pill${state.blocked?' bad':''}">${esc(l)}</span>`).join('')}${pcBadge(p)}${franTag(p)}</div>${pcBio(p,stateRow)}${own?`${stateRow('피로',Math.round(state.fat)+'/100')}${stateRow('기분',state.morale==null?'미확인':moodLabel(state.morale))}${moraleBox(p,4)}${p.isP?`${stateRow('팔 부하',Math.round(state.arm*100)+'%')}${stateRow('최근 등판',state.rest==null?'기록 없음':(state.rest===0?'오늘':state.rest+'일 전')+(state.lastPc!=null?' · '+state.lastPc+'구':''))}`:''}${state.fat>45?'<p class="small bad keep">피로 누적으로 경기력 저하</p>':''}`:fsx?`${(G.fmarket||[]).includes(p.id)?negDoor('fm',p):''}${(()=>{ const e=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; return e&&foreignOpen()&&foYBOk(p)?`<p class="small muted keep">${esc(e)} 일반 외국인 자리가 비어 있어 외국인 슬롯으로는 영입할 수 있습니다(협상 창에서 선택).</p>`:e?`<p class="small warn keep">${esc(e)}</p>`:''; })()}${stateRow('종합 추정',fsx.mid!=null?`${fsx.lo}~${fsx.hi}`:'미확인')}${stateRow('조사 단계',esc(fsx.l||'-'))}${stateRow('출신',esc(p.nat||'-'))}<p class="small muted keep">${esc(fsx.d||'')}</p>${(()=>{ const rs=fsx.mid!=null?fResid(p):null; return rs!=null?`<p class="small muted keep pf-resid">${esc(fResidTxt(rs))}</p>`:''; })()}<button class="btn small" data-a="fwatch" data-v="${p.id}">${fwatchIntent(p.id)?'관찰 명단에서 빼기':'관찰 명단에 올리기'}</button>`:'<p class="small muted keep">상세 컨디션은 우리 구단 선수만 확인합니다.</p>'+moraleBox(p)}${own&&p.isP&&!state.blocked&&!isSPr(p)?`<p class="pf-availability ${relAvail(p,G.day,false)?'good':'warn'}">${relAvail(p,G.day,false)?'불펜 가용 조건 충족':'오늘 불펜 운용 제한'}</p>`:''}</section>${fmOn()?recent:''}<section class="card pf-bio"><h3>선수 정보</h3><div class="pf-dup">${stateRow('나이',p.age+'세')}</div>${!p.foreign?`<div class="pf-dup">${stateRow('고향',esc(homeTxt(p)))}</div>`:''}${!p.foreign?stateRow('학력',p.college?'대졸':'고졸'):''}${p.ht?stateRow('체격',p.ht+'cm'+(p.wt?' · '+p.wt+'kg':'')):''}<div class="pf-dup">${stateRow('손잡이',hand(p))}</div>${stateRow('병역',esc(milText(p)))}<div class="pf-dup">${stateRow('계약',esc(ctText(p)))}</div>${p.draft?stateRow('드래프트',p.draft.y+' · '+p.draft.rd+'R '+p.draft.no+'순위'):''}</section><section class="card pf-role"><h3>포지션·역할</h3><b>${posLabel(p)}</b>${!p.isP&&subsOf(p).length?`<p class="small keep">가능 포지션 ${subsOf(p).map(k=>POSK[k]||k).join(' · ')}</p>`:''}<p class="small keep">${esc(rp.arch||'평가 없음')}</p>${rp.role?`<p class="small keep"><span class="muted">${p.foreign?'올해 역할':'장래 예상'}</span> ${esc(rp.role)}</p>`:''}</section></aside>
+  return `<div class="pf-overview"><aside class="pf-sidebar">${fmCard}${ctCard}<section class="card pr-readout pf-state"><h3>${fsx?'스카우트 조사':'현재 상태'}</h3><div class="pf-status">${state.labels.map(l=>`<span class="pill${state.blocked?' bad':''}">${esc(l)}</span>`).join('')}${pcBadge(p)}${franTag(p)}</div>${pcBio(p,stateRow)}${own?`${stateRow('피로',Math.round(state.fat)+'/100')}${stateRow('기분',state.morale==null?'미확인':moodLabel(state.morale))}${moraleBox(p,4)}${p.isP?`${stateRow('팔 부하',Math.round(state.arm*100)+'%')}${stateRow('최근 등판',state.rest==null?'기록 없음':(state.rest===0?'오늘':state.rest+'일 전')+(state.lastPc!=null?' · '+state.lastPc+'구':''))}`:''}${state.fat>45?'<p class="small bad keep">피로 누적으로 경기력 저하</p>':''}`:fsx?`${(G.fmarket||[]).includes(p.id)?negDoor('fm',p):''}${(()=>{ const e=foreignOpen()?foreignCheck(G.user,p):'지금은 외국인 선수를 영입할 수 없습니다.'; return e?`<p class="small warn keep">${esc(e)}</p>`:''; })()}${stateRow('종합 추정',fsx.mid!=null?`${fsx.lo}~${fsx.hi}`:'미확인')}${stateRow('조사 단계',esc(fsx.l||'-'))}${stateRow('출신',esc(p.nat||'-'))}<p class="small muted keep">${esc(fsx.d||'')}</p>${(()=>{ const rs=fsx.mid!=null?fResid(p):null; return rs!=null?`<p class="small muted keep pf-resid">${esc(fResidTxt(rs))}</p>`:''; })()}<button class="btn small" data-a="fwatch" data-v="${p.id}">${fwatchIntent(p.id)?'관찰 명단에서 빼기':'관찰 명단에 올리기'}</button>`:'<p class="small muted keep">상세 컨디션은 우리 구단 선수만 확인합니다.</p>'+moraleBox(p)}${own&&p.isP&&!state.blocked&&!isSPr(p)?`<p class="pf-availability ${relAvail(p,G.day,false)?'good':'warn'}">${relAvail(p,G.day,false)?'불펜 가용 조건 충족':'오늘 불펜 운용 제한'}</p>`:''}</section>${fmOn()?recent:''}<section class="card pf-bio"><h3>선수 정보</h3><div class="pf-dup">${stateRow('나이',p.age+'세')}</div>${!p.foreign?`<div class="pf-dup">${stateRow('고향',esc(homeTxt(p)))}</div>`:''}${!p.foreign?stateRow('학력',p.college?'대졸':'고졸'):''}${p.ht?stateRow('체격',p.ht+'cm'+(p.wt?' · '+p.wt+'kg':'')):''}<div class="pf-dup">${stateRow('손잡이',hand(p))}</div>${stateRow('병역',esc(milText(p)))}<div class="pf-dup">${stateRow('계약',esc(ctText(p)))}</div>${p.draft?stateRow('드래프트',p.draft.y+' · '+p.draft.rd+'R '+p.draft.no+'순위'):''}</section><section class="card pf-role"><h3>포지션·역할</h3><b>${posLabel(p)}</b>${!p.isP&&subsOf(p).length?`<p class="small keep">가능 포지션 ${subsOf(p).map(k=>POSK[k]||k).join(' · ')}</p>`:''}<p class="small keep">${esc(rp.arch||'평가 없음')}</p>${rp.role?`<p class="small keep"><span class="muted">${p.foreign?'올해 역할':'장래 예상'}</span> ${esc(rp.role)}</p>`:''}</section></aside>
   <main class="pf-main"><div class="pf-main-top"><section class="card pf-attributes"><div class="pf-section-title"><h3>세부 능력 <button class="tc-i" data-a="attrHelp" aria-label="능력치 설명" title="능력치마다 어디에 영향을 주는지">i</button></h3></div><div class="pf-attribute-grid">${attributes}</div>${UI.attrHelpOpen?`<div class="note">${attrHelpList()}</div>`:''}</section>${fmOn()?(()=>{ let N=[],X=[]; try{ N=staffNotes(p); }catch(e){} try{ X=curExplain(p,rp)||[]; }catch(e){} const f=l10Text(p);
       return `<section class="card pf-report"><h3>보고서</h3>${f?`<div class="pf-rp-form"><span>최근 폼</span><b>${f}</b></div>`:''}${N.map(x=>`<div class="pf-rp-note"><span>${esc(x.w)}</span><p>${esc(x.t)}</p></div>`).join('')}${X.slice(0,3).map(t=>`<p class="pf-rp-why">${tipRest(t)}</p>`).join('')}${mop?`<div class="pf-rp-mop">${mop}</div>`:''}${pfPersBox(p)}</section>`; })():''}</div><section class="card pf-season pf-season-inline pf-mobile-only"><h3>${h?h.y+' '+(h.lvl||'1군'):'시즌'} 성적</h3>${tiles?`<div class="pf-season-grid">${tiles.map(t=>`<div><span>${t[0]}</span><b>${t[1]}</b></div>`).join('')}</div>`:'<p class="small muted keep">아직 경기 기록이 없습니다.</p>'}</section><section class="card pf-season-table">${seasonStatsBlock(p,'<h3>시즌 통계</h3>',1)}${fmOn()?'':'</section>'}<details class="pf-more" data-k="player-more:${p.id}" ${UI.open['player-more:'+p.id]?'open':''}><summary>구종·성장 추이·코치 의견 자세히 보기</summary><div class="pf-more-grid">${injBox||''}${pitcherRepertoireCard(p,rp)}${mgrOpinion(p)}${detailCard(p)}${reportCard(p,true)}${!p.isP?posCard(p,true):''}${growthCard(p)}</div></details>${fmOn()?'</section>':''}</main>
   <aside class="pf-insights"><section class="card pf-radar"><h3>능력 차트</h3>${d?radarSVG(d.radar,rp.ofp!=null&&tools.some(t=>t.fut>t.cur),true,rsd>=1.5?rg:null,d.exact):'<p>평가 미확인</p>'}<p class="small keep pf-rd-key"><i class="k1"></i>${rsd>=1.5?'추정':'현재'} ${rp.ofp!=null&&tools.some(t=>t.fut>t.cur)?'<i class="k2"></i>잠재력 ':''}<i class="k3"></i>1군 평균</p><div class="pf-core-compact"><div class="pf-core-caption">핵심 능력 <span>100점 · 63 = 1군 평균</span></div><div class="pf-core-grid${p.isP?' pitcher':''}">${core||'<p>평가 미확인</p>'}</div></div></section>${pitch?`<section class="card pf-pitch-head"><h3>구속·사용 구종</h3>${stateRow('평균',pitch.velo+' km/h')}${stateRow('최고 상한',pitch.max+' km/h')}<p class="small keep">경기 적용 ${pitch.activeCount}구종</p><div class="pf-status">${active.map(x=>`<span class="pill">${esc(x.name)} ${rg(x.value)}</span>`).join('')}</div></section>`:''}${proCon}${!p.isP?`<div class="pf-pos-mini">${fmOn()?posFieldBox(p):posCard(p,true)}</div>`:''}${track?`<div class="pf-track">${track}</div>`:''}</aside><aside class="pf-extra">${infoCard}${teamPos}${slCard(p)}${career.replace(/<\/section>$/,storyBox.replace(/^<section[^>]*>/,'').replace(/<\/section>$/,'')+'</section>')}</aside>
@@ -48021,9 +47992,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
   watch(v){ UI.sheet=null; UI.posSheet=null; UI.game=+v; UI.gtab='pbp'; UI.pbp={g:+v,k:0}; renderSheet(); },
   async slotCopy(){if(!G)return false;const source=saveActionSource(),m=meta(),to=SLOT_IDS.find(n=>!slotUsed(n,m));if(!to){UI.slotMsg='빈 슬롯이 없습니다. 슬롯 하나를 지운 뒤 다시 누르세요.';render();return false;}const info=slotInfo(),memo=m.slots[source.slot]?.memo;if(memo!=null)info.memo=memo;UI.slotMsg='빈 슬롯에 저장하는 중입니다.';render();const ok=await writeSlotConfirmed(to,packJ(source.j),info,0,{replace:true,body:null});if(!ok){UI.slotMsg=`따로 저장하지 못했습니다. ${SAVE_ERR||''}`.trim();render();return false;}UI.slotMsg=`슬롯 ${to}에 지금 상황(${info.date})을 따로 저장했습니다. 계속 진행하는 곳은 슬롯 ${source.slot}입니다.`;render();return true;},
   /* 지금 진행을 이미 쓰는 다른 슬롯에 덮어 저장(커뮤니티 제보 11-11): 한 번 더 눌러야 덮는다. 계속 진행하는 곳은 지금 슬롯 */
-  async slotOver(v){if(!G)return false;const n=+v;if(n===curSlot()||!SLOT_IDS.includes(n))return false;if(sbFlag(meta(),n)&&!await sbRefresh([n])&&!sbLostRow(n)){UI.slotMsg=`슬롯 ${n}의 최신 저장을 읽지 못해 덮어쓰지 않았습니다.`;render();return false;}const m=meta(),source=saveActionSource(),old=UI.overAsk,body=sbGet(n),lost=sbFlag(m,n)&&body==null; /* 본문을 못 읽는 칸도 덮어쓸 수 있다(카페 11-21) */if(m.slots[n]?.lock){UI.slotMsg=`슬롯 ${n}은(는) 보관 중입니다.`;render();return false;}
-    if(!old||old.n!==n||!saveActionSame(old.source)){const info=slotInfo(),memo=m.slots[source.slot]?.memo;if(memo!=null)info.memo=memo;UI.overAsk={n,rev:revOf(m,n),body,lost,source,data:packJ(source.j),info};UI.slotMsg=`슬롯 ${n}의 저장(${m.slots[n]?.name||''})을 지우고 지금 진행(${dstr(G.day)})으로 덮어씁니다. 되돌릴 수 없습니다. 한 번 더 누르면 덮어씁니다.`;render();return false;}
-    UI.overAsk=null;if(revOf(m,n)!==old.rev||body!==old.body){UI.slotMsg=`슬롯 ${n}에 다른 탭(창)이 그사이 저장해 덮어쓰지 않았습니다. 다시 확인해 주세요.`;render();return false;}const ok=await writeSlotConfirmed(n,old.data,old.info,old.rev,{replace:true,body:old.body,lost:!!old.lost&&lost});UI.slotMsg=ok?`슬롯 ${n}에 지금 상황(${old.info.date})을 덮어 저장했습니다. 계속 진행하는 곳은 슬롯 ${old.source.slot}입니다.`:`덮어쓰지 못했습니다. ${SAVE_ERR||''}`.trim();render();return ok;},
+  async slotOver(v){if(!G)return false;const n=+v;if(n===curSlot()||!SLOT_IDS.includes(n))return false;if(sbFlag(meta(),n)&&!await sbRefresh([n])){UI.slotMsg=`슬롯 ${n}의 최신 저장을 읽지 못해 덮어쓰지 않았습니다.`;render();return false;}const m=meta(),source=saveActionSource(),old=UI.overAsk,body=sbGet(n);if(m.slots[n]?.lock){UI.slotMsg=`슬롯 ${n}은(는) 보관 중입니다.`;render();return false;}
+    if(!old||old.n!==n||!saveActionSame(old.source)){const info=slotInfo(),memo=m.slots[source.slot]?.memo;if(memo!=null)info.memo=memo;UI.overAsk={n,rev:revOf(m,n),body,source,data:packJ(source.j),info};UI.slotMsg=`슬롯 ${n}의 저장(${m.slots[n]?.name||''})을 지우고 지금 진행(${dstr(G.day)})으로 덮어씁니다. 되돌릴 수 없습니다. 한 번 더 누르면 덮어씁니다.`;render();return false;}
+    UI.overAsk=null;if(revOf(m,n)!==old.rev||body!==old.body){UI.slotMsg=`슬롯 ${n}에 다른 탭(창)이 그사이 저장해 덮어쓰지 않았습니다. 다시 확인해 주세요.`;render();return false;}const ok=await writeSlotConfirmed(n,old.data,old.info,old.rev,{replace:true,body:old.body});UI.slotMsg=ok?`슬롯 ${n}에 지금 상황(${old.info.date})을 덮어 저장했습니다. 계속 진행하는 곳은 슬롯 ${old.source.slot}입니다.`:`덮어쓰지 못했습니다. ${SAVE_ERR||''}`.trim();render();return ok;},
   slotAll(){ UI.slotAll=!UI.slotAll; render(); },
   dpick(v){ UI.open=UI.open||{}; UI.open.dviewMenu=false; if(v==='hist'||v==='fd'){ UI.drv=v; render(); return; } UI.drv=null; UI.df=UI.df||{pos:'all',typ:'all',reg:'all',sort:'rk',seg:'board',more:20}; UI.df.seg=v==='card'?'board':v; if(v==='card'||v==='board')UI.dview=v==='card'?'card':'list'; render(); }, /* 드래프트 '보기 ▾'(33_scouting_train draftViewMenu) */
   jumpTo(v){ const e=document.getElementById(v); if(e)e.scrollIntoView({block:'start',behavior:'smooth'}); }, /* 긴 화면 바로 가기(jumpBar) */
@@ -48162,9 +48133,9 @@ homeTasks(){UI.homePanel='work';UI.homePage=0;UI.homeFocus={view:'work',index:0}
     if(!UI.delAsk||UI.delAsk.n!==v){ UI.delAsk={n:v,rev:revOf(meta(),v),body:body()}; UI.slotMsg=`슬롯 ${v}을(를) 지우려면 삭제를 한 번 더 누르세요.`; render(); return; }
     const ask=UI.delAsk; UI.delAsk=null; const busy=()=>{ UI.slotMsg=`슬롯 ${v}에 다른 탭(창)이 그사이 저장해 지우지 않았습니다. 목록을 확인하고 다시 누르세요.`; render(); };
     /* 본문 전체와 판번호를 지우기 직전에 다시 확인하고, 목록에 새 판번호를 먼저 적어 슬롯을 차지한 뒤 지운다: 그 뒤 다른 탭 저장은 충돌로 막힌다(검수 11-09 #2, 11-09zr #2: 본문 길이만 비교, 확인과 삭제 사이 저장) */
-    const m0=meta(); if(revOf(m0,v)!==ask.rev||body()!==ask.body)return busy(); const oldInfo=m0.slots[v], r=revNext(ask.rev); m0.slots[v]=Object.assign({},m0.slots[v]||{name:''},{rev:r,deleting:{old:oldInfo,at:Date.now()}}); /* at: 지우다 멈춘 표시를 나중에 풀 수 있게 */ if(!setMeta(m0)){ UI.slotMsg=`슬롯 ${v}을(를) 지우지 못했습니다. 저장 목록을 기록하지 못했습니다.`; render(); return false; }claimed=oldInfo||{rev:ask.rev};
+    const m0=meta(); if(revOf(m0,v)!==ask.rev||body()!==ask.body)return busy(); const oldInfo=m0.slots[v], r=revNext(ask.rev); m0.slots[v]=Object.assign({},m0.slots[v]||{name:''},{rev:r,deleting:{old:oldInfo}}); if(!setMeta(m0)){ UI.slotMsg=`슬롯 ${v}을(를) 지우지 못했습니다. 저장 목록을 기록하지 못했습니다.`; render(); return false; }claimed=oldInfo||{rev:ask.rev};
     if(body()!==ask.body){ slotFix(v,r); return busy(); }
-    let gone=false; try{ gone=await sbRemove(v,r)&&sbGet(v)==null; }catch(e){} if(!gone){ let alive=true; try{ alive=await sbAlive(v,oldInfo); }catch(e){} if(!alive&&revOf(meta(),v)===r)gone=true; /* 본문이 이미 없으면 목록을 되돌리지 않는다(예전: 빈 본문을 가리키는 항목이 되살아나 지울 수 없게 됨) */ else{ try{ const m=meta(); if(revOf(m,v)===r&&body()===ask.body){ if(oldInfo)m.slots[v]=oldInfo; else delete m.slots[v]; setMeta(m); } }catch(e){} UI.slotMsg=`슬롯 ${v}을(를) 지우지 못했습니다. 브라우저 저장소가 삭제를 막았습니다. 잠시 뒤 다시 눌러 보세요.`; render(); return false; } } /* 실제로 지워졌을 때만 목록에서 뺀다(검수 11-06) */
+    let gone=false; try{ gone=await sbRemove(v,r)&&sbGet(v)==null; }catch(e){} if(!gone){ try{ const m=meta(); if(revOf(m,v)===r&&body()===ask.body){ if(oldInfo)m.slots[v]=oldInfo; else delete m.slots[v]; setMeta(m); } }catch(e){} UI.slotMsg=`슬롯 ${v}을(를) 지우지 못했습니다. 브라우저 저장소가 삭제를 막았습니다.`; render(); return false; } /* 실제로 지워졌을 때만 목록에서 뺀다(검수 11-06) */
     const m=meta(); if(revOf(m,v)===r)delete m.slots[v]; delete SLOT_BAD[v]; if(m.active===v){ const k=contSlot(m); if(k!=null)m.active=k; } /* 다른 탭이 활성으로 만든 슬롯을 지우면 남은 슬롯으로(검수 11-09 #11) */ UI.slotMsg=setMeta(m)?`슬롯 ${v}을(를) 지웠습니다.`:`슬롯 ${v}의 저장 내용은 지웠지만 저장 목록을 갱신하지 못했습니다. 목록 정보만 남은 칸은 삭제를 다시 눌러 정리하세요.`; render(); },
   async expFile(){ if(!G)return; const g0=G, n0=curSlot(), d0=G.day, bk0=G.bkAt; G.bkAt=d0; let code; try{ code=LZString.compressToBase64(prepG()); }finally{ G.bkAt=bk0; } /* 파일에는 백업일을 넣어 두고, 게임에는 내려받기가 끝난 뒤에만 적는다(검수 11-09zr #16) */ /* 로컬 저장과 같은 내용(중계 재개 위치 포함, 검수 11-06) */
     const done=()=>{ backupMark(g0,d0); if(G===g0&&curSlot()===n0){ try{ saveNow(); }catch(e){} } }; /* 완료 순서가 뒤집혀도 더 최근 파일의 백업일을 보존한다. */
@@ -50579,7 +50550,7 @@ function contractMoneyValid(){
 function contractMoneyDraft(scope){
   if(scope==='ngt')return UI.ngt?.T?{draft:UI.ngt.T,fields:['annual','bonus','opt']}:null;
   const draft=UI.fo,p=draft&&G.players[draft.id];if(!p)return null;
-  const top=draft.re&&Number.isFinite(p.newSal)?Math.round(p.newSal*2):foSlotRun(p,()=>foCap(p)); /* 재계약 기준액이 없으면 NaN 상한으로 검증이 통째로 빠졌다 */
+  const top=draft.re&&Number.isFinite(p.newSal)?Math.round(p.newSal*2):foCap(p); /* 재계약 기준액이 없으면 NaN 상한으로 검증이 통째로 빠졌다 */
   return {draft,fields:['g','i'],top};
 }
 /* 한 범위(ngt·fo)의 금액 칸을 모두 같이 읽는다. 외국인은 보장+인센티브 합계가 상한 안이어야 해서,
@@ -51441,12 +51412,8 @@ Object.assign(A,{
   tcImport(){ const el=document.getElementById('tc-in'); UI.tcImp=el?el.value.trim():''; render(); },
   tcClear(){ UI.tcImp=''; render(); } });
 /* ---------- 외국인 선수 협상 패널(선수 상세): 보장·인센티브 정하기, 우리 매력과 경쟁 구단 비교 ---------- */
-/* 아시아쿼터 후보의 영입 슬롯(카페 11-21): '외국인 슬롯으로 영입'을 고르면 협상 화면·버튼·추천이 모두 일반 외국인 기준(fAsYB)으로 계산한다 */
-function foSlotRun(p,fn){ const F=UI.fo; return F&&p&&F.id===p.id&&F.slot==='yb'?fAsYB(p,fn):fn(); }
-function foPanel(p){ if(p&&p.foreign==='아시아'&&p.team==null){ let F0=UI.fo&&UI.fo.id===p.id?UI.fo:null; if(!F0)F0=UI.fo={id:p.id,msg:'',g:null,i:null,slot:foListErr0(p)&&foYBOk(p)?'yb':'asia'}; if(F0.slot==='yb')return fAsYB(p,()=>foPanel(p)); } /* 아시아쿼터 자리가 막히고 일반 슬롯이 비어 있으면 일반 슬롯부터 */
-  const per=period(); const mid=per==='season'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0; const open=foreignOpen();
-  const cap=foCap(p); let F=UI.fo&&UI.fo.id===p.id?UI.fo:null; if(!F||F.g==null){ const g=Math.min(cap,Math.round(p.ask*.85/USD)*USD); F=UI.fo=Object.assign(F||{id:p.id,msg:''},{g,i:Math.max(0,Math.min(cap-g,p.ask-g))}); }
-  const slotH=p.foreign==='아시아'||p._fyb?`<div class="fo-slot" role="group" aria-label="영입 슬롯">${[['asia','아시아쿼터로 영입'],['yb','외국인 슬롯으로 영입']].map(([k,l])=>`<button class="btn small${(F.slot||'asia')===k?' on':''}" data-a="foSlot" data-v="${k}" aria-pressed="${(F.slot||'asia')===k}">${l}</button>`).join('')}</div><p class="small muted keep fo-slot-d">${p._fyb?`일반 외국인 규정으로 계약합니다: 1인 상한 ${usdT(foCap(p))} · 일반 외국인 ${fMaxYB(G.user)}명·총액 한도 · 시즌 중 교체 ${fReplMax('용병')}회. 아시아쿼터 자리는 쓰지 않습니다. 아시아쿼터 상한이 없어져 요구액이 일반 외국인 시장 수준으로 오릅니다.`:`아시아쿼터 규정으로 계약합니다: 신규 상한 ${usdT(asiaCap())} · 1명 · 시즌 중 교체 ${fReplMax('아시아')}회. 일반 외국인 자리가 비어 있으면 외국인 슬롯으로도 영입할 수 있습니다.`}</p>`:'';
+function foPanel(p){ const per=period(); const mid=per==='season'; const repl=mid&&fReplLeft(G.user,p.foreign)<=0; const open=foreignOpen();
+  const cap=foCap(p); let F=UI.fo&&UI.fo.id===p.id?UI.fo:null; if(!F){ const g=Math.min(cap,Math.round(p.ask*.85/USD)*USD); F=UI.fo={id:p.id,g,i:Math.max(0,Math.min(cap-g,p.ask-g)),msg:''}; }
   const me=foAppeal(p,G.user,{rel:!!F.rel}); const Rv=foRivals(p); const best=Rv[0]; const N=p.fneg; const known=!!N||Rv.length===0;
   const pct=f=>{ const v=Math.round((f-1)*100); return `${v>=0?'+':''}${v}%`; };
   const parts=me.parts.map(x=>`<div class="row between small"><span>${esc(x[0])}</span><b class="${x[1]>0?'good':x[1]<0?'bad':''}">${x[1]>0?'+':''}${Math.round(x[1]*100)}%</b></div>`).join('');
@@ -51454,7 +51421,7 @@ function foPanel(p){ if(p&&p.foreign==='아시아'&&p.team==null){ let F0=UI.fo&
   const room=foRoom(p), atTop=F.g+F.i>=room;
   const step=(k,d,l)=>`<button class="btn small" data-a="foStep" data-v="${k}:${d}"${d>0&&atTop?` disabled title="${esc(foRoomWhy(p,room))}"`:''}>${l} 달러</button>`;
   const err=!open?'지금은 외국인 선수를 영입할 수 없습니다.':repl?'이번 시즌 외국인 교체 횟수를 다 썼습니다.':(()=>{ const a0=p.ask; p.ask=F.g+F.i; const e=foreignCheck(G.user,p); p.ask=a0; return e; })();
-  return `<section class="card fo"><div class="row between"><h2 class="sec">계약 협상</h2><span class="small muted">상한 ${Math.round(cap/USD)}만 달러</span></div>${slotH}
+  return `<section class="card fo"><div class="row between"><h2 class="sec">계약 협상</h2><span class="small muted">상한 ${Math.round(cap/USD)}만 달러</span></div>
     <p class="small">요구 총액 <b>${usdT(p.ask)}</b>(${money(p.ask)}) · 보장 85% + 인센티브 15% 선호${mid?` · 남은 기간분 ${Math.round(remainFrac()*100)}%만 지급`:''} ${hiI(`보통 보장 85% + 인센티브 15%로 받기를 원합니다. 선수는 인센티브를 보장의 절반 정도 가치로 봅니다.${mid?` 시즌 중 계약이라 남은 기간분 ${Math.round(remainFrac()*100)}%만 지급합니다.`:''}`)}</p>
     <div class="fo-in">
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>
@@ -51474,12 +51441,11 @@ function foPanel(p){ if(p&&p.foreign==='아시아'&&p.team==null){ let F0=UI.fo&
 function foRoom(p){ let cap=foCap(p); if(p.foreign!=='용병')return cap; try{ if(G.contract&&!G.contract.done){ const f=fReCapInfo(); if(f)return Math.max(0,Math.min(cap,f.cap-f.tot)); } const yb=fStayOf(G.user).filter(x=>x.foreign==='용병'&&x.id!==p.id); cap=Math.min(cap,fCap(G.user)-sum(yb.map(fCommit))); }catch(e){} return Math.max(0,cap); }
 function foRoomWhy(p,room){ const c=foCap(p); return room<c?`외국인 3명 연봉 총액 한도에서 남은 몫이 ${usdT(room)}입니다(1인 상한 ${usdT(c)}). 이미 계약한 외국인 연봉을 합친 금액입니다.`:`신규 계약은 보장과 인센티브를 합쳐 1인 ${usdT(c)}까지입니다.`; }
 Object.assign(A,{ foRe(v){ UI.negWin={k:'fre',id:+v}; renderSheet(); }, /* 재계약 협상도 협상 창으로 */
-  foStep(v){ const [k,d]=String(v).split(':'); const F=UI.fo; if(!F)return; const p=G.players[F.id]; if(!p)return;
-    const top=F.re?Math.round(p.newSal*2):foSlotRun(p,()=>foRoom(p)), g0=F.g, i0=F.i; if(k==='g')F.g=clamp(F.g+(+d)*USD,MIN_SAL,Math.max(MIN_SAL,top-F.i)); else F.i=clamp(F.i+(+d)*USD,0,Math.max(0,top-F.g)); F.msg=+d>0&&F.g===g0&&F.i===i0&&!F.re?'더 올릴 수 없습니다: '+foSlotRun(p,()=>foRoomWhy(p,top)):''; renderSheet(); },
-  foSlot(v){ const F=UI.fo; if(!F||F.re)return; const s=v==='yb'?'yb':'asia'; if(F.slot===s)return; F.slot=s; F.g=null; F.i=null; F.msg=''; renderSheet(); }, /* 슬롯을 바꾸면 요구액·상한이 달라 조건을 새로 잡는다 */ /* 막히면 이유를 적는다(플레이테스트 4 #11) */
+  foStep(v){ const [k,d]=String(v).split(':'); const F=UI.fo; if(!F)return; const p=G.players[F.id]; if(!p)return; const cap=foCap(p);
+    const top=F.re?Math.round(p.newSal*2):foRoom(p), g0=F.g, i0=F.i; if(k==='g')F.g=clamp(F.g+(+d)*USD,MIN_SAL,Math.max(MIN_SAL,top-F.i)); else F.i=clamp(F.i+(+d)*USD,0,Math.max(0,top-F.g)); F.msg=+d>0&&F.g===g0&&F.i===i0&&!F.re?'더 올릴 수 없습니다: '+foRoomWhy(p,top):''; renderSheet(); }, /* 막히면 이유를 적는다(플레이테스트 4 #11) */
   foRel(){ const F=UI.fo; if(!F)return; F.rel=!F.rel; F.msg=''; renderSheet(); },
   foGo(v){ if(!contractMoneyValid())return; const F=UI.fo; if(!F||F.id!==+v)return;
-    if(!F.re&&!UI._cfmPass){ const p=G.players[+v]; if(p){ UI.cfm={k:'foGo',v,doc:{head:'외국인 계약',subj:`${p.name}에게 이 조건으로 제안할까요?`,lines:[`보장 ${usdT(F.g)}(${money(F.g)})${F.i?` + 인센티브 ${usdT(F.i)}(규정 출전 시)`:''}`,F.rel?'보류권 해제 조항 포함: 재계약하지 않으면 국내 다른 구단과 계약할 수 있습니다.':'',F.slot==='yb'&&p.foreign==='아시아'?'외국인 슬롯(일반 외국인 규정)으로 계약합니다. 아시아쿼터 자리는 쓰지 않습니다.':'',`선수가 받아들이면 바로 계약됩니다. 계약 뒤에는 되돌릴 수 없습니다.`],ok:'제안하기',no:'취소',noMail:true}}; cfmRender(); return; } } /* 계약 전 확인(플레이테스트 4 #12) */ const r=F.re?foReOffer(+v,F.g,F.i):foOffer(+v,F.g,F.i,!!F.rel,F.slot==='yb'); if(F.re){ F.msg=r.msg; save(); render(); return; } F.msg=r.msg; if(r.ok){ UI.fo=null; toast(r.msg); UI.sheet=null; save(); render(); return; } save(); renderSheet(); } });
+    if(!F.re&&!UI._cfmPass){ const p=G.players[+v]; if(p){ UI.cfm={k:'foGo',v,doc:{head:'외국인 계약',subj:`${p.name}에게 이 조건으로 제안할까요?`,lines:[`보장 ${usdT(F.g)}(${money(F.g)})${F.i?` + 인센티브 ${usdT(F.i)}(규정 출전 시)`:''}`,F.rel?'보류권 해제 조항 포함: 재계약하지 않으면 국내 다른 구단과 계약할 수 있습니다.':'',`선수가 받아들이면 바로 계약됩니다. 계약 뒤에는 되돌릴 수 없습니다.`],ok:'제안하기',no:'취소',noMail:true}}; cfmRender(); return; } } /* 계약 전 확인(플레이테스트 4 #12) */ const r=F.re?foReOffer(+v,F.g,F.i):foOffer(+v,F.g,F.i,!!F.rel); if(F.re){ F.msg=r.msg; save(); render(); return; } F.msg=r.msg; if(r.ok){ UI.fo=null; toast(r.msg); UI.sheet=null; save(); render(); return; } save(); renderSheet(); } });
 /* 우리 외국인 재계약 협상(보류권: 경쟁 상대는 해외 제안뿐) */
 function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.fo&&UI.fo.id===p.id?UI.fo:null;
   if(!F){ F=UI.fo={id:p.id,g:Math.round(p.newSal*.85/USD)*USD,i:0,msg:'',re:true}; }
@@ -51488,7 +51454,6 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
   return `<section class="card fo"><div class="row between"><h2 class="sec">재계약 협상</h2><span class="small muted">보류권 · 국내 경쟁 없음</span></div>
     <p class="small">지금 ${usdT(p.sal)} · 요구 ${usdT(p.newSal)}(${money(p.newSal)}) · 지난 시즌 ${h?statLine(h,p):'기록 없음'}${h?` · WAR ${warOf(h,p).toFixed(1)}`:''}</p>
     ${p.foreign==='아시아'?`<p class="small">아시아쿼터 재계약 상한 <b>${usdT(asiaReCap(p))}</b> ${hiI(`신규 계약은 ${Math.round(asiaCap()/USD)}만 달러까지입니다. 재계약 상한은 KBO에서 뛴 시즌마다 10만 달러씩 늘고, 직전 연봉보다 10만 달러 더 주는 것도 됩니다.`)}</p>`:''}
-    ${p.foreign==='아시아'?(()=>{ const e=fReYBErr(G.user,p,C.y+1,fReRoster(G.user,C.y+1,C)); return `<div class="fo-slot fo-re-slot"><button class="btn small" data-a="foReYB" data-v="${p.id}"${e?` disabled title="${esc(e)}"`:''}>외국인 슬롯으로 재계약</button></div><p class="small muted keep fo-slot-d">${e?esc(e):`일반 외국인 규정(정원·총액 한도)으로 바꾸면 아시아쿼터 상한이 없어지고 요구액이 ${usdT(fYBReAsk(p))}(으)로 다시 정해집니다. 아시아쿼터 자리는 비어 다른 선수를 영입할 수 있습니다.`}</p>`; })():p.fAsiaRe===C.y?`<div class="fo-slot fo-re-slot"><button class="btn small on" data-a="foReYB" data-v="${p.id}" aria-pressed="true">외국인 슬롯으로 재계약 중 · 아시아쿼터로 되돌리기</button></div><p class="small muted keep fo-slot-d">일반 외국인 규정으로 재계약합니다. 아시아쿼터 자리는 비어 있습니다.</p>`:''}
     <p class="small">보류권 때문에 국내 다른 구단은 이 선수와 협상할 수 없습니다. 경쟁 상대는 해외 제안뿐입니다: <b>${O&&!O.none?`${O.k} 구단 ${usdT(O.v)} 수준`:'해외 제안 없음'}</b></p>
     <div class="fo-in">
       <div><span class="muted small">보장 연봉</span>${contractMoneyInput('fo','g','보장 연봉',F.g,true)}<div class="row">${step('g',-5,'-5만')}${step('g',-1,'-1만')}${step('g',1,'+1만')}${step('g',5,'+5만')}</div></div>
@@ -51500,7 +51465,6 @@ function foRePanel(p){ const C=G.contract; const N=(C.fre||{})[p.id]; let F=UI.f
     ${N&&N.ok&&reCap&&reCap.over>0?`<div class="note">외국인 3명 연봉 총액이 한도를 ${money(reCap.over)} 넘습니다. 낮춘 조건으로 다시 제안해 합의를 바꿀 수 있습니다(거절돼도 기존 합의는 남습니다).</div><button class="btn primary block" data-a="foGo" data-v="${p.id}">낮춘 조건으로 다시 제안</button>`:''}
     ${N&&N.ok?`<div class="note">이미 합의했습니다. 연봉 계약 확정 때 반영됩니다.${p.fMulti>C.y?` ${C.y+1}~${p.fMulti} 2년 계약입니다.`:''}</div>${p.fMulti>C.y||p.age>=35?'':`<button class="btn small" data-a="foMulti" data-v="${p.id}" title="연봉 +5%, 다음 겨울 협상 없음">2년 계약으로 바꾸기 · 연봉 +5%</button>`}`:`<div class="row" style="gap:6px"><button class="btn" data-a="foRec" data-v="${p.id}">추천 조건</button><button class="btn primary" style="flex:1" data-a="foGo" data-v="${p.id}">이 조건으로 재계약 제안</button></div>`}${F.msg?`<div class="note">${esc(F.msg)}</div>`:''}</section>`; }
 Object.assign(A,{
-  foReYB(v){ const m=fReToYB(+v); if(UI.fo&&UI.fo.id===+v){ const p=G.players[+v]; UI.fo.g=Math.round(p.newSal*.85/USD)*USD; UI.fo.i=0; UI.fo.msg=m; } toast(m); save(); renderSheet(); render(); }, /* 카페 11-21: 아시아쿼터 → 일반 외국인 재계약 */
   foMulti(v){ const m=fReMulti(+v); if(UI.fo)UI.fo.msg=m; toast(m); save(); render(); },
   fTmpStart(v){ UI.ftmpFor=v===''||v==null?null:+v; UI.ff=Object.assign({},UI.ff||{},{t:'yb'},UI.ftmpFor!=null?{r:'all'}:{}); /* 타자·투수 등 이전 필터가 대체 후보를 숨기지 않게(검수 11-09c) */ if(UI.tab==='transfer'&&curSub('transfer')==='foreign')render(); else A.go('transfer:foreign'); },
   fTmpSign(v){ const err=signTempForeign(G.user,UI.ftmpFor,+v); toast(err||'부상 대체 외국인을 등록했습니다.'); if(!err)UI.ftmpFor=null; save(); render(); },
@@ -51876,10 +51840,10 @@ Object.assign(A,{ handOff(v){ toast(handOff(v)); save(); render(); }, takeBack(v
   evHand(v){ toast(handOffEv(v)); save(); render(); }, evDeleg(v){ toast(evDeleg(v)); save(); render(); }, evHandAll(){ const n=evHandAll(G.mail.filter(m=>!m.read||ibMust(m)).filter(ibMust)); toast(n?`결정 ${n}건을 비서가 기본안으로 처리했습니다.`:'비서에게 넘길 결정이 없습니다.'); save(); render(); }, evTake(v){ G.deleg=G.deleg||{}; if(EV_LATE.has(v))G.deleg[v]=false; else delete G.deleg[v]; if(evPolOf(v))G.evPol[v]='self'; save(); render(); }, evGive(v){ G.deleg=G.deleg||{}; G.deleg[v]=true; if(evPolOf(v)==='self')delete G.evPol[v]; toast(`${EV_NAME[v]||'이 종류'} 결정은 앞으로 비서가 기본안으로 처리합니다. 권한 화면에서 다시 가져올 수 있습니다.`); save(); render(); },
   foRec(v){ const F=UI.fo; const p=G.players[+v]; if(!F||!p)return; if(F.re){ const t=foReFloor(p), f=foReComfort(p), cap=p.foreign==='아시아'?asiaReCap(p):Infinity; const need=i=>Math.max(MIN_SAL,Math.ceil((t/f-i*FO_INC_W)/USD)*USD); /* 아시아쿼터 재계약 상한 안에서만 추천(검수 11-09b). 상한이 있으면 인센티브 없이 보장으로 주는 쪽이 값이 크다 */
     if(need(F.i)+F.i>cap)F.i=0; const g=need(F.i); if(g+F.i>cap){ F.g=Math.max(MIN_SAL,cap-F.i); F.msg=`재계약 상한 ${usdT(cap)} 안에서는 합의할 수 있는 조건이 없습니다. 상한까지 맞췄습니다.`; } else { F.g=g; F.msg='사인 가능한 최소 보장액으로 맞췄습니다.'; } renderSheet(); return; }
-    foSlotRun(p,()=>{ const me=foAppeal(p,G.user,{rel:!!F.rel}) /* 넣은 보류권 해제 조항도 반영(검수 11-09b) */, Rv=foRivals(p), best=Rv[0]; const known=!!p.fneg||!best; const cap=foCap(p);
+    const me=foAppeal(p,G.user,{rel:!!F.rel}) /* 넣은 보류권 해제 조항도 반영(검수 11-09b) */, Rv=foRivals(p), best=Rv[0]; const known=!!p.fneg||!best; const cap=foCap(p);
     /* 추천 조건은 실제 제안 판정과 같은 기준(경쟁 구단 조건 포함)으로 계산한다. 경쟁 조건을 아직 몰라도 에이전트 귀띔으로 맞춘다(플레이테스트 4 #12: 추천 조건이 거절됨) */
     const room=foRoom(p), tgt=Math.max(foFloor(p),best?best.v*1.01:0)*1.005; const need=i=>{ const g=foNeedG(p,i,tgt,me.f); return g!=null&&g+i<=room?g:null; }; let g=need(F.i); if(g==null){ F.i=0; g=need(0); }
-    if(g==null){ F.msg=room<cap?`외국인 총액 한도에서 남은 몫(${usdT(room)}) 안에서는 사인할 만한 조건이 없습니다.`:'상한 안에서는 사인할 만한 조건이 없습니다.'; } else { F.g=g; F.msg=known?'사인 가능한 최소 보장액으로 맞췄습니다.':'에이전트 귀띔(경쟁 구단 조건 포함)으로 사인 가능한 보장액에 맞췄습니다.'; } }); renderSheet(); } }); /* 외국인 슬롯을 고른 아시아쿼터 후보는 일반 외국인 기준으로 추천(카페 11-21) */
+    if(g==null){ F.msg=room<cap?`외국인 총액 한도에서 남은 몫(${usdT(room)}) 안에서는 사인할 만한 조건이 없습니다.`:'상한 안에서는 사인할 만한 조건이 없습니다.'; } else { F.g=g; F.msg=known?'사인 가능한 최소 보장액으로 맞췄습니다.':'에이전트 귀띔(경쟁 구단 조건 포함)으로 사인 가능한 보장액에 맞췄습니다.'; } renderSheet(); } });
 /* ---------- 구단 > 언론·여론: 언론사와 기자, 친분 쌓기, 언론 플레이 ---------- */
 function pressCards(){ if(G.unemp)return ''; const L=pressInit();
   const rep=r=>`<button class="prr" data-a="person" data-v="rep:${r.id}">${avImg({persona:'agent',pid:r.id+r.name,age:r.age,female:r.female,expr:relEx(r.rel),name:r.name})}<span class="prr-t"><b>${esc(r.name)}</b><i>${PR_STYLE[r.style].l} · ${esc(r.field)} · ${'★'.repeat(r.inf)}</i></span><span class="prr-r num ${r.rel>=60?'good':r.rel<PP_MIN_REL?'bad':''}">${relLabel(Math.round(r.rel))}</span></button>`;
@@ -52713,11 +52677,11 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
-  {id:'2026-11-21-asia-to-foreign',d:'11월 21일',t:'아시아쿼터 선수를 일반 외국인 슬롯으로 영입·재계약할 수 있습니다',items:[
-    'KBO 일반 외국인 슬롯에는 국적 제한이 없어, 아시아쿼터 후보(일본·대만·호주 등)도 일반 외국인으로 계약할 수 있습니다. 외국인 영입 협상 창에서 "아시아쿼터로 영입" / "외국인 슬롯으로 영입"을 고르세요.',
-    '외국인 슬롯으로 계약하면 일반 외국인 규정(1인 상한 100만 달러·3명 총액 한도·시즌 중 교체 2회)을 따르고 아시아쿼터 자리는 비워 둡니다. 아시아쿼터 상한이 없어지니 요구액은 일반 외국인 시장 수준으로 오릅니다.',
-    '일반 외국인 자리가 다 차 있으면 외국인 슬롯으로는 영입할 수 없습니다. 아시아쿼터 자리가 차 있어도 일반 외국인 자리가 비어 있으면 협상할 수 있습니다. AI 구단도 같은 규정으로, 아시아쿼터 후보가 일반 후보보다 확실히 나을 때 일반 슬롯으로 데려갑니다.',
-    '우리 아시아쿼터 선수도 재계약 때 "외국인 슬롯으로 재계약"을 누르면 일반 외국인으로 바뀝니다. 다음 시즌 일반 외국인 자리가 비어 있어야 하고, 요구액은 일반 외국인 기준으로 다시 정해집니다. 그러면 아시아쿼터 자리가 비어 다른 선수를 영입할 수 있습니다(확정 전이면 되돌릴 수 있음). AI 구단도 같은 규정을 따릅니다.',
+  {id:'2026-11-21-aging-physical',d:'11월 21일',t:'나이가 들면 체력·구속·주력 같은 신체 능력이 먼저, 더 크게 떨어집니다',items:[
+    '33세 무렵부터 투수 체력·구위·구속과 타자 주력·체력·장타력이 조금씩 떨어지기 시작하고, 35~36세부터는 눈에 띄게 빨리 떨어집니다. 37세에 체력 90대를 유지하는 투수는 거의 없습니다.',
+    '제구·선구안·컨택 같은 기술은 전보다 덜, 늦게 떨어집니다. 기술이 좋은 노장은 몸이 늙어도 기술로 오래 버틸 수 있습니다.',
+    '멘탈(프로의식이 높고 예민하지 않은 선수)이 좋을수록 신체 능력도 천천히 떨어집니다. 은퇴·베테랑 방출을 정할 때도 멘탈과 제구·컨택·선구안을 함께 봐서, 기술로 사는 노장은 더 오래 현역으로 뜁니다.',
+    '모든 구단 선수에게 같은 기준이고, 진행 중인 저장의 선수 능력은 지금 그대로 두고 다음 해 넘어갈 때부터 적용합니다.'
   ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
     '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',
@@ -57217,7 +57181,7 @@ render(); /* 공간이 빠듯하면(본문 합계 약 3MB 이상) 진행 중이 
  try{performance.mark('fronttime-menu-ready');}catch(e){} /* 첫 화면 준비 표시: 저장을 읽고 첫 화면을 그린 뒤에 남긴다. IndexedDB를 기다리는 부팅(sbNeedBoot)에서는 이 시점이 스크립트 끝보다 늦다 */ }
 let DL=null; try{ if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{ DL=d; if(G&&UI.tab==='club')render(); }).catch(()=>{}); }catch(e){}
 /* IndexedDB에 둔 슬롯이 있으면 먼저 읽어 온 뒤 연다. 없으면 예전처럼 바로 연다(사용자 11-12) */
-if(sbNeedBoot()){ let done=false; const go=()=>{ if(done)return; done=true; bootLoad(); }; sbRefresh().catch(()=>{}).then(()=>{ if(done){ try{ render(); }catch(e){} } go(); }); /* 늦게 끝나도(본문이 크고 많을 때) 슬롯 목록을 다시 그려 '본문 없음'으로 남지 않게 */ setTimeout(()=>{ if(!done){ go(); try{ toast('보조 저장소(IndexedDB)가 응답하지 않아 일부 슬롯을 읽지 못했을 수 있습니다. 새로고침해 보세요.'); }catch(e){} } },2500); } else bootLoad(); /* 일부 Safari에서 indexedDB.open이 응답하지 않으면 첫 화면이 영영 안 뜨던 문제(UI 리뷰 11-13) */
+if(sbNeedBoot()){ let done=false; const go=()=>{ if(done)return; done=true; bootLoad(); }; sbRefresh().catch(()=>{}).then(go); setTimeout(()=>{ if(!done){ go(); try{ toast('보조 저장소(IndexedDB)가 응답하지 않아 일부 슬롯을 읽지 못했을 수 있습니다. 새로고침해 보세요.'); }catch(e){} } },2500); } else bootLoad(); /* 일부 Safari에서 indexedDB.open이 응답하지 않으면 첫 화면이 영영 안 뜨던 문제(UI 리뷰 11-13) */
 try{ savePersistAsk(); }catch(e){} /* 저장 영구 보관 요청(모바일 정리로 지워지지 않게) */
 
 </script>
