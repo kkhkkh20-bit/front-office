@@ -10,6 +10,7 @@ function negChip(tid){ const ni=negInfo(tid); return ni.free?`<span class="negc 
 function tradeBar(p,tid){ if(!p)return null; const H=why=>({l:'트레이드 불가',why,hard:true});
   if(p.foreign)return H('외국인 선수는 트레이드할 수 없습니다.');
   if(p.joinY>G.year)return H('올해 입단한 신인은 트레이드할 수 없습니다.');
+  try{ if(sdLock(p))return H(sdLockWhy(p)); }catch(e){}
   try{ if(faSignLock(p))return H('FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다.'); if(faLock(p))return H('FA 신청을 앞둔 선수는 FA 공시(스토브리그 시작) 전까지 트레이드할 수 없습니다.'); }catch(e){}
   if(p.team!==G.user){ try{ if(hasNtc(p))return H(`계약서에 트레이드 거부권(${p.ntc}년까지)이 있어 데려올 수 없습니다.`); }catch(e){} return null; }
   try{ if(tid!=null?ntcFor(p,tid):hasNtc(p))return {l:'거부권',why:`트레이드 거부권(${p.ntc}년까지)이 있어 선수 동의가 필요합니다.`,hard:false}; }catch(e){}

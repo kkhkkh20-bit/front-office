@@ -18,6 +18,7 @@ function tradeEligible(p,ctx){ const c=ctx||{}; if(!p)return false;
   if(c.healthy!==false&&!healthy(p))return false;
   const nt=c.ntc===undefined?true:c.ntc; if(nt===true?hasNtc(p):nt!==false&&ntcFor(p,nt))return false;
   if(c.faLock!==false&&faLock(p))return false;
+  if(sdLock(p))return false; /* 2차 드래프트 의무 미달: 규약상 트레이드 금지, 모든 경로 공통(카페 11-21) */
   const rc=c.recent===undefined?'tr':c.recent; if(rc==='tr'?recentTr(p):rc==='mv'&&mvRecent(p))return false;
   return true; }
 /* 거래 뒤 정식 인원이 정원 안인지(evalTrade의 theirN). 이미 정원을 넘었거나(군 전역·드래프트 합류 등) 모자란 구단은 그 차이를 더 키우지만 않으면 된다: 71명인 구단이 4명을 받고 6명을 보내 69명이 되는 거래는 막지 않는다(카페 11-21 마스터쉐프). 모든 구단 같은 규칙 */
@@ -29,13 +30,14 @@ function tradeRosterFits(tid,nOut,nIn){ return rosterN(tid)-nOut+nIn<=ROSTER_MAX
  ctx.path: 'user'(우리 제안: from=우리 구단, ctx.budget이면 구단주·상한 결재까지) · 'offer'(받은 제안: from=우리 구단, to=제안 구단, ctx.strict) · 'ai'(AI끼리: from=사는 구단 A, to=파는 구단 B)
  돌려주는 값은 경로가 예전에 돌려주던 모양 그대로다(user: {ok,msg,...}, offer: {ok,msg}, ai: {ok,a,b}) */
 const TRADE_RULES={
-  user:['recent','open','empty','faLock','own','ntcOut','ntcIn','cashMax','cashInNoGive','cashTheirs','cashOutNoGet','cashMine','foreign','pk','cool','budget','owner','cap'],
-  offer:['recentOffer','coolOffer','faLock','ntcOut','ntcIn','exists','own','cashParse','cashInt','cashMine','cashTheirs','pk','eval','size','capHard','value'],
+  user:['recent','sd2','open','empty','faLock','own','ntcOut','ntcIn','cashMax','cashInNoGive','cashTheirs','cashOutNoGet','cashMine','foreign','pk','cool','budget','owner','cap'],
+  offer:['recentOffer','sd2','coolOffer','faLock','ntcOut','ntcIn','exists','own','cashParse','cashInt','cashMine','cashTheirs','pk','eval','size','capHard','value'],
   ai:['distinct','eligible','cashMax','cashAi','pkAi','coolAi','ntcAi','evalTo','ownerAi','capAi','evalFrom']
 };
 const TRADE_RULE={
   recent:d=>{ const msg=tradeRecentMsg([...d.give,...d.get]); if(msg)return {ok:false,msg}; },
   recentOffer:d=>{ const msg=tradeRecentMsg([...(d.get||[]),...(d.give||[])]); if(msg)return {ok:false,msg}; },
+  sd2:d=>{ const msg=sdLockMsg([...(d.give||[]),...(d.get||[])]); if(msg)return {ok:false,msg}; },
   open:()=>{ if(!tradeOpen())return {ok:false,msg:'트레이드 마감(7월 31일)이 지났습니다. 포스트시즌이 끝난 뒤 다시 할 수 있습니다.'}; },
   empty:d=>{ if(!d.give.length&&!d.get.length)return {ok:false,msg:'주고받을 선수를 골라 주세요.'}; },
   faLock:d=>{ const m=faLockMsg([...(d.give||[]),...(d.get||[])]); if(m)return {ok:false,msg:m}; },

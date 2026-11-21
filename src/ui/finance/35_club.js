@@ -166,6 +166,7 @@ function gamesView(){
 function tradeMood(tid,give,get,cash,pk){
   if(!give.length&&!get.length)return null;
   { let cd=null; try{ cd=tradeCool(tid,get); }catch(e){} if(cd)return {k:'no',l:'거래 제한',s:cd.cap?`올해 이 구단과 거래 한도(${cd.max}번)를 채웠습니다`:`최근 거래해 ${dsh(cd.until)}부터 다시 거래할 수 있습니다`,c:'var(--bad)',w:3,sd:0}; } /* 보내기 전에 거래 제한을 반응 막대에(플레이 테스트 11-13) */
+  { const m=sdLockMsg([...give,...get]); if(m)return {k:'no',l:'트레이드 불가',s:m,c:'var(--bad)',w:3,sd:0}; }
   if(faLockMsg([...give,...get]))return {k:'no',l:'트레이드 불가',s:[...give,...get].some(id=>faSignLock(G.players[id]))?'FA로 계약한 선수는 다음 시즌 개막 전까지 트레이드할 수 없습니다':'FA 신청을 앞둔 선수는 FA 공시 전까지 트레이드할 수 없습니다',c:'var(--bad)',w:3,sd:0};
   const t=team(tid); const e=evalTrade(tid,give,get,cash,pk);
   if(e.pkGate)return {k:'no',l:'상위 지명권',s:'1라운드 1~5순번 지명권은 리그 A급 선수(1순위는 특급)를 받고 그 자리가 필요할 때만 검토합니다',c:'var(--bad)',w:3,sd:0};
