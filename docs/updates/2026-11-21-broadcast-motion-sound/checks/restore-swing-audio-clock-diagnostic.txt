@@ -1,0 +1,17 @@
+3D ready
+AUDIO CLOCK DIAGNOSTIC {
+  audio: 9.531791383219955,
+  state: 'running',
+  perf: 73498,
+  ended: true,
+  epoch: 3,
+  voices: 0
+}
+AUDIO CLOCK DIAGNOSTIC +200ms {
+  audio: 9.711746031746031,
+  state: 'running',
+  perf: 73711,
+  ended: true
+}
+page.waitForFunction: Timeout 3000ms exceeded.
+    at /workspace/front-office-broadcast-motion-sound/tools/check-broadcast-motion-sound-1121.cjs:10:790

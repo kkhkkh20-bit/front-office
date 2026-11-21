@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: rejected automatic swing recovery is still scheduled
+
+760 !== 0
+
+    at /workspace/front-office-broadcast-motion-sound/tools/check-broadcast-swing-1121.cjs:9:781

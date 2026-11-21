@@ -1,0 +1,3 @@
+PASS actual rig: contact 450ms, complete follow-through, original held pose, explicit stance/run/bunt/seek preserved
+PASS actual rig: contact 900ms, complete follow-through, original held pose, explicit stance/run/bunt/seek preserved
+PASS actual rig: contact 1400ms, complete follow-through, original held pose, explicit stance/run/bunt/seek preserved

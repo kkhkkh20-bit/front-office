@@ -1,0 +1,4 @@
+10 real WebGL samples. Through1350ms: same swing clip/time, full follow-through preserved.
+At2100ms: before=swing (clamped final pose), after=batting_stance.
+Final camera maximum coordinate difference: 0.00011653987954574063m (same target; submillimetre).
+Initial zoom convergence differs between separate browser runs; only the final settled-pose screenshots are delivered as visual A/B.

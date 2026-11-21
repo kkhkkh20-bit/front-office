@@ -449,3 +449,18 @@ body .cs-prep-teams>section.cs-pcard.cs-rcard{grid-template-columns:1fr 1fr;widt
   .match-dashboard[data-view="field"]:has(.has-3d) .md-lineup-row>b{display:none}
 }
 .cs-face>.cf-al{position:absolute;top:7px;right:8px;max-width:118px}.cs-face>.cf-al .cs-alerts{display:grid;justify-items:end;gap:3px}.cs-face>.cf-al .cs-alerts>i{font-size:10px;padding:1px 6px;white-space:nowrap}.cs-face:has(>.cf-al) .cs-face-tx{padding-right:112px}
+/* Keep the pitch visible. Inspecting either card reveals both existing detail cards. */
+@media(min-width:1001px) and (hover:hover) and (pointer:fine){
+ .match-dashboard[data-view="field"] .cs-stage.has-3d .cs-face{height:92px}
+ .match-dashboard[data-view="field"] .cs-faces:has(.cf-al):not(:has(.cs-face:hover,.cs-face:focus-visible)) .cs-face{height:128px}
+ .match-dashboard[data-view="field"] .cs-stage.has-3d .cs-face .cf-body{grid-row:2}
+ .match-dashboard[data-view="field"] .cs-stage.has-3d .cs-face :is(.cf-season,.cf-rows,.md-duel-more){display:none}
+ .match-dashboard[data-view="field"] .cs-stage.has-3d .cs-face>.cf-al{position:static;top:auto;right:auto;grid-column:1/-1;grid-row:3;max-width:none}
+ .match-dashboard[data-view="field"] .cs-stage.has-3d .cs-face>.cf-al .cs-alerts{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:3px}
+ .match-dashboard[data-view="field"] .cs-stage.has-3d .cs-face:has(>.cf-al) .cs-face-tx{padding-right:0}
+ .match-dashboard[data-view="field"] .cs-faces:has(.cs-face:hover,.cs-face:focus-visible) .cs-face{height:var(--cf-h,264px)}
+ .match-dashboard[data-view="field"] .cs-faces:has(.cs-face:hover,.cs-face:focus-visible) .cs-face :is(.cf-season,.cf-rows,.md-duel-more){display:grid}
+ .match-dashboard[data-view="field"] .cs-faces:has(.cs-face:hover,.cs-face:focus-visible) .cs-face>.cf-al{position:absolute;top:7px;right:8px;grid-column:auto;grid-row:auto;max-width:118px}
+ .match-dashboard[data-view="field"] .cs-faces:has(.cs-face:hover,.cs-face:focus-visible) .cs-face>.cf-al .cs-alerts{display:grid;justify-items:end}
+ .match-dashboard[data-view="field"] .cs-faces:has(.cs-face:hover,.cs-face:focus-visible) .cs-face:has(>.cf-al) .cs-face-tx{padding-right:112px}
+}

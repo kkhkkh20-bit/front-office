@@ -1,0 +1,13 @@
+{
+  "scene_matches_parent_c655ddba": true,
+  "sound_sources_match_approved_829c0a69": [
+    "src/ui/matches/20_art_sound.js",
+    "src/ui/matches/21_cast.js",
+    "src/ui/matches/25_scene_actions.js"
+  ],
+  "sound_action_handlers_match_approved_829c0a69": [
+    "castPlay",
+    "castPlayer"
+  ],
+  "other_main_action_changes_preserved": true
+}

@@ -1,0 +1,4 @@
+PASS A new crowd reaction crossfades the old crowd without cutting the field impact
+PASS Mute/close stops active one-shots, layered bat sound, organ and loops; ended nodes disconnect
+PASS Delayed sounds belong to the exact playback and stop generation, including mute-then-unmute
+PASS Preferences, impact volume/rate, visual crowd reaction and no-sound menus stay compatible

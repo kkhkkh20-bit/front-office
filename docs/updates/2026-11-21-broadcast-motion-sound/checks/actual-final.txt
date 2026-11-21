@@ -1,0 +1,10 @@
+3D ready
+Audio control checked: mute true
+Audio control checked: pause true
+Audio control checked: seek true
+Audio control checked: speed true
+Audio control checked: end true
+Audio control checked: player true
+PASS actual WebGL swing recovery and mute/pause/seek/speed/player audio lifecycle; records unchanged
+
+CHECK_EXIT=0

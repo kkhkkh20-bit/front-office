@@ -45,64 +45,75 @@ function isoField(ox,oy,F,o){ o=o||{}; const k=F/80, t=o.turf||2; const g2=t>=3?
   s+=`<path d="M6 6H80M6 6V80" stroke="#fff" stroke-opacity=".75" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"/><g fill="#fff"><rect x="27" y="5" width="2" height="2"/><rect x="27" y="27" width="2" height="2"/><rect x="5" y="27" width="2" height="2"/><rect x="5" y="5" width="2" height="2"/></g>`;
   return `<g transform="matrix(${isoN(k)} ${isoN(k/2)} ${isoN(-k)} ${isoN(k/2)} ${isoN(ox)} ${isoN(oy)})">${s}</g>`; }
 
-/* 구장 외관. 지역 좌표: 필드 뒤 모서리(홈 뒤)가 (100,40), 필드 한 변 80.
-   o.lv={seat,fnb,prem,vis,turf}(1~5), o.build=[{k,pct}], o.col 우리 구단 색, o.dome, o.fs 글자 크기, o.proj={stage,pct,label} 신구장, o.labels 공사 글자 표시 */
-function isoStadium(o){ o=o||{}; const L=Object.assign({seat:2,fnb:2,prem:2,vis:2,turf:2},o.lv||{}); const col=o.col||'#d6333f'; const X=100,Y=40; const fs=o.fs||7;
-  const B={}; (o.build||[]).forEach(b=>{ B[b.k]=b; });
-  const sl=L.seat, H=sl>=4?36:sl>=3?26:14, T=sl>=4?28:sl>=3?22:14; const P=(u,v,h)=>isoXY(X,Y,u,v,h); const g=[]; const top=[];
-  const nT=L.turf>=4?4:L.turf>=3?3:2; const tH=H+26;
-  g.push(isoTile(X,Y,-T-10,-T-10,T+108,T+108,ISO.plaza));
-  /* 관중석 뒤 조명탑(관중석보다 먼저 그려 아래가 가려지게) */
-  const tw=(u,v)=>{ const [x,y]=P(u,v,0); return isoLight(x,y,tH,9); };
-  if(nT>=4){ g.push(tw(-T-4,40)); g.push(tw(40,-T-4)); } else if(nT>=3)g.push(tw(-T-4,-T-4)); g.push(tw(-T-4,74)); g.push(tw(74,-T-4));
-  g.push(isoField(X,Y,80,{turf:L.turf}));
-  /* 잔디 공사: 외야 일부를 걷어 낸 흙 */
-  if(B.turf)g.push(`<g transform="${isoMT(X,Y,0)}"><rect x="40" y="40" width="33" height="33" fill="${ISO.dirt}" opacity=".85"/><path d="M40 48H73M40 56H73M40 64H73" stroke="#8a5a2b" stroke-width="1" vector-effect="non-scaling-stroke"/></g>`);
-  /* 관중석: 홈 뒤 모서리 → 1루 쪽(오른쪽 뒤) → 3루 쪽(왼쪽 뒤). 필드를 보는 면이 앞면 */
-  g.push(isoBox(X,Y,-T,-T,T,T,H,{t:ISO.stT,l:ISO.stF,r:ISO.stF}));
-  g.push(isoBox(X,Y,0,-T,80,T,H,{t:ISO.stT,l:ISO.stF,r:ISO.wR}));
-  g.push(isoBox(X,Y,-T,0,T,80,H,{t:ISO.stT,l:ISO.wR,r:ISO.stF}));
-  const rows=[.28,.52,.76].map(f=>`M2 ${isoN(-H*f)}H78`).join('');
-  const rowSt=`stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke" fill="none" opacity=".9"`;
-  g.push(`<g transform="${isoML(X,Y,0)}"><path d="${rows}" ${rowSt}/></g><g transform="${isoMR(X,Y,0)}"><path d="${rows}" ${rowSt}/></g>`);
-  /* 윗면 통로 줄무늬 */
-  g.push(`<g transform="${isoMT(X,Y,H)}"><path d="M${-T/2} ${-T/2}H80M${-T/2} ${-T/2}V80" stroke="#46546a" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"/></g>`);
-  /* 프리미엄석: 홈 뒤 관중석 위 유리 띠(스카이박스). 단계가 오를수록 길어진다 */
-  if(L.prem>=3){ const len=L.prem>=5?60:L.prem>=4?44:26; const ph=6;
-    g.push(isoBox(X,Y,-6,-6,6,6,ph,{t:ISO.stT,l:ISO.win,r:ISO.win},H)+isoBox(X,Y,0,-6,len,6,ph,{t:ISO.stT,l:ISO.win,r:ISO.wR},H)+isoBox(X,Y,-6,0,6,len,ph,{t:ISO.stT,l:ISO.wR,r:ISO.win},H));
-    const lit=len=>{ let d=''; for(let i=3;i<len-2;i+=6)d+=`<rect x="${i}" y="${-ph+1.6}" width="3" height="${ph-3.2}" fill="${ISO.lamp}" opacity=".85"/>`; return d; };
-    g.push(`<g transform="${isoML(X,Y,0,H)}">${lit(len)}</g><g transform="${isoMR(X,Y,0,H)}">${lit(len)}</g>`); }
-  /* 최고 단계 관람석: 관중석 위 지붕막 + 지붕 조명 */
-  if(sl>=5){ const r1=H+16, r0=H+9; const rb=-T*.6; const mem=`<g opacity=".9">${isoPoly([P(rb,rb,r1),P(80,rb,r1),P(80,5,r0),P(5,5,r0),P(5,80,r0),P(rb,80,r1)],ISO.mem)}</g>`;
-    const posts=[[10,0],[40,0],[70,0],[0,10],[0,40],[0,70]].map(([u,v])=>{ const a=P(u,v,H), b=P(u+(u?0:4),v+(v?0:4),r0); return `M${isoN(a[0])} ${isoN(a[1])}L${isoN(b[0])} ${isoN(b[1])}`; }).join('');
-    g.push(`<path d="${posts}" stroke="${ISO.pole}" stroke-width="1" fill="none"/>`+mem+[10,26,42,58,74].map(u=>{ const a=P(u,5,r0), b=P(5,u,r0); return `<circle cx="${isoN(a[0])}" cy="${isoN(a[1]+1)}" r="1.5" fill="${ISO.lamp}"/><circle cx="${isoN(b[0])}" cy="${isoN(b[1]+1)}" r="1.5" fill="${ISO.lamp}"/>`; }).join('')); }
-  /* 프리미엄석 최고 단계: 1루 쪽 파울 지역 캠핑존 */
-  if(L.prem>=5)[60,66,72].forEach(u=>{ const [x,y]=P(u,2.5,0); g.push(`<path d="M${isoN(x-4)} ${isoN(y+1)}L${isoN(x)} ${isoN(y-6)}L${isoN(x+4)} ${isoN(y+1)}Z" fill="${col}"/><path d="M${isoN(x)} ${isoN(y-6)}L${isoN(x+4)} ${isoN(y+1)}L${isoN(x+6)} ${isoN(y-1)}Z" fill="#0004"/>`); });
-  /* 전광판: 3단계부터, 좌익수 뒤. 단계가 오를수록 넓다 */
-  const sbW=L.vis>=5?34:L.vis>=4?26:18, sbZ=8, sbH=isoN(sbW*.55), sbV=84;
-  if(L.vis>=3){ const lg=[sbV+3,sbV+sbW-3].map(v=>{ const a=P(-2,v,0), b=P(-2,v,sbZ); return `M${isoN(a[0])} ${isoN(a[1])}L${isoN(b[0])} ${isoN(b[1])}`; }).join('');
-    g.push(`<path d="${lg}" stroke="${ISO.pole}" stroke-width="1.6"/>`+isoBox(X,Y,-4,sbV,3,sbW,sbH,{t:'#3a4656',l:'#2b3340',r:ISO.sb},sbZ)
-      +`<g transform="${isoMR(X,Y,-1,sbZ)}"><rect x="${sbV+1}" y="${-sbH+1}" width="${sbW-2}" height="${sbH-2}" fill="none" stroke="${ISO.sbE}" stroke-width="1.2" vector-effect="non-scaling-stroke"/>${L.vis>=5?`<rect x="${sbV+3}" y="${-sbH+3}" width="${isoN(sbW*.45)}" height="${isoN(sbH-6)}" fill="${col}" opacity=".75"/>`:`<rect x="${sbV+3}" y="${-sbH+3}" width="6" height="4" fill="${col}"/>`}${[0,1,2].map(i=>`<rect x="${isoN(sbV+(L.vis>=5?sbW*.5+2:12))}" y="${isoN(-sbH+3+i*(sbH-5)/3)}" width="${isoN(L.vis>=5?sbW*.4:sbW-16)}" height="1.6" fill="${ISO.lamp}" opacity=".8"/>`).join('')}</g>`); }
-  /* 식음료·굿즈 매장: 우익 펜스 밖 매대, 단계만큼 */
-  const nK=Math.max(0,Math.min(4,L.fnb-1)); for(let i=0;i<nK;i++){ const v=12+i*16; g.push(isoBox(X,Y,85,v,7,9,7,{t:col,l:ISO.wL,r:ISO.wR})+`<g transform="${isoML(X,Y,v+9)}"><rect x="86.5" y="-5" width="4" height="2.6" fill="${ISO.lamp}"/></g>`); }
-  if(o.dome){ const [lx,ly]=P(-T,82,0), [rx]=P(82,-T,0); const cy=ly-6; g.push(`<path d="M${isoN(lx-4)} ${isoN(cy)}C${isoN(lx)} ${isoN(cy-140)} ${isoN(rx)} ${isoN(cy-140)} ${isoN(rx+4)} ${isoN(cy)}Z" fill="${ISO.mem}" fill-opacity=".14" stroke="${ISO.mem}" stroke-opacity=".7" stroke-width="1.2"/><path d="M${isoN((lx+rx)/2)} ${isoN(cy-105)}V${isoN(cy)}M${isoN(lx+40)} ${isoN(cy-78)}Q${isoN((lx+rx)/2)} ${isoN(cy-30)} ${isoN(rx-40)} ${isoN(cy-78)}" stroke="${ISO.mem}" stroke-opacity=".35" fill="none"/>`); }
-  /* 공사 중 항목: 비계 + 진행 막대 */
-  const lab=(k,u,v,h,txt)=>{ const b=B[k]; const [x,y]=P(u,v,h); top.push(isoBar(x,y,Math.max(30,fs*5),b.pct,o.labels===false?'':`${txt} ${Math.round(b.pct*100)}%`,fs)); };
-  if(B.seat){ g.push(isoScaf(X,Y,0,-T,80,T,H+6)+isoScaf(X,Y,-T,0,T,80,H+6)); const [x,y]=P(50,-T,0); g.push(isoCrane(x,y,H+30,30)); lab('seat',40,0,H+12,'관람석'); }
-  if(B.prem){ g.push(isoScaf(X,Y,-8,-8,40,8,8,H)); lab('prem',8,-4,H+16,'프리미엄석'); }
-  if(B.vis){ g.push(isoScaf(X,Y,-5,sbV,5,sbW,sbZ+sbH+2)); lab('vis',-2,sbV+sbW/2,sbZ+sbH+8,'전광판'); }
-  if(B.fnb){ const v=12+Math.min(3,nK)*16; g.push(isoScaf(X,Y,85,v,7,9,9)); lab('fnb',88,v+4,16,'매장'); }
-  if(B.turf)lab('turf',56,56,4,'그라운드');
-  /* 신구장: 오른쪽 옆 부지 */
-  if(o.proj){ const N=o.proj, X2=262, Y2=58, S2=52; const PP=(u,v,h)=>isoXY(X2,Y2,u,v,h);
-    if(N.stage==='build'){ const hh=6+30*N.pct; g.push(isoTile(X2,Y2,0,0,S2,S2,'#2b3340')+`<g transform="${isoMT(X2,Y2,0)}"><rect x="10" y="10" width="${S2-14}" height="${S2-14}" fill="${ISO.dirt}" opacity=".55"/></g>`+isoScaf(X2,Y2,0,0,S2,8,hh)+isoScaf(X2,Y2,0,8,8,S2-8,hh)); const [cx,cy]=PP(S2*.7,S2*.5,0); g.push(isoCrane(cx,cy,48,34)); const [bx,by]=PP(S2,S2,0); top.push(isoBar(bx,by+6,70,N.pct,N.label||`신구장 ${Math.round(N.pct*100)}%`,fs)); }
-    else { g.push(isoTile(X2,Y2,0,0,S2,S2,'none',`stroke="${ISO.pole}" stroke-dasharray="4 3" stroke-width="1.2"`)); const [bx,by]=PP(S2/2,S2/2,0); top.push(`<text class="isot" x="${isoN(bx)}" y="${isoN(by)}" font-size="${fs}" stroke-width="${isoN(fs*.28)}" text-anchor="middle">${N.label||'신구장 부지'}</text>`); } }
+/* Stadium-only artwork. The farm/campus field stays unchanged. */
+function isoParkProfile(o){ const L=Object.assign({seat:2,fnb:2,prem:2,vis:2,turf:2},o.lv||{}), level=Math.max(1,Math.min(12,+L.seat||2));
+  const kind=o.dome?'dome':['mid','big','dome','mega'].includes(o.kind)?o.kind:'classic';
+  const size={mid:[19,20],big:[25,27],dome:[27,29],mega:[33,35]}, base=size[kind]||[13+Math.min(5,level)*2,12+Math.min(5,level)*4];
+  return {L,kind,T:base[0],H:base[1]+Math.max(0,level-5)*1.3,rows:kind==='mega'?10:kind==='big'||kind==='dome'?8:7}; }
+function isoParkGrass(ox,oy,L){ const r=78,home=6,g=[];
+  g.push(`<path d="M6 6H84A78 78 0 0 1 6 84Z" fill="#286746"/>`);
+  for(let a=6;a<84;a+=9){ const b=Math.min(84,a+4.5),points=[[a,6],[b,6]]; for(let x=b;x>=a-.01;x-=(b-a)/4||1)points.push([x,6+Math.sqrt(Math.max(0,r*r-(x-home)*(x-home)))]);g.push(isoPoly(points,L.turf>=4?'#438856':'#37774b')); }
+  g.push('<path d="M6 6H84A78 78 0 0 1 6 84Z" fill="none" stroke="#a6946b" stroke-width="2.8"/>');
+  g.push('<path d="M6 6H37A31 31 0 0 1 6 37Z" fill="#bd8a5f"/><path d="M6 6H28V28H6Z" fill="#d0a273"/><path d="M9 9H25V25H9Z" fill="#3b8151"/><circle cx="17" cy="17" r="3.2" fill="#d2aa7b"/><rect x="16.4" y="16.5" width="1.2" height=".6" fill="#fff8e9"/>');
+  g.push('<path d="M6 6H84M6 6V84" stroke="#fff8eb" stroke-width=".7" fill="none"/><path d="M5 6L6 5L7 6L7 7L5 7Z" fill="#fffaf0"/><g fill="#fffaf0"><rect x="27" y="5" width="1.8" height="1.8"/><rect x="27" y="27" width="1.8" height="1.8"/><rect x="5" y="27" width="1.8" height="1.8"/></g><path d="M1 6H4V9H1ZM6 1V4H9V1" fill="none" stroke="#efe8d8" stroke-width=".45"/>');
+  return `<g transform="${isoMT(ox,oy,0)}">${g.join('')}</g>`; }
+/* Stepped, individually-seated grandstands replace the flat block walls. */
+function isoParkSeats(X,Y,P,T,H,rows,col,mirror){ const g=[],p=(u,v,h)=>mirror?P(v,u,h):P(u,v,h),color=['#293c51',col,'#3b5063'];
+  g.push(isoPoly([p(0,-T,0),p(83,-T,0),p(83,-T,H),p(0,-T,H)],'#273340'));
+  g.push(isoPoly([p(83,-T,0),p(83,0,0),p(83,0,3),p(83,-T,H)],'#1b2935'));
+  for(let i=rows-1;i>=0;i--){ const v0=-T*(i+1)/rows,v1=-T*i/rows,h0=3+(i+1)/rows*H,h1=3+i/rows*H;
+    g.push(isoPoly([p(0,v0,h0),p(83,v0,h0),p(83,v1,h1),p(0,v1,h1)],i%2?'#405061':'#48596a'));
+    for(let j=0;j<24;j++){if(j%6===0)continue;const u=j*3.4+.4,w=2.45,front=v0+(v1-v0)*.68,h=h0+(h1-h0)*.58;
+      g.push(isoPoly([p(u,front,h),p(u+w,front,h),p(u+w,front+.7,h-.2),p(u,front+.7,h-.2)],color[(i+Math.floor(j/6))%3])); }
+  }
+  for(const u of [0,20.4,40.8,61.2,82])g.push(isoPoly([p(u,-T,H+3),p(u+.65,-T,H+3),p(u+.65,0,3),p(u,0,3)],'#88959c'));
+  return g.join(''); }
+function isoParkDome(P,T,H){ const l=P(-T-3,86,0),r=P(86,-T-3,0),base=(l[1]+r[1])/2-2,top=base-H-63;
+  const outer=`M${isoN(l[0]-3)} ${isoN(base)}C${isoN(l[0]-9)} ${isoN(top)} ${isoN(r[0]+9)} ${isoN(top)} ${isoN(r[0]+3)} ${isoN(base)}`;
+  let s=`<g class="iso-dome-roof"><path d="${outer}Q${isoN((l[0]+r[0])/2)} ${isoN(base+37)} ${isoN(l[0]-3)} ${isoN(base)}Z" fill="#c4d8e2" opacity=".13"/><path d="${outer}L${isoN(r[0]-12)} ${isoN(base-2)}C${isoN(r[0]-20)} ${isoN(top+32)} ${isoN(l[0]+20)} ${isoN(top+32)} ${isoN(l[0]+12)} ${isoN(base-2)}Z" fill="#b4c4cf" stroke="#e5edf1" stroke-width=".6"/>`;
+  const bez=(t,a,b,c,d)=>{const n=1-t;return n*n*n*a+3*n*n*t*b+3*n*t*t*c+t*t*t*d;};
+  for(let i=1;i<12;i++){const t=i/12,x=bez(t,l[0]-3,l[0]-9,r[0]+9,r[0]+3),y=bez(t,base,top,top,base),ix=bez(t,l[0]+12,l[0]+20,r[0]-20,r[0]-12),iy=bez(t,base-2,top+32,top+32,base-2);
+    s+=`<path d="M${isoN(x)} ${isoN(y)}L${isoN(ix)} ${isoN(iy)}" fill="none" stroke="#7893a3" stroke-width=".7"/>`;}
+  s+=`<path d="M${isoN(l[0]+12)} ${isoN(base-2)}C${isoN(l[0]+20)} ${isoN(top+32)} ${isoN(r[0]-20)} ${isoN(top+32)} ${isoN(r[0]-12)} ${isoN(base-2)}" fill="none" stroke="#e2edf1" stroke-width="1.6"/><path d="M${isoN(l[0]+5)} ${isoN(base)}Q${isoN((l[0]+r[0])/2)} ${isoN(base+43)} ${isoN(r[0]-5)} ${isoN(base)}" fill="none" stroke="#8199a8" stroke-width="2"/></g>`;
+  return s; }
+/* The roof is a cutaway illustration, not a retractable-roof game rule. */
+function isoStadium(o){o=o||{};const {L,kind,T,H,rows}=isoParkProfile(o),X=100,Y=40,P=(u,v,h)=>isoXY(X,Y,u,v,h),col=o.col||'#b5384b',g=[],top=[],B={};
+  for(const b of o.build||[])B[b.k]=b;
+  g.push(isoTile(X,Y,-T-15,-T-15,T+116,T+116,'#18232d'),isoTile(X,Y,-T-10,-T-10,T+106,T+106,'#263741'));
+  /* Plaza paving, perimeter trees, and entrance lighting remain legible when small. */
+  for(const u of [8,26,44,62,80]){const a=P(u,-T-8,0),b=P(u,-T-13,0);g.push(`<path d="M${a.join(' ')}L${b.join(' ')}" stroke="#46555d" stroke-width=".6"/>`);}
+  for(const [u,v] of [[-T-10,8],[-T-10,38],[-T-10,68],[8,-T-10],[38,-T-10],[68,-T-10]]){const p=P(u,v,0);g.push(`<path d="M${isoN(p[0])} ${isoN(p[1])}v-4" stroke="#74614b" stroke-width="1"/><ellipse cx="${isoN(p[0])}" cy="${isoN(p[1]-6)}" rx="3.1" ry="3.8" fill="#34614c"/>`);}
+  if(kind!=='dome')for(const [u,v] of [[-T-7,73],[73,-T-7],[-T-5,-T-5]]){const p=P(u,v,0);g.push(isoLight(p[0],p[1],H+24,8));}
+  g.push(isoParkGrass(X,Y,L));
+  /* Low, rounded outfield terrace follows the grass rather than covering it. */
+  g.push(`<g transform="${isoMT(X,Y,3)}"><path d="M84 6A78 78 0 0 1 6 84L6 92A86 86 0 0 0 92 6Z" fill="#2a3d4d"/><path d="M86 6A80 80 0 0 1 6 86M89 6A83 83 0 0 1 6 89" fill="none" stroke="${col}" stroke-width="1.2"/></g>`);
+  g.push(isoParkSeats(X,Y,P,T,H,rows,col,false),isoParkSeats(X,Y,P,T,H,rows,col,true));
+  /* Entry rotunda, glass hospitality ring, and team-colour fascia. */
+  for(let i=rows-1;i>=0;i--){const r=T*(i+1)/rows,n=T*i/rows,h=3+(i+1)/rows*H,hn=3+i/rows*H;g.push(isoPoly([P(-r,0,h),P(-r,-r,h),P(0,-r,h),P(0,-n,hn),P(-n,-n,hn),P(-n,0,hn)],i%2?'#3c5265':col));}
+  g.push(isoBox(X,Y,0,-T,83,2,3,{t:col,l:col,r:'#5d2738'},H+3),isoBox(X,Y,-T,0,2,83,3,{t:col,l:'#5d2738',r:col},H+3));
+  for(const mirror of [false,true]){const p=(u,v,h)=>mirror?P(v,u,h):P(u,v,h);for(let u=5;u<80;u+=10)g.push(isoPoly([p(u,-T-.2,4),p(u+5,-T-.2,4),p(u+5,-T-.2,10),p(u,-T-.2,10)],'#a4c5d0'));}
+  if(L.prem>=3){const len=L.prem>=8?80:L.prem>=5?70:54;g.push(isoBox(X,Y,2,-T+2,len,5,5,{t:'#b0c1cb',l:'#395967',r:'#1e3d4a'},H+6),isoBox(X,Y,-T+2,2,5,len,5,{t:'#9fb4bf',l:'#1e3d4a',r:'#395967'},H+6));}
+  /* Open parks have spectator canopies; a dome has a distinct whole-building roof. */
+  if(kind!=='dome'&&(o.modern||L.seat>=4)){const lip=kind==='mega'?9:6,h=H+14;g.push(isoPoly([P(-T,-T,h+4),P(84,-T,h+4),P(84,-lip,h),P(-lip,-lip,h),P(-lip,84,h),P(-T,84,h+4)],'#c4d1d5'));
+    for(const u of [12,36,60,80]){for(const mirror of [false,true]){const a=mirror?P(-lip,u,h):P(u,-lip,h),b=mirror?P(0,u,2):P(u,0,2);g.push(`<path d="M${a.join(' ')}L${b.join(' ')}" stroke="#8cabb6" stroke-width=".65"/>`);}}}
+  /* A real visual advertising belt: fictional lettering, no external brands. */
+  const ads=[['PLAY BALL','#254e68'],['FRONT TIME',col],['BASEBALL','#9c713a'],['FAN ZONE','#315957']];
+  let ad='';for(let i=0;i<4;i++){const u=6+i*18;ad+=`<rect x="${u}" y="-5.3" width="16.5" height="4" rx=".25" fill="${ads[i][1]}"/><text x="${u+8.25}" y="-2.5" font-family="Arial,sans-serif" font-size="1.9" font-weight="700" fill="#f2f1e9" text-anchor="middle">${ads[i][0]}</text>`;}
+  g.push(`<g class="iso-adboards"><g transform="${isoML(X,Y,0)}">${ad}</g><g transform="${isoMR(X,Y,0)}">${ad}</g></g>`);
+  /* Broadcast screen and concessions sit outside the playing area. */
+  const sw=L.vis>=8?35:L.vis>=4?29:22,sz=9,sh=sw*.53;g.push(isoBox(X,Y,-5,85,3,sw,sh,{t:'#617784',l:'#253b48',r:'#101f2b'},sz));
+  g.push(`<g transform="${isoMR(X,Y,-2,sz)}"><rect x="87" y="${-sh+2}" width="${sw-4}" height="${sh-4}" rx=".5" fill="#183b4d"/><path d="M89 ${-sh+5}h${sw-8}M89 ${-sh+8}h${sw-11}" stroke="#c7dbc8" stroke-width="1"/><rect x="89" y="-4.5" width="${sw-8}" height="1.5" fill="${col}"/></g>`);
+  for(let i=0;i<Math.min(4,Math.max(1,+L.fnb||1));i++){const v=13+i*17;g.push(isoBox(X,Y,93,v,6,10,6,{t:col,l:'#d2b69a',r:'#8e7864'}));}
+  if(B.turf)g.push(`<g transform="${isoMT(X,Y,0)}"><path d="M43 36H63V58H43Z" fill="#ad8962"/><path d="M44 42h18M44 49h18" stroke="#765a3d" stroke-width=".8"/></g>`);
+  if(kind==='dome')g.push(isoParkDome(P,T,H));
+  for(const k of Object.keys(B)){const b=B[k],pt=k==='vis'?P(-3,95,sz+sh+8):k==='turf'?P(55,50,5):P(32,-T,H+20);top.push(isoBar(pt[0],pt[1],44,Math.max(0,Math.min(1,b.pct||0)),o.labels===false?'':`${({seat:'관람석',prem:'프리미엄석',vis:'전광판',fnb:'매장',turf:'잔디'})[k]||'시설'} ${Math.round((b.pct||0)*100)}%`,o.fs||6));
+    if(k==='seat'){g.push(isoScaf(X,Y,0,-T,83,T,H+6));const p=P(60,-T,0);g.push(isoCrane(p[0],p[1],H+34,28));}}
+  if(o.proj){const N=o.proj,X2=300,Y2=58,S2=48;g.push('<g class="iso-new-site">',isoTile(X2,Y2,0,0,S2,S2,'#293846'));
+    if(N.stage==='build'){g.push(isoScaf(X2,Y2,0,0,S2,8,6+28*N.pct),isoScaf(X2,Y2,0,8,8,S2-8,6+28*N.pct));const p=isoXY(X2,Y2,30,22,0);g.push(isoCrane(p[0],p[1],49,33));const b=isoXY(X2,Y2,24,24,0);top.push(isoBar(b[0],b[1]+36,78,N.pct,o.labels===false?'':N.label||'신구장 공사',o.fs||6));}
+    else{const p=isoXY(X2,Y2,24,24,0);top.push(`<text class="isot" x="${p[0]}" y="${p[1]}" font-size="${o.fs||6}" text-anchor="middle">${N.label||'신구장 부지'}</text>`);}g.push('</g>');}
   return g.join('')+top.join(''); }
-/* 구장 그림을 담은 svg: 신구장 부지가 있으면 오른쪽으로 넓힌다 */
-function isoStadTop(o){ const L=Object.assign({seat:2,prem:2,turf:2},(o&&o.lv)||{}); const sl=L.seat, H=sl>=4?36:sl>=3?26:14, T=sl>=4?28:sl>=3?22:14, tH=H+26;
-  const st=40-T-H-(sl>=5?16:L.prem>=3?6:0); const tw=L.turf>=4?40+(36-T)/2-tH-8:L.turf>=3?40-(T+4)-tH-8:40+(70-T)/2-tH-8;
-  return Math.floor(Math.min(st,tw,o&&o.dome?-34:99,o&&o.proj&&o.proj.stage==='build'?-2:99)-6); }
-function isoStadiumSvg(o,cls){ const t=isoStadTop(o); const vb=`-28 ${t} ${o&&o.proj?360:244} ${142-t}`; return `<svg class="${cls||'isosvg'}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="구장 외관">${isoStadium(o)}</svg>`; }
+function isoStadTop(o){const {T,H,kind}=isoParkProfile(o||{});return Math.floor(Math.min(40-T-H-42,kind==='dome'?-72:0)-8);}
+function isoStadiumSvg(o,cls){o=o||{};const {kind}=isoParkProfile(o),t=isoStadTop(o),vb=`-60 ${t} ${o.proj?430:320} ${158-t}`;return `<svg class="${cls||'isosvg'}" data-stadium-kind="${kind}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${kind==='dome'?'돔구장 외관 · 내부 절개도':'야구장 외관'}">${isoStadium(o)}</svg>`;}
 
 /* 2군 구장(필드 + 단계별 부속). (ox, oy)가 필드 뒤 모서리, 한 변 F */
 function isoFarmField(ox,oy,F,lv,col){ const k=F/80, P=(a,b,h)=>isoXY(ox,oy,a*k,b*k,(h||0)*k); const g=[];

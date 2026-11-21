@@ -1,0 +1,12 @@
+3D ready
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'swing stayed frozen after completion'
++ ]
+- []
+
+    at /workspace/front-office-broadcast-motion-sound/tools/check-broadcast-motion-sound-1121.cjs:9:197
+
+EXPECTED_BASELINE_EXIT=1

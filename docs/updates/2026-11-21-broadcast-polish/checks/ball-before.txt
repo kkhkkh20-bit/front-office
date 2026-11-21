@@ -1,0 +1,14 @@
+FAIL Portrait pitches have a readable minimum without enlarging already-readable desktop pitches: a pure pitch projection helper is required
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+FAIL Visual scale stays bounded and hidden or legacy viewports retain the old size: Expected values to be strictly equal:
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+FAIL Release and every pitch frame resize only the ball visual, not motion, contact, camera or draw count: release frame already has readable pitch sizing
+PASS Existing batted-ball scaling and ground lift remain unchanged

@@ -1,0 +1,3 @@
+PASS actual rig: contact 450ms, complete follow-through, stance recovery, runner override and bunt/seek preserved
+PASS actual rig: contact 900ms, complete follow-through, stance recovery, runner override and bunt/seek preserved
+PASS actual rig: contact 1400ms, complete follow-through, stance recovery, runner override and bunt/seek preserved

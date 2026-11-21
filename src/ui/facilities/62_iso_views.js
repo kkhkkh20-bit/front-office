@@ -8,9 +8,12 @@ function stadIsoOpts(tid){ const S=stadOf(tid);
   if(N&&tid===G.user){ if(N.stage==='build'){ const t0=N.res||N.start||G.day; const pct=clamp((G.day-t0)/Math.max(1,N.done-t0),0,1); const o=NEWSTAD.find(x=>x.k===N.k);
       proj={stage:'build',pct,label:`${o?o.l+' ':''}신구장 공사 ${Math.round(pct*100)}% · ${dobj(N.done).y}년 개장`}; }
     else proj={stage:N.stage,label:N.stage==='talk'?'신구장 부지 · 시와 협상 중':'신구장 부지 · 규모 선택 대기'}; }
-  return {lv:Object.assign({},S.lv),build,dome:!!S.dome,proj}; }
+  const saved=typeof newStadKind==='function'?newStadKind(tid):S.nk, dome=typeof S.dome==='boolean'?S.dome:saved==='dome';
+  const kind=dome?'dome':S.mega?'mega':['mid','big','mega'].includes(saved)?saved:'classic';
+  const cap=typeof stadCap==='function'?stadCap(tid):(S.cap||0);
+  return {lv:Object.assign({},S.lv),build,dome,kind,cap,modern:kind!=='classic',proj}; }
 function stadIsoPic(tid){ const S=stadOf(tid); const o=stadIsoOpts(tid); o.col=cTeamCol(tid);
-  const cap=STAD_ITEMS.map(it=>{ const b=o.build.find(x=>x.k===it.k); return `<span>${STAD_SHORT[it.k]} <b>${S.lv[it.k]}</b>/5${b?` <em class="bld">${b.lv}단계 공사 ${Math.round(b.pct*100)}%</em>`:''}</span>`; }).join('');
+  const cap=STAD_ITEMS.map(it=>{ const b=o.build.find(x=>x.k===it.k); return `<span>${STAD_SHORT[it.k]} <b>${S.lv[it.k]}</b>/${STAD_MAX}${b?` <em class="bld">${b.lv}단계 공사 ${Math.round(b.pct*100)}%</em>`:''}</span>`; }).join('');
   return `<figure class="isostad">${isoStadiumSvg(o)}<figcaption class="isocap">${cap}${o.dome?'<span><b>돔구장</b></span>':''}${o.proj&&o.proj.stage==='build'?`<span><em class="bld">${esc(o.proj.label)}</em></span>`:''}</figcaption></figure>`; }
 /* 구단 버스 그림: 지금 버스 크게 + 세 등급 비교 띠(같은 축척이라 길이 차이가 보인다) */
 function busIsoPic(){ const bl=busLv(), col=cTeamCol(G.user); const vb=isoBusVB(2).join(' ');

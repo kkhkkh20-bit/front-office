@@ -1,0 +1,4 @@
+AssertionError [ERR_ASSERTION]: swing never returns to ready stance
+    at /workspace/front-office-broadcast-motion-sound/tools/check-broadcast-swing-1121.cjs:9:781
+
+EXPECTED_BASELINE_EXIT=1

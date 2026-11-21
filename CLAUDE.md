@@ -19,6 +19,12 @@ Current state / open PRs / pending replies: `docs/claude/STATUS.md` (read it fir
 - Never weaken tests. Fix scenario setup, or update a world-dependent baseline with an old→new comment.
 - UI: PC has no page scroll; 390px has no horizontal overflow.
 
+## Broadcast references (owner rule, 2026-11-21)
+- Inspect actual broadcast footage before proposing motion/camera/audio changes, preferably official KBO uncut sequences. Record source URL, verified timestamps, observed sequence, and the corresponding game behavior.
+- A search listing, transcript, still, or isolated end pose is not a watched motion sequence. Mark unplayable/unverified footage explicitly and do not implement guessed movement from it.
+- Identify missing links in existing sequences; distinguish already implemented behavior and intentionally removed effects. Fill small evidenced gaps, preserving engine results/timing/RNG and prior owner preferences.
+- Owner rejected automatic swing-to-stance recovery (pause/spin looked worse). Preserve the original batting pose. Sound cleanup was accepted; do not bundle rejected motion back into that change.
+
 ## Git / deploy
 - Branch per change, draft PR, CI = 16 `rules` shards + `browser-and-sim` (~70 min). No force-push/rebase; bring main in with `git merge origin/main`.
 - Merge only when rules 16/16 pass and browser failures are known ones (see STATUS). Set draft→ready before merge.
