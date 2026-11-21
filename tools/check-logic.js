@@ -10854,6 +10854,16 @@ T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 �
   G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
   G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
   G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
+T('[사용자 11-21 고교리그 탭] 전국대회 개인 기록은 모든 출전 선수를 모아 결승 때 위 10명·최우수 선수로 굳히고, 순위는 규정 타석·이닝을 따르며 난수를 쓰지 않는다',()=>{ fresh();
+  const S={y:G.year,live:true,tour:{},tp:{}}; const T0={k:'t1',n:'시험대회',ch:'가고'}; S.tour.t1=T0; const U=(id,sch,isP)=>({id,kind:'e',sch,gr:2,isP});
+  const bat=(pa,ab,h,hr,rbi)=>({pa,ab,h,d:0,tr:0,hr,bb:pa-ab,hbp:0,so:1,rbi,sb:0}); const r0=__rngCalls();
+  for(let i=0;i<4;i++){ amTourLineAdd(S,'t1',U(1,'가고',false),{n:'갑'},bat(4,4,2,1,3)); amTourLineAdd(S,'t1',U(3,'다고',true),{n:'병'},{outs:18,er:1,so:7,bb:1,h:4,w:1}); }
+  amTourLineAdd(S,'t1',U(2,'나고',false),{n:'을'},bat(2,2,2,0,0)); /* 2타석 10할: 규정 타석 미달 */
+  const A=amTlLeaders(S,T0,'avg',false,5); ok(A.length===1&&A[0].n==='갑'&&A[0].v===.5,'타율 순위가 규정 타석을 따르지 않음: '+JSON.stringify(A));
+  const R=amTlLeaders(S,T0,'rbi',false,5); ok(R[0].n==='갑'&&R[0].v===12,'타점 순위 합계가 틀림'); const E=amTlLeaders(S,T0,'era',true,5); ok(E[0].n==='병'&&Math.abs(E[0].v-1.5)<1e-9,'평균자책점이 틀림: '+JSON.stringify(E));
+  amTourFreeze(S,T0,[9,'갑','가고',2,0,null]); ok(T0.ld&&T0.ld.ops[0].n==='갑'&&T0.mvp&&T0.mvp.n==='갑'&&!(S.tl&&S.tl.t1),'결승 뒤 대회 기록·최우수 선수가 남지 않음');
+  ok(amTlLeaders(S,T0,'hr',false,5)[0].v===4,'굳힌 기록을 다시 읽지 못함'); ok(__rngCalls()===r0,'대회 기록이 본 난수를 씀');
+  const S2={y:G.year,live:false,tour:{t1:{k:'t1',n:'x'}}}; amTourLineAdd(S2,'t1',U(1,'가고',false),{n:'갑'},bat(4,4,1,0,0)); amTourFreeze(S2,S2.tour.t1,null); ok(!S2.tour.t1.ld,'월드 생성 시즌(live 아님)에 대회 기록을 굳힘'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
