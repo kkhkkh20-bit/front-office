@@ -15878,14 +15878,18 @@ const AGE_DECL_K=.4, AGE_PHYS_K=.16, AGE_SLUMP_F=1/3, PEAK_MU=.3, POT_TIDY_PEAK=
 const DT={norm:{l:'정상 성장형',grow:28,peak:31,fall:33},early:{l:'조기 완성형',grow:25,peak:29,fall:31},late:{l:'대기만성형',grow:30,peak:33,fall:35},stall:{l:'정체형',grow:26,peak:30,fall:32},vet:{l:'기술형 베테랑',grow:28,peak:33,fall:35}}; /* KBO 전성기는 29세 전후부터: 모든 유형을 2년 늦췄다(사용자 11-07) */
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
 /* 카페 11-21 노장 체력 노화(FC서울: "37세 투수가 체력 90대는 말이 안 된다", 구단주: 피지컬 쪽 감소가 좀 심해야 하고 정신적인 것은 덜하고, 전성기 27~33·신체 하락은 33세부터 완만히, 35~36세부터 가파르게).
-   능력을 신체 몫(AGE_PW, 1=순수 신체)으로 나눈다. 투수 체력(sta)·주력(spd)·타자 체력(vit) 1, 구위(stf, 구속) .7, 장타력(pow) .6, 수비(def, 범위·송구) .5, 컨택(con) .2, 선구안(eye)·제구(ctl) 0.
+   능력을 신체 몫(AGE_PW, 1=순수 신체)으로 나눈다. 투수 체력(sta)·주력(spd)·타자 체력(vit) 1, 구위(stf, 구속) .7, 장타력(pow) .5, 수비(def, 범위·송구) .4, 컨택(con) .2, 선구안(eye)·제구(ctl) 0.
    1) 신체 노화: 유형과 무관하게 몸 나이(그해 뛸 나이 a1)로 정한다. agePhys(a1)×신체 몫만큼 깎는다(33~35세 완만, 36세부터 가파르게). 구속 보정(velo)도 같은 곡선으로 줄어든다.
    2) 정신·기술 노화: 하락 구간의 공통 하락(base)을 신체 몫이 작을수록 덜 받는다(제구·선구안 0.5배·컨택 0.6배). 예전 PHYS 식(제구·선구안 소폭 가산)은 이 식으로 바꿨다.
    3) 나이 천장: 순수 신체 능력(몫 1)은 agePhysCap(a1)을 넘으면 넘친 몫을 더 깎는다(한 해 최대 AGE_CAP_STEP, 예전 저장의 노장이 한 번에 무너지지 않게). 37세 천장 68(화면 약 88).
    엘리트 완만 하락(AGE_ELITE_F)은 기술 몫에만 준다(기술은 엘리트로 남고 몸은 똑같이 늙는다). 모든 구단·모든 선수 같은 식이고 난수를 더 쓰지 않는다.
    새 게임 세계를 만드는 동안(WORLD_BUILD)은 예전 식 그대로라 시작 세계가 main과 같다. 예전 저장은 지금 능력을 건드리지 않고 다음 해 넘김(develop)부터 새 식을 탄다 */
-const AGE_PW={sta:1,spd:1,vit:1,stf:.7,pow:.6,def:.5,con:.2,eye:0,ctl:0}, AGE_PH0=33, AGE_MENT_F=.5, AGE_CAP_PULL=1, AGE_CAP_STEP=4, AGE_VELO_K=.25;
-const agePhys=a=>a<AGE_PH0?0:a<=35?.45*(a-AGE_PH0+1):1.35+1.0*(a-35); /* 33세 .45 · 34 .9 · 35 1.35 · 36 2.35 · 37 3.35 · 38 4.35 · 40 6.35(원래 능력 단위, 한 해) */
+const AGE_PW={sta:1,spd:1,vit:1,stf:.7,pow:.5,def:.4,con:.2,eye:0,ctl:0}, AGE_PH0=33, AGE_MENT_F=.5, AGE_CAP_PULL=1, AGE_CAP_STEP=4, AGE_VELO_K=.25;
+/* 카페 11-21 후속(구단주: 노장을 좀 더 늘려도 된다. 멘탈·체력 좋고 기술로 사는 선수가 살아남는다): 멘탈 점수 ageMent(프로의식, 예민도 13 초과는 감점, -1~1)가
+   신체 노화를 ±40%(AGE_MENT_PH) 조절하고, 좋은 멘탈은 36세 이후 기울기를 최대 30%(AGE_MENT_SLOPE) 낮추며, 기술 몫의 공통 하락 완화도 최대 +0.2(AGE_MENT_SK) 키운다. 나이 천장은 그대로(37세 체력 90대는 여전히 드물다) */
+const AGE_MENT_PH=.4, AGE_MENT_SLOPE=.3, AGE_MENT_SK=.2, AGE_SLOPE36=.6;
+function ageMent(p){ if(!p)return 0; initPers(p); const pr=p.pers.pro??10, tp=p.pers.temp??10; return clamp((pr-10)/8-Math.max(0,tp-13)*.05,-1,1); }
+const agePhys=(a,m=0)=>a<AGE_PH0?0:a<=35?.45*(a-AGE_PH0+1):1.35+AGE_SLOPE36*(1-AGE_MENT_SLOPE*Math.max(0,m))*(a-35); /* 보통 멘탈: 33세 .45 · 34 .9 · 35 1.35 · 36 1.95 · 37 2.55 · 38 3.15 · 40 4.35(원래 능력 단위, 한 해). 후속(노장을 더 남긴다): 36세 이후 기울기 1.0→0.6(37세 체력 90대는 나이 천장이 막는다), 장타 신체 몫 .6→.5·수비 .5→.4 */
 const agePhysCap=a=>a<=34?80:80-4*(a-34); /* 35세 76 · 36 72 · 37 68 · 38 64 · 39 60 · 40 56 */
 const ageNew=()=>!(typeof WORLD_BUILD!=='undefined'&&WORLD_BUILD>0);
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
@@ -15979,11 +15983,11 @@ function develop(p){
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
   const tc=svc?(delete p.trD,null):typeof trnCost==='function'?trnCost(p):null; /* 복무 중 겨울에는 입대 전 집중 훈련 비용을 매기지 않는다(검수 11-09zy) */ /* 훈련 방향 비용: 한 항목에 집중한 만큼 다른 항목의 성장 기회가 준다 */
   const stam0=(p.isP?p.r.sta:p.r.vit)??50; initPers(p); const agK=clamp(1-(stam0-50)*.012-((p.pers.pro??10)-10)*.025,.7,1.4); /* 노화 하락 폭: 체력이 높고 프로의식이 강하면 덜 떨어진다(사용자 11-08). 부상 후유증 하락은 따로(injury) */
-  const AN=ageNew(), a1=age+1, pw=k=>AGE_PW[k]??.5, phK=clamp(1-((p.pers.pro??10)-10)*.025,.75,1.25); /* 카페 11-21: 신체 노화는 프로의식만 본다(체력이 높다고 체력이 덜 늙지 않는다) */
+  const AN=ageNew(), a1=age+1, pw=k=>AGE_PW[k]??.5, am=ageMent(p), phK=clamp(1-am*AGE_MENT_PH,.6,1.4); /* 카페 11-21: 신체 노화는 멘탈(프로의식·예민도)만 본다(체력이 높다고 체력이 덜 늙지 않는다). 후속: ±25%→±40% */
   for(const k in p.r){
     let dk=base+N(0,(k==='eye'||k==='ctl'?.6:1)), dP=0;
     if(age>=T.fall-1){ // 노화: 신체 능력이 먼저 떨어진다
-      if(AN){ if(base<0)dk-=base*AGE_MENT_F*(1-pw(k)); } else dk-=PHYS[k]*(age-T.fall+2)*AGE_PHYS_K*fac.d; /* 카페 11-21: 기술 몫은 공통 하락을 덜 받는다 */
+      if(AN){ if(base<0)dk-=base*(AGE_MENT_F+AGE_MENT_SK*Math.max(0,am))*(1-pw(k)); } else dk-=PHYS[k]*(age-T.fall+2)*AGE_PHYS_K*fac.d; /* 카페 11-21: 기술 몫은 공통 하락을 덜 받는다 */
       if(p.dt==='vet'&&PHYS[k]<=0&&age<=VET_SKILL_AGE)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
     }
     if(dk>0&&club)dk*=coachToolMult(p,k);
@@ -15991,7 +15995,7 @@ function develop(p){
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k]&&dk>0){dk=Math.max(0,dk-tc[k]);if(!p.devLog.reasons.includes('training-opportunity'))p.devLog.reasons.push('training-opportunity');} /* 성장 기회만 줄인다. 이미 퇴보 중인 능력은 더 깎지 않는다. */
     if(dk<0&&age>=T.fall-1&&svc!=='현역'){dk*=agK*(age>=34&&o>=AGE_ELITE_O?AGE_ELITE_F:1);if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging');}
-    if(AN&&svc!=='현역'){ dP=-pw(k)*agePhys(a1)*fac.d*phK; if(pw(k)>=1){ const cap=agePhysCap(a1), v=p.r[k]+dk+dP; if(v>cap)dP-=Math.min(AGE_CAP_STEP,(v-cap)*AGE_CAP_PULL); } if(dP<0){ dk+=dP; if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging'); } } /* 카페 11-21 신체 노화·나이 천장(엘리트 완만 하락 없음) */
+    if(AN&&svc!=='현역'){ dP=-pw(k)*agePhys(a1,am)*fac.d*phK; if(pw(k)>=1){ const cap=agePhysCap(a1), v=p.r[k]+dk+dP; if(v>cap)dP-=Math.min(AGE_CAP_STEP,(v-cap)*AGE_CAP_PULL); } if(dP<0){ dk+=dP; if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging'); } } /* 카페 11-21 신체 노화·나이 천장(엘리트 완만 하락 없음) */
     if(dk<0&&(age>=T.fall-1||dP<0)&&svc!=='현역'){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }
@@ -16006,7 +16010,7 @@ function develop(p){
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
   if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+(age>T.grow?POT_TIDY_PEAK:1)+(T.vl?2:0)+(p.gcar||0)+(p.potUp&&p.potUp.y===G.year?p.potUp.v:0)); /* 올해 성적 보상으로 오른 잠재력(65_cur_eval potPerfSeason·potIntlUp)은 이번 정리에서 지켜 준다 */ /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
   p.pot=clamp(Math.max(p.pot,no),20,80);if(p.pot<potBefore)p.devLog.reasons.push('potential-reassessment');
-  if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(ageNew()){ if(svc!=='현역')p.velo-=agePhys(age+1)*AGE_VELO_K*fac.d+(age>=T.fall&&p.dt==='vet'?.2:0); } else if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0); /* 카페 11-21: 구속 보정도 몸 나이 곡선(33세 -0.1·36세 -0.6·38세 -1.1km/h, 구위 하락분과 합쳐 35세 약 -1.3·37세 약 -2.3km/h) */
+  if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(ageNew()){ if(svc!=='현역')p.velo-=agePhys(age+1,ageMent(p))*AGE_VELO_K*fac.d+(age>=T.fall&&p.dt==='vet'?.2:0); } else if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0); /* 카페 11-21: 구속 보정도 몸 나이 곡선(33세 -0.1·36세 -0.6·38세 -1.1km/h, 구위 하락분과 합쳐 35세 약 -1.3·37세 약 -2.3km/h) */
   (p.oh=p.oh||[]).push({y:G.year,o:Math.round(no)}); if(p.oh.length>12)p.oh.shift();
   p.age++;
 }
@@ -17351,7 +17355,11 @@ const RET_AGE=40, RET_VET_AGE=37, RET_FREE_AGE=35, RET_VET_O=40, RET_MID_AGE=32,
 /* 40세 정년 완화(11-20, 구단주 결정): 40세부터 바로 은퇴하던 것을 기량으로 가른다. 40세 이상은 나이마다 베테랑 기준(RET_VET_O 40)보다 2씩 높은 기준(40세 42·41세 44·42세 46·43세 48·44세 50) 미만이면 은퇴하고, 45세(RET_CAP)에는 누구나 은퇴한다.
    우리·AI 구단 같은 식, 난수 없음. 은퇴 면담으로 한 해 미루는 것도 45세 전까지만(retDelayOk) */
 const RET_CAP=45, RET_OLD_STEP=2; const retOldO=a=>RET_VET_O+(a-RET_AGE+1)*RET_OLD_STEP;
-function retireVetRule(p,o){ o=o??ovr(p); return p.age>=RET_CAP||(p.age>=RET_AGE&&o<retOldO(p.age))||(p.age>=RET_VET_AGE&&o<RET_VET_O); } /* 나이·기량 은퇴(계약과 무관): FA 자격의 은퇴 예상도 같은 함수 */
+/* 카페 11-21 후속(구단주: 멘탈·체력 좋고 기술로 사는 노장이 살아남는다): 베테랑 은퇴·AI 베테랑 방출은 종합 능력에 멘탈 가산(좋은 멘탈만, 최대 RET_MENT_B)과 기술 가산(제구 또는 컨택·선구안이 종합보다 높은 몫의 0.4배, 최대 RET_SKILL_B)을 더한 값(retO)으로 본다. 노장 2군 체류 뒤 은퇴 대신 트레이드 요청(VET_FARM_KEEP)도 같은 값.
+   체력·구위가 떨어져도 제구·멘탈이 좋은 노장은 더 뛴다. 우리·AI 같은 식, 난수 없음. 새 게임 세계를 만드는 동안은 예전 값(종합 능력) 그대로 */
+const RET_MENT_B=4, RET_SKILL_B=3;
+function retO(p,o){ o=o??ovr(p); if((typeof WORLD_BUILD!=='undefined'&&WORLD_BUILD>0)||!p||!p.r)return o; const r=p.r, sk=p.isP?r.ctl:((r.con??o)+(r.eye??o))/2; return o+RET_MENT_B*Math.max(0,ageMent(p))+Math.min(RET_SKILL_B,Math.max(0,(sk??o)-o)*.4); }
+function retireVetRule(p,o){ o=o??ovr(p); const v=p.age>=RET_VET_AGE&&p.age<RET_CAP?retO(p,o):o; return p.age>=RET_CAP||(p.age>=RET_AGE&&v<retOldO(p.age))||(p.age>=RET_VET_AGE&&v<RET_VET_O); } /* 나이·기량 은퇴(계약과 무관): FA 자격의 은퇴 예상도 같은 함수 */
 /* KBO 비율 기준(11-20 구단주 결정, 2026 최고령 최형우 42세·40대 현역이 시즌마다 몇 명): 35~36세(RET_FREE_AGE~RET_VET_AGE-1)는 능력으로 강제 은퇴하지 않는다. 이 나이는 FA 미계약·무적 기간만으로 은퇴한다.
    베테랑 기준 40(RET_VET_O)은 37세부터(예전 35세부터), 계약 없는 약체 기준 34(RET_MID_O)는 32~34세에만. 우리·AI 같음 */
 function retireRule(p,o){ o=o??ovr(p); return retireVetRule(p,o)||(p.age>=RET_MID_AGE&&p.age<RET_FREE_AGE&&o<RET_MID_O&&!p.faC); }
@@ -17360,7 +17368,7 @@ const retDelayOk=p=>p.retDelay===G.year&&p.age<RET_CAP; /* 은퇴 면담으로 �
    은퇴 확률 35세 20%·36세 25%·37세 이상 35%(능력 45 이상은 은퇴하지 않고 트레이드 요청)(선수·해마다 고정 난수, 주 난수 R() 호출 수 불변). 은퇴하지 않으면 트레이드 요청: 우리 구단은 소식함 요청(트레이드 명단에 올리기), AI 구단은 트레이드 블록에 올린다(출전 불만과 같은 표시). 우리·AI 같은 규칙. 은퇴 면담으로 미룬 해는 빼고 */
 const VET_FARM_AGE=35, VET_FARM_RET=[.2,.25,.35], VET_FARM_KEEP=45; /* 측정(시드 7, 8시즌): 35/45/55%면 35세 은퇴가 몰려(32세 이상 은퇴의 27%) 낮췄다. 능력 45 이상은 은퇴 대신 트레이드 요청(아직 1군에서 뛸 수 있다) */
 function vetFarmLong(p,y){ if(!p||p.foreign||p.team==null||p.age<VET_FARM_AGE||!p.hist)return false; const a=seasonTotal(p,y,'1군')||{}, f=seasonTotal(p,y,'퓨처스')||{}, hurt=(p.injOut||0)>=60; /* 오래 다쳐 재활 중인 노장도 같다(박병호·오승환 사례) */ return p.isP?(a.outs||0)<90&&((f.outs||0)>=90||hurt):(a.pa||0)<100&&((f.pa||0)>=100||hurt); }
-function vetFarmPick(p){ const k=Math.min(VET_FARM_RET.length-1,p.age-VET_FARM_AGE), x=withRng(rngHash('vetFarm',G.year,p.id),()=>R()); return x<VET_FARM_RET[k]&&!(p.r&&ovr(p)>=VET_FARM_KEEP)?'ret':'treq'; }
+function vetFarmPick(p){ const k=Math.min(VET_FARM_RET.length-1,p.age-VET_FARM_AGE), x=withRng(rngHash('vetFarm',G.year,p.id),()=>R()); return x<VET_FARM_RET[k]&&!(p.r&&retO(p)>=VET_FARM_KEEP)?'ret':'treq'; }
 function vetFarmTreq(p){ return withRng(rngHash('vetFarmMsg',G.year,p.id),()=>vetFarmTreq0(p)); } /* 알림·소식도 따로 된 난수(주 난수 흐름 불변) */
 function vetFarmTreq0(p){ if(p.team===G.user&&!G.unemp){ if(p.listed||(p.treq&&!p.treq.done))return; p.treq={day:G.day}; mail(p.name,'트레이드 요청',`올해 거의 한 시즌을 2군에서 보냈습니다. 제 나이에 남은 시간이 많지 않습니다. 1군에서 뛸 수 있는 팀이 있으면 보내 주십시오. 내년에도 이대로라면 은퇴를 생각하겠습니다.`,{imp:true,ref:p.id,face:p.id,kind:'선수',acts:[{l:'트레이드 명단에 올리기',a:'listP',v:p.id},{l:'방출해 준다',a:'release',v:p.id},{l:'남아 달라고 설득',a:'keepP',v:p.id},{l:'선수 보기',a:'player',v:p.id}]}); return; } /* 방출하면 무적 선수로 다른 구단을 찾고, 아무도 데려가지 않으면 은퇴한다(freeYear) */
   if(hasNtc(p)||p.aiListed)return; p.aiListed=true; p.aiWhy='mood'; p.aiLd=G.day; try{ wire('구단 사정',`${tshort(p.team)} ${p.name}(${posLabel(p)}, ${p.age}세), 2군 생활 끝에 트레이드 요청`,{tid:p.team,ref:p.id}); }catch(e){} }
@@ -17825,7 +17833,7 @@ function contractStart(){
   G.contract={y:G.year,tid:G.user,ended,foreignEnd,foreignDrop:[],released:[],done:false}; for(const id of foreignEnd)initPers(G.players[id]); salTalkInit();
   for(const p of aiSal){ let r=null; try{ r=aiSalNeg(p); }catch(e){} if(r&&r.st==='hold'&&p.team!==G.user)holdStart(p,r.sal,r.ask,true); else { p.sal=Math.max(MIN_SAL,r?r.sal:p.newSal); delete p.newSal; } } /* AI도 같은 요구·판정으로 협상하고, 차이가 크면 미계약(계약 2단계) */
   /* AI 구단: 기량이 크게 떨어진 고액 연봉 베테랑은 정리한다 */
-  for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간에는 AI가 맡은 전 소속 구단도 정리한다 */ for(const p of domestic(t.id)){ if(p.age>=32&&ovr(p)<VET_REL_O&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); const c=relCost(p).tot; payOut(t.id,c,'rel'); /* 일반 방출과 같은 보장계약 정산(검수 11-09g) */ if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`,c); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
+  for(const t of G.teams){ if(t.id===ME())continue; /* 야인 기간에는 AI가 맡은 전 소속 구단도 정리한다 */ for(const p of domestic(t.id)){ if(p.age>=32&&retO(p)<VET_REL_O&&p.sal>=800&&!p.ys){ wire('방출',`${tname(t.id)}, 베테랑 ${p.name} 방출`,{tid:t.id,ref:p.id}); const c=relCost(p).tot; payOut(t.id,c,'rel'); /* 일반 방출과 같은 보장계약 정산(검수 11-09g) */ if(p.age<=35&&ovr(p)>=30)toFree(p,`${tname(t.id)}에서 방출`,c); else retireOut(p,`${tname(t.id)}에서 방출된 뒤 은퇴`); } } }
   for(const t of G.teams) if(t.id!==ME()) trimRoster(t.id,60);
   refreshFMarket(12,99);
   if(!G.unemp){ stop('연봉',`연봉 협상이 시작되었습니다. 국내 선수 ${ended.length}명의 구단 산정안(직전 시즌 성적 기준)과 외국인 선수 ${foreignEnd.length}명의 재계약안이 올라왔습니다. 1월 31일까지 계약하세요.`); if(G.mail[0])G.mail[0].auto=foreignEnd.length?['sal','fre']:['sal']; }
@@ -52672,6 +52680,7 @@ const PATCH=[
   {id:'2026-11-21-aging-physical',d:'11월 21일',t:'나이가 들면 체력·구속·주력 같은 신체 능력이 먼저, 더 크게 떨어집니다',items:[
     '33세 무렵부터 투수 체력·구위·구속과 타자 주력·체력·장타력이 조금씩 떨어지기 시작하고, 35~36세부터는 눈에 띄게 빨리 떨어집니다. 37세에 체력 90대를 유지하는 투수는 거의 없습니다.',
     '제구·선구안·컨택 같은 기술은 전보다 덜, 늦게 떨어집니다. 기술이 좋은 노장은 몸이 늙어도 기술로 오래 버틸 수 있습니다.',
+    '멘탈(프로의식이 높고 예민하지 않은 선수)이 좋을수록 신체 능력도 천천히 떨어집니다. 은퇴·베테랑 방출을 정할 때도 멘탈과 제구·컨택·선구안을 함께 봐서, 기술로 사는 노장은 더 오래 현역으로 뜁니다.',
     '모든 구단 선수에게 같은 기준이고, 진행 중인 저장의 선수 능력은 지금 그대로 두고 다음 해 넘어갈 때부터 적용합니다.'
   ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[

@@ -10729,11 +10729,11 @@ T('[카페 11-20 상무 지원 취소] 접수 기간 안에는 지원을 거두�
   ok(sangmuCanApply(p),'취소 뒤 다시 지원 가능'); ok(sangmuApply(p.id)==='','재지원'); G.day=dnum(G.year,10,20); ok(sangmuCancel(p.id)!=='','기간이 끝나면 취소 불가'); ok(p.mil&&p.mil.app==='dec','지원 유지');
   const q=domestic(G.user).find(x=>x!==p&&milFree(x)&&!x.mil); ok(sangmuCancel(q.id)!=='','지원 안 한 선수는 취소 대상 아님'); });
 T('[은퇴 11-20] 노화 곡선: 베테랑 은퇴 기준 40(RET_VET_O)은 우리·AI 선수 모두 같고, AI 베테랑 방출도 같은 40 미만',()=>{ fresh(); ok(RET_VET_O===40&&VET_REL_O===RET_VET_O,'베테랑 기준 '+RET_VET_O+'/'+VET_REL_O);
-  const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
+  const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패'); /* 카페 11-21 후속: 은퇴 기준(retO)에 멘탈·기술 가산이 붙어, 기준선 시나리오는 보통 멘탈(프로의식·예민도 10)·고른 능력으로 맞춘다 */ for(const p of [me,ai]){ initPers(p); p.pers.pro=10; p.pers.temp=10; for(const k of (p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def']))p.r[k]=50; }
   for(const p of [me,ai]){ p.age=37; setOvr(p,40.2); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 40을 은퇴로 봄'); setOvr(p,39.4); ok(retireRule(p),(p.team===G.user?'우리':'AI')+' 37세 39를 은퇴로 보지 않음'); p.age=36; setOvr(p,30.4); ok(!retireRule(p),(p.team===G.user?'우리':'AI')+' 36세 30을 능력으로 은퇴시킴'); } /* 사양 변경(11-20 KBO 비율 기준): 35~36세 능력 은퇴 없음, 기준 40은 37세부터. 예전 이 검사는 36세 40/39 */
-  ok(String(contractStart).includes('ovr(p)<VET_REL_O')&&!/ovr\(p\)<44/.test(String(contractStart)),'AI 베테랑 방출이 예전 44 기준');
+  ok(String(contractStart).includes('retO(p)<VET_REL_O')&&/* 카페 11-21 후속: 예전 'ovr(p)<VET_REL_O' → 멘탈·기술 가산 retO */!/ovr\(p\)<44/.test(String(contractStart)),'AI 베테랑 방출이 예전 44 기준');
   ok(String(faUpcoming).includes('if(retireVetRule(p))continue;'),'FA 자격의 은퇴 예상이 은퇴 기준과 다름'); /* 11-20 정년 완화: 같은 기준을 한 함수(retireVetRule)로 묶었다. 예전 식 'p.age>=RET_AGE||(p.age>=RET_VET_AGE&&ovr(p)<RET_VET_O)' */
-  for(const a of [35,36,37,38,39])for(const o of [30.4,39.4,40.2]){ const q={age:a,r:me.r,isP:me.isP}; ok(retireVetRule(q,o)===(a>=37&&o<RET_VET_O),a+'세 '+o+' FA 은퇴 예상이 기준(35~36세 없음·37~39세 40)과 다름'); } });
+  for(const a of [35,36,37,38,39])for(const o of [30.4,39.4,40.2]){ const q={age:a,r:me.isP?{stf:o,ctl:o,sta:o}:{con:o,pow:o,eye:o,spd:o,def:o},isP:me.isP,pers:{pro:10,temp:10,amb:10,loy:10}}; /* 카페 11-21 후속: 예전 r:me.r(기술 가산이 붙음) → 고른 능력·보통 멘탈 */ ok(retireVetRule(q,o)===(a>=37&&o<RET_VET_O),a+'세 '+o+' FA 은퇴 예상이 기준(35~36세 없음·37~39세 40)과 다름'); } });
 T('[성장 11-20] 노화 곡선: 프로의식 하락 시작 보정 한 단계 축소(-2/-1/0/0/+1), 전성기·노화 퇴보 확률 3분의 1·전성기 기대값 +0.3, 하락 기울기 .4·신체 노화 .16',()=>{ fresh(); const base=domestic(G.user).find(q=>!q.isP&&!q.prospect&&!q.foreign); ok(base,'준비 실패');
   const mk=(dt,pro)=>{ const p=JSON.parse(JSON.stringify(base)); p.dt=dt; p.pers.pro=pro; return p; };
   const want={5:31,6:31,7:32,9:32,10:33,12:33,13:33,16:33,17:34,20:34}; for(const pr in want){ const T=dtSpan(mk('norm',+pr)); ok(T.fall===want[pr]&&T.grow===28&&T.peak===Math.min(31,T.fall-1),'정상형 프로의식 '+pr+': '+JSON.stringify(T)); }
@@ -10745,7 +10745,7 @@ T('[성장 11-20] 노화 곡선: 프로의식 하락 시작 보정 한 단계 �
   ok(String(develop).includes('*(age>T.grow?AGE_SLUMP_F:1)')&&String(develop).includes('base=N(PEAK_MU,1.1)')&&String(develop).includes('(age>T.grow?POT_TIDY_PEAK:1)'),'전성기 퇴보·잠재력 정리 규칙이 develop에 없음'); });
 /* 11-20 정년 완화·세대 재능·노장 은퇴: 새 시나리오는 맨 끝에 둔다(CI 조각 배정이 기존 시나리오 순서로 정해져, 중간에 넣으면 기존 기준 시나리오가 다른 조각으로 옮겨 간다) */
 T('[은퇴 11-20] 정년 완화: 40세 이상은 나이마다 기준(40세 42·41세 44·42세 46·43세 48·44세 50) 미만이면 은퇴, 45세는 누구나 은퇴. 우리·AI 같음, 은퇴 면담 유예도 45세 전까지',()=>{ fresh(); ok(RET_AGE===40&&RET_CAP===45&&RET_VET_O===40,'기준 상수 '+RET_AGE+'/'+RET_CAP+'/'+RET_VET_O);
-  const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패');
+  const me=domestic(G.user).find(q=>!q.faC&&!q.ys), ai=domestic(otherT()).find(q=>!q.faC&&!q.ys); ok(me&&ai,'준비 실패'); /* 카페 11-21 후속: 은퇴 기준(retO)에 멘탈·기술 가산이 붙어, 기준선 시나리오는 보통 멘탈(프로의식·예민도 10)·고른 능력으로 맞춘다 */ for(const p of [me,ai]){ initPers(p); p.pers.pro=10; p.pers.temp=10; for(const k of (p.isP?['stf','ctl','sta']:['con','pow','eye','spd','def']))p.r[k]=50; }
   const exp={40:42,41:44,42:46,43:48,44:50};
   for(const p of [me,ai]){ const w=p.team===G.user?'우리':'AI';
     for(const a in exp){ p.age=+a; setOvr(p,exp[a]+.3); ok(ovr(p)>=exp[a],'준비 실패 '+ovr(p)); ok(!retireRule(p)&&!retireLikely(p),w+' '+a+'세 '+exp[a]+'을 은퇴로 봄(정년 완화)'); setOvr(p,exp[a]-.6); ok(ovr(p)<exp[a],'준비 실패 '+ovr(p)); ok(retireRule(p)&&retireLikely(p),w+' '+a+'세 '+(exp[a]-1)+'을 은퇴로 보지 않음'); }
@@ -10862,7 +10862,7 @@ T('[카페 11-21 노장 체력 노화] 신체(체력·구속·주력)는 33세�
     const step=p=>{ develop(p); for(const k in (p.declP||{}))p.r[k]=clamp(p.r[k]+p.declP[k],20,80); delete p.declP; };
     /* 37세 체력 95(내부 72) 투수 한 해: 체력이 제구보다 확실히 더 떨어지고 구속도 준다 */
     const p=mk(P,37,{stf:60,ctl:60,sta:72},10); __seed(21); const v0=p.velo; step(p); const dS=p.r.sta-72, dC=p.r.ctl-60, dF=p.r.stf-60; G.players[P.id]=P;
-    ok(dS<=-5&&dS<dC-3,w+' 37세 체력 하락 '+dS.toFixed(1)+'이 제구 '+dC.toFixed(1)+'보다 크지 않음'); ok(dF<dC,w+' 구위 '+dF.toFixed(1)+'가 제구 '+dC.toFixed(1)+'보다 덜 떨어짐'); ok(p.velo-v0<=-1,w+' 37세 구속 보정 하락 '+(p.velo-v0).toFixed(2));
+    ok(dS<=-5&&dS<dC-3,w+' 37세 체력 하락 '+dS.toFixed(1)+'이 제구 '+dC.toFixed(1)+'보다 크지 않음'); ok(dF<dC,w+' 구위 '+dF.toFixed(1)+'가 제구 '+dC.toFixed(1)+'보다 덜 떨어짐'); ok(p.velo-v0<=-.75,w+' 37세 구속 보정 하락 '+(p.velo-v0).toFixed(2)); /* 후속(36세 이후 기울기 1.0→0.6): 예전 -1→-0.75. main은 -0.4 */
     /* 34세 최상급(체력 80·프로의식 20) 투수 40명이 37세가 될 때까지: 체력 화면 90 이상은 드물다(나이 천장) */
     let hi=0, sta=[]; for(let i=0;i<40;i++){ const q=mk(P,34,{stf:70,ctl:70,sta:80},20); __seed(100+i); step(q); step(q); step(q); ok(q.age===37,'준비 실패 '+q.age); sta.push(q.r.sta); if(dv(q.r.sta)>=90)hi++; } G.players[P.id]=P; ok(hi<=2,w+' 37세 체력 90대 '+hi+'/40 · '+sta.slice(0,6));
     /* 타자 37세: 주력·체력이 선구안보다 확실히 더 떨어진다 */
@@ -10871,6 +10871,23 @@ T('[카페 11-21 노장 체력 노화] 신체(체력·구속·주력)는 33세�
     const y=mk(P,31,{stf:60,ctl:60,sta:72},10); __seed(23); step(y); G.players[P.id]=P; ok(y.r.sta-72>-3,w+' 31세 체력이 벌써 크게 떨어짐 '+(y.r.sta-72).toFixed(1));
     /* 주 난수 호출 수: 새 식과 예전 식(세계 생성 중)이 같다 */
     const c=[]; for(const wb of [0,1]){ const q=mk(P,37,{stf:60,ctl:60,sta:72},10); WORLD_BUILD=wb; __seed(31); develop(q); c.push(__rngCalls()); WORLD_BUILD=W0; } G.players[P.id]=P; ok(c[0]===c[1]&&c[0]>0,w+' 주 난수 호출 수 다름 '+c); } });
+T('[카페 11-21 노장 체력 노화 후속] 멘탈 좋고 기술로 사는 노장: 같은 능력이면 멘탈 좋은 선수가 덜 늙고, 은퇴 기준(retO)에 멘탈·기술 가산이 붙어 더 오래 뛴다(우리·AI 같음, 난수 없음, 세계 생성 중에는 종합 능력 그대로)',()=>{ fresh(); ok(AGE_MENT_PH===.4&&RET_MENT_B===4&&RET_SKILL_B===3,'상수 다름');
+  for(const tid of [G.user,otherT()]){ const w=tid===G.user?'우리':'AI'; const P=domestic(tid).find(q=>q.isP&&!q.prospect&&!q.foreign&&!q.mil); ok(P,'준비 실패');
+    const mk=(age,r,pro,temp)=>{ const p=JSON.parse(JSON.stringify(P)); p.dt='norm'; p.age=age; Object.assign(p.r,r); initPers(p); p.pers.pro=pro; p.pers.temp=temp; p.pers.amb=10; p.velo=0; delete p.declP; delete p.gcar; delete p.mil; delete p.lastY; delete p.retDelay; p.hist=[]; G.players[p.id]=p; return p; };
+    const step=p=>{ develop(p); for(const k in (p.declP||{}))p.r[k]=clamp(p.r[k]+p.declP[k],20,80); delete p.declP; };
+    /* 38세 기술형 투수 한 해: 멘탈 좋은 선수(프로의식 18·예민도 8)가 나쁜 선수(4·16)보다 덜 떨어진다(같은 난수) */
+    const r={stf:55,ctl:62,sta:60}; const hi=mk(38,r,18,8), lo=mk(38,r,4,16); const oh=ovr(hi), ol=ovr(lo); __seed(41); step(hi); __seed(41); step(lo); G.players[P.id]=P;
+    const dh=ovr(hi)-oh, dl=ovr(lo)-ol; ok(dh<0&&dh>dl+.8,w+' 멘탈 좋은 노장 종합 하락 '+dh.toFixed(2)+'이 나쁜 노장 '+dl.toFixed(2)+'보다 확실히 작지 않음'); ok(hi.r.sta-60>lo.r.sta-60,w+' 멘탈 좋은 노장 체력 하락이 더 큼');
+    /* 40세 종합 41(기준 42 미만): 멘탈 나쁜 선수는 은퇴, 멘탈 좋은 선수는 더 뛴다 */
+    const b={stf:41,ctl:41,sta:41}; const gm=mk(40,b,18,8), bm=mk(40,b,4,16); ok(ovr(gm)<retOldO(40)&&ovr(bm)<retOldO(40),'준비 실패 '+ovr(gm));
+    ok(!retireRule(gm)&&retireRule(bm),w+' 40세 종합 41: 멘탈 좋은 선수 '+retO(gm).toFixed(1)+'·나쁜 선수 '+retO(bm).toFixed(1)+' 은퇴 판정이 다름');
+    /* 기술형: 멘탈이 나빠도 제구가 종합보다 높으면 기술 가산(최대 2)으로 더 뛴다 */
+    const sk=mk(40,{stf:34,ctl:50,sta:35},4,16), fl=mk(40,{stf:41.5,ctl:41.5,sta:41.5},4,16); ok(ovr(sk)<=ovr(fl)&&retO(sk)>=ovr(sk)+RET_SKILL_B-1e-9&&!retireRule(sk)&&retireRule(fl),w+' 제구형 노장 '+ovr(sk).toFixed(1)+'/'+retO(sk).toFixed(1)+' vs 고른 노장 '+ovr(fl).toFixed(1)+'/'+retO(fl).toFixed(1));
+    const W0=WORLD_BUILD; WORLD_BUILD=1; ok(retO(gm)===ovr(gm),'세계 생성 중 은퇴 기준에 가산이 붙음'); WORLD_BUILD=W0;
+    /* 노화 천장은 멘탈과 무관: 멘탈 최상 34세 체력 80도 37세에 체력 화면 90 미만 */
+    let n=0; for(let i=0;i<20;i++){ const q=mk(34,{stf:70,ctl:70,sta:80},20,3); __seed(200+i); step(q); step(q); step(q); if(dv(q.r.sta)>=90)n++; } G.players[P.id]=P; ok(n===0,w+' 멘탈 최상 37세 체력 90대 '+n+'/20');
+    for(const q of [hi,lo,gm,bm,sk,fl])if(G.players[q.id]===q)G.players[q.id]=P; }
+  const rng=FO_RNG; let c=0; try{ FO_RNG=()=>{ c++; return FO_RNG0(); }; const p=domestic(G.user)[0]; retO(p); ageMent(p); retireRule(p); }finally{ FO_RNG=rng; } ok(c===0,'주 난수 '+c+'번 씀'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
