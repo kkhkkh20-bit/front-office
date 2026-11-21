@@ -10885,6 +10885,27 @@ T('[카페 11-21 2차 드래프트 트레이드] KBO 규약: 의무 미달 1·2�
   mvLog('트레이드',ot,A,C,'옛 거래',0); ot.team=C; mvLog('보상선수',oc,A,C,'옛 보상',0); oc.team=C;
   const r0=__rngCalls(); sdObFix(); const j=JSON.stringify([ot.sd2,oc.sd2]); sdObFix(); ok(JSON.stringify([ot.sd2,oc.sd2])===j,'옛 저장 정리가 두 번째에 또 바뀜'); ok(__rngCalls()===r0,'옛 저장 정리가 난수를 씀');
   ok(!ot.sd2&&ot.team===C,'규약 이전 트레이드로 옮긴 선수의 의무가 남음'); ok(oc.sd2&&oc.sd2.dt===A,'보상선수로 옮긴 선수의 의무·처음 지명 구단 기록이 사라짐 '+JSON.stringify(oc.sd2)); });
+T('[카페 11-21 대졸 의무 지명] KBO 규정: 구단마다 대졸 선수 1명 이상. 우리·AI 모두 마지막 지명은 대졸만(고졸 지명·건너뛰기 막힘, 일괄 건너뛰기·맡긴 지명도 대졸), AI 강제 지명은 본게임 난수 없음, 남은 대졸이 없으면 면제(멈추지 않음)',()=>{
+  const U0=()=>G.user; const run=(onUser)=>{ const d=G.draft; let g=0; while(!d.done&&g++<600){ const pk=d.picks[d.cur]; if(pk.tid===U0()){ onUser(pk); } else { const id=aiDraftPick(pk.tid); if(id==null){ finishDraft(); break; } if(id===-1)passCurrent(); else doPick(id); } } ok(d.done,'드래프트가 끝나지 않음(멈춤)'); };
+  const owners=()=>[...new Set(G.draft.picks.map(x=>x.tid))];
+  /* A: 우리 일괄 건너뛰기여도 마지막 지명은 대졸 자동 지명 */
+  fresh(); G.day=G.cal.draft; draftRestSet('pass'); startDraft(); ok(G.draft.rest&&G.draft.rest.mode==='pass','준비: 일괄 건너뛰기');
+  run(()=>{ const r=draftRestPick(); if(!r)passCurrent(); });
+  { const S=draftColState(U0()), mine=G.draft.picks.filter(x=>x.tid===U0()), last=mine[mine.length-1]; ok(S&&S.got===1,'일괄 건너뛰기에서 대졸 지명 '+(S&&S.got)); ok(last.pid>0&&draftIsCol(G.players[last.pid])&&last.col,'마지막 지명이 대졸 의무 지명이 아님'); ok(mine.slice(0,-1).every(x=>x.pass),'앞 지명은 건너뛰기 그대로여야'); }
+  /* B: 대졸 후보가 모두 낮게 평가돼도 AI·우리 모두 1명씩. 우리 고졸 지명·건너뛰기는 마지막 지명에서 막힌다 */
+  fresh(); G.day=G.cal.draft; for(const id of G.draftClass){ const p=G.players[id]; if(p&&draftIsCol(p)){ for(const k in p.r)if(k!=='vit')p.r[k]=20; p.pot=21; p.amZ=-2.5; } }
+  startDraft(); ok(G.draft.cls.filter(id=>draftIsCol(G.players[id])).length>=G.teams.length,'준비: 대졸 후보 수');
+  let blocked=0, passBlk=0, rngOk=true;
+  run(pk=>{ const d=G.draft; if(draftColMust(U0())){ const hs=d.cls.find(id=>{ const p=G.players[id]; return p&&p.prospect&&p.team==null&&!draftIsCol(p); }); const e=userPick(hs); if(/대졸/.test(e)&&d.picks[d.cur]===pk)blocked++; const e2=passPick(); if(/대졸/.test(e2||'')&&d.picks[d.cur]===pk)passBlk++; const id=userAutoPick(); ok(draftIsCol(G.players[id]),'추천 지명이 대졸이 아님'); ok(userPick(id)==='','대졸 지명이 막힘'); }
+    else { const id=userAutoPick0(p=>!draftIsCol(p)); if(id==null)passCurrent(); else ok(userPick(id)==='','고졸 지명이 막힘(아직 마지막 지명 아님)'); } });
+  ok(blocked===1,'마지막 지명에서 고졸 지명이 막히지 않음 '+blocked); ok(passBlk===1,'마지막 지명 건너뛰기가 막히지 않음 '+passBlk);
+  for(const t of owners()){ const S=draftColState(t); ok(S&&S.got>=1,tname(t)+' 대졸 지명 '+(S&&S.got)+'명(대졸 후보가 남았는데 의무 미달)'); }
+  /* AI 강제 지명은 본게임 난수를 쓰지 않는다 */
+  fresh(); G.day=G.cal.draft; startDraft(); { const d=G.draft, ai=d.picks.find(x=>x.tid!==U0()).tid; d.cur=d.picks.map(x=>x.tid).lastIndexOf(ai); for(let i=0;i<d.cur;i++)if(d.picks[i].tid===ai)d.picks[i].pid=-1; ok(draftColMust(ai),'준비: AI 마지막 지명 의무'); const r0=__rngCalls(); const id=aiDraftPick(ai); rngOk=__rngCalls()===r0; ok(rngOk,'AI 대졸 강제 지명이 본게임 난수를 씀'); ok(draftIsCol(G.players[id]),'AI 마지막 지명이 대졸이 아님'); }
+  /* C: 남은 대졸이 없으면 면제: 고졸 지명 가능, 멈추지 않음 */
+  fresh(); G.day=G.cal.draft; startDraft(); for(const id of G.draft.cls){ const p=G.players[id]; if(p&&draftIsCol(p))p.prospect=false; }
+  run(()=>{ ok(!draftColMust(U0()),'대졸이 없는데 의무'); const id=userAutoPick(); if(id==null)passCurrent(); else ok(userPick(id)==='','대졸이 없는데 고졸 지명이 막힘'); });
+});
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

@@ -235,12 +235,25 @@ function aiDraftChoose(tid,ids,rd,proj){ const t=team(tid); const need=draftNeed
   const L=ids.map(id=>({id,s:aiDraftScore(tid,G.players[id],need)})).sort((a,b)=>b.s-a.s); if(!L.length)return null;
   if(!(rd>=3&&proj>=ROSTER_MAX-2))return L[0].id;
   const worst=Math.min(...domestic(tid).map(keepScore)); const f=L.find(x=>keepScore(G.players[x.id])+hn('ak'+tid,x.id)*t.scoutSd*.5>=worst+1); return f?f.id:-1; }
-function aiDraftPick(tid){ const d=G.draft; return aiDraftChoose(tid,d.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null),d.picks[d.cur].rd,rosterProj(tid)); }
+/* KBO 대졸 의무 지명(2019 드래프트부터): 구단마다 대학 졸업 예정 선수를 1명 이상 지명해야 한다(어기면 벌금·다음 해 1차 지명권 박탈).
+   벌칙 대신 미리 막는다: 대졸을 아직 못 뽑은 구단의 남은 지명이 마지막 1번이면 그 지명은 대졸만. 모든 구단 같은 규칙(카페 11-21). 남은 대졸 후보가 없으면 면제(멈추지 않는다).
+   해외 복귀 선수(ovsRet)는 대졸 예정자가 아니다. 저장 값 없이 지명 기록에서 바로 세므로 진행 중이던 예전 저장도 그대로 맞는다 */
+const DRAFT_COL_MIN=1;
+const draftIsCol=p=>!!(p&&p.college&&!p.ovsRet);
+function draftColState(tid){ const d=G.draft; if(!d||!Array.isArray(d.picks)||tid==null)return null; const own=d.picks.filter(x=>x&&x.tid===tid); if(!own.length)return null;
+  const got=own.filter(x=>x.pid>0&&draftIsCol(G.players[x.pid])).length, live=!d.done; const left=live?d.picks.slice(d.cur).filter(x=>x&&x.tid===tid).length:0;
+  const avail=live?(d.cls||[]).filter(id=>{ const p=G.players[id]; return p&&p.prospect&&p.team==null&&draftIsCol(p); }).length:0;
+  return {need:DRAFT_COL_MIN,got,left,avail,ok:got>=DRAFT_COL_MIN,must:live&&got<DRAFT_COL_MIN&&avail>0&&left>0&&left<=DRAFT_COL_MIN-got}; }
+function draftColMust(tid){ const d=G.draft, pk=d&&!d.done&&d.picks[d.cur]; if(!pk||pk.tid!==tid)return false; const S=draftColState(tid); return !!(S&&S.must); }
+const DRAFT_COL_MSG='KBO 규정상 구단마다 대졸 선수를 1명 이상 지명해야 합니다. 남은 지명이 이번 1번이라 대졸 선수만 지명할 수 있습니다.';
+function aiDraftPick(tid){ const d=G.draft; const ids=d.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null);
+  if(draftColMust(tid)){ const c=ids.filter(id=>draftIsCol(G.players[id])); if(c.length)return aiDraftChoose(tid,c,d.picks[d.cur].rd,0); } /* 대졸 의무: 마지막 지명은 대졸 중 평가 1위(로스터가 차도 건너뛰지 않는다) */
+  return aiDraftChoose(tid,ids,d.picks[d.cur].rd,rosterProj(tid)); }
 function passCurrent(){ const d=G.draft; const pk=d.picks[d.cur]; pk.pid=-1; pk.pass=true; d.cur++; if(pk.tid===G.user&&!G.unemp)addLog(`${pk.rd}라운드 ${pk.no}순위 지명을 건너뛰었습니다.`); if(d.cur>=d.picks.length)finishDraft(); }
 /* 우리 지명 요청: 우리 차례일 때만(검수 11-06) */
-function userPick(pid){ const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return '지금은 우리 차례가 아닙니다.'; return doPick(pid)?'':'지명할 수 없는 선수입니다.'; }
+function userPick(pid){ const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return '지금은 우리 차례가 아닙니다.'; if(draftColMust(G.user)&&G.players[pid]&&!draftIsCol(G.players[pid]))return DRAFT_COL_MSG; return doPick(pid)?'':'지명할 수 없는 선수입니다.'; }
 function doPick(pid){
-  const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; const p=G.players[pid]; if(!pk||!p||!p.prospect||p.team!=null||!d.cls.includes(pid))return false; /* 어느 구단과든 계약한 선수는 지명할 수 없다(카페 11-17) */ /* 이미 지명된 선수·후보 아닌 선수는 다시 뽑지 않는다(검수 11-06) */
+  const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; const p=G.players[pid]; if(!pk||!p||!p.prospect||p.team!=null||!d.cls.includes(pid))return false; if(draftColMust(pk.tid)&&!draftIsCol(p))return false; /* 대졸 의무 지명(카페 11-21) */ /* 어느 구단과든 계약한 선수는 지명할 수 없다(카페 11-17) */ /* 이미 지명된 선수·후보 아닌 선수는 다시 뽑지 않는다(검수 11-06) */
   const mine=pk.tid===G.user&&!G.unemp; let rp0=null; /* 지명 직전 우리 스카우트 추정: 지명 뒤 다시 읽으면 우리 선수 기준이라 값이 달라진다(검수 11-09d) */
   if(mine){ try{ rp0=scoutReport(p); if(rp0.ofp!=null)p.dEst={ofp:rp0.ofp,sd:rp0.sd,who:rp0.who,tid:G.user,y:G.year,d:G.day}; }catch(e){} }
   p.prospect=false; p.team=pk.tid; p.joinY=G.year+1; p.sal=MIN_SAL; p.svc=0; p.draft={y:G.year,rd:pk.rd,no:pk.no,nt:G.teams.length,tid:pk.tid,bonus:bonusOf(pk.rd,pk.no,p),...(pk.from!=null?{from:pk.from}:{})}; /* from: 넘겨받은 지명권의 원래 구단(거래 성과 집계) */ acqStamp(p,'draft',pk.tid,Object.assign({rd:pk.rd,no:pk.no},mine?{how:pk.rule?'rule':pk.auto?'auto':'gm'}:{})); if(mine&&rp0)try{ p.acq.e0=rp0.cur; if(rp0.ofp!=null)p.acq.ep=rp0.ofp; }catch(e){} story(p,`${G.year} 신인 드래프트 ${pk.rd}라운드 ${pk.no}순위 · ${tname(pk.tid)} 지명 (${p.school||''})`,'draft');
@@ -253,7 +266,7 @@ function doPick(pid){
   G.shortlist=(G.shortlist||[]).filter(x=>x!==pid);
   if(d.cur>=d.picks.length)finishDraft(); return true;
 }
-function passPick(){ const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return; passCurrent(); } /* KBO는 어느 라운드든 지명권을 패스할 수 있다(카페 피드백 11-09v) */
+function passPick(){ const d=G.draft; const pk=d&&!d.done&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return ''; if(draftColMust(G.user))return '대졸 선수를 아직 지명하지 않아 마지막 지명은 건너뛸 수 없습니다. '+DRAFT_COL_MSG; passCurrent(); return ''; } /* KBO는 어느 라운드든 지명권을 패스할 수 있다(카페 피드백 11-09v) */
 function finishDraft(){ const d=G.draft; for(let i=d.cur;i<d.picks.length;i++){ const k=d.picks[i]; if(!(k.pid>0)){k.pid=-1;k.pass=true;} } d.cur=d.picks.length; d.done=true; G.dlog=G.dlog||{}; G.dlog[d.y]=d.picks.filter(x=>x.pid>0).map(x=>{ const p=G.players[x.pid]; return {id:x.pid,nm:p?p.name:'',t:x.tid,rd:x.rd,no:x.no,nt:G.teams.length,from:x.from??x.tid,pos:p?posLabel(p):'',pr:p?p.press||null:null}; }); let udK=new Set(); try{ udK=tryUdPick(d.cls); }catch(e){ console.error(e); } /* 미지명 재목은 육성 계약 후보로 남긴다(94_tryout) */ for(const id of d.cls){ const p=G.players[id]; if(G.dmemo)delete G.dmemo[id]; /* 후보 메모·고려 라운드도 함께 정리(검수 11-09ze) */ if(!p||!p.prospect)continue; if(p.ovsRet){ p.prospect=false; toFree(p,`${d.y} 신인 드래프트 미지명 · 자유계약 선수`); continue; } /* 해외파 복귀자는 지우지 않고 자유계약으로(검수 11-09ze) */ if(udK.has(id)){ try{ tryUdKeep(p,d.y); continue; }catch(e){ console.error(e); } } delete G.players[id]; } G.draftClass=[]; const cls=new Set(d.cls); try{ tryAfterDraft(d.y,[...udK].filter(id=>G.players[id]&&G.players[id].tryK==='ud').length); }catch(e){}
   const mine=d.picks.filter(x=>x.tid===G.user&&x.pid>0).map(x=>G.players[x.pid]).filter(Boolean); G.shortlist=(G.shortlist||[]).filter(id=>!cls.has(id)&&G.players[id]); /* 신인 후보만 정리하고 현역 관심 선수는 남긴다(검수 11-06) */
   note('드래프트',`드래프트를 마쳤습니다. 우리 구단 지명: ${mine.map(p=>p.name).join(', ')}. 내년 1월에 합류합니다.`); try{ draftOddsCal(); }catch(e){} try{ obsViewTrim(); }catch(e){} }
@@ -273,6 +286,8 @@ function draftCondSummary(min){ const d=G.draft, ids=d&&!d.done?d.cls:G.draftCla
 /* 우리 보드 맡기기(사용자 11-17 드래프트 전 전략): 남은 후보 중 우리 보드(관심 목록 순서) 맨 위. AI 구단도 자기 평가 순서로 고르니 같은 방식이다 */
 function draftBoardTop(){ const d=G.draft; if(!d||d.done)return null; const av=new Set(d.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null)); return draftBoardOrder().find(id=>av.has(id))??null; }
 function draftRestPick(){ const d=G.draft; const R0=draftRestOf(); const pk=R0&&d.picks[d.cur]; if(!pk||pk.tid!==G.user)return null;
+  if(draftColMust(G.user)){ const av=new Set(d.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null&&draftIsCol(G.players[id]))); const id=(R0.mode==='board'?draftBoardOrder().find(x=>av.has(x)):null)??userAutoPick(null); /* 대졸 의무: 건너뛰기·기준·로스터 한도와 상관없이 마지막 지명은 대졸(보드 순서 → 스카우트 추천) */
+    pk.rule=true; pk.col=true; if(id&&doPick(id)){ const p=G.players[id]; d.ruleMsg=`KBO 대졸 의무 지명(구단마다 1명 이상): 마지막 지명으로 대졸 ${p?p.name:''}을(를) 지명했습니다.`; return {pk,pid:id,me:true}; } delete pk.rule; delete pk.col; }
   if(R0.mode==='board'){ const id=rosterProj(G.user)<ROSTER_MAX?draftBoardTop():null; if(id){ pk.rule=true; pk.board=true; doPick(id); return {pk,pid:id,me:true}; }
     if(rosterProj(G.user)>=ROSTER_MAX){ pk.passReason=`정식 로스터 한도 ${ROSTER_MAX}명`; passCurrent(); return {pk,pass:true}; }
     R0.mode='cond'; R0.min=R0.min||3; R0.after=1; d.ruleMsg='우리 보드 후보가 모두 지명되어, 이후는 스카우트 추천 ★2(1군 백업) 이상으로 이어 갑니다.'; } /* 보드가 비면 스카우트 추천 기준으로 이어 간다 */
@@ -284,7 +299,8 @@ function draftRestPick(){ const d=G.draft; const R0=draftRestOf(); const pk=R0&&
   if(ok){ pk.rule=true; doPick(id); return {pk,pid:id,me:true}; }
   pk.passReason=!cond?'직접 설정: 남은 지명 건너뛰기':S.full?`정식 로스터 한도 ${ROSTER_MAX}명`:'잠재력 추정 기준을 충족한 후보 없음';
   passCurrent(); return {pk,pass:true}; }
-function userAutoPick(ok){ const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null&&(!ok||ok(G.players[id]))); let best=null,bs=-1; /* ok: 조건(등급 등)을 채운 후보 중에서만 */
+function userAutoPick(ok){ if(draftColMust(G.user)){ const o0=ok, col=p=>draftIsCol(p); const b=userAutoPick0(p=>col(p)&&(!o0||o0(p))); return b??userAutoPick0(col); } return userAutoPick0(ok); } /* 대졸 의무 지명: 맡긴·추천 지명도 대졸만(조건을 채운 대졸이 없으면 대졸 중 추천 1위) */
+function userAutoPick0(ok){ const av=G.draft.cls.filter(id=>G.players[id]&&G.players[id].prospect&&G.players[id].team==null&&(!ok||ok(G.players[id]))); let best=null,bs=-1; /* ok: 조건(등급 등)을 채운 후보 중에서만 */
   for(const id of av){ const rp=scoutReport(G.players[id]); const v=draftUserScore(G.players[id],null,null,rp); /* 빅보드 라운드 목표(스카우트 1단계) */ if(v>bs){bs=v;best=id;} } return best; }
 
 /* 다음 우리 차례 전에 다른 구단이 데려갈 확률: 사이에 지명하는 구단들이 각자 상위 후보 중에서 고른다고 보고 여러 번 굴려 본다 */
