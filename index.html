@@ -36871,7 +36871,10 @@ const SD_PROT=35, SD_RD=3, SD_XRD=2, SD_LOSS=4, SD_FEE=[400,300,200,100], SD_REG
 const sdYear=y=>y>=2023&&y%2===1;
 const sdFee=rd=>SD_FEE[Math.min(rd,4)-1];
 /* shortcut: 게임 시작 때 만든 선수는 지명 기록이 없어 만 21세 이하를 입단 3년 차 이내로 본다. 시작 선수가 다 지명 기록을 갖게 되면 지운다 */
-function sdExempt(p){ const y=G.year; return !!(p.foreign||p.ys||p.prospect||p.joinY>y||(p.draft?p.draft.y>=y-3||(p.draft.y===y-4&&p.mil&&p.mil.pf!=null):p.age<=21)||milServing(p)||(p.lastFA!=null&&p.lastFA>=y)); }
+function sdExempt(p){ const y=G.year; return !!(p.foreign||p.ys||p.prospect||p.joinY>y||(p.draft?p.draft.y>=y-3||(p.draft.y===y-4&&p.mil&&p.mil.pf!=null):p.age<=21)||milServing(p)||(p.lastFA!=null&&p.lastFA>=y)||sdCompIn(p)); }
+/* KBO: 2차 드래프트 실시 전 FA 보상선수로 옮긴 선수는 지명 자동 제외(보호명단 제출 뒤 합류해도 같고, 원소속 구단도 되찾을 수 없다). 이번 시즌이 끝난 뒤 옮겨 지금 그 구단에 있는 선수만(카페 11-21). 영입 기록(acqStamp)으로 본다 */
+function sdCompIn(p){ const a=p.acq; return !!a&&a.k==='보상선수'&&a.y===G.year&&a.tid===p.team&&a.d>(G.cal&&G.cal.end!=null?G.cal.end:dnum(G.year,10,1)); }
+function sdWhyOut(p){ return sdCompIn(p)?'이번 겨울 FA 보상선수로 합류 · 자동 보호':''; } /* 2차 드래프트 화면 안내 */
 function sdPool(tid){ return Object.values(G.players).filter(p=>p.team===tid&&!sdExempt(p)); }
 function sdProtAI(tid){ return sdPool(tid).sort((a,b)=>keepScore(b)-keepScore(a)).slice(0,SD_PROT).map(p=>p.id); } /* 보호는 전력 순(연봉 비용을 빼지 않는다): 비싼 주전이 명단 밖으로 나오지 않게(카페 11-08) */
 function sdSeq(order){ const s=[]; for(let rd=1;rd<=SD_RD+SD_XRD;rd++)(rd<=SD_RD?order:order.slice(0,3)).forEach(tid=>s.push({rd,tid})); return s; }
@@ -49235,6 +49238,8 @@ function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
   if(!L.length&&!log)return `<p class="small muted"><b>웨이버 공시</b> 지금 공시 중인 선수가 없습니다.${hiI(rule)}</p>`; /* 비어 있으면 칸 대신 한 줄 */
   return csec('웨이버 공시',`<p class="small muted">방출 선수는 ${WV_DAYS}일 동안 공시되고, 신청 구단 중 지금 성적이 낮은 구단이 계약을 이어받습니다. ${hiI(rule)}</p>
     ${L.length?L.map(row).join(''):emptyState('지금 공시 중인 선수가 없습니다. 공시되면 소식함으로 알려 드립니다.')}${pri}${log?`<div class="eyebrow" style="margin-top:8px">최근 결과</div>${log}`:''}`); }
+/* 2차 드래프트: 명단에 넣지 않아도 지명되지 않는 우리 선수와 이유(카페 11-21) */
+function sdAutoP(){ const L=Object.values(G.players).filter(p=>p.team===G.user&&sdWhyOut(p)); return L.length?`<p class="small" data-sd-auto>${L.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="pill good">${esc(sdWhyOut(p))}</span>`).join(' · ')}</p>`:''; }
 /* 2차 드래프트 명단의 능력·잠재력: 다른 선수 목록과 같은 색 능력 칩과 잠재력 별(카페 11-18). 능력은 우리 스카우트 평가(못 본 선수는 '-') */
 function sdRate(rp,p){ return ` <span class="sd-rate">${rchipG(rp&&rp.cur,rp&&rp.exact)}${potChip(rp,p)}</span>`; }
 function sdBox(){ const S=G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'?G.sd2:null; /* 진행 중인 회차만. 끝난 회차는 대기 화면에서 해마다 따로 본다(검수 11-09ze) */
@@ -49252,14 +49257,14 @@ function sdBox(){ const S=G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'?G.sd2:nu
     const P=new Set(UI.sdProt.filter(id=>pool.some(p=>p.id===id))); const PG=pager('sdp',pool,15);
     const row=p=>`<div class="market-player-row"><span class="market-player-info">${avImg(p)}<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${sdRate(scoutReport(p),p)} <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 연 ${money(p.sal)}</span></span><span class="market-player-actions"><button class="btn small ${P.has(p.id)?'primary':''}" data-a="sdTog" data-v="${p.id}">${P.has(p.id)?'보호':'명단 밖'}</button></span></div>`;
     return csec('2차 드래프트 · 보호선수 명단'+rule,`<p class="small"><b>보호 ${P.size} / ${SD_PROT}명</b> · 대상 ${pool.length}명 · ${dsh(S.exp-1)}까지 제출${sdSubd(G.user)?(()=>{ const L=(S.prot[G.user]||[]).filter(id=>pool.some(p=>p.id===id)); return L.length===P.size&&L.every(id=>P.has(id))?' · <span class="pill good">제출함</span>':' · <span class="pill warn">수정함 · 다시 제출해야 반영</span>'; })():''}</p>
-      <div class="btns"><button class="btn primary" data-a="sdSubmit">명단 제출</button><button class="btn" data-a="sdAuto">운영팀 추천으로 채우기</button></div><p class="small muted">최소 1명(대상이 없으면 0명), 최대 ${SD_PROT}명까지 제출할 수 있습니다. 적게 제출한 빈자리는 자동으로 채우지 않아 나머지는 명단 밖에 남습니다. 미제출은 운영팀이 대신 정합니다.<br>운영팀 추천은 현재 능력만이 아니라 성장 여지·나이·계약까지 따진 순서라, 능력이 더 낮은 유망주를 먼저 보호할 수 있습니다.</p>${PG.items.map(row).join('')}${PG.bar}`); }
+      ${sdAutoP()}<div class="btns"><button class="btn primary" data-a="sdSubmit">명단 제출</button><button class="btn" data-a="sdAuto">운영팀 추천으로 채우기</button></div><p class="small muted">최소 1명(대상이 없으면 0명), 최대 ${SD_PROT}명까지 제출할 수 있습니다. 적게 제출한 빈자리는 자동으로 채우지 않아 나머지는 명단 밖에 남습니다. 미제출은 운영팀이 대신 정합니다.<br>운영팀 추천은 현재 능력만이 아니라 성장 여지·나이·계약까지 따진 순서라, 능력이 더 낮은 유망주를 먼저 보호할 수 있습니다.</p>${PG.items.map(row).join('')}${PG.bar}`); }
   const res=resOf(S);
   const s=S.seq[S.cur]; let turn='';
   if(S.stage==='pick'&&s&&s.tid===G.user&&S.wait===S.cur){ const RP=new Map(sdCands(G.user).map(p=>[p,scoutReport(p)])), E=new Map([...RP].map(([p,r])=>[p,r.cur])), C=[...E.keys()].sort((a,b)=>(E.get(b)??-1)-(E.get(a)??-1)); const PG=pager('sdc',C,15); /* 우리 스카우트 평가로 보이고 정렬한다: 못 본 선수의 실제 능력을 드러내지 않는다(검수 11-09f) */
     const W0=sdWhy(G.user,s.rd); /* 정원·현금: 모든 후보에 같은 이유 */ const W=p=>W0||sdWhy(G.user,s.rd,p.id);
     turn=`<div class="note"><b>${s.rd}라운드 우리 차례</b> · 양도금 ${money(sdFee(s.rd))} · ${dsh(S.exp)}까지 정하지 않으면 건너뜁니다.${W0?`<br><b class="bad">지금은 지명할 수 없습니다.</b> ${esc(W0.t)} 건너뛰거나 조건을 맞춘 뒤 고르세요.`:''}</div><div class="btns"><button class="btn" data-a="sdPick" data-v="skip">이번 라운드 건너뛰기</button></div>
       ${PG.items.map(p=>{ const w=W(p); return `<div class="market-player-row"><span class="market-player-info">${avImg(p)}<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${sdRate(RP.get(p),p)} <span class="small muted">${esc(tshort(p.team))} · ${esc(posLabel(p))} · ${p.age}세 · 연 ${money(p.sal)}</span>${w&&!W0?`<span class="small bad" style="display:block">${esc(w.t)}</span>`:''}</span><span class="market-player-actions"><button class="btn small ${w&&!w.soft?'':'primary'}" data-a="sdPick" data-v="${p.id}" ${w&&!w.soft?`disabled aria-label="지명 불가: ${esc(w.t)}"`:''}>${w&&!w.soft?esc(w.k):w?'지명(상한 초과)':'지명'}</button></span></div>`; }).join('')}${PG.bar}`; }
-  return csec(`${S.y} 2차 드래프트 · 지명 중${rule}`,`${turn}<div class="eyebrow" style="margin-top:8px">지명 결과</div>${res}`); }
+  return csec(`${S.y} 2차 드래프트 · 지명 중${rule}`,`${sdAutoP()}${turn}<div class="eyebrow" style="margin-top:8px">지명 결과</div>${res}`); }
 Object.assign(A,{
   wvClaim(v){ toast(wvClaim(+v)); save(); render(); },
   wvPri(v){ const [id,d]=String(v).split(':').map(Number); wvPriMove(id,d); save(); render(); },
@@ -52656,6 +52661,10 @@ Object.assign(A,{
    - 게임 화면에 들어왔을 때 아직 안 본 패치가 있으면 한 번 띄운다(본 기록은 이 기기의 브라우저에만 남는다).
    - 처음 화면과 게임 설정에서 언제든 다시 볼 수 있다 */
 const PATCH=[
+  {id:'2026-11-21-sd2-comp',d:'11월 21일',t:'FA 보상선수로 데려온 선수는 2차 드래프트에서 자동 보호됩니다',items:[
+    'KBO 규정대로, 2차 드래프트 전에 FA 보상선수로 옮긴 선수는 지명 대상에서 자동으로 빠집니다. 보호명단을 낸 뒤 데려왔어도 명단 밖으로 나오지 않고, 그 선수를 내준 구단이 2차 드래프트로 되찾아 갈 수도 없습니다.',
+    '보호명단 화면에 "이번 겨울 FA 보상선수로 합류 · 자동 보호"로 따로 보여 주며, 35명 자리를 쓰지 않습니다. AI 구단끼리도 같은 규칙입니다. 이미 끝난 2차 드래프트 결과는 되돌리지 않습니다.'
+  ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
     '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',
     '인원이 더 늘어나는 거래와, 정원 안 구단이 68명을 넘게 되는 거래는 전처럼 막습니다. 안내에 지금 인원과 거래 뒤 인원을 함께 보여 줍니다. AI 구단끼리도 같은 규칙입니다.'

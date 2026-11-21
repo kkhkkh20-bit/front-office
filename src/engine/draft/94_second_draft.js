@@ -9,7 +9,10 @@ const SD_PROT=35, SD_RD=3, SD_XRD=2, SD_LOSS=4, SD_FEE=[400,300,200,100], SD_REG
 const sdYear=y=>y>=2023&&y%2===1;
 const sdFee=rd=>SD_FEE[Math.min(rd,4)-1];
 /* shortcut: 게임 시작 때 만든 선수는 지명 기록이 없어 만 21세 이하를 입단 3년 차 이내로 본다. 시작 선수가 다 지명 기록을 갖게 되면 지운다 */
-function sdExempt(p){ const y=G.year; return !!(p.foreign||p.ys||p.prospect||p.joinY>y||(p.draft?p.draft.y>=y-3||(p.draft.y===y-4&&p.mil&&p.mil.pf!=null):p.age<=21)||milServing(p)||(p.lastFA!=null&&p.lastFA>=y)); }
+function sdExempt(p){ const y=G.year; return !!(p.foreign||p.ys||p.prospect||p.joinY>y||(p.draft?p.draft.y>=y-3||(p.draft.y===y-4&&p.mil&&p.mil.pf!=null):p.age<=21)||milServing(p)||(p.lastFA!=null&&p.lastFA>=y)||sdCompIn(p)); }
+/* KBO: 2차 드래프트 실시 전 FA 보상선수로 옮긴 선수는 지명 자동 제외(보호명단 제출 뒤 합류해도 같고, 원소속 구단도 되찾을 수 없다). 이번 시즌이 끝난 뒤 옮겨 지금 그 구단에 있는 선수만(카페 11-21). 영입 기록(acqStamp)으로 본다 */
+function sdCompIn(p){ const a=p.acq; return !!a&&a.k==='보상선수'&&a.y===G.year&&a.tid===p.team&&a.d>(G.cal&&G.cal.end!=null?G.cal.end:dnum(G.year,10,1)); }
+function sdWhyOut(p){ return sdCompIn(p)?'이번 겨울 FA 보상선수로 합류 · 자동 보호':''; } /* 2차 드래프트 화면 안내 */
 function sdPool(tid){ return Object.values(G.players).filter(p=>p.team===tid&&!sdExempt(p)); }
 function sdProtAI(tid){ return sdPool(tid).sort((a,b)=>keepScore(b)-keepScore(a)).slice(0,SD_PROT).map(p=>p.id); } /* 보호는 전력 순(연봉 비용을 빼지 않는다): 비싼 주전이 명단 밖으로 나오지 않게(카페 11-08) */
 function sdSeq(order){ const s=[]; for(let rd=1;rd<=SD_RD+SD_XRD;rd++)(rd<=SD_RD?order:order.slice(0,3)).forEach(tid=>s.push({rd,tid})); return s; }

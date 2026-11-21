@@ -10854,6 +10854,21 @@ T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 �
   G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
   G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
   G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
+T('[카페 11-21 2차 드래프트 보상선수] 보호명단을 낸 뒤 FA 보상선수로 데려온 선수는 자동 보호되어 원소속 구단이 2차 드래프트로 되찾지 못한다(KBO: 드래프트 전 보상선수 이적은 지명 자동 제외, AI도 같음)',()=>{ fresh(); G.teams.forEach((t,i)=>{ G.sea.rec[t.id]={w:i,l:10-i,t:0}; }); G.day=KD(11,12); G.ps=null; sdOpen(); const S=G.sd2, U=G.user;
+  ok(/명단을 냈습니다/.test(sdSubmit(sdProtAI(U))),'준비 실패: 우리 명단 제출');
+  const ids=G.teams.map(t=>t.id).filter(t=>t!==U), B=ids[0];
+  const mk=(from,to)=>{ const c={id:'cpSd'+from+'_'+to,pid:-999,name:'점검 FA',grade:'A',from,to,prev:300,day:G.day,stage:'pick',prot:[],away0:[]}; const q=sdPool(to).filter(x=>!(S.prot[to]||[]).includes(x.id)).sort((a,b)=>aiVal(team(from),b)-aiVal(team(from),a)).find(x=>{ c.pool0=[x.id]; return compPickCheck(c,x.id).ok; }); ok(q,'준비 실패: 보상선수 후보 '+from+'←'+to); c.pool0=[q.id]; G.comp=[c,...(G.comp||[])]; compResolve(c,q.id); ok(q.team===from&&c.stage==='done','준비 실패: 보상선수 이적'); return q; };
+  G.day++; const q=mk(U,B); /* 우리 FA를 데려간 B에게서 보호명단 제출 뒤 보상선수를 받았다 */
+  const [C,D]=ids.slice(1); const r=mk(C,D); /* AI끼리도 같은 규칙 */
+  ok(q.acq&&q.acq.k==='보상선수','준비 실패: 영입 기록'); ok(sdExempt(q)&&sdExempt(r),'이번 겨울 보상선수 이적 선수가 2차 드래프트 지명 대상에 남음');
+  ok(typeof sdWhyOut==='function'&&/보상선수/.test(sdWhyOut(q)||''),'보호 이유 안내가 없음');
+  ok(!sdPool(U).some(x=>x.id===q.id)&&/명단을 냈습니다/.test(sdSubmit([...sdProtAI(U),q.id]))&&!S.prot[U].includes(q.id),'보상선수가 보호명단 대상(35명 자리)에 남음');
+  G.day=S.exp; sd2Daily(G.day); ok(S.stage!=='protect','준비 실패: 지명 시작 안 됨');
+  ok(!(S.pool[U]||[]).includes(q.id)&&!(S.pool[C]||[]).includes(r.id),'보상선수가 지명 시작 때 명단 밖 대상에 들어감');
+  for(const t of G.teams)ok(!sdCands(t.id).some(x=>x.id===q.id||x.id===r.id),tshort(t.id)+'이(가) 보상선수를 2차 드래프트 후보로 봄');
+  for(let i=0;i<40&&S.stage==='pick';i++){ if(S.seq[S.cur]&&S.seq[S.cur].tid===U&&S.wait===S.cur)sdPick(null); else sd2Daily(++G.day); }
+  ok(S.stage==='done','준비 실패: 드래프트가 끝나지 않음'); ok(q.team===U&&r.team===C,'보상선수가 2차 드래프트로 옮김: '+q.team+'/'+r.team);
+  const old=sdPool(B).find(x=>!sdExempt(x)); old.acq={k:'보상선수',y:G.year-1,d:dnum(G.year-1,11,20),tid:B}; ok(!sdExempt(old),'지난 겨울 보상선수까지 계속 자동 보호함(이번 회차만 제외)'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

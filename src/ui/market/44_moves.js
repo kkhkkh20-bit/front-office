@@ -57,6 +57,8 @@ function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
   if(!L.length&&!log)return `<p class="small muted"><b>웨이버 공시</b> 지금 공시 중인 선수가 없습니다.${hiI(rule)}</p>`; /* 비어 있으면 칸 대신 한 줄 */
   return csec('웨이버 공시',`<p class="small muted">방출 선수는 ${WV_DAYS}일 동안 공시되고, 신청 구단 중 지금 성적이 낮은 구단이 계약을 이어받습니다. ${hiI(rule)}</p>
     ${L.length?L.map(row).join(''):emptyState('지금 공시 중인 선수가 없습니다. 공시되면 소식함으로 알려 드립니다.')}${pri}${log?`<div class="eyebrow" style="margin-top:8px">최근 결과</div>${log}`:''}`); }
+/* 2차 드래프트: 명단에 넣지 않아도 지명되지 않는 우리 선수와 이유(카페 11-21) */
+function sdAutoP(){ const L=Object.values(G.players).filter(p=>p.team===G.user&&sdWhyOut(p)); return L.length?`<p class="small" data-sd-auto>${L.map(p=>`<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button> <span class="pill good">${esc(sdWhyOut(p))}</span>`).join(' · ')}</p>`:''; }
 /* 2차 드래프트 명단의 능력·잠재력: 다른 선수 목록과 같은 색 능력 칩과 잠재력 별(카페 11-18). 능력은 우리 스카우트 평가(못 본 선수는 '-') */
 function sdRate(rp,p){ return ` <span class="sd-rate">${rchipG(rp&&rp.cur,rp&&rp.exact)}${potChip(rp,p)}</span>`; }
 function sdBox(){ const S=G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'?G.sd2:null; /* 진행 중인 회차만. 끝난 회차는 대기 화면에서 해마다 따로 본다(검수 11-09ze) */
@@ -74,14 +76,14 @@ function sdBox(){ const S=G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'?G.sd2:nu
     const P=new Set(UI.sdProt.filter(id=>pool.some(p=>p.id===id))); const PG=pager('sdp',pool,15);
     const row=p=>`<div class="market-player-row"><span class="market-player-info">${avImg(p)}<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${sdRate(scoutReport(p),p)} <span class="small muted">${esc(posLabel(p))} · ${p.age}세 · 연 ${money(p.sal)}</span></span><span class="market-player-actions"><button class="btn small ${P.has(p.id)?'primary':''}" data-a="sdTog" data-v="${p.id}">${P.has(p.id)?'보호':'명단 밖'}</button></span></div>`;
     return csec('2차 드래프트 · 보호선수 명단'+rule,`<p class="small"><b>보호 ${P.size} / ${SD_PROT}명</b> · 대상 ${pool.length}명 · ${dsh(S.exp-1)}까지 제출${sdSubd(G.user)?(()=>{ const L=(S.prot[G.user]||[]).filter(id=>pool.some(p=>p.id===id)); return L.length===P.size&&L.every(id=>P.has(id))?' · <span class="pill good">제출함</span>':' · <span class="pill warn">수정함 · 다시 제출해야 반영</span>'; })():''}</p>
-      <div class="btns"><button class="btn primary" data-a="sdSubmit">명단 제출</button><button class="btn" data-a="sdAuto">운영팀 추천으로 채우기</button></div><p class="small muted">최소 1명(대상이 없으면 0명), 최대 ${SD_PROT}명까지 제출할 수 있습니다. 적게 제출한 빈자리는 자동으로 채우지 않아 나머지는 명단 밖에 남습니다. 미제출은 운영팀이 대신 정합니다.<br>운영팀 추천은 현재 능력만이 아니라 성장 여지·나이·계약까지 따진 순서라, 능력이 더 낮은 유망주를 먼저 보호할 수 있습니다.</p>${PG.items.map(row).join('')}${PG.bar}`); }
+      ${sdAutoP()}<div class="btns"><button class="btn primary" data-a="sdSubmit">명단 제출</button><button class="btn" data-a="sdAuto">운영팀 추천으로 채우기</button></div><p class="small muted">최소 1명(대상이 없으면 0명), 최대 ${SD_PROT}명까지 제출할 수 있습니다. 적게 제출한 빈자리는 자동으로 채우지 않아 나머지는 명단 밖에 남습니다. 미제출은 운영팀이 대신 정합니다.<br>운영팀 추천은 현재 능력만이 아니라 성장 여지·나이·계약까지 따진 순서라, 능력이 더 낮은 유망주를 먼저 보호할 수 있습니다.</p>${PG.items.map(row).join('')}${PG.bar}`); }
   const res=resOf(S);
   const s=S.seq[S.cur]; let turn='';
   if(S.stage==='pick'&&s&&s.tid===G.user&&S.wait===S.cur){ const RP=new Map(sdCands(G.user).map(p=>[p,scoutReport(p)])), E=new Map([...RP].map(([p,r])=>[p,r.cur])), C=[...E.keys()].sort((a,b)=>(E.get(b)??-1)-(E.get(a)??-1)); const PG=pager('sdc',C,15); /* 우리 스카우트 평가로 보이고 정렬한다: 못 본 선수의 실제 능력을 드러내지 않는다(검수 11-09f) */
     const W0=sdWhy(G.user,s.rd); /* 정원·현금: 모든 후보에 같은 이유 */ const W=p=>W0||sdWhy(G.user,s.rd,p.id);
     turn=`<div class="note"><b>${s.rd}라운드 우리 차례</b> · 양도금 ${money(sdFee(s.rd))} · ${dsh(S.exp)}까지 정하지 않으면 건너뜁니다.${W0?`<br><b class="bad">지금은 지명할 수 없습니다.</b> ${esc(W0.t)} 건너뛰거나 조건을 맞춘 뒤 고르세요.`:''}</div><div class="btns"><button class="btn" data-a="sdPick" data-v="skip">이번 라운드 건너뛰기</button></div>
       ${PG.items.map(p=>{ const w=W(p); return `<div class="market-player-row"><span class="market-player-info">${avImg(p)}<button class="lnk" data-a="player" data-v="${p.id}">${esc(p.name)}</button>${sdRate(RP.get(p),p)} <span class="small muted">${esc(tshort(p.team))} · ${esc(posLabel(p))} · ${p.age}세 · 연 ${money(p.sal)}</span>${w&&!W0?`<span class="small bad" style="display:block">${esc(w.t)}</span>`:''}</span><span class="market-player-actions"><button class="btn small ${w&&!w.soft?'':'primary'}" data-a="sdPick" data-v="${p.id}" ${w&&!w.soft?`disabled aria-label="지명 불가: ${esc(w.t)}"`:''}>${w&&!w.soft?esc(w.k):w?'지명(상한 초과)':'지명'}</button></span></div>`; }).join('')}${PG.bar}`; }
-  return csec(`${S.y} 2차 드래프트 · 지명 중${rule}`,`${turn}<div class="eyebrow" style="margin-top:8px">지명 결과</div>${res}`); }
+  return csec(`${S.y} 2차 드래프트 · 지명 중${rule}`,`${sdAutoP()}${turn}<div class="eyebrow" style="margin-top:8px">지명 결과</div>${res}`); }
 Object.assign(A,{
   wvClaim(v){ toast(wvClaim(+v)); save(); render(); },
   wvPri(v){ const [id,d]=String(v).split(':').map(Number); wvPriMove(id,d); save(); render(); },
