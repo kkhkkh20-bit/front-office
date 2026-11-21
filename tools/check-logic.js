@@ -2497,7 +2497,7 @@ T('트레이드로 떠났다 돌아온 선수의 끝난 계약 조건이 되살�
   p.faC=true; p.yrs=3; termsApply(p,{years:3,bonus:900,annual:p.sal,opt:200,role:0,ntc:false},'fa',G.year,true); ok(capBOf(p)>0&&p.roleProm,'준비 실패');
   const q1=domestic(other).filter(x=>!x.ys&&!x.foreign).sort((a,b)=>a.sal-b.sal)[0]; /* 연봉이 가장 적은 선수: 예산 초과로 구단주 결재에 걸리지 않게 */ G.offers=[{id:'t1',from:other,give:[q1.id],get:[p.id],exp:G.day+7,day:G.day}]; const am=evOK(()=>answerOffer('t1',true)); ok(p.team===other,'준비 실패: 트레이드 안 됨 '+JSON.stringify(am).slice(0,200));
   G.day+=31; G.trades=[]; /* 계약 조항 점검은 최근 이적 제한이 끝난 뒤 수행한다 */ G.offers=[{id:'t2',from:other,give:[p.id],get:[q1.id],exp:G.day+7,day:G.day}]; evOK(()=>answerOffer('t2',true)); ok(p.team===G.user,'준비 실패: 되돌아오지 않음');
-  ok(capBOf(p)===0,'상한 반영액이 되살아남: '+capBOf(p)); ok(!(ctOn(p)&&p.opt),'옵션이 되살아남'); ok(!(ctOn(p)&&p.roleProm),'주전 약속이 되살아남'); });
+  ok(capBOf(p)===0,'상한 반영액이 되살아남: '+capBOf(p)); /* 조항 점검 11-21: 예전 '트레이드하면 옵션 끝' → 계약 양도라 옵션은 계약과 함께 다녀온다(구두 약속·계약금 상한 반영만 끝) */ ok(ctOn(p)&&p.opt&&p.opt.a===200,'계약 양도인데 성과 옵션이 사라짐'); ok(!(ctOn(p)&&p.roleProm),'주전 약속이 되살아남'); });
 
 T('포스트시즌: 로스터 초과·건강한 야수 부족이면 진행을 막는다(90e6fa8 리뷰)',()=>{ fresh(); simTo(()=>period()==='post'&&G.ps&&!G.ps.done); ok(period()==='post','준비 실패'); if(!G.ps.seeds.includes(G.user))G.ps.seeds[0]=G.user; for(const k in G.ps.res)if(G.ps.res[k]&&G.ps.res[k][1]===G.user)delete G.ps.res[k]; /* 가을야구에 남은 팀이어야 정원 검사 대상(탈락 팀은 막지 않음) */
   while(rosterN(G.user)<=ROSTER_MAX)newPlayer({age:22,isP:false,base:30,pot:35,team:G.user}); G.res=null; G.live=null; ok(/로스터/.test(blocker()),'포스트시즌에 정원 '+rosterN(G.user)+'명인데 진행됨');
@@ -2582,7 +2582,7 @@ T('[감사] 시즌 중 이직하면 옛 구단의 캠프 효과·지원 계획�
 T('[감사] 트레이드로 보낸 선수의 매물 표시·출전 약속·전환 훈련·미리 맺은 계약 조건은 끝난다',()=>{ fresh(); const other=G.teams.find(t=>t.id!==G.user).id; const p=playersOf(G.user).find(q=>!q.foreign&&!q.isP);
   p.listed=true; p.promise={until:G.day+30}; p.pconv={pos:'1B',d:G.day}; p.extNext={annual:p.sal,years:3,terms:{years:3,ntc:true,opt:100,role:0,bonus:0,annual:p.sal}};
   const q1=domestic(other).filter(x=>!x.ys&&!x.foreign).sort((a,b)=>a.sal-b.sal)[0]; /* 연봉이 가장 적은 선수: 예산 초과로 구단주 결재에 걸리지 않게 */ G.offers=[{id:'t3',from:other,give:[q1.id],get:[p.id],exp:G.day+7,day:G.day}]; evOK(()=>answerOffer('t3',true)); ok(p.team===other,'준비 실패');
-  ok(!p.listed&&!p.promise&&!p.pconv&&!(p.extNext&&p.extNext.terms),'트레이드 뒤에도 남음: '+JSON.stringify({listed:p.listed,promise:!!p.promise,pconv:!!p.pconv,terms:!!(p.extNext&&p.extNext.terms)})); });
+  ok(!p.listed&&!p.promise&&!p.pconv,'트레이드 뒤에도 남음: '+JSON.stringify({listed:p.listed,promise:!!p.promise,pconv:!!p.pconv})); /* 조항 점검 11-21: 예전 '미리 맺은 계약 조건 끝' → 계약 양도라 조항(거부권·옵션)은 잇고 역할 약속만 끝 */ const X=p.extNext&&p.extNext.terms; ok(X&&X.ntc&&X.opt===100&&X.role==null,'미리 맺은 계약 조항이 승계되지 않거나 역할 약속이 남음: '+JSON.stringify(X)); });
 
 T('[감사] 감독을 경질해 대행 체제가 되면 전임 감독의 육성 우대(×1.3)는 끝난다',()=>{ fresh(); const m=G.mgr[G.user]; const p=playersOf(G.user).find(q=>q.age<=25)||playersOf(G.user)[0]; G.mpick={y:G.year,mid:m.id,ids:[p.id],back:true,day:G.day};
   ok(mpickMult(p)===1.3,'준비 실패'); fireMgr(); ok(mpickMult(p)===1,'경질 뒤에도 전임 감독 우대 '+mpickMult(p)); });
