@@ -1,0 +1,7 @@
+PASS PC retains 20% practical recovery after a return 60 days ago
+PASS injured player appears once with remaining days; healthy player stays out
+PASS phone retains existing recovery text and 20% progress
+PASS PC preserves current ineligibility and military qualifiers
+PASS completed aftereffects stay out of the current recovery rows
+PASS foreign-team and future-join recovery stays outside our current medical list
+6 passed, 0 failed

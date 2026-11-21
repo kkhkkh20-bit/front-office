@@ -26,6 +26,14 @@
 
 이들 게임의 인원 제한·계약·예산·부상 판정을 도입한 작업은 아니다. 화면 문구와 기존 상태의 표시만 수정했다.
 
+## 버튼 정렬 후속 수정
+
+이전 시안 `3a43e473`에서 모바일 계약창의 ‘닫기’만 `inline-flex` 기본 정렬을 사용해 왼쪽에 붙었다. 실제 글자 중심이 버튼 중심에서 약 63.3px 벗어나는 실패를 먼저 확인했다. `src/css/contracts/10_fa_and_patches.css`의 해당 선택자에 가로·세로 가운데 정렬만 추가했다. 버튼 너비·순서·기능은 그대로다.
+
+PC/모바일 계약창의 모든 표시 중인 실행 버튼(비활성 포함)의 실제 글자 영역과 버튼 영역 중심을 비교하는 회귀를 기존 UI 검사에 추가했다. 선수단·훈련·의무·일정의 표시 방식도 함께 점검했다. 구단/선수 행이나 정보 카드의 별도 정렬은 이번 수정 범위가 아니다.
+
+[정렬 전 실패](button-align-before-test.txt) → [PC/모바일 정렬 및 기능 검사 통과](button-align-after-test.txt). [빌드 2종](button-align-build.txt)·[정적 검사](button-align-static.txt)·[의무 화면 6/6](button-align-medical.txt) 통과. 필수 규칙 재검사와 QUICK은 진행 중이다. 전체 검사·별도 장기 시뮬은 미실행이며 GitHub 결과도 확정 전이다. 배포하지 않았다.
+
 ## 영향과 경계
 
 `src/modules.json`의 기존 로딩 순서와 `ngtClose`/`ngtWithdraw`, `calGames`, `injNowList` 호출 관계를 확인했다. 모듈 추가/순서 변경은 없다. 엔진·저장 구조·난수·AI·계약 실행·부상 판정은 수정하지 않았다. 두 종류 빌드 후 엔진은 기준 main과 바이트 단위로 동일하다([해시](engine-parity.json)).
