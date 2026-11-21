@@ -79,7 +79,7 @@ function offseason(){ try{ if(G.startY&&G.year>=G.startY+2&&!G.fdRev&&!G.unemp)f
     const dp=faDeclP(p,declCtx);
     if(elig&&p.ctFree!==G.year&&R()>=dp){ p.faSkip=G.year; if(p.team===ME()){ const w=faSkipWhy(p,declCtx); (G._faSkip=G._faSkip||[]).push(p.name+(w.length?`(${w.join(', ')})`:'')); } continue; }
     if(elig){ delete p.faSkip; const grade=faGradeOf(p,all,gSnap);
-      p.faFrom=p.team; p.faGrade=grade; p.faPrevSal=faCompBase(p); delete p.salCompCap; /* 보상 기준 연봉: 요구액을 넘긴 인상분은 빼고 */ faMktFix(G.year); termsClear(p); /* 끝난 계약의 계약금 상한 반영·옵션은 FA가 되면 정리(AI FA도 계약금이 생겼다) */ p.team=null; pool.push(p.id);
+      p.faFrom=p.team; p.faGrade=grade; p.faPrevSal=faCompBase(p); delete p.salCompCap; /* 보상 기준 연봉: 요구액을 넘긴 인상분은 빼고 */ faMktFix(G.year); termsClear(p); /* 끝난 계약의 계약금 상한 반영·옵션은 FA가 되면 정리(AI FA도 계약금이 생겼다) */ p.team=null; pool.push(p.id); try{ scoutDeparture(p,p.faFrom,null); }catch(e){} /* FA가 된 우리 선수: 방출·트레이드처럼 떠날 때 구단 평가를 보관(카페 11-21 뚜땅: 2군 출신 FA가 '-'·'?') */
       for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k];
       if(p.faFrom===ME())declared.push(p.id); }
   }
