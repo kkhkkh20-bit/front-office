@@ -14,7 +14,7 @@ step "중계 선수 카드·투구 공 가독성"
 node tools/check-broadcast-ball-1121.cjs || fail=1
 node tools/check-broadcast-hud-1121.cjs || fail=1
 node tools/check-broadcast-pitch-1121.cjs || fail=1
-step "중계 스윙 복귀·효과음 재생 소유권"
+step "중계 기존 스윙 유지·효과음 재생 소유권"
 node tools/check-broadcast-swing-1121.cjs || fail=1
 node tools/check-broadcast-sound-1121.cjs || fail=1
 node tools/check-broadcast-sound-render-1121.cjs || fail=1

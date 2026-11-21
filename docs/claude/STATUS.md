@@ -2,14 +2,14 @@
 
 Updated: 2026-11-21. Latest fetched origin/main: 83de5da9.
 
-## Active motion/sound preview (not deployed)
-- Worktree /workspace/front-office-broadcast-motion-sound; branch codex/broadcast-motion-sound-1121. Started origin/main, merged #336 frozen c655ddba locally as preview baseline. Do not modify parent PR branches.
-- New scope: full swing returns to ready stance only after full clip at effective rate. Crowd reactions crossfade instead of stack. One-shots/organ and delayed cues stop on mute/pause/seek/speed/player view/natural game end. Existing impact timbre/volumes, engine/RNG/save/module order unchanged.
-- Report: docs/updates/2026-11-21-broadcast-motion-sound/README.md. Actual audio A/B + WebGL pose captures.
-- PASS: pre-fix failures reproduced; sound ownership4/4; actual rig 450/900/1400ms with full follow-through/run/bunt/seek regressions; existing scene unit10/10; actual WebGL + AudioContext six UI lifecycle controls (including natural end), records unchanged; real WebAudio impact PCM identical and post-stop RMS0; builds2/static. Engine hash 4d0eceb5a6bbd9f967e8fc7731f169e7c3053ea7628cf2c630247d9eb11b92ce identical.
-- Independent motion review found no blocker. Sound reviewer found missing natural-end cleanup; fixed and actual end regression passed.
-- QUICK /workspace/work/broadcast-motion-sound-1121/quick-final.log running. Full/long-season/actual-phone sustained FPS+speaker audition unrun. Do not call complete/pass without final CHECK_EXIT=0 and required GitHub checks.
-- Draft preview only. No merge/deploy until user preview approval AND checks complete; refresh latest main and resolve parent dependencies first.
+## Active sound-only preview (not deployed)
+- Draft PR #337 https://github.com/kkhkkh20-bit/front-office/pull/337; branch codex/broadcast-motion-sound-1121 in /workspace/front-office-broadcast-motion-sound. Parent #336 c655ddba.
+- USER REJECTED swing auto-return: batters pause/spin, original pose is preferred. Restore scene.mjs byte-for-byte to c655ddba. Do not reintroduce auto-return or claim the spin cause is fixed. User APPROVED sound changes; four sound-related source files remain byte-identical to829c0a69.
+- Keep crowd crossfade and active/delayed cue cleanup (mute/pause/seek/speed/player/end). Engine/RNG/save/module order unchanged.
+- New tests preserve original held swing pose plus explicit stance/run/bunt/seek transitions. This expectation change is user-directed, not a test workaround. Candidate failed new expectation; restored source passed450/900/1400ms and sound4/4. Build2/static passed.
+- Current recheck logs: /workspace/work/broadcast-motion-sound-1121/revert-swing/{actual,quick}.log. Actual WebGL/UI and QUICK pending; require their final CHECK_EXIT before pass claims. Prior829c0a69's tests/captures are superseded for motion.
+- Current report/preview docs/updates/2026-11-21-broadcast-motion-sound/README.md and preview.html show SOUND ONLY. Old motion captures/logs are history, not the selected design.
+- Full/long-season/actual-phone sustained FPS+speaker audition unrun. Draft only; no merge/deploy before required checks and final approval. Refresh main and resolve #326->#336 dependencies first.
 
 ## Parent design holds
 - #336 codex/broadcast-polish-1121 HEAD c655ddba (PC92px cards, bounded pitch visibility), draft. /workspace/work/broadcast-polish-1121/quick-final.log still running. Its local STATUS has PR link only, uncommitted; do not copy unreviewed changes from other worktrees.
