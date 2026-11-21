@@ -32,7 +32,7 @@
 
 PC/모바일 계약창의 모든 표시 중인 실행 버튼(비활성 포함)의 실제 글자 영역과 버튼 영역 중심을 비교하는 회귀를 기존 UI 검사에 추가했다. 선수단·훈련·의무·일정의 표시 방식도 함께 점검했다. 구단/선수 행이나 정보 카드의 별도 정렬은 이번 수정 범위가 아니다.
 
-[정렬 전 실패](button-align-before-test.txt) → [PC/모바일 정렬 및 기능 검사 통과](button-align-after-test.txt). [빌드 2종](button-align-build.txt)·[정적 검사](button-align-static.txt)·[의무 화면 6/6](button-align-medical.txt) 통과. 필수 규칙 재검사와 QUICK은 진행 중이다. 전체 검사·별도 장기 시뮬은 미실행이며 GitHub 결과도 확정 전이다. 배포하지 않았다.
+[정렬 전 실패](button-align-before-test.txt) → [PC/모바일 정렬 및 기능 검사 통과](button-align-after-test.txt). [빌드 2종](button-align-build.txt)·[정적 검사](button-align-static.txt)·[의무 화면 6/6](button-align-medical.txt) 통과. [필수 규칙 재검사](button-align-migration.txt)도 4/4 통과했다. 최신 정렬 변경을 포함한 QUICK은 진행 중이다. 전체 검사·별도 장기 시뮬은 미실행이며 GitHub 결과도 확정 전이다. 배포하지 않았다.
 
 ## 영향과 경계
 

@@ -5,7 +5,7 @@ Updated: 2026-11-21. This worktree only: codex/management-ui-reference-1121, bas
 ## Current follow-up: button alignment
 - Owner requested consistent centered action labels. Confirmed only mobile contract Close is flex-start in audited screens; reproduced 63.3px horizontal offset.
 - Minimal CSS fix in contracts/10_fa_and_patches.css; existing UI test now measures every visible contract action label center, including disabled buttons.
-- New follow-up checks/logs: /workspace/work/button-align-1121. Required rules and QUICK rerun in progress. Do not claim previous head checks cover the new head.
+- New follow-up checks/logs: /workspace/work/button-align-1121. Required rules rerun passed 4/4 with CHECK_EXIT=0; current QUICK remains in progress. Do not claim previous head checks cover the new head.
 - Keep #343 draft, no merge/deploy; final approval still required.
 
 ## Management UI reference batch
