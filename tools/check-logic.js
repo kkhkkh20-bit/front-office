@@ -10854,6 +10854,22 @@ T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 �
   G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
   G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
   G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
+T('[카페 11-21 비FA 다년 연봉] 34세 25.35억 선수: 보장 기간이 길면 지금 연봉보다 조금 낮게도 받고(나이·부상·성격), 너무 낮으면 거절, 젊은 선수는 덜 깎고, 난수 없이 AI와 같은 하한',()=>{ fresh();
+  const p=domestic(G.user).filter(x=>canExtend(x)&&!x.faC&&!x.ext&&!x.isP).sort((a,b)=>ovr(b)-ovr(a))[0]; ok(p,'준비 실패');
+  const set=(q,age,sal)=>{ q.age=age; q.sal=sal; q.svc=faSvc(q)-1; q.agId=null; q.inj=.05; q.hist=[]; q.mor=60; initPers(q); q.pers.loy=10; q.pers.amb=12; delete q.extNg; delete q.extCounter; delete q.extLast; };
+  set(p,34,2535); ok(canExtend(p)&&!salReset(p),'준비 실패: 다년 대상 아님'); extDemandAll(p,4); /* FA 시장 분위기는 처음 한 번 정해진다(그해 고정) */
+  const r0=__rngState(); const f1=extFloor(p,1), f2=extFloor(p,2), f3=extFloor(p,3), f4=extFloor(p,4), d4=extDemandAll(p,4); const x4=extParts(p,4); ok(__rngState()===r0,'다년 하한·요구 계산이 난수를 씀');
+  ok(f1===2535,'1년은 지금 연봉 그대로가 아님: '+f1); ok(f4<f3&&f3<f2&&f2<f1,'보장 기간이 길어도 덜 깎지 않음: '+[f1,f2,f3,f4].join('/'));
+  ok(f4>=round5(2535*.85)&&f4<=round5(2535*.95),'34세 4년 할인이 5~15% 밖: '+f4); ok(d4<2535&&d4>=f4,'4년 요구가 지금 연봉 이상이거나 하한 아래: '+d4+'/'+f4);
+  ok(!x4.why.some(w=>w.includes('깎아 주지 않습니다'))&&x4.why.some(w=>w.includes('4년 보장')),'요구 근거가 실제 할인과 다름: '+x4.why.join(' · '));
+  const y=JSON.parse(JSON.stringify(p)); y.id=p.id; y.age=27; ok(extFloor(y,4)===2535,'27세가 다년 보장으로 연봉을 깎아 줌: '+extFloor(y,4)); y.age=31; const f31=extFloor(y,4); ok(f31<2535&&f31>f4,'31세 할인이 0이거나 34세보다 큼: '+f31+'/'+f4);
+  const z=JSON.parse(JSON.stringify(p)); z.inj=.3; ok(extFloor(z,4)<f4,'부상 이력이 있어도 더 깎지 않음: '+extFloor(z,4)+'/'+f4); z.inj=.05; z.pers.loy=18; ok(extFloor(z,4)<f4,'구단 애착이 커도 더 깎지 않음');
+  WORLD_BUILD++; try{ ok(extFloor(p,4)===2535,'새 게임 세계 만들기 중에도 할인(새 게임 세계가 main과 달라짐)'); } finally{ WORLD_BUILD--; }
+  const far=offerExtension(p.id,1500,4); ok(!far.ok&&far.cut,'너무 낮은 다년(연 15억)을 받음: '+far.st+' '+far.msg);
+  delete p.extNg; const two=offerExtension(p.id,2385,2); ok(!two.ok&&two.cut&&two.msg.includes('2년'),'2년이면 23.85억은 할인 범위 밖인데 다르게 판단: '+two.st+' '+two.msg);
+  const t=G.teams.find(o=>o.id!==G.user); const q=domestic(t.id).find(o=>!o.foreign&&!o.ys&&!o.faC&&!o.ext&&!o.extNext); ok(q,'준비 실패: AI 선수'); set(q,33,2000);
+  const qf=extFloor(q,4); ok(qf<2000,'AI 구단 선수는 다년 할인이 없음: '+qf); ok(extJudge(q,qf,4,t.id,false).st==='ok','AI 판정이 할인 하한을 받지 않음: '+extJudge(q,qf,4,t.id,false).st); ok(extJudge(q,round5(qf*.9),4,t.id,false).st==='cut','AI 판정이 할인 하한 아래를 받음');
+  delete p.extNg; const r=offerExtension(p.id,2385,4); ok(r.ok,'4년 23.85억(지금보다 6% 낮음)을 거절: '+r.st+' '+r.msg); ok(p.sal===2385||(p.extNext&&p.extNext.annual===2385),'합의 연봉이 다름'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
