@@ -161,7 +161,7 @@ const QUICK=process.env.QUICK==='1';
     if(!r)return; if(!r.hr||!r.rbi)add('기록 순위',`규정 타석 미달 ${r.name}이(가) 홈런${r.hr?'':'·'}${r.rbi?'':'타점'} 정렬에 안 나옴`); if(r.ops)add('기록 순위',`규정 타석 미달 ${r.name}이(가) OPS 정렬(규정 이상)에 나옴`); };
   /* 신인 드래프트(드래프트 시즌): 홈 타일과 드래프트 화면에 남은 날과 우리 1라운드 순위(지난 시즌 역순)가 보여야 한다. 드래프트 화면이 현재 순위로 계산하던 문제 */
   const draftCheck=async label=>{ where=`${label} · 신인 드래프트 안내`;
-    const r=await ev(()=>{ if(!(G.day>=KD(3,1)&&G.day<G.cal.draft)||G.unemp)return null; const h=[...G.history].reverse().find(x=>x.y<G.year); const n=[...h.order].reverse().findIndex(o=>o.tid===G.user)+1;
+    const r=await ev(()=>{ if(!(G.day>=KD(3,1)&&G.day<G.cal.draft)||G.unemp)return null; const h=[...G.history].reverse().find(x=>x.y<G.year); const F=G.dr1F&&G.dr1F.y===G.year&&Array.isArray(G.dr1F.ord)?G.dr1F.ord:null; const n=F?G.teams.length-F.indexOf(G.user):[...h.order].reverse().findIndex(o=>o.tid===G.user)+1; /* 11-21: 예전엔 지난 시즌 순위의 역순만. 창단 게임 첫 시즌은 창단 지명 순번의 역순(창단 k순위 → 신인 n+1-k순위) */
       closeSheets(); A.tab('home'); const tl=[...document.querySelectorAll('#app .dtl')].map(x=>x.innerText).find(t=>t.includes('신인 드래프트'))||'';
       UI.it=Object.assign(UI.it||{},{dr:'now'}); A.go('transfer:draft'); const hd=(document.querySelector('#app .dhead')||{}).innerText||''; return {n,tl,hd}; });
     if(!r)return; if(r.tl&&!r.tl.includes('1라운드 '+r.n+'순위'))add('신인 드래프트',`홈 타일에 '1라운드 ${r.n}순위' 없음: ${r.tl.replace(/\n/g,' ')}`); /* PC 홈(구단 현황)에는 타일이 없다(11-06 개편): 타일이 있을 때만 본다 */if(!r.hd.includes('1라운드 '+r.n+'순위'))add('신인 드래프트',`드래프트 화면에 '1라운드 ${r.n}순위' 없음`); };

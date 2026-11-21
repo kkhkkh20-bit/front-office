@@ -38,6 +38,8 @@ try{
   R['fd'+W].club=tc; ok(tc<B.click,`${W} 순번 전 구단 클릭 반응 ${tc}ms`);
   ok(s1.tid!=null&&s1.sel===1&&s1.need&&/지명 순번/.test(s1.why)&&s1.step==='team'&&!/구단 미선택/.test(s1.bar),`${W} 순번보다 구단을 먼저 눌러도 고른 것으로 남고 순번을 물음 ${JSON.stringify(s1)}`);
   const tk=await timed(p,()=>p.click('[data-a="fdPk"][data-v="4"]'),()=>UI.fdPk===4); R['fd'+W].order=tk; ok(tk<B.click,`${W} 순번 클릭 반응 ${tk}ms`);
+  { const t=await p.evaluate(()=>({pick:document.querySelectorAll('.dr1pk,[data-a="dr1Pk"]').length,steps:(document.querySelector('.fdset')||{}).textContent||''})); /* 구단주 11-21: 1년차 신인 순번은 고르지 않고 창단 순번의 역순 */
+   ok(t.pick===0&&/4순위 · 신인 7순위/.test(t.steps),`${W} 1년차 신인 순번 고르기 없음 + 창단 4순위 → 신인 7순위 표시 ${JSON.stringify(t)}`); }
   ok(await p.locator('.fdgo-b[aria-disabled="false"]').count()===1&&await p.locator('.fdgo-why').count()===0,`${W} 구단·순번을 다 고르면 '다음' 켜짐`);
   const sel=await p.evaluate(()=>UI.fdTid);
   const tg=await timed(p,()=>p.click('.fdgo-b'),()=>UI.sstep==='prof'); R['fd'+W].next=tg; ok(tg<B.click*1.5&&await p.evaluate(s=>UI.pickT===s,sel),`${W} '다음'으로 단장 소개(고른 구단) ${tg}ms`);
@@ -46,7 +48,8 @@ try{
   await p.fill('#gp-name','점검단장'); await p.click('[data-a="gpStart"]');
   if(early){ await p.waitForTimeout(200); ok(await p.evaluate(()=>UI.gpWait&&UI.title&&/대기/.test(document.querySelector('[data-a="gpStart"]').textContent)),`${W} 리그를 만드는 중 시작을 누르면 대기 표시`); }
   await p.waitForFunction(()=>!UI.title,null,{timeout:600000});
-  const g=await p.evaluate(()=>({user:G.user,pk:G.fdSlot??null,fd:!!G.fdWait,gm:G.gmP&&G.gmP.name}));
+  const g=await p.evaluate(()=>({user:G.user,pk:G.fdSlot??null,fd:!!G.fdWait,gm:G.gmP&&G.gmP.name,dr1F:G.dr1F&&G.dr1F.y===G.year,dr1:G.dr1||null}));
+  ok(g.dr1F&&!g.dr1,`${W} 창단 게임은 첫 시즌 신인 순번을 창단 역순으로 정해 둠(지정 순번 없음) ${JSON.stringify(g)}`);
   ok(g.user===sel&&g.fd&&g.gm==='점검단장',`${W} 다 만든 뒤 고른 구단으로 바로 시작 ${JSON.stringify(g)}`);
   ok(errs.length===0,`${W} 창단 페이지 오류 없음 ${errs.slice(0,2).join('|')}`); await ctx.close(); }
  /* 1366: 리그를 다 만든 뒤 카드 화면·클릭·시작 시간과 화면 스레드 최대 멈춤 */
@@ -55,16 +58,24 @@ try{
   await p.evaluate(()=>{ window.__lt=0; }); await p.waitForFunction(()=>UI.world&&!UI.worldBusy,null,{timeout:600000,polling:200}); await p.waitForTimeout(300);
   const blk=await p.evaluate(()=>Math.round(window.__lt)); R[mode+'Block']=blk; ok(blk<B.block,`${mode}: 리그를 만드는 동안 화면 스레드 최대 멈춤 ${blk}ms < ${B.block}(고치기 전 11초)`);
   await p.waitForSelector('[data-a="tpOpen"]'); await fit(p,1366,mode+' 구단 고르기(완성)');
-  if(mode==='fd'){ const t=await timed(p,()=>p.click('[data-a="fdPk"][data-v="7"]'),()=>UI.fdPk===7); ok(t<B.click,`fd 완성 후 순번 클릭 ${t}ms`); }
+  if(mode==='fd'){ /* 구단주 11-21(1420px): 고른 카드의 '선택한 구단' 표시가 격자 칸을 차지해 연봉 상자가 세로로 깨졌다. 고른 카드도 다른 카드와 같은 높이·연봉 상자 폭 */
+   const cm=()=>p.evaluate(()=>{ const s=document.querySelector('.tpg>.tmk.sel'); if(!s)return null; const un=[...document.querySelectorAll('.tpg>.tmk:not(.sel)')].map(c=>c.getBoundingClientRect().height).sort((a,b)=>a-b); const r=s.querySelector('.tp-r'); return {h:Math.round(s.getBoundingClientRect().height),med:Math.round(un[un.length>>1]),rw:r?Math.round(r.getBoundingClientRect().width):0,sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}; });
+   for(const W of [1366,1420,1600,1920,768,390]){ await p.setViewportSize({width:W,height:W===390?844:W===768?1024:800}); await p.evaluate(()=>{ UI.fdPk=0; UI.fdTid=null; render(); });
+    await p.locator('.tpg [data-a="start"].btn').nth(1).click(); await p.waitForTimeout(150); const a=await cm();
+    await p.click('[data-a="fdPk"][data-v="4"]'); await p.waitForTimeout(150); const c=await cm();
+    for(const [k,m] of [['순번 전',a],['순번 후',c]])ok(m&&Math.abs(m.h-m.med)<=m.med*.1&&m.rw>120&&m.sw<=m.cw+1,`${W} 고른 카드(${k}) 높이가 다른 카드 ±10%·연봉 상자 폭>120 ${JSON.stringify(m)}`); }
+   await p.setViewportSize({width:1366,height:768}); await p.evaluate(()=>{ UI.fdPk=0; UI.fdTid=null; render(); window.scrollTo(0,0); }); }
+  if(mode==='fd'){ const t=await timed(p,()=>p.click('[data-a="fdPk"][data-v="7"]'),()=>UI.fdPk===7); ok(t<B.click,`fd 완성 후 순번 클릭 ${t}ms`); ok(/1년차 신인 드래프트 4순위/.test(await p.locator('.fdpk-now').innerText()),'fd: 창단 7순위 → 1년차 신인 4순위 표시'); }
+  else { const r=await p.evaluate(()=>{ const n=UI.world.teams.length; return UI.world.preview.every(x=>{ const c=document.querySelector(`.tmk[data-v="${x.tid}"] .tp-t`); return c&&c.textContent.includes('1년차 신인 '+(n+1-x.prev)+'순위'); }); }); ok(r,'take: 구단 카드마다 1년차 신인 순번(지난 시즌 역순)을 읽기 전용으로 표시'); }
   const tc=await timed(p,()=>p.locator('.tpg [data-a="start"].btn').first().click(),()=>UI.sstep==='prof'); R[mode+'Club']=tc; ok(tc<B.click*1.5,`${mode}: 구단 클릭→단장 소개 ${tc}ms`);
-  await p.fill('#gp-name','점검단장');
+  await p.fill('#gp-name','점검단장'); ok(/1년차 신인 드래프트 \d+순위/.test(await p.locator('.gp-dr1').innerText()),mode+': 단장 소개에 1년차 신인 순번 표시');
   const tg=await timed(p,()=>p.click('[data-a="gpStart"]'),()=>!UI.title&&!document.querySelector('[data-a="gpStart"]')&&!!document.querySelector('#app *')); R[mode+'Game']=tg;
   ok(tg<B.game,`${mode}: 시작→첫 게임 화면 ${tg}ms < ${B.game}`);
   await p.waitForTimeout(600); ok(await p.evaluate(()=>{ const m=meta(); return m.active===curSlot()&&!!m.slots[curSlot()]&&!!sbGet(curSlot()); }),`${mode}: 첫 화면 뒤 새 슬롯에 저장됨`);
   ok(errs.length===0,`${mode} 페이지 오류 없음 ${errs.slice(0,2).join('|')}`); await ctx.close(); }
  /* 단장 취임 390: 만드는 중에도 카드 클릭이 바로 단장 소개로 */
  { const {ctx,p,errs}=await open(390); await p.click('[data-a="tsGo"][data-v="mode"]'); await p.click('[data-a="smode"][data-v="take"]');
-  await fit(p,390,'취임 구단 고르기(만드는 중)'); ok(await p.locator('.fdset').count()===1,'취임: 순서 표시');
+  await fit(p,390,'취임 구단 고르기(만드는 중)'); ok(await p.locator('.dr1pk,[data-a="dr1Pk"]').count()===0,'취임: 1년차 신인 순번 고르기 없음'); ok(await p.locator('.fdset').count()===1,'취임: 순서 표시');
   const tc=await timed(p,()=>p.locator('.tpg [data-a="start"].btn').nth(1).click(),()=>UI.sstep==='prof'); ok(tc<B.click*1.5&&await p.evaluate(()=>!UI.world&&UI.pickT===1),`390 취임: 만드는 중 구단 클릭→단장 소개 ${tc}ms`);
   await fit(p,390,'취임 단장 소개'); await p.click('[data-a="gpStart"]'); await p.waitForFunction(()=>!UI.title,null,{timeout:600000});
   ok(await p.evaluate(()=>G.user===1&&!G.fdWait),'390 취임: 다 만든 뒤 바로 시작'); ok(errs.length===0,'취임 390 페이지 오류 없음 '+errs.slice(0,2).join('|')); await ctx.close(); }
