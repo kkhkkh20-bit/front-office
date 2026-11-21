@@ -44,12 +44,12 @@
 | 기존 계약 현금 UI 회귀 | 통과 |
 | 기존 #1054~1056 일정 회귀 | 더블헤더·박스·중계 중 집계·교육리그 일정 통과 |
 | 독립 코드 검토 | 세 소스 파일의 추가 결함 확인 없음 |
-| `ONLY="11-09b"` | 실행 중 — 결과 확정 전 |
+| `ONLY="11-09b"` | 4/4 통과 · CHECK_EXIT=0 |
 | `QUICK=1 bash tools/check.sh` | 실행 중 — 결과 확정 전 |
 | GitHub 검사 | 초안 PR 생성 후 확인 |
 | 전체 `bash tools/check.sh` / 별도 장기 시즌 시뮬 | 미실행 |
 
-[변경 전 UI 재현](ui-before-final.txt) · [변경 후 UI](ui-after-final.txt) · [의무 화면](medical-final.txt) · [계약 회귀](contract-regression.txt) · [일정 회귀](calendar-regression.txt) · [빌드](build.txt) · [정적 검사](static-after.txt)
+[필수 11-09b](migration.txt) · [변경 전 UI 재현](ui-before-final.txt) · [변경 후 UI](ui-after-final.txt) · [의무 화면](medical-final.txt) · [계약 회귀](contract-regression.txt) · [일정 회귀](calendar-regression.txt) · [빌드](build.txt) · [정적 검사](static-after.txt)
 
 ## 남은 위험과 적용 상태
 

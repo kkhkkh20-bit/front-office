@@ -7,7 +7,7 @@ Updated: 2026-11-21. This worktree only: codex/management-ui-reference-1121, bas
 - UI only: ngtClose label becomes Close; PC calendar labels hidden completed games; PC medical reuses common practical-recovery rows. Engine byte-identical to base main; no RNG/save/rules changes.
 - Report and actual screenshots: docs/updates/2026-11-21-management-ui-reference/README.md and preview.html.
 - Passed: before/after reproduction, medical 6/6, actual PC/mobile UI, existing calendar and contract UI regression, both builds, static, independent source review.
-- Migration 11-09b and QUICK running; do not claim success without final CHECK_EXIT=0. Full/independent long-season test unrun. GitHub checks required before approval.
+- Migration 11-09b passed 4/4 (CHECK_EXIT=0); QUICK running; do not claim success without final CHECK_EXIT=0. Full/independent long-season test unrun. GitHub checks required before approval.
 - Do not commit tools/node_modules symlink. Do not skip/weaken tests or merge known failures under old guide exceptions; owner safety rules prevail.
 
 ## Separate branches on hold (do not mix)
