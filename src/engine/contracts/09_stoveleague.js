@@ -41,6 +41,20 @@ function lifeTags(p){ const T=[]; if(!p||p.foreign)return T; try{ const R=(p.his
 /* 9월 1일: 이번 시즌 뒤 은퇴가 유력한 우리 선수 미리 알림. 오래 뛴 선수에게는 은퇴 투어를 제안한다 */
 /* 은퇴 면담 설득 확률: 기분이 좋고 아직 쓸 만할수록, 나이가 적을수록 */
 function retTalkP(p){ return clamp(.3+((p.mor??60)-60)/150+(ovr(p)>=48?.15:0)-(p.age>=39?.2:p.age>=37?.1:0),.08,.75); }
+/* 은퇴 권유(카페 11-21 FC서울): 단장이 우리 구단 36세 이상 국내 선수에게 먼저 은퇴를 권한다. 받아들일지는 나이·능력·기분·야망으로 정한다(선수·해마다 고정 씨앗 난수, 주 난수 R() 호출 수 불변). 선수마다 한 해 한 번.
+   받아들이면 기존 은퇴 경로를 탄다: 시즌 중이면 은퇴 예고(lastY: 시즌을 마치고 결산 때 은퇴, 은퇴 투어·은퇴식 질문 그대로), 결산 뒤~개막 전이면 바로 은퇴(통산 기록·명예의 전당 심사·OB 진로·은퇴식/코치 제안).
+   KBO 관행: 은퇴하면 선수 계약이 끝나 남은 기간 연봉은 주지 않는다(선수단에서 빠짐). 우리 구단만의 선택이고 AI는 원래 은퇴 규칙을 따른다 */
+const RET_SUG_AGE=36;
+function retSugP(p){ initPers(p); return clamp(.25+(p.age-RET_SUG_AGE)*.07+(52-ovr(p))*.025-((p.mor??60)-60)/200-((p.pers.amb??12)-12)*.02,.05,.9); }
+function retSugWhy(p){ if(!p||G.unemp||p.team!==G.user)return '우리 구단 선수에게만 권할 수 있습니다.'; if(p.foreign)return '외국인 선수는 재계약하지 않는 방식으로 정리합니다.'; if(p.prospect||p.joinY>G.year)return '아직 입단하지 않은 선수입니다.'; if(p.age<RET_SUG_AGE)return `${RET_SUG_AGE}세 이상 선수에게만 은퇴를 권할 수 있습니다.`; if(lastSeason(p))return `${p.name}은(는) 이미 이번 시즌을 끝으로 은퇴하기로 했습니다.`; if(p.retSugY===G.year)return `올해는 이미 ${p.name}에게 은퇴를 권했습니다. 내년에 다시 이야기할 수 있습니다.`; return ''; }
+const retSugNow=()=>G.rolled===G.year||!!(G.cal&&G.day<G.cal.open); /* 결산 뒤 비시즌·개막 전: 바로 은퇴 */
+function retireNowUser(p){ return withRng(rngHash('retSugDo',G.year,p.id),()=>{ const tid=p.team; try{ legendRetire(p); }catch(e){} let rec=null; try{ rec=retireRecord(p); }catch(e){} let ob=null; try{ ob=obFromPlayer(p,rec); }catch(e){} for(const k in G.lineup)if(G.lineup[k]===p.id)delete G.lineup[k]; (G.retired=G.retired||[]).push({name:p.name,team:tid,age:p.age}); dropP(p.id); try{ if(ob)obRetireEvents([ob]); }catch(e){} return ob; }); }
+function retSuggest(id){ const p=G.players[id], why=retSugWhy(p); if(why)return {ok:false,msg:why}; p.retSugY=G.year; const pr=retSugP(p), yes=withRng(rngHash('retSug',G.year,p.id),()=>R())<pr;
+  if(!yes){ p.mor=clamp((p.mor??60)-8,0,100); try{ story(p,`${G.year} 구단의 은퇴 권유를 거절`,'move'); }catch(e){} return {ok:true,acc:false,msg:`${p.name}: "아직 더 뛸 수 있습니다." 은퇴 권유를 거절했습니다. 기분이 상했습니다.`}; }
+  p.mor=clamp((p.mor??60)+3,0,100); const nm=p.name;
+  if(retSugNow()){ try{ story(p,`${G.year} 구단과 면담 끝에 은퇴`,'move'); }catch(e){} try{ news('구단',`${tshort(G.user)} ${nm}, 현역 은퇴`,`${nm}(${p.age}세)이(가) 구단과 면담한 뒤 유니폼을 벗기로 했습니다. 남은 계약은 은퇴와 함께 끝납니다.`,1,{tid:G.user}); }catch(e){} retireNowUser(p); return {ok:true,acc:true,now:true,msg:`${nm}이(가) 은퇴 권유를 받아들여 은퇴했습니다. 남은 계약 연봉은 없습니다.`}; }
+  p.lastY=G.year; try{ story(p,`${G.year} 구단과 면담 끝에 이번 시즌을 끝으로 은퇴 결정`,'move'); }catch(e){} try{ news('구단',`${tshort(G.user)} ${nm}, 올 시즌 끝으로 은퇴`,`${nm}(${p.age}세)이(가) 구단과 면담한 뒤 이번 시즌을 마지막으로 뛰기로 했습니다.`,1,{tid:G.user,ref:p.id}); }catch(e){}
+  return {ok:true,acc:true,now:false,msg:`${nm}이(가) 은퇴 권유를 받아들였습니다. 이번 시즌을 마치고 은퇴합니다(남은 계약 연봉은 없습니다).`}; }
 function retireNotice(){ if(G.unemp)return; const L=playersOf(G.user).filter(retireLikely); if(!L.length)return; mail('운영팀',`시즌 뒤 은퇴가 유력한 선수 ${L.length}명`,L.map(p=>`· ${p.name}(${posLabel(p)}, ${p.age}세, 연봉 ${money(p.sal)})`).join('\n')+'\n\n나이와 능력으로 보아 이번 시즌이 끝나면 유니폼을 벗을 가능성이 큽니다.',{kind:'선수'});
   const star=L.filter(p=>{ const ys=new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)); return ys.size>=8||p.fr; }).sort((a,b)=>(b.svc||0)-(a.svc||0))[0];
   { const ten=p=>new Set((p.hist||[]).filter(h=>h.lvl==='1군'&&h.t===G.user).map(h=>h.y)).size; /* 선수가 먼저 은퇴 의사를 밝힌다(사용자 11-11): 우리 구단 1군 3시즌 이상 뛴 선수, 많아야 3명 */
@@ -189,7 +203,7 @@ function aiExtWant(t,p,ytf,d0,years){ const ps=domestic(t.id).filter(q=>!q.ys), 
 function aiExtensions(all){ const done=[];
   for(const t of G.teams){ if(t.id===ME()||t.cash<-3000)continue; let room=capOf(G.year+1)*(t.mode==='contend'?1.0:.96)*aiCapMul(t)-capPay(t.id); let n=0;
     const C=all.filter(p=>p.team===t.id&&!p.foreign&&!p.ys&&!p.extNext&&!p.faC&&!p.ext&&p.age<=33&&ovr(p)>=56&&faSvc(p)-(p.svc||0)<=1&&faSvc(p)-(p.svc||0)>=0).sort((a,b)=>ovr(b)-ovr(a));
-    const pl=planOf(t); for(const p of C){ if(n>=2)break; if(pl==='build'&&p.age>=29)continue; /* 유망주 수집 구단은 젊은 핵심만 묶는다 */ const ytf=faSvc(p)-(p.svc||0); const years=Math.max(extMinY(p),ovr(p)>=64&&p.age<=30?(R()<.5?6:5):ovr(p)>=60&&p.age<=30?5:p.age<=29?4:p.age<=32?3:2); /* 프랜차이즈 스타는 비FA 장기계약(5~6년, 카페 11-13 dddddd). 에이전트 최소 기간은 지킨다 */ const d0=round5(Math.min(faTop(),Math.max(extFloor(p),extDemand(p,years)*(hasAgent(p)?agExtMul(p,t.id):1)))); /* 감액 한도는 AI 구단도 같다(제보 11-17) */
+    const pl=planOf(t); for(const p of C){ if(n>=2)break; if(pl==='build'&&p.age>=29)continue; /* 유망주 수집 구단은 젊은 핵심만 묶는다 */ const ytf=faSvc(p)-(p.svc||0); const years=Math.max(extMinY(p),ovr(p)>=64&&p.age<=30?(R()<.5?6:5):ovr(p)>=60&&p.age<=30?5:p.age<=29?4:p.age<=32?3:2); /* 프랜차이즈 스타는 비FA 장기계약(5~6년, 카페 11-13 dddddd). 에이전트 최소 기간은 지킨다 */ const d0=round5(Math.min(faTop(),Math.max(extFloor(p,years),extDemand(p,years)*(hasAgent(p)?agExtMul(p,t.id):1)))); /* 감액 한도는 AI 구단도 같다(제보 11-17) */
       if(d0-p.sal>room||(pl==='tight'&&d0>=500))continue; R(); /* 예전 무작위 판정 자리: 난수 순서만 지킨다 */ if(!aiExtWant(t,p,ytf,d0,years))continue; /* AI 판단 2차(#5): 사람 단장처럼 핵심인지·FA 예상 몸값보다 싼지·계획으로 정한다 */
       const ng=aiExtNeg(p,t,years,room); if(!ng)continue; const d=ng.a; /* 사용자와 같은 판정·라운드로 협상(계약 2단계). 못 맞추면 묶지 않는다 */
       p.extNext={annual:d,years}; room-=d-p.sal; n++; if(hasAgent(p)){ agRelAdd(agentOf(p),3,`${p.name} 다년계약`,t.id); agDealAdd(p,t.id); agMemSet(agentOf(p),t.id,'ok',p.id); } /* 사용자 다년계약과 같은 친분·실적·기억 */ story(p,`비FA 다년계약 ${years}년 연 ${money(d)} (${tshort(t.id)})`,'move'); done.push({p,t,d,years}); } }
