@@ -19,7 +19,7 @@ function austOn(t){ return t&&t.aust&&sponSeason()<=t.aust.y1?t.aust:null; }
 function austTxt(a){ return a.d<0?`긴축 ${Math.round(-a.d*100)}% 감액`:a.d>0?`지원 ${Math.round(a.d*100)}% 증액`:'긴축'; }
 function fdOrder(){ return G.teams.map(t=>({id:t.id,v:fdCapOf(t.id)+hn('fdo'+G.year,t.id)*30})).sort((a,b)=>a.v-b.v).map(x=>x.id); }
 function fdStart(){ const ids=[]; for(const t of G.teams)t.cap=null; for(const p of Object.values(G.players)){ if(p.team==null||p.foreign||p.prospect||(p.joinY>G.year))continue; p.fdFrom=p.team; p.team=null; p.fdPool=true; delete p.role; ids.push(p.id); if(p.fsx==null)p.fsx=Math.round(clamp(N(0,4.5),-9,9)*10)/10; } /* fsx: 실전 감각(숨은 값). 기록에는 묻어나지만 툴을 보는 눈에는 안 보인다 */
-  G.lineup={}; const order=G.fdOrd&&G.fdOrd.length===G.teams.length?G.fdOrd:fdOrder(); delete G.fdOrd; const picks=[]; /* 구단 고르기 화면에서 정해 둔 순서가 있으면 그대로 */
+  G.lineup={}; const order=G.fdOrd&&G.fdOrd.length===G.teams.length?G.fdOrd:fdOrder(); delete G.fdOrd; if(G.dr1F&&G.dr1F.y===G.year&&!G.dr1F.ord)G.dr1F.ord=[...order]; /* 첫 시즌 신인 드래프트 순번은 이 순서의 역순(10_draft.js draftOrders). 이 규칙으로 시작한 새 게임만(G.dr1F) */ const picks=[]; /* 구단 고르기 화면에서 정해 둔 순서가 있으면 그대로 */
   for(let r=0;r<FD_ROUNDS;r++){ const seq=r%2&&!G.fdStraight?[...order].reverse():order; seq.forEach((tid,i)=>picks.push({rd:r+1,no:i+1,tid,pid:null})); }
   G.startY=G.year; G.fd={pool:ids,all:ids.slice(),order,picks,cur:0,done:false,y:G.year,open:false,man:FD_MAN};
   { for(let i=0;i<4;i++)scoutFindWeek(true); } /* 창단 때 찾은 후보도 소식 없이 외국인 시장에 '우리 스카우트 발굴'로 표시 */

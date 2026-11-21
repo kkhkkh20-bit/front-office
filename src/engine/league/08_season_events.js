@@ -273,7 +273,7 @@ function settlementCore(){
     ['홀드',top(pits,x=>x.h.hld,()=>true),x=>x.h.hld+'개'],
   ].filter(l=>l[1]).map(l=>({k:l[0],id:l[1].p.id,v:l[2](l[1]),nm:l[1].p.name,t:l[1].h.t??l[1].p.team}));
   const rank=order.findIndex(o=>o.tid===G.user)+1;
-  for(const [i,o] of order.entries()){const tid=o.tid,H=typeof clubChron==='function'?clubChron(tid):(G.chron||[]);if(H.some(x=>x.tid===tid&&x.y===y&&x.k==='season'))continue;const psr=ps.champ===tid?' · 한국시리즈 우승':ps.runner===tid?' · 한국시리즈 준우승':ps.poLose===tid?' · 플레이오프 진출':ps.spoLose===tid?' · 준플레이오프 진출':ps.wcLose===tid?' · 와일드카드 진출':'';chron('season',`${o.w}승 ${o.l}패${o.t?` ${o.t}무`:''} ${i+1}위${psr}`,null,tid);}
+  for(const [i,o] of order.entries()){const tid=o.tid,H=typeof clubChron==='function'?clubChron(tid):(G.chron||[]);if(H.some(x=>x.tid===tid&&x.y===y&&x.k==='season'))continue;const psr=ps.champ===tid?' · 한국시리즈 우승':ps.runner===tid?' · 한국시리즈 준우승':ps.poLose===tid?' · 플레이오프 진출':ps.spoLose===tid?' · 준플레이오프 진출':ps.wcLose===tid?' · 와일드카드 진출':'';const fr=kboFinalRank({order,champ:ps.champ,runner:ps.runner},tid); /* KBO 최종 순위: 한국시리즈 우승 1위·준우승 2위(카페 11-21) */ chron('season',`${o.w}승 ${o.l}패${o.t?` ${o.t}무`:''} ${fr&&fr!==i+1?`정규시즌 ${i+1}위${psr} · 최종 ${fr}위`:`${i+1}위${psr}`}`,null,tid);}
   try{ if(!G.unemp&&typeof teleEv==='function')teleEv('season_end',{rank,champ:ps.champ===G.user?1:0,ps:P.seeds&&P.seeds.includes(G.user)?1:0,trust:team(G.user).trust}); }catch(e){}
   try{ franchiseCheck(); }catch(e){}
   try{ if(!G.unemp)seasonReview(y); }catch(e){}

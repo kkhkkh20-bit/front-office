@@ -37,7 +37,7 @@ function miniStand(){
   const rkS=[]; order.forEach((o,i)=>rkS.push(live&&i&&tieOf(order[i-1],o)?rkS[i-1]:i+1)); /* 승패가 같으면 같은 순위(표의 순서는 상대 전적 등 동률 기준) */
   const nTop=live?order.filter(o=>tieOf(order[0],o)).length:1;
   const rows=order.map((o,i)=>{ const l=l10Of(o.tid); return `<tr class="${o.tid===G.user?'me':''}${i===4?' cut':''}"><td class="rk">${rkS[i]}</td><td><button class="lnk tname" data-a="lteamGo" data-v="${o.tid}">${badge(o.tid,18)}${tshort(o.tid)}</button></td><td class="num">${wlStr(o)}</td><td class="num">${i?(tieOf(order[i-1],o)&&gbOf(top,o)===0?'동률':gbStr(gbOf(top,o))):(tieOf(o,order[1])?'동률':'-')}</td>${hasTl?`${nar?'':`<td class="num">${l.n?wlStr(l):'-'}</td>`}<td>${strkPill(o.tid)}</td>`:''}${od?`<td class="num ppc">${pct((od.find(x=>x.tid===o.tid)||{}).ps)}</td>`:''}</tr>`; }).join('');
-  return `<section class="card"><div class="row between"><h2 class="sec">${live?'현재 순위':`${y} 최종 순위`}</h2><button class="btn small" data-a="go" data-v="league:stand">순위</button></div>
+  return `<section class="card"><div class="row between"><h2 class="sec">${live?'현재 순위':`${y} 정규시즌 순위`}</h2><button class="btn small" data-a="go" data-v="league:stand">순위</button></div>
     <div class="tw"><table class="mst"><thead><tr><th></th><th>구단</th><th>승-패-무</th><th>차</th>${hasTl?`${nar?'':'<th>최근10</th>'}<th>연속</th>`:''}${od?'<th>가을야구</th>':''}</tr></thead><tbody>${rows}</tbody></table></div>
     ${nTop>1?`<p class="small"><b>공동 선두</b> ${nTop===2?`${esc(tshort(order[0].tid))}·${esc(tshort(order[1].tid))}`:`${esc(tshort(order[0].tid))} 등 ${nTop}개 구단 공동 선두`} · 승패가 같아 같은 순위입니다(표의 순서는 상대 전적 기준).</p>`:''}<p class="small muted">점선 위 5개 팀이 가을야구에 나갑니다.${od?' 가을야구는 남은 일정을 모의 진행한 진출 확률입니다.':''}</p></section>`;
 }

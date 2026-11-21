@@ -22,7 +22,7 @@ function contractMoneyValid(){
 function contractMoneyDraft(scope){
   if(scope==='ngt')return UI.ngt?.T?{draft:UI.ngt.T,fields:['annual','bonus','opt']}:null;
   const draft=UI.fo,p=draft&&G.players[draft.id];if(!p)return null;
-  const top=draft.re&&Number.isFinite(p.newSal)?Math.round(p.newSal*2):foCap(p); /* 재계약 기준액이 없으면 NaN 상한으로 검증이 통째로 빠졌다 */
+  const top=draft.re&&Number.isFinite(p.newSal)?Math.round(p.newSal*2):foSlotRun(p,()=>foCap(p)); /* 재계약 기준액이 없으면 NaN 상한으로 검증이 통째로 빠졌다 */
   return {draft,fields:['g','i'],top};
 }
 /* 한 범위(ngt·fo)의 금액 칸을 모두 같이 읽는다. 외국인은 보장+인센티브 합계가 상한 안이어야 해서,

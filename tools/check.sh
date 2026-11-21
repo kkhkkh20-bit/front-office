@@ -26,6 +26,7 @@ done
 END=2029; [ "${QUICK:-0}" = "1" ] && END=2027
 step "상대 트레이드 제안·투구폼 저장"; node tools/check-offer-review.cjs || fail=1
 step "첫 접속·초기 파일 분리"; node tools/check-startup.cjs || fail=1
+step "새 게임 구단 고르기: Worker로 리그 만들기·구단/순번 순서·같은 세계(11-21)"; node tools/check-fd-setup-1121.cjs || fail=1
 step "계속·날짜 표시·스카우트 위임"; node tools/check-continue.cjs || fail=1
 step "동기·분할 진행 결과 일치"; node tools/check-advance-steps.cjs || fail=1
 step "캘린더 기간·실제 진행·중도 중단"; node tools/check-calendar-progress.cjs || fail=1
@@ -88,6 +89,7 @@ step "홈 카드·반응형·페이지"; node tools/check-home-fit.cjs || fail=1
 step "터치 기기·날짜 효과·실제 조작"; node tools/check-touch.cjs || fail=1
 step "선수 카드·모바일 읽기·검색 공간·파일 불러오기"; node tools/check-experience.cjs || fail=1
 step "저장 실패 뒤 다시 저장·보조 저장소 위치 표시"; node tools/check-save-failure.cjs || fail=1
+step "본문 없는 슬롯 삭제·덮어쓰기·되살리기, 큰 저장 여러 개(카페 11-21)"; node tools/check-save-orphan-1121.cjs || fail=1
 step "백업 가져오기·슬롯 전환·itch 이전"; node tools/check-save-import.cjs || fail=1
 step "다년계약 협상 연도별 지출 줄"; node tools/check-contract-cash-ui.cjs || fail=1
 step "기기 옮기기(코드로 저장 옮기기) 화면 왕복"; node tools/check-save-transfer-ui.cjs || fail=1
@@ -120,6 +122,7 @@ step "사이트 배포·파일 크기·3D 재시도"; node tools/check-site.cjs 
 step "인게임 동작·이름·수비·전광판"; node tools/check-gameplay.cjs || fail=1
 step "3D 경기장·동작·오프라인"; node tools/check-match3d.cjs || fail=1
 step "계약 금액 직접 입력"; node tools/check-contract-input.cjs || fail=1
+step "계약 조항 화면(포스팅 허용·트레이드 승계)"; node tools/check-contract-clauses-1121.cjs || fail=1
 step "3D 상태·공 연결·메모리"; node tools/check-match3d-state.cjs || fail=1
 step "3D 플레이 리뷰·시선·릴리스"; node tools/check-match3d-review.cjs || fail=1
 step "공별 중계·투구판"; node tools/check-pitches.cjs || fail=1
@@ -132,6 +135,7 @@ step "카페 11-19: 소식함 보낸이·읽지 않음 필터, 아마추어 전 
 step "카페 11-19: 단장 일정 줄마다 취소·시즌 끝까지·매주 자동 잡기·관심 선수 학교"; node tools/check-calendar-plans-1119.cjs || fail=1
 step "카페 11-19: 신인 드래프트 화면(건너뛰기 확인 창·안내 글·머리글 배경·집중 모드)"; node tools/check-draft-screen-1119.cjs || fail=1
 step "카페 11-21: 신인 드래프트 후보 표 현재 능력 추정"; node tools/check-draft-cur-1121.cjs || fail=1
+step "카페 11-21: 아시아쿼터 후보 외국인 슬롯 영입 선택(390·1366)"; node tools/check-asia-slot-1121-ui.cjs || fail=1
 step "직원 카드·관계·희망 보직"; node tools/check-staff.cjs || fail=1
 step "결재 키 입력·상세 복귀 리뷰"; node tools/check-review.cjs || fail=1
 step "모든 상세 화면 상단바"; node tools/check-topbar.cjs || fail=1

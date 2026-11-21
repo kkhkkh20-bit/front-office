@@ -31,7 +31,7 @@ const QUICK=process.env.QUICK==='1';
     if(d){ if(d.mode!=='CSS1Compat')add('문서','표준 모드가 아님(doctype 없음)'); if(!/utf-8/i.test(d.cs))add('문서','문자셋이 UTF-8이 아님: '+d.cs); if(!d.vp)add('문서','viewport 메타가 없어 휴대폰에서 PC 화면으로 보임'); if(W<600&&d.w>W+20)add('문서',`휴대폰 폭 ${W}인데 화면 폭이 ${d.w}`); } }
   /* 2) 새 게임: 실제 버튼으로 */
   where='구단 고르기'; try{ await pg.click('[data-a="tsGo"][data-v="mode"]',{timeout:60000}); await pg.waitForTimeout(300); await pg.click('[data-a="smode"][data-v="fd"]',{timeout:120000}); /* 시작 방식 화면에서 리그를 미리 만든다(수 초 동안 화면이 멈춤) */ await pg.waitForTimeout(300); await blank(); await pg.click('[data-a="fdPk"][data-v="5"]',{timeout:3000}); await pg.waitForTimeout(200); await pg.click('[data-a="start"]',{timeout:3000}); await pg.waitForTimeout(300);
-    where='단장 소개'; await blank(); await pg.fill('#gp-name','점검단장'); await pg.click('[data-a="gpStart"]'); await pg.waitForTimeout(600); }catch(e){ add('진행 실패',e.message); }
+    where='단장 소개'; await blank(); await pg.fill('#gp-name','점검단장'); await pg.click('[data-a="gpStart"]'); await pg.waitForFunction(()=>!UI.title,null,{timeout:300000}); /* 11-21: 리그는 Worker에서 만들고, 먼저 누른 시작은 다 만든 뒤 이어진다 */ await pg.waitForTimeout(600); }catch(e){ add('진행 실패',e.message); }
   /* itch 껍데기에서 옛 저장 옮겨 오기: 저장이 없을 때 itch 주소에서 온 저장만 받는다(다른 주소·이미 저장이 있으면 무시) */
   { where='옛 저장 옮겨 오기'; const r=await ev(()=>{ const keep={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); keep[k]=localStorage.getItem(k); } localStorage.clear();
       const BODY=packG(); /* 읽을 수 없는 본문은 옮기지 않으므로(검수 11-09zr #18) 실제 저장 본문으로 시험한다 */ const items={[META]:JSON.stringify({active:1,slots:{1:{tid:3,name:'점검',date:'x',y:2027,at:1}}}),[slotKey(1)]:BODY};
@@ -161,7 +161,7 @@ const QUICK=process.env.QUICK==='1';
     if(!r)return; if(!r.hr||!r.rbi)add('기록 순위',`규정 타석 미달 ${r.name}이(가) 홈런${r.hr?'':'·'}${r.rbi?'':'타점'} 정렬에 안 나옴`); if(r.ops)add('기록 순위',`규정 타석 미달 ${r.name}이(가) OPS 정렬(규정 이상)에 나옴`); };
   /* 신인 드래프트(드래프트 시즌): 홈 타일과 드래프트 화면에 남은 날과 우리 1라운드 순위(지난 시즌 역순)가 보여야 한다. 드래프트 화면이 현재 순위로 계산하던 문제 */
   const draftCheck=async label=>{ where=`${label} · 신인 드래프트 안내`;
-    const r=await ev(()=>{ if(!(G.day>=KD(3,1)&&G.day<G.cal.draft)||G.unemp)return null; const h=[...G.history].reverse().find(x=>x.y<G.year); const n=[...h.order].reverse().findIndex(o=>o.tid===G.user)+1;
+    const r=await ev(()=>{ if(!(G.day>=KD(3,1)&&G.day<G.cal.draft)||G.unemp)return null; const h=[...G.history].reverse().find(x=>x.y<G.year); const F=G.dr1F&&G.dr1F.y===G.year&&Array.isArray(G.dr1F.ord)?G.dr1F.ord:null; const n=F?G.teams.length-F.indexOf(G.user):[...h.order].reverse().findIndex(o=>o.tid===G.user)+1; /* 11-21: 예전엔 지난 시즌 순위의 역순만. 창단 게임 첫 시즌은 창단 지명 순번의 역순(창단 k순위 → 신인 n+1-k순위) */
       closeSheets(); A.tab('home'); const tl=[...document.querySelectorAll('#app .dtl')].map(x=>x.innerText).find(t=>t.includes('신인 드래프트'))||'';
       UI.it=Object.assign(UI.it||{},{dr:'now'}); A.go('transfer:draft'); const hd=(document.querySelector('#app .dhead')||{}).innerText||''; return {n,tl,hd}; });
     if(!r)return; if(r.tl&&!r.tl.includes('1라운드 '+r.n+'순위'))add('신인 드래프트',`홈 타일에 '1라운드 ${r.n}순위' 없음: ${r.tl.replace(/\n/g,' ')}`); /* PC 홈(구단 현황)에는 타일이 없다(11-06 개편): 타일이 있을 때만 본다 */if(!r.hd.includes('1라운드 '+r.n+'순위'))add('신인 드래프트',`드래프트 화면에 '1라운드 ${r.n}순위' 없음`); };

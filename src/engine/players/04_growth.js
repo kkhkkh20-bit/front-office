@@ -11,6 +11,21 @@ const VET_SKILL_AGE=38, AGE_ELITE_O=50, AGE_ELITE_F=.6;
 const AGE_DECL_K=.4, AGE_PHYS_K=.16, AGE_SLUMP_F=1/3, PEAK_MU=.3, POT_TIDY_PEAK=2;
 const DT={norm:{l:'정상 성장형',grow:28,peak:31,fall:33},early:{l:'조기 완성형',grow:25,peak:29,fall:31},late:{l:'대기만성형',grow:30,peak:33,fall:35},stall:{l:'정체형',grow:26,peak:30,fall:32},vet:{l:'기술형 베테랑',grow:28,peak:33,fall:35}}; /* KBO 전성기는 29세 전후부터: 모든 유형을 2년 늦췄다(사용자 11-07) */
 const PHYS={vit:.9,con:.1,pow:.5,eye:-.3,spd:.9,def:.5,stf:.6,ctl:-.2,sta:.7}; // 나이 들 때 신체 의존도(높을수록 먼저 떨어짐)
+/* 카페 11-21 노장 체력 노화(FC서울: "37세 투수가 체력 90대는 말이 안 된다", 구단주: 피지컬 쪽 감소가 좀 심해야 하고 정신적인 것은 덜하고, 전성기 27~33·신체 하락은 33세부터 완만히, 35~36세부터 가파르게).
+   능력을 신체 몫(AGE_PW, 1=순수 신체)으로 나눈다. 투수 체력(sta)·주력(spd)·타자 체력(vit) 1, 구위(stf, 구속) .7, 장타력(pow) .5, 수비(def, 범위·송구) .4, 컨택(con) .2, 선구안(eye)·제구(ctl) 0.
+   1) 신체 노화: 유형과 무관하게 몸 나이(그해 뛸 나이 a1)로 정한다. agePhys(a1)×신체 몫만큼 깎는다(33~35세 완만, 36세부터 가파르게). 구속 보정(velo)도 같은 곡선으로 줄어든다.
+   2) 정신·기술 노화: 하락 구간의 공통 하락(base)을 신체 몫이 작을수록 덜 받는다(제구·선구안 0.5배·컨택 0.6배). 예전 PHYS 식(제구·선구안 소폭 가산)은 이 식으로 바꿨다.
+   3) 나이 천장: 순수 신체 능력(몫 1)은 agePhysCap(a1)을 넘으면 넘친 몫을 더 깎는다(한 해 최대 AGE_CAP_STEP, 예전 저장의 노장이 한 번에 무너지지 않게). 37세 천장 68(화면 약 88).
+   엘리트 완만 하락(AGE_ELITE_F)은 기술 몫에만 준다(기술은 엘리트로 남고 몸은 똑같이 늙는다). 모든 구단·모든 선수 같은 식이고 난수를 더 쓰지 않는다.
+   새 게임 세계를 만드는 동안(WORLD_BUILD)은 예전 식 그대로라 시작 세계가 main과 같다. 예전 저장은 지금 능력을 건드리지 않고 다음 해 넘김(develop)부터 새 식을 탄다 */
+const AGE_PW={sta:1,spd:1,vit:1,stf:.7,pow:.5,def:.4,con:.2,eye:0,ctl:0}, AGE_PH0=33, AGE_MENT_F=.5, AGE_CAP_PULL=1, AGE_CAP_STEP=4, AGE_VELO_K=.25;
+/* 카페 11-21 후속(구단주: 노장을 좀 더 늘려도 된다. 멘탈·체력 좋고 기술로 사는 선수가 살아남는다): 멘탈 점수 ageMent(프로의식, 예민도 13 초과는 감점, -1~1)가
+   신체 노화를 ±40%(AGE_MENT_PH) 조절하고, 좋은 멘탈은 36세 이후 기울기를 최대 30%(AGE_MENT_SLOPE) 낮추며, 기술 몫의 공통 하락 완화도 최대 +0.2(AGE_MENT_SK) 키운다. 나이 천장은 그대로(37세 체력 90대는 여전히 드물다) */
+const AGE_MENT_PH=.4, AGE_MENT_SLOPE=.3, AGE_MENT_SK=.2, AGE_SLOPE36=.6;
+function ageMent(p){ if(!p)return 0; initPers(p); const pr=p.pers.pro??10, tp=p.pers.temp??10; return clamp((pr-10)/8-Math.max(0,tp-13)*.05,-1,1); }
+const agePhys=(a,m=0)=>a<AGE_PH0?0:a<=35?.45*(a-AGE_PH0+1):1.35+AGE_SLOPE36*(1-AGE_MENT_SLOPE*Math.max(0,m))*(a-35); /* 보통 멘탈: 33세 .45 · 34 .9 · 35 1.35 · 36 1.95 · 37 2.55 · 38 3.15 · 40 4.35(원래 능력 단위, 한 해). 후속(노장을 더 남긴다): 36세 이후 기울기 1.0→0.6(37세 체력 90대는 나이 천장이 막는다), 장타 신체 몫 .6→.5·수비 .5→.4 */
+const agePhysCap=a=>a<=34?80:80-4*(a-34); /* 35세 76 · 36 72 · 37 68 · 38 64 · 39 60 · 40 56 */
+const ageNew=()=>!(typeof WORLD_BUILD!=='undefined'&&WORLD_BUILD>0);
 function rollDT(){ const x=R(); return x<.52?'norm':x<.64?'early':x<.76?'late':x<.89?'stall':'vet'; }
 function playShare(p){ // 지난 시즌 출전 비중: 1군은 그대로, 2군는 60%만 인정
   const y=G.year; const a=seasonTotal(p,y,'1군'), f=seasonTotal(p,y,'퓨처스'); const fw=.6+facAiFut(p.team); /* 모든 구단 같은 식(우리만 +0.1이던 비대칭, 사용자 11-13) */ /* 2군 구장이 좋을수록 2군 출전을 더 인정 */
@@ -102,10 +117,11 @@ function develop(p){
   if(!p.foreign&&p.team!=null&&p.lastFA==null&&p.svc===faSvc(p)-1&&age>=23&&age<=33&&age>T.grow)base+=rnd(.4,1.8)*play;
   const tc=svc?(delete p.trD,null):typeof trnCost==='function'?trnCost(p):null; /* 복무 중 겨울에는 입대 전 집중 훈련 비용을 매기지 않는다(검수 11-09zy) */ /* 훈련 방향 비용: 한 항목에 집중한 만큼 다른 항목의 성장 기회가 준다 */
   const stam0=(p.isP?p.r.sta:p.r.vit)??50; initPers(p); const agK=clamp(1-(stam0-50)*.012-((p.pers.pro??10)-10)*.025,.7,1.4); /* 노화 하락 폭: 체력이 높고 프로의식이 강하면 덜 떨어진다(사용자 11-08). 부상 후유증 하락은 따로(injury) */
+  const AN=ageNew(), a1=age+1, pw=k=>AGE_PW[k]??.5, am=ageMent(p), phK=clamp(1-am*AGE_MENT_PH,.6,1.4); /* 카페 11-21: 신체 노화는 멘탈(프로의식·예민도)만 본다(체력이 높다고 체력이 덜 늙지 않는다). 후속: ±25%→±40% */
   for(const k in p.r){
-    let dk=base+N(0,(k==='eye'||k==='ctl'?.6:1));
+    let dk=base+N(0,(k==='eye'||k==='ctl'?.6:1)), dP=0;
     if(age>=T.fall-1){ // 노화: 신체 능력이 먼저 떨어진다
-      dk-=PHYS[k]*(age-T.fall+2)*AGE_PHYS_K*fac.d;
+      if(AN){ if(base<0)dk-=base*(AGE_MENT_F+AGE_MENT_SK*Math.max(0,am))*(1-pw(k)); } else dk-=PHYS[k]*(age-T.fall+2)*AGE_PHYS_K*fac.d; /* 카페 11-21: 기술 몫은 공통 하락을 덜 받는다 */
       if(p.dt==='vet'&&PHYS[k]<=0&&age<=VET_SKILL_AGE)dk=Math.abs(dk)*.5+rnd(.3,1.3); // 기술형: 컨택·선구안·제구는 오히려 는다
     }
     if(dk>0&&club)dk*=coachToolMult(p,k);
@@ -113,7 +129,8 @@ function develop(p){
     if(svc==='현역')dk=Math.min(dk,0); /* 현역: 야구를 하지 못해 늘지 않는다(아래에서 조금씩 떨어진다) */
     if(tc&&tc[k]&&dk>0){dk=Math.max(0,dk-tc[k]);if(!p.devLog.reasons.includes('training-opportunity'))p.devLog.reasons.push('training-opportunity');} /* 성장 기회만 줄인다. 이미 퇴보 중인 능력은 더 깎지 않는다. */
     if(dk<0&&age>=T.fall-1&&svc!=='현역'){dk*=agK*(age>=34&&o>=AGE_ELITE_O?AGE_ELITE_F:1);if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging');}
-    if(dk<0&&age>=T.fall-1&&svc!=='현역'){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
+    if(AN&&svc!=='현역'){ dP=-pw(k)*agePhys(a1,am)*fac.d*phK; if(pw(k)>=1){ const cap=agePhysCap(a1), v=p.r[k]+dk+dP; if(v>cap)dP-=Math.min(AGE_CAP_STEP,(v-cap)*AGE_CAP_PULL); } if(dP<0){ dk+=dP; if(!p.devLog.reasons.includes('aging'))p.devLog.reasons.push('aging'); } } /* 카페 11-21 신체 노화·나이 천장(엘리트 완만 하락 없음) */
+    if(dk<0&&(age>=T.fall-1||dP<0)&&svc!=='현역'){ const h=dk*.5; dk-=h; (p.declP=p.declP||{})[k]=(p.declP[k]||0)+h; } /* 노화 하락은 절반만 새해에, 나머지는 6월 1일에: 겨울에 영입한 베테랑이 계약 직후 한꺼번에 무너지지 않게(커뮤니티 피드백 11-08) */
     p.r[k]=clamp(p.r[k]+dk,20,80);
   }
   if(svc==='현역')p.devLog.reasons.push('military');
@@ -127,7 +144,7 @@ function develop(p){
   // 성장 구간이 끝나면 터지지 않은 잠재력은 사라진다
   if(age>=T.grow)p.pot=Math.min(p.pot,no+Math.max(0,(T.grow+3-age))*1.5+(age>T.grow?POT_TIDY_PEAK:1)+(T.vl?2:0)+(p.gcar||0)+(p.potUp&&p.potUp.y===G.year?p.potUp.v:0)); /* 올해 성적 보상으로 오른 잠재력(65_cur_eval potPerfSeason·potIntlUp)은 이번 정리에서 지켜 준다 */ /* 상한에 잘려 넘겨 둔 몫만큼은 남긴다 */
   p.pot=clamp(Math.max(p.pot,no),20,80);if(p.pot<potBefore)p.devLog.reasons.push('potential-reassessment');
-  if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0);
+  if(p.isP&&base>0&&svc!=='현역')p.velo+=N(.2,.4); if(ageNew()){ if(svc!=='현역')p.velo-=agePhys(age+1,ageMent(p))*AGE_VELO_K*fac.d+(age>=T.fall&&p.dt==='vet'?.2:0); } else if(age>=T.fall)p.velo-=.4+(p.dt==='vet'?.2:0); /* 카페 11-21: 구속 보정도 몸 나이 곡선(33세 -0.1·36세 -0.6·38세 -1.1km/h, 구위 하락분과 합쳐 35세 약 -1.3·37세 약 -2.3km/h) */
   (p.oh=p.oh||[]).push({y:G.year,o:Math.round(no)}); if(p.oh.length>12)p.oh.shift();
   p.age++;
 }

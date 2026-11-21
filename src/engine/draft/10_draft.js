@@ -226,10 +226,12 @@ function draftClubLeave(old,rehire){ draftClubInit();
   G.shortlist=n?n.shortlist:[]; G.dmemo=n?n.dmemo:{}; G.dplan=n?n.dplan:null; G.drestPre=n?n.drestPre:null; G.dbSort=draftBoardSortState(n&&n.dbSort,G.user);
   for(const p of Object.values(G.players)){ delete p.rchkA; if(n&&n.rchkA&&n.rchkA[p.id])p.rchkA=n.rchkA[p.id]; }
   if(n)delete T[G.user]; }
-function draftOrders(){ draftClubInit(); const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid); for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
-  if(G.dr1&&G.dr1.y===G.year&&order.includes(G.dr1.tid)){ const i=order.indexOf(G.dr1.tid); order.splice(i,1); order.splice(clamp(G.dr1.slot-1,0,order.length),0,G.dr1.tid); } /* 1년차 신인 드래프트 순번을 새 게임에서 골랐으면 첫 시즌만 그 자리(오른발고니 11-11) */
+function draftOrders(){ draftClubInit(); const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; let order=kboFinalOrder(h).reverse().map(o=>o.tid??o); /* KBO: 지난 시즌 최종 순위의 역순(한국시리즈 우승팀이 마지막, 준우승팀이 그 앞. 2018 정규 2위 SK 우승 → 2020 2차 지명 10번째, 카페 11-21). 옛 저장도 champ·runner로 계산 */ for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
+  if(G.dr1F&&G.dr1F.y===G.year&&Array.isArray(G.dr1F.ord)){ const o=[...G.dr1F.ord].reverse().filter(t=>order.includes(t)); order=[...order.filter(t=>!o.includes(t)),...o]; } /* 창단 게임 첫 시즌 신인 드래프트: 창단 지명 순서의 역순(창단 1순위 → 신인 10순위). 모든 구단 같은 규칙(구단주 11-21: 1년차 순번을 공짜로 고르면 다 1순위를 골랐다) */
   const pen=G.teams.filter(t=>t.pickPen===G.year&&order.includes(t.id)).map(t=>t.id);
   return {r1:penOrder(order,pen),r2:order,pen,y:h.y}; }
+/* 올해 성적으로 본 다음 드래프트 순서 어림(지명권 거래 예상 순번): 지금 순위의 역순, 한국시리즈가 끝났으면 KBO 최종 순위의 역순(카페 11-21). 난수 없음 */
+function draftBaseOrder(){ const st=standingsNow(), P=G.ps; return (P&&P.done&&P.champ!=null&&!(Number.isInteger(P.y)&&P.y!==G.year)?kboFinalOrder({order:st,champ:P.champ,runner:P.runner}):st).map(x=>x.tid).reverse(); }
 /* 1라운드 제재 반영 순서: 제재 구단은 원래 순번에서 9칸 아래 자리에 둔다. 여러 구단이 함께 받아도 서로 밀어 올리지 않게 자리를 먼저 잡고 나머지를 순서대로 채운다(검수 11-07). 지명권 예상 순번도 같은 식(검수 11-08d) */
 function penOrder(order,pen){ const n=order.length; pen=pen.filter(t=>order.includes(t)).sort((a,b)=>order.indexOf(b)-order.indexOf(a)); const slot=new Array(n).fill(null);
   for(const t of pen){ let j=Math.min(n-1,order.indexOf(t)+9); while(j<n&&slot[j]!=null)j++; if(j>=n){ j=n-1; while(slot[j]!=null)j--; } slot[j]=t; }

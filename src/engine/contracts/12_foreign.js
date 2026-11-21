@@ -230,12 +230,25 @@ function fAiEst(tid,q){ if(q.team!=null||!q.foreign){ const sd=(team(tid)||{}).s
 /* 이 구단이 노리는 후보 상위 3명: 계약할 수 있는 후보만(보류권·총액 한도·교체 기준), 우리와 협상 중인 다른 후보는 뺀다. AI 영입·경쟁 구단·관심 집계가 같은 목록을 쓴다(검수 11-09zl: 계약 불가 후보가 상위 칸을 차지) */
 function fTop3(tid,nd,q){ const L=(G.fmarket||[]).map(id=>G.players[id]).filter(x=>x&&x.team==null&&(x===q||!foHeld(x))&&fKnows(tid,x)&&x.foreign===nd.kind&&(nd.isP==null||x.isP===nd.isP)&&(!nd.up||fAiEst(tid,x)>=nd.upO+6)).sort((a,b)=>fScoreBy(tid,b)-fScoreBy(tid,a));
   const out=[]; for(const x of L){ if(!foreignCheck(tid,x,nd.up))out.push(x); if(out.length>=3)break; } return out; }
-function aiForeignPick(tid){ const nd=fNeed(tid); return nd&&fTop3(tid,nd)[0]||null; }
+/* 아시아쿼터 후보를 일반 외국인 슬롯으로(카페 11-21 전자포): KBO 일반 외국인 슬롯은 국적 제한이 없어 아시아 선수도 일반 외국인으로 계약할 수 있다.
+   그러면 일반 외국인 규정(1인 상한·3명 총액·교체 2회)을 따르고 아시아쿼터 자리는 쓰지 않는다. 슬롯 종류는 p.foreign에 남기고(계약 뒤 '용병'), 아시아쿼터 대상이었음은 p.fAsia.
+   fAsYB(q,fn): 시장 후보 q를 일반 외국인으로 보고 fn을 돌린다. 계약하면 그대로 두고, 못 하면 원래(아시아쿼터·요구액)로 되돌린다. 난수 없음 */
+function fYBAsk(q){ const o=ovr(q)+hn('fyb',q.id)*3.5+(q.mlbG>=30?1.5:q.mlbG>0?.7:0); let a=fAsk(Object.assign({},q,{foreign:'용병'}),o); if(q.flaw)a=round5(a*.88); return Math.max(q.ask||0,a); } /* 신규 일반 외국인과 같은 몸값 식: 아시아쿼터 상한이 없어지니 요구액이 일반 시장 수준으로 오른다 */
+function fAsYB(q,fn){ if(!q||q.foreign!=='아시아'||q.team!=null)return fn(); const a0=q.ask; q.foreign='용병'; q.ask=fYBAsk(q); q._fyb=1;
+  try{ return fn(); } finally{ delete q._fyb; if(q.team!=null){ q.fAsia=1; try{ story(q,'아시아쿼터 대상 선수지만 일반 외국인 슬롯으로 계약(일반 외국인 규정 적용)','move'); }catch(e){} } else { q.foreign='아시아'; q.ask=a0; } } }
+/* AI(우리 위임 포함)도 같은 판단: 일반 외국인 자리를 채울 때 아시아쿼터 후보가 일반 슬롯 몸값으로도 일반 후보 1순위보다 확실히(점수 +F_YB_EDGE) 나으면 그 선수를 고른다. 새 게임 세계 생성 중에는 하지 않는다 */
+const F_YB_EDGE=5;
+function fAiYBPick(tid,nd,best){ if(WORLD_BUILD>0||!nd||nd.kind!=='용병'||!best||best.foreign!=='용병')return null; let top=null, ts=fScoreBy(tid,best)+F_YB_EDGE;
+  for(const id of G.fmarket||[]){ const x=G.players[id]; if(!x||x.team!=null||x.foreign!=='아시아'||foHeld(x)||!fKnows(tid,x)||(nd.isP!=null&&x.isP!==nd.isP))continue;
+    fAsYB(x,()=>{ if(nd.up&&fAiEst(tid,x)<nd.upO+6)return; const s=fScoreBy(tid,x); if(s>=ts&&!foreignCheck(tid,x,nd.up)){ top=x; ts=s; } }); }
+  return top; }
+const fAiYB=(tid,q)=>!!(q&&q.foreign==='아시아'&&q.team==null&&(fNeed(tid)||{}).kind==='용병'); /* aiForeignPick이 일반 자리에 고른 아시아쿼터 후보 */
+function aiForeignPick(tid){ const nd=fNeed(tid); const q=nd&&fTop3(tid,nd)[0]||null; return q&&fAiYBPick(tid,nd,q)||q; } /* 일반 외국인 자리: 아시아쿼터 후보가 확실히 나으면 일반 슬롯으로(카페 11-21). 일반 후보가 있을 때만 바꿔 난수 순서는 그대로 */
 function fInterest(q){ return !q||q.team!=null?0:foRivalTeams(q).length; } /* 보류권으로 다른 구단이 못 데려가는 선수는 관심도 0이라 몸값이 오르지 않는다 */
 function aiForeignSign(tid,q,why,T){ const c=q.fneg&&q.fneg.cut, nd=fNeed(tid); const up=c&&c.tid===tid?foUp(tid,q):nd&&nd.up&&fAiEst(tid,q)>=nd.upO+6?nd.up:null; /* 끼어들기를 일으킨 구단은 그때 바꾸려던 선수를 내보낸다(검수 11-09zl) */ if(up&&G.players[up]){ const w=G.players[up]; { const a0=q.ask; if(T)q.ask=T.g+T.i; const e=foreignCheck(tid,q,w.id); q.ask=a0; if(e)return e; } /* 교체 계약이 성립하는지(총액 한도 등) 먼저 보고 나서 기존 선수를 내보낸다(검수 11-06) */ releaseForeign(w.id); wire('외국인',`${tshort(tid)}, 외국인 ${w.name} 대신 ${q.name} 영입 추진`,{tid,ref:q.id}); } const err=T?signForeignT(tid,q.id,T.g,T.i):signForeign(tid,q.id); /* T: 경쟁 구단이 실제로 제시한 보장·인센티브(검수 11-05: 협상을 압박한 조건과 실제 계약이 달랐다) */ if(err)return err; if(fwatchOn(q.id)&&!G._foNegSign)mail('스카우트팀장',`관찰 후보 ${q.name}, ${tshort(tid)}와(과) 계약`,`관찰 명단에 있던 ${q.name}(${posLabel(q)})을(를) ${tname(tid)}이(가) ${T?`보장 ${money(T.g)}${T.i?` + 인센티브 ${money(T.i)}`:''}`:`연 ${money(q.sal)}`}에 먼저 데려갔습니다.${why||''}`,{kind:'외국인',acts:[{l:'외국인 시장',a:'go',v:'transfer:foreign'}]}); else if(ovr(q)>=60)wire('외국인',`${tshort(tid)}, 외국인 ${posLabel(q)} ${q.name} 영입 (${money(q.sal)})`,{tid,ref:q.id}); }
 /* 스토브리그·캠프 기간: 구단들이 하루하루 시장에서 데려간다. 인기 선수는 몸값이 오른다 */
 function aiForeignDaily(){ if(!foreignOpen()||period()==='season')return; const o=dobj(G.day); const pr=G.startY===G.year&&o.m===1?.45:o.m===1||o.m===2?.12:.06; /* 창단 첫 1월: 모든 구단이 외국인 선수단을 새로 꾸리므로 각 구단이 자기 판단으로 바로 움직인다(순번 없이). 평소 겨울은 띄엄띄엄 */
-  for(const t of G.teams){ if(t.id===ME()||!fNeed(t.id))continue; const q=aiForeignPick(t.id); if(q&&R()<pr&&!foCutIn(t.id,q)){ if(fwatchOn(q.id)&&!G.unemp){ const w=q.fwarn; if(!w||w.tid!==t.id||w.y!==G.year){ q.fwarn={tid:t.id,d:G.day,y:G.year}; stop('외국인',`${tname(t.id)}이(가) 우리가 관찰 중인 외국인 후보 ${q.name}(${posLabel(q)})과(와) 협상에 들어갔습니다. 3일쯤 뒤 계약할 것으로 보입니다. 잡으려면 외국인 시장에서 먼저 제안하세요.`); continue; } if(G.day-w.d<3)continue; } aiForeignSign(t.id,q); } } } /* 관찰 중인 후보: 다른 구단이 움직이면 먼저 알리고 3일 여유를 준다(커뮤니티 11-12: 관찰을 시키자마자 다음 날 다른 구단과 계약). 관찰한다고 AI가 서두르지는 않는다(해외 활성화 1-2) */
+  for(const t of G.teams){ if(t.id===ME()||!fNeed(t.id))continue; const q=aiForeignPick(t.id); if(q&&R()<pr){ const go=()=>{ if(foCutIn(t.id,q))return; if(fwatchOn(q.id)&&!G.unemp){ const w=q.fwarn; if(!w||w.tid!==t.id||w.y!==G.year){ q.fwarn={tid:t.id,d:G.day,y:G.year}; stop('외국인',`${tname(t.id)}이(가) 우리가 관찰 중인 외국인 후보 ${q.name}(${posLabel(q)})과(와) 협상에 들어갔습니다. 3일쯤 뒤 계약할 것으로 보입니다. 잡으려면 외국인 시장에서 먼저 제안하세요.`); return; } if(G.day-w.d<3)return; } aiForeignSign(t.id,q); }; if(fAiYB(t.id,q))fAsYB(q,go); else go(); } } } /* 관찰 중인 후보: 다른 구단이 움직이면 먼저 알리고 3일 여유를 준다(커뮤니티 11-12: 관찰을 시키자마자 다음 날 다른 구단과 계약). 관찰한다고 AI가 서두르지는 않는다(해외 활성화 1-2) */
 /* 트리플A 옵트아웃 후보(해외 활성화 2-2): 6월 1일~7월 10일 매주 2~3명. 실제로 MLB 경력 베테랑의 마이너 계약에는 6월 1일·7월 1일 옵트아웃이 흔하고(노사협약 XX(B) 선수는 6월 1일, 날짜는 계약마다 달라 불확실),
    KBO 시즌 중 교체 외국인이 이 무렵에 몰린다. 올해 트리플A 기록(p.now)을 그 주까지 채워서 낸다. 같은 시장이라 AI 교체 판단(aiForeignReview)도 같은 후보를 본다 */
 const F_OPT={d0:[6,1],d1:[7,10],max:24};
@@ -253,7 +266,7 @@ function fNewWeek(){ G.fmarket=G.fmarket||[]; const ag=G.fmarket.filter(id=>{ co
   return n; }
 function fBidWeek(){ try{ scoutFindWeek(); }catch(err){} if(!foreignOpen())return; fNewWeek(); rosterMemoOn(); try{ for(const id of (G.fmarket||[])){ const q=G.players[id]; if(!q||q.team!=null)continue; const n=fInterest(q); q.fint=n; if(q.ask0==null)q.ask0=q.ask; if(q.ask>foCap(q))q.ask=foCap(q); /* 요구액도 지금 제안 상한 안에서: 우리는 막히고 AI는 상한액으로 잘려 계약하던 차이(검수 11-08) */ const nn=new Set([...foRivalTeams(q),...fWatchers(q)]).size; /* 관찰 소문(사용자 11-17): 3주 넘게 지켜본 구단도 관심으로 친다. 우리 관찰·AI 관찰 같은 규칙 */ if(nn>=2&&q.ask<q.ask0*1.3)q.ask=round5(Math.min(q.ask*1.04,foCap(q))); /* 시즌 중 줄어든 신규 상한까지만(검수 11-08) */ } } finally { rosterMemoOff(); } } /* 시장 선수 관심도 평가는 구단 명단을 바꾸지 않는다: 명단 거르기를 한 번만(성능 11-18) */
 function aiForeignFill(tid){
-  { const q=aiForeignPick(tid); if(q){ aiForeignSign(tid,q); return; } }
+  { const q=aiForeignPick(tid); if(q){ if(fAiYB(tid,q))fAsYB(q,()=>aiForeignSign(tid,q)); else aiForeignSign(tid,q); return; } }
   const fs=foreignOf(tid); const yb=fs.filter(x=>x.foreign==='용병');
   if(yb.length<fMaxYB(tid)&&fReplLeft(tid)>0){ const needP=yb.filter(x=>x.isP).length<2, needB=yb.filter(x=>!x.isP).length<1;
     const want=needP?true:needB?false:R()<.6;
