@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "path_base": "assets/v24/game_events/",
+  "created": "2026-11-21",
+  "purpose": "In-game event illustration; no gameplay effects",
+  "assets": [
+    {
+      "id": "event_theme_day",
+      "title": "테마 데이",
+      "file": "event_theme_day.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 96600,
+      "sha256": "d11048075341af4627933e37b0465646aa8a0253964c118b98874c467afb5771",
+      "source": "exec-f71c5ac0-7164-4abc-ac92-1a7cc285fd32.png",
+      "source_kind": "Generated fictional documentary scene",
+      "encoding": "RGB WebP quality 84"
+    },
+    {
+      "id": "event_collab_uniform",
+      "title": "콜라보 유니폼",
+      "file": "event_collab_uniform.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 92808,
+      "sha256": "76a1b181ef8d8d32b97e9e0079b4d13ea18455c27baf556ca4eb768f77ce0cbd",
+      "source": "exec-f3639f8e-d837-4b43-b0f0-029fcd59d96c.png",
+      "source_kind": "Generated fictional documentary scene",
+      "encoding": "RGB WebP quality 84"
+    },
+    {
+      "id": "event_supporters",
+      "title": "서포터즈 모집",
+      "file": "event_supporters.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 108786,
+      "sha256": "85e467cc0cf40d296977420aed705a228119c98c3f3891775fa5dbf92b7d098f",
+      "source": "exec-8a53b557-6996-43b6-931d-4cc4714dd43c.png",
+      "source_kind": "Generated fictional documentary scene",
+      "encoding": "RGB WebP quality 84"
+    }
+  ]
+}

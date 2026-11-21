@@ -442,6 +442,7 @@
     ],
     "scene3d": [
       "src/scene3d/scene.mjs",
+      "src/scene3d/stadium.mjs",
       "src/scene3d/motion.mjs",
       "src/scene3d/athletic-motion.mjs",
       "src/scene3d/scoreboard.mjs",
