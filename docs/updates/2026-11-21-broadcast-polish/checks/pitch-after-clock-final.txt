@@ -1,0 +1,9 @@
+3D ready
+Render callback captured
+Clock installed
+Clock paused
+Sampling 1440 우
+Sampling 1440 좌
+Sampling 390 우
+Sampling 390 좌
+WebGL pitch: both throwing hands, desktop/portrait, bounded readability and unchanged game records passed

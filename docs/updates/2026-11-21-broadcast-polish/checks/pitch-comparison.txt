@@ -1,0 +1,10 @@
+16 WebGL samples: identical positions at equal timestamps, endpoints, camera, FOV and viewport.
+The first frame after mobile resize has asynchronous crowd culling; draw calls are not used as an invariant.
+1440px / 0ms: projected diameter 2.92 -> 2.92 CSS px
+1440px / 250ms: projected diameter 3.50 -> 3.50 CSS px
+1440px / 500ms: projected diameter 4.36 -> 4.36 CSS px
+1440px / 850ms: projected diameter 6.53 -> 6.53 CSS px
+390px / 0ms: projected diameter 1.43 -> 2.37 CSS px
+390px / 250ms: projected diameter 1.72 -> 2.75 CSS px
+390px / 500ms: projected diameter 2.14 -> 2.75 CSS px
+390px / 850ms: projected diameter 3.21 -> 3.21 CSS px

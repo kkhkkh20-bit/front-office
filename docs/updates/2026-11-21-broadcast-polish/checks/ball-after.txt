@@ -1,0 +1,4 @@
+PASS Portrait pitches have a readable minimum without enlarging already-readable desktop pitches
+PASS Visual scale stays bounded and hidden or legacy viewports retain the old size
+PASS Release and every pitch frame resize only the ball visual, not motion, contact, camera or draw count
+PASS Existing batted-ball scaling and ground lift remain unchanged

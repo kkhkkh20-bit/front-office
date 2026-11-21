@@ -2,6 +2,10 @@
 
 검토용이며 병합·배포하지 않았습니다. [화면 비교](preview.html) · [PC 기존](previews/pc-before.png) · [PC 개선](previews/pc-after.png) · [상세 기록](previews/pc-detail.png)
 
+| 기존 | 개선 |
+| --- | --- |
+| ![기존 PC](previews/pc-before.png) | ![개선 PC](previews/pc-after.png) |
+
 ## 변경
 
 - PC 마우스 환경의 3D 중계 선수 카드: 기본 높이 264 → 92px. 투수 경고가 있으면 128px. 마우스 또는 키보드 포커스로 기존 상세 카드가 펼쳐집니다. 터치 PC와 모바일 카드 방식은 유지합니다.
@@ -22,12 +26,12 @@
 
 ## 확인 결과
 
-- 수정 전 공 크기 3개, PC 기본 카드 2개 재현 검사 실패 → 수정 후 통과. [수정 전](checks/ball-before.log) / [수정 후](checks/ball-after.log), [카드 수정 전](checks/hud-before.log) / [수정 후](checks/hud-final.log).
-- 빌드 2종 및 정적 검사 통과. 엔진 산출물은 기준과 바이트 단위 동일합니다. [동일성](checks/engine-parity.log).
+- 수정 전 공 크기 3개, PC 기본 카드 2개 재현 검사 실패 → 수정 후 통과. [수정 전](checks/ball-before.txt) / [수정 후](checks/ball-after.txt), [카드 수정 전](checks/hud-before.txt) / [수정 후](checks/hud-final.txt).
+- 빌드 2종 및 정적 검사 통과. 엔진 산출물은 기준과 바이트 단위 동일합니다. [동일성](checks/engine-parity.txt).
 - PC 1440·1280, 모바일 390 세로·844 가로의 실제 Chromium 렌더링 통과. 카드 상세·투수 경고·선수 정보 복귀·숨김·경기 상태 불변과 페이지 오류를 확인했습니다.
-- 좌/우 투수 × PC/모바일 × 4시점, 실제 WebGL 투구 16장면 통과. [결과](checks/pitch-after-clock-final.log). 기존과 같은 시간의 공 좌표·출발/도착·카메라·FOV가 일치합니다. [수치 비교](checks/pitch-comparison.log).
-- 기존 모션·구종·시야 순수 검사 10/10, 중계 정보 626타석, 3D 상태·공 연결·메모리 검사 통과. [순수 검사](checks/scene-units.log), [중계 정보](checks/cast-info.log), [3D 상태](checks/3d-state.log).
-- 기존 휴대폰 2D/3D 세로·가로 상황판 20장면, PC/모바일 얼굴 지연 로딩·재생 유지 검사 통과. [상황판](checks/portrait-hud.log), [얼굴](checks/face-redraw.log).
+- 좌/우 투수 × PC/모바일 × 4시점, 실제 WebGL 투구 16장면 통과. [결과](checks/pitch-after-clock-final.txt). 기존과 같은 시간의 공 좌표·출발/도착·카메라·FOV가 일치합니다. [수치 비교](checks/pitch-comparison.txt).
+- 기존 모션·구종·시야 순수 검사 10/10, 중계 정보 626타석, 3D 상태·공 연결·메모리 검사 통과. [순수 검사](checks/scene-units.txt), [중계 정보](checks/cast-info.txt), [3D 상태](checks/3d-state.txt).
+- 기존 휴대폰 2D/3D 세로·가로 상황판 20장면, PC/모바일 얼굴 지연 로딩·재생 유지 검사 통과. [상황판](checks/portrait-hud.txt), [얼굴](checks/face-redraw.txt).
 - `QUICK=1 bash tools/check.sh` 실행 중. 종료 결과가 나오지 않았으므로 통과로 보고하지 않습니다.
 - 이 브랜치 전체 점검·장기 시즌 시뮬레이션은 미실행. 실제 휴대폰의 장시간 FPS·발열도 미검증입니다.
 
