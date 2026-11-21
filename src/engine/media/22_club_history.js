@@ -26,7 +26,7 @@ function addAward(p,label,tid){const aw=p.aw=p.aw||[],added=!aw.includes(label);
 /* 최근 소식과 영구 연대기를 분리한다. 화면 조회는 게임·난수·저장 상태를 바꾸지 않는다. */
 let _chronGame=null,_chronIds=null,_chronSources=null;
 const chronIdentity=x=>x.source?'s:'+x.tid+':'+x.source+(x.k==='rebrand'&&/^rebrand:\d+:\d+$/.test(x.source)?':'+JSON.stringify([x.d,x.t]):''):x.id?'i:'+x.id:'l:'+JSON.stringify([x.tid,x.y,x.d,x.k,x.t,x.ref??null]);
-/* KBO 최종 순위(카페 11-21): 한국시리즈 우승 1위, 준우승 2위, 나머지는 정규시즌 순서. h.order(정규시즌 순서)는 그대로 둔다(신인 드래프트는 정규시즌 역순).
+/* KBO 최종 순위(카페 11-21): 한국시리즈 우승 1위, 준우승 2위, 나머지는 정규시즌 순서. h.order(정규시즌 순서)는 그대로 저장하고, 신인·2차 드래프트 순서는 이 최종 순위의 역순(2018 SK 우승 → 2020 드래프트 10번째).
    옛 저장도 h.champ·h.runner만 있으면 읽을 때 계산한다(저장·난수 없음). 우승팀이 없는 해(시작용 2025시즌 등)는 정규시즌 순서 그대로 */
 function kboFinalOrder(h){const o=(h&&h.order)||[],id=x=>x&&typeof x==='object'?x.tid:x;if(!h||h.champ==null)return o.slice();const top=[h.champ,h.runner].filter(t=>t!=null&&o.some(x=>id(x)===t));return top.map(t=>o.find(x=>id(x)===t)).concat(o.filter(x=>!top.includes(id(x))));}
 function kboFinalRank(h,tid){const i=kboFinalOrder(h).findIndex(x=>(x&&typeof x==='object'?x.tid:x)===tid);return i<0?0:i+1;}

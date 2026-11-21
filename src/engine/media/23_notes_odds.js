@@ -86,7 +86,7 @@ function asstOpinion(tid,give,get,cash,pk){ // 우리 부단장 의견: 스카�
   return L.slice(0,3); }
 function draftPickOrder(){ // 드래프트 전: 실제 드래프트와 같은 기준(끝난 지난 시즌 순위의 역순, 경쟁균형세 벌칙 반영) 1라운드
   { const P=draftPlan(); if(P)return P.filter(k=>k.rd===1); } /* 지명권 거래 반영: 넘긴 순번은 받은 구단 차례(검수 11-06) */
-  const st=G.history.length?G.history[G.history.length-1].order:standingsNow(); const o1=[...st].reverse().map(o=>o.tid);
+  const st=G.history.length?kboFinalOrder(G.history[G.history.length-1]):standingsNow(); const o1=[...st].reverse().map(o=>o.tid??o); /* KBO 최종 순위의 역순(카페 11-21) */
   for(const t of G.teams){ if(t.pickPen!==G.year)continue; const i=o1.indexOf(t.id); if(i<0)continue; o1.splice(i,1); o1.splice(Math.min(o1.length,i+9),0,t.id); }
   return o1.map((tid,i)=>({tid,rd:1,no:i+1})); }
 /* 예상 지명(mockDraft)은 소문·확률로 바뀌었다(65_draft_odds.js, 스카우트 1단계). AI 실제 지명 함수는 쓰지 않는다 */

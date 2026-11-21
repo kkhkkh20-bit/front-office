@@ -18218,7 +18218,9 @@ function draftClubLeave(old,rehire){ draftClubInit();
   G.shortlist=n?n.shortlist:[]; G.dmemo=n?n.dmemo:{}; G.dplan=n?n.dplan:null; G.drestPre=n?n.drestPre:null; G.dbSort=draftBoardSortState(n&&n.dbSort,G.user);
   for(const p of Object.values(G.players)){ delete p.rchkA; if(n&&n.rchkA&&n.rchkA[p.id])p.rchkA=n.rchkA[p.id]; }
   if(n)delete T[G.user]; }
-function draftOrders(){ draftClubInit(); const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=[...h.order].reverse().map(o=>o.tid); for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
+/* 올해 성적으로 본 다음 드래프트 순서 어림(지명권 거래 예상 순번): 지금 순위의 역순, 한국시리즈가 끝났으면 KBO 최종 순위의 역순(카페 11-21). 난수 없음 */
+function draftBaseOrder(){ const st=standingsNow(), P=G.ps; return (P&&P.done&&P.champ!=null&&!(Number.isInteger(P.y)&&P.y!==G.year)?kboFinalOrder({order:st,champ:P.champ,runner:P.runner}):st).map(x=>x.tid).reverse(); }
+function draftOrders(){ draftClubInit(); const h=[...(G.history||[])].reverse().find(x=>x.y<G.year&&x.order); if(!h)return null; const order=kboFinalOrder(h).reverse().map(o=>o.tid??o); /* KBO: 지난 시즌 최종 순위의 역순(한국시리즈 우승팀이 마지막, 준우승팀이 그 앞. 2018 정규 2위 SK 우승 → 2020 2차 지명 10번째, 카페 11-21). 옛 저장도 champ·runner로 계산 */ for(const t of G.teams)if(!order.includes(t.id))order.unshift(t.id); /* 지난 시즌 기록이 없는 신생 구단은 첫 순번(89_league_expansion) */
   if(G.dr1&&G.dr1.y===G.year&&order.includes(G.dr1.tid)){ const i=order.indexOf(G.dr1.tid); order.splice(i,1); order.splice(clamp(G.dr1.slot-1,0,order.length),0,G.dr1.tid); } /* 1년차 신인 드래프트 순번을 새 게임에서 골랐으면 첫 시즌만 그 자리(오른발고니 11-11) */
   const pen=G.teams.filter(t=>t.pickPen===G.year&&order.includes(t.id)).map(t=>t.id);
   return {r1:penOrder(order,pen),r2:order,pen,y:h.y}; }
@@ -21146,7 +21148,7 @@ function addAward(p,label,tid){const aw=p.aw=p.aw||[],added=!aw.includes(label);
 /* 최근 소식과 영구 연대기를 분리한다. 화면 조회는 게임·난수·저장 상태를 바꾸지 않는다. */
 let _chronGame=null,_chronIds=null,_chronSources=null;
 const chronIdentity=x=>x.source?'s:'+x.tid+':'+x.source+(x.k==='rebrand'&&/^rebrand:\d+:\d+$/.test(x.source)?':'+JSON.stringify([x.d,x.t]):''):x.id?'i:'+x.id:'l:'+JSON.stringify([x.tid,x.y,x.d,x.k,x.t,x.ref??null]);
-/* KBO 최종 순위(카페 11-21): 한국시리즈 우승 1위, 준우승 2위, 나머지는 정규시즌 순서. h.order(정규시즌 순서)는 그대로 둔다(신인 드래프트는 정규시즌 역순).
+/* KBO 최종 순위(카페 11-21): 한국시리즈 우승 1위, 준우승 2위, 나머지는 정규시즌 순서. h.order(정규시즌 순서)는 그대로 저장하고, 신인·2차 드래프트 순서는 이 최종 순위의 역순(2018 SK 우승 → 2020 드래프트 10번째).
    옛 저장도 h.champ·h.runner만 있으면 읽을 때 계산한다(저장·난수 없음). 우승팀이 없는 해(시작용 2025시즌 등)는 정규시즌 순서 그대로 */
 function kboFinalOrder(h){const o=(h&&h.order)||[],id=x=>x&&typeof x==='object'?x.tid:x;if(!h||h.champ==null)return o.slice();const top=[h.champ,h.runner].filter(t=>t!=null&&o.some(x=>id(x)===t));return top.map(t=>o.find(x=>id(x)===t)).concat(o.filter(x=>!top.includes(id(x))));}
 function kboFinalRank(h,tid){const i=kboFinalOrder(h).findIndex(x=>(x&&typeof x==='object'?x.tid:x)===tid);return i<0?0:i+1;}
@@ -21711,7 +21713,7 @@ function asstOpinion(tid,give,get,cash,pk){ // 우리 부단장 의견: 스카�
   return L.slice(0,3); }
 function draftPickOrder(){ // 드래프트 전: 실제 드래프트와 같은 기준(끝난 지난 시즌 순위의 역순, 경쟁균형세 벌칙 반영) 1라운드
   { const P=draftPlan(); if(P)return P.filter(k=>k.rd===1); } /* 지명권 거래 반영: 넘긴 순번은 받은 구단 차례(검수 11-06) */
-  const st=G.history.length?G.history[G.history.length-1].order:standingsNow(); const o1=[...st].reverse().map(o=>o.tid);
+  const st=G.history.length?kboFinalOrder(G.history[G.history.length-1]):standingsNow(); const o1=[...st].reverse().map(o=>o.tid??o); /* KBO 최종 순위의 역순(카페 11-21) */
   for(const t of G.teams){ if(t.pickPen!==G.year)continue; const i=o1.indexOf(t.id); if(i<0)continue; o1.splice(i,1); o1.splice(Math.min(o1.length,i+9),0,t.id); }
   return o1.map((tid,i)=>({tid,rd:1,no:i+1})); }
 /* 예상 지명(mockDraft)은 소문·확률로 바뀌었다(65_draft_odds.js, 스카우트 1단계). AI 실제 지명 함수는 쓰지 않는다 */
@@ -36897,7 +36899,7 @@ const sdSubd=tid=>{ const S=G.sd2; return !!S&&(!!(S.subs&&S.subs[tid])||S.sub==
 function sdBackWhy(o){ if(Math.max(rosterN(o.from),rosterProj(o.from))>=ROSTER_MAX)return `다음 개막 예상 인원이 정원 ${ROSTER_MAX}명에 찼습니다. 선수를 정리한 뒤 복귀를 받으세요.`;
   const r=Math.round(o.fee/2); return spendable(o.from)<r?`반환금 ${money(r)}을(를) 낼 자금이 모자랍니다.`:''; }
 const sdBackAI=(p,o)=>!sdBackWhy(o)&&aiVal(team(o.from),p)>=0;
-function sdOpen(){ if(G.sd2&&G.sd2.y!==G.year){ const o=G.sd2; (G.sd2h=G.sd2h||{})[o.y]={y:o.y,stage:'done',done:o.done,seq:o.seq.filter(s=>s.pid)}; } /* 지난 회차는 지명 결과만 보관 */ const order=((G.last&&G.last.y===G.year&&G.last.order)||standingsNow()).map(x=>x.tid).reverse();
+function sdOpen(){ if(G.sd2&&G.sd2.y!==G.year){ const o=G.sd2; (G.sd2h=G.sd2h||{})[o.y]={y:o.y,stage:'done',done:o.done,seq:o.seq.filter(s=>s.pid)}; } /* 지난 회차는 지명 결과만 보관 */ const order=(G.last&&G.last.y===G.year&&G.last.order?kboFinalOrder({order:G.last.order,champ:G.last.ps&&G.last.ps.champ,runner:G.last.ps&&G.last.ps.runner}):standingsNow()).map(x=>x.tid).reverse(); /* 성적 역순 = KBO 최종 순위의 역순(카페 11-21) */
   const prot={}; for(const t of G.teams)if(t.id!==ME())prot[t.id]=sdProtAI(t.id);
   G.sd2={y:G.year,stage:'protect',exp:Math.max(dnum(G.year,...SD_DAY),G.day+5),order,prot,seq:sdSeq(order),cur:0};
   wire('2차 드래프트',`${G.year} 2차 드래프트: 구단별 보호선수 ${SD_PROT}명 명단 제출`,{});
@@ -37024,12 +37026,12 @@ function pkHeld(tid){ const y=pkYear(), L=[]; for(let rd=1;rd<=DRAFT_ROUNDS;rd++
 function pkHeldF(tid){ const L=[]; for(const y of pkYears())for(let rd=1;rd<=DRAFT_ROUNDS;rd++)for(const t of G.teams)if(pkOwner(y,rd,t.id)===tid)L.push(pkKey(rd,t.id,y)); return L; }
 function pkName(k){ const {rd,o,y}=pkParse(k); return `${tshort(o)} ${y} ${rd}라운드`; }
 /* 예상 순번(0이 첫 순번): 올해 드래프트 전이면 정해진 순서, 끝났으면 지금 순위의 역순 */
-function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; let o=D?(rd===1?D.r1:D.r2):standingsNow().map(x=>x.tid).reverse(); if(!D&&rd===1)o=penOrder(o,G.teams.filter(t=>t.pickPen===pkYear()).map(t=>t.id)); /* 이미 확정된 다음 드래프트 순번 하락 제재: 실제 순번과 같은 식(검수 11-07, 11-08d: 두 구단이 같은 순번으로 잡힘) */ let i=o.indexOf(orig); if(i<0)i=5; return i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
+function pkSlot(orig,rd){ const D=pkYear()===G.year?draftOrders():null; let o=D?(rd===1?D.r1:D.r2):draftBaseOrder(); if(!D&&rd===1)o=penOrder(o,G.teams.filter(t=>t.pickPen===pkYear()).map(t=>t.id)); /* 이미 확정된 다음 드래프트 순번 하락 제재: 실제 순번과 같은 식(검수 11-07, 11-08d: 두 구단이 같은 순번으로 잡힘) */ let i=o.indexOf(orig); if(i<0)i=5; return i; } /* 1라운드는 경쟁균형세 페널티가 반영된 순서 */
 /* 올 시즌 진행 정도(0~1): 팀당 평균 경기 수 / 144 */
 function pkSeasonProg(){ try{ const r=G.sea&&G.sea.rec; if(!r||(G.sea.y!=null&&G.sea.y!==G.year))return 0; const g=G.teams.map(t=>{ const x=r[t.id]||{}; return (x.w||0)+(x.l||0)+(x.t||0); }); return clamp(g.reduce((a,b)=>a+b,0)/g.length/144,0,1); }catch(e){ return 0; } }
 /* 미래 지명권의 예상 순번(카페 11-18): 그 드래프트 순서를 정할 시즌이 아직 덜 끝났으면 지금 전력(순위, 시즌 초엔 지난 순서)으로 어림하고 가운데 쪽으로 당겨 본다.
    y가 다음 드래프트면 예전 pkSlot과 같은 식, 그 뒤 해는 지금 순위(10경기 전엔 지난 시즌 순서)로. 올해 확정 순서는 그대로 */
-function pkProjIdx(o,rd,y){ if(y===pkYear())return pkSlot(o,rd); let ord; const D=draftOrders(); if(pkSeasonProg()*144>=10||!D)ord=standingsNow().map(x=>x.tid).reverse(); else ord=[...D.r2];
+function pkProjIdx(o,rd,y){ if(y===pkYear())return pkSlot(o,rd); let ord; const D=draftOrders(); if(pkSeasonProg()*144>=10||!D)ord=draftBaseOrder(); else ord=[...D.r2];
   if(rd===1)ord=penOrder(ord,G.teams.filter(t=>t.pickPen===y).map(t=>t.id)); const i=ord.indexOf(o); return i<0?5:i; }
 /* 화면 표시용 순번(라운드 안 1부터): 올해 드래프트 순서가 정해졌으면 확정, 아니면 지금 순위 역순 어림(pkProjIdx와 같은 식).
    첫 시즌처럼 경기가 거의 없고 지난 순서도 없으면 시즌 전 전력 예상(G.proj)의 역순으로 보인다(표시만, 거래 가치 계산은 그대로). 난수 없음 */
@@ -41916,7 +41918,7 @@ function standView0(){
 /* 지난 시즌 최종 순위(커뮤니티 제안 11-11): 시즌 중에도 지난해 순위를 본다. KBO 최종 순위(한국시리즈 우승 1위·준우승 2위, 나머지는 정규시즌 순서, 카페 11-21)와 정규시즌 순위를 함께 */
 function lastStandCard(){ const H=[...(G.history||[])].reverse().find(h=>h.order&&h.order.length); return H?finalStandCard(H):''; /* 가장 최근에 끝난 시즌 */ }
 function finalStandCard(H){ const rows=finalStandRows(H).map(r=>{ const w=r.o.w, l=r.o.l, t=r.o.t||0; return `<tr class="${r.tid===G.user?'me':''}"><td class="num">${r.rank}</td><td style="text-align:left">${badge(r.tid,16)} ${esc(tshort(r.tid,H.y))}</td><td class="num">${w!=null?`${w}승 ${l}패${t?` ${t}무`:''}`:'-'}</td><td class="num">${w!=null&&w+l?fmt3(w/(w+l)):'-'}</td><td class="num">${r.reg}위</td><td>${esc(r.res.replace('한국시리즈 ','KS ').replace(/^(와일드카드|준플레이오프|플레이오프) 진출$/,(m,k)=>k))||'-'}</td></tr>`; }).join('');
-  return `<section class="card fin-stand"><div class="row between"><h2 class="sec">${H.y} 최종 순위</h2><span class="small muted">KBO 기준 · 한국시리즈 우승 1위, 준우승 2위, 나머지는 정규시즌 순서</span></div><div class="tw"><table class="tbl"><thead><tr><th>순위</th><th style="text-align:left">구단</th><th>성적</th><th>승률</th><th>정규시즌</th><th>가을야구</th></tr></thead><tbody>${rows}</tbody></table></div><p class="small muted">신인 드래프트 지명 순서는 정규시즌 순위의 역순입니다.</p></section>`; }
+  return `<section class="card fin-stand"><div class="row between"><h2 class="sec">${H.y} 최종 순위</h2><span class="small muted">KBO 기준 · 한국시리즈 우승 1위, 준우승 2위, 나머지는 정규시즌 순서</span></div><div class="tw"><table class="tbl"><thead><tr><th>순위</th><th style="text-align:left">구단</th><th>성적</th><th>승률</th><th>정규시즌</th><th>가을야구</th></tr></thead><tbody>${rows}</tbody></table></div><p class="small muted">신인 드래프트 지명 순서는 이 최종 순위의 역순입니다(우승팀이 마지막).</p></section>`; }
 function teamRecCard(){
   const per=period(); const y=per==='season'||per==='post'||(G.sea&&G.sea.y===G.year&&G.cal&&G.day>G.cal.open)?G.year:G.year-1; const T=teamStats(y);
   const cols=[{k:'tm',l:'구단',v:r=>tshort(r.tid),f:r=>`${badge(r.tid,16)} ${tshort(r.tid)}`,cls:'stk'},
@@ -52671,7 +52673,8 @@ const PATCH=[
   {id:'2026-11-21-final-rank',d:'11월 21일',t:'한국시리즈 결과를 반영한 KBO 최종 순위를 보여 줍니다',items:[
     '한국시리즈 우승팀은 최종 1위, 준우승팀은 최종 2위이고 나머지 구단은 정규시즌 순서를 따릅니다(KBO 기준). 정규시즌 3위가 우승하면 최종 1위가 되고, 정규시즌 1·2위는 한 칸씩 밀릴 수 있습니다(2019년 키움 최종 2위·SK 최종 3위처럼).',
     '한국시리즈가 끝나면 리그 순위 화면에 "최종 순위" 탭이 먼저 열리고, 홈 순위 칸·리그 역사·구단 연혁·트로피 진열장도 최종 순위로 보여 줍니다. 정규시즌 순위표는 "정규시즌 순위"로 그대로 남습니다.',
-    '준플레이오프·플레이오프 업셋은 최종 순위를 바꾸지 않습니다. 신인 드래프트 지명 순서, 구단주 순위 목표, 포스트시즌 배당금은 전처럼 정규시즌 순위·가을야구 성적 기준입니다. 예전 저장도 그대로 최종 순위가 보입니다.'
+    '신인 드래프트와 2차 드래프트 지명 순서도 KBO처럼 최종 순위의 역순입니다. 한국시리즈 우승팀이 마지막, 준우승팀이 그 앞에서 뽑습니다(2018년 정규 2위 SK가 우승해 2020 드래프트에서 10번째로 지명). 지명권 거래의 예상 순번도 한국시리즈가 끝나면 최종 순위로 계산합니다.',
+    '준플레이오프·플레이오프 업셋은 최종 순위를 바꾸지 않습니다. 구단주 순위 목표와 포스트시즌 배당금은 전처럼 정규시즌 순위·가을야구 성적 기준입니다. 예전 저장도 그대로 최종 순위가 보입니다.'
   ]},
   {id:'2026-11-21-roster-over-trade',d:'11월 21일',t:'정원을 이미 넘은 구단과도 인원을 줄이는 트레이드를 할 수 있습니다',items:[
     '군 전역·드래프트 합류 등으로 상대 구단 정식 선수가 이미 68명을 넘은 상태에서는, 우리가 더 많이 받아 와 상대 인원이 줄어드는 트레이드도 "68명을 넘게 됩니다"로 막히던 문제를 고쳤습니다. 이제 인원이 늘지 않는 거래는 받을 수 있습니다.',

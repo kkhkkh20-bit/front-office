@@ -31,7 +31,7 @@ const sdSubd=tid=>{ const S=G.sd2; return !!S&&(!!(S.subs&&S.subs[tid])||S.sub==
 function sdBackWhy(o){ if(Math.max(rosterN(o.from),rosterProj(o.from))>=ROSTER_MAX)return `다음 개막 예상 인원이 정원 ${ROSTER_MAX}명에 찼습니다. 선수를 정리한 뒤 복귀를 받으세요.`;
   const r=Math.round(o.fee/2); return spendable(o.from)<r?`반환금 ${money(r)}을(를) 낼 자금이 모자랍니다.`:''; }
 const sdBackAI=(p,o)=>!sdBackWhy(o)&&aiVal(team(o.from),p)>=0;
-function sdOpen(){ if(G.sd2&&G.sd2.y!==G.year){ const o=G.sd2; (G.sd2h=G.sd2h||{})[o.y]={y:o.y,stage:'done',done:o.done,seq:o.seq.filter(s=>s.pid)}; } /* 지난 회차는 지명 결과만 보관 */ const order=((G.last&&G.last.y===G.year&&G.last.order)||standingsNow()).map(x=>x.tid).reverse();
+function sdOpen(){ if(G.sd2&&G.sd2.y!==G.year){ const o=G.sd2; (G.sd2h=G.sd2h||{})[o.y]={y:o.y,stage:'done',done:o.done,seq:o.seq.filter(s=>s.pid)}; } /* 지난 회차는 지명 결과만 보관 */ const order=(G.last&&G.last.y===G.year&&G.last.order?kboFinalOrder({order:G.last.order,champ:G.last.ps&&G.last.ps.champ,runner:G.last.ps&&G.last.ps.runner}):standingsNow()).map(x=>x.tid).reverse(); /* 성적 역순 = KBO 최종 순위의 역순(카페 11-21) */
   const prot={}; for(const t of G.teams)if(t.id!==ME())prot[t.id]=sdProtAI(t.id);
   G.sd2={y:G.year,stage:'protect',exp:Math.max(dnum(G.year,...SD_DAY),G.day+5),order,prot,seq:sdSeq(order),cur:0};
   wire('2차 드래프트',`${G.year} 2차 드래프트: 구단별 보호선수 ${SD_PROT}명 명단 제출`,{});
