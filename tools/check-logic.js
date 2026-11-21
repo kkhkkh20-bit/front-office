@@ -10854,6 +10854,23 @@ T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 �
   G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
   G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
   G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
+T('[카페 11-21 노장 체력 노화] 신체(체력·구속·주력)는 33세부터 완만히·35~36세부터 가파르게, 제구·선구안은 덜 떨어지고, 37세 체력 화면 90대는 나이 천장으로 드물다(우리·AI 같음, 주 난수 호출 수 불변, 새 게임 세계 생성 중에는 예전 식)',()=>{ fresh(); ok(typeof agePhys==='function'&&typeof agePhysCap==='function'&&AGE_PH0===33,'신체 노화 곡선 없음');
+  ok(agePhys(32)===0&&agePhys(33)>0&&agePhys(34)-agePhys(33)<agePhys(37)-agePhys(36)&&agePhysCap(37)<68.8&&agePhysCap(34)>=80,'곡선 모양: 33세 시작·35~36세부터 가파름·37세 천장 화면 90 미만');
+  const W0=WORLD_BUILD; WORLD_BUILD=1; ok(!ageNew(),'세계 생성 중 새 노화 식이 켜짐'); WORLD_BUILD=W0; ok(ageNew(),'시즌 중 새 노화 식이 꺼짐');
+  for(const tid of [G.user,otherT()]){ const w=tid===G.user?'우리':'AI'; const P=domestic(tid).find(q=>q.isP&&!q.prospect&&!q.foreign&&!q.mil), B=domestic(tid).find(q=>!q.isP&&!q.prospect&&!q.foreign&&!q.mil); ok(P&&B,'준비 실패');
+    const mk=(src,age,r,pro)=>{ const p=JSON.parse(JSON.stringify(src)); p.dt='norm'; p.age=age; Object.assign(p.r,r); initPers(p); p.pers.pro=pro; p.pers.amb=10; p.pers.temp=10; p.velo=2; delete p.declP; delete p.gcar; delete p.mil; p.hist=[]; G.players[p.id]=p; return p; };
+    const step=p=>{ develop(p); for(const k in (p.declP||{}))p.r[k]=clamp(p.r[k]+p.declP[k],20,80); delete p.declP; };
+    /* 37세 체력 95(내부 72) 투수 한 해: 체력이 제구보다 확실히 더 떨어지고 구속도 준다 */
+    const p=mk(P,37,{stf:60,ctl:60,sta:72},10); __seed(21); const v0=p.velo; step(p); const dS=p.r.sta-72, dC=p.r.ctl-60, dF=p.r.stf-60; G.players[P.id]=P;
+    ok(dS<=-5&&dS<dC-3,w+' 37세 체력 하락 '+dS.toFixed(1)+'이 제구 '+dC.toFixed(1)+'보다 크지 않음'); ok(dF<dC,w+' 구위 '+dF.toFixed(1)+'가 제구 '+dC.toFixed(1)+'보다 덜 떨어짐'); ok(p.velo-v0<=-1,w+' 37세 구속 보정 하락 '+(p.velo-v0).toFixed(2));
+    /* 34세 최상급(체력 80·프로의식 20) 투수 40명이 37세가 될 때까지: 체력 화면 90 이상은 드물다(나이 천장) */
+    let hi=0, sta=[]; for(let i=0;i<40;i++){ const q=mk(P,34,{stf:70,ctl:70,sta:80},20); __seed(100+i); step(q); step(q); step(q); ok(q.age===37,'준비 실패 '+q.age); sta.push(q.r.sta); if(dv(q.r.sta)>=90)hi++; } G.players[P.id]=P; ok(hi<=2,w+' 37세 체력 90대 '+hi+'/40 · '+sta.slice(0,6));
+    /* 타자 37세: 주력·체력이 선구안보다 확실히 더 떨어진다 */
+    const b=mk(B,37,{con:60,pow:60,eye:60,spd:65,def:60,vit:65},10); __seed(22); step(b); G.players[B.id]=B; ok(b.r.spd-65<b.r.eye-60-3&&b.r.vit-65<b.r.eye-60-3,w+' 37세 주력 '+(b.r.spd-65).toFixed(1)+'·체력 '+(b.r.vit-65).toFixed(1)+' vs 선구안 '+(b.r.eye-60).toFixed(1));
+    /* 31세: 아직 신체 노화 없음(전성기 27~33) */
+    const y=mk(P,31,{stf:60,ctl:60,sta:72},10); __seed(23); step(y); G.players[P.id]=P; ok(y.r.sta-72>-3,w+' 31세 체력이 벌써 크게 떨어짐 '+(y.r.sta-72).toFixed(1));
+    /* 주 난수 호출 수: 새 식과 예전 식(세계 생성 중)이 같다 */
+    const c=[]; for(const wb of [0,1]){ const q=mk(P,37,{stf:60,ctl:60,sta:72},10); WORLD_BUILD=wb; __seed(31); develop(q); c.push(__rngCalls()); WORLD_BUILD=W0; } G.players[P.id]=P; ok(c[0]===c[1]&&c[0]>0,w+' 주 난수 호출 수 다름 '+c); } });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */
