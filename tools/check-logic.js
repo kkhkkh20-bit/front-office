@@ -5477,8 +5477,8 @@ T('[검수 11-09f] 2차 드래프트: 양도금을 내거나 받은 구단에 �
   switchTeam(D); ok(sdCash(D)===team(D).cash,'받은 양도금을 다시 더함'); });
 T('[검수 11-09f] 2차 드래프트 의무: 복귀 거절은 보장계약을 정산하고, 야인이면 전 구단이 AI로 정하며, 제3 구단 이적·옛 저장도 의무를 남긴다',()=>{ fresh(); const A0=G.user; const [A,B,C]=G.teams.map(t=>t.id).filter(t=>t!==A0);
   const p=domestic(B).find(q=>!q.foreign&&!q.isP); p.faC=true; p.sal=700; p.yrs=2; const c=relCost(p).tot; ok(c>0,'준비 실패: 정산금'); const cb=team(B).cash; sdBackDo(p,{y:G.year-2,from:A,to:B,fee:400,need:50,reg:0},false); ok(p.team==null&&team(B).cash===cb-c,'복귀 거절 자유계약에 정산 누락');
-  const q=domestic(B).find(z=>!z.foreign&&z!==p); q.sd2={y:G.year-1,rd:1,from:A,to:B,fee:400,need:50,reg:0}; q.team=C; G.regTrk=G.year; q.regD={y:G.year,n:10,il:0,tm:{[B]:4,[C]:6,[A]:9}}; sdRegCheck(G.cal.end+1); ok(q.sd2&&q.sd2.to===C&&q.sd2.reg===10,'제3 구단 이적으로 의무가 사라짐 '+JSON.stringify(q.sd2));
-  q.sd2.y=G.year-2; delete q.sd2.ly; q.regD={y:G.year,n:0,il:0,tm:{}}; sdRegCheck(G.cal.end+1); ok(!q.sd2&&q.team!==C,'의무 미달인데 원소속 구단 결정 없음');
+  const q=domestic(B).find(z=>!z.foreign&&z!==p); q.sd2={y:G.year-1,rd:1,from:A,to:B,fee:400,need:50,reg:0}; q.team=C; G.regTrk=G.year; q.regD={y:G.year,n:10,il:0,tm:{[B]:4,[C]:6,[A]:9}}; sdRegCheck(G.cal.end+1); ok(!q.sd2&&q.team===C,'제3 구단 이적 뒤에도 의무가 남음 '+JSON.stringify(q.sd2)); /* old→new(카페 11-21): 예전엔 의무가 제3 구단으로 넘어갔다(to===C, reg 10). 이제 지명 구단을 떠나면 의무가 끝난다 */
+  q.team=B; q.sd2={y:G.year-2,rd:1,from:A,to:B,fee:400,need:50,reg:0}; q.regD={y:G.year,n:0,il:0,tm:{}}; sdRegCheck(G.cal.end+1); ok(!q.sd2&&q.team!==B,'의무 미달인데 원소속 구단 결정 없음'); /* old→new: 미달 판정은 지명 구단 B에 남은 선수로 확인 */
   const h=domestic(C).find(z=>!z.foreign&&!z.isP&&!z.sd2); h.sd2={y:G.year-1,rd:1,from:A,to:C,fee:400,need:50,reg:0}; G.regTrk=G.year-1; h.hist=h.hist.filter(e=>!(e.y===G.year&&e.lvl==='1군')); h.hist.push({y:G.year,lvl:'1군',t:C,g:10}); sdRegCheck(G.cal.end+1); ok(h.sd2&&h.sd2.reg===12,'옛 저장 등록일을 경기 수로 어림하지 않음 '+JSON.stringify(h.sd2));
   const r=domestic(A).find(z=>!z.foreign&&z.team===A&&!z.sd2); r.team=B; const o={y:G.year-2,from:A0,to:B,fee:100,need:50,reg:0}; evNew('sd2back','점검',' ',[{l:'복귀를 받는다'},{l:'받지 않는다'}],{def:0,exp:5,from:'운영팀',ref:r.id,data:{pid:r.id,o}});
   firedFlow(G.year,'점검','resign'); ok(G.unemp,'준비 실패: 야인'); const b=sdBackAI(r,o); G.day+=10; evDaily(); ok(b?r.team===A0:r.team==null,'야인인데 전 구단 복귀를 AI로 정하지 않음 '+b+'/'+r.team); });
@@ -10840,6 +10840,19 @@ T('[카페 11-21 해외 복귀 병역] 2년 유예 중인 미필 해외 복귀 �
   G.day=tryAnnD(y); tryDaily(G.day); const T0=G.tryout; ok(T0&&!T0.ids.includes(p.id),'현역 복무 중인 해외 복귀 선수가 트라이아웃 명단에 나옴');
   G.year=y+1; G.day=dnum(y+1,1,2); makeDraftClass(); ok(G.draftClass.includes(p.id)&&p.prospect&&p.ovsRet&&!p.ovsWait,'복무 중 유예가 끝난 선수가 드래프트 명단에 없음(선수를 잃음)'); ok(p.mil&&p.mil.unit==='현역'&&p.mil.until===JSON.parse(m0).until,'드래프트 명단에 오르며 복무 기록이 바뀜');
   G.day=p.mil.until; milDaily(); ok(p.mil.done&&!milFree(p)&&p.prospect&&p.team==null,'전역 뒤 군필 드래프트 후보가 아님: '+JSON.stringify(p.mil)); });
+T('[카페 11-21 2차 드래프트 트레이드] 2차 지명 의무는 지명 구단만 진다: 트레이드로 데려온 구단(우리·AI 같음)에는 의무 미달 복귀·방출이 없고, 트레이드 상대로 덮어쓴 옛 저장도 한 번에 정리한다(난수 없음)',()=>{ fresh(); const U=G.user; const [A,B,C]=G.teams.map(t=>t.id).filter(t=>t!==U); const y0=G.year-2; G.regTrk=G.year;
+  const mk=(tid,to,ex)=>{ const p=domestic(tid).find(q=>!q.foreign&&!q.ys&&!q.sd2); p.sd2=Object.assign({y:y0,d:G.day,rd:1,from:B,to,fee:400,need:50,reg:0},ex||{}); p.regD={y:G.year,n:0,il:0,tm:{}}; return p; };
+  const u=mk(A,A), c=mk(A,A), k=mk(A,A), old=mk(C,C,{ly:G.year-1}), idx={}; [u,c,k,old].forEach(p=>idx[p.id]=1);
+  G.sd2={y:y0,stage:'done',done:G.day,prot:{},order:[],seq:[u,c,k,old].map(p=>({rd:1,tid:A,pid:p.id,from:B,fee:400,nm:p.name}))};
+  for(const [p,to] of [[u,U],[c,C]]){ tradeTerms(p); p.team=to; story(p,'트레이드로 '+tname(to)+' 이적','move'); }
+  const r0=__rngCalls(); sdObFix(); const j=JSON.stringify(G.players[old.id]); sdObFix(); ok(JSON.stringify(G.players[old.id])===j,'옛 저장 정리가 두 번째에 또 바뀜'); ok(__rngCalls()===r0,'옛 저장 정리가 난수를 씀');
+  ok(!old.sd2&&old.team===C,'트레이드 상대로 덮어쓴 옛 의무가 남음 '+JSON.stringify(old.sd2));
+  sdRegCheck(G.cal.end+1);
+  ok(u.team===U&&!u.sd2,'트레이드로 데려온 우리 구단 선수에게 2차 지명 의무 적용: '+u.team+' '+JSON.stringify(u.sd2));
+  ok(c.team===C&&!c.sd2,'트레이드로 데려온 AI 구단 선수에게 2차 지명 의무 적용: '+c.team+' '+JSON.stringify(c.sd2));
+  ok(k.team!==A&&!k.sd2,'지명 구단에 남은 선수는 여전히 의무 미달 판정을 받아야 함');
+  const ob=Object.fromEntries(G.sd2.seq.map(s=>[s.pid,s.ob])); ok(ob[u.id]==='trade'&&ob[c.id]==='trade'&&ob[old.id]==='trade','결과표에 트레이드 종료 사유 없음 '+JSON.stringify(ob));
+  tradeTerms(u); u.team=A; sdRegCheck(G.cal.end+1); ok(u.team===A&&!u.sd2,'지명 구단으로 되돌아오면 끝난 의무가 되살아남'); });
 `);
 try{ env(T); }catch(e){ console.error=oe; console.log('준비 실패: '+e.stack.slice(0,400)); process.exit(1); }
 /* RULE_SHARD=번호/전체: CI에서 시나리오를 나눠 돌린다(예: 3/8). 시나리오 순서대로 번갈아 나눈다 */

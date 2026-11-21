@@ -29314,7 +29314,7 @@ function ctCashYears(T,s0){ const py=sponSeason(), yrs=Math.max(1,T.years||1), s
 function optPaid(tid,a){ const L=G.sea.optPd=G.sea.optPd||{}; L[tid]=(L[tid]||0)+a; }
 /* 최근 트레이드로 옮긴 선수(30일): 같은 선수를 곧바로 다시 트레이드하지 않는다(플레이테스트 4 #19·#25) */
 function recentTr(p,d){ return !!p&&p.trD!=null&&G.day-p.trD<(d||30); }
-function tradeTerms(p){ if(p){ moveSalary(p,p.team); p.trD=G.day; } try{ if(p&&p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ optPaid(p.team,p.opt.a); p.opt.paidY=G.year; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 트레이드와 함께 지급합니다.`); } }catch(e){} try{ capDeadBonus(p); }catch(e){} termsClear(p); } /* 계약금 반영액은 낸 구단 상한에 남긴다 */
+function tradeTerms(p){ if(p){ sdObEnd(p,'trade'); /* 2차 드래프트 의무는 지명 구단만: 트레이드로 떠나면 끝(카페 11-21) */ moveSalary(p,p.team); p.trD=G.day; } try{ if(p&&p.team!=null&&!p.foreign&&optEarned(p)&&p.opt.paidY!==G.year){ optPaid(p.team,p.opt.a); p.opt.paidY=G.year; if(p.team===G.user)addLog(`${p.name}이(가) 이미 달성한 성과 옵션 ${money(p.opt.a)}을(를) 트레이드와 함께 지급합니다.`); } }catch(e){} try{ capDeadBonus(p); }catch(e){} termsClear(p); } /* 계약금 반영액은 낸 구단 상한에 남긴다 */
 /* 끝나지 않은 수상 옵션 장부(리뷰② 11-17): 정규시즌 뒤 시상식 전에 계약이 바뀌거나(재계약·다년 시작·트레이드·방출) FA가 되면 p.opt가 지워져
    12월 골든글러브 옵션이 사라졌다. 지우기 전에 {pid,y 시즌,tid 계약 구단,a 금액,paid}를 G.optLed에 남기고 시상식에서 그 시즌 수상이면 원래 구단이 한 번만 낸다. 사용자·AI 같은 규칙 */
 function optLedKeep(p){ try{ const o=p&&p.opt, y=G.year; if(!o||(o.c)!=='gg'||!(o.a>0)||o.from>y||o.until<y||o.paidY===y||p.ctT==null)return; if(!(G.cal&&G.day>=G.cal.end))return; /* 그 시즌을 마친 뒤만 */
@@ -36942,7 +36942,8 @@ function sdObMark(p,o,v){ const S=sdRounds()[o.y]||(G.sd2&&G.sd2.y===o.y?G.sd2:n
 function sdRounds(){ const o=Object.assign({},G.sd2h||{}); if(G.sd2&&G.sd2.stage==='done')o[G.sd2.y]=G.sd2; return o; }
 function sdRegCheck(day){ if(!G.cal||day!==G.cal.end+1)return;
   for(const p of Object.values(G.players)){ const o=p.sd2; if(!o||o.y>=G.year||o.ly===G.year)continue; if(p.team==null||p.team===o.from){ o.reg+=sdRegN(p,o); delete p.sd2; sdObMark(p,o,o.reg>=o.need?'ok':p.team==null?'rel':'home'); continue; } /* 방출되거나 원소속으로 돌아가면 의무도 끝: 결과표에 사유를 남긴다(검수 11-09ze) */
-    o.reg+=sdRegN(p,o); o.ly=G.year; o.to=p.team; /* 제3 구단으로 옮겨도 의무는 선수를 따라가 새 구단이 진다. 원소속 구단의 복귀 권리는 남는다(검수 11-09f) */
+    if(p.team!==o.to){ sdObEnd(p,'trade'); continue; } /* 의무는 지명 구단만 진다. 트레이드 등으로 지명 구단을 떠나면 의무와 원소속 복귀 권리가 함께 끝난다(카페 11-21: 예전엔 o.to를 새 구단으로 바꿔 트레이드 상대가 의무를 물려받음, 검수 11-09f 규칙 폐기) */
+    o.reg+=sdRegN(p,o); o.ly=G.year;
     if(o.reg>=o.need){ delete p.sd2; sdObMark(p,o,'ok'); continue; } if(G.year<o.y+2)continue; delete p.sd2;
     if(o.from===G.user&&!G.unemp){ sdObMark(p,o,'wait'); /* 복귀 결정 대기도 결과표에(검수 11-09ze) */ evNew('sd2back',`${p.name} 2차 드래프트 복귀 여부`,`${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})이(가) ${tname(o.to)}에서 의무 등록(두 시즌 1군 ${o.need}일)을 채우지 못했습니다. 원소속 구단으로서 복귀를 받을지 정해야 합니다.`,[{l:'복귀를 받는다',fx:`양도금 절반 ${money(Math.round(o.fee/2))}을(를) ${tshort(o.to)}에 돌려줍니다.`},{l:'받지 않는다',fx:'선수는 자유계약으로 풀립니다.'}],{def:0,exp:5,from:'운영팀',cat:'must',ref:p.id,data:{pid:p.id,o}}); continue; } /* 우리 구단으로 돌아오는 선수는 단장이 정한다 */
     sdBackDo(p,o,sdBackAI(p,o)); } } /* 야인이면 전 구단도 AI 기준(검수 11-09f) */
@@ -36967,7 +36968,10 @@ function sdObFix(){ for(const p of Object.values(G.players||{})){ const o=p.sd2;
   const moved=(G.moves||[]).find(m=>m.pid===p.id&&m.t==='2차 드래프트'&&m.y===o.y&&m.from===o.from&&m.to!=null);
   const since=o.d??moved?.d??dnum(o.y+1,1,1);
   const released=p.team==null||(p.tLog||[]).some(x=>x.t==null&&x.d>=since)||(p.relD!=null&&p.relD>=since&&p.relT===o.to);
-  if(released)sdObEnd(p,'rel'); }
+  if(released){ sdObEnd(p,'rel'); continue; }
+  /* 카페 11-21 구버전: 시즌 판정이 o.to를 트레이드 상대로 덮어쓴 저장. 지명 기록으로 지명 구단을 되찾고, 지금 그 구단에 없으면 의무를 끝낸다 */
+  const pk=Object.values(sdRounds()).map(S=>S.y===o.y&&(S.seq||[]).find(x=>x.pid===p.id&&x.from===o.from)).find(Boolean), dt=pk?pk.tid:moved?moved.to:o.to;
+  if(dt!=null)o.to=dt; if(p.team!==o.to)sdObEnd(p,'trade'); }
   for(const S of Object.values(sdRounds()))for(const s of S.seq||[])if(s.pid&&!s.ob&&!G.players[s.pid]&&G.arch&&G.arch[s.pid])s.ob='ret'; }
 function sd2Daily(day){ try{ sdRegCheck(day); }catch(e){}
   if(sdYear(G.year)&&day>=dnum(G.year,...SD_OPEN)&&!(G.sd2&&G.sd2.y===G.year)&&G.last&&G.last.y===G.year&&period()==='off')sdOpen();
@@ -49238,7 +49242,7 @@ function wvBox(){ const L=wvList().sort((a,b)=>ovr(b)-ovr(a));
 function sdRate(rp,p){ return ` <span class="sd-rate">${rchipG(rp&&rp.cur,rp&&rp.exact)}${potChip(rp,p)}</span>`; }
 function sdBox(){ const S=G.sd2&&G.sd2.y===G.year&&G.sd2.stage!=='done'?G.sd2:null; /* 진행 중인 회차만. 끝난 회차는 대기 화면에서 해마다 따로 본다(검수 11-09ze) */
   const rule=hiI(`2차 드래프트는 홀수 해 11월에 열립니다. 구단마다 보호선수 최대 ${SD_PROT}명을 내고, 다른 구단이 지난 시즌 성적 역순으로 명단 밖 선수를 ${SD_RD}라운드까지(하위 3개 구단은 5라운드) 지명합니다. 한 구단에서 최대 ${SD_LOSS}명. 양도금 1라운드 4억·2라운드 3억·3라운드 2억·4라운드 이하 1억. 1·2라운드 지명자는 두 시즌 안에 1군 ${SD_REG[0]}일·${SD_REG[1]}일을 채우지 못하면 원소속 구단으로 돌아갑니다. 외국인·입단 1~3년 차·육성선수·군 보류·이번 겨울 FA 계약 선수는 대상이 아닙니다.`);
-  const ob=(S,s)=>{ if(s.rd>SD_REG.length)return ''; const need=SD_REG[s.rd-1]; if(s.ob)return ` · 의무 등록${s.obN!=null?` 1군 ${s.obN}/${need}일`:''} ${{ok:'충족',back:'미달 · 원소속 복귀',free:'미달 · 자유계약',wait:'미달 · 원소속 복귀 결정 대기',rel:'방출로 의무 종료',ret:'은퇴로 의무 종료',home:'원소속 구단 복귀로 의무 종료',moved:'결정 전 재이적으로 복귀 결정 종료'}[s.ob]||''}`; const q=G.players[s.pid], o=q&&q.sd2; if(!o||o.y!==S.y)return ''; const n=Math.min(o.need,o.reg+(G.year>o.y&&o.ly!==G.year&&q.team!=null?sdRegN(q,o):0)); return ` · 의무 등록 1군 ${n}/${o.need}일(${o.y+2}시즌까지)`; }; /* 지명 선수별 의무 진행(검수 11-09f) */
+  const ob=(S,s)=>{ if(s.rd>SD_REG.length)return ''; const need=SD_REG[s.rd-1]; if(s.ob)return ` · 의무 등록${s.obN!=null?` 1군 ${s.obN}/${need}일`:''} ${{ok:'충족',back:'미달 · 원소속 복귀',free:'미달 · 자유계약',wait:'미달 · 원소속 복귀 결정 대기',rel:'방출로 의무 종료',ret:'은퇴로 의무 종료',home:'원소속 구단 복귀로 의무 종료',moved:'결정 전 재이적으로 복귀 결정 종료',trade:'트레이드 이적으로 의무 종료'}[s.ob]||''}`; const q=G.players[s.pid], o=q&&q.sd2; if(!o||o.y!==S.y)return ''; const n=Math.min(o.need,o.reg+(G.year>o.y&&o.ly!==G.year&&q.team!=null?sdRegN(q,o):0)); return ` · 의무 등록 1군 ${n}/${o.need}일(${o.y+2}시즌까지)`; }; /* 지명 선수별 의무 진행(검수 11-09f) */
   const resOf=S=>{ const done=S.seq.filter(s=>s.pid); return done.length?done.map(s=>`<p class="small">${s.rd}라운드 ${esc(tshort(s.tid))}: <button class="lnk" data-a="player" data-v="${s.pid}">${esc(s.nm)}</button> (전 ${esc(tshort(s.from))}, 양도금 ${money(s.fee)}${ob(S,s)})</p>`).join(''):'<p class="small muted">지명된 선수가 없습니다.</p>'; };
   if(!S){ let y=G.year+(G.sd2&&G.sd2.y===G.year?1:0); while(!sdYear(y))y++; /* 대기 중: 지금 운영팀 추천 기준으로 보호 명단 밖이 될 선수를 미리 보여 준다(지난 결과가 있어도, 검수 11-09ze) */
     const pool=sdPool(G.user), prot=new Set(sdProtAI(G.user)), out=pool.filter(p=>!prot.has(p.id)).sort((a,b)=>ovr(b)-ovr(a));
@@ -52659,6 +52663,10 @@ const PATCH=[
     '8회 이후 큰 리드에 올라온 구원 투수가 점수를 줘 세이브 상황(3점 차 이내 또는 동점 주자가 누상·타석·대기 타석)이 되면, 감독이 이닝이 끝나기를 기다리지 않고 마무리를 올립니다. 마무리가 이미 던졌거나 쉬어야 하면 필승조를 올립니다.',
     '세이브 상황에 올라온 투수가 2점 이상 주거나, 2점 이상 줘서 동점~4점 차로 좁혀져도 필승조로 바꿉니다. 마무리가 동점을 허용하거나 3점 이상 주면 마무리도 내립니다.',
     '연투·피로 한도는 그대로 지킵니다. 올릴 마무리·필승조가 없으면 지금 투수에게 맡깁니다. 우리 구단과 다른 구단 모두 같은 기준입니다.'
+  ]},
+  {id:'2026-11-21-sd2-trade',d:'11월 21일',t:'2차 드래프트 의무 등록은 지명한 구단만 집니다',items:[
+    '2차 드래프트로 데려온 선수를 트레이드로 보내면 의무 등록(1군 등록일)과 원소속 구단 복귀 권리가 그때 끝납니다. 트레이드로 받은 구단은 의무를 물려받지 않아, 등록일이 모자라도 원소속 복귀·자유계약 방출이 없습니다.',
+    '예전 저장에서 트레이드 상대에게 넘어가 있던 의무도 불러올 때 정리됩니다. 2차 드래프트 결과표에는 "트레이드 이적으로 의무 종료"로 남습니다. 우리 구단과 다른 구단 모두 같은 기준입니다.'
   ]},
   {id:'2026-11-21-soft-mode',d:'11월 21일',t:'새 게임 난이도에 쉬움이 생겼습니다(쉬움·보통·어려움)',items:[
     '새 게임 난이도를 쉬움·보통·어려움 중에서 고릅니다. 예전 하드는 어려움으로 이름만 바뀌었습니다.',

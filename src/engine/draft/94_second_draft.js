@@ -81,7 +81,8 @@ function sdObMark(p,o,v){ const S=sdRounds()[o.y]||(G.sd2&&G.sd2.y===o.y?G.sd2:n
 function sdRounds(){ const o=Object.assign({},G.sd2h||{}); if(G.sd2&&G.sd2.stage==='done')o[G.sd2.y]=G.sd2; return o; }
 function sdRegCheck(day){ if(!G.cal||day!==G.cal.end+1)return;
   for(const p of Object.values(G.players)){ const o=p.sd2; if(!o||o.y>=G.year||o.ly===G.year)continue; if(p.team==null||p.team===o.from){ o.reg+=sdRegN(p,o); delete p.sd2; sdObMark(p,o,o.reg>=o.need?'ok':p.team==null?'rel':'home'); continue; } /* 방출되거나 원소속으로 돌아가면 의무도 끝: 결과표에 사유를 남긴다(검수 11-09ze) */
-    o.reg+=sdRegN(p,o); o.ly=G.year; o.to=p.team; /* 제3 구단으로 옮겨도 의무는 선수를 따라가 새 구단이 진다. 원소속 구단의 복귀 권리는 남는다(검수 11-09f) */
+    if(p.team!==o.to){ sdObEnd(p,'trade'); continue; } /* 의무는 지명 구단만 진다. 트레이드 등으로 지명 구단을 떠나면 의무와 원소속 복귀 권리가 함께 끝난다(카페 11-21: 예전엔 o.to를 새 구단으로 바꿔 트레이드 상대가 의무를 물려받음, 검수 11-09f 규칙 폐기) */
+    o.reg+=sdRegN(p,o); o.ly=G.year;
     if(o.reg>=o.need){ delete p.sd2; sdObMark(p,o,'ok'); continue; } if(G.year<o.y+2)continue; delete p.sd2;
     if(o.from===G.user&&!G.unemp){ sdObMark(p,o,'wait'); /* 복귀 결정 대기도 결과표에(검수 11-09ze) */ evNew('sd2back',`${p.name} 2차 드래프트 복귀 여부`,`${p.name}(${posLabel(p)}, ${p.age}세, 능력 ${dvo(p)})이(가) ${tname(o.to)}에서 의무 등록(두 시즌 1군 ${o.need}일)을 채우지 못했습니다. 원소속 구단으로서 복귀를 받을지 정해야 합니다.`,[{l:'복귀를 받는다',fx:`양도금 절반 ${money(Math.round(o.fee/2))}을(를) ${tshort(o.to)}에 돌려줍니다.`},{l:'받지 않는다',fx:'선수는 자유계약으로 풀립니다.'}],{def:0,exp:5,from:'운영팀',cat:'must',ref:p.id,data:{pid:p.id,o}}); continue; } /* 우리 구단으로 돌아오는 선수는 단장이 정한다 */
     sdBackDo(p,o,sdBackAI(p,o)); } } /* 야인이면 전 구단도 AI 기준(검수 11-09f) */
@@ -106,7 +107,10 @@ function sdObFix(){ for(const p of Object.values(G.players||{})){ const o=p.sd2;
   const moved=(G.moves||[]).find(m=>m.pid===p.id&&m.t==='2차 드래프트'&&m.y===o.y&&m.from===o.from&&m.to!=null);
   const since=o.d??moved?.d??dnum(o.y+1,1,1);
   const released=p.team==null||(p.tLog||[]).some(x=>x.t==null&&x.d>=since)||(p.relD!=null&&p.relD>=since&&p.relT===o.to);
-  if(released)sdObEnd(p,'rel'); }
+  if(released){ sdObEnd(p,'rel'); continue; }
+  /* 카페 11-21 구버전: 시즌 판정이 o.to를 트레이드 상대로 덮어쓴 저장. 지명 기록으로 지명 구단을 되찾고, 지금 그 구단에 없으면 의무를 끝낸다 */
+  const pk=Object.values(sdRounds()).map(S=>S.y===o.y&&(S.seq||[]).find(x=>x.pid===p.id&&x.from===o.from)).find(Boolean), dt=pk?pk.tid:moved?moved.to:o.to;
+  if(dt!=null)o.to=dt; if(p.team!==o.to)sdObEnd(p,'trade'); }
   for(const S of Object.values(sdRounds()))for(const s of S.seq||[])if(s.pid&&!s.ob&&!G.players[s.pid]&&G.arch&&G.arch[s.pid])s.ob='ret'; }
 function sd2Daily(day){ try{ sdRegCheck(day); }catch(e){}
   if(sdYear(G.year)&&day>=dnum(G.year,...SD_OPEN)&&!(G.sd2&&G.sd2.y===G.year)&&G.last&&G.last.y===G.year&&period()==='off')sdOpen();
