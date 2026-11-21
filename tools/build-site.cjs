@@ -5,7 +5,9 @@ const {splitWebsite}=require('./lib/site-runtime.cjs');
 const {build}=require('./build.cjs'),{modelFiles,audioFiles}=require('./match3d-assets.cjs');
 const MAX_ASSET_BYTES=25*1024*1024;
 /* v14 장면 사진(응원 무대·행사·스카우트 출장): HTML에 넣지 않고 같은 경로로 따로 올린다. 화면은 받아지면 그리고 못 받으면 생략(77_assets_ui.js sceneImg) */
-function sceneFiles(root){ const M=JSON.parse(fs.readFileSync(path.join(root,'assets/v14/scene_manifest.json'),'utf8')); return [...M.scenes.map(x=>({filename:'assets/v14/'+x.file.path,data:fs.readFileSync(path.join(root,'assets/v14',x.file.path))})),...champFiles(root),...v13Faces(root),...v18Faces(root),...v19People(root),...v23Faces(root),...v21Faces(root),...operationsPhotos(root)]; }
+function sceneFiles(root){ const M=JSON.parse(fs.readFileSync(path.join(root,'assets/v14/scene_manifest.json'),'utf8')); return [...M.scenes.map(x=>({filename:'assets/v14/'+x.file.path,data:fs.readFileSync(path.join(root,'assets/v14',x.file.path))})),...champFiles(root),...v13Faces(root),...v18Faces(root),...v19People(root),...v23Faces(root),...v21Faces(root),...operationsPhotos(root),...eventPhotos(root)]; }
+/* In-game event thumbnails remain standalone, lazy images rather than first-load data. */
+function eventPhotos(root){ const base='assets/v24/game_events/', m=JSON.parse(fs.readFileSync(path.join(root,base,'manifest.json'),'utf8')); return m.assets.map(a=>({filename:base+a.file,data:fs.readFileSync(path.join(root,base,a.file))})); }
 /* v13 선수 얼굴 60명 256px 시트(구단 ID.webp, 납품 f6bce76 무손실본을 WebP q85로 줄임). 앱 HTML에는 128px만 넣고 사이트에서만 받는다(77_assets_ui.js faceSheets) */
 function v13Faces(root){ const b='assets/v13/face256/'; return fs.readdirSync(path.join(root,b)).filter(f=>f.endsWith('.webp')).map(f=>({filename:b+f,data:fs.readFileSync(path.join(root,b,f))})); }
 /* v18 선수 얼굴 200명 시트(구단 홈 유니폼 A·B × 128·256·384, v18b 납품 그대로 60장). 앱 HTML에는 넣지 않고(00j_faces_v18_data.js는 번호표만) 같은 경로로 받는다(77_assets_ui.js faceSheets).

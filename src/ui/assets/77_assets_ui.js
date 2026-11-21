@@ -256,7 +256,7 @@ Object.assign(A,{ gpFace7(){ gp7Seeds(UI.gp||gpDefault(),true); render(); } });
  - 장면은 HTML에 넣지 않는다(용량). 사이트는 tools/build-site.cjs가 assets/v14/를 함께 올리고, 저장소에서 연 index.html도 옆 폴더에서 읽는다
  - 처음 한 장을 시험으로 받아 보고 되면 그린다. 못 받으면(아티팩트·파일 하나만 받은 경우) 그림 자리를 아예 만들지 않는다 */
 const SCENE_N={cheer_basic:3,cheer_expanded:3,cheer_large:3,scout_weekend:3,scout_tournament:2,scout_dugout:2,scout_winter:2};
-const scenePath=id=>'assets/v14/'+(id.startsWith('event_')?'cheer/events/':id.startsWith('cheer_')?'cheer/stage/':'scout/scenes/')+id+'.webp';
+const scenePath=id=>(['event_theme_day','event_collab_uniform','event_supporters'].includes(id)?'assets/v24/game_events/':'assets/v14/'+(id.startsWith('event_')?'cheer/events/':id.startsWith('cheer_')?'cheer/stage/':'scout/scenes/'))+id+'.webp';
 let SCENE_OK=null; /* null 아직 · 'wait' 시험 중 · true 됨 · false 안 됨 */
 function sceneProbe(){ if(SCENE_OK!==null||typeof Image==='undefined')return; SCENE_OK='wait'; const im=new Image(); im.onload=()=>{ SCENE_OK=true; try{ render(); }catch(e){} }; im.onerror=()=>{ SCENE_OK=false; }; im.src=scenePath('event_first_pitch'); }
 const sceneOf=(g,seed)=>SCENE_N[g]?g+'_'+(1+shash(seed)%SCENE_N[g]):g; /* shash: 44b_cheer_squad.js */

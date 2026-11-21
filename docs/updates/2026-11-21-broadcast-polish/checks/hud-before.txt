@@ -1,0 +1,19 @@
+HUD viewport 1440 checked
+HUD viewport 1280 checked
+AssertionError [ERR_ASSERTION]: broadcast HUD regressions
++ actual - expected
+
++ [
++   '1440 default player cards stay compact',
++   '1280 default player cards stay compact'
++ ]
+- []
+
+    at /workspace/front-office-broadcast-polish/tools/check-broadcast-hud-1121.cjs:23:181 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [Array],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
